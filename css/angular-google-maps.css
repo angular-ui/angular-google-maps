@@ -1,3 +1,9 @@
+@media (max-width: 980px) {
+	#forkme {
+		display: none;
+	}	
+}
+
 body {
 	padding-top: 60px;
 	font-size: 15px;
@@ -61,6 +67,10 @@ footer .pull-right {
 
 .hero-unit p {
 	margin: 10px 0 20px 0;
+}
+
+h1, h2, h3, h4, h5, legend {
+	letter-spacing: -1px;
 }
 
 #___plusone_0 {
