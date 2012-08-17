@@ -14,60 +14,9 @@
 	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Istok+Web:400,400italic,700,700italic">
 	<link rel="stylesheet" href="css/prettify.css">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-responsive.min.css">
+	<link rel="stylesheet" href="css/angular-google-maps.css">
 	
-	<style>
-	body {	
-		padding-top: 60px;
-		font-size: 15px;
-	}
-	
-	body,p,label,input,textarea {
-		font-family: "Istok Web", Arial, Helvetica, Sans-Serif;
-	}
-	
-	p {
-		line-height: 22px;
-	}
-	
-	.angular-google-map {
-		height: 400px;
-		border: 10px #fff solid;
-		margin-bottom: 20px;
-		box-shadow: 0 0 5px -2px rgba(0, 0, 0, 1);
-	}
-	
-	.angular-google-map img {
-		max-width: inherit !important;
-	}
-	
-	legend {
-		margin-bottom: 10px;
-	}
-	
-	pre {
-		margin-bottom: 30px;
-	}
-	
-	footer {
-		margin-top: 40px;
-		padding: 20px 0;
-		border-top: 1px #eee solid;		
-	}
-	
-	footer .pull-right {
-		text-align: right;
-	}
-	
-	.share {
-		margin-top: 40px;
-	}
-	
-	#___plusone_0 {
-		position: relative;
-		top: -3px;
-	}
-	</style>
-
 	<script type="text/javascript">
 	  var _gaq = _gaq || [];
 	  _gaq.push(['_setAccount', 'UA-34163232-1']);
@@ -101,10 +50,18 @@
 	
 		<div class="hero-unit">
 			<h1>Google Maps for Angular.js</h1>
-			<p>Simple to use #angularjs directive to work with Google Maps inside your applications.</p>
-			<a class="btn btn-large btn-primary" href="https://raw.github.com/nlaplante/angular-google-maps/master/src/angular-google-maps.js">Download</a>
-			<a class="btn btn-large" href="https://github.com/nlaplante/angular-google-maps">View on GitHub</a>
+			
+			<p>Simple to use <a href="http://angularjs.org/" rel="external">Angular.js</a> directive to work with Google Maps inside your applications.</p>
+			
+			<a class="btn btn-large btn-primary" href="https://raw.github.com/nlaplante/angular-google-maps/master/src/angular-google-maps.js" rel="external">Download</a>
+			<a class="btn btn-large" href="https://github.com/nlaplante/angular-google-maps" rel="external">View on GitHub</a>
+			
+			or
+			
+			<a href="#demo">try it now!</a>
 
+			<hr>
+			
 			<div class="share">
 				<a href="https://twitter.com/share" class="twitter-share-button" data-text="Just found about #angular-google-maps. Check it out!" data-url="http://nlaplante.github.com/angular-google-maps/" data-count="none" data-size="large">Tweet</a>
 				<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
@@ -116,9 +73,7 @@
 				    po.src = 'https://apis.google.com/js/plusone.js';
 				    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
 				  })();
-				</script>
-				
-				
+				</script>				
 			</div>
 		</div>
 		
@@ -217,7 +172,7 @@
 		
 		<hr>
 		
-		<h2>Try it</h2>
+		<h2 id="demo">Try it</h2>
 		
 		<div class="row">
 			<form class="form-horizontal" name="angularGoogleMapsForm" novalidate>
