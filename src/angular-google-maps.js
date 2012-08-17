@@ -102,7 +102,6 @@
 						return null;
 					};
 				
-				
 				scope.refreshMarkers = function () {
 					if (scope.markers && scope.markers.length) {			
 						
@@ -129,7 +128,6 @@
 						}
 					}
 				};
-				
 				
 				if (attrs.markCenter) {
 					addMarker(center.lat(), center.lng());
@@ -225,6 +223,9 @@
 				scope.$watch("refresh()", function (newValue, oldValue) {
 					if (newValue) {
 						google.maps.event.trigger(scope.map, "resize");
+						
+						// Need to reset center after refresh
+						map.setCenter(center);
 					}
 				});
 				
@@ -255,13 +256,8 @@
 				}, true);
 				
 				// Reset markers when changed in controller
-				scope.$watch("markers", function (newValue, oldValue) {
-					if (newValue === oldValue) {
-						return;
-					}
-					
-					scope.refreshMarkers();
-					
+				scope.$watch("markers", function (newValue, oldValue) {					
+					scope.refreshMarkers();					
 				}, true);
 			}
 		};
