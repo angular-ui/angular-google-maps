@@ -48,7 +48,7 @@
 			link: function (scope, element, attrs, ctrl) {
 				
 				// Center property must be specified and provide lat & lng properties
-				if (!scope.center || (!scope.center.lat || !scope.center.lng)) {
+				if (!angular.isDefined(scope.center) || (!angular.isDefined(scope.center.lat) || !angular.isDefined(scope.center.lng))) {
 					$log.error("Could not find a valid center property in scope");
 					return;
 				}
@@ -188,10 +188,9 @@
 				scope.map = map;
 				
 				// Listen for drags
+				var dragging = false;
 				if (attrs.draggable == "true") {					
-					(function () {
-						var dragging = false;
-						
+					(function () {						
 						google.maps.event.addListener(map, "dragstart", function (e) {
 							dragging = true;
 						});
@@ -212,21 +211,29 @@
 				}				
 				
 				// Watch for zoom
-				google.maps.event.addListener(map, "zoom_changed", function (e) {			
-					scope.$apply(function (s) {
-						s.zoom = map.getZoom();
-					});
-				});
-				
-				scope.$watch("zoom", function (newValue, oldValue) {
-					if (newValue === oldValue) {
-						return;
-					}
+				(function () {
 					
-					if (angular.isNumber(scope.zoom)) {
-						map.setZoom(scope.zoom);
-					}
-				});
+					var changing = false;
+					
+					google.maps.event.addListener(map, "zoom_changed", function (e) {
+						changing = true;
+						scope.zoom = map.getZoom();
+						scope.$apply();
+					});
+					
+					scope.$watch("zoom", function (newValue, oldValue) {
+						if (newValue === oldValue) {
+							return;
+						}
+						
+						if (angular.isNumber(scope.zoom) && !changing) {
+							map.setZoom(scope.zoom);
+						}
+						
+						changing = false;
+					});
+				}());
+				
 				
 				// Check if we need to refresh the map
 				scope.$watch("refresh()", function (newValue, oldValue) {
@@ -255,7 +262,7 @@
 						return;
 					}
 					
-					if (!scope.dragging) {					
+					if (!dragging) {					
 						if (angular.isNumber(newValue.lat) && angular.isNumber(newValue.lng)) {
 							
 							center = new google.maps.LatLng(newValue.lat, newValue.lng);
