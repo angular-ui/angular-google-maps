@@ -1,4 +1,6 @@
-angular-google-maps
-===================
+angular-google-maps github pages
+================================
 
-AngularJS directives for the Google Maps Javascript API
+This is the GitHub pages branch of the [angular-google-maps](https://github.com/nlaplante/angular-google-maps) repository.
+
+[View the full site here](http://nlaplante.github.com/angular-google-maps/)
