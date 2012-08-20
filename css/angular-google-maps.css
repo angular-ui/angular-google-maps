@@ -10,7 +10,7 @@ body {
 }
 
 body,p,label,input,textarea {
-	font-family: "Istok Web", Arial, Helvetica, Sans-Serif;
+	font-family: "Source Sans Pro", Arial, Helvetica, Sans-Serif;
 }
 
 p {
@@ -46,23 +46,14 @@ footer .pull-right {
 	text-align: right;
 }
 
-.hero-unit {
-	position: relative;
-}
-
-.hero-unit .share {
-	position: absolute;
-	right: 20px;
-	bottom: 20px;
-}
-
 .hero-unit hr {
 	border-color: #ddd #000 #eee;
 	margin: 20px 0 10px 0;
 }
 
 .hero-unit h1 {
-	letter-spacing: -2px;
+	letter-spacing: -3px;
+	font-size: 70px;
 }
 
 .hero-unit p {
@@ -71,6 +62,17 @@ footer .pull-right {
 
 h1, h2, h3, h4, h5, legend {
 	letter-spacing: -1px;
+}
+
+h2 {
+	padding-bottom: 5px;
+	border-bottom: 1px #eee solid;
+	font-size: 30px;
+	margin: 30px 0 20px;
+}
+
+h1, h2 {
+	font-weight: 900;
 }
 
 #___plusone_0 {

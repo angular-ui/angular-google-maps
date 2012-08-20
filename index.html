@@ -11,7 +11,7 @@
 	
 	<title>nlaplante/angular-google-maps &mdash; Google Maps for Angular.js</title>
 	
-	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Istok+Web:400,400italic,700,700italic">
+	<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,900' rel='stylesheet' type='text/css'>
 	<link rel="stylesheet" href="css/prettify.css">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/angular-google-maps.css">
@@ -62,16 +62,18 @@
 			
 			<p>Simple to use <a href="http://angularjs.org/" rel="external">Angular.js</a> directive to work with Google Maps inside your applications.</p>
 			
-			<call-to-action class="btn-large btn-primary" href="https://raw.github.com/nlaplante/angular-google-maps/master/src/angular-google-maps.js" rel="external" category="Actions">Download</call-to-action>
-			<call-to-action class="btn-large" href="https://github.com/nlaplante/angular-google-maps" rel="external" category="Actions">View on GitHub</call-to-action>
-			
-			or
-			
-			<a href="#demo">try it now!</a>
-
 			<hr>
 			
-			<div class="share">
+			<div class="pull-left">
+				<call-to-action class="btn-large btn-primary" href="https://raw.github.com/nlaplante/angular-google-maps/master/src/angular-google-maps.js" rel="external" category="Actions">Download</call-to-action>
+				<call-to-action class="btn-large" href="https://github.com/nlaplante/angular-google-maps" rel="external" category="Actions">View on GitHub</call-to-action>
+			
+				or	
+			
+				<a href="#demo">try it now!</a>
+			</div>			
+			
+			<div class="pull-right">
 				<a href="https://twitter.com/share" class="twitter-share-button" data-text="Just found about #angular-google-maps. Check it out!" data-url="http://nlaplante.github.com/angular-google-maps/" data-count="none" data-size="large">Tweet</a>
 				<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 							
@@ -127,9 +129,11 @@
 		
 		<p>The value of the <code>refresh</code> attribute is an expression used to trigger a map refresh when it returns true.</p>
 		
+		<h2>API</h2>
+		
 		<p>Here is the list of all attributes supported by the <code>&lt;google-map&gt;</code> element:</p>
 		
-		<table class="table table-bordered">
+		<table class="table">
 			<thead>
 				<tr>
 					<th>Attribute</th>
@@ -178,9 +182,7 @@
 					<td>Expression which, when returning true, will trigger a map refresh</td> 
 			</tbody>
 		</table>
-		
-		<hr>
-		
+				
 		<h2 id="demo">Try it</h2>
 		
 		<div class="row">
