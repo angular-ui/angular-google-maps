@@ -37,15 +37,21 @@
 			replace: true,
 			transclude: true,
 			scope: {
-				center: "=center",
-				markers: "=markers",
-				latitude: "=latitude",
-				longitude: "=longitude",
-				zoom: "=zoom",
-				refresh: "&refresh"
+				center: "=center", // required
+				markers: "=markers", // optional
+				latitude: "=latitude", // required
+				longitude: "=longitude", // required
+				zoom: "=zoom", // optional, default 8
+				refresh: "&refresh", // optional
 			},
 			template: "<div class='angular-google-map' ng-transclude></div>",
 			link: function (scope, element, attrs, ctrl) {
+				
+				// Center property must be specified and provide lat & lng properties
+				if (!scope.center || (!scope.center.lat || !scope.center.lng)) {
+					$log.error("Could not find a valid center property in scope");
+					return;
+				}
 				
 				var $el = angular.element(element).get(0),
 				
@@ -77,7 +83,7 @@
 						};
 						
 						if (markerImage) {
-							optsicon = markerImage;
+							opts.icon = markerImage;
 						}
 						
 						marker = new google.maps.Marker(opts);
