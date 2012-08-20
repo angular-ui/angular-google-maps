@@ -27,6 +27,25 @@ function DemoController ($scope)
 }
 
 (function () {
+	
+	var module = angular.module("google-maps");
+	
+	module.directive("callToAction", function () {
+		return {
+			restrict: "E",
+			transclude: true,
+			replace: true,
+			template: "<a class='btn' ng-click='track()' ng-transclude></a>",
+			link: function (scope, element, attrs, ctrl) {
+				scope.track = function () {
+					if (_gaq) {
+						_gaq.push(["_trackEvent", attrs.category, angular.element(element).text()]);
+					}
+				};
+			}
+		};
+	});
+	
 	angular.module("google-maps").run(function ($rootScope) {
 		
 		if (!navigator.geolocation) {
