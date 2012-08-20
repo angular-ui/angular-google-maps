@@ -28,7 +28,7 @@ function DemoController ($scope)
 
 (function () {
 	
-	var module = angular.module("google-maps");
+	var module = angular.module("google-maps-demo", ["google-maps"]);
 	
 	module.directive("callToAction", function () {
 		return {
@@ -46,7 +46,7 @@ function DemoController ($scope)
 		};
 	});
 	
-	angular.module("google-maps").run(function ($rootScope) {
+	module.run(function ($rootScope) {
 		
 		if (!navigator.geolocation) {
 			$rootScope.center = {
