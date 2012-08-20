@@ -139,7 +139,8 @@
 					addMarker(center.lat(), center.lng());
 				}
 				
-				if (attrs.markClick) {
+				// Handle marker on click if enabled
+				if (attrs.markClick == "true") {
 					(function () {
 						// Keep a reference to the click marker in the scope to update its position
 						// when user clicks anywhere else
@@ -181,39 +182,40 @@
 							});
 						});
 					}());
-					
 				}
 				
 				// Done!
 				scope.map = map;
 				
 				// Listen for drags
-				if (attrs.draggable == "true") {
-					
-					scope.dragging = false;
-					
-					google.maps.event.addListener(map, "dragstart", function (e) {
-						scope.dragging = true;
-					});
-					
-					google.maps.event.addListener(map, "dragend", function (e) {
-						scope.dragging = false;
-					});
-					
-					google.maps.event.addListener(map, "drag", function (e) {
-						var c = map.getBounds().getCenter();
+				if (attrs.draggable == "true") {					
+					(function () {
+						var dragging = false;
 						
-						scope.$apply(function (s) {
-							s.center.lat = c.lat();
-							s.center.lng = c.lng();
+						google.maps.event.addListener(map, "dragstart", function (e) {
+							dragging = true;
 						});
-					});
+						
+						google.maps.event.addListener(map, "dragend", function (e) {
+							dragging = false;
+						});
+						
+						google.maps.event.addListener(map, "drag", function (e) {
+							var c = map.getBounds().getCenter();
+							
+							scope.$apply(function (s) {
+								s.center.lat = c.lat();
+								s.center.lng = c.lng();
+							});
+						});
+					}());
 				}				
 				
 				// Watch for zoom
-				google.maps.event.addListener(map, "zoom_changed", function (e) {					
-					scope.zoom = map.getZoom();				
-					scope.$apply();
+				google.maps.event.addListener(map, "zoom_changed", function (e) {			
+					scope.$apply(function (s) {
+						s.zoom = map.getZoom();
+					});
 				});
 				
 				scope.$watch("zoom", function (newValue, oldValue) {
@@ -229,7 +231,7 @@
 				// Check if we need to refresh the map
 				scope.$watch("refresh()", function (newValue, oldValue) {
 					if (newValue) {
-						google.maps.event.trigger(scope.map, "resize");
+						google.maps.event.trigger(map, "resize");
 						
 						// Need to reset center after refresh
 						map.setCenter(center);
@@ -239,10 +241,12 @@
 				// Watch for center change
 				google.maps.event.addListener(map, "center_changed", function (e) {
 					
-					var c = map.getCenter();
+					center = map.getCenter();
 					
-					scope.center.lat = c.lat();
-					scope.center.lng = c.lng();
+					angular.extend(scope.center, {
+						lat: center.lat(),
+						lng: center.lng()
+					});
 				});				
 				
 				// Update map when center coordinates change
