@@ -206,7 +206,8 @@
 				
 				// Watch for zoom
 				google.maps.event.addListener(map, "zoom_changed", function (e) {					
-					scope.zoom = map.getZoom();					
+					scope.zoom = map.getZoom();				
+					scope.$apply();
 				});
 				
 				scope.$watch("zoom", function (newValue, oldValue) {
