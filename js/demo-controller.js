@@ -1,13 +1,14 @@
 function DemoController ($scope, $location)
 {
-	$scope.activeTab = $location.path() == "/" ? "usage" : $location.path().substr(1);
+	
+	$scope.activeTab = $location.path() == $scope.basePath ? "usage" : $location.path().substr(1);
 	
 	$scope.$watch("activeTab", function (newValue, oldValue) {
 		if (newValue === oldValue) {
 			return;
 		}
 		
-		$location.path($scope.activeTab);
+		$location.path($scope.basePath +  $scope.activeTab);
 	});
 	
 	$scope.$watch(function () {
@@ -17,7 +18,7 @@ function DemoController ($scope, $location)
 			return;
 		}
 		
-		$scope.activeTab = newValue.substr(1);
+		$scope.activeTab = newValue.substr($scope.basePath.length);
 	});
 	
 	$scope.getNavClass = function (item) {
@@ -56,6 +57,10 @@ function DemoController ($scope, $location)
 	
 	module.config(function ($locationProvider) {
 		$locationProvider.html5Mode(true);
+	});
+	
+	module.run(function ($rootScope, $location) {
+		$rootScope.basePath = $location.path();
 	});
 	
 	module.directive("callToAction", function () {
