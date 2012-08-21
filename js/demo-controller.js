@@ -1,5 +1,29 @@
-function DemoController ($scope)
+function DemoController ($scope, $location)
 {
+	$scope.activeTab = $location.path() == "/" ? "usage" : $location.path().substr(1);
+	
+	$scope.$watch("activeTab", function (newValue, oldValue) {
+		if (newValue === oldValue) {
+			return;
+		}
+		
+		$location.path($scope.activeTab);
+	});
+	
+	$scope.$watch(function () {
+		return $location.path();
+	}, function (newValue, oldValue) {
+		if (newValue === oldValue) {
+			return;
+		}
+		
+		$scope.activeTab = newValue.substr(1);
+	});
+	
+	$scope.getNavClass = function (item) {
+		return item == $scope.activeTab ? "active" : "";
+	};
+	
 	$scope.center = {
 		lat: 0,
 		lng: 0
@@ -28,7 +52,11 @@ function DemoController ($scope)
 
 (function () {
 	
-	var module = angular.module("google-maps-demo", ["google-maps"]);
+	var module = angular.module("google-maps-demo", ["google-maps", "bootstrap"]);
+	
+	module.config(function ($locationProvider) {
+		$locationProvider.html5Mode(true);
+	});
 	
 	module.directive("callToAction", function () {
 		return {
