@@ -109,9 +109,13 @@
 <strong>&lt;script src="/path/to/angular-google-maps.js"&gt;&lt;/script&gt;</strong>
 &lt;script src="/path/to/your-angular-controller.js"&gt;&lt;/script&gt;</pre>
 
-		<p>Next, inside your controller, you'll need to define some properties required for the directive to work:</p>
+				<p>You will need to make your application's module depend on the <code>google-maps</code> module:</p>
+				
+				<pre class="prettyprint lang-javascript">var app = angular.module("myApp", ["google-maps"]);</pre>
+
+				<p>Next, inside your controller, you'll need to define some properties required for the directive to work:</p>
 		
-		<pre class="prettyprint lang-javascript">angular.extend($scope, {
+				<pre class="prettyprint lang-javascript">angular.extend($scope, {
 	center: {
 		lat: 0, // initial map center latitude
 		lng: 0, // initial map center longitude
