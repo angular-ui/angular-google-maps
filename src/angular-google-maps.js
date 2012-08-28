@@ -309,8 +309,10 @@
 								
 								// Update position of marker in scope too
 								if (filtered_markers.length) {
-									filtered_markers[0].latitude = e.latLng.lat();
-									filtered_markers[0].longitude = e.latLng.lng();
+									angular.extend(filtered_markers[0], {
+										latitude: e.latLng.lat(),
+										longitude: e.latLng.lng()
+									});									
 								}
 							}
 							
