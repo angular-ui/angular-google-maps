@@ -219,7 +219,7 @@
 	
 	var googleMapsModule = angular.module("google-maps", []);
 
-	googleMapsModule.directive("googleMap", function ($log, $timeout) {
+	googleMapsModule.directive("googleMap", function ($log, $timeout, $filter) {
 		return {
 			restrict: "EC",
 			replace: true,
@@ -295,8 +295,23 @@
 								});
 							}
 							else {
-								// TODO update clicked marker position
+								// Find our marker in the scope
+								var cm_position = cm.getPosition(),
+									cm_lat = cm_position.lat(),
+									cm_lng = cm_position.lng(),								
+									filtered_markers = $filter("filter")(scope.markers, function (m) {
+										return m.latitude == cm_lat &&
+											m.longitude == cm_lng;								
+									});
+								
+								// Update the marker position on the map
 								cm.setPosition(e.latLng);
+								
+								// Update position of marker in scope too
+								if (filtered_markers.length) {
+									filtered_markers[0].latitude = e.latLng.lat();
+									filtered_markers[0].longitude = e.latLng.lng();
+								}
 							}
 							
 							$timeout(function () {
