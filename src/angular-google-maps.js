@@ -29,9 +29,188 @@
 
 (function () {
 	
+	"use strict";
+	
+	// Create the model in a self-contained class where map-specific logic is done. 
+	// This model will be used in the directive.
+	
+	var _instance = null,
+		_markers = [], // caches the instances of google.maps.Marker
+		_handlers = [],
+		_defaults = {
+			zoom: 8,
+			draggable: false,
+			container: null
+		};
+	
+	/**
+	 * 
+	 */
+	function MapModel(opts) {
+		var o = angular.extend({}, _defaults, opts);
+		
+		// Public properties
+		this.center = opts.center;
+		this.zoom = o.zoom;
+		this.draggable = o.draggable;
+		this.dragging = false;
+		this.selector = o.container;
+		this.markers = [];
+	}
+	
+	/**
+	 * 
+	 */
+	MapModel.prototype.draw = function () {
+		if (this.center == null) {
+			// TODO log error
+			return;
+		}
+		
+		if (_instance == null) {
+			_instance = new google.maps.Map(this.selector, {
+				center: this.center,
+				zoom: this.zoom,
+				draggable: this.draggable,
+				mapTypeId : google.maps.MapTypeId.ROADMAP
+			});
+			
+			var that = this;
+			
+			google.maps.event.addListener(_instance, "dragstart", function () {
+				that.dragging = true;
+			});
+			
+			google.maps.event.addListener(_instance, "dragend", function () {
+				that.dragging = false;
+			});
+			
+			google.maps.event.addListener(_instance, "drag", function () {				
+				that.center = _instance.getBounds().getCenter();		
+			});
+			
+			google.maps.event.addListener(_instance, "zoom_changed", function () {
+				that.zoom = _instance.getZoom();
+			});
+			
+			google.maps.event.addListener(_instance, "center_changed", function () {
+				that.center = _instance.getCenter();
+			});
+			
+			// Attach additional event listeners if needed
+			if (_handlers.length) {
+				angular.forEach(_handlers, function (h, i) {
+					google.maps.event.addListener(_instance, h.on, h.handler);
+				});
+			}
+		}
+		else {
+			_instance.setCenter(this.center);
+			google.maps.event.trigger(_instance, "resize");
+		}
+	};
+	
+	/**
+	 * 
+	 */
+	MapModel.prototype.fit = function () {
+		if (_instance && _markers.length) {
+			
+			var bounds = new google.maps.LatLngBounds();
+			
+			angular.forEach(_markers, function (m, i) {
+				bounds.extend(m.getPosition());
+			});
+			
+			_instance.fitBounds(bounds);
+		}
+	};
+	
+	/**
+	 * 
+	 * @param event
+	 * @param handler
+	 */
+	MapModel.prototype.on = function(event, handler) {
+		_handlers.push({
+			"on": event,
+			"handler": handler
+		});
+	};
+	
+	/**
+	 * 
+	 * @param lat
+	 * @param lng
+	 * @param label
+	 * @param url
+	 * @param thumbnail
+	 */
+	MapModel.prototype.addMarker = function (lat, lng, label, url, thumbnail) {
+		if (this.findMarker(lat, lng) != null) {
+			return;
+		}
+		
+		var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(lat, lng),
+			map: _instance
+		});
+		
+		if (label) {
+			
+		}
+		
+		if (url) {
+			
+		}
+		
+		// Cache marker 
+		_markers.unshift(marker);
+		
+		// Cache instance of our marker for scope purposes
+		this.markers.unshift({
+			"lat": lat,
+			"lng": lng,
+			"draggable": false,
+			"label": label,
+			"url": url,
+			"thumbnail": thumbnail
+		});
+		
+		// Return marker instance
+		return marker;
+	};
+	
+	/**
+	 * 
+	 * @param lat
+	 * @param lng
+	 * @returns
+	 */
+	MapModel.prototype.findMarker = function (lat, lng) {
+		for (var i = 0; i < _markers.length; i++) {
+			var pos = _markers[i].getPosition();
+			
+			if (pos.lat() == lat && pos.lng() == lng) {
+				return _markers[i];
+			}
+		}
+		
+		return null;
+	};	
+	
+	/**
+	 * 
+	 * @param lat
+	 * @param lng
+	 */
+	MapModel.prototype.hasMarker = function (lat, lng) {
+		return this.findMarker(lat, lng) !== null;
+	};
+	
 	var googleMapsModule = angular.module("google-maps", []);
 
-	googleMapsModule.directive("googleMap", function ($log) {
+	googleMapsModule.directive("googleMap", function ($log, $timeout) {
 		return {
 			restrict: "EC",
 			replace: true,
@@ -46,215 +225,103 @@
 			},
 			template: "<div class='angular-google-map' ng-transclude></div>",
 			link: function (scope, element, attrs, ctrl) {
-				
+								
 				// Center property must be specified and provide lat & lng properties
 				if (!angular.isDefined(scope.center) || (!angular.isDefined(scope.center.lat) || !angular.isDefined(scope.center.lng))) {
 					$log.error("Could not find a valid center property in scope");
 					return;
 				}
 				
-				var $el = angular.element(element).get(0),
+				// Create our model
+				scope.map = new MapModel({
+					container: angular.element(element).get(0),
+					center: new google.maps.LatLng(scope.center.lat, scope.center.lng),
+					draggable: attrs.draggable == "true",
+					zoom: scope.zoom
+				});
+			
+				scope.map.on("drag", function () {
+					var c = _instance.getBounds().getCenter();
 				
-					// Obtain a reference to the marker icon image
-					markerImage = attrs.markerIcon ? new google.maps.MarkerImage(attrs.markerIcon) : null,
-					
-					// Center of the map
-					center = new google.maps.LatLng(scope.center.lat, scope.center.lng),
-				
-					// Create the map instance
-					map = new google.maps.Map($el, {
-						backgroundColor: "#fff",
-						"center": center,
-						draggable: attrs.draggable == "true",
-						zoom: angular.isNumber(scope.zoom) ? scope.zoom : 8,
-						mapTypeId : google.maps.MapTypeId.ROADMAP
-					}),
-					
-					/**
-					 * Adds a marker to the map
-					 * 
-					 * @param marker object 
-					 */
-					addMarker = function (latitude, longitude, label, url) {
-						var opts = {
-							position: new google.maps.LatLng(latitude, longitude),
-							"map": map,
-							draggable: false,
-						};
-						
-						if (markerImage) {
-							opts.icon = markerImage;
-						}
-						
-						marker = new google.maps.Marker(opts);
-						
-						// Cache marker
-						markerCache.push(marker);
-						
-						return marker;
-					},
-					
-					markerCache = [],
-					
-					findMarkerInCache = function (lat, lng) {
-						for (var i = 0; i < markerCache.length; i++) {
-							var pos = markerCache[i].getPosition();
-							
-							if (pos.lat() == lat && pos.lng() == lng) {
-								return markerCache[i];
-							}
-						}
-						
-						return null;
-					};
-				
-				scope.refreshMarkers = function () {
-					if (scope.markers && scope.markers.length) {			
-						
-						angular.forEach(scope.markers, function (marker) {
-							var m = findMarkerInCache(marker.latitude, marker.longitude);
-							
-							if (!m) {
-								addMarker(marker.latitude, marker.longitude, marker.label || null, marker.url || null);
-							} else {
-								m.setPosition(new google.maps.LatLng(marker.latitude, marker.longitude));
-							}
+					$timeout(function () {
+						scope.$apply(function (s) {
+							s.center.lat = c.lat();
+							s.center.lng = c.lng();
 						});
-						
-						// Check if we need to fitBounds()
-						if (scope.markers && scope.markers.length > 1) {
-							
-							var bounds = new google.maps.LatLngBounds();
-							
-							angular.forEach(scope.markers, function (marker) {
-								bounds.extend(new google.maps.LatLng(marker.latitude, marker.longitude));
+					});
+				});
+			
+				scope.map.on("zoom_changed", function () {					
+					$timeout(function () {
+						scope.$apply(function (s) {
+								s.zoom = scope.map.zoom;
+						});
+					});
+				});
+			
+				scope.map.on("center_changed", function () {
+					var c = _instance.getCenter();
+				
+					if (!scope.map.dragging) {
+						$timeout(function () {	
+							scope.$apply(function (s) {
+									s.center.lat = c.lat();
+									s.center.lng = c.lng();
 							});
-							
-							map.fitBounds(bounds);
-						}
+						});
 					}
-				};
+				});
 				
-				if (attrs.markCenter) {
-					addMarker(center.lat(), center.lng());
-				}
-				
-				// Handle marker on click if enabled
-				if (attrs.markClick == "true") {
+				if (attrs.markClick) {
 					(function () {
-						// Keep a reference to the click marker in the scope to update its position
-						// when user clicks anywhere else
-						var scopedClickMarker = null;
+						var cm = null;
 						
-						google.maps.event.addListener(map, 'click', function (e) {
-
-							if (scopedClickMarker) {
-								// Click marker already present. Remove it to create a new one
+						scope.map.on("click", function (e) {													
+							if (cm == null) {
+								cm = scope.map.addMarker(e.latLng.lat(), e.latLng.lng());
 								
-								// We must find the real marker in our cache to set its map instance to null (remove it)
-								var m = findMarkerInCache(scopedClickMarker.latitude, scopedClickMarker.longitude);
-								
-								if (m) {
-									m.setMap(null);
-									markerCache.splice(markerCache.indexOf(m), 1);
-								}
-								
-								// Remove it from the scope's markers property too
-								scope.markers.splice(scope.markers.indexOf(scopedClickMarker), 1);
-								
-								// Done
-								scopedClickMarker = null;
+								scope.markers.push({
+									latitude: e.latLng.lat(),
+									longitude: e.latLng.lng()
+								});
+							}
+							else {
+								// TODO update clicked marker position
+								cm.setPosition(e.latLng);
 							}
 							
-							// Add a new marker in our scope
-							scopedClickMarker = {
-								latitude: e.latLng.lat(),
-								longitude: e.latLng.lng()
-							};
-							
-							scope.markers.push(scopedClickMarker);
-							
-							// Set scope's latitude and longitude properties to the position
-							// of the new marker
-							scope.$apply(function (s) {
-								s.latitude = e.latLng.lat();
-								s.longitude = e.latLng.lng();
+							$timeout(function () {
+								scope.$apply();
 							});
 						});
 					}());
 				}
-				
-				// Done!
-				scope.map = map;
-				
-				// Listen for drags
-				var dragging = false;
-				if (attrs.draggable == "true") {					
-					(function () {						
-						google.maps.event.addListener(map, "dragstart", function (e) {
-							dragging = true;
-						});
-						
-						google.maps.event.addListener(map, "dragend", function (e) {
-							dragging = false;
-						});
-						
-						google.maps.event.addListener(map, "drag", function (e) {
-							var c = map.getBounds().getCenter();
-							
-							scope.$apply(function (s) {
-								s.center.lat = c.lat();
-								s.center.lng = c.lng();
-							});
-						});
-					}());
-				}				
-				
-				// Watch for zoom
-				(function () {
-					
-					var changing = false;
-					
-					google.maps.event.addListener(map, "zoom_changed", function (e) {
-						changing = true;
-						scope.zoom = map.getZoom();
-						scope.$apply();
-					});
-					
-					scope.$watch("zoom", function (newValue, oldValue) {
-						if (newValue === oldValue) {
-							return;
-						}
-						
-						if (angular.isNumber(scope.zoom) && !changing) {
-							map.setZoom(scope.zoom);
-						}
-						
-						changing = false;
-					});
-				}());
-				
 				
 				// Check if we need to refresh the map
 				scope.$watch("refresh()", function (newValue, oldValue) {
 					if (newValue) {
-						google.maps.event.trigger(map, "resize");
-						
-						// Need to reset center after refresh
-						map.setCenter(center);
+						scope.map.draw();
 					}
-				});
+				});	
 				
-				// Watch for center change
-				google.maps.event.addListener(map, "center_changed", function (e) {
+				// Markers
+				scope.$watch("markers", function (newValue, oldValue) {
+					if (newValue === oldValue) {
+						return;
+					}
 					
-					center = map.getCenter();
-					
-					angular.extend(scope.center, {
-						lat: center.lat(),
-						lng: center.lng()
+					angular.forEach(newValue, function (v, i) {
+						if (!scope.map.hasMarker(v.latitude, v.longitude)) {
+							scope.map.addMarker(v.latitude, v.longitude);
+						}
 					});
-				});				
+					
+					// Fit map when there are more than one marker. This will change the map center coordinates
+					if (newValue.length > 1) {
+						scope.map.fit();
+					}
+				}, true);
+				
 				
 				// Update map when center coordinates change
 				scope.$watch("center", function (newValue, oldValue) {
@@ -262,20 +329,8 @@
 						return;
 					}
 					
-					if (!dragging) {					
-						if (angular.isNumber(newValue.lat) && angular.isNumber(newValue.lng)) {
-							
-							center = new google.maps.LatLng(newValue.lat, newValue.lng);
-							
-							scope.map.setCenter(center);					
-							google.maps.event.trigger(scope.map, "resize");
-						}
-					}
-				}, true);
-				
-				// Reset markers when changed in controller
-				scope.$watch("markers", function (newValue, oldValue) {					
-					scope.refreshMarkers();					
+					scope.map.center = new google.maps.LatLng(newValue.lat, newValue.lng);					
+					scope.map.draw();
 				}, true);
 			}
 		};
