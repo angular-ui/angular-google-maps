@@ -219,6 +219,9 @@
 	
 	var googleMapsModule = angular.module("google-maps", []);
 
+	/**
+	 * Map directive
+	 */
 	googleMapsModule.directive("googleMap", function ($log, $timeout, $filter) {
 		return {
 			restrict: "EC",
@@ -233,6 +236,9 @@
 				refresh: "&refresh", // optional
 			},
 			template: "<div class='angular-google-map' ng-transclude></div>",
+			controller: function ($scope) {
+				
+			},
 			link: function (scope, element, attrs, ctrl) {
 								
 				// Center property must be specified and provide lat & lng properties
@@ -358,6 +364,19 @@
 					scope.map.center = new google.maps.LatLng(newValue.lat, newValue.lng);					
 					scope.map.draw();
 				}, true);
+			}
+		};
+	});
+	
+	/**
+	 * Overlay directive
+	 */
+	googleMapsModule.directive("overlay", function ($log, $timeout) {
+		return {
+			restrict: 'E',
+			require: 'googleMap',
+			link: function (scope, element, attrs, ctrl) {
+				
 			}
 		};
 	});
