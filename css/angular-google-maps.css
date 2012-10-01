@@ -18,6 +18,7 @@ p {
 	border: 10px #fff solid;
 	margin-bottom: 20px;
 	box-shadow: 0 0 5px -1px rgba(0, 0, 0, 1);
+	display: block;
 }
 
 .angular-google-map img {
