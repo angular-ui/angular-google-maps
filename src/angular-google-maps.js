@@ -81,8 +81,6 @@
 						mapTypeId : google.maps.MapTypeId.ROADMAP
 					});
 					
-					var self = this;
-					
 					google.maps.event.addListener(_instance, "dragstart",
 							
 							function () {
@@ -427,7 +425,7 @@
 	googleMapsModule.directive("infoWindow", function ($log, $timeout, 
 			$compile, $controller) {
 		
-		return {
+		return {
 			restrict: 'E',
 			require: '^googleMap',
 			transclude: true,
