@@ -275,10 +275,11 @@
 					return;
 				}
 				
+				angular.element(element).addClass("angular-google-map");
+				
 				// Create our model
 				scope.map = new MapModel({
-					container: angular.element(element)
-						.addClass("angular-google-map"),
+					container: element[0],
 						
 					center: new google.maps.LatLng(scope.center.lat, 
 									scope.center.lng),
@@ -438,7 +439,7 @@
 				return function (scope, element, attrs, ctrl) {				
 					$timeout(function () {
 						ctrl.addInfoWindow(parseFloat(attrs.lat), 
-								parseFloat(attrs.lng), linker(scope));
+								parseFloat(attrs.lng), linker(scope)[0]);
 					});
 					
 				};
