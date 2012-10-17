@@ -386,9 +386,6 @@
 				
 				// Markers
 				scope.$watch("markers", function (newValue, oldValue) {
-					if (newValue === oldValue) {
-						return;
-					}
 					
 					angular.forEach(newValue, function (v, i) {
 						if (!scope.map.hasMarker(v.latitude, v.longitude)) {
