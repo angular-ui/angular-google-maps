@@ -88,7 +88,7 @@
 							}
 					);
 					
-					google.maps.event.addListener(_instance, "dragend",
+					google.maps.event.addListener(_instance, "idle",
 							
 							function () {
 								that.dragging = false;
@@ -97,8 +97,8 @@
 					
 					google.maps.event.addListener(_instance, "drag",
 							
-							function () {				
-								that.center = _instance.getBounds().getCenter();		
+							function () {
+								that.dragging = true;		
 							}
 					);	
 					
@@ -290,9 +290,11 @@
 				});
 			
 				scope.map.on("drag", function () {
+					
 					var c = scope.map.center;
 				
 					$timeout(function () {
+						
 						scope.$apply(function (s) {
 							s.center.lat = c.lat();
 							s.center.lng = c.lng();
@@ -300,19 +302,26 @@
 					});
 				});
 			
-				scope.map.on("zoom_changed", function () {					
-					$timeout(function () {
-						scope.$apply(function (s) {
+				scope.map.on("zoom_changed", function () {
+					
+					if (scope.zoom != scope.map.zoom) {
+						
+						$timeout(function () {
+							
+							scope.$apply(function (s) {
 								s.zoom = scope.map.zoom;
+							});
 						});
-					});
+					}
 				});
 			
 				scope.map.on("center_changed", function () {
 					var c = scope.map.center;
 				
-					$timeout(function () {	
+					$timeout(function () {
+						
 						scope.$apply(function (s) {
+							
 							if (!s.map.dragging) {
 								s.center.lat = c.lat();
 								s.center.lng = c.lng();
