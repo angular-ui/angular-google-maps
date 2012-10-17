@@ -422,6 +422,9 @@
 					scope.map.zoom = newValue;
 					scope.map.draw();
 				});
+				
+				// Done, draw the map
+				scope.map.draw();
 			},
 		};
 	});
