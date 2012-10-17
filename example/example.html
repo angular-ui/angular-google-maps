@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html ng-app="angular-google-maps-example">
+
+<head>
+	<meta charset="UTF-8">
+	<title>angular-google-maps example page</title>
+	
+	<style>
+	/* uncomment this if you are using the <google-map> element instead of a div
+	.angular-google-map {
+		display: block;
+	}*/
+	</style>
+</head>
+
+<body ng-controller="ExampleController">
+
+	<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in 
+			the latter case, uncomment the style above to make sure the custom elements gets block display	-->
+			
+	<div class="google-map" 
+		center="centerProperty"
+		zoom="zoomProperty" 
+		markers="markersProperty"
+		latitude="clickedLatitudeProperty"
+		longitude="clickedLongitudeProperty"
+		mark-click="true"
+		draggable="true"
+		refresh="true"
+		style="height: 1000px; width: 100%">
+	</div>
+
+	<script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+	<script src="../src/angular-google-maps.js"></script>
+	<script src="example-controller.js"></script>
+
+</body>
+
+</html>
