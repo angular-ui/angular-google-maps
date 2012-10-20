@@ -89,7 +89,7 @@ function DemoController ($scope, $location)
 	
 	module.directive("callToAction", function () {
 		return {
-			restrict: "E",
+			restrict: "EC",
 			transclude: true,
 			replace: true,
 			template: "<a class='btn' ng-click='track()' ng-transclude></a>",
