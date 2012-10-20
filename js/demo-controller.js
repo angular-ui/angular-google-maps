@@ -84,7 +84,7 @@ function DemoController ($scope, $location)
 	});
 	
 	module.run(function ($rootScope, $location) {
-		$rootScope.basePath = "angular-google-maps/";
+		$rootScope.basePath = $location.path();
 	});
 	
 	module.directive("callToAction", function () {
