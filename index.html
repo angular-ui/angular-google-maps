@@ -125,11 +125,9 @@
 					</form>	
 				</div>
 			</div>
-		</div>		
-				
-		<hr>
+		</div>
 		
-		<div class="tabbable tabs-left" ng-model="activeTab">
+		<div class="tabbable" ng-model="activeTab">
 			
 			<div class="tab-pane" title="Usage" value="usage">
 				<h2>Usage</h2>
@@ -138,7 +136,7 @@
 				the Google Maps library and the <i>angular-google-maps.js</i> script:</p>
 				
 				<pre class="prettyprint lang-html">&lt;script src="http://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&sensor=false&language=en"&gt;&lt;/script&gt;
-&lt;script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.1/angular.min.js"&gt;&lt;/script&gt;
+&lt;script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"&gt;&lt;/script&gt;
 <strong>&lt;script src="/path/to/angular-google-maps.js"&gt;&lt;/script&gt;</strong>
 &lt;script src="/path/to/your-angular-controller.js"&gt;&lt;/script&gt;</pre>
 
@@ -168,8 +166,12 @@
 				
 				<pre class="prettyprint lang-html">&lt;google-map center="center" zoom="zoom" markers="markers" refresh="!isMapElementHidden" style="height: 400px"&gt;&lt;/google-map&gt;</pre>
 				
-				<p>The value of the <code>refresh</code> attribute is an expression used to trigger a map refresh when it returns true.</p>			
-			
+				<p>The value of the <code>refresh</code> attribute is an expression used to trigger a map refresh when it returns true.</p>
+				
+				<div class="alert alert-info">
+					An example page is provided in the 
+					<a href="https://github.com/nlaplante/angular-google-maps" rel="external">GitHub repository</a> for you to experiment.
+				</div>
 			</div>
 			
 			<div class="tab-pane" title="API" value="api">
