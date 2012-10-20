@@ -25,9 +25,10 @@ function DemoController ($scope, $location)
 		return item == $scope.activeTab ? "active" : "";
 	};
 	
+	// Default New York
 	$scope.center = {
-		lat: 0,
-		lng: 0
+		lat: 40.69847032728747,
+		lng: -73.9514422416687
 	};
 	
 	$scope.geolocationAvailable = navigator.geolocation ? true : false;
@@ -100,9 +101,5 @@ function DemoController ($scope, $location)
 				};
 			}
 		};
-	});
-	
-	module.run(function ($rootScope) {
-		
 	});
 }());
