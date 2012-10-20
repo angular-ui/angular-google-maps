@@ -25,10 +25,7 @@ function DemoController ($scope, $location)
 		return item == $scope.activeTab ? "active" : "";
 	};
 	
-	$scope.center = {
-		lat: 0,
-		lng: 0
-	};
+
 	
 	$scope.latitude = null;
 	$scope.longitude = null;
@@ -49,6 +46,26 @@ function DemoController ($scope, $location)
 		$scope.markerLat = null;
 		$scope.markerLng = null;
 	};
+	
+	
+	if (!navigator.geolocation) {
+		
+		$scope.center = {
+			lat: 0,
+			lng: 0
+		};		
+	}
+	else {
+
+		navigator.geolocation.getCurrentPosition(function (position) {
+			
+			$scope.center = {
+				lat: position.coords.latitude,
+				lng: position.coords.longitude
+			};
+		}, function () {});
+		
+	}
 }
 
 (function () {
@@ -77,33 +94,5 @@ function DemoController ($scope, $location)
 				};
 			}
 		};
-	});
-	
-	module.run(function ($rootScope) {
-		
-		if (!navigator.geolocation) {
-			$rootScope.center = {
-				lat: 0,
-				lng: 0
-			};
-			
-			return;
-		}
-		
-		navigator.geolocation.getCurrentPosition(function (position) {
-			$rootScope.center = {
-					lat: position.coords.latitude,
-					lng: position.coords.longitude
-				};
-			}, 
-			function (position) {
-				$rootScope.center = {
-					lat: 0,
-					lng: 0
-				};	
-			}, {
-			timeout: 10000,
-			maximumAge: 60000
-		});
 	});
 }());
