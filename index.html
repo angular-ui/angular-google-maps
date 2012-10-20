@@ -255,6 +255,16 @@
 									</div>
 								</div>
 								
+								<div class="control-group" ng-hidden="!geolocationAvailable">
+									<label></label>
+									<div class="controls">
+										<a class="btn" ng-click="findMe()">
+											<i class="icon-screenshot"></i>
+											Find me
+										</a>
+									</div>
+								</div>
+								
 								<div class="control-group" ng-hide="!latitude || !longitude">
 									<label class="control-label">Clicked marker position:</label>
 									<div class="controls">

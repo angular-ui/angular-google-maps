@@ -25,7 +25,12 @@ function DemoController ($scope, $location)
 		return item == $scope.activeTab ? "active" : "";
 	};
 	
-
+	$scope.center = {
+		lat: 0,
+		lng: 0
+	};
+	
+	$scope.geolocationAvailable = navigator.geolocation ? true : false;
 	
 	$scope.latitude = null;
 	$scope.longitude = null;
@@ -47,30 +52,26 @@ function DemoController ($scope, $location)
 		$scope.markerLng = null;
 	};
 	
-	$scope.center = {
-		lat: 0,
-		lng: 0
-	};	
+	$scope.findMe = function () {
+		
+		if ($scope.geolocationAvailable) {
+			
+			navigator.geolocation.getCurrentPosition(function (position) {
+				
+				$scope.center = {
+					lat: position.coords.latitude,
+					lng: position.coords.longitude
+				};
+				
+				$scope.$apply();
+			}, function () {
+				
+			});
+				
+		}	
+	};
 	
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(function (position) {
-			
-			$scope.center = {
-				lat: position.coords.latitude,
-				lng: position.coords.longitude
-			};
-			
-			$scope.$apply();
-		}, function () {
-			$scope.center = {
-				lat: 0,
-				lng: 0
-			};
-			
-			$scope.$apply();
-		});
-			
-	}	
+	
 }
 
 (function () {
