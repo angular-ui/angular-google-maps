@@ -48,24 +48,7 @@ function DemoController ($scope, $location)
 	};
 	
 	
-	if (!navigator.geolocation) {
-		
-		$scope.center = {
-			lat: 0,
-			lng: 0
-		};		
-	}
-	else {
-
-		navigator.geolocation.getCurrentPosition(function (position) {
-			
-			$scope.center = {
-				lat: position.coords.latitude,
-				lng: position.coords.longitude
-			};
-		}, function () {});
-		
-	}
+	
 }
 
 (function () {
@@ -94,5 +77,26 @@ function DemoController ($scope, $location)
 				};
 			}
 		};
+	});
+	
+	module.run(function ($rootScope) {
+		if (!navigator.geolocation) {
+			
+			$rootScope.center = {
+				lat: 0,
+				lng: 0
+			};		
+		}
+		else {
+
+			navigator.geolocation.getCurrentPosition(function (position) {
+				
+				$rootScope.center = {
+					lat: position.coords.latitude,
+					lng: position.coords.longitude
+				};
+			}, function () {});
+			
+		}
 	});
 }());
