@@ -84,7 +84,7 @@ function DemoController ($scope, $location)
 	});
 	
 	module.run(function ($rootScope, $location) {
-		$rootScope.basePath = $location.path();
+		$rootScope.basePath = "";
 	});
 	
 	module.directive("callToAction", function () {
