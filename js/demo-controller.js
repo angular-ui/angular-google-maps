@@ -95,7 +95,12 @@ function DemoController ($scope, $location)
 					lat: position.coords.latitude,
 					lng: position.coords.longitude
 				};
-			}, function () {});
+			}, function () {
+				$rootScope.center = {
+					lat: 0,
+					lng: 0
+				};
+			});
 			
 		}
 	});
