@@ -226,7 +226,13 @@
 						<tr>
 							<td>refresh</td>
 							<td></td>
-							<td>Expression which, when true, will trigger a map refresh</td> 
+							<td>Expression which, when true, will trigger a map refresh</td>
+						</tr>
+						<tr>
+							<td>fit</td>
+							<td></td>
+							<td>If set to true, map viewport will be adjusted to fit all markers.</td>
+						</tr> 
 					</tbody>
 				</table>			
 			</div>
@@ -318,7 +324,7 @@
 					</div>
 					
 					<div class="span7">
-							<google-map center="center" draggable="true" zoom="zoom" markers="markers" mark-click="true"
+							<google-map center="center" draggable="true" zoom="zoom" markers="markers" mark-click="true" fit="false"
 								latitude="latitude" longitude="longitude" refresh="activeTab == 'demo'" class="angular-google-map"></google-map>
 					</div>
 					</form>
