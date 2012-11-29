@@ -289,7 +289,7 @@
 				longitude: "=longitude", // required
 				zoom: "=zoom", // optional, default 8
 				refresh: "&refresh", // optional
-				windows: "=windows" // optional
+				windows: "=windows" // optional"
 			},
 			controller: function ($scope, $element) {
 				
@@ -374,38 +374,17 @@
 						
 						_m.on("click", function (e) {													
 							if (cm == null) {
-								cm = _m.addMarker(e.latLng.lat(), 
-										e.latLng.lng());
 								
-								scope.markers.push({
+								cm = {
 									latitude: e.latLng.lat(),
-									longitude: e.latLng.lng()
-								});
+									longitude: e.latLng.lng()	
+								};
+								
+								scope.markers.push(cm);
 							}
 							else {
-								// Find our marker in the scope
-								var cm_position = cm.getPosition(),
-									cm_lat = cm_position.lat(),
-									cm_lng = cm_position.lng(),								
-									filtered_markers = $filter("filter")(
-											scope.markers, 
-											
-											function (m) {												
-												return m.latitude == cm_lat &&
-													m.longitude == cm_lng;								
-											}
-									);
-								
-								// Update the marker position on the map
-								cm.setPosition(e.latLng);
-								
-								// Update position of marker in scope too
-								if (filtered_markers.length) {
-									angular.extend(filtered_markers[0], {
-										latitude: e.latLng.lat(),
-										longitude: e.latLng.lng()
-									});									
-								}
+								cm.latitude = e.latLng.lat();
+								cm.longitude = e.latLng.lng();
 							}
 							
 							$timeout(function () {
@@ -468,12 +447,11 @@
 							}
 						});
 						
-						_m.removeMarkers(orphaned);
-						
+						_m.removeMarkers(orphaned);						
 						
 						// Fit map when there are more than one marker. 
 						// This will change the map center coordinates
-						if (newValue.length > 1) {
+						if (attrs.fit == "true" && newValue.length > 1) {
 							_m.fit();
 						}
 					});
