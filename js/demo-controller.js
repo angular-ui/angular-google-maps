@@ -3,11 +3,12 @@
 	var module = angular.module("google-maps-demo", ["google-maps", "bootstrap"]);
 	
 	module.config(function ($locationProvider) {
-		$locationProvider.html5Mode(true);
+		$locationProvider.html5Mode(false).hashPrefix('!');
 	});
 	
 	module.run(function ($rootScope, $location) {
-		$rootScope.basePath = $location.path();
+		$rootScope.activeTab = 'usage';
+		$location.path("usage");
 	});
 	
 	module.directive("callToAction", function () {
@@ -27,34 +28,25 @@
 	});
 	
 	module.controller("DemoController", function ($scope, $location) {
-		$scope.activeTab = $location.path() == $scope.basePath ? "usage" : $location.path().substr(1);
-		
+				
 		$scope.$watch("activeTab", function (newValue, oldValue) {
 			if (newValue === oldValue) {
 				return;
 			}
 			
-			$location.path($scope.basePath +  $scope.activeTab);
-		});
-		
-		$scope.$watch(function () {
-			return $location.path();
-		}, function (newValue, oldValue) {
-			if (newValue === oldValue) {
-				return;
+			if ($location.path() != $scope.activeTab) {
+				$location.path($scope.activeTab);
 			}
-			
-			$scope.activeTab = newValue.substr($scope.basePath.length);
 		});
 		
 		$scope.getNavClass = function (item) {
 			return item == $scope.activeTab ? "active" : "";
 		};
 		
-		// Default New York
+		// default location
 		$scope.center = {
-			lat: 40.69847032728747,
-			lng: -73.9514422416687
+			lat: 45,
+			lng: -73
 		};
 		
 		$scope.geolocationAvailable = navigator.geolocation ? true : false;
@@ -94,7 +86,6 @@
 				}, function () {
 					
 				});
-					
 			}	
 		};
 	});
