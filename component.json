@@ -1,0 +1,8 @@
+{
+  "name": "angular-google-maps",
+  "version": "1.0.0",
+  "main": "./src/angular-google-maps.js",
+  "dependencies": {
+    "angular": "683afc7e2aea6bbad5baa3ce1e59216d"
+  }
+}
