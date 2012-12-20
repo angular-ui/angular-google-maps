@@ -273,7 +273,7 @@
 	/**
 	 * Map directive
 	 */
-	googleMapsModule.directive("googleMap", function ($log, $timeout, 
+	googleMapsModule.directive("googleMap", ["$log", "$timeout", "$filter", function ($log, $timeout, 
 			$filter) {
 		
 		return {
@@ -484,5 +484,5 @@
 				
 			},
 		};
-	});	
+	}]);	
 }());
