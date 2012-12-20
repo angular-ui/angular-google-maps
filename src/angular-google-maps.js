@@ -293,8 +293,7 @@
 			},
 			controller: function ($scope, $element) {
 				
-				var self = this,
-					_m = $scope.map;
+				var _m = $scope.map;
 				
 				self.addInfoWindow = function (lat, lng, content) {
 					_m.addInfoWindow(lat, lng, content);
