@@ -484,32 +484,5 @@
 				
 			},
 		};
-	});
-	
-	/**
-	 * Information window directive (WIP, not ready for production)
-	 */
-	googleMapsModule.directive("infoWindow", function ($log, $timeout, $compile) {
-		
-		return {
-			restrict: 'E',
-			require: '^googleMap',
-			transclude: true,
-			template: "<div class='angular-google-maps-info-window' " +
-					"ng-transclude></div>",
-			priority: 150,
-			replace: false,
-			compile: function (el, att, linker) {
-				
-				return function (scope, element, attrs, ctrl) {				
-					$timeout(function () {
-						ctrl.addInfoWindow(parseFloat(attrs.lat), 
-								parseFloat(attrs.lng), linker(scope)[0]);
-					});
-					
-				};
-			}
-		};
-	});
-	
+	});	
 }());
