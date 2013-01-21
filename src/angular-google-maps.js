@@ -31,6 +31,19 @@
 	
 	"use strict";
 	
+	/*
+	 * Utility functions
+	 */
+	
+	/**
+	 * Check if 2 floating point numbers are equal
+	 * 
+	 * @see http://stackoverflow.com/a/588014
+	 */
+	function floatEqual (f1, f2) {
+	  return (Math.abs(f1 - f2) < 0.000001);
+	}
+	
 	/* 
 	 * Create the model in a self-contained class where map-specific logic is 
 	 * done. This model will be used in the directive.
@@ -434,7 +447,7 @@
 								
 								var sm = scope.markers[si];
 								
-								if (sm.latitude == lat && sm.longitude == lng) {
+								if (floatEqual(sm.latitude, lat) && floatEqual(sm.longitude, lng)) {
 									// Map marker is present in scope too, don't remove
 									found = true;
 								}
