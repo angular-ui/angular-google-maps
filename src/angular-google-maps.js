@@ -214,7 +214,7 @@
 				for (var i = 0; i < _markers.length; i++) {
 					var pos = _markers[i].getPosition();
 					
-					if (pos.lat() == lat && pos.lng() == lng) {
+					if (floatEqual(pos.lat(), lat) && floatEqual(pos.lng(), lng)) {
 						return _markers[i];
 					}
 				}
@@ -226,7 +226,7 @@
 				for (var i = 0; i < _markers.length; i++) {
 					var pos = _markers[i].getPosition();
 					
-					if (pos.lat() == lat && pos.lng() == lng) {
+					if (floatEqual(pos.lat(), lat) && floatEqual(pos.lng(), lng)) {
 						return i;
 					}
 				}
