@@ -119,6 +119,7 @@
               
               function () {
                 that.zoom = _instance.getZoom();
+                that.center = _instance.getCenter();
               }
           );
           
@@ -141,16 +142,20 @@
         }
         else {
           
-          // Refresh the existing instance          
-          _instance.setCenter(that.center);
-          _instance.setZoom(that.zoom);
+          // Refresh the existing instance
           google.maps.event.trigger(_instance, "resize");
-        }
+          
+          var instanceCenter = _instance.getCenter();
+          
+          if (!floatEqual(instanceCenter.lat(), that.center.lat())
+            || !floatEqual(instanceCenter.lng(), that.center.lng())) {
+              _instance.setCenter(that.center);
+          }
         
-        // TODO is this really needed to open each info windows?
-        angular.forEach(_windows, function (w, i) {
-          w.open(_instance);
-        });
+          if (_instance.getZoom() != that.zoom) {
+            _instance.setZoom(that.zoom);
+          }          
+        }
       };
       
       this.fit = function () {
@@ -214,7 +219,7 @@
         for (var i = 0; i < _markers.length; i++) {
           var pos = _markers[i].getPosition();
           
-          if (pos.lat() == lat && pos.lng() == lng) {
+          if (floatEqual(pos.lat(), lat) && floatEqual(pos.lng(), lng)) {
             return _markers[i];
           }
         }
@@ -226,7 +231,7 @@
         for (var i = 0; i < _markers.length; i++) {
           var pos = _markers[i].getPosition();
           
-          if (pos.lat() == lat && pos.lng() == lng) {
+          if (floatEqual(pos.lat(), lat) && floatEqual(pos.lng(), lng)) {
             return i;
           }
         }
@@ -413,11 +418,17 @@
         scope.map = _m;
         
         // Check if we need to refresh the map
-        scope.$watch("refresh()", function (newValue, oldValue) {
-          if (newValue) {
-            _m.draw();
-          }
-        }); 
+        if (!scope.hasOwnProperty) {
+          // No refresh property given; draw the map immediately
+          _m.draw();
+        }
+        else {
+          scope.$watch("refresh()", function (newValue, oldValue) {
+            if (newValue && !oldValue) {
+              _m.draw();
+            }
+          }); 
+        }
         
         // Markers
         scope.$watch("markers", function (newValue, oldValue) {
