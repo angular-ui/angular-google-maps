@@ -418,7 +418,8 @@
         scope.map = _m;
         
         // Check if we need to refresh the map
-        if (!scope.hasOwnProperty) {
+        if (!scope.hasOwnProperty('refresh')) {
+
           // No refresh property given; draw the map immediately
           _m.draw();
         }
