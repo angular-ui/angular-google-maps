@@ -411,9 +411,6 @@
           }());
         }
         
-        // Done, draw the map
-        _m.draw();
-        
         // Put the map into the scope
         scope.map = _m;
         
