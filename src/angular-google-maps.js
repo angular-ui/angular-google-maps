@@ -293,6 +293,17 @@
    */
   googleMapsModule.directive("googleMap", ["$log", "$timeout", "$filter", function ($log, $timeout, 
       $filter) {
+
+    var controller = function ($scope, $element) {
+      
+      var _m = $scope.map;
+      
+      self.addInfoWindow = function (lat, lng, content) {
+        _m.addInfoWindow(lat, lng, content);
+      };
+    };
+
+    controller.$inject = ['$scope', '$element'];
     
     return {
       restrict: "EC",
@@ -309,14 +320,7 @@
         refresh: "&refresh", // optional
         windows: "=windows" // optional"
       },
-      controller: function ($scope, $element) {
-        
-        var _m = $scope.map;
-        
-        self.addInfoWindow = function (lat, lng, content) {
-          _m.addInfoWindow(lat, lng, content);
-        };
-      },      
+      controller: controller,      
       link: function (scope, element, attrs, ctrl) {
         
         // Center property must be specified and provide lat & 
