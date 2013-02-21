@@ -293,6 +293,17 @@
    */
   googleMapsModule.directive("googleMap", ["$log", "$timeout", "$filter", function ($log, $timeout, 
       $filter) {
+
+    var controller = function ($scope, $element) {
+      
+      var _m = $scope.map;
+      
+      self.addInfoWindow = function (lat, lng, content) {
+        _m.addInfoWindow(lat, lng, content);
+      };
+    };
+
+    controller.$inject = ['$scope', '$element'];
     
     return {
       restrict: "EC",
@@ -309,14 +320,7 @@
         refresh: "&refresh", // optional
         windows: "=windows" // optional"
       },
-      controller: function ($scope, $element) {
-        
-        var _m = $scope.map;
-        
-        self.addInfoWindow = function (lat, lng, content) {
-          _m.addInfoWindow(lat, lng, content);
-        };
-      },      
+      controller: controller,      
       link: function (scope, element, attrs, ctrl) {
         
         // Center property must be specified and provide lat & 
@@ -415,8 +419,7 @@
         scope.map = _m;
         
         // Check if we need to refresh the map
-        if (!scope.hasOwnProperty('refresh')) {
-
+        if (angular.isUndefined(scope.refresh())) {
           // No refresh property given; draw the map immediately
           _m.draw();
         }
@@ -467,8 +470,8 @@
                 orphaned.push(v);
               }
             });
-            
-            _m.removeMarkers(orphaned);           
+
+            orphaned.length && _m.removeMarkers(orphaned);           
             
             // Fit map when there are more than one marker. 
             // This will change the map center coordinates
