@@ -316,7 +316,7 @@
         markers: "=markers", // optional
         latitude: "=latitude", // required
         longitude: "=longitude", // required
-        zoom: "=zoom", // optional, default 8
+        zoom: "=zoom", // required
         refresh: "&refresh", // optional
         windows: "=windows" // optional"
       },
@@ -328,23 +328,23 @@
         if (!angular.isDefined(scope.center) || 
             (!angular.isDefined(scope.center.lat) || 
                 !angular.isDefined(scope.center.lng))) {
-          
-          $log.error("Could not find a valid center property");
-          
+        	
+          $log.error("angular-google-maps: ould not find a valid center property");          
           return;
+        }
+        
+        if (!angular.isDefined(scope.zoom)) {
+        	$log.error("angular-google-maps: map zoom property not set");
+        	return;
         }
         
         angular.element(element).addClass("angular-google-map");
         
         // Create our model
         var _m = new MapModel({
-          container: element[0],
-            
-          center: new google.maps.LatLng(scope.center.lat, 
-                  scope.center.lng),
-              
+          container: element[0],            
+          center: new google.maps.LatLng(scope.center.lat, scope.center.lng),              
           draggable: attrs.draggable == "true",
-          
           zoom: scope.zoom
         });       
       
