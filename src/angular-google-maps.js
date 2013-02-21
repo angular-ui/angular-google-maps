@@ -466,8 +466,8 @@
                 orphaned.push(v);
               }
             });
-            
-            _m.removeMarkers(orphaned);           
+
+            orphaned.length && _m.removeMarkers(orphaned);           
             
             // Fit map when there are more than one marker. 
             // This will change the map center coordinates
