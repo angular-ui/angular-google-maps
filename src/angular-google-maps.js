@@ -67,7 +67,8 @@
         _handlers = [], // event handlers
         _windows = [],  // InfoWindow objects
         o = angular.extend({}, _defaults, opts),
-        that = this;
+        that = this,
+        currentInfoWindow = null;
       
       this.center = opts.center;
       this.zoom = o.zoom;
@@ -178,7 +179,7 @@
         });
       };
       
-      this.addMarker = function (lat, lng, label, url, 
+      this.addMarker = function (lat, lng, icon, infoWindowContent, label, url,
           thumbnail) {
         
         if (that.findMarker(lat, lng) != null) {
@@ -187,7 +188,8 @@
         
         var marker = new google.maps.Marker({
           position: new google.maps.LatLng(lat, lng),
-          map: _instance
+          map: _instance,
+          icon: icon
         });
         
         if (label) {
@@ -196,6 +198,20 @@
         
         if (url) {
           
+        }
+
+        if (infoWindowContent != null) {
+          var infoWindow = new google.maps.InfoWindow({
+            content: infoWindowContent
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+            if (currentInfoWindow != null) {
+              currentInfoWindow.close();
+            }
+            infoWindow.open(_instance, marker);
+            currentInfoWindow = infoWindow;
+          });
         }
         
         // Cache marker 
@@ -206,6 +222,8 @@
           "lat": lat,
           "lng": lng,
           "draggable": false,
+          "icon": icon,
+          "infoWindowContent": infoWindowContent,
           "label": label,
           "url": url,
           "thumbnail": thumbnail
@@ -438,7 +456,7 @@
             
             angular.forEach(newValue, function (v, i) {
               if (!_m.hasMarker(v.latitude, v.longitude)) {
-                _m.addMarker(v.latitude, v.longitude);
+                _m.addMarker(v.latitude, v.longitude, v.icon, v.infoWindow);
               }
             });
             
