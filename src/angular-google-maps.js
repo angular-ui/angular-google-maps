@@ -408,7 +408,10 @@
                 cm.longitude = e.latLng.lng();
               }
               
+              
               $timeout(function () {
+                scope.latitude = cm.latitude;
+                scope.longitude = cm.longitude;
                 scope.$apply();
               });
             });
