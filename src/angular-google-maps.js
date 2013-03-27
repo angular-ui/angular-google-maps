@@ -76,6 +76,7 @@
       this.dragging = false;
       this.selector = o.container;
       this.markers = [];
+      this.options = o.options;
       
       this.draw = function () {
         
@@ -88,12 +89,12 @@
           
           // Create a new map instance
           
-          _instance = new google.maps.Map(that.selector, {
+          _instance = new google.maps.Map(that.selector, angular.extend(that.options, {
             center: that.center,
             zoom: that.zoom,
             draggable: that.draggable,
             mapTypeId : google.maps.MapTypeId.ROADMAP
-          });
+          }));
           
           google.maps.event.addListener(_instance, "dragstart",
               
@@ -357,14 +358,20 @@
         }
         
         angular.element(element).addClass("angular-google-map");
+
+        // Parse options
+        var opts = {options: {}};
+        if (attrs.options) {
+          opts.options = angular.fromJson(attrs.options);
+        }
         
         // Create our model
-        var _m = new MapModel({
+        var _m = new MapModel(angular.extend(opts, {
           container: element[0],            
           center: new google.maps.LatLng(scope.center.lat, scope.center.lng),              
           draggable: attrs.draggable == "true",
           zoom: scope.zoom
-        });       
+        }));       
       
         _m.on("drag", function () {
           
