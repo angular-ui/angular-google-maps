@@ -78,6 +78,10 @@
       this.markers = [];
       this.options = o.options;
       
+      this.setViewport = function(viewport){
+    	  _instance.fitBounds(viewport);
+      },
+      
       this.draw = function () {
         
         if (that.center == null) {
@@ -337,7 +341,8 @@
         longitude: "=longitude", // required
         zoom: "=zoom", // required
         refresh: "&refresh", // optional
-        windows: "=windows" // optional"
+        windows: "=windows", // optional"
+        viewport: "=viewport"
       },
       controller: controller,      
       link: function (scope, element, attrs, ctrl) {
@@ -458,6 +463,20 @@
             }
           }); 
         }
+        
+      //Update map when viewport change
+        scope.$watch('viewport',function(newValue,oldValue){
+        	if (newValue === oldValue) {
+                return;
+            }
+        	
+        	if(!_m.dragging){
+        		var sw = new google.maps.LatLng(newValue.sw.lat,newValue.sw.lng);
+        		var ne = new google.maps.LatLng(newValue.ne.lat,newValue.ne.lng);
+        		var viewport = new google.maps.LatLngBounds(sw,ne);
+        		_m.fitBounds(viewport);
+        	}
+        });
         
         // Markers
         scope.$watch("markers", function (newValue, oldValue) {
