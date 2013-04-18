@@ -474,7 +474,7 @@
         		var sw = new google.maps.LatLng(newValue.sw.lat,newValue.sw.lng);
         		var ne = new google.maps.LatLng(newValue.ne.lat,newValue.ne.lng);
         		var viewport = new google.maps.LatLngBounds(sw,ne);
-        		_m.fitBounds(viewport);
+        		_m.setViewport(viewport);
         	}
         });
         
