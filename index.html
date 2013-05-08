@@ -130,8 +130,8 @@
 		
 				<pre class="prettyprint lang-javascript">angular.extend($scope, {
 	center: {
-		lat: 0, // initial map center latitude
-		lng: 0, // initial map center longitude
+		latitude: 0, // initial map center latitude
+		longitude: 0, // initial map center longitude
 	},
 	markers: [], // an array of markers,
 	zoom: 8, // the zoom level
@@ -175,7 +175,10 @@
 						<tr>
 							<td>center</td>
 							<td>yes</td>
-							<td>A javascript object having <code>lat</code> and <code>lng</code> properties representing the center of the map</td>
+							<td>
+								A javascript object having <code>latitude</code> and <code>longitude</code> properties representing the center of the map<br>
+								<span class="label label-warning">Breaking change! Previous versions used lat and lng properties! Check your stuff!</span>
+							</td>
 						</tr>
 						<tr>
 							<td>zoom</td>
@@ -230,14 +233,14 @@
 								<div class="control-group">
 									<label class="control-label">Latitude:</label>
 									<div class="controls">
-										<input type="number" ng-model="center.lat">
+										<input type="number" ng-model="center.latitude">
 									</div>
 								</div>
 								
 								<div class="control-group">
 									<label class="control-label">Longitude:</label>
 									<div class="controls">
-										<input type="number" ng-model="center.lng">
+										<input type="number" ng-model="center.longitude">
 									</div>
 								</div>
 								

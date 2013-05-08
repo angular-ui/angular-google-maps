@@ -45,8 +45,8 @@
 		
 		// default location
 		$scope.center = {
-			lat: 45,
-			lng: -73
+			latitude: 45,
+			longitude: -73
 		};
 		
 		$scope.geolocationAvailable = navigator.geolocation ? true : false;
@@ -78,8 +78,8 @@
 				navigator.geolocation.getCurrentPosition(function (position) {
 					
 					$scope.center = {
-						lat: position.coords.latitude,
-						lng: position.coords.longitude
+						latitude: position.coords.latitude,
+						longitude: position.coords.longitude
 					};
 					
 					$scope.$apply();

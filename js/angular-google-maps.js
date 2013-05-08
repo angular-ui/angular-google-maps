@@ -67,7 +67,8 @@
         _handlers = [], // event handlers
         _windows = [],  // InfoWindow objects
         o = angular.extend({}, _defaults, opts),
-        that = this;
+        that = this,
+        currentInfoWindow = null;
       
       this.center = opts.center;
       this.zoom = o.zoom;
@@ -75,6 +76,7 @@
       this.dragging = false;
       this.selector = o.container;
       this.markers = [];
+      this.options = o.options;
       
       this.draw = function () {
         
@@ -87,12 +89,12 @@
           
           // Create a new map instance
           
-          _instance = new google.maps.Map(that.selector, {
+          _instance = new google.maps.Map(that.selector, angular.extend(that.options, {
             center: that.center,
             zoom: that.zoom,
             draggable: that.draggable,
             mapTypeId : google.maps.MapTypeId.ROADMAP
-          });
+          }));
           
           google.maps.event.addListener(_instance, "dragstart",
               
@@ -178,7 +180,7 @@
         });
       };
       
-      this.addMarker = function (lat, lng, label, url, 
+      this.addMarker = function (lat, lng, icon, infoWindowContent, label, url,
           thumbnail) {
         
         if (that.findMarker(lat, lng) != null) {
@@ -187,7 +189,8 @@
         
         var marker = new google.maps.Marker({
           position: new google.maps.LatLng(lat, lng),
-          map: _instance
+          map: _instance,
+          icon: icon
         });
         
         if (label) {
@@ -196,6 +199,20 @@
         
         if (url) {
           
+        }
+
+        if (infoWindowContent != null) {
+          var infoWindow = new google.maps.InfoWindow({
+            content: infoWindowContent
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+            if (currentInfoWindow != null) {
+              currentInfoWindow.close();
+            }
+            infoWindow.open(_instance, marker);
+            currentInfoWindow = infoWindow;
+          });
         }
         
         // Cache marker 
@@ -206,6 +223,8 @@
           "lat": lat,
           "lng": lng,
           "draggable": false,
+          "icon": icon,
+          "infoWindowContent": infoWindowContent,
           "label": label,
           "url": url,
           "thumbnail": thumbnail
@@ -316,7 +335,7 @@
         markers: "=markers", // optional
         latitude: "=latitude", // required
         longitude: "=longitude", // required
-        zoom: "=zoom", // optional, default 8
+        zoom: "=zoom", // required
         refresh: "&refresh", // optional
         windows: "=windows" // optional"
       },
@@ -326,27 +345,33 @@
         // Center property must be specified and provide lat & 
         // lng properties
         if (!angular.isDefined(scope.center) || 
-            (!angular.isDefined(scope.center.lat) || 
-                !angular.isDefined(scope.center.lng))) {
-          
-          $log.error("Could not find a valid center property");
-          
+            (!angular.isDefined(scope.center.latitude) || 
+                !angular.isDefined(scope.center.longitude))) {
+            
+          $log.error("angular-google-maps: ould not find a valid center property");          
           return;
         }
         
+        if (!angular.isDefined(scope.zoom)) {
+            $log.error("angular-google-maps: map zoom property not set");
+            return;
+        }
+        
         angular.element(element).addClass("angular-google-map");
+
+        // Parse options
+        var opts = {options: {}};
+        if (attrs.options) {
+          opts.options = angular.fromJson(attrs.options);
+        }
         
         // Create our model
-        var _m = new MapModel({
-          container: element[0],
-            
-          center: new google.maps.LatLng(scope.center.lat, 
-                  scope.center.lng),
-              
+        var _m = new MapModel(angular.extend(opts, {
+          container: element[0],            
+          center: new google.maps.LatLng(scope.center.latitude, scope.center.longitude),              
           draggable: attrs.draggable == "true",
-          
           zoom: scope.zoom
-        });       
+        }));       
       
         _m.on("drag", function () {
           
@@ -355,8 +380,8 @@
           $timeout(function () {
             
             scope.$apply(function (s) {
-              scope.center.lat = c.lat();
-              scope.center.lng = c.lng();
+              scope.center.latitude = c.lat();
+              scope.center.longitude = c.lng();
             });
           });
         });
@@ -382,8 +407,8 @@
             scope.$apply(function (s) {
               
               if (!_m.dragging) {
-                scope.center.lat = c.lat();
-                scope.center.lng = c.lng();
+                scope.center.latitude = c.lat();
+                scope.center.longitude = c.lng();
               }
             });
           });
@@ -408,7 +433,10 @@
                 cm.longitude = e.latLng.lng();
               }
               
+              
               $timeout(function () {
+                scope.latitude = cm.latitude;
+                scope.longitude = cm.longitude;
                 scope.$apply();
               });
             });
@@ -438,7 +466,7 @@
             
             angular.forEach(newValue, function (v, i) {
               if (!_m.hasMarker(v.latitude, v.longitude)) {
-                _m.addMarker(v.latitude, v.longitude);
+                _m.addMarker(v.latitude, v.longitude, v.icon, v.infoWindow);
               }
             });
             
@@ -490,8 +518,8 @@
           }
           
           if (!_m.dragging) {
-            _m.center = new google.maps.LatLng(newValue.lat, 
-                newValue.lng);          
+            _m.center = new google.maps.LatLng(newValue.latitude, 
+                newValue.longitude);          
             _m.draw();
           }
         }, true);
