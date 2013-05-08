@@ -9,8 +9,8 @@ function ExampleController ($scope) {
 		
 		/** the initial center of the map */
 		centerProperty: {
-			lat: 45,
-			lng: -73
+			latitude: 45,
+			longitude: -73
 		},
 		
 		/** the initial zoom level of the map */
