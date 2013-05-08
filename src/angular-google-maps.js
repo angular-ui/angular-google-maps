@@ -345,8 +345,8 @@
         // Center property must be specified and provide lat & 
         // lng properties
         if (!angular.isDefined(scope.center) || 
-            (!angular.isDefined(scope.center.lat) || 
-                !angular.isDefined(scope.center.lng))) {
+            (!angular.isDefined(scope.center.latitude) || 
+                !angular.isDefined(scope.center.longitude))) {
         	
           $log.error("angular-google-maps: ould not find a valid center property");          
           return;
@@ -368,7 +368,7 @@
         // Create our model
         var _m = new MapModel(angular.extend(opts, {
           container: element[0],            
-          center: new google.maps.LatLng(scope.center.lat, scope.center.lng),              
+          center: new google.maps.LatLng(scope.center.latitude, scope.center.longitude),              
           draggable: attrs.draggable == "true",
           zoom: scope.zoom
         }));       
@@ -380,8 +380,8 @@
           $timeout(function () {
             
             scope.$apply(function (s) {
-              scope.center.lat = c.lat();
-              scope.center.lng = c.lng();
+              scope.center.latitude = c.lat();
+              scope.center.longitude = c.lng();
             });
           });
         });
@@ -407,8 +407,8 @@
             scope.$apply(function (s) {
               
               if (!_m.dragging) {
-                scope.center.lat = c.lat();
-                scope.center.lng = c.lng();
+                scope.center.latitude = c.lat();
+                scope.center.longitude = c.lng();
               }
             });
           });
@@ -518,8 +518,8 @@
           }
           
           if (!_m.dragging) {
-            _m.center = new google.maps.LatLng(newValue.lat, 
-                newValue.lng);          
+            _m.center = new google.maps.LatLng(newValue.latitude, 
+                newValue.longitude);          
             _m.draw();
           }
         }, true);
