@@ -348,7 +348,7 @@
             (!angular.isDefined(scope.center.latitude) || 
                 !angular.isDefined(scope.center.longitude))) {
         	
-          $log.error("angular-google-maps: ould not find a valid center property");          
+          $log.error("angular-google-maps: could not find a valid center property");          
           return;
         }
         
