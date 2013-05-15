@@ -348,7 +348,7 @@
             (!angular.isDefined(scope.center.latitude) || 
                 !angular.isDefined(scope.center.longitude))) {
         	
-          $log.error("angular-google-maps: ould not find a valid center property");          
+          $log.error("angular-google-maps: could not find a valid center property");          
           return;
         }
         
@@ -503,7 +503,7 @@
             
             // Fit map when there are more than one marker. 
             // This will change the map center coordinates
-            if (attrs.fit == "true" && newValue.length > 1) {
+            if (attrs.fit == "true" && newValue && newValue.length > 1) {
               _m.fit();
             }
           });
