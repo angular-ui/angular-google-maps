@@ -9,6 +9,9 @@
 	module.run(function ($rootScope, $location) {
 		$rootScope.activeTab = 'usage';
 		$location.path("usage");
+		
+		// New look for Google Maps
+		google.maps.visualRefresh = true;
 	});
 	
 	module.directive("callToAction", function () {
