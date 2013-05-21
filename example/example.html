@@ -20,18 +20,20 @@
 			the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 			
 	<div class="google-map" 
-		center="centerProperty"
+		center="position.coords"
 		zoom="zoomProperty" 
 		markers="markersProperty"
 		latitude="clickedLatitudeProperty"
 		longitude="clickedLongitudeProperty"
 		mark-click="true"
 		draggable="true"
+		fit="false"
+		events="eventsProperty"
 		style="height: 1000px; width: 100%">
 	</div>
 
 	<script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.3/angular.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
 	<script src="../src/angular-google-maps.js"></script>
 	<script src="example-controller.js"></script>
 
