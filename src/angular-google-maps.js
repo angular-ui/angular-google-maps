@@ -325,7 +325,7 @@
     controller.$inject = ['$scope', '$element'];
     
     return {
-      restrict: "EC",
+      restrict: "ECA",
       priority: 100,
       transclude: true,
       template: "<div class='angular-google-map' ng-transclude></div>",
