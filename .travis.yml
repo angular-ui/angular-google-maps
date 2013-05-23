@@ -1,1 +1,5 @@
+branches:
+  only:
+    - master
+    - gh-pages-new
 language: javascript
