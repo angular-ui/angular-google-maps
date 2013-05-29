@@ -2,6 +2,8 @@
 
 > AngularJS directives for Google Maps
 
+[![Build Status](https://travis-ci.org/nlaplante/angular-google-maps.png?branch=r1-dev)](https://travis-ci.org/nlaplante/angular-google-maps)
+
 ## Getting started
 This is a directive for AngularJS `~1.0.x`.
 
