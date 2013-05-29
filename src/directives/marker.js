@@ -28,7 +28,7 @@
  */
 
 angular.module('google-maps')
-  .directive('marker', ['$log', function ($log) {   
+  .directive('marker', ['$log', '$timeout', function ($log, $timeout) {   
     
     "use strict";
     
@@ -49,18 +49,23 @@ angular.module('google-maps')
       },
       link: function (scope, element, attrs, mapCtrl) {
         
-        var opts = angular.extend({}, DEFAULTS, {
-          position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude),
-          map: mapCtrl.getMap()
+        $timeout(function () {
+          var opts = angular.extend({}, DEFAULTS, {
+            position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude),
+            map: mapCtrl.getMap(),
+            visible: scope.coords.latitude !== null && scope.coords.longitude !== null
+          });
+          
+          var marker = new google.maps.Marker(opts);
+          
+          scope.$watch('coords', function (newValue, oldValue) {
+            if (newValue !== oldValue) {
+              marker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              marker.setVisible(newValue.latitude !== null && newValue.longitude !== null);
+            }
+          }, true);  
         });
         
-        var marker = new google.maps.Marker(opts);
-        
-        scope.$watch('coords', function (newValue, oldValue) {
-          if (newValue !== oldValue) {
-            marker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
-          }
-        }, true);
       }
     };
   }]);
