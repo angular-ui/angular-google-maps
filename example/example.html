@@ -14,8 +14,14 @@
 	
 	.angular-google-map-container {
   	width: 100%;
-  	height: 400px;
+  	height: 600px;
 	}
+	
+	/* fix for Twitter Bootstrap handling of responsive images */
+	.angular-google-map img {
+	 max-width: inherit;
+	}
+	
 	/* uncomment this if you are using the <google-map> element instead of a div
 	.angular-google-map {
 		display: block;
@@ -28,61 +34,54 @@
 	<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in 
 			the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 			
-			<div class="container">
-			 <div class="page-title">
-			   <h1>angular-google-maps example</h1>
-			 </div>
-			 
-			 <div class="row">
-			   <div class="span8">
-			   
-			     <div class="google-map" 
-					    center="position.coords"
-					    zoom="zoomProperty" 
-					    markers="markersProperty"
-					    latitude="clickedLatitudeProperty"
-					    longitude="clickedLongitudeProperty"
-					    mark-click="false"
-					    draggable="true"
-					    fit="true"
-					    pan="false"
-					    events="eventsProperty">
-				    
-				      <marker ng-repeat="m in markersProperty" coords="m"></marker>
-				      
-				  </div>
-			   </div>
-			   <div class="span4">
-			     <table class="table table-striped">
-			       <thead>
-			         <tr>
-			           <th width=150>property</th>
-			           <th>value</th>
-			          </tr>
-			         </thead>
-			         <tbody>
-			           <tr>
-			             <td>center</td>
-			             <td>{{ position.coords.latitude }},{{ position.coords.longitude }}</td>
-			            </tr>
-			            <tr>
-			             <td>zoom</td>
-			             <td>{{ zoomProperty }}</td>
-			            </tr>
-			            <tr>
-			             <td>clicked position</td>
-			             <td>{{ clickedLatitudeProperty }},{{ clickedLongitudeProperty }}</td>
-			            </tr>
-			         </tbody>
-			     </table>
-			   </div>
-			 </div>
-			 
-  
-			</div>
+	<div class="container">
+	 <div class="page-title">
+	   <h1>angular-google-maps example</h1>
+	 </div>
+	 
+	 <div class="row">
+	   <div class="span8">
+	   
+	     <div class="google-map" 
+			    center="map.center"
+			    zoom="map.zoom" 
+			    draggable="true"
+			    events="map.events">
+		      
+		      <!-- prefedined markers -->
+		      <marker ng-repeat="m in map.markers" coords="m"></marker>
+		      
+		      <!-- marker for clicked position -->
+		      <marker coords="map.clickedMarker"></marker>
+		  </div>
+	   </div>
+	   <div class="span4">
+	     <fieldset>	     
+		     <table class="table">
+		         <tbody>
+		           <tr>
+		             <td>center</td>
+		             <td><pre><span ng-show="map.center.latitude >= 0">&nbsp;</span>{{ map.center.latitude | number:4 }} lat<br><span ng-show="map.center.longitude >= 0">&nbsp;</span>{{ map.center.longitude | number:4 }} lng</pre></td>
+		            </tr>
+		            <tr>
+		             <td>zoom</td>
+		             <td>{{ map.zoom }}</td>
+		            </tr>
+		            <tr>
+		             <td>clicked position</td>
+		             <td>
+		              <pre ng-show="map.clickedMarker.latitude != null && map.clickedMarker.longitude != null"><span ng-show="map.clickedMarker.latitude >= 0">&nbsp;</span>{{ map.clickedMarker.latitude | number:4 }} lat<br><span ng-show="map.clickedMarker.longitude >= 0">&nbsp;</span>{{ map.clickedMarker.longitude | number:4 }} lng</pre>
+		              <span ng-show="map.clickedMarker.latitude == null || map.clickedMarker.longitude == null">Click the map to see</span>
+		             </td>
+		            </tr>
+		         </tbody>
+		     </table>
+	     </fieldset>
+	   </div>
+	 </div>
+	</div>
 			
-	
-
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 	<script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
 	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
 	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
