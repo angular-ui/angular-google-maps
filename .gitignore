@@ -1,2 +1,6 @@
 /.settings
 /.project
+node_modules
+old/
+tmp/
+*~
