@@ -1,5 +1,10 @@
+language: node_js
+node_js:
+    - "0.11"
+    - "0.10"
+    - "0.8"
+script: grunt test --force
 branches:
   only:
     - master
-    - gh-pages-new
-language: javascript
+    - r1-dev
