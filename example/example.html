@@ -5,8 +5,17 @@
 <head>
 	<meta charset="UTF-8">
 	<title>angular-google-maps example page</title>
-	
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700' rel='stylesheet' type='text/css'>	
 	<style>
+	body {
+	 font-family: 'Open Sans', sans-serif;
+	}
+	
+	.angular-google-map-container {
+  	width: 100%;
+  	height: 400px;
+	}
 	/* uncomment this if you are using the <google-map> element instead of a div
 	.angular-google-map {
 		display: block;
@@ -19,24 +28,67 @@
 	<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in 
 			the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 			
-	<div class="google-map" 
-		center="position.coords"
-		zoom="zoomProperty" 
-		markers="markersProperty"
-		latitude="clickedLatitudeProperty"
-		longitude="clickedLongitudeProperty"
-		mark-click="true"
-		draggable="true"
-		fit="false"
-		events="eventsProperty"
-		style="height: 1000px; width: 100%">
-	</div>
+			<div class="container">
+			 <div class="page-title">
+			   <h1>angular-google-maps example</h1>
+			 </div>
+			 
+			 <div class="row">
+			   <div class="span8">
+			   
+			     <div class="google-map" 
+					    center="position.coords"
+					    zoom="zoomProperty" 
+					    markers="markersProperty"
+					    latitude="clickedLatitudeProperty"
+					    longitude="clickedLongitudeProperty"
+					    mark-click="false"
+					    draggable="true"
+					    fit="true"
+					    pan="false"
+					    events="eventsProperty">
+				    
+				      <marker ng-repeat="m in markersProperty" coords="m"></marker>
+				      
+				  </div>
+			   </div>
+			   <div class="span4">
+			     <table class="table table-striped">
+			       <thead>
+			         <tr>
+			           <th width=150>property</th>
+			           <th>value</th>
+			          </tr>
+			         </thead>
+			         <tbody>
+			           <tr>
+			             <td>center</td>
+			             <td>{{ position.coords.latitude }},{{ position.coords.longitude }}</td>
+			            </tr>
+			            <tr>
+			             <td>zoom</td>
+			             <td>{{ zoomProperty }}</td>
+			            </tr>
+			            <tr>
+			             <td>clicked position</td>
+			             <td>{{ clickedLatitudeProperty }},{{ clickedLongitudeProperty }}</td>
+			            </tr>
+			         </tbody>
+			     </table>
+			   </div>
+			 </div>
+			 
+  
+			</div>
+			
+	
 
 	<script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
-	<script src="../src/angular-google-maps.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+	<script src="angular-google-maps.js"></script>
 	<script src="example-controller.js"></script>
-
+  <script src="http://localhost:35729/livereload.js"></script>
 </body>
 
 </html>

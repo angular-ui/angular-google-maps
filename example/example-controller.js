@@ -25,12 +25,15 @@ function ExampleController ($scope, $timeout, $log) {
 		},
 		
 		/** the initial zoom level of the map */
-		zoomProperty: 4,
+		zoomProperty: 2,
 		
 		/** list of markers to put in the map */
 		markersProperty: [ {
 				latitude: 45,
 				longitude: -74
+			}, {
+			    latitude: 15,
+			    longitude: 30
 			}],
 		
 		// These 2 properties will be set when clicking on the map
