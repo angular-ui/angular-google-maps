@@ -50,7 +50,7 @@ angular.module('google-maps')
          */
         function isTrue(val) {
             return angular.isDefined(val) &&
-                val != null &&
+                val !== null &&
                 val === true ||
                 val === '1' ||
                 val === 'y' ||
@@ -194,16 +194,20 @@ angular.module('google-maps')
                 });
 
                 if (angular.isDefined(scope.events) &&
-                    scope.events != null &&
+                    scope.events !== null &&
                     angular.isObject(scope.events)) {
+
+                    var getEventHandler = function (eventName) {
+                        return function () {
+                            scope.events[eventName].apply(scope, [_m, eventName, arguments ]);
+                        };
+                    };
 
                     for (var eventName in scope.events) {
 
                         if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
 
-                            google.maps.event.addListener(_m, eventName, function () {
-                                scope.events[eventName].apply(scope, [_m, eventName, arguments]);
-                            });
+                            google.maps.event.addListener(_m, eventName, getEventHandler(eventName));
                         }
                     }
                 }
@@ -214,7 +218,7 @@ angular.module('google-maps')
 
                     google.maps.event.addListener(_m, 'click', function (e) {
 
-                        if (cm == null) {
+                        if (cm === null) {
 
                             cm = {
                                 latitude: e.latLng.lat(),
