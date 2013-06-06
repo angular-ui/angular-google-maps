@@ -49,10 +49,20 @@
 			    events="map.events">
 		      
 		      <!-- prefedined markers -->
-		      <marker ng-repeat="m in map.markers" coords="m"></marker>
+		      <marker ng-repeat="m in map.markers" coords="m">
+                  <window>
+                      <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
+                      <p class="muted">My marker will reappear when you close me.</p>
+                  </window>
+		      </marker>
 		      
 		      <!-- marker for clicked position -->
-		      <marker coords="map.clickedMarker"></marker>
+		      <marker coords="map.clickedMarker">
+                  <window>This is my clicked marker!</window>
+		      </marker>
+
+             <window show="map.infoWindow.show" coords="map.infoWindow.coords">I should not be attached to a
+             marker.</window>
 		  </div>
 	   </div>
 	   <div class="span4">
@@ -76,6 +86,7 @@
 		            </tr>
 		         </tbody>
 		     </table>
+             <button class="btn btn-danger" ng-click="removeMarkers()">Clear markers</button>
 	     </fieldset>
 	   </div>
 	 </div>

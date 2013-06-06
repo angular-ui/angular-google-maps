@@ -27,17 +27,36 @@
  * @author Nicolas Laplante https://plus.google.com/108189012221374960701
  */
 
+/**
+ * Map marker directive
+ *
+ * This directive is used to create a marker on an existing map.
+ * This directive creates a new scope.
+ *
+ * {attribute coords required}  object containing latitude and longitude properties
+ * {attribute animate optional} if set to false, the marker won't be animated (on by default)
+ */
+
 angular.module('google-maps')
     .directive('marker', ['$log', '$timeout', function ($log, $timeout) {
 
         "use strict";
 
         var DEFAULTS = {
+            // Animation is enabled by default
             animation: google.maps.Animation.DROP
         };
 
+        /**
+         * Check if a value is literally false
+         * @param value the value to test
+         * @returns {boolean} true if value is literally false, false otherwise
+         */
+        function isFalse(value) {
+            return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value ) !== -1;
+        }
         return {
-            restrict: 'ECAM',
+            restrict: 'ECMA',
             require: '^googleMap',
             priority: -1,
             transclude: true,
@@ -47,8 +66,24 @@ angular.module('google-maps')
                 coords: '=coords',
                 click: '&click'
             },
+            controller: function ($scope, $element) {
+             this.getMarker = function () {
+                 return $element.data('instance');
+             };
+            },
             link: function (scope, element, attrs, mapCtrl) {
 
+                // Validate required properties
+                if (angular.isUndefined(scope.coords) ||
+                    scope.coords === null ||
+                    angular.isUndefined(scope.coords.latitude) ||
+                    angular.isUndefined(scope.coords.longitude)) {
+
+                    $log.error("marker: no valid coords attribute found");
+                    return;
+                }
+
+                // Wrap marker initialization inside a $timeout() call to make sure the map is created already
                 $timeout(function () {
                     var opts = angular.extend({}, DEFAULTS, {
                         position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude),
@@ -56,12 +91,25 @@ angular.module('google-maps')
                         visible: scope.coords.latitude !== null && scope.coords.longitude !== null
                     });
 
+                    // Disable animations
+                    if (angular.isDefined(attrs.animate) && isFalse(attrs.animate)) {
+                        delete opts.animate;
+                    }
+
                     var marker = new google.maps.Marker(opts);
+                    element.data('instance', marker);
 
                     scope.$watch('coords', function (newValue, oldValue) {
                         if (newValue !== oldValue) {
-                            marker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
-                            marker.setVisible(newValue.latitude !== null && newValue.longitude !== null);
+                            if (newValue) {
+                                marker.setMap(mapCtrl.getMap());
+                                marker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+                                marker.setVisible(newValue.latitude !== null && newValue.longitude !== null);
+                            }
+                            else {
+                                // Remove marker
+                                marker.setMap(null);
+                            }
                         }
                     }, true);
 
@@ -70,7 +118,6 @@ angular.module('google-maps')
                         marker.setMap(null);
                     });
                 });
-
             }
         };
     }]);

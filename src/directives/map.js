@@ -61,7 +61,7 @@ angular.module('google-maps')
             /**
              *
              */
-            restrict: 'ECAM',
+            restrict: 'ECMA',
 
             /**
              *
@@ -81,7 +81,7 @@ angular.module('google-maps')
             /**
              *
              */
-            template: '<div class="angular-google-map" ng-transclude><div class="angular-google-map-container"></div></div>',
+            template: '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>',
 
             /**
              *

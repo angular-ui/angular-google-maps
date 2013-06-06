@@ -38,14 +38,16 @@ module.exports = function(grunt) {
         src: ['src/module.js', 
               'src/directives/map.js', 
               'src/directives/marker.js', 
-              'src/directives/polyline.js'],
+              'src/directives/polyline.js',
+              'src/directives/window.js'],
         dest: 'tmp/output.js'
       },
       example: {
         src: ['src/module.js',
               'src/directives/map.js', 
               'src/directives/marker.js', 
-              'src/directives/polyline.js'],
+              'src/directives/polyline.js',
+              'src/directives/window.js'],
         dest: 'example/<%= pkg.name %>.js'
       }
     },

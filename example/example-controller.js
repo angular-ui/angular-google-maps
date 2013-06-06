@@ -34,13 +34,38 @@ function ExampleController ($scope, $timeout, $log) {
               $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
               
               var e = originalEventArgs[0];
-              
-              $scope.map.clickedMarker.latitude = e.latLng.lat();
-              $scope.map.clickedMarker.longitude = e.latLng.lng();
+
+              if (!$scope.map.clickedMarker) {
+                  $scope.map.clickedMarker = {
+                      latitude: e.latLng.lat(),
+                      longitude: e.latLng.lng()
+                  };
+              }
+              else {
+                  $scope.map.clickedMarker.latitude = e.latLng.lat();
+                  $scope.map.clickedMarker.longitude = e.latLng.lng();
+              }
               
               $scope.$apply();
             }
+          },
+          infoWindow: {
+              coords: {
+                  latitude: 30,
+                  longitude: -89
+              },
+              show: false
           }
-	    } 
+	    }
 	});
+
+    $scope.removeMarkers = function () {
+        $log.info("Clearing markers. They should disappear from the map now");
+        $scope.map.markers.length = 0;
+        $scope.map.clickedMarker = null;
+    };
+
+    $timeout(function () {
+        $scope.map.infoWindow.show = true;
+    }, 2000);
 }
