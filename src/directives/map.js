@@ -32,6 +32,10 @@ angular.module('google-maps')
 
         "use strict";
 
+        var DEFAULTS = {
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
         /*
          * Utility functions
          */
@@ -120,7 +124,9 @@ angular.module('google-maps')
                     return;
                 }
 
-                angular.element(element).addClass("angular-google-map");
+                var el = angular.element(element);
+
+                el.addClass("angular-google-map");
 
                 // Parse options
                 var opts = {options: {}};
@@ -128,12 +134,22 @@ angular.module('google-maps')
                     opts.options = angular.fromJson(attrs.options);
                 }
 
+                if (attrs.type) {
+                    var type = attrs.type.toUpperCase();
+
+                    if (google.maps.MapTypeId.hasOwnProperty(type)) {
+                        opts.mapTypeId = google.maps.MapTypeId[attrs.type.toUpperCase()];
+                    }
+                    else {
+                        $log.error('angular-google-maps: invalid map type "' + attrs.type + '"');
+                    }
+                }
+
                 // Create the map
-                var _m = new google.maps.Map(element.find('div')[1], angular.extend(opts, {
+                var _m = new google.maps.Map(el.find('div')[1], angular.extend({}, DEFAULTS, opts, {
                     center: new google.maps.LatLng(scope.center.latitude, scope.center.longitude),
                     draggable: isTrue(attrs.draggable),
-                    zoom: scope.zoom,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                    zoom: scope.zoom
                 }));
 
                 var dragging = false;
