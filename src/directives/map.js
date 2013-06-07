@@ -28,22 +28,13 @@
  */
 
 angular.module('google-maps')
-    .directive('googleMap', ['$log', '$timeout', '$filter', function ($log, $timeout, $filter) {
+    .directive('googleMap', ['$log', '$timeout', function ($log, $timeout) {
 
         "use strict";
 
         /*
          * Utility functions
          */
-
-        /**
-         * Check if 2 floating point numbers are equal
-         *
-         * @see http://stackoverflow.com/a/588014
-         */
-        function floatEqual(f1, f2) {
-            return (Math.abs(f1 - f2) < 0.000001);
-        }
 
         /**
          * Check if a value is true
@@ -89,12 +80,10 @@ angular.module('google-maps')
             scope: {
                 center: '=center',          // required
                 zoom: '=zoom',              // required
-                latitude: '=latitude',      // required
-                longitude: '=longitude',    // required
                 markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
-                events: '=events'
+                events: '=events'           // optional
             },
 
             /**
@@ -114,10 +103,8 @@ angular.module('google-maps')
              * @param scope
              * @param element
              * @param attrs
-             * @param ctrl
-             * @returns
              */
-            link: function (scope, element, attrs, ctrl) {
+            link: function (scope, element, attrs) {
 
                 // Center property must be specified and provide lat &
                 // lng properties
@@ -163,8 +150,8 @@ angular.module('google-maps')
 
                     $timeout(function () {
                         scope.$apply(function (s) {
-                            scope.center.latitude = c.lat();
-                            scope.center.longitude = c.lng();
+                            s.center.latitude = c.lat();
+                            s.center.longitude = c.lng();
                         });
                     });
                 });
@@ -174,7 +161,7 @@ angular.module('google-maps')
 
                         $timeout(function () {
                             scope.$apply(function (s) {
-                                scope.zoom = _m.zoom;
+                                s.zoom = _m.zoom;
                             });
                         });
                     }
@@ -186,8 +173,8 @@ angular.module('google-maps')
                     $timeout(function () {
                         scope.$apply(function (s) {
                             if (!_m.dragging) {
-                                scope.center.latitude = c.lat();
-                                scope.center.longitude = c.lng();
+                                s.center.latitude = c.lat();
+                                s.center.longitude = c.lng();
                             }
                         });
                     });
@@ -206,39 +193,9 @@ angular.module('google-maps')
                     for (var eventName in scope.events) {
 
                         if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-
                             google.maps.event.addListener(_m, eventName, getEventHandler(eventName));
                         }
                     }
-                }
-
-                if (isTrue(attrs.markClick)) {
-
-                    var cm = null;
-
-                    google.maps.event.addListener(_m, 'click', function (e) {
-
-                        if (cm === null) {
-
-                            cm = {
-                                latitude: e.latLng.lat(),
-                                longitude: e.latLng.lng()
-                            };
-
-                            scope.markers.push(cm);
-                        }
-                        else {
-                            cm.latitude = e.latLng.lat();
-                            cm.longitude = e.latLng.lng();
-                        }
-
-
-                        $timeout(function () {
-                            scope.latitude = cm.latitude;
-                            scope.longitude = cm.longitude;
-                            scope.$apply();
-                        });
-                    });
                 }
 
                 // Put the map into the scope
@@ -247,11 +204,7 @@ angular.module('google-maps')
                 google.maps.event.trigger(_m, "resize");
 
                 // Check if we need to refresh the map
-                if (angular.isUndefined(scope.refresh())) {
-                    // No refresh property given; draw the map immediately
-                    //_m.draw();
-                }
-                else {
+                if (!angular.isUndefined(scope.refresh())) {
                     scope.$watch("refresh()", function (newValue, oldValue) {
                         if (newValue && !oldValue) {
                             //  _m.draw();
