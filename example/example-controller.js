@@ -15,47 +15,58 @@ function ExampleController ($scope, $timeout, $log) {
 	        latitude: 45,
 	        longitude: -73
 	      },
-	      zoom: 3,
-	      markers: [ {
-            latitude: 45,
-            longitude: -74
-          }, {
-              latitude: 15,
-              longitude: 30
-          }],
-          clickedMarker: {
-            latitude: null,
-            longitude: null
-          },
-          events: {
-            click: function (mapModel, eventName, originalEventArgs) {    
+        zoom: 3,
+        markers: [ {
+              latitude: 45,
+              longitude: -74
+            }, {
+                latitude: 15,
+                longitude: 30
+            }],
+        clickedMarker: {
+              latitude: null,
+              longitude: null
+            },
+        events: {
+              click: function (mapModel, eventName, originalEventArgs) {    
 
-              // 'this' is the directive's scope
-              $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
-              
-              var e = originalEventArgs[0];
+                // 'this' is the directive's scope
+                $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
+                
+                var e = originalEventArgs[0];
 
-              if (!$scope.map.clickedMarker) {
-                  $scope.map.clickedMarker = {
-                      latitude: e.latLng.lat(),
-                      longitude: e.latLng.lng()
-                  };
+                if (!$scope.map.clickedMarker) {
+                    $scope.map.clickedMarker = {
+                        latitude: e.latLng.lat(),
+                        longitude: e.latLng.lng()
+                    };
+                }
+                else {
+                    $scope.map.clickedMarker.latitude = e.latLng.lat();
+                    $scope.map.clickedMarker.longitude = e.latLng.lng();
+                }
+                
+                $scope.$apply();
               }
-              else {
-                  $scope.map.clickedMarker.latitude = e.latLng.lat();
-                  $scope.map.clickedMarker.longitude = e.latLng.lng();
-              }
-              
-              $scope.$apply();
-            }
-          },
+            },
           infoWindow: {
-              coords: {
-                  latitude: 30,
-                  longitude: -89
-              },
-              show: false
-          }
+                coords: {
+                    latitude: 30,
+                    longitude: -89
+                },
+                show: false
+            },
+            templatedInfoWindow: {
+                coords: {
+                    latitude: 60,
+                    longitude: -95
+                },
+                show: true,
+                templateUrl: 'templates/info.html',
+                templateParameter: {
+                  message: 'passed in from the opener'
+                } 
+            }
 	    }
 	});
 

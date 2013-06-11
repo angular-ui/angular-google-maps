@@ -506,7 +506,7 @@ angular.module("google-maps")
  */
 
 angular.module("google-maps").
-    directive("window", ['$log', '$timeout','$compile', function ($log, $timeout, $compile) {
+    directive("window", ['$log', '$timeout','$compile', '$http', '$templateCache', function ($log, $timeout, $compile, $http, $templateCache) {
 
         "use strict";
 
@@ -522,7 +522,9 @@ angular.module("google-maps").
           require: ['^googleMap', '^?marker'],
           scope: {
             coords: '=coords',
-            show: '&show'
+            show: '&show',
+            templateUrl: '=templateurl',
+            templateParameter: '=templateparameter'
           },
           link: function (scope, element, attrs, ctrls) {
               $timeout(function () {
@@ -560,14 +562,38 @@ angular.module("google-maps").
                       });
                   }
 
+                   function showWindow() {
+                    if (scope.templateUrl) {
+                        $http.get(scope.templateUrl, { cache: $templateCache })
+                             .then(function (content) {
+                                    var templateScope = scope.$new();
+                                    if (angular.isDefined(scope.templateParameter)) {
+                                        templateScope.parameter = scope.templateParameter;
+                                    }
+                                    var compiled = $compile(content.data)(templateScope);
+                                    win.setContent(compiled.get(0));
+                                    win.open(mapCtrl.getMap());
+                              });
+                    } else {
+                        win.open(mapCtrl.getMap());
+                    }
+                  }
+
+                  function hideWindow() {
+                    win.close();
+                  }
+
                   scope.$watch('show()', function (newValue, oldValue) {
                     if (newValue !== oldValue) {
                         if (newValue) {
-                            win.open(mapCtrl.getMap());
+                            showWindow();
                         }
                         else {
-                            win.close();
+                            hideWindow();
                         }
+                    } else if (newValue && !win.getMap()) {
+                        // If we're initially showing the marker and it's not yet visible, show it.
+                        showWindow();
                     }
                   });
               }, 50);
