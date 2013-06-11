@@ -63,6 +63,9 @@
 
              <window show="map.infoWindow.show" coords="map.infoWindow.coords">I should not be attached to a
              marker.</window>
+
+             <window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords" templateUrl="map.templatedInfoWindow.templateUrl" templateParameter="map.templatedInfoWindow.templateParameter">
+             </window>
 		  </div>
 	   </div>
 	   <div class="span4">
@@ -98,6 +101,7 @@
 	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 	<script src="angular-google-maps.js"></script>
 	<script src="example-controller.js"></script>
+	<script src="templates/infoController.js"></script>
   <script src="http://localhost:35729/livereload.js"></script>
 </body>
 
