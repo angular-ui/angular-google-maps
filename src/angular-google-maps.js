@@ -183,7 +183,7 @@
       this.addMarker = function (lat, lng, icon, infoWindowContent, label, url,
           thumbnail) {
         
-        if (that.findMarker(lat, lng) != null) {
+        if (that.findMarker(lat, lng, icon) != null) {
           return;
         }
         
@@ -234,11 +234,11 @@
         return marker;
       };      
       
-      this.findMarker = function (lat, lng) {
+      this.findMarker = function (lat, lng, icon) {
         for (var i = 0; i < _markers.length; i++) {
           var pos = _markers[i].getPosition();
           
-          if (floatEqual(pos.lat(), lat) && floatEqual(pos.lng(), lng)) {
+          if (icon === _markers[i].icon && floatEqual(pos.lat(), lat) && floatEqual(pos.lng(), lng)) {
             return _markers[i];
           }
         }
@@ -246,11 +246,11 @@
         return null;
       };  
       
-      this.findMarkerIndex = function (lat, lng) {
+      this.findMarkerIndex = function (lat, lng, icon) {
         for (var i = 0; i < _markers.length; i++) {
           var pos = _markers[i].getPosition();
           
-          if (floatEqual(pos.lat(), lat) && floatEqual(pos.lng(), lng)) {
+          if (icon === _markers[i].icon && floatEqual(pos.lat(), lat) && floatEqual(pos.lng(), lng)) {
             return i;
           }
         }
@@ -269,8 +269,8 @@
         return win;
       };
       
-      this.hasMarker = function (lat, lng) {
-        return that.findMarker(lat, lng) !== null;
+      this.hasMarker = function (lat, lng, icon) {
+        return that.findMarker(lat, lng, icon) !== null;
       };  
       
       this.getMarkerInstances = function () {
@@ -285,7 +285,7 @@
           var pos = v.getPosition(),
             lat = pos.lat(),
             lng = pos.lng(),
-            index = s.findMarkerIndex(lat, lng);
+            index = s.findMarkerIndex(lat, lng, v.icon);
           
           // Remove from local arrays
           _markers.splice(index, 1);
@@ -476,7 +476,7 @@
           $timeout(function () {
             
             angular.forEach(newValue, function (v, i) {
-              if (!_m.hasMarker(v.latitude, v.longitude)) {
+              if (!_m.hasMarker(v.latitude, v.longitude, v.icon)) {
                 _m.addMarker(v.latitude, v.longitude, v.icon, v.infoWindow);
               }
             });
@@ -485,7 +485,7 @@
             var orphaned = [];
             
             angular.forEach(_m.getMarkerInstances(), function (v, i) {
-              // Check our scope if a marker with equal latitude and longitude. 
+              // Check our scope if a marker with equal icon, latitude, and longitude. 
               // If not found, then that marker has been removed form the scope.
               
               var pos = v.getPosition(),
@@ -498,7 +498,7 @@
                 
                 var sm = scope.markers[si];
                 
-                if (floatEqual(sm.latitude, lat) && floatEqual(sm.longitude, lng)) {
+                if (sm.icon === v.icon && floatEqual(sm.latitude, lat) && floatEqual(sm.longitude, lng)) {
                   // Map marker is present in scope too, don't remove
                   found = true;
                 }
