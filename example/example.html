@@ -49,7 +49,7 @@
 			    events="map.events">
 		      
 		      <!-- prefedined markers -->
-		      <marker ng-repeat="m in map.markers" coords="m">
+		      <marker ng-repeat="m in map.markers" coords="m" icon="m.icon">
                   <window>
                       <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
                       <p class="muted">My marker will reappear when you close me.</p>
