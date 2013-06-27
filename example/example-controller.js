@@ -22,7 +22,11 @@ function ExampleController ($scope, $timeout, $log) {
             }, {
                 latitude: 15,
                 longitude: 30
-            }],
+            }, {
+                icon: 'plane.png',
+                latitude: 37,
+                longitude: -122
+        }],
         clickedMarker: {
               latitude: null,
               longitude: null

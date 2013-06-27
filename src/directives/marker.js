@@ -64,6 +64,7 @@ angular.module('google-maps')
             replace: true,
             scope: {
                 coords: '=coords',
+                icon: '=icon',
                 click: '&click'
             },
             controller: function ($scope, $element) {
@@ -88,6 +89,7 @@ angular.module('google-maps')
                     var opts = angular.extend({}, DEFAULTS, {
                         position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude),
                         map: mapCtrl.getMap(),
+                        icon: scope.icon,
                         visible: scope.coords.latitude !== null && scope.coords.longitude !== null
                     });
 
