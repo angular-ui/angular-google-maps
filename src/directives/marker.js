@@ -56,6 +56,7 @@ angular.module('google-maps')
         function isFalse(value) {
             return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value ) !== -1;
         }
+        
         return {
             restrict: 'ECMA',
             require: '^googleMap',
