@@ -34,6 +34,7 @@
  * This directive creates a new scope.
  *
  * {attribute coords required}  object containing latitude and longitude properties
+ * {attribute icon optional}	string url to image used for marker icon
  * {attribute animate optional} if set to false, the marker won't be animated (on by default)
  */
 
