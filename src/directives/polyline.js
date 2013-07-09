@@ -58,6 +58,32 @@ angular.module("google-maps")
             return result;
         }
 
+        function extendMapBounds(map, points) {
+            var bounds = new google.maps.LatLngBounds();
+
+            for (var i = 0; i < points.length; i++) {
+                bounds.extend(points[i]);
+            }
+
+            map.fitBounds(bounds);
+        }
+
+        /*
+         * Utility functions
+         */
+
+        /**
+         * Check if a value is true
+         */
+        function isTrue(val) {
+            return angular.isDefined(val) &&
+                val !== null &&
+                val === true ||
+                val === '1' ||
+                val === 'y' ||
+                val === 'true';
+        }
+
         return {
             restrict: 'ECA',
             require: '^googleMap',
@@ -78,9 +104,13 @@ angular.module("google-maps")
 
                 // Wrap polyline initialization inside a $timeout() call to make sure the map is created already
                 $timeout(function () {
+                    var map = mapCtrl.getMap();
+
+                    var pathPoints = convertPathPoints(scope.path);
+
                     var opts = angular.extend({}, DEFAULTS, {
-                        map: mapCtrl.getMap(),
-                        path: convertPathPoints(scope.path),
+                        map: map,
+                        path: pathPoints,
                         strokeColor: scope.stroke && scope.stroke.color,
                         strokeOpacity: scope.stroke && scope.stroke.opacity,
                         strokeWeight: scope.stroke && scope.stroke.weight
@@ -88,11 +118,21 @@ angular.module("google-maps")
 
                     var polyline = new google.maps.Polyline(opts);
 
+                    if (isTrue(attrs.fit)) {
+                        extendMapBounds(map, pathPoints);
+                    }
+
                     scope.$watch('path', function (newValue, oldValue) {
                         if (newValue !== oldValue) {
                             if (newValue) {
-                                polyline.setMap(mapCtrl.getMap());
-                                polyline.setPath(convertPathPoints(newValue));
+                                var newPathPoints = convertPathPoints(newValue);
+
+                                polyline.setMap(map);
+                                polyline.setPath(newPathPoints);
+
+                                if (isTrue(attrs.fit)) {
+                                    extendMapBounds(map, newPathPoints);
+                                }
                             }
                             else {
                                 // Remove polyline
