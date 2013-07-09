@@ -32,12 +32,80 @@ angular.module("google-maps")
 
         "use strict";
 
+        var DEFAULTS = {
+
+        };
+
+        function validatePathPoints(path) {
+            for (var i = 0; i < path.length; i++) {
+              if (angular.isUndefined(path[i].latitude) ||
+                  angular.isUndefined(path[i].longitude)) {
+                  console.log(path[i].latitude, path[i].longitude);
+                  return false;
+              }
+            }
+
+            return true;
+        }
+
+        function convertPathPoints(path) {
+            var result = [];
+
+            for (var i = 0; i < path.length; i++) {
+                result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
+            }
+
+            return result;
+        }
+
         return {
             restrict: 'ECA',
             require: '^googleMap',
-            scope: {},
+            scope: {
+                path: '=path',
+                stroke: '=stroke'
+            },
             link: function (scope, element, attrs, mapCtrl) {
-                var map = mapCtrl.getMap();
+                // Validate required properties
+                if (angular.isUndefined(scope.path) ||
+                    scope.path === null ||
+                    scope.path.length < 2 ||
+                    !validatePathPoints(scope.path)) {
+
+                    $log.error("polyline: no valid path attribute found");
+                    return;
+                }
+
+                // Wrap polyline initialization inside a $timeout() call to make sure the map is created already
+                $timeout(function () {
+                    var opts = angular.extend({}, DEFAULTS, {
+                        map: mapCtrl.getMap(),
+                        path: convertPathPoints(scope.path),
+                        strokeColor: scope.stroke && scope.stroke.color,
+                        strokeOpacity: scope.stroke && scope.stroke.opacity,
+                        strokeWeight: scope.stroke && scope.stroke.weight
+                    });
+
+                    var polyline = new google.maps.Polyline(opts);
+
+                    scope.$watch('path', function (newValue, oldValue) {
+                        if (newValue !== oldValue) {
+                            if (newValue) {
+                                polyline.setMap(mapCtrl.getMap());
+                                polyline.setPath(convertPathPoints(newValue));
+                            }
+                            else {
+                                // Remove polyline
+                                polyline.setMap(null);
+                            }
+                        }
+                    }, true);
+
+                    // Remove polyline on scope $destroy
+                    scope.$on("$destroy", function () {
+                        polyline.setMap(null);
+                    });
+                });
             }
         };
     }]);
