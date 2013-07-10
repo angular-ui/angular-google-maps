@@ -154,11 +154,6 @@ angular.module('google-maps')
                     return;
                 }
 
-                if (!angular.isDefined(scope.dragging)) {
-                    $log.error("angular-google-maps: map dragging property not set");
-                    return;
-                }
-
                 var el = angular.element(element);
 
                 el.addClass("angular-google-map");
