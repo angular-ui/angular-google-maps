@@ -113,6 +113,7 @@ angular.module('google-maps')
             scope: {
                 center: '=center',          // required
                 zoom: '=zoom',              // required
+                dragging: '=dragging',      // optional
                 markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
@@ -182,12 +183,23 @@ angular.module('google-maps')
                 }));
 
                 var dragging = false;
+
                 google.maps.event.addListener(_m, 'dragstart', function () {
                     dragging = true;
+                    $timeout(function () {
+                        scope.$apply(function (s) {
+                            s.dragging = dragging;
+                        });
+                    });
                 });
 
                 google.maps.event.addListener(_m, 'dragend', function () {
                     dragging = false;
+                    $timeout(function () {
+                        scope.$apply(function (s) {
+                            s.dragging = dragging;
+                        });
+                    });
                 });
 
                 google.maps.event.addListener(_m, 'drag', function () {
@@ -336,6 +348,7 @@ angular.module('google-maps')
  * This directive creates a new scope.
  *
  * {attribute coords required}  object containing latitude and longitude properties
+ * {attribute icon optional}	string url to image used for marker icon
  * {attribute animate optional} if set to false, the marker won't be animated (on by default)
  */
 
@@ -366,6 +379,7 @@ angular.module('google-maps')
             replace: true,
             scope: {
                 coords: '=coords',
+                icon: '=icon',
                 click: '&click'
             },
             controller: function ($scope, $element) {
@@ -390,12 +404,13 @@ angular.module('google-maps')
                     var opts = angular.extend({}, DEFAULTS, {
                         position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude),
                         map: mapCtrl.getMap(),
+                        icon: scope.icon,
                         visible: scope.coords.latitude !== null && scope.coords.longitude !== null
                     });
 
                     // Disable animations
                     if (angular.isDefined(attrs.animate) && isFalse(attrs.animate)) {
-                        delete opts.animate;
+                        delete opts.animation;
                     }
 
                     var marker = new google.maps.Marker(opts);

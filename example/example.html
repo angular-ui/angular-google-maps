@@ -46,10 +46,11 @@
 			    center="map.center"
 			    zoom="map.zoom" 
 			    draggable="true"
+			    dragging="map.dragging"
 			    events="map.events">
 		      
 		      <!-- prefedined markers -->
-		      <marker ng-repeat="m in map.markers" coords="m" icon="m.icon">
+		      <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
                   <window>
                       <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
                       <p class="muted">My marker will reappear when you close me.</p>
@@ -57,7 +58,7 @@
 		      </marker>
 		      
 		      <!-- marker for clicked position -->
-		      <marker coords="map.clickedMarker">
+		      <marker coords="map.clickedMarker" animate="false">
                   <window>This is my clicked marker!</window>
 		      </marker>
 
@@ -79,6 +80,10 @@
 		            <tr>
 		             <td>zoom</td>
 		             <td>{{ map.zoom }}</td>
+		            </tr>
+		            <tr>
+		             <td>dragging</td>
+		             <td>{{ map.dragging }}</td>
 		            </tr>
 		            <tr>
 		             <td>clicked position</td>

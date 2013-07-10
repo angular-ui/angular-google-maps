@@ -16,6 +16,7 @@ function ExampleController ($scope, $timeout, $log) {
 	        longitude: -73
 	      },
         zoom: 3,
+        dragging: false,
         markers: [ {
               latitude: 45,
               longitude: -74
