@@ -84,6 +84,7 @@ angular.module('google-maps')
             scope: {
                 center: '=center',          // required
                 zoom: '=zoom',              // required
+                dragging: '=dragging',      // required
                 markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
@@ -124,6 +125,11 @@ angular.module('google-maps')
                     return;
                 }
 
+                if (!angular.isDefined(scope.dragging)) {
+                    $log.error("angular-google-maps: map dragging property not set");
+                    return;
+                }
+
                 var el = angular.element(element);
 
                 el.addClass("angular-google-map");
@@ -153,12 +159,23 @@ angular.module('google-maps')
                 }));
 
                 var dragging = false;
+
                 google.maps.event.addListener(_m, 'dragstart', function () {
                     dragging = true;
+                    $timeout(function () {
+                        scope.$apply(function (s) {
+                            s.dragging = dragging;
+                        });
+                    });
                 });
 
                 google.maps.event.addListener(_m, 'dragend', function () {
                     dragging = false;
+                    $timeout(function () {
+                        scope.$apply(function (s) {
+                            s.dragging = dragging;
+                        });
+                    });
                 });
 
                 google.maps.event.addListener(_m, 'drag', function () {
