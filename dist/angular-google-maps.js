@@ -113,7 +113,7 @@ angular.module('google-maps')
             scope: {
                 center: '=center',          // required
                 zoom: '=zoom',              // required
-                dragging: '=dragging',      // required
+                dragging: '=dragging',      // optional
                 markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
