@@ -96,7 +96,7 @@ angular.module('google-maps')
 
                     // Disable animations
                     if (angular.isDefined(attrs.animate) && isFalse(attrs.animate)) {
-                        delete opts.animate;
+                        delete opts.animation;
                     }
 
                     var marker = new google.maps.Marker(opts);
