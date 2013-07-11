@@ -102,6 +102,11 @@ angular.module('google-maps')
                     var marker = new google.maps.Marker(opts);
                     element.data('instance', marker);
 
+                    google.maps.event.addListener(marker, 'click', function () {
+                        if (angular.isDefined(attrs.click) && scope.click !== null)
+                            scope.click();
+                    });
+
                     scope.$watch('coords', function (newValue, oldValue) {
                         if (newValue !== oldValue) {
                             if (newValue) {
