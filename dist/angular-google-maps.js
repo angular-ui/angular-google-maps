@@ -416,6 +416,11 @@ angular.module('google-maps')
                     var marker = new google.maps.Marker(opts);
                     element.data('instance', marker);
 
+                    google.maps.event.addListener(marker, 'click', function () {
+                        if (angular.isDefined(attrs.click) && scope.click !== null)
+                            scope.click();
+                    });
+
                     scope.$watch('coords', function (newValue, oldValue) {
                         if (newValue !== oldValue) {
                             if (newValue) {
@@ -539,10 +544,15 @@ angular.module("google-maps").
             coords: '=coords',
             show: '&show',
             templateUrl: '=templateurl',
-            templateParameter: '=templateparameter'
+            templateParameter: '=templateparameter',
+            isIconVisibleOnClick: '=isiconvisibleonclick'
           },
           link: function (scope, element, attrs, ctrls) {
               $timeout(function () {
+
+                  if (!angular.isDefined(attrs.isiconvisibleonclick)) {
+                        scope.isIconVisibleOnClick = true;
+                  }
 
                   var mapCtrl = ctrls[0],
                       markerCtrl = ctrls.length > 1 ? ctrls[1] : null;
@@ -568,7 +578,8 @@ angular.module("google-maps").
                           win.open(mapCtrl.getMap());
 
                           initialMarkerVisibility = markerInstance.getVisible();
-                          markerInstance.setVisible(false);
+
+                          markerInstance.setVisible(scope.isIconVisibleOnClick);
                       });
 
                       // Set visibility of marker back to what it was before opening the window
