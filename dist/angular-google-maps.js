@@ -555,7 +555,8 @@ angular.module("google-maps").
             show: '&show',
             templateUrl: '=templateurl',
             templateParameter: '=templateparameter',
-            isIconVisibleOnClick: '=isiconvisibleonclick'
+            isIconVisibleOnClick: '=isiconvisibleonclick',
+            closeClick: '&closeclick'           //scope glue to gmap InfoWindow closeclick
           },
           link: function (scope, element, attrs, ctrls) {
               $timeout(function () {
@@ -596,6 +597,7 @@ angular.module("google-maps").
                       // Set visibility of marker back to what it was before opening the window
                       google.maps.event.addListener(win, 'closeclick', function () {
                         markerInstance.setVisible(initialMarkerVisibility);
+                        scope.closeClick();
                       });
                   }
 
