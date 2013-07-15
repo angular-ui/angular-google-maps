@@ -435,6 +435,16 @@ angular.module('google-maps')
                         }
                     }, true);
 
+                    scope.$watch('icon', function (newValue, oldValue) {
+                        if (newValue !== oldValue) {
+                            marker.icon = newValue;
+                            marker.setMap(null);   
+                            marker.setMap(mapCtrl.getMap());
+                            marker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
+                            marker.setVisible(scope.coords.latitude !== null && scope.coords.longitude !== null);
+                        }
+                    }, true);
+
                     // remove marker on scope $destroy
                     scope.$on("$destroy", function () {
                         marker.setMap(null);
@@ -622,7 +632,7 @@ angular.module("google-maps").
                         // If we're initially showing the marker and it's not yet visible, show it.
                         showWindow();
                     }
-                  });
+                  },true);
               }, 50);
           }
         };

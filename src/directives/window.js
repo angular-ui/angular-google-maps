@@ -134,7 +134,7 @@ angular.module("google-maps").
                         // If we're initially showing the marker and it's not yet visible, show it.
                         showWindow();
                     }
-                  });
+                  },true);
               }, 50);
           }
         };
