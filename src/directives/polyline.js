@@ -40,7 +40,6 @@ angular.module("google-maps")
             for (var i = 0; i < path.length; i++) {
               if (angular.isUndefined(path[i].latitude) ||
                   angular.isUndefined(path[i].longitude)) {
-                  console.log(path[i].latitude, path[i].longitude);
                   return false;
               }
             }
