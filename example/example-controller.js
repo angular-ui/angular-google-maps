@@ -107,7 +107,7 @@ function ExampleController ($scope, $timeout, $log) {
 
     _.each($scope.map.markers,function(marker){
         marker.closeClick = function(){                        
-            this.do_show_window = false;
+            this.showWindow = false;
             $scope.$apply();
         };
     });
