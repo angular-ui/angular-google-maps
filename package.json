@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "grunt-cli": "~0.1.9",
-    "grunt": "~0.4.1",
-    "underscore": "~1.5.1"
+    "grunt": "~0.4.1"
   }
 }
