@@ -20,16 +20,19 @@ function ExampleController ($scope, $timeout, $log) {
             markers: [
                 {
                     latitude: 45,
-                    longitude: -74
+                    longitude: -74,
+                    do_show_window: false
                 },
                 {
                     latitude: 15,
-                    longitude: 30
+                    longitude: 30,
+                    do_show_window: false
                 },
                 {
                     icon: 'plane.png',
                     latitude: 37,
-                    longitude: -122
+                    longitude: -122,
+                    do_show_window: false
                 }
             ],
             clickedMarker: {
@@ -100,6 +103,13 @@ function ExampleController ($scope, $timeout, $log) {
                 }
             }
         }
+    });
+
+    _.each($scope.map.markers,function(marker){
+        marker.closeClick = function(){                        
+            this.do_show_window = false;
+            $scope.$apply();
+        };
     });
 
     $scope.removeMarkers = function () {
