@@ -50,7 +50,7 @@
 				events="map.events">
 				<!-- prefedined markers -->
 				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
-					<window show="m.do_show_window" closeClick="m.closeClick()">
+					<window show="m.showWindow" closeClick="m.closeClick()">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
 					</window>
@@ -81,7 +81,7 @@
 								<td>
 									<div class="well sidebar-nav">
 										<ul class="nav nav-list">
-											<li  ng-repeat="m in map.markers" ng-click="m.do_show_window=true">
+											<li  ng-repeat="m in map.markers" ng-click="m.showWindow = true">
 												<a href="#">
 													<i class="i" title="Click me to Show InfoWindow!">
 														Marker: {{m}}
