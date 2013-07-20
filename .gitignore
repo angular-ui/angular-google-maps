@@ -4,3 +4,4 @@ node_modules
 old/
 tmp/
 *~
+app/components
