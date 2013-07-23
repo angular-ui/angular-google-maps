@@ -97,8 +97,20 @@ angular.module('google-maps', []);;(function() {
     return this.IMarker = (function(_super) {
       __extends(IMarker, _super);
 
+      IMarker.prototype.DEFAULTS = {
+        animation: google.maps.Animation.DROP
+      };
+
+      IMarker.prototype.isFalse = function(value) {
+        return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
+      };
+
       function IMarker($log, $timeout) {
         this.link = __bind(this.link, this);
+        this.linkInit = __bind(this.linkInit, this);
+        this.onDestroy = __bind(this.onDestroy, this);
+        this.onIconChanged = __bind(this.onIconChanged, this);
+        this.onCordsChanged = __bind(this.onCordsChanged, this);
         var self;
         self = this;
         this.$log = $log;
@@ -117,6 +129,22 @@ angular.module('google-maps', []);;(function() {
         $log.info(self);
       }
 
+      IMarker.prototype.onCordsChanged = function(newValue, oldValue, id) {
+        throw new Exception("Not Implemented!!");
+      };
+
+      IMarker.prototype.onIconChanged = function(newValue, oldValue, id, coords) {
+        throw new Exception("Not Implemented!!");
+      };
+
+      IMarker.prototype.onDestroy = function(id) {
+        throw new Exception("Not Implemented!!");
+      };
+
+      IMarker.prototype.linkInit = function(element, mapCtrl, scope, animate) {
+        throw new Exception("Not Implemented!!");
+      };
+
       IMarker.prototype.controller = function($scope, $element) {
         return this.getMarker = function() {
           return $element.data('instance');
@@ -130,55 +158,19 @@ angular.module('google-maps', []);;(function() {
           return;
         }
         return this.$timeout(function() {
-          var marker, opts;
-          opts = angular.extend({}, _this.DEFAULTS, {
-            position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude),
-            map: mapCtrl.getMap(),
-            icon: scope.icon,
-            visible: (scope.coords.latitude != null) && (scope.coords.longitude != null)
-          });
-          if (angular.isDefined(attrs.animate) && _this.isFalse(attrs.animate)) {
-            delete opts.animation;
-          }
-          marker = new google.maps.Marker(opts);
-          element.data('instance', marker);
-          google.maps.event.addListener(marker, 'click', function() {
-            if (angular.isDefined(attrs.click) && (scope.click != null)) {
-              return scope.click();
-            }
-          });
+          var animate;
+          animate = angular.isDefined(attrs.animate) && _this.isFalse(attrs.animate);
+          _this.linkInit(element, mapCtrl, scope, animate, angular.isDefined(attrs.click));
           scope.$watch('coords', function(newValue, oldValue) {
-            if (newValue !== oldValue) {
-              if (newValue) {
-                marker.setMap(mapCtrl.getMap());
-                marker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
-                return marker.setVisible((newValue.latitude != null) && (newValue.longitude != null));
-              } else {
-                return marker.setMap(void 0);
-              }
-            }
+            return _this.onCordsChanged(newValue, oldValue, scope.$id);
           }, true);
           scope.$watch('icon', function(newValue, oldValue) {
-            if (newValue !== oldValue) {
-              marker.icon = newValue;
-              marker.setMap(void 0);
-              marker.setMap(mapCtrl.getMap());
-              marker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-              return marker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
-            }
+            return _this.onIconChanged(newValue, oldValue, scope.$id, scope.coords);
           }, true);
           return scope.$on("$destroy", function() {
-            return marker.setMap(null);
+            return onDestroy(scope.$id);
           });
         });
-      };
-
-      IMarker.prototype.DEFAULTS = {
-        animation: google.maps.Animation.DROP
-      };
-
-      IMarker.prototype.isFalse = function(value) {
-        return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
       };
 
       return IMarker;
@@ -189,7 +181,8 @@ angular.module('google-maps', []);;(function() {
 }).call(this);
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   this.module("directives.api", function() {
@@ -197,11 +190,64 @@ angular.module('google-maps', []);;(function() {
       __extends(Marker, _super);
 
       function Marker($log, $timeout) {
+        this.linkInit = __bind(this.linkInit, this);
+        this.onDestroy = __bind(this.onDestroy, this);
+        this.onIconChanged = __bind(this.onIconChanged, this);
+        this.onCordsChanged = __bind(this.onCordsChanged, this);
         var self;
         Marker.__super__.constructor.call(this, $log, $timeout);
         self = this;
         $log.info(this);
+        this.marker = {};
+        this.mapCtrl = void 0;
       }
+
+      Marker.prototype.onCordsChanged = function(newValue, oldValue, id) {
+        if (newValue !== oldValue) {
+          if (newValue) {
+            this.marker[id].setMap(this.mapCtrl.getMap());
+            this.marker[id].setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+            return this.marker[id].setVisible((newValue.latitude != null) && (newValue.longitude != null));
+          } else {
+            return this.marker[id].setMap(void 0);
+          }
+        }
+      };
+
+      Marker.prototype.onIconChanged = function(newValue, oldValue, id, coords) {
+        if (newValue !== oldValue) {
+          this.marker[id].icon = newValue;
+          this.marker[id].setMap(void 0);
+          this.marker[id].setMap(this.mapCtrl.getMap());
+          this.marker[id].setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
+          return this.marker[id].setVisible(coords.latitude && (coords.longitude != null));
+        }
+      };
+
+      Marker.prototype.onDestroy = function(id) {
+        return this.marker[id].setMap(null);
+      };
+
+      Marker.prototype.linkInit = function(element, mapCtrl, scope, animate, doClick) {
+        var opts;
+        this.mapCtrl = mapCtrl;
+        opts = angular.extend({}, this.DEFAULTS, {
+          position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude),
+          map: mapCtrl.getMap(),
+          icon: scope.icon,
+          visible: (scope.coords.latitude != null) && (scope.coords.longitude != null)
+        });
+        if (!animate) {
+          delete opts.animation;
+        }
+        this.marker[scope.$id] = new google.maps.Marker(opts);
+        element.data('instance', this.marker[scope.$id]);
+        return google.maps.event.addListener(this.marker[scope.$id], 'click', function() {
+          if (doClick && (scope.click != null)) {
+            return scope.click();
+          }
+        });
+      };
 
       return Marker;
 
@@ -540,7 +586,7 @@ angular.module('google-maps')
  */
 
 angular.module('google-maps').directive('marker', ['$log', '$timeout', function($log,$timeout){ 
-	return new directves.api.Marker($log,$timeout);}]);
+	return new directives.api.Marker($log,$timeout);}]);
 ;/**!
  * The MIT License
  *
