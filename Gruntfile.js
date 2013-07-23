@@ -36,7 +36,12 @@ module.exports = function(grunt) {
     coffee: {
       compile: {
         files: {
-          'tmp/output_coffee.js': ['src/coffee/*.coffee','src/coffee/oo/*.coffee'] // concat then compile into single file
+          'tmp/output_coffee.js': 
+          ['src/coffee/*.coffee',
+          'src/coffee/oo/module.coffee',
+          'src/coffee/oo/base-object.coffee',
+          'src/coffee/directives/api/*.coffee',
+          'src/coffee/directives/*.coffee'] // concat then compile into single file
         }
       }
     },
@@ -47,20 +52,20 @@ module.exports = function(grunt) {
       },
       dist: {
         src: ['src/js/module.js', 
+              'tmp/output_coffee.js',
               'src/js/directives/map.js', 
               'src/js/directives/marker.js', 
               'src/js/directives/polyline.js',
-              'src/js/directives/window.js',
-              'tmp/output_coffee.js'],
+              'src/js/directives/window.js'],
         dest: 'tmp/output.js'
       },
       example: {
         src: ['src/js/module.js',
+              'tmp/output_coffee.js',
               'src/js/directives/map.js', 
               'src/js/directives/marker.js', 
               'src/js/directives/polyline.js',
-              'src/js/directives/window.js',
-              'tmp/output_coffee.js'],
+              'src/js/directives/window.js'],
         dest: 'example/<%= pkg.name %>.js'
       }
     },

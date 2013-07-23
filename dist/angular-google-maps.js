@@ -27,7 +27,194 @@
  * @author Nicolas Laplante https://plus.google.com/108189012221374960701
  */
 
-angular.module('google-maps', []);;/**!
+angular.module('google-maps', []);;(function() {
+  this.module = function(names, fn) {
+    var space, _name;
+    if (typeof names === 'string') {
+      names = names.split('.');
+    }
+    space = this[_name = names.shift()] || (this[_name] = {});
+    space.module || (space.module = this.module);
+    if (names.length) {
+      return space.module(names, fn);
+    } else {
+      return fn.call(space);
+    }
+  };
+
+}).call(this);
+
+(function() {
+  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  this.module("oo", function() {
+    var baseObjectKeywords;
+    baseObjectKeywords = ['extended', 'included'];
+    return this.BaseObject = (function() {
+      function BaseObject() {}
+
+      BaseObject.extend = function(obj) {
+        var key, value, _ref;
+        for (key in obj) {
+          value = obj[key];
+          if (__indexOf.call(baseObjectKeywords, key) < 0) {
+            this[key] = value;
+          }
+        }
+        if ((_ref = obj.extended) != null) {
+          _ref.apply(0);
+        }
+        return this;
+      };
+
+      BaseObject.include = function(obj) {
+        var key, value, _ref;
+        for (key in obj) {
+          value = obj[key];
+          if (__indexOf.call(baseObjectKeywords, key) < 0) {
+            this.prototype[key] = value;
+          }
+        }
+        if ((_ref = obj.included) != null) {
+          _ref.apply(0);
+        }
+        return this;
+      };
+
+      return BaseObject;
+
+    })();
+  });
+
+}).call(this);
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.IMarker = (function(_super) {
+      __extends(IMarker, _super);
+
+      function IMarker($log, $timeout) {
+        this.link = __bind(this.link, this);
+        var self;
+        self = this;
+        this.$log = $log;
+        this.$timeout = $timeout;
+        this.restrict = 'ECMA';
+        this.require = '^googleMap';
+        this.priority = -1;
+        this.transclude = true;
+        this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
+        this.replace = true;
+        this.scope = {
+          coords: '=coords',
+          icon: '=icon',
+          click: '&click'
+        };
+        $log.info(self);
+      }
+
+      IMarker.prototype.controller = function($scope, $element) {
+        return this.getMarker = function() {
+          return $element.data('instance');
+        };
+      };
+
+      IMarker.prototype.link = function(scope, element, attrs, mapCtrl) {
+        var _this = this;
+        if (angular.isUndefined(scope.coords) || scope.coords === void 0 || angular.isUndefined(scope.coords.latitude) || angular.isUndefined(scope.coords.longitude)) {
+          $log.error("marker: no valid coords attribute found");
+          return;
+        }
+        return this.$timeout(function() {
+          var marker, opts;
+          opts = angular.extend({}, _this.DEFAULTS, {
+            position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude),
+            map: mapCtrl.getMap(),
+            icon: scope.icon,
+            visible: (scope.coords.latitude != null) && (scope.coords.longitude != null)
+          });
+          if (angular.isDefined(attrs.animate) && _this.isFalse(attrs.animate)) {
+            delete opts.animation;
+          }
+          marker = new google.maps.Marker(opts);
+          element.data('instance', marker);
+          google.maps.event.addListener(marker, 'click', function() {
+            if (angular.isDefined(attrs.click) && (scope.click != null)) {
+              return scope.click();
+            }
+          });
+          scope.$watch('coords', function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              if (newValue) {
+                marker.setMap(mapCtrl.getMap());
+                marker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+                return marker.setVisible((newValue.latitude != null) && (newValue.longitude != null));
+              } else {
+                return marker.setMap(void 0);
+              }
+            }
+          }, true);
+          scope.$watch('icon', function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              marker.icon = newValue;
+              marker.setMap(void 0);
+              marker.setMap(mapCtrl.getMap());
+              marker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
+              return marker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
+            }
+          }, true);
+          return scope.$on("$destroy", function() {
+            return marker.setMap(null);
+          });
+        });
+      };
+
+      IMarker.prototype.DEFAULTS = {
+        animation: google.maps.Animation.DROP
+      };
+
+      IMarker.prototype.isFalse = function(value) {
+        return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
+      };
+
+      return IMarker;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.Marker = (function(_super) {
+      __extends(Marker, _super);
+
+      function Marker($log, $timeout) {
+        var self;
+        Marker.__super__.constructor.call(this, $log, $timeout);
+        self = this;
+        $log.info(this);
+      }
+
+      return Marker;
+
+    })(directives.api.IMarker);
+  });
+
+}).call(this);
+
+(function() {
+
+
+}).call(this);
+;/**!
  * The MIT License
  *
  * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
@@ -352,108 +539,8 @@ angular.module('google-maps')
  * {attribute animate optional} if set to false, the marker won't be animated (on by default)
  */
 
-angular.module('google-maps')
-    .directive('marker', ['$log', '$timeout', function ($log, $timeout) {
-
-        "use strict";
-
-        var DEFAULTS = {
-            // Animation is enabled by default
-            animation: google.maps.Animation.DROP
-        };
-
-        /**
-         * Check if a value is literally false
-         * @param value the value to test
-         * @returns {boolean} true if value is literally false, false otherwise
-         */
-        function isFalse(value) {
-            return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value ) !== -1;
-        }
-        
-        return {
-            restrict: 'ECMA',
-            require: '^googleMap',
-            priority: -1,
-            transclude: true,
-            template: '<span class="angular-google-map-marker" ng-transclude></span>',
-            replace: true,
-            scope: {
-                coords: '=coords',
-                icon: '=icon',
-                click: '&click'
-            },
-            controller: function ($scope, $element) {
-             this.getMarker = function () {
-                 return $element.data('instance');
-             };
-            },
-            link: function (scope, element, attrs, mapCtrl) {
-
-                // Validate required properties
-                if (angular.isUndefined(scope.coords) ||
-                    scope.coords === null ||
-                    angular.isUndefined(scope.coords.latitude) ||
-                    angular.isUndefined(scope.coords.longitude)) {
-
-                    $log.error("marker: no valid coords attribute found");
-                    return;
-                }
-
-                // Wrap marker initialization inside a $timeout() call to make sure the map is created already
-                $timeout(function () {
-                    var opts = angular.extend({}, DEFAULTS, {
-                        position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude),
-                        map: mapCtrl.getMap(),
-                        icon: scope.icon,
-                        visible: scope.coords.latitude !== null && scope.coords.longitude !== null
-                    });
-
-                    // Disable animations
-                    if (angular.isDefined(attrs.animate) && isFalse(attrs.animate)) {
-                        delete opts.animation;
-                    }
-
-                    var marker = new google.maps.Marker(opts);
-                    element.data('instance', marker);
-
-                    google.maps.event.addListener(marker, 'click', function () {
-                        if (angular.isDefined(attrs.click) && scope.click !== null)
-                            scope.click();
-                    });
-
-                    scope.$watch('coords', function (newValue, oldValue) {
-                        if (newValue !== oldValue) {
-                            if (newValue) {
-                                marker.setMap(mapCtrl.getMap());
-                                marker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
-                                marker.setVisible(newValue.latitude !== null && newValue.longitude !== null);
-                            }
-                            else {
-                                // Remove marker
-                                marker.setMap(null);
-                            }
-                        }
-                    }, true);
-
-                    scope.$watch('icon', function (newValue, oldValue) {
-                        if (newValue !== oldValue) {
-                            marker.icon = newValue;
-                            marker.setMap(null);   
-                            marker.setMap(mapCtrl.getMap());
-                            marker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-                            marker.setVisible(scope.coords.latitude !== null && scope.coords.longitude !== null);
-                        }
-                    }, true);
-
-                    // remove marker on scope $destroy
-                    scope.$on("$destroy", function () {
-                        marker.setMap(null);
-                    });
-                });
-            }
-        };
-    }]);
+angular.module('google-maps').directive('marker', ['$log', '$timeout', function($log,$timeout){ 
+	return new directves.api.Marker($log,$timeout);}]);
 ;/**!
  * The MIT License
  *
@@ -747,63 +834,3 @@ angular.module("google-maps").
           }
         };
     }]);
-;(function() {
-  var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
-
-  this.module("oo", function() {
-    var baseObjectKeywords;
-    baseObjectKeywords = ['extended', 'included'];
-    return this.BaseObject = (function() {
-      function BaseObject() {}
-
-      BaseObject.extend = function(obj) {
-        var key, value, _ref;
-        for (key in obj) {
-          value = obj[key];
-          if (__indexOf.call(baseObjectKeywords, key) < 0) {
-            this[key] = value;
-          }
-        }
-        if ((_ref = obj.extended) != null) {
-          _ref.apply(0);
-        }
-        return this;
-      };
-
-      BaseObject.include = function(obj) {
-        var key, value, _ref;
-        for (key in obj) {
-          value = obj[key];
-          if (__indexOf.call(baseObjectKeywords, key) < 0) {
-            this.prototype[key] = value;
-          }
-        }
-        if ((_ref = obj.included) != null) {
-          _ref.apply(0);
-        }
-        return this;
-      };
-
-      return BaseObject;
-
-    })();
-  });
-
-}).call(this);
-
-(function() {
-  this.module = function(names, fn) {
-    var space, _name;
-    if (typeof names === 'string') {
-      names = names.split('.');
-    }
-    space = this[_name = names.shift()] || (this[_name] = {});
-    space.module || (space.module = this.module);
-    if (names.length) {
-      return space.module(names, fn);
-    } else {
-      return fn.call(space);
-    }
-  };
-
-}).call(this);
