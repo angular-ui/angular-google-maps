@@ -10,13 +10,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-open');
   grunt.loadNpmTasks('grunt-mkdir');
+  grunt.loadNpmTasks('grunt-contrib-coffee');
   
+
   // Project configuration.
   grunt.initConfig({
     
     pkg: grunt.file.readJSON('package.json'),
     
     clean: {
+      coffee: ['tmp/output_coffee.js'],
       dist: ['dist/*', 'tmp'],
       example: ['example/<%= pkg.name %>.js']
     },
@@ -29,25 +32,35 @@ module.exports = function(grunt) {
         }
       }
     },
+
+    coffee: {
+      compile: {
+        files: {
+          'tmp/output_coffee.js': ['src/coffee/*.coffee','src/coffee/oo/*.coffee'] // concat then compile into single file
+        }
+      }
+    },
     
     concat: {
       options: {
         separator: ';'
       },
       dist: {
-        src: ['src/module.js', 
-              'src/directives/map.js', 
-              'src/directives/marker.js', 
-              'src/directives/polyline.js',
-              'src/directives/window.js'],
+        src: ['src/js/module.js', 
+              'src/js/directives/map.js', 
+              'src/js/directives/marker.js', 
+              'src/js/directives/polyline.js',
+              'src/js/directives/window.js',
+              'tmp/output_coffee.js'],
         dest: 'tmp/output.js'
       },
       example: {
-        src: ['src/module.js',
-              'src/directives/map.js', 
-              'src/directives/marker.js', 
-              'src/directives/polyline.js',
-              'src/directives/window.js'],
+        src: ['src/js/module.js',
+              'src/js/directives/map.js', 
+              'src/js/directives/marker.js', 
+              'src/js/directives/polyline.js',
+              'src/js/directives/window.js',
+              'tmp/output_coffee.js'],
         dest: 'example/<%= pkg.name %>.js'
       }
     },
@@ -74,7 +87,7 @@ module.exports = function(grunt) {
     },
     
     jshint: {
-      all: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js']
+      all: ['Gruntfile.js', 'src/js/**/*.js', 'test/js/**/*.js']
     },
     
     test: {
@@ -84,7 +97,7 @@ module.exports = function(grunt) {
     watch: {
       all: {
         options: { livereload: true },
-        files: ['src/**/*.js'],
+        files: ['src/js/**/*.js'],
         tasks: ['clean:example', 'concat:example'],
       },
     },
@@ -114,6 +127,7 @@ module.exports = function(grunt) {
                                  'test', 
                                  'jshint', 
                                  'mkdir', 
+                                 'coffee',
                                  'concat:dist', 
                                  'copy:dist',
                                  'uglify']);
