@@ -1,5 +1,7 @@
 @module "directives.api", ->
 	class @Marker extends directives.api.IMarker
+		@include directives.api.MarkerUtil
+		
 		constructor: ($log, $timeout) ->
 			super($log,$timeout)
 			self = @
@@ -46,4 +48,8 @@
 			, true)
 
 		watchDestroy:(scope)=>
-			scope.$on("$destroy", => @markers[scope.$id].setMap(null))
+			scope.$on("$destroy", => 
+				#remove from gMaps and then free resources
+				@markers[scope.$id].setMap(null)
+				delete @markers[scope.$id]
+			)
