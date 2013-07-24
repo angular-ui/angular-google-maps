@@ -35,6 +35,25 @@ function ExampleController ($scope, $timeout, $log) {
                     showWindow: false
                 }
             ],
+            markers2: [
+                {
+                    latitude: 46,
+                    longitude: -77,
+                    showWindow: false
+                },
+                {
+                    latitude: 33,
+                    longitude: -77,
+                    showWindow: false
+                },
+                {
+                    icon: 'plane.png',
+                    latitude: 35,
+                    longitude: -125,
+                    showWindow: false
+                }
+            ]
+            ,
             clickedMarker: {
                 latitude: null,
                 longitude: null
