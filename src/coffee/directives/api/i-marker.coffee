@@ -12,6 +12,7 @@
 
 		constructor: ($log, $timeout) ->
 			self = @
+			@clsName = "IMarker"
 			@$log = $log
 			@$timeout = $timeout
 			@restrict = 'ECMA'
@@ -28,12 +29,12 @@
 
 			$log.info(self)
 
-		onCordsChanged:(newValue,oldValue,id) =>
+		watchCoords:(scope) =>
 			throw new Exception("Not Implemented!!")
 
-		onIconChanged:(newValue,oldValue,id,coords) =>
+		watchIcon:(scope) =>
 			throw new Exception("Not Implemented!!")
-		onDestroy:(id) =>
+		watchDestroy:(scope) =>
 			throw new Exception("Not Implemented!!")
 
 		linkInit:(element,mapCtrl,scope,animate)=>
@@ -43,28 +44,23 @@
 			@getMarker = ->
 				$element.data('instance')
 
-		link: (scope, element, attrs, mapCtrl) =>
-			# Validate required properties
-			if (angular.isUndefined(scope.coords) or 
+		validateLinkedScope:(scope)=>
+			ret = angular.isUndefined(scope.coords) or 
 				scope.coords == undefined or
 				angular.isUndefined(scope.coords.latitude) or
-				angular.isUndefined(scope.coords.longitude))
-					$log.error("marker: no valid coords attribute found")
+				angular.isUndefined(scope.coords.longitude)
+			if(ret)
+				$log.error(@clsName + ": no valid coords attribute found")
+			ret
+		link: (scope, element, attrs, mapCtrl) =>
+			# Validate required properties
+			if (@validateLinkedScope(scope))
 					return
 			# Wrap marker initialization inside a $timeout() call to make sure the map is created already
 			@$timeout( =>
 				animate = angular.isDefined(attrs.animate) and @isFalse(attrs.animate)
-
 				@linkInit(element,mapCtrl,scope,animate,angular.isDefined(attrs.click))
-
-				scope.$watch('coords', (newValue, oldValue) =>
-					@onCordsChanged(newValue,oldValue,scope.$id)
-				, true)
-
-				scope.$watch('icon', (newValue, oldValue) =>
-					@onIconChanged(newValue,oldValue,scope.$id,scope.coords)
-				, true)
-
-				# remove marker on scope $destroy
-				scope.$on("$destroy", -> onDestroy(scope.$id))
+				@watchCoords(scope)
+				@watchIcon(scope)
+				@watchDestroy(scope)
 			)
