@@ -29,17 +29,6 @@
 
 			$log.info(self)
 
-		watchCoords:(scope) =>
-			throw new Exception("Not Implemented!!")
-
-		watchIcon:(scope) =>
-			throw new Exception("Not Implemented!!")
-		watchDestroy:(scope) =>
-			throw new Exception("Not Implemented!!")
-
-		linkInit:(element,mapCtrl,scope,animate)=>
-			throw new Exception("Not Implemented!!")
-
 		controller: ($scope, $element) ->
 			@getMarker = ->
 				$element.data('instance')
@@ -52,6 +41,7 @@
 			if(ret)
 				$log.error(@clsName + ": no valid coords attribute found")
 			ret
+
 		link: (scope, element, attrs, mapCtrl) =>
 			# Validate required properties
 			if (@validateLinkedScope(scope))
@@ -64,3 +54,25 @@
 				@watchIcon(scope)
 				@watchDestroy(scope)
 			)
+
+		createMarkerOptions:(map,coords,icon,animate) ->
+			opts = angular.extend({}, @DEFAULTS, {
+				position: new google.maps.LatLng(coords.latitude, coords.longitude),
+				map: map.getMap(),
+				icon: icon,
+				visible: coords.latitude? and coords.longitude?
+			})
+			if !animate
+				delete opts.animation;
+			opts
+
+		watchCoords:(scope) =>
+			throw new Exception("Not Implemented!!")
+
+		watchIcon:(scope) =>
+			throw new Exception("Not Implemented!!")
+		watchDestroy:(scope) =>
+			throw new Exception("Not Implemented!!")
+
+		linkInit:(element,mapCtrl,scope,animate)=>
+			throw new Exception("Not Implemented!!")

@@ -20,30 +20,6 @@ Coords and icons need to be rewatched within Markers linked scope
 			@coordsKey = undefined
 			$log.info(@)
 
-		getMarkerProperty:(marker,property) ->
-			marker[property]
-
-		onCordsChanged:(newValue,oldValue,id) =>
-			if (newValue != oldValue) 
-				if (newValue) 
-					@marker[id].setMap(@mapCtrl.getMap())
-					@marker[id].setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
-					@marker[id].setVisible(newValue.latitude? and newValue.longitude?)
-				else
-					# Remove marker
-					@marker[id].setMap(undefined);	
-					
-		onIconChanged:(newValue,oldValue,id,coords) =>
-			if (newValue != oldValue) 
-				@marker[id].icon = newValue
-				@marker[id].setMap(undefined)
-				@marker[id].setMap(@mapCtrl.getMap())
-				@marker[id].setPosition(new google.maps.LatLng(coords.latitude, coords.longitude))
-				@marker[id].setVisible(coords.latitude and coords.longitude?);
-
-		onDestroy:(id)=>
-			@marker[id].setMap(null)	
-
 		validateLinkedScope:(scope)->
 			markerNotDefined = angular.isUndefined(scope.markers) or scope.markers == undefined
 			if(markerNotDefined)
@@ -51,7 +27,7 @@ Coords and icons need to be rewatched within Markers linked scope
 
 			super.validateLinkedScope(scope) or markerNotDefined
 
-
+		# if we have made it here all attributes are valid so we can initialize and glue things together	
 		linkInit:(element,mapCtrl,scope,animate,doClick) =>
 			@mapCtrl = mapCtrl
 			opts = angular.extend({}, @DEFAULTS, {
@@ -71,3 +47,28 @@ Coords and icons need to be rewatched within Markers linked scope
 				if doClick and scope.click?
 					scope.click()
 			)
+
+		watchCoords:(scope) =>
+			scope.$watch('coords', (newValue, oldValue) =>
+				if (newValue != oldValue) 
+					if (newValue) 
+						@markers[scope.$id].setMap(@mapCtrl.getMap())
+						@markers[scope.$id].setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
+						@markers[scope.$id].setVisible(newValue.latitude? and newValue.longitude?)
+					else
+						# Remove marker
+						@markers[scope.$id].setMap(undefined)			
+			, true)
+					
+		watchIcon:(scope) =>
+			scope.$watch('icon', (newValue, oldValue) =>
+				if (newValue != oldValue) 
+					@markers[scope.$id].icon = newValue	
+					@markers[scope.$id].setMap(undefined)
+					@markers[scope.$id].setMap(@mapCtrl.getMap())
+					@markers[scope.$id].setPosition(new google.maps.LatLng(coords.latitude, coords.longitude))
+					@markers[scope.$id].setVisible(coords.latitude and coords.longitude?)
+			, true)
+
+		watchDestroy:(scope)=>
+			scope.$on("$destroy", => @markers[scope.$id].setMap(null))

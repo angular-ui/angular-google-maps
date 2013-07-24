@@ -8,6 +8,21 @@
 			@markers = {}
 			@mapCtrl = undefined
 
+		# if we have made it here all attributes are valid so we can initialize and glue things together
+		linkInit:(element,mapCtrl,scope,animate,doClick) =>
+			#linked scope is 1:1 per marker
+			@mapCtrl = mapCtrl
+			opts = @createMarkerOptions(mapCtrl,scope.coords,scope.icon,animate)
+
+			#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the indec)
+			@markers[scope.$id] = new google.maps.Marker(opts)
+			element.data('instance', @markers[scope.$id])
+
+			google.maps.event.addListener(@markers[scope.$id], 'click', ->
+				if doClick and scope.click?
+					scope.click()
+			)
+
 		watchCoords:(scope) =>
 			scope.$watch('coords', (newValue, oldValue) =>
 				if (newValue != oldValue) 
@@ -31,26 +46,4 @@
 			, true)
 
 		watchDestroy:(scope)=>
-			scope.$on("$destroy", -> @markers[scope.$id].setMap(null))
-
-		linkInit:(element,mapCtrl,scope,animate,doClick) =>
-			#linked scope is 1:1 per marker
-			@mapCtrl = mapCtrl
-			opts = angular.extend({}, @DEFAULTS, {
-				position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude),
-				map: mapCtrl.getMap(),
-				icon: scope.icon,
-				visible: scope.coords.latitude? and scope.coords.longitude?
-			})
-
-			if !animate
-				delete opts.animation;
-
-			#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the indec)
-			@markers[scope.$id] = new google.maps.Marker(opts)
-			element.data('instance', @markers[scope.$id])
-
-			google.maps.event.addListener(@markers[scope.$id], 'click', ->
-				if doClick and scope.click?
-					scope.click()
-			)
+			scope.$on("$destroy", => @markers[scope.$id].setMap(null))
