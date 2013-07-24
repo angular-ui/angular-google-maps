@@ -1,4 +1,11 @@
-# simple module of functions to be overriden / mixed in
+###
+	- interface for all markers to derrive from
+ 	- to enforce a minimum set of requirements
+ 		- attributes
+ 			- coords
+ 			- icon
+		- implementation needed on watches
+###	
 @module "directives.api", ->
 	class @IMarker extends oo.BaseObject
 		# Animation is enabled by default
@@ -25,8 +32,6 @@
 				icon: '=icon',
 				click: '&click'
 			}
-
-			@$log.info(self)
 
 		controller: ($scope, $element) ->
 			@getMarker = ->

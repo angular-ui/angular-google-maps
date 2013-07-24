@@ -91,9 +91,9 @@ angular.module('google-maps', []);;(function() {
 (function() {
   this.module("directives.api.utils", function() {
     return this.GmapUtil = {
-      createMarkerOptions: function(map, coords, icon, animate) {
+      createMarkerOptions: function(map, coords, icon, animate, defaults) {
         var opts;
-        opts = angular.extend({}, this.DEFAULTS, {
+        opts = angular.extend({}, defaults, {
           position: new google.maps.LatLng(coords.latitude, coords.longitude),
           map: map.getMap(),
           icon: icon,
@@ -103,6 +103,12 @@ angular.module('google-maps', []);;(function() {
           delete opts.animation;
         }
         return opts;
+      },
+      createWindowOptions: function(gMarker, scope, content) {
+        return angular.extend({}, DEFAULTS, {
+          content: content,
+          position: gMarker != null ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+        });
       }
     };
   });
@@ -120,7 +126,7 @@ angular.module('google-maps', []);;(function() {
 
       MarkerModel.include(directives.api.utils.GmapUtil);
 
-      function MarkerModel(index, model, parentScope, mapCtrl, $timeout, $log, notifyLocalDestroy) {
+      function MarkerModel(index, model, parentScope, mapCtrl, $timeout, $log, notifyLocalDestroy, defaults) {
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
@@ -133,7 +139,7 @@ angular.module('google-maps', []);;(function() {
         this.myScope.icon = this.iconKey === 'self' ? model : model[this.iconKey];
         this.myScope.coords = this.coordsKey === 'self' ? model : model[this.coordsKey];
         this.mapCtrl = mapCtrl;
-        this.opts = this.createMarkerOptions(this.mapCtrl, this.myScope.coords, this.myScope.icon);
+        this.opts = this.createMarkerOptions(this.mapCtrl, this.myScope.coords, this.myScope.icon, defaults);
         this.gMarker = new google.maps.Marker(this.opts);
         google.maps.event.addListener(this.gMarker, 'click', function() {
           if (doClick && (this.myScope.click != null)) {
@@ -196,6 +202,112 @@ angular.module('google-maps', []);;(function() {
 
 }).call(this);
 
+
+/*
+	Functions are taking entireley local variables as to try and reuse functionality. 
+	Hopefully this will work when an HTML Element is created or not for an InfoWindow.
+*/
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api.models", function() {
+    var _this = this;
+    return this.WindowModelFunctions = {
+      watchShow: function(scope, $http, $templateCache, $compile, gWin, showHandle, hideHandle) {
+        return scope.$watch('show()', function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            if (newValue) {
+              return showHandle(scope, $http, $templateCache, $compile, gWin);
+            } else {
+              return hideHandle(gWin);
+            }
+          } else {
+            if (newValue && !win.getMap()) {
+              return showHandle(scope, $http, $templateCache, $compile, gWin);
+            }
+          }
+        }, true);
+      },
+      handleClick: function(scope, mapCtrl, markerInstance, gWin) {
+        google.maps.event.addListener(markerInstance, 'click', function() {
+          var initialMarkerVisibility;
+          gWin.setPosition(markerInstance.getPosition());
+          gWin.open(mapCtrl.getMap());
+          initialMarkerVisibility = markerInstance.getVisible();
+          return markerInstance.setVisible(isIconVisibleOnClick);
+        });
+        return google.maps.event.addListener(win, 'closeclick', function() {
+          markerInstance.setVisible(initialMarkerVisibility);
+          return scope.closeClick();
+        });
+      },
+      showWindow: function(scope, $http, $templateCache, $compile, gWin) {
+        if (scope.templateUrl) {
+          return $http.get(scope.templateUrl, {
+            cache: $templateCache
+          }).then(function(content) {
+            var compiled, templateScope;
+            templateScope = scope.$new();
+            if (angular.isDefined(scope.templateParameter)) {
+              templateScope.parameter = scope.templateParameter;
+            }
+            compiled = $compile(content.data)(templateScope);
+            gWin.setContent(compiled.get(0));
+            return gWin.open(mapCtrl.getMap());
+          });
+        } else {
+          return _this.gWin.open(mapCtrl.getMap());
+        }
+      },
+      hideWindow: function(gWin) {
+        return gWin.close();
+      }
+    };
+  });
+
+  this.module("directives.api.models", function() {
+    return this.WindowModel = (function(_super) {
+      __extends(WindowModel, _super);
+
+      WindowModel.include(directives.api.models.WindowModelFunctions);
+
+      function WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $log, $http, $templateCache, $compile) {
+        this.scope = scope;
+        this.opts = opts;
+        this.isIconVisibleOnClick = isIconVisibleOnClick;
+        this.mapCtrl = mapCtrl;
+        this.markerCtrl = markerCtrl;
+        this.$log = $log;
+        this.$http = $http;
+        this.$templateCache = $templateCache;
+        this.$compile = $compile;
+        this.gWin = new google.maps.InfoWindow(opts);
+        this.markerInstance = markerCtrl.getMarker();
+        this.markerInstance.setClickable(true);
+        this.handleClick(this.scope, this.mapCtrl, this.markerInstance, this.gWin);
+        this.watchShow(scope, $http, $templateCache, $compile, this.gWin, this.showWindow, this.hideWindow);
+        this.$log.info(this);
+      }
+
+      return WindowModel;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
+
+/*
+	- interface for all markers to derrive from
+ 	- to enforce a minimum set of requirements
+ 		- attributes
+ 			- coords
+ 			- icon
+		- implementation needed on watches
+*/
+
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
@@ -235,7 +347,6 @@ angular.module('google-maps', []);;(function() {
           icon: '=icon',
           click: '&click'
         };
-        this.$log.info(self);
       }
 
       IMarker.prototype.controller = function($scope, $element) {
@@ -291,6 +402,66 @@ angular.module('google-maps', []);;(function() {
 
 }).call(this);
 
+
+/*
+	- interface directive for all window(s) to derrive from
+*/
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.IWindow = (function(_super) {
+      __extends(IWindow, _super);
+
+      IWindow.include(directives.api.utils.GmapUtil);
+
+      IWindow.prototype.DEFAULTS = {};
+
+      function IWindow($log, $timeout, $compile, $http, $templateCache) {
+        this.link = __bind(this.link, this);
+        var self;
+        self = this;
+        this.clsName = "IWindow";
+        this.restrict = 'ECMA';
+        this.template = void 0;
+        this.transclude = true;
+        this.priority = -100;
+        this.require = ['^googleMap', '^?marker'];
+        this.scope = {
+          coords: '=coords',
+          show: '&show',
+          templateUrl: '=templateurl',
+          templateParameter: '=templateparameter',
+          isIconVisibleOnClick: '=isiconvisibleonclick',
+          closeClick: '&closeclick'
+        };
+        this.$log = $log;
+        this.$timeout = $timeout;
+        this.$compile = $compile;
+        this.$http = $http;
+        this.$templateCache = $templateCache;
+      }
+
+      IWindow.prototype.link = function(scope, element, attrs, ctrls) {
+        throw new Exception("Not Implemented!!");
+      };
+
+      return IWindow;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
+
+/*
+	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
+	Thus there will be one html element per marker within the directive.
+*/
+
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
@@ -325,7 +496,7 @@ angular.module('google-maps', []);;(function() {
       Marker.prototype.linkInit = function(element, mapCtrl, scope, animate, doClick) {
         var opts;
         this.mapCtrl = mapCtrl;
-        opts = this.createMarkerOptions(mapCtrl, scope.coords, scope.icon, animate);
+        opts = this.createMarkerOptions(mapCtrl, scope.coords, scope.icon, animate, this.DEFAULTS);
         this.markers[scope.$id] = new google.maps.Marker(opts);
         element.data('instance', this.markers[scope.$id]);
         return google.maps.event.addListener(this.markers[scope.$id], 'click', function() {
@@ -443,7 +614,7 @@ not 1:1 in this setting.
           _results.push((function(model) {
             _this.markers[_this.markersIndex] = new directives.api.models.MarkerModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.$log, function(index) {
               return delete _this.markers[index];
-            });
+            }, _this.DEFAULTS);
             _this.markersIndex++;
             return element.data('instance', _this.markers);
           })(model));
@@ -500,6 +671,55 @@ not 1:1 in this setting.
       return Markers;
 
     })(directives.api.IMarker);
+  });
+
+}).call(this);
+
+
+/*
+	Window directive for GoogleMap Info Windows, where ng-repeat is being used....
+	Where Html DOM element is 1:1 on Scope and a Model
+*/
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.Window = (function(_super) {
+      __extends(Window, _super);
+
+      function Window($log, $timeout, $compile, $http, $templateCache) {
+        this.link = __bind(this.link, this);
+        var self;
+        Window.__super__.constructor.call(this, $log, $timeout, $compile, $http, $templateCache);
+        self = this;
+        this.clsName = "Window";
+        this.template = '<span class="angular-google-maps-window" ng-transclude></span>';
+        this.$log.info(self);
+      }
+
+      Window.prototype.link = function(scope, element, attrs, ctrls) {
+        var _this = this;
+        return $timeout(function() {
+          var isIconVisibleOnClick, mapCtrl, markerCtrl, opts;
+          isIconVisibleOnClick = true;
+          if (angular.isDefined(attrs.isiconvisibleonclick)) {
+            isIconVisibleOnClick = scope.isIconVisibleOnClick;
+          }
+          mapCtrl = ctrls[0];
+          markerCtrl = ctrls.length > 1 ? ctrls[1] : void 0;
+          opts = createOption(markerCtrl, scope, element.html());
+          if ((mapCtrl != null) && (markerCtrl != null)) {
+            return new directives.api.models.WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$templateCache, _this.$compile);
+          }
+        }, 50);
+      };
+
+      return Window;
+
+    })(directives.api.IWindow);
   });
 
 }).call(this);
@@ -1061,107 +1281,7 @@ angular.module("google-maps")
  * {attribute show optional}    map will show when this expression returns true
  */
 
-angular.module("google-maps").
-    directive("window", ['$log', '$timeout','$compile', '$http', '$templateCache', function ($log, $timeout, $compile, $http, $templateCache) {
-
-        "use strict";
-
-        var DEFAULTS = {
-
-        };
-
-        return {
-          restrict: 'ECMA',
-          template: '<span class="angular-google-maps-window" ng-transclude></span>',
-          transclude: true,
-          priority: -100,
-          require: ['^googleMap', '^?marker'],
-          scope: {
-            coords: '=coords',
-            show: '&show',
-            templateUrl: '=templateurl',
-            templateParameter: '=templateparameter',
-            isIconVisibleOnClick: '=isiconvisibleonclick',
-            closeClick: '&closeclick'           //scope glue to gmap InfoWindow closeclick
-          },
-          link: function (scope, element, attrs, ctrls) {
-              $timeout(function () {
-
-                  var isIconVisibleOnClick = true;
-
-                  if (angular.isDefined(attrs.isiconvisibleonclick)) 
-                        isIconVisibleOnClick = scope.isIconVisibleOnClick;
-
-                  var mapCtrl = ctrls[0],
-                      markerCtrl = ctrls.length > 1 ? ctrls[1] : null;
-
-                  var opts = angular.extend({}, DEFAULTS, {
-                      content: element.html(),
-                      position: angular.isDefined(markerCtrl) ? markerCtrl.getMarker().getPosition() :
-                          new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
-                  });
-
-                  var win = new google.maps.InfoWindow(opts);
-
-                  if (angular.isDefined(markerCtrl)) {
-                      // Open window on click
-                      var markerInstance = markerCtrl.getMarker();
-
-                      markerInstance.setClickable(true);
-
-                      // Show the window and hide the marker on click
-                      var initialMarkerVisibility;
-                      google.maps.event.addListener(markerInstance, 'click', function () {
-                          win.setPosition(markerInstance.getPosition());
-                          win.open(mapCtrl.getMap());
-
-                          initialMarkerVisibility = markerInstance.getVisible();
-
-                          markerInstance.setVisible(isIconVisibleOnClick);
-                      });
-
-                      // Set visibility of marker back to what it was before opening the window
-                      google.maps.event.addListener(win, 'closeclick', function () {
-                        markerInstance.setVisible(initialMarkerVisibility);
-                        scope.closeClick();
-                      });
-                  }
-
-                   function showWindow() {
-                    if (scope.templateUrl) {
-                        $http.get(scope.templateUrl, { cache: $templateCache })
-                             .then(function (content) {
-                                    var templateScope = scope.$new();
-                                    if (angular.isDefined(scope.templateParameter)) {
-                                        templateScope.parameter = scope.templateParameter;
-                                    }
-                                    var compiled = $compile(content.data)(templateScope);
-                                    win.setContent(compiled.get(0));
-                                    win.open(mapCtrl.getMap());
-                              });
-                    } else {
-                        win.open(mapCtrl.getMap());
-                    }
-                  }
-
-                  function hideWindow() {
-                    win.close();
-                  }
-
-                  scope.$watch('show()', function (newValue, oldValue) {
-                    if (newValue !== oldValue) {
-                        if (newValue) {
-                            showWindow();
-                        }
-                        else {
-                            hideWindow();
-                        }
-                    } else if (newValue && !win.getMap()) {
-                        // If we're initially showing the marker and it's not yet visible, show it.
-                        showWindow();
-                    }
-                  },true);
-              }, 50);
-          }
-        };
-    }]);
+angular.module("google-maps").directive("window", ['$log', '$timeout','$compile', '$http', '$templateCache', 
+  function ($log, $timeout, $compile, $http, $templateCache) {
+    new directives.api.Window($log, $timeout, $compile, $http, $templateCache);
+  }]);

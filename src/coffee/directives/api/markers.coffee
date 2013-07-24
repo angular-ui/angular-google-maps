@@ -41,7 +41,7 @@ not 1:1 in this setting.
 					@markers[@markersIndex] = 
 						new directives.api.models.MarkerModel(@markersIndex,model,scope,@mapCtrl,@$timeout,@$log, (index) =>
 							delete @markers[index]
-						)
+						,@DEFAULTS)
 
 					@markersIndex++
 					element.data('instance', @markers)

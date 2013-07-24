@@ -1,3 +1,7 @@
+###
+	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
+	Thus there will be one html element per marker within the directive.
+###
 @module "directives.api", ->
 	class @Marker extends directives.api.IMarker
 		@include directives.api.utils.GmapUtil
@@ -20,7 +24,7 @@
 		linkInit:(element,mapCtrl,scope,animate,doClick) =>
 			#linked scope is 1:1 per marker
 			@mapCtrl = mapCtrl
-			opts = @createMarkerOptions(mapCtrl,scope.coords,scope.icon,animate)
+			opts = @createMarkerOptions(mapCtrl,scope.coords,scope.icon,animate,@DEFAULTS)
 
 			#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
 			@markers[scope.$id] = new google.maps.Marker(opts)
