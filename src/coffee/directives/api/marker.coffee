@@ -1,14 +1,20 @@
 @module "directives.api", ->
 	class @Marker extends directives.api.IMarker
 		@include directives.api.utils.GmapUtil
-		
+
 		constructor: ($log, $timeout) ->
 			super($log,$timeout)
 			self = @
+			@template = '<span class="angular-google-map-marker" ng-transclude></span>'
 			@clsName = "Marker"
 			$log.info(@)
 			@markers = {}
 			@mapCtrl = undefined
+
+
+
+		validateLinkedScope:(scope)=>
+			super(scope) or angular.isUndefined(scope.coords.latitude) or angular.isUndefined(scope.coords.longitude)
 
 		# if we have made it here all attributes are valid so we can initialize and glue things together
 		linkInit:(element,mapCtrl,scope,animate,doClick) =>

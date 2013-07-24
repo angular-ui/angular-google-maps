@@ -12,21 +12,21 @@ Coords and icons need to be rewatched within Markers linked scope
 		constructor: ($log, $timeout) ->
 			super($log,$timeout)
 			self = @
+			@template = '<span class="angular-google-map-markers" ng-transclude></span>'
 			@clsName = "Markers"
-			@scope.markers = '=markers'
+			@scope.models = '=models'
 			@markers = {}
 			@markersIndex = 0
 			@mapCtrl = undefined
 			@$timeout = $timeout
-			@$log = $log
-			$log.info(@)
+			@$log.info(@)
 
-		validateLinkedScope:(scope)->
-			markerNotDefined = angular.isUndefined(scope.markers) or scope.markers == undefined
-			if(markerNotDefined)
-				$log.error(@clsName + ": no valid markers attribute found")
+		validateLinkedScope:(scope)=>
+			modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
+			if(modelsNotDefined)
+				@$log.error(@clsName + ": no valid models attribute found")
 
-			super.validateLinkedScope(scope) or markerNotDefined
+			super(scope) or modelsNotDefined
 
 		# if we have made it here all attributes are valid so we can initialize and glue things together	
 		linkInit:(element,mapCtrl,scope,animate,doClick) =>
@@ -34,10 +34,10 @@ Coords and icons need to be rewatched within Markers linked scope
 			@createMarkers(element,scope,animate,doClick)
 
 		createMarkers:(element,scope,animate,doClick) =>
-			for model in scope.markers
+			for model in scope.models
 				do(model) =>
 					@markers[@markersIndex] = 
-						new directives.api.models.MarkerModel(index,model,scope,@$timeout,@$log, (index) =>
+						new directives.api.models.MarkerModel(@markersIndex,model,scope,@mapCtrl,@$timeout,@$log, (index) =>
 							delete @markers[index]
 						)
 

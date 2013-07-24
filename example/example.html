@@ -49,20 +49,20 @@
 				dragging="map.dragging"
 				events="map.events">
 
-<!-- 				<markers markers="map.markers" coords="coords" icon="icon" >
-					<window show="m.showWindow" closeClick="m.closeClick()">
+				<markers models="map.markers" coords="'self'" icon="'icon'" >
+					<!-- <window show="m.showWindow" closeClick="m.closeClick()">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
-					</window>
-				</markers> -->
+					</window> -->
+				</markers>
 
 				<!-- prefedined markers -->
-				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
+				<!-- <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
 					<window show="m.showWindow" closeClick="m.closeClick()">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
 					</window>
-				</marker>
+				</marker> -->
 
 				<!-- marker for clicked position -->
 				<marker coords="map.clickedMarker" animate="false" >

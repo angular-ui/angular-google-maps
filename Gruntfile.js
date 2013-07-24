@@ -57,6 +57,7 @@ module.exports = function(grunt) {
               'tmp/output_coffee.js',
               'src/js/directives/map.js', 
               'src/js/directives/marker.js', 
+              'src/js/directives/markers.js', 
               'src/js/directives/polyline.js',
               'src/js/directives/window.js'],
         dest: 'tmp/output.js'
@@ -66,6 +67,7 @@ module.exports = function(grunt) {
               'tmp/output_coffee.js',
               'src/js/directives/map.js', 
               'src/js/directives/marker.js', 
+              'src/js/directives/markers.js', 
               'src/js/directives/polyline.js',
               'src/js/directives/window.js'],
         dest: 'example/<%= pkg.name %>.js'
@@ -104,8 +106,8 @@ module.exports = function(grunt) {
     watch: {
       all: {
         options: { livereload: true },
-        files: ['src/js/**/*.js'],
-        tasks: ['clean:example', 'concat:example'],
+        files: ['src/js/**/*.js','src/coffee/**/*.coffee','src/coffee/*.coffee'],
+        tasks: ['clean:example','coffee','concat:example'],
       },
     },
     

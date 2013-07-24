@@ -19,7 +19,6 @@
 			@require = '^googleMap'
 			@priority = -1
 			@transclude = true
-			@template = '<span class="angular-google-map-marker" ng-transclude></span>'
 			@replace = true
 			@scope = {
 				coords: '=coords',
@@ -27,7 +26,7 @@
 				click: '&click'
 			}
 
-			$log.info(self)
+			@$log.info(self)
 
 		controller: ($scope, $element) ->
 			@getMarker = ->
@@ -35,11 +34,9 @@
 
 		validateLinkedScope:(scope)=>
 			ret = angular.isUndefined(scope.coords) or 
-				scope.coords == undefined or
-				angular.isUndefined(scope.coords.latitude) or
-				angular.isUndefined(scope.coords.longitude)
+				scope.coords == undefined 
 			if(ret)
-				$log.error(@clsName + ": no valid coords attribute found")
+				@$log.error(@clsName + ": no valid coords attribute found")
 			ret
 
 		link: (scope, element, attrs, mapCtrl) =>
@@ -54,7 +51,7 @@
 				@watchIcon(scope)
 				@watchDestroy(scope)
 			)
-			
+
 		watchCoords:(scope) =>
 			throw new Exception("Not Implemented!!")
 

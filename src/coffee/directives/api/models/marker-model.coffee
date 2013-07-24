@@ -1,22 +1,22 @@
 @module "directives.api.models", ->
 	class @MarkerModel extends oo.BaseObject
 		@include directives.api.utils.GmapUtil
-		constructor:(index,model,parentScope,$timeout,$log,notifyLocalDestroy)->
+		constructor:(index,model,parentScope,mapCtrl,$timeout,$log,notifyLocalDestroy)->
 			@index = index
-			@iconKey = scope.icon
-			@coordsKey = scope.coords
-			@opts = createMarkerOptions(@mapCtrl,model[@coordsKey],model[@iconKey])
-			@gMarker = new google.maps.Marker(opts)
+			@iconKey = parentScope.icon
+			@coordsKey = parentScope.coords
+			@myScope = parentScope.$new(false)
+			@myScope.icon = if @iconKey == 'self' then model else model[@iconKey]
+			@myScope.coords = if @coordsKey == 'self' then model else model[@coordsKey]
+			@mapCtrl = mapCtrl
+			@opts = @createMarkerOptions(@mapCtrl,@myScope.coords,@myScope.icon)
+			@gMarker = new google.maps.Marker(@opts)
 			google.maps.event.addListener(@gMarker, 'click', ->
 				#this needs to be thought about as scope is not 1:1 on clicking..... hmmmmm :/
-				if doClick and scope.click?
-					scope.click()
+				if doClick and @myScope.click?
+					@myScope.click()
 			)
-			@myScope = parentScope.$new(false)
-			@myScope.icon = model[@iconKey]
-			@myScope.coords = model[@coordsKey]
-
-			@$timeout( =>
+			$timeout( =>
 				@watchCoords(@myScope)
 				@watchIcon(@myScope)
 				@watchDestroy(@myScope)

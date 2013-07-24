@@ -127,18 +127,18 @@ angular.module('google-maps', []);;(function() {
         this.destroy = __bind(this.destroy, this);
         var _this = this;
         this.index = index;
-        this.iconKey = scope.icon;
-        this.coordsKey = scope.coords;
-        this.opts = createMarkerOptions(this.mapCtrl, model[this.coordsKey], model[this.iconKey]);
+        this.iconKey = parentScope.icon;
+        this.coordsKey = parentScope.coords;
+        this.myScope = parentScope.$new(false);
+        this.myScope.icon = this.iconKey === 'self' ? model : model[this.iconKey];
+        this.myScope.coords = this.coordsKey === 'self' ? model : model[this.coordsKey];
+        this.opts = this.createMarkerOptions(this.mapCtrl, this.myScope.coords, this.myScope.icon);
         this.gMarker = new google.maps.Marker(opts);
         google.maps.event.addListener(this.gMarker, 'click', function() {
-          if (doClick && (scope.click != null)) {
-            return scope.click();
+          if (doClick && (this.myScope.click != null)) {
+            return this.myScope.click();
           }
         });
-        this.myScope = parentScope.$new(false);
-        this.myScope.icon = model[this.iconKey];
-        this.myScope.coords = model[this.coordsKey];
         this.$timeout(function() {
           _this.watchCoords(_this.myScope);
           _this.watchIcon(_this.myScope);
@@ -228,14 +228,13 @@ angular.module('google-maps', []);;(function() {
         this.require = '^googleMap';
         this.priority = -1;
         this.transclude = true;
-        this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
         this.replace = true;
         this.scope = {
           coords: '=coords',
           icon: '=icon',
           click: '&click'
         };
-        $log.info(self);
+        this.$log.info(self);
       }
 
       IMarker.prototype.controller = function($scope, $element) {
@@ -246,9 +245,9 @@ angular.module('google-maps', []);;(function() {
 
       IMarker.prototype.validateLinkedScope = function(scope) {
         var ret;
-        ret = angular.isUndefined(scope.coords) || scope.coords === void 0 || angular.isUndefined(scope.coords.latitude) || angular.isUndefined(scope.coords.longitude);
+        ret = angular.isUndefined(scope.coords) || scope.coords === void 0;
         if (ret) {
-          $log.error(this.clsName + ": no valid coords attribute found");
+          this.$log.error(this.clsName + ": no valid coords attribute found");
         }
         return ret;
       };
@@ -307,14 +306,20 @@ angular.module('google-maps', []);;(function() {
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
         this.linkInit = __bind(this.linkInit, this);
+        this.validateLinkedScope = __bind(this.validateLinkedScope, this);
         var self;
         Marker.__super__.constructor.call(this, $log, $timeout);
         self = this;
+        this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
         this.clsName = "Marker";
         $log.info(this);
         this.markers = {};
         this.mapCtrl = void 0;
       }
+
+      Marker.prototype.validateLinkedScope = function(scope) {
+        return Marker.__super__.validateLinkedScope.call(this, scope) || angular.isUndefined(scope.coords.latitude) || angular.isUndefined(scope.coords.longitude);
+      };
 
       Marker.prototype.linkInit = function(element, mapCtrl, scope, animate, doClick) {
         var opts;
@@ -398,26 +403,27 @@ Coords and icons need to be rewatched within Markers linked scope
         this.watchCoords = __bind(this.watchCoords, this);
         this.createMarkers = __bind(this.createMarkers, this);
         this.linkInit = __bind(this.linkInit, this);
+        this.validateLinkedScope = __bind(this.validateLinkedScope, this);
         var self;
         Markers.__super__.constructor.call(this, $log, $timeout);
         self = this;
+        this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
         this.clsName = "Markers";
-        this.scope.markers = '=markers';
+        this.scope.models = '=models';
         this.markers = {};
         this.markersIndex = 0;
         this.mapCtrl = void 0;
         this.$timeout = $timeout;
-        this.$log = $log;
-        $log.info(this);
+        this.$log.info(this);
       }
 
       Markers.prototype.validateLinkedScope = function(scope) {
-        var markerNotDefined;
-        markerNotDefined = angular.isUndefined(scope.markers) || scope.markers === void 0;
-        if (markerNotDefined) {
-          $log.error(this.clsName + ": no valid markers attribute found");
+        var modelsNotDefined;
+        modelsNotDefined = angular.isUndefined(scope.models) || scope.models === void 0;
+        if (modelsNotDefined) {
+          this.$log.error(this.clsName + ": no valid models attribute found");
         }
-        return Markers.__super__.validateLinkedScope.apply(this, arguments).validateLinkedScope(scope) || markerNotDefined;
+        return Markers.__super__.validateLinkedScope.call(this, scope) || modelsNotDefined;
       };
 
       Markers.prototype.linkInit = function(element, mapCtrl, scope, animate, doClick) {
@@ -428,12 +434,12 @@ Coords and icons need to be rewatched within Markers linked scope
       Markers.prototype.createMarkers = function(element, scope, animate, doClick) {
         var model, _i, _len, _ref, _results,
           _this = this;
-        _ref = scope.markers;
+        _ref = scope.models;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           model = _ref[_i];
           _results.push((function(model) {
-            _this.markers[_this.markersIndex] = new directives.api.models.MarkerModel(index, model, scope, _this.$timeout, _this.$log, function(index) {
+            _this.markers[_this.markersIndex] = new directives.api.models.MarkerModel(_this.markersIndex, model, scope, _this.$timeout, _this.$log, function(index) {
               return delete _this.markers[index];
             });
             _this.markersIndex++;
@@ -806,7 +812,7 @@ angular.module('google-maps')
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @author Nicolas Laplante https://plus.google.com/108189012221374960701
+ * @authors Nicolas Laplante, Nicholas McCready https://plus.google.com/108189012221374960701
  */
 
 /**
@@ -822,6 +828,48 @@ angular.module('google-maps')
 
 angular.module('google-maps').directive('marker', ['$log', '$timeout', function($log,$timeout){ 
 	return new directives.api.Marker($log,$timeout);}]);
+;/**!
+ * The MIT License
+ *
+ * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * angular-google-maps
+ * https://github.com/nlaplante/angular-google-maps
+ *
+ * @author Nicolas Laplante, Nicholas McCready https://plus.google.com/108189012221374960701
+ */
+
+/**
+ * Map marker directive
+ *
+ * This directive is used to create a marker on an existing map.
+ * This directive creates a new scope.
+ *
+ * {attribute coords required}  object containing latitude and longitude properties
+ * {attribute icon optional}	string url to image used for marker icon
+ * {attribute animate optional} if set to false, the marker won't be animated (on by default)
+ */
+
+angular.module('google-maps').directive('markers', ['$log', '$timeout', function($log,$timeout){ 
+	return new directives.api.Markers($log,$timeout);}]);
 ;/**!
  * The MIT License
  *
