@@ -22,7 +22,7 @@
 			@mapCtrl = mapCtrl
 			opts = @createMarkerOptions(mapCtrl,scope.coords,scope.icon,animate)
 
-			#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the indec)
+			#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
 			@markers[scope.$id] = new google.maps.Marker(opts)
 			element.data('instance', @markers[scope.$id])
 

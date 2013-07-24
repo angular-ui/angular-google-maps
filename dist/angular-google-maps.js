@@ -120,7 +120,7 @@ angular.module('google-maps', []);;(function() {
 
       MarkerModel.include(directives.api.utils.GmapUtil);
 
-      function MarkerModel(index, model, parentScope, $timeout, $log, notifyLocalDestroy) {
+      function MarkerModel(index, model, parentScope, mapCtrl, $timeout, $log, notifyLocalDestroy) {
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
@@ -132,14 +132,15 @@ angular.module('google-maps', []);;(function() {
         this.myScope = parentScope.$new(false);
         this.myScope.icon = this.iconKey === 'self' ? model : model[this.iconKey];
         this.myScope.coords = this.coordsKey === 'self' ? model : model[this.coordsKey];
+        this.mapCtrl = mapCtrl;
         this.opts = this.createMarkerOptions(this.mapCtrl, this.myScope.coords, this.myScope.icon);
-        this.gMarker = new google.maps.Marker(opts);
+        this.gMarker = new google.maps.Marker(this.opts);
         google.maps.event.addListener(this.gMarker, 'click', function() {
           if (doClick && (this.myScope.click != null)) {
             return this.myScope.click();
           }
         });
-        this.$timeout(function() {
+        $timeout(function() {
           _this.watchCoords(_this.myScope);
           _this.watchIcon(_this.myScope);
           return _this.watchDestroy(_this.myScope);
@@ -379,13 +380,14 @@ angular.module('google-maps', []);;(function() {
 
 
 /*
-Markers will map icon and coords differently as there us not 1:1 Scope to marker
-icon - will be the iconKey to the marker value ie: to get the icon marker[iconKey]
-coords - will be the coordsKey to the marker value ie: to get the icon marker[coordsKey]
+Markers will map icon and coords differently than directibes.api.Marker. This is because Scope and the model marker are
+not 1:1 in this setting.
+	
+	- icon - will be the iconKey to the marker value ie: to get the icon marker[iconKey]
+	- coords - will be the coordsKey to the marker value ie: to get the icon marker[coordsKey]
 
-property changes from IMarker reflect that the look up key for a value has changed and not the actual icon or coords itself
-
-Coords and icons need to be rewatched within Markers linked scope
+    - watches from IMarker reflect that the look up key for a value has changed and not the actual icon or coords itself
+    - actual changes to a model are tracked inside directives.api.model.MarkerModel
 */
 
 (function() {
@@ -439,7 +441,7 @@ Coords and icons need to be rewatched within Markers linked scope
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           model = _ref[_i];
           _results.push((function(model) {
-            _this.markers[_this.markersIndex] = new directives.api.models.MarkerModel(_this.markersIndex, model, scope, _this.$timeout, _this.$log, function(index) {
+            _this.markers[_this.markersIndex] = new directives.api.models.MarkerModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.$log, function(index) {
               return delete _this.markers[index];
             });
             _this.markersIndex++;

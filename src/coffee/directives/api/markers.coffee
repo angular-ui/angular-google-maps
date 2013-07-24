@@ -1,11 +1,13 @@
 ###
-Markers will map icon and coords differently as there us not 1:1 Scope to marker
-icon - will be the iconKey to the marker value ie: to get the icon marker[iconKey]
-coords - will be the coordsKey to the marker value ie: to get the icon marker[coordsKey]
+Markers will map icon and coords differently than directibes.api.Marker. This is because Scope and the model marker are
+not 1:1 in this setting.
+	
+	- icon - will be the iconKey to the marker value ie: to get the icon marker[iconKey]
+	- coords - will be the coordsKey to the marker value ie: to get the icon marker[coordsKey]
 
-property changes from IMarker reflect that the look up key for a value has changed and not the actual icon or coords itself
+    - watches from IMarker reflect that the look up key for a value has changed and not the actual icon or coords itself
+    - actual changes to a model are tracked inside directives.api.model.MarkerModel
 
-Coords and icons need to be rewatched within Markers linked scope
 ###
 @module "directives.api", ->
 	class @Markers extends directives.api.IMarker
