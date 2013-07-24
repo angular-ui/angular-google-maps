@@ -40,6 +40,8 @@ module.exports = function(grunt) {
           ['src/coffee/*.coffee',
           'src/coffee/oo/module.coffee',
           'src/coffee/oo/base-object.coffee',
+          'src/coffee/directives/api/utils/*.coffee',
+          'src/coffee/directives/api/models/*.coffee',
           'src/coffee/directives/api/*.coffee',
           'src/coffee/directives/*.coffee'] // concat then compile into single file
         }

@@ -89,6 +89,113 @@ angular.module('google-maps', []);;(function() {
 }).call(this);
 
 (function() {
+  this.module("directives.api.utils", function() {
+    return this.GmapUtil = {
+      createMarkerOptions: function(map, coords, icon, animate) {
+        var opts;
+        opts = angular.extend({}, this.DEFAULTS, {
+          position: new google.maps.LatLng(coords.latitude, coords.longitude),
+          map: map.getMap(),
+          icon: icon,
+          visible: (coords.latitude != null) && (coords.longitude != null)
+        });
+        if (!animate) {
+          delete opts.animation;
+        }
+        return opts;
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api.models", function() {
+    return this.MarkerModel = (function(_super) {
+      __extends(MarkerModel, _super);
+
+      MarkerModel.include(directives.api.utils.GmapUtil);
+
+      function MarkerModel(index, model, parentScope, $timeout, $log, notifyLocalDestroy) {
+        this.watchDestroy = __bind(this.watchDestroy, this);
+        this.watchIcon = __bind(this.watchIcon, this);
+        this.watchCoords = __bind(this.watchCoords, this);
+        this.destroy = __bind(this.destroy, this);
+        var _this = this;
+        this.index = index;
+        this.iconKey = scope.icon;
+        this.coordsKey = scope.coords;
+        this.opts = createMarkerOptions(this.mapCtrl, model[this.coordsKey], model[this.iconKey]);
+        this.gMarker = new google.maps.Marker(opts);
+        google.maps.event.addListener(this.gMarker, 'click', function() {
+          if (doClick && (scope.click != null)) {
+            return scope.click();
+          }
+        });
+        this.myScope = parentScope.$new(false);
+        this.myScope.icon = model[this.iconKey];
+        this.myScope.coords = model[this.coordsKey];
+        this.$timeout(function() {
+          _this.watchCoords(_this.myScope);
+          _this.watchIcon(_this.myScope);
+          return _this.watchDestroy(_this.myScope);
+        });
+      }
+
+      MarkerModel.prototype.destroy = function() {
+        return this.myScope.$destroy();
+      };
+
+      MarkerModel.prototype.watchCoords = function(scope) {
+        var _this = this;
+        return scope.$watch('coords', function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            if (newValue) {
+              _this.gmap.setMap(_this.mapCtrl.getMap());
+              _this.gmap.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              return _this.gmap.setVisible((newValue.latitude != null) && (newValue.longitude != null));
+            } else {
+              return _this.gmap.setMap(void 0);
+            }
+          }
+        }, true);
+      };
+
+      MarkerModel.prototype.watchIcon = function(scope) {
+        var _this = this;
+        return scope.$watch('icon', function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            _this.gmap.icon = newValue;
+            _this.gmap.setMap(void 0);
+            _this.gmap.setMap(_this.mapCtrl.getMap());
+            _this.gmap.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
+            return _this.gmap.setVisible(coords.latitude && (coords.longitude != null));
+          }
+        }, true);
+      };
+
+      MarkerModel.prototype.watchDestroy = function(scope) {
+        var _this = this;
+        return scope.$on("$destroy", function() {
+          _this.gmap.setMap(null);
+          if (typeof notifyLocalDestroy !== "undefined" && notifyLocalDestroy !== null) {
+            return notifyLocalDestroy(_this.index);
+          }
+        });
+      };
+
+      return MarkerModel;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
+(function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -185,27 +292,6 @@ angular.module('google-maps', []);;(function() {
 }).call(this);
 
 (function() {
-  this.module("directives.api", function() {
-    return this.MarkerUtil = {
-      createMarkerOptions: function(map, coords, icon, animate) {
-        var opts;
-        opts = angular.extend({}, this.DEFAULTS, {
-          position: new google.maps.LatLng(coords.latitude, coords.longitude),
-          map: map.getMap(),
-          icon: icon,
-          visible: (coords.latitude != null) && (coords.longitude != null)
-        });
-        if (!animate) {
-          delete opts.animation;
-        }
-        return opts;
-      }
-    };
-  });
-
-}).call(this);
-
-(function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -214,7 +300,7 @@ angular.module('google-maps', []);;(function() {
     return this.Marker = (function(_super) {
       __extends(Marker, _super);
 
-      Marker.include(directives.api.MarkerUtil);
+      Marker.include(directives.api.utils.GmapUtil);
 
       function Marker($log, $timeout) {
         this.watchDestroy = __bind(this.watchDestroy, this);
@@ -286,8 +372,127 @@ angular.module('google-maps', []);;(function() {
 
 }).call(this);
 
-(function() {
 
+/*
+Markers will map icon and coords differently as there us not 1:1 Scope to marker
+icon - will be the iconKey to the marker value ie: to get the icon marker[iconKey]
+coords - will be the coordsKey to the marker value ie: to get the icon marker[coordsKey]
+
+property changes from IMarker reflect that the look up key for a value has changed and not the actual icon or coords itself
+
+Coords and icons need to be rewatched within Markers linked scope
+*/
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.Markers = (function(_super) {
+      __extends(Markers, _super);
+
+      function Markers($log, $timeout) {
+        this.watchDestroy = __bind(this.watchDestroy, this);
+        this.watchIcon = __bind(this.watchIcon, this);
+        this.watchCoords = __bind(this.watchCoords, this);
+        this.createMarkers = __bind(this.createMarkers, this);
+        this.linkInit = __bind(this.linkInit, this);
+        var self;
+        Markers.__super__.constructor.call(this, $log, $timeout);
+        self = this;
+        this.clsName = "Markers";
+        this.scope.markers = '=markers';
+        this.markers = {};
+        this.markersIndex = 0;
+        this.mapCtrl = void 0;
+        this.$timeout = $timeout;
+        this.$log = $log;
+        $log.info(this);
+      }
+
+      Markers.prototype.validateLinkedScope = function(scope) {
+        var markerNotDefined;
+        markerNotDefined = angular.isUndefined(scope.markers) || scope.markers === void 0;
+        if (markerNotDefined) {
+          $log.error(this.clsName + ": no valid markers attribute found");
+        }
+        return Markers.__super__.validateLinkedScope.apply(this, arguments).validateLinkedScope(scope) || markerNotDefined;
+      };
+
+      Markers.prototype.linkInit = function(element, mapCtrl, scope, animate, doClick) {
+        this.mapCtrl = mapCtrl;
+        return this.createMarkers(element, scope, animate, doClick);
+      };
+
+      Markers.prototype.createMarkers = function(element, scope, animate, doClick) {
+        var model, _i, _len, _ref, _results,
+          _this = this;
+        _ref = scope.markers;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          model = _ref[_i];
+          _results.push((function(model) {
+            _this.markers[_this.markersIndex] = new directives.api.models.MarkerModel(index, model, scope, _this.$timeout, _this.$log, function(index) {
+              return delete _this.markers[index];
+            });
+            _this.markersIndex++;
+            return element.data('instance', _this.markers);
+          })(model));
+        }
+        return _results;
+      };
+
+      Markers.prototype.watchCoords = function(scope) {
+        var _this = this;
+        return scope.$watch('coords', function(newValue, oldValue) {
+          var model, _i, _len, _ref, _results;
+          if (newValue !== oldValue) {
+            _ref = _this.markers;
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              model = _ref[_i];
+              _results.push(model.coordsKey = newValue);
+            }
+            return _results;
+          }
+        }, true);
+      };
+
+      Markers.prototype.watchIcon = function(scope) {
+        var _this = this;
+        return scope.$watch('icon', function(newValue, oldValue) {
+          var model, _i, _len, _ref, _results;
+          if (newValue !== oldValue) {
+            _ref = _this.markers;
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              model = _ref[_i];
+              _results.push(model.iconKey = newValue);
+            }
+            return _results;
+          }
+        }, true);
+      };
+
+      Markers.prototype.watchDestroy = function(scope) {
+        var _this = this;
+        return scope.$on("$destroy", function() {
+          var model, _i, _len, _ref, _results;
+          _ref = _this.markers;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            model = _ref[_i];
+            _results.push(model.destroy());
+          }
+          return _results;
+        });
+      };
+
+      return Markers;
+
+    })(directives.api.IMarker);
+  });
 
 }).call(this);
 ;/**!

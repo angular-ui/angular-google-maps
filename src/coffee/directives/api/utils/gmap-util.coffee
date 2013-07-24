@@ -1,5 +1,5 @@
-@module "directives.api", ->
-	@MarkerUtil =
+@module "directives.api.utils", ->
+	@GmapUtil =
 		createMarkerOptions:(map,coords,icon,animate) ->
 			opts = angular.extend({}, @DEFAULTS, {
 				position: new google.maps.LatLng(coords.latitude, coords.longitude),

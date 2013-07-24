@@ -1,6 +1,6 @@
 @module "directives.api", ->
 	class @Marker extends directives.api.IMarker
-		@include directives.api.MarkerUtil
+		@include directives.api.utils.GmapUtil
 		
 		constructor: ($log, $timeout) ->
 			super($log,$timeout)
