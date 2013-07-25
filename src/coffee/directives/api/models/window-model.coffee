@@ -18,17 +18,18 @@
 			,true)
 
 		handleClick:(scope,mapCtrl,markerInstance,gWin,isIconVisibleOnClick,initialMarkerVisibility) ->
-			# Show the window and hide the marker on click
-			google.maps.event.addListener(markerInstance, 'click', ->
-				gWin.setPosition(markerInstance.getPosition())
-				gWin.open(mapCtrl)
-				markerInstance.setVisible(isIconVisibleOnClick)
-			)
-			# Set visibility of marker back to what it was before opening the window
-			google.maps.event.addListener(gWin, 'closeclick', ->
-				markerInstance.setVisible(initialMarkerVisibility)
-				scope.closeClick()
-			)
+			if markerInstance?
+				# Show the window and hide the marker on click
+				google.maps.event.addListener(markerInstance, 'click', ->
+					gWin.setPosition(markerInstance.getPosition())
+					gWin.open(mapCtrl)
+					markerInstance.setVisible(isIconVisibleOnClick)
+				)
+				# Set visibility of marker back to what it was before opening the window
+				google.maps.event.addListener(gWin, 'closeclick', ->
+					markerInstance.setVisible(initialMarkerVisibility)
+					scope.closeClick()
+				)
 		
 		showWindow:(scope,$http,$templateCache,$compile,gWin,mapCtrl) =>
 			if scope.templateUrl
@@ -55,14 +56,14 @@
 			@mapCtrl = mapCtrl
 			@markerCtrl = markerCtrl
 			@isIconVisibleOnClick = isIconVisibleOnClick
-			@initialMarkerVisibility = @markerCtrl.getVisible()
+			@initialMarkerVisibility = if @markerCtrl? then @markerCtrl.getVisible() else false
 			@$log = $log
 			@$http = $http
 			@$templateCache = $templateCache
 			@$compile = $compile
 			@gWin = new google.maps.InfoWindow(opts)
 			# Open window on click
-			@markerCtrl.setClickable(true)
+			@markerCtrl.setClickable(true) if @markerCtrl?
 
 			@handleClick(@scope,@mapCtrl,@markerCtrl,@gWin,@isIconVisibleOnClick,@initialMarkerVisibility)
 			@watchShow(scope,$http,$templateCache,@$compile,@gWin,@showWindow,@hideWindow,@mapCtrl)

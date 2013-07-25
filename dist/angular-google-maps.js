@@ -104,10 +104,10 @@ angular.module('google-maps', []);;(function() {
         }
         return opts;
       },
-      createWindowOptions: function(gMarker, scope, content) {
-        return angular.extend({}, DEFAULTS, {
+      createWindowOptions: function(gMarker, scope, content, defaults) {
+        return angular.extend({}, defaults, {
           content: content,
-          position: gMarker != null ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+          position: angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
         });
       }
     };
@@ -215,35 +215,35 @@ angular.module('google-maps', []);;(function() {
   this.module("directives.api.models", function() {
     var _this = this;
     return this.WindowModelFunctions = {
-      watchShow: function(scope, $http, $templateCache, $compile, gWin, showHandle, hideHandle) {
+      watchShow: function(scope, $http, $templateCache, $compile, gWin, showHandle, hideHandle, mapCtrl) {
         return scope.$watch('show()', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             if (newValue) {
-              return showHandle(scope, $http, $templateCache, $compile, gWin);
+              return showHandle(scope, $http, $templateCache, $compile, gWin, mapCtrl);
             } else {
               return hideHandle(gWin);
             }
           } else {
             if (newValue && !win.getMap()) {
-              return showHandle(scope, $http, $templateCache, $compile, gWin);
+              return showHandle(scope, $http, $templateCache, $compile, gWin, mapCtrl);
             }
           }
         }, true);
       },
-      handleClick: function(scope, mapCtrl, markerInstance, gWin) {
-        google.maps.event.addListener(markerInstance, 'click', function() {
-          var initialMarkerVisibility;
-          gWin.setPosition(markerInstance.getPosition());
-          gWin.open(mapCtrl.getMap());
-          initialMarkerVisibility = markerInstance.getVisible();
-          return markerInstance.setVisible(isIconVisibleOnClick);
-        });
-        return google.maps.event.addListener(win, 'closeclick', function() {
-          markerInstance.setVisible(initialMarkerVisibility);
-          return scope.closeClick();
-        });
+      handleClick: function(scope, mapCtrl, markerInstance, gWin, isIconVisibleOnClick, initialMarkerVisibility) {
+        if (markerInstance != null) {
+          google.maps.event.addListener(markerInstance, 'click', function() {
+            gWin.setPosition(markerInstance.getPosition());
+            gWin.open(mapCtrl);
+            return markerInstance.setVisible(isIconVisibleOnClick);
+          });
+          return google.maps.event.addListener(gWin, 'closeclick', function() {
+            markerInstance.setVisible(initialMarkerVisibility);
+            return scope.closeClick();
+          });
+        }
       },
-      showWindow: function(scope, $http, $templateCache, $compile, gWin) {
+      showWindow: function(scope, $http, $templateCache, $compile, gWin, mapCtrl) {
         if (scope.templateUrl) {
           return $http.get(scope.templateUrl, {
             cache: $templateCache
@@ -255,10 +255,10 @@ angular.module('google-maps', []);;(function() {
             }
             compiled = $compile(content.data)(templateScope);
             gWin.setContent(compiled.get(0));
-            return gWin.open(mapCtrl.getMap());
+            return gWin.open(mapCtrl);
           });
         } else {
-          return _this.gWin.open(mapCtrl.getMap());
+          return gWin.open(mapCtrl);
         }
       },
       hideWindow: function(gWin) {
@@ -276,18 +276,18 @@ angular.module('google-maps', []);;(function() {
       function WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $log, $http, $templateCache, $compile) {
         this.scope = scope;
         this.opts = opts;
-        this.isIconVisibleOnClick = isIconVisibleOnClick;
         this.mapCtrl = mapCtrl;
         this.markerCtrl = markerCtrl;
+        this.isIconVisibleOnClick = isIconVisibleOnClick;
+        this.initialMarkerVisibility = this.markerCtrl != null ? this.markerCtrl.getVisible() : false;
         this.$log = $log;
         this.$http = $http;
         this.$templateCache = $templateCache;
         this.$compile = $compile;
         this.gWin = new google.maps.InfoWindow(opts);
-        this.markerInstance = markerCtrl.getMarker();
-        this.markerInstance.setClickable(true);
-        this.handleClick(this.scope, this.mapCtrl, this.markerInstance, this.gWin);
-        this.watchShow(scope, $http, $templateCache, $compile, this.gWin, this.showWindow, this.hideWindow);
+        this.markerCtrl.setClickable(true);
+        this.handleClick(this.scope, this.mapCtrl, this.markerCtrl, this.gWin, this.isIconVisibleOnClick, this.initialMarkerVisibility);
+        this.watchShow(scope, $http, $templateCache, this.$compile, this.gWin, this.showWindow, this.hideWindow, this.mapCtrl);
         this.$log.info(this);
       }
 
@@ -702,16 +702,16 @@ not 1:1 in this setting.
 
       Window.prototype.link = function(scope, element, attrs, ctrls) {
         var _this = this;
-        return $timeout(function() {
+        return this.$timeout(function() {
           var isIconVisibleOnClick, mapCtrl, markerCtrl, opts;
           isIconVisibleOnClick = true;
           if (angular.isDefined(attrs.isiconvisibleonclick)) {
             isIconVisibleOnClick = scope.isIconVisibleOnClick;
           }
-          mapCtrl = ctrls[0];
-          markerCtrl = ctrls.length > 1 ? ctrls[1] : void 0;
-          opts = createOption(markerCtrl, scope, element.html());
-          if ((mapCtrl != null) && (markerCtrl != null)) {
+          mapCtrl = ctrls[0].getMap();
+          markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
+          opts = _this.createWindowOptions(markerCtrl, scope, element.html(), _this.DEFAULTS);
+          if (mapCtrl != null) {
             return new directives.api.models.WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$templateCache, _this.$compile);
           }
         }, 50);
@@ -1283,5 +1283,5 @@ angular.module("google-maps")
 
 angular.module("google-maps").directive("window", ['$log', '$timeout','$compile', '$http', '$templateCache', 
   function ($log, $timeout, $compile, $http, $templateCache) {
-    new directives.api.Window($log, $timeout, $compile, $http, $templateCache);
+    return new directives.api.Window($log, $timeout, $compile, $http, $templateCache);
   }]);
