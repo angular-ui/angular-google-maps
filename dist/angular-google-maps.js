@@ -665,7 +665,7 @@ not 1:1 in this setting.
           model = _ref[_i];
           _fn(model);
         }
-        return scope.markers = this.markers;
+        return scope.markerModels = this.markers;
       };
 
       Markers.prototype.watchModels = function(scope) {
@@ -919,7 +919,7 @@ not 1:1 in this setting.
         gMap = this.linked.ctrls[0].getMap();
         markersScope = this.linked.ctrls.length > 1 && (this.linked.ctrls[1] != null) ? this.linked.ctrls[1].getMarkersScope() : void 0;
         modelsNotDefined = angular.isUndefined(this.linked.scope.models) || scope.models === void 0;
-        if (modelsNotDefined && (markersScope === void 0 || markersScope.markers === void 0 || markersScope.models === void 0)) {
+        if (modelsNotDefined && (markersScope === void 0 || markersScope.markerModels === void 0 || markersScope.models === void 0)) {
           this.$log.info("No models to create windows from! Need direct models or models derrived from markers!");
           return;
         }

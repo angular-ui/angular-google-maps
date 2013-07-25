@@ -77,7 +77,7 @@
 
 			modelsNotDefined = angular.isUndefined(@linked.scope.models) or scope.models == undefined
 			
-			if(modelsNotDefined and (markersScope == undefined or markersScope.markers == undefined or markersScope.models == undefined ))
+			if(modelsNotDefined and (markersScope == undefined or markersScope.markerModels == undefined or markersScope.models == undefined ))
 				@$log.info("No models to create windows from! Need direct models or models derrived from markers!")
 				return
 			if gMap? 
