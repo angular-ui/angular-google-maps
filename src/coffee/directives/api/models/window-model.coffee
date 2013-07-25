@@ -12,7 +12,7 @@
 					else
 						hideHandle(gWin)
 				else 
-					if (newValue and !win.getMap())
+					if (newValue and !gWin.getMap())
 						# If we're initially showing the marker and it's not yet visible, show it.
 						showHandle(scope,$http,$templateCache,$compile,gWin,mapCtrl)
 			,true)

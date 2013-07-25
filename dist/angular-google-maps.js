@@ -285,7 +285,9 @@ angular.module('google-maps', []);;(function() {
         this.$templateCache = $templateCache;
         this.$compile = $compile;
         this.gWin = new google.maps.InfoWindow(opts);
-        this.markerCtrl.setClickable(true);
+        if (this.markerCtrl != null) {
+          this.markerCtrl.setClickable(true);
+        }
         this.handleClick(this.scope, this.mapCtrl, this.markerCtrl, this.gWin, this.isIconVisibleOnClick, this.initialMarkerVisibility);
         this.watchShow(scope, $http, $templateCache, this.$compile, this.gWin, this.showWindow, this.hideWindow, this.mapCtrl);
         this.$log.info(this);
