@@ -26,8 +26,8 @@ not 1:1 in this setting.
 			@$log.info(@)
 
 		controller:($scope, $element) ->
-			@getMarkers = ->
-				$scope.markers
+			@getMarkersScope = ->
+				$scope
 
 		validateLinkedScope:(scope)=>
 			modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
@@ -54,7 +54,7 @@ not 1:1 in this setting.
 					)
 					@markersIndex++
 			#put MarkerModels into local scope					
-			scope.markers = @markers
+			scope.markerModels = @markers
 
 		watchModels:(scope) =>
 			scope.$watch('models', (newValue, oldValue) =>

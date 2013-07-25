@@ -629,8 +629,8 @@ not 1:1 in this setting.
       }
 
       Markers.prototype.controller = function($scope, $element) {
-        return this.getMarkers = function() {
-          return $scope.markers;
+        return this.getMarkersScope = function() {
+          return $scope;
         };
       };
 
@@ -811,6 +811,7 @@ not 1:1 in this setting.
         this.createChildScopesWindows = __bind(this.createChildScopesWindows, this);
         this.link = __bind(this.link, this);
         this.watchOurScope = __bind(this.watchOurScope, this);
+        this.watchModels = __bind(this.watchModels, this);
         this.watch = __bind(this.watch, this);
         var name, self, _i, _len, _ref;
         Windows.__super__.constructor.call(this, $log, $timeout, $compile, $http, $templateCache);
@@ -830,6 +831,7 @@ not 1:1 in this setting.
         this.linked = void 0;
         this.models = void 0;
         this.isIconVisibleOnClick = void 0;
+        this.firstTime = true;
         this.$log.info(self);
       }
 
@@ -848,6 +850,27 @@ not 1:1 in this setting.
               })(model));
             }
             return _results;
+          }
+        }, true);
+      };
+
+      Windows.prototype.watchModels = function(scope) {
+        var _this = this;
+        return scope.$watch('models', function(newValue, oldValue) {
+          var oldW, _fn, _i, _len, _ref;
+          if (newValue !== oldValue) {
+            _ref = _this.windows;
+            _fn = function(oldM) {
+              return oldW.destroy();
+            };
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              oldW = _ref[_i];
+              _fn(oldM);
+            }
+            delete _this.windows;
+            _this.windows = [];
+            _this.windowsIndex = 0;
+            return _this.createChildScopesWindows();
           }
         }, true);
       };
@@ -887,42 +910,46 @@ not 1:1 in this setting.
         
         			This may force redundant information into the model, but this appears to be the most flexible approach.
         */
-        var gMap, isIconVisibleOnClick, markerModels, mm, model, modelsNotDefined, _i, _j, _len, _len1, _ref, _results, _results1,
+        var gMap, isIconVisibleOnClick, markersScope, mm, model, modelsNotDefined, _fn, _i, _j, _len, _len1, _ref, _ref1,
           _this = this;
         this.isIconVisibleOnClick = true;
         if (angular.isDefined(this.linked.attrs.isiconvisibleonclick)) {
           isIconVisibleOnClick = this.linked.scope.isIconVisibleOnClick;
         }
         gMap = this.linked.ctrls[0].getMap();
-        markerModels = this.linked.ctrls.length > 1 && (this.linked.ctrls[1] != null) ? this.linked.ctrls[1].getMarkers() : void 0;
+        markersScope = this.linked.ctrls.length > 1 && (this.linked.ctrls[1] != null) ? this.linked.ctrls[1].getMarkersScope() : void 0;
         modelsNotDefined = angular.isUndefined(this.linked.scope.models) || scope.models === void 0;
-        if (modelsNotDefined && markerModels === void 0) {
+        if (modelsNotDefined && (markersScope === void 0 || markersScope.markers === void 0 || markersScope.models === void 0)) {
           this.$log.info("No models to create windows from! Need direct models or models derrived from markers!");
           return;
         }
         if (gMap != null) {
           if (this.linked.scope.models != null) {
             this.models = this.linked.scope.models;
+            if (this.firstTime) {
+              this.watchModels(this.linked.scope);
+            }
             _ref = this.linked.scope.models;
-            _results = [];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               model = _ref[_i];
-              _results.push(this.createWindow(model, void 0, gMap));
+              this.createWindow(model, void 0, gMap);
             }
-            return _results;
           } else {
-            this.models = [];
-            _results1 = [];
-            for (_j = 0, _len1 = markerModels.length; _j < _len1; _j++) {
-              mm = markerModels[_j];
-              _results1.push((function(mm) {
-                _this.models.push(mm.model);
-                return _this.createWindow(mm.model, mm.gMarker, gMap);
-              })(mm));
+            this.models = markersScope.models;
+            if (this.firstTime) {
+              this.watchModels(markersScope);
             }
-            return _results1;
+            _ref1 = markersScope.markerModels;
+            _fn = function(mm) {
+              return _this.createWindow(mm.model, mm.gMarker, gMap);
+            };
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              mm = _ref1[_j];
+              _fn(mm);
+            }
           }
         }
+        return this.firstTime = false;
       };
 
       Windows.prototype.createWindow = function(model, gMarker, gMap) {

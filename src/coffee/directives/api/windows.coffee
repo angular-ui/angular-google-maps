@@ -20,6 +20,7 @@
 			@linked = undefined
 			@models = undefined
 			@isIconVisibleOnClick = undefined
+			@firstTime = true
 			@$log.info(self)
 		
 		#watch this scope(Parent to all WindowModels), these updates reflect expression / Key changes
@@ -33,13 +34,26 @@
 				 			model.scope[name] = if (@[nameKey] == 'self' or @[nameKey] == undefined) then model else model[@[nameKey]]  
 			,true)
 
+		watchModels:(scope) =>
+			scope.$watch('models', (newValue, oldValue) =>
+				if (newValue != oldValue) 
+					for oldW in @windows
+						do(oldM) =>
+							oldW.destroy()
+					delete @windows
+					@windows = []
+					@windowsIndex = 0
+					@createChildScopesWindows()
+
+			, true)
+
 		watchOurScope:(scope) =>
 			for name in @scopePropNames
 				do(name) =>
 					nameKey = name + 'Key'
 					@[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
 					@watch(scope,name,nameKey)
-					
+
 		link: (scope, element, attrs, ctrls) =>
 			@linked = new directives.api.utils.Linked(scope,element,attrs,ctrls)	
 			@watchOurScope(scope)
@@ -59,11 +73,11 @@
 			if angular.isDefined(@linked.attrs.isiconvisibleonclick) 
 				isIconVisibleOnClick = @linked.scope.isIconVisibleOnClick
 			gMap = @linked.ctrls[0].getMap()
-			markerModels = if @linked.ctrls.length > 1 and @linked.ctrls[1]? then @linked.ctrls[1].getMarkers() else undefined
+			markersScope = if @linked.ctrls.length > 1 and @linked.ctrls[1]? then @linked.ctrls[1].getMarkersScope() else undefined
 
 			modelsNotDefined = angular.isUndefined(@linked.scope.models) or scope.models == undefined
 			
-			if(modelsNotDefined and markerModels == undefined)
+			if(modelsNotDefined and (markersScope == undefined or markersScope.markers == undefined or markersScope.models == undefined ))
 				@$log.info("No models to create windows from! Need direct models or models derrived from markers!")
 				return
 			if gMap? 
@@ -71,14 +85,18 @@
 				if @linked.scope.models?
 					#we are creating windows with no markers
 					@models = @linked.scope.models
+					if(@firstTime)
+						@watchModels(@linked.scope)
 					@createWindow(model,undefined,gMap) for model in @linked.scope.models
 				else
 					#creating windows with parent markers
-					@models = []
-					for mm in markerModels
+					@models = markersScope.models
+					if(@firstTime)
+						@watchModels(markersScope)
+					for mm in markersScope.markerModels
 						do(mm) =>
-							@models.push(mm.model)
-							@createWindow(mm.model,mm.gMarker,gMap) 
+							@createWindow(mm.model,mm.gMarker,gMap)
+			@firstTime = false
 						
 		createWindow: (model,gMarker,gMap)=>
 			###
