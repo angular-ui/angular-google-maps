@@ -338,7 +338,8 @@
         zoom: "=zoom", // required
         refresh: "&refresh", // optional
         windows: "=windows", // optional
-        events: "=events"
+        events: "=events",
+        options: "="
       },
       controller: controller,      
       link: function (scope, element, attrs, ctrl) {
@@ -363,7 +364,7 @@
         // Parse options
         var opts = {options: {}};
         if (attrs.options) {
-          opts.options = angular.fromJson(attrs.options);
+          opts.options = scope.options;
         }
         
         // Create our model
