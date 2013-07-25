@@ -21,3 +21,10 @@
 
 			@$log.info(@)
 
+
+		destroy:()=>
+			@hideWindow(@gWin)
+			@scope.$destroy()
+			delete @gWin
+			delete @
+

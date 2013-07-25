@@ -50,20 +50,20 @@
 				events="map.events">
 
 				<markers models="map.markers2" coords="'self'" icon="'icon'" >
-					<windows show="'showWindow'" closeClick="'closeClick'">
-						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
+					<windows show="'showWindow'" closeClick="'closeClick'" contentKeys="['latitude','longitude']">
+						<p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
 					</windows>
 				</markers>
 
 				<!-- prefedined markers -->
 				<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
-<!-- 				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
+				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
 					<window show="m.showWindow" closeClick="m.closeClick()">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
 					</window>
-				</marker> -->
+				</marker>
 
 				<!-- marker for clicked position -->
 <!-- 				<marker coords="map.clickedMarker" animate="false" >

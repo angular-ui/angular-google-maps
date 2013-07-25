@@ -5,7 +5,7 @@
 @module "directives.api", ->
 	class @Window extends directives.api.IWindow
 
-		constructor: ($log, $timeout, $compile, $http, $templateCache) ->
+		constructor: ($log, $timeout, $compile, $http, $templateCache,$interpolate) ->
 			super($log, $timeout, $compile, $http, $templateCache)
 			self = @
 			@clsName = "Window"

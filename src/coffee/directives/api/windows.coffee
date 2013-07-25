@@ -4,17 +4,19 @@
 @module "directives.api", ->
 	class @Windows extends directives.api.IWindow
 
-		constructor: ($log, $timeout, $compile, $http, $templateCache) ->
+		constructor: ($log, $timeout, $compile, $http, $templateCache,$interpolate) ->
 			super($log, $timeout, $compile, $http, $templateCache)
 			self = @
+			@$interpolate = $interpolate
 			@clsName = "Windows"
 			@require= ['^googleMap', '^?markers']
 			@template = '<span class="angular-google-maps-windows" ng-transclude></span>'
 			@scope.models = '=models' #if undefined it will try get a markers models
+			@scope.contentKeys = '=contentkeys'
 			@windows = []
 			@windwsIndex = 0
 			@scopePropNames = ['show','coords','templateUrl','templateParameter',
-			'isIconVisibleOnClick','closeClick']
+			'isIconVisibleOnClick','closeClick','contentKeys']
 			#setting up local references to propety keys IE: @coordsKey
 			@[name + 'Key'] = undefined for name in @scopePropNames
 			@linked = undefined
@@ -37,15 +39,23 @@
 		watchModels:(scope) =>
 			scope.$watch('models', (newValue, oldValue) =>
 				if (newValue != oldValue) 
-					for oldW in @windows
-						do(oldM) =>
-							oldW.destroy()
+					for model in @windows
+						do(model) =>
+							model.destroy()
 					delete @windows
 					@windows = []
 					@windowsIndex = 0
 					@createChildScopesWindows()
 
 			, true)
+
+		watchDestroy:(scope)=>
+			scope.$on("$destroy", => 
+				model.destroy() for model in @windows
+				delete @windows
+				@windows = []
+				@windowsIndex = 0
+			)
 
 		watchOurScope:(scope) =>
 			for name in @scopePropNames
@@ -87,12 +97,14 @@
 					@models = @linked.scope.models
 					if(@firstTime)
 						@watchModels(@linked.scope)
+						@watchDestroy(@linked.scope)
 					@createWindow(model,undefined,gMap) for model in @linked.scope.models
 				else
 					#creating windows with parent markers
 					@models = markersScope.models
 					if(@firstTime)
 						@watchModels(markersScope)
+						@watchDestroy(markersScope)
 					for mm in markersScope.markerModels
 						do(mm) =>
 							@createWindow(mm.model,mm.gMarker,gMap)
@@ -115,7 +127,14 @@
 				do (name) =>
 					nameKey = name + 'Key'
 					childScope[name] = if (@[nameKey] == 'self' or @[nameKey] == undefined) then model else model[@[nameKey]]
-			opts = @createWindowOptions(gMarker,childScope,@linked.element.html(),@DEFAULTS)
+			parsedContent = @interpolateContent(@linked.element.html(),model)
+			opts = @createWindowOptions(gMarker,childScope,parsedContent,@DEFAULTS)
 			@windows.push( 
 				new directives.api.models.WindowModel( childScope,opts,@isIconVisibleOnClick,gMap,gMarker,@$log,@$http,@$templateCache,@$compile)
 			)
+
+		interpolateContent: (content,model) =>
+			exp = @$interpolate(content)
+			interpModel = {}
+			interpModel[key] = model[key] for key in @contentKeysKey
+			exp(interpModel)

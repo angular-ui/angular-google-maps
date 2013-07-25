@@ -292,7 +292,8 @@ angular.module('google-maps', []);;(function() {
 }).call(this);
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   this.module("directives.api.models", function() {
@@ -302,6 +303,7 @@ angular.module('google-maps', []);;(function() {
       WindowModel.include(directives.api.models.WindowFunctions);
 
       function WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $log, $http, $templateCache, $compile) {
+        this.destroy = __bind(this.destroy, this);
         this.scope = scope;
         this.opts = opts;
         this.mapCtrl = mapCtrl;
@@ -320,6 +322,13 @@ angular.module('google-maps', []);;(function() {
         this.watchShow(scope, $http, $templateCache, this.$compile, this.gWin, this.showWindow, this.hideWindow, this.mapCtrl);
         this.$log.info(this);
       }
+
+      WindowModel.prototype.destroy = function() {
+        this.hideWindow(this.gWin);
+        this.scope.$destroy();
+        delete this.gWin;
+        return delete this;
+      };
 
       return WindowModel;
 
@@ -811,6 +820,7 @@ not 1:1 in this setting.
         this.createChildScopesWindows = __bind(this.createChildScopesWindows, this);
         this.link = __bind(this.link, this);
         this.watchOurScope = __bind(this.watchOurScope, this);
+        this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchModels = __bind(this.watchModels, this);
         this.watch = __bind(this.watch, this);
         var name, self, _i, _len, _ref;
@@ -875,6 +885,21 @@ not 1:1 in this setting.
         }, true);
       };
 
+      Windows.prototype.watchDestroy = function(scope) {
+        var _this = this;
+        return scope.$on("$destroy", function() {
+          var model, _i, _len, _ref;
+          _ref = _this.windows;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            model = _ref[_i];
+            model.destroy();
+          }
+          delete _this.windows;
+          _this.windows = [];
+          return _this.windowsIndex = 0;
+        });
+      };
+
       Windows.prototype.watchOurScope = function(scope) {
         var name, _i, _len, _ref, _results,
           _this = this;
@@ -928,6 +953,7 @@ not 1:1 in this setting.
             this.models = this.linked.scope.models;
             if (this.firstTime) {
               this.watchModels(this.linked.scope);
+              this.watchDestroy(this.linked.scope);
             }
             _ref = this.linked.scope.models;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -938,6 +964,7 @@ not 1:1 in this setting.
             this.models = markersScope.models;
             if (this.firstTime) {
               this.watchModels(markersScope);
+              this.watchDestroy(markersScope);
             }
             _ref1 = markersScope.markerModels;
             _fn = function(mm) {
