@@ -21,6 +21,8 @@ not 1:1 in this setting.
 			@markersIndex = 0
 			@mapCtrl = undefined
 			@$timeout = $timeout
+			@doClick = undefined
+			@animate = undefined 
 			@$log.info(@)
 
 		controller:($scope, $element) ->
@@ -37,19 +39,34 @@ not 1:1 in this setting.
 		# if we have made it here all attributes are valid so we can initialize and glue things together	
 		linkInit:(element,mapCtrl,scope,animate,doClick) =>
 			@mapCtrl = mapCtrl
-			@createMarkers(element,scope,animate,doClick)
+			@doClick = doClick
+			@animate = animate
+			@createMarkers(scope)
 
-		createMarkers:(element,scope,animate,doClick) =>
+		createMarkers:(scope) =>
 			for model in scope.models
 				do(model) =>
 					@markers.push( 
 						new directives.api.models.MarkerModel(@markersIndex,model,scope,@mapCtrl,@$timeout,@$log, (index) =>
 							delete @markers[index]
-						,@DEFAULTS,doClick)
+						,@DEFAULTS,@doClick)
 					)
 					@markersIndex++
 			#put MarkerModels into local scope					
 			scope.markers = @markers
+
+		watchModels:(scope) =>
+			scope.$watch('models', (newValue, oldValue) =>
+				if (newValue != oldValue) 
+					for oldM in @markers
+						do(oldM) =>
+							oldM.destroy()
+					delete @markers
+					@markers = []
+					@markersIndex = 0
+					@createMarkers(scope)
+
+			, true)
 
 		watchCoords:(scope) =>
 			scope.$watch('coords', (newValue, oldValue) =>
