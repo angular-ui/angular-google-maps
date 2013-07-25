@@ -116,6 +116,28 @@ angular.module('google-maps', []);;(function() {
 }).call(this);
 
 (function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api.utils", function() {
+    return this.Linked = (function(_super) {
+      __extends(Linked, _super);
+
+      function Linked(scope, element, attrs, ctrls) {
+        this.scope = scope;
+        this.element = element;
+        this.attrs = attrs;
+        this.ctrls = ctrls;
+      }
+
+      return Linked;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
+(function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -204,17 +226,15 @@ angular.module('google-maps', []);;(function() {
 
 
 /*
-	Functions are taking entireley local variables as to try and reuse functionality. 
+	Functions are using entireley local variables as to try and reuse functionality. 
 	Hopefully this will work when an HTML Element is created or not for an InfoWindow.
+
+	IE if another window-model needs to be derrived for Windows or other Window directives.
 */
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
   this.module("directives.api.models", function() {
-    var _this = this;
-    return this.WindowModelFunctions = {
+    return this.WindowFunctions = {
       watchShow: function(scope, $http, $templateCache, $compile, gWin, showHandle, hideHandle, mapCtrl) {
         return scope.$watch('show()', function(newValue, oldValue) {
           if (newValue !== oldValue) {
@@ -224,7 +244,7 @@ angular.module('google-maps', []);;(function() {
               return hideHandle(gWin);
             }
           } else {
-            if (newValue && !win.getMap()) {
+            if (newValue && !gWin.getMap()) {
               return showHandle(scope, $http, $templateCache, $compile, gWin, mapCtrl);
             }
           }
@@ -267,11 +287,17 @@ angular.module('google-maps', []);;(function() {
     };
   });
 
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   this.module("directives.api.models", function() {
     return this.WindowModel = (function(_super) {
       __extends(WindowModel, _super);
 
-      WindowModel.include(directives.api.models.WindowModelFunctions);
+      WindowModel.include(directives.api.models.WindowFunctions);
 
       function WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $log, $http, $templateCache, $compile) {
         this.scope = scope;
@@ -491,6 +517,12 @@ angular.module('google-maps', []);;(function() {
         this.mapCtrl = void 0;
       }
 
+      Marker.prototype.controller = function($scope, $element) {
+        return this.getMarker = function() {
+          return $element.data('instance');
+        };
+      };
+
       Marker.prototype.validateLinkedScope = function(scope) {
         return Marker.__super__.validateLinkedScope.call(this, scope) || angular.isUndefined(scope.coords.latitude) || angular.isUndefined(scope.coords.longitude);
       };
@@ -585,12 +617,18 @@ not 1:1 in this setting.
         this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
         this.clsName = "Markers";
         this.scope.models = '=models';
-        this.markers = {};
+        this.markers = [];
         this.markersIndex = 0;
         this.mapCtrl = void 0;
         this.$timeout = $timeout;
         this.$log.info(this);
       }
+
+      Markers.prototype.controller = function($scope, $element) {
+        return this.getMarkers = function() {
+          return $element.data('instance');
+        };
+      };
 
       Markers.prototype.validateLinkedScope = function(scope) {
         var modelsNotDefined;
@@ -607,21 +645,20 @@ not 1:1 in this setting.
       };
 
       Markers.prototype.createMarkers = function(element, scope, animate, doClick) {
-        var model, _i, _len, _ref, _results,
+        var model, _fn, _i, _len, _ref,
           _this = this;
         _ref = scope.models;
-        _results = [];
+        _fn = function(model) {
+          _this.markers.push(new directives.api.models.MarkerModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.$log, function(index) {
+            return delete _this.markers[index];
+          }, _this.DEFAULTS));
+          return _this.markersIndex++;
+        };
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           model = _ref[_i];
-          _results.push((function(model) {
-            _this.markers[_this.markersIndex] = new directives.api.models.MarkerModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.$log, function(index) {
-              return delete _this.markers[index];
-            }, _this.DEFAULTS);
-            _this.markersIndex++;
-            return element.data('instance', _this.markers);
-          })(model));
+          _fn(model);
         }
-        return _results;
+        return element.data('instance', this.markers);
       };
 
       Markers.prototype.watchCoords = function(scope) {
@@ -714,12 +751,180 @@ not 1:1 in this setting.
           markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
           opts = _this.createWindowOptions(markerCtrl, scope, element.html(), _this.DEFAULTS);
           if (mapCtrl != null) {
-            return new directives.api.models.WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$templateCache, _this.$compile);
+            return new directives.api.models.WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$log, _this.$http, _this.$templateCache, _this.$compile);
           }
         }, 50);
       };
 
       return Window;
+
+    })(directives.api.IWindow);
+  });
+
+}).call(this);
+
+
+/*
+	Windows directive where many windows map to the models property
+*/
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.Windows = (function(_super) {
+      __extends(Windows, _super);
+
+      function Windows($log, $timeout, $compile, $http, $templateCache) {
+        this.createWindow = __bind(this.createWindow, this);
+        this.createChildScopesWindows = __bind(this.createChildScopesWindows, this);
+        this.link = __bind(this.link, this);
+        this.watchOurScope = __bind(this.watchOurScope, this);
+        this.watch = __bind(this.watch, this);
+        var name, self, _i, _len, _ref;
+        Windows.__super__.constructor.call(this, $log, $timeout, $compile, $http, $templateCache);
+        self = this;
+        this.clsName = "Windows";
+        this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
+        this.scope.models = '=models';
+        this.windows = [];
+        this.windwsIndex = 0;
+        this.scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
+        _ref = this.scopePropNames;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          name = _ref[_i];
+          this[name + 'Key'] = void 0;
+        }
+        this.linked = void 0;
+        this.models = void 0;
+        this.$log.info(self);
+      }
+
+      Windows.prototype.watch = function(scope, name, nameKey) {
+        var _this = this;
+        return scope.$watch(name, function(newValue, oldValue) {
+          var model, _i, _len, _ref, _results;
+          if (newValue !== oldValue) {
+            _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
+            _ref = _this.windows;
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              model = _ref[_i];
+              _results.push((function(model) {
+                return model.scope[name] = _this[nameKey] === 'self' || _this[nameKey] === void 0 ? model : model[_this[nameKey]];
+              })(model));
+            }
+            return _results;
+          }
+        }, true);
+      };
+
+      Windows.prototype.watchOurScope = function(scope) {
+        var name, _i, _len, _ref, _results,
+          _this = this;
+        _ref = this.scopePropNames;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          name = _ref[_i];
+          _results.push((function(name) {
+            var nameKey;
+            nameKey = name + 'Key';
+            _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
+            return _this.watch(scope, name, nameKey);
+          })(name));
+        }
+        return _results;
+      };
+
+      Windows.prototype.link = function(scope, element, attrs, ctrls) {
+        var _this = this;
+        this.linked = new directives.api.utils.Linked(scope, element, attrs, ctrls);
+        this.watchOurScope(scope);
+        return this.$timeout(function() {
+          return _this.createChildScopesWindows();
+        }, 50);
+      };
+
+      Windows.prototype.createChildScopesWindows = function() {
+
+        /*
+        			being that we cannot tell the difference in Key String vs. a normal value string (TemplateUrl)
+        			we will assume that all scope values are string expressions either pointing to a key (propName) or using 
+        			'self' to point the model as container/object of interest.	
+        
+        			This may force redundant information into the model, but this appears to be the most flexible approach.
+        */
+        var gMap, isIconVisibleOnClick, markerModels, mm, model, modelsNotDefined, _i, _j, _len, _len1, _ref, _results, _results1,
+          _this = this;
+        isIconVisibleOnClick = true;
+        if (angular.isDefined(this.linked.attrs.isiconvisibleonclick)) {
+          isIconVisibleOnClick = this.linked.scope.isIconVisibleOnClick;
+        }
+        gMap = this.linked.ctrls[0].getMap();
+        markerModels = this.linked.ctrls.length > 1 && (this.linked.ctrls[1] != null) ? this.linked.ctrls[1].getMarkers() : void 0;
+        modelsNotDefined = angular.isUndefined(this.linked.scope.models) || scope.models === void 0;
+        if (modelsNotDefined && (markerModels != null)) {
+          this.$log.info("No models to create windows from! Need direct models or models derrived from markers!");
+          return;
+        }
+        if (gMap != null) {
+          if (this.linked.scope.models != null) {
+            this.models = this.linked.scope.models;
+            _ref = this.linked.scope.models;
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              model = _ref[_i];
+              _results.push(this.createWindow(model, void 0, gMap));
+            }
+            return _results;
+          } else {
+            this.models = [];
+            _results1 = [];
+            for (_j = 0, _len1 = markerModels.length; _j < _len1; _j++) {
+              mm = markerModels[_j];
+              _results1.push((function(mm) {
+                _this.models.push(mm.model);
+                return _this.createWindow(mm.model, mm.gMarker, gMap);
+              })(mm));
+            }
+            return _results1;
+          }
+        }
+      };
+
+      Windows.prototype.createWindow = function(model, gMarker, gMap) {
+
+        /*
+        			Create ChildScope to Mimmick an ng-repeat created scope, must define the below scope
+        		  		scope= {
+        					coords: '=coords',
+        					show: '&show',
+        					templateUrl: '=templateurl',
+        					templateParameter: '=templateparameter',
+        					isIconVisibleOnClick: '=isiconvisibleonclick',
+        					closeClick: '&closeclick'
+        				}
+        */
+        var childScope, name, opts, _fn, _i, _len, _ref,
+          _this = this;
+        childScope = this.linked.scope.$new(false);
+        _ref = this.scopePropNames;
+        _fn = function(name) {
+          var nameKey;
+          nameKey = name + 'Key';
+          return childScope[name] = _this[nameKey] === 'self' || _this[nameKey] === void 0 ? model : model[_this[nameKey]];
+        };
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          name = _ref[_i];
+          _fn(name);
+        }
+        opts = this.createWindowOptions(gMarker, childScope, this.linked.element.html(), this.DEFAULTS);
+        return this.windows.push(new directives.api.models.WindowModel(childScope, opts, isIconVisibleOnClick, gMap, gMarker, this.$log, this.$http, this.$templateCache, this.$compile));
+      };
+
+      return Windows;
 
     })(directives.api.IWindow);
   });
@@ -1286,4 +1491,48 @@ angular.module("google-maps")
 angular.module("google-maps").directive("window", ['$log', '$timeout','$compile', '$http', '$templateCache', 
   function ($log, $timeout, $compile, $http, $templateCache) {
     return new directives.api.Window($log, $timeout, $compile, $http, $templateCache);
+  }]);;/**!
+ * The MIT License
+ *
+ * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * angular-google-maps
+ * https://github.com/nlaplante/angular-google-maps
+ *
+ * @authors: 
+ *			- Nicolas Laplante https://plus.google.com/108189012221374960701 
+ *			- Nicholas McCready  https://plus.google.com/112199819969944829348
+ */
+
+/**
+ * Map info window directive
+ *
+ * This directive is used to create an info window on an existing map.
+ * This directive creates a new scope.
+ *
+ * {attribute coords required}  object containing latitude and longitude properties
+ * {attribute show optional}    map will show when this expression returns true
+ */
+
+angular.module("google-maps").directive("windows", ['$log', '$timeout','$compile', '$http', '$templateCache', 
+  function ($log, $timeout, $compile, $http, $templateCache) {
+    return new directives.api.Windows($log, $timeout, $compile, $http, $templateCache);
   }]);

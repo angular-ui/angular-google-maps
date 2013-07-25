@@ -16,6 +16,9 @@
 			@mapCtrl = undefined
 
 
+		controller:($scope, $element) ->
+			@getMarker = ->
+				$element.data('instance')
 
 		validateLinkedScope:(scope)=>
 			super(scope) or angular.isUndefined(scope.coords.latitude) or angular.isUndefined(scope.coords.longitude)
@@ -27,10 +30,11 @@
 			opts = @createMarkerOptions(mapCtrl,scope.coords,scope.icon,animate,@DEFAULTS)
 
 			#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
-			@markers[scope.$id] = new google.maps.Marker(opts)
-			element.data('instance', @markers[scope.$id])
+			gMarker = new google.maps.Marker(opts)
+			@markers[scope.$id] = gMarker
+			element.data('instance', gMarker)
 
-			google.maps.event.addListener(@markers[scope.$id], 'click', ->
+			google.maps.event.addListener(gMarker, 'click', ->
 				if doClick and scope.click?
 					scope.click()
 			)

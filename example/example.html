@@ -48,38 +48,38 @@
 				draggable="true"
 				dragging="map.dragging"
 				events="map.events">
-<!-- 
+
 				<markers models="map.markers2" coords="'self'" icon="'icon'" >
-					<window show="'showWindow'" closeClick="'closeClick'">
+					<windows show="'showWindow'" closeClick="'closeClick'">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
-					</window>
-				</markers> -->
+					</windows>
+				</markers>
 
 				<!-- prefedined markers -->
 				<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
-				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
+<!-- 				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
 					<window show="m.showWindow" closeClick="m.closeClick()">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
 					</window>
-				</marker>
+				</marker> -->
 
 				<!-- marker for clicked position -->
-				<marker coords="map.clickedMarker" animate="false" >
+<!-- 				<marker coords="map.clickedMarker" animate="false" >
 					<window isIconVisibleOnClick="false">This is my clicked marker!
 						<p class="muted">My marker will reappear when you close me.</p>
 					</window>
-				</marker>
+				</marker> -->
 
 				<!--WINDOWS without markers-->
-				<window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false">
+<!-- 				<window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false">
 					I should not be attached to a
 					marker.
 				</window>
 
 				<window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords" templateUrl="map.templatedInfoWindow.templateUrl" templateParameter="map.templatedInfoWindow.templateParameter">
-				</window>
+				</window> -->
 
 				<polyline path="map.polyline.path" stroke="map.polyline.stroke" fit="true"></polyline>
 			</div>
@@ -94,6 +94,22 @@
 								<div class="well sidebar-nav">
 									<ul class="nav nav-list">
 										<li  ng-repeat="m in map.markers" ng-click="m.showWindow = true">
+											<a href="#">
+												<i class="i" title="Click me to Show InfoWindow!">
+													Marker: {{m}}
+												</i>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>markers2</td>
+							<td>
+								<div class="well sidebar-nav">
+									<ul class="nav nav-list">
+										<li  ng-repeat="m in map.markers2" ng-click="m.showWindow = true">
 											<a href="#">
 												<i class="i" title="Click me to Show InfoWindow!">
 													Marker: {{m}}

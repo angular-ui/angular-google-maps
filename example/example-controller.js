@@ -131,9 +131,17 @@ function ExampleController ($scope, $timeout, $log) {
         };
     });
 
+    _.each($scope.map.markers2,function(marker){
+        marker.closeClick = function(){                        
+            this.showWindow = false;
+            $scope.$apply();
+        };
+    });
+
     $scope.removeMarkers = function () {
         $log.info("Clearing markers. They should disappear from the map now");
         $scope.map.markers.length = 0;
+        $scope.map.markers2.length = 0;
         $scope.map.clickedMarker = null;
     };
 

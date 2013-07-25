@@ -34,8 +34,7 @@
 			}
 
 		controller: ($scope, $element) ->
-			@getMarker = ->
-				$element.data('instance')
+			throw new Exception("Not Implemented!!")
 
 		validateLinkedScope:(scope)=>
 			ret = angular.isUndefined(scope.coords) or 

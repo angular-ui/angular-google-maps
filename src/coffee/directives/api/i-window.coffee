@@ -14,7 +14,7 @@
 			@template= undefined
 			@transclude= true
 			@priority= -100
-			@require= ['^googleMap', '^?marker']
+			@require = undefined
 			@scope= {
 				coords: '=coords',
 				show: '&show',

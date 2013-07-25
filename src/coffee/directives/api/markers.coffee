@@ -17,11 +17,15 @@ not 1:1 in this setting.
 			@template = '<span class="angular-google-map-markers" ng-transclude></span>'
 			@clsName = "Markers"
 			@scope.models = '=models'
-			@markers = {}
+			@markers = []
 			@markersIndex = 0
 			@mapCtrl = undefined
 			@$timeout = $timeout
 			@$log.info(@)
+
+		controller:($scope, $element) ->
+			@getMarkers = ->
+				$scope.markers
 
 		validateLinkedScope:(scope)=>
 			modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
@@ -38,13 +42,14 @@ not 1:1 in this setting.
 		createMarkers:(element,scope,animate,doClick) =>
 			for model in scope.models
 				do(model) =>
-					@markers[@markersIndex] = 
+					@markers.push( 
 						new directives.api.models.MarkerModel(@markersIndex,model,scope,@mapCtrl,@$timeout,@$log, (index) =>
 							delete @markers[index]
-						,@DEFAULTS)
-
+						,@DEFAULTS,doClick)
+					)
 					@markersIndex++
-					element.data('instance', @markers)
+			#put MarkerModels into local scope					
+			scope.markers = @markers
 
 		watchCoords:(scope) =>
 			scope.$watch('coords', (newValue, oldValue) =>
