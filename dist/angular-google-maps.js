@@ -148,7 +148,7 @@ angular.module('google-maps', []);;(function() {
 
       MarkerModel.include(directives.api.utils.GmapUtil);
 
-      function MarkerModel(index, model, parentScope, mapCtrl, $timeout, $log, notifyLocalDestroy, defaults, doClick) {
+      function MarkerModel(index, model, parentScope, gMap, $timeout, $log, notifyLocalDestroy, defaults, doClick) {
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
@@ -161,8 +161,8 @@ angular.module('google-maps', []);;(function() {
         this.myScope = parentScope.$new(false);
         this.myScope.icon = this.iconKey === 'self' ? model : model[this.iconKey];
         this.myScope.coords = this.coordsKey === 'self' ? model : model[this.coordsKey];
-        this.mapCtrl = mapCtrl;
-        this.opts = this.createMarkerOptions(this.mapCtrl, this.myScope.coords, this.myScope.icon, defaults);
+        this.gMap = gMap;
+        this.opts = this.createMarkerOptions(this.gMap, this.myScope.coords, this.myScope.icon, defaults);
         this.gMarker = new google.maps.Marker(this.opts);
         this.doClick = doClick;
         google.maps.event.addListener(this.gMarker, 'click', function() {
@@ -186,11 +186,11 @@ angular.module('google-maps', []);;(function() {
         return scope.$watch('coords', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             if (newValue) {
-              _this.gmap.setMap(_this.mapCtrl.getMap());
-              _this.gmap.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
-              return _this.gmap.setVisible((newValue.latitude != null) && (newValue.longitude != null));
+              _this.gMarker.setMap(_this.gMap.getMap());
+              _this.gMarker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              return _this.gMarker.setVisible((newValue.latitude != null) && (newValue.longitude != null));
             } else {
-              return _this.gmap.setMap(void 0);
+              return _this.gMarker.setMap(void 0);
             }
           }
         }, true);
@@ -200,11 +200,11 @@ angular.module('google-maps', []);;(function() {
         var _this = this;
         return scope.$watch('icon', function(newValue, oldValue) {
           if (newValue !== oldValue) {
-            _this.gmap.icon = newValue;
-            _this.gmap.setMap(void 0);
-            _this.gmap.setMap(_this.mapCtrl.getMap());
-            _this.gmap.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
-            return _this.gmap.setVisible(coords.latitude && (coords.longitude != null));
+            _this.gMarker.icon = newValue;
+            _this.gMarker.setMap(void 0);
+            _this.gMarker.setMap(_this.gMap.getMap());
+            _this.gMarker.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
+            return _this.gMarker.setVisible(coords.latitude && (coords.longitude != null));
           }
         }, true);
       };
@@ -212,7 +212,7 @@ angular.module('google-maps', []);;(function() {
       MarkerModel.prototype.watchDestroy = function(scope) {
         var _this = this;
         return scope.$on("$destroy", function() {
-          _this.gmap.setMap(null);
+          _this.gMarker.setMap(null);
           if (typeof notifyLocalDestroy !== "undefined" && notifyLocalDestroy !== null) {
             return notifyLocalDestroy(_this.index);
           }

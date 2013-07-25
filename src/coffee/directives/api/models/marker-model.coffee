@@ -1,7 +1,7 @@
 @module "directives.api.models", ->
 	class @MarkerModel extends oo.BaseObject
 		@include directives.api.utils.GmapUtil
-		constructor:(index,model,parentScope,mapCtrl,$timeout,$log,notifyLocalDestroy,defaults,doClick)->
+		constructor:(index,model,parentScope,gMap,$timeout,$log,notifyLocalDestroy,defaults,doClick)->
 			@index = index
 			@model = model
 			@iconKey = parentScope.icon
@@ -9,8 +9,8 @@
 			@myScope = parentScope.$new(false)
 			@myScope.icon = if @iconKey == 'self' then model else model[@iconKey]
 			@myScope.coords = if @coordsKey == 'self' then model else model[@coordsKey]
-			@mapCtrl = mapCtrl
-			@opts = @createMarkerOptions(@mapCtrl,@myScope.coords,@myScope.icon,defaults)
+			@gMap = gMap
+			@opts = @createMarkerOptions(@gMap,@myScope.coords,@myScope.icon,defaults)
 			@gMarker = new google.maps.Marker(@opts)
 			@doClick = doClick
 			google.maps.event.addListener(@gMarker, 'click', =>
@@ -30,26 +30,26 @@
 			scope.$watch('coords', (newValue, oldValue) =>
 				if (newValue != oldValue) 
 					if (newValue) 
-						@gmap.setMap(@mapCtrl.getMap())
-						@gmap.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
-						@gmap.setVisible(newValue.latitude? and newValue.longitude?)
+						@gMarker.setMap(@gMap.getMap())
+						@gMarker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
+						@gMarker.setVisible(newValue.latitude? and newValue.longitude?)
 					else
 						# Remove marker
-						@gmap.setMap(undefined)			
+						@gMarker.setMap(undefined)			
 			, true)
 					
 		watchIcon:(scope) =>
 			scope.$watch('icon', (newValue, oldValue) =>
 				if (newValue != oldValue) 
-					@gmap.icon = newValue	
-					@gmap.setMap(undefined)
-					@gmap.setMap(@mapCtrl.getMap())
-					@gmap.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude))
-					@gmap.setVisible(coords.latitude and coords.longitude?)
+					@gMarker.icon = newValue	
+					@gMarker.setMap(undefined)
+					@gMarker.setMap(@gMap.getMap())
+					@gMarker.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude))
+					@gMarker.setVisible(coords.latitude and coords.longitude?)
 			, true)
 
 		watchDestroy:(scope)=>
 			scope.$on("$destroy", => 
-				@gmap.setMap(null)
+				@gMarker.setMap(null)
 				notifyLocalDestroy(@index) if notifyLocalDestroy?
 			)
