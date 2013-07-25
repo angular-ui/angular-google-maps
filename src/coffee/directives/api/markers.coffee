@@ -41,6 +41,7 @@ not 1:1 in this setting.
 			@mapCtrl = mapCtrl
 			@doClick = doClick
 			@animate = animate
+			@watchModels(scope)
 			@createMarkers(scope)
 
 		createMarkers:(scope) =>

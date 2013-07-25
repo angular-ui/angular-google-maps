@@ -647,7 +647,8 @@ not 1:1 in this setting.
         this.mapCtrl = mapCtrl;
         this.doClick = doClick;
         this.animate = animate;
-        return this.createMarkers(element, scope, animate);
+        this.watchModels(scope);
+        return this.createMarkers(scope);
       };
 
       Markers.prototype.createMarkers = function(scope) {
