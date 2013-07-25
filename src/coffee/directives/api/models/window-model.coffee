@@ -4,8 +4,8 @@
 ###
 @module "directives.api.models", ->
 	@WindowModelFunctions =
-		watchShow:(scope,$http,$templateCache,$compile,gWin,showHandle,hideHandle,mapCtrl) =>
-			scope.$watch('show()', (newValue, oldValue) =>
+		watchShow:(scope,$http,$templateCache,$compile,gWin,showHandle,hideHandle,mapCtrl) ->
+			scope.$watch('show()', (newValue, oldValue) ->
 				if (newValue != oldValue)
 					if (newValue)
 						showHandle(scope,$http,$templateCache,$compile,gWin,mapCtrl)
@@ -31,9 +31,9 @@
 					scope.closeClick()
 				)
 		
-		showWindow:(scope,$http,$templateCache,$compile,gWin,mapCtrl) =>
+		showWindow:(scope,$http,$templateCache,$compile,gWin,mapCtrl) ->
 			if scope.templateUrl
-				$http.get(scope.templateUrl, { cache: $templateCache }).then((content) =>
+				$http.get(scope.templateUrl, { cache: $templateCache }).then((content) ->
 					templateScope = scope.$new()
 					if angular.isDefined(scope.templateParameter)
 						templateScope.parameter = scope.templateParameter
