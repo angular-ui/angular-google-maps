@@ -56,6 +56,14 @@
 					</windows>
 				</markers>
 
+
+				<markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" >
+					<windows show="'showWindow'" closeClick="'closeClick'">
+						<p>Dynamic Marker created via a delay!</p>
+						<p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+						<p class="muted">My marker will stay open when the window is popped up!</p>
+					</windows>
+				</markers>
 				<!-- prefedined markers -->
 				<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
 				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
@@ -66,20 +74,20 @@
 				</marker>
 
 				<!-- marker for clicked position -->
-<!-- 				<marker coords="map.clickedMarker" animate="false" >
+				<marker coords="map.clickedMarker" animate="false" >
 					<window isIconVisibleOnClick="false">This is my clicked marker!
 						<p class="muted">My marker will reappear when you close me.</p>
 					</window>
-				</marker> -->
+				</marker>
 
 				<!--WINDOWS without markers-->
-<!-- 				<window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false">
+				<window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false">
 					I should not be attached to a
 					marker.
 				</window>
 
 				<window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords" templateUrl="map.templatedInfoWindow.templateUrl" templateParameter="map.templatedInfoWindow.templateParameter">
-				</window> -->
+				</window>
 
 				<polyline path="map.polyline.path" stroke="map.polyline.stroke" fit="true"></polyline>
 			</div>

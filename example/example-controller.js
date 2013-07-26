@@ -52,8 +52,8 @@ function ExampleController ($scope, $timeout, $log) {
                     longitude: -125,
                     showWindow: false
                 }
-            ]
-            ,
+            ],
+            dynamicMarkers: [],
             clickedMarker: {
                 latitude: null,
                 longitude: null
@@ -147,5 +147,30 @@ function ExampleController ($scope, $timeout, $log) {
 
     $timeout(function () {
         $scope.map.infoWindow.show = true;
+        dynamicMarkers = [
+                {
+                    latitude: 46,
+                    longitude: -79,
+                    showWindow: false
+                },
+                {
+                    latitude: 33,
+                    longitude: -79,
+                    showWindow: false
+                },
+                {
+                    icon: 'plane.png',
+                    latitude: 35,
+                    longitude: -127,
+                    showWindow: false
+                }
+        ];
+       _.each(dynamicMarkers,function(marker){
+        marker.closeClick = function(){                        
+            this.showWindow = false;
+            $scope.$apply();
+        };
+        });
+        $scope.map.dynamicMarkers = dynamicMarkers;
     }, 2000);
 }

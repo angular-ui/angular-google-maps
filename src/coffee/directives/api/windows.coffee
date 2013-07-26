@@ -140,6 +140,8 @@
 			)
 
 		interpolateContent: (content,model) =>
+			if @contentKeys == undefined or @contentKeys.length == 0
+				return
 			exp = @$interpolate(content)
 			interpModel = {}
 			interpModel[key] = model[key] for key in @contentKeys
