@@ -36,14 +36,14 @@
 						@gMarker.setVisible(newValue.latitude? and newValue.longitude?)
 					else
 						# Remove marker
-						@gMarker.setMap(undefined)			
+						@gMarker.setMap(null)			
 			, true)
 					
 		watchIcon:(scope) =>
 			scope.$watch('icon', (newValue, oldValue) =>
 				if (newValue != oldValue) 
 					@gMarker.icon = newValue	
-					@gMarker.setMap(undefined)
+					@gMarker.setMap(null)
 					@gMarker.setMap(@gMap.getMap())
 					@gMarker.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude))
 					@gMarker.setVisible(coords.latitude and coords.longitude?)

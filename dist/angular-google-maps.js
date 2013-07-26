@@ -210,7 +210,7 @@ angular.module('google-maps', []);;(function() {
               _this.gMarker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
               return _this.gMarker.setVisible((newValue.latitude != null) && (newValue.longitude != null));
             } else {
-              return _this.gMarker.setMap(void 0);
+              return _this.gMarker.setMap(null);
             }
           }
         }, true);
@@ -221,7 +221,7 @@ angular.module('google-maps', []);;(function() {
         return scope.$watch('icon', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             _this.gMarker.icon = newValue;
-            _this.gMarker.setMap(void 0);
+            _this.gMarker.setMap(null);
             _this.gMarker.setMap(_this.gMap.getMap());
             _this.gMarker.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
             return _this.gMarker.setVisible(coords.latitude && (coords.longitude != null));
@@ -537,7 +537,7 @@ angular.module('google-maps', []);;(function() {
         this.linkInit = __bind(this.linkInit, this);
         this.validateLinkedScope = __bind(this.validateLinkedScope, this);
         var self;
-        Marker.__super__.constructor.call(this, $log, $timeout);
+        Marker.__super__.constructor.call(this, $timeout);
         self = this;
         this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
         this.clsName = "Marker";
@@ -579,7 +579,7 @@ angular.module('google-maps', []);;(function() {
               _this.markers[scope.$id].setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
               return _this.markers[scope.$id].setVisible((newValue.latitude != null) && (newValue.longitude != null));
             } else {
-              return _this.markers[scope.$id].setMap(void 0);
+              return _this.markers[scope.$id].setMap(null);
             }
           }
         }, true);
@@ -590,7 +590,7 @@ angular.module('google-maps', []);;(function() {
         return scope.$watch('icon', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             _this.markers[scope.$id].icon = newValue;
-            _this.markers[scope.$id].setMap(void 0);
+            _this.markers[scope.$id].setMap(null);
             _this.markers[scope.$id].setMap(_this.mapCtrl.getMap());
             _this.markers[scope.$id].setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
             return _this.markers[scope.$id].setVisible(coords.latitude && (coords.longitude != null));
@@ -643,7 +643,7 @@ not 1:1 in this setting.
         this.linkInit = __bind(this.linkInit, this);
         this.validateLinkedScope = __bind(this.validateLinkedScope, this);
         var self;
-        Markers.__super__.constructor.call(this, $log, $timeout);
+        Markers.__super__.constructor.call(this, $timeout);
         self = this;
         this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
         this.clsName = "Markers";
@@ -789,7 +789,7 @@ not 1:1 in this setting.
       function Window($timeout, $compile, $http, $templateCache, $interpolate) {
         this.link = __bind(this.link, this);
         var self;
-        Window.__super__.constructor.call(this, $log, $timeout, $compile, $http, $templateCache);
+        Window.__super__.constructor.call(this, $timeout, $compile, $http, $templateCache);
         self = this;
         this.clsName = "Window";
         this.require = ['^googleMap', '^?marker'];
@@ -846,7 +846,7 @@ not 1:1 in this setting.
         this.watchModels = __bind(this.watchModels, this);
         this.watch = __bind(this.watch, this);
         var name, self, _i, _len, _ref;
-        Windows.__super__.constructor.call(this, $log, $timeout, $compile, $http, $templateCache);
+        Windows.__super__.constructor.call(this, $timeout, $compile, $http, $templateCache);
         self = this;
         this.$interpolate = $interpolate;
         this.clsName = "Windows";
@@ -1389,8 +1389,8 @@ angular.module('google-maps')
  * {attribute animate optional} if set to false, the marker won't be animated (on by default)
  */
 
-angular.module('google-maps').directive('marker', ['$log', '$timeout', function($log,$timeout){ 
-	return new directives.api.Marker($log,$timeout);}]);
+angular.module('google-maps').directive('marker', ['$timeout', function($timeout){ 
+	return new directives.api.Marker($timeout);}]);
 ;/**!
  * The MIT License
  *
@@ -1431,8 +1431,8 @@ angular.module('google-maps').directive('marker', ['$log', '$timeout', function(
  * {attribute animate optional} if set to false, the marker won't be animated (on by default)
  */
 
-angular.module('google-maps').directive('markers', ['$log', '$timeout', function($log,$timeout){ 
-	return new directives.api.Markers($log,$timeout);}]);
+angular.module('google-maps').directive('markers', ['$timeout', function($timeout){ 
+	return new directives.api.Markers($timeout);}]);
 ;/**!
  * The MIT License
  *
@@ -1622,9 +1622,9 @@ angular.module("google-maps")
  * {attribute show optional}    map will show when this expression returns true
  */
 
-angular.module("google-maps").directive("window", ['$log', '$timeout','$compile', '$http', '$templateCache', 
-  function ($log, $timeout, $compile, $http, $templateCache) {
-    return new directives.api.Window($log, $timeout, $compile, $http, $templateCache);
+angular.module("google-maps").directive("window", ['$timeout','$compile', '$http', '$templateCache', 
+  function ($timeout, $compile, $http, $templateCache) {
+    return new directives.api.Window($timeout, $compile, $http, $templateCache);
   }]);;/**!
  * The MIT License
  *
@@ -1666,7 +1666,7 @@ angular.module("google-maps").directive("window", ['$log', '$timeout','$compile'
  * {attribute show optional}    map will show when this expression returns true
  */
 
-angular.module("google-maps").directive("windows", ['$log', '$timeout','$compile', '$http', '$templateCache', '$interpolate',
-  function ($log, $timeout, $compile, $http, $templateCache,$interpolate) {
-    return new directives.api.Windows($log, $timeout, $compile, $http, $templateCache, $interpolate);
+angular.module("google-maps").directive("windows", ['$timeout','$compile', '$http', '$templateCache', '$interpolate',
+  function ($timeout, $compile, $http, $templateCache,$interpolate) {
+    return new directives.api.Windows($timeout, $compile, $http, $templateCache, $interpolate);
   }]);

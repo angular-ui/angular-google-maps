@@ -48,14 +48,14 @@
 						@markers[scope.$id].setVisible(newValue.latitude? and newValue.longitude?)
 					else
 						# Remove marker
-						@markers[scope.$id].setMap(undefined)			
+						@markers[scope.$id].setMap(null)			
 			, true)
 					
 		watchIcon:(scope) =>
 			scope.$watch('icon', (newValue, oldValue) =>
 				if (newValue != oldValue) 
 					@markers[scope.$id].icon = newValue	
-					@markers[scope.$id].setMap(undefined)
+					@markers[scope.$id].setMap(null)
 					@markers[scope.$id].setMap(@mapCtrl.getMap())
 					@markers[scope.$id].setPosition(new google.maps.LatLng(coords.latitude, coords.longitude))
 					@markers[scope.$id].setVisible(coords.latitude and coords.longitude?)
