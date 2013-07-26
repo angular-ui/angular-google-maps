@@ -4,8 +4,8 @@
 @module "directives.api", ->
 	class @Windows extends directives.api.IWindow
 
-		constructor: ($log, $timeout, $compile, $http, $templateCache,$interpolate) ->
-			super($log, $timeout, $compile, $http, $templateCache)
+		constructor: ($timeout, $compile, $http, $templateCache,$interpolate) ->
+			super($timeout, $compile, $http, $templateCache)
 			self = @
 			@$interpolate = $interpolate
 			@clsName = "Windows"
@@ -136,7 +136,7 @@
 			parsedContent = @interpolateContent(@linked.element.html(),model)
 			opts = @createWindowOptions(gMarker,childScope,parsedContent,@DEFAULTS)
 			@windows.push( 
-				new directives.api.models.WindowModel( childScope,opts,@isIconVisibleOnClick,gMap,gMarker,@$log,@$http,@$templateCache,@$compile)
+				new directives.api.models.WindowModel( childScope,opts,@isIconVisibleOnClick,gMap,gMarker,@$http,@$templateCache,@$compile)
 			)
 
 		interpolateContent: (content,model) =>

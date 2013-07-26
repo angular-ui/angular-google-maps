@@ -1,14 +1,14 @@
 @module "directives.api.models", ->
 	class @WindowModel extends oo.BaseObject
 		@include directives.api.models.WindowFunctions
-		constructor:(scope,opts,isIconVisibleOnClick,mapCtrl, markerCtrl,$log,$http,$templateCache,$compile)->
+		constructor:(scope,opts,isIconVisibleOnClick,mapCtrl, markerCtrl,$http,$templateCache,$compile)->
 			@scope = scope
 			@opts = opts
 			@mapCtrl = mapCtrl
 			@markerCtrl = markerCtrl
 			@isIconVisibleOnClick = isIconVisibleOnClick
 			@initialMarkerVisibility = if @markerCtrl? then @markerCtrl.getVisible() else false
-			@$log = $log
+			@$log = directives.api.utils.Logger
 			@$http = $http
 			@$templateCache = $templateCache
 			@$compile = $compile

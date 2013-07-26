@@ -37,7 +37,7 @@
  * {attribute show optional}    map will show when this expression returns true
  */
 
-angular.module("google-maps").directive("window", ['$log', '$timeout','$compile', '$http', '$templateCache', 
-  function ($log, $timeout, $compile, $http, $templateCache) {
-    return new directives.api.Window($log, $timeout, $compile, $http, $templateCache);
+angular.module("google-maps").directive("window", ['$timeout','$compile', '$http', '$templateCache', 
+  function ($timeout, $compile, $http, $templateCache) {
+    return new directives.api.Window($timeout, $compile, $http, $templateCache);
   }]);

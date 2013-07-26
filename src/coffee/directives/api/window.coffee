@@ -5,8 +5,8 @@
 @module "directives.api", ->
 	class @Window extends directives.api.IWindow
 
-		constructor: ($log, $timeout, $compile, $http, $templateCache,$interpolate) ->
-			super($log, $timeout, $compile, $http, $templateCache)
+		constructor: ($timeout, $compile, $http, $templateCache,$interpolate) ->
+			super($timeout, $compile, $http, $templateCache)
 			self = @
 			@clsName = "Window"
 			@require= ['^googleMap', '^?marker']
@@ -26,6 +26,6 @@
 				if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
 					new directives.api.models.WindowModel(
 						scope,opts,isIconVisibleOnClick,mapCtrl,
-						markerCtrl,@$log,@$http,@$templateCache,@$compile
+						markerCtrl,@$http,@$templateCache,@$compile
 					)
 			,50)

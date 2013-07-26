@@ -6,12 +6,12 @@
 	class @Marker extends directives.api.IMarker
 		@include directives.api.utils.GmapUtil
 
-		constructor: ($log, $timeout) ->
-			super($log,$timeout)
+		constructor: ($timeout) ->
+			super($timeout)
 			self = @
 			@template = '<span class="angular-google-map-marker" ng-transclude></span>'
 			@clsName = "Marker"
-			$log.info(@)
+			@$log.info(@)
 			@markers = {}
 			@mapCtrl = undefined
 

@@ -17,10 +17,10 @@
 		isFalse: (value) ->
 			['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) != -1   
 
-		constructor: ($log, $timeout) ->
+		constructor: ($timeout) ->
 			self = @
 			@clsName = "IMarker"
-			@$log = $log
+			@$log = directives.api.utils.Logger
 			@$timeout = $timeout
 			@restrict = 'ECMA'
 			@require = '^googleMap'

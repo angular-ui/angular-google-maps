@@ -39,7 +39,7 @@
  * {attribute show optional}    map will show when this expression returns true
  */
 
-angular.module("google-maps").directive("windows", ['$log', '$timeout','$compile', '$http', '$templateCache', '$interpolate',
-  function ($log, $timeout, $compile, $http, $templateCache,$interpolate) {
-    return new directives.api.Windows($log, $timeout, $compile, $http, $templateCache, $interpolate);
+angular.module("google-maps").directive("windows", ['$timeout','$compile', '$http', '$templateCache', '$interpolate',
+  function ($timeout, $compile, $http, $templateCache,$interpolate) {
+    return new directives.api.Windows($timeout, $compile, $http, $templateCache, $interpolate);
   }]);

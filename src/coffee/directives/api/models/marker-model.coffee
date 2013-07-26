@@ -1,7 +1,7 @@
 @module "directives.api.models", ->
 	class @MarkerModel extends oo.BaseObject
 		@include directives.api.utils.GmapUtil
-		constructor:(index,model,parentScope,gMap,$timeout,$log,notifyLocalDestroy,defaults,doClick)->
+		constructor:(index,model,parentScope,gMap,$timeout,notifyLocalDestroy,defaults,doClick)->
 			@index = index
 			@model = model
 			@iconKey = parentScope.icon
@@ -13,6 +13,7 @@
 			@opts = @createMarkerOptions(@gMap,@myScope.coords,@myScope.icon,defaults)
 			@gMarker = new google.maps.Marker(@opts)
 			@doClick = doClick
+			@$log = directives.api.utils.Logger
 			google.maps.event.addListener(@gMarker, 'click', =>
 				#this needs to be thought about as scope is not 1:1 on clicking..... hmmmmm :/
 				if @doClick and @myScope.click?

@@ -138,6 +138,25 @@ angular.module('google-maps', []);;(function() {
 }).call(this);
 
 (function() {
+  this.module("directives.api.utils", function() {
+    return this.Logger = {
+      logger: void 0,
+      doLog: false,
+      info: function(msg) {
+        if (directives.api.utils.Logger.doLog) {
+          if (directives.api.utils.Logger.logger != null) {
+            return directives.api.utils.Logger.logger.info(msg);
+          } else {
+            return console.info(msg);
+          }
+        }
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -148,7 +167,7 @@ angular.module('google-maps', []);;(function() {
 
       MarkerModel.include(directives.api.utils.GmapUtil);
 
-      function MarkerModel(index, model, parentScope, gMap, $timeout, $log, notifyLocalDestroy, defaults, doClick) {
+      function MarkerModel(index, model, parentScope, gMap, $timeout, notifyLocalDestroy, defaults, doClick) {
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
@@ -165,6 +184,7 @@ angular.module('google-maps', []);;(function() {
         this.opts = this.createMarkerOptions(this.gMap, this.myScope.coords, this.myScope.icon, defaults);
         this.gMarker = new google.maps.Marker(this.opts);
         this.doClick = doClick;
+        this.$log = directives.api.utils.Logger;
         google.maps.event.addListener(this.gMarker, 'click', function() {
           if (_this.doClick && (_this.myScope.click != null)) {
             return _this.myScope.click();
@@ -302,7 +322,7 @@ angular.module('google-maps', []);;(function() {
 
       WindowModel.include(directives.api.models.WindowFunctions);
 
-      function WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $log, $http, $templateCache, $compile) {
+      function WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile) {
         this.destroy = __bind(this.destroy, this);
         this.scope = scope;
         this.opts = opts;
@@ -310,7 +330,7 @@ angular.module('google-maps', []);;(function() {
         this.markerCtrl = markerCtrl;
         this.isIconVisibleOnClick = isIconVisibleOnClick;
         this.initialMarkerVisibility = this.markerCtrl != null ? this.markerCtrl.getVisible() : false;
-        this.$log = $log;
+        this.$log = directives.api.utils.Logger;
         this.$http = $http;
         this.$templateCache = $templateCache;
         this.$compile = $compile;
@@ -364,7 +384,7 @@ angular.module('google-maps', []);;(function() {
         return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
       };
 
-      function IMarker($log, $timeout) {
+      function IMarker($timeout) {
         this.linkInit = __bind(this.linkInit, this);
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
@@ -374,7 +394,7 @@ angular.module('google-maps', []);;(function() {
         var self;
         self = this;
         this.clsName = "IMarker";
-        this.$log = $log;
+        this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         this.restrict = 'ECMA';
         this.require = '^googleMap';
@@ -457,7 +477,7 @@ angular.module('google-maps', []);;(function() {
 
       IWindow.prototype.DEFAULTS = {};
 
-      function IWindow($log, $timeout, $compile, $http, $templateCache) {
+      function IWindow($timeout, $compile, $http, $templateCache) {
         this.link = __bind(this.link, this);
         var self;
         self = this;
@@ -475,7 +495,7 @@ angular.module('google-maps', []);;(function() {
           isIconVisibleOnClick: '=isiconvisibleonclick',
           closeClick: '&closeclick'
         };
-        this.$log = $log;
+        this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         this.$compile = $compile;
         this.$http = $http;
@@ -510,7 +530,7 @@ angular.module('google-maps', []);;(function() {
 
       Marker.include(directives.api.utils.GmapUtil);
 
-      function Marker($log, $timeout) {
+      function Marker($timeout) {
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
@@ -521,7 +541,7 @@ angular.module('google-maps', []);;(function() {
         self = this;
         this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
         this.clsName = "Marker";
-        $log.info(this);
+        this.$log.info(this);
         this.markers = {};
         this.mapCtrl = void 0;
       }
@@ -614,7 +634,7 @@ not 1:1 in this setting.
     return this.Markers = (function(_super) {
       __extends(Markers, _super);
 
-      function Markers($log, $timeout) {
+      function Markers($timeout) {
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
@@ -665,7 +685,7 @@ not 1:1 in this setting.
           _this = this;
         _ref = scope.models;
         _fn = function(model) {
-          _this.markers.push(new directives.api.models.MarkerModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.$log, function(index) {
+          _this.markers.push(new directives.api.models.MarkerModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, function(index) {
             return delete _this.markers[index];
           }, _this.DEFAULTS, _this.doClick));
           return _this.markersIndex++;
@@ -680,7 +700,21 @@ not 1:1 in this setting.
       Markers.prototype.watchModels = function(scope) {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
-          return "";
+          var oldM, _fn, _i, _len, _ref;
+          if (newValue !== oldValue) {
+            _ref = _this.markers;
+            _fn = function(oldM) {
+              return oldM.destroy();
+            };
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              oldM = _ref[_i];
+              _fn(oldM);
+            }
+            delete _this.markers;
+            _this.markers = [];
+            _this.markersIndex = 0;
+            return _this.createMarkers(scope);
+          }
         }, true);
       };
 
@@ -752,7 +786,7 @@ not 1:1 in this setting.
     return this.Window = (function(_super) {
       __extends(Window, _super);
 
-      function Window($log, $timeout, $compile, $http, $templateCache, $interpolate) {
+      function Window($timeout, $compile, $http, $templateCache, $interpolate) {
         this.link = __bind(this.link, this);
         var self;
         Window.__super__.constructor.call(this, $log, $timeout, $compile, $http, $templateCache);
@@ -775,7 +809,7 @@ not 1:1 in this setting.
           markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
           opts = _this.createWindowOptions(markerCtrl, scope, element.html(), _this.DEFAULTS);
           if (mapCtrl != null) {
-            return new directives.api.models.WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$log, _this.$http, _this.$templateCache, _this.$compile);
+            return new directives.api.models.WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile);
           }
         }, 50);
       };
@@ -801,9 +835,10 @@ not 1:1 in this setting.
     return this.Windows = (function(_super) {
       __extends(Windows, _super);
 
-      function Windows($log, $timeout, $compile, $http, $templateCache, $interpolate) {
+      function Windows($timeout, $compile, $http, $templateCache, $interpolate) {
         this.interpolateContent = __bind(this.interpolateContent, this);
         this.createWindow = __bind(this.createWindow, this);
+        this.setContentKeys = __bind(this.setContentKeys, this);
         this.createChildScopesWindows = __bind(this.createChildScopesWindows, this);
         this.link = __bind(this.link, this);
         this.watchOurScope = __bind(this.watchOurScope, this);
@@ -818,10 +853,9 @@ not 1:1 in this setting.
         this.require = ['^googleMap', '^?markers'];
         this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
         this.scope.models = '=models';
-        this.scope.contentKeys = '=contentkeys';
         this.windows = [];
         this.windwsIndex = 0;
-        this.scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick', 'contentKeys'];
+        this.scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
         _ref = this.scopePropNames;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
@@ -829,6 +863,7 @@ not 1:1 in this setting.
         }
         this.linked = void 0;
         this.models = void 0;
+        this.contentKeys = void 0;
         this.isIconVisibleOnClick = void 0;
         this.firstTime = true;
         this.$log.info(self);
@@ -837,8 +872,18 @@ not 1:1 in this setting.
       Windows.prototype.watch = function(scope, name, nameKey) {
         var _this = this;
         return scope.$watch(name, function(newValue, oldValue) {
+          var model, _i, _len, _ref, _results;
           if (newValue !== oldValue) {
-            return _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
+            _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
+            _ref = _this.windows;
+            _results = [];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              model = _ref[_i];
+              _results.push((function(model) {
+                return model.scope[name] = _this[nameKey] === 'self' || _this[nameKey] === void 0 ? model : model[_this[nameKey]];
+              })(model));
+            }
+            return _results;
           }
         }, true);
       };
@@ -846,7 +891,20 @@ not 1:1 in this setting.
       Windows.prototype.watchModels = function(scope) {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
-          return "";
+          var model, _fn, _i, _len, _ref;
+          if (newValue !== oldValue) {
+            _ref = _this.windows;
+            _fn = function(model) {
+              return model.destroy();
+            };
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              model = _ref[_i];
+              _fn(model);
+            }
+            _this.windows = [];
+            _this.windowsIndex = 0;
+            return _this.createChildScopesWindows();
+          }
         }, true);
       };
 
@@ -876,9 +934,7 @@ not 1:1 in this setting.
             var nameKey;
             nameKey = name + 'Key';
             _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
-            if (firstTime) {
-              return _this.watch(scope, name, nameKey);
-            }
+            return _this.watch(scope, name, nameKey);
           })(name));
         }
         return _results;
@@ -922,6 +978,7 @@ not 1:1 in this setting.
               this.watchModels(this.linked.scope);
               this.watchDestroy(this.linked.scope);
             }
+            this.setContentKeys(this.linked.scope.models);
             _ref = this.linked.scope.models;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               model = _ref[_i];
@@ -933,6 +990,7 @@ not 1:1 in this setting.
               this.watchModels(markersScope);
               this.watchDestroy(markersScope);
             }
+            this.setContentKeys(markersScope.models);
             _ref1 = markersScope.markerModels;
             _fn = function(mm) {
               return _this.createWindow(mm.model, mm.gMarker, gMap);
@@ -944,6 +1002,12 @@ not 1:1 in this setting.
           }
         }
         return this.firstTime = false;
+      };
+
+      Windows.prototype.setContentKeys = function(models) {
+        if (models.length > 0) {
+          return this.contentKeys = Object.keys(models[0]);
+        }
       };
 
       Windows.prototype.createWindow = function(model, gMarker, gMap) {
@@ -972,19 +1036,19 @@ not 1:1 in this setting.
           name = _ref[_i];
           _fn(name);
         }
-        parsedContent = "";
+        parsedContent = this.interpolateContent(this.linked.element.html(), model);
         opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS);
-        return this.windows.push(new directives.api.models.WindowModel(childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$log, this.$http, this.$templateCache, this.$compile));
+        return this.windows.push(new directives.api.models.WindowModel(childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile));
       };
 
       Windows.prototype.interpolateContent = function(content, model) {
         var exp, interpModel, key, _i, _len, _ref;
-        if (this.contentKeysKey == null) {
+        if (this.contentKeys === void 0 || this.contentKeys.length === 0) {
           return;
         }
         exp = this.$interpolate(content);
         interpModel = {};
-        _ref = this.contentKeysKey;
+        _ref = this.contentKeys;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           key = _ref[_i];
           interpModel[key] = model[key];
@@ -1031,6 +1095,8 @@ angular.module('google-maps')
     .directive('googleMap', ['$log', '$timeout', function ($log, $timeout) {
 
         "use strict";
+        
+        directives.api.utils.Logger.logger = $log;
 
         var DEFAULTS = {
           mapTypeId: google.maps.MapTypeId.ROADMAP

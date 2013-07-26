@@ -31,6 +31,8 @@ angular.module('google-maps')
     .directive('googleMap', ['$log', '$timeout', function ($log, $timeout) {
 
         "use strict";
+        
+        directives.api.utils.Logger.logger = $log;
 
         var DEFAULTS = {
           mapTypeId: google.maps.MapTypeId.ROADMAP

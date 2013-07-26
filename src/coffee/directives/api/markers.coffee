@@ -11,8 +11,8 @@ not 1:1 in this setting.
 ###
 @module "directives.api", ->
 	class @Markers extends directives.api.IMarker
-		constructor: ($log, $timeout) ->
-			super($log,$timeout)
+		constructor: ($timeout) ->
+			super($timeout)
 			self = @
 			@template = '<span class="angular-google-map-markers" ng-transclude></span>'
 			@clsName = "Markers"
@@ -48,7 +48,7 @@ not 1:1 in this setting.
 			for model in scope.models
 				do(model) =>
 					@markers.push( 
-						new directives.api.models.MarkerModel(@markersIndex,model,scope,@mapCtrl,@$timeout,@$log, (index) =>
+						new directives.api.models.MarkerModel(@markersIndex,model,scope,@mapCtrl,@$timeout,(index) =>
 							delete @markers[index]
 						,@DEFAULTS,@doClick)
 					)

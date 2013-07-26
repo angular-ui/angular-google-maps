@@ -7,7 +7,7 @@
 		# Animation is enabled by default
 		DEFAULTS: {}
 
-		constructor: ($log, $timeout, $compile, $http, $templateCache) ->
+		constructor: ($timeout, $compile, $http, $templateCache) ->
 			self = @
 			@clsName = "IWindow"
 			@restrict= 'ECMA'
@@ -23,7 +23,7 @@
 				isIconVisibleOnClick: '=isiconvisibleonclick',
 				closeClick: '&closeclick'           #scope glue to gmap InfoWindow closeclick
 			}
-			@$log = $log
+			@$log = directives.api.utils.Logger
 			@$timeout = $timeout
 			@$compile = $compile
 			@$http = $http
