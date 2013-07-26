@@ -90,9 +90,8 @@ angular.module('google-maps')
                 markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
-                events: '=events',          // optional
-                events: '=events',           // optional
                 options: '=options'         // optional
+                events: '=events',          // optional
                 bounds: '=bounds'
             },
 
