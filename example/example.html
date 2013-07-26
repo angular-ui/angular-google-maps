@@ -50,7 +50,7 @@
 				events="map.events">
 
 				<markers models="map.markers2" coords="'self'" icon="'icon'" >
-					<windows show="'showWindow'" closeClick="'closeClick'" contentKeys="['latitude','longitude']">
+					<windows show="'showWindow'" closeClick="'closeClick'">
 						<p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
 					</windows>

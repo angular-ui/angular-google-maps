@@ -680,21 +680,7 @@ not 1:1 in this setting.
       Markers.prototype.watchModels = function(scope) {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
-          var oldM, _fn, _i, _len, _ref;
-          if (newValue !== oldValue) {
-            _ref = _this.markers;
-            _fn = function(oldM) {
-              return oldM.destroy();
-            };
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              oldM = _ref[_i];
-              _fn(oldM);
-            }
-            delete _this.markers;
-            _this.markers = [];
-            _this.markersIndex = 0;
-            return _this.createMarkers(scope);
-          }
+          return "";
         }, true);
       };
 
@@ -766,7 +752,7 @@ not 1:1 in this setting.
     return this.Window = (function(_super) {
       __extends(Window, _super);
 
-      function Window($log, $timeout, $compile, $http, $templateCache) {
+      function Window($log, $timeout, $compile, $http, $templateCache, $interpolate) {
         this.link = __bind(this.link, this);
         var self;
         Window.__super__.constructor.call(this, $log, $timeout, $compile, $http, $templateCache);
@@ -815,7 +801,8 @@ not 1:1 in this setting.
     return this.Windows = (function(_super) {
       __extends(Windows, _super);
 
-      function Windows($log, $timeout, $compile, $http, $templateCache) {
+      function Windows($log, $timeout, $compile, $http, $templateCache, $interpolate) {
+        this.interpolateContent = __bind(this.interpolateContent, this);
         this.createWindow = __bind(this.createWindow, this);
         this.createChildScopesWindows = __bind(this.createChildScopesWindows, this);
         this.link = __bind(this.link, this);
@@ -826,13 +813,15 @@ not 1:1 in this setting.
         var name, self, _i, _len, _ref;
         Windows.__super__.constructor.call(this, $log, $timeout, $compile, $http, $templateCache);
         self = this;
+        this.$interpolate = $interpolate;
         this.clsName = "Windows";
         this.require = ['^googleMap', '^?markers'];
         this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
         this.scope.models = '=models';
+        this.scope.contentKeys = '=contentkeys';
         this.windows = [];
         this.windwsIndex = 0;
-        this.scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
+        this.scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick', 'contentKeys'];
         _ref = this.scopePropNames;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
@@ -848,18 +837,8 @@ not 1:1 in this setting.
       Windows.prototype.watch = function(scope, name, nameKey) {
         var _this = this;
         return scope.$watch(name, function(newValue, oldValue) {
-          var model, _i, _len, _ref, _results;
           if (newValue !== oldValue) {
-            _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
-            _ref = _this.windows;
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              model = _ref[_i];
-              _results.push((function(model) {
-                return model.scope[name] = _this[nameKey] === 'self' || _this[nameKey] === void 0 ? model : model[_this[nameKey]];
-              })(model));
-            }
-            return _results;
+            return _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
           }
         }, true);
       };
@@ -867,21 +846,7 @@ not 1:1 in this setting.
       Windows.prototype.watchModels = function(scope) {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
-          var oldW, _fn, _i, _len, _ref;
-          if (newValue !== oldValue) {
-            _ref = _this.windows;
-            _fn = function(oldM) {
-              return oldW.destroy();
-            };
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              oldW = _ref[_i];
-              _fn(oldM);
-            }
-            delete _this.windows;
-            _this.windows = [];
-            _this.windowsIndex = 0;
-            return _this.createChildScopesWindows();
-          }
+          return "";
         }, true);
       };
 
@@ -911,7 +876,9 @@ not 1:1 in this setting.
             var nameKey;
             nameKey = name + 'Key';
             _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
-            return _this.watch(scope, name, nameKey);
+            if (firstTime) {
+              return _this.watch(scope, name, nameKey);
+            }
           })(name));
         }
         return _results;
@@ -920,8 +887,8 @@ not 1:1 in this setting.
       Windows.prototype.link = function(scope, element, attrs, ctrls) {
         var _this = this;
         this.linked = new directives.api.utils.Linked(scope, element, attrs, ctrls);
-        this.watchOurScope(scope);
         return this.$timeout(function() {
+          _this.watchOurScope(scope);
           return _this.createChildScopesWindows();
         }, 50);
       };
@@ -992,7 +959,7 @@ not 1:1 in this setting.
         					closeClick: '&closeclick'
         				}
         */
-        var childScope, name, opts, _fn, _i, _len, _ref,
+        var childScope, name, opts, parsedContent, _fn, _i, _len, _ref,
           _this = this;
         childScope = this.linked.scope.$new(false);
         _ref = this.scopePropNames;
@@ -1005,8 +972,24 @@ not 1:1 in this setting.
           name = _ref[_i];
           _fn(name);
         }
-        opts = this.createWindowOptions(gMarker, childScope, this.linked.element.html(), this.DEFAULTS);
+        parsedContent = "";
+        opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS);
         return this.windows.push(new directives.api.models.WindowModel(childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$log, this.$http, this.$templateCache, this.$compile));
+      };
+
+      Windows.prototype.interpolateContent = function(content, model) {
+        var exp, interpModel, key, _i, _len, _ref;
+        if (this.contentKeysKey == null) {
+          return;
+        }
+        exp = this.$interpolate(content);
+        interpModel = {};
+        _ref = this.contentKeysKey;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          key = _ref[_i];
+          interpModel[key] = model[key];
+        }
+        return exp(interpModel);
       };
 
       return Windows;
@@ -1617,7 +1600,7 @@ angular.module("google-maps").directive("window", ['$log', '$timeout','$compile'
  * {attribute show optional}    map will show when this expression returns true
  */
 
-angular.module("google-maps").directive("windows", ['$log', '$timeout','$compile', '$http', '$templateCache', 
-  function ($log, $timeout, $compile, $http, $templateCache) {
-    return new directives.api.Windows($log, $timeout, $compile, $http, $templateCache);
+angular.module("google-maps").directive("windows", ['$log', '$timeout','$compile', '$http', '$templateCache', '$interpolate',
+  function ($log, $timeout, $compile, $http, $templateCache,$interpolate) {
+    return new directives.api.Windows($log, $timeout, $compile, $http, $templateCache, $interpolate);
   }]);

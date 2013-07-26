@@ -12,15 +12,15 @@
 			@require= ['^googleMap', '^?markers']
 			@template = '<span class="angular-google-maps-windows" ng-transclude></span>'
 			@scope.models = '=models' #if undefined it will try get a markers models
-			@scope.contentKeys = '=contentkeys'
 			@windows = []
 			@windwsIndex = 0
 			@scopePropNames = ['show','coords','templateUrl','templateParameter',
-			'isIconVisibleOnClick','closeClick','contentKeys']
+			'isIconVisibleOnClick','closeClick']
 			#setting up local references to propety keys IE: @coordsKey
 			@[name + 'Key'] = undefined for name in @scopePropNames
 			@linked = undefined
 			@models = undefined
+			@contentKeys = undefined #model keys to parse html angular content
 			@isIconVisibleOnClick = undefined
 			@firstTime = true
 			@$log.info(self)
@@ -42,11 +42,10 @@
 					for model in @windows
 						do(model) =>
 							model.destroy()
-					delete @windows
+					# delete @windows
 					@windows = []
 					@windowsIndex = 0
 					@createChildScopesWindows()
-
 			, true)
 
 		watchDestroy:(scope)=>
@@ -66,8 +65,9 @@
 
 		link: (scope, element, attrs, ctrls) =>
 			@linked = new directives.api.utils.Linked(scope,element,attrs,ctrls)	
-			@watchOurScope(scope)
+			
 			@$timeout( => 
+				@watchOurScope(scope)
 				@createChildScopesWindows()
 			,50)
 
@@ -98,6 +98,7 @@
 					if(@firstTime)
 						@watchModels(@linked.scope)
 						@watchDestroy(@linked.scope)
+					@setContentKeys(@linked.scope.models) #only setting content keys once per model array
 					@createWindow(model,undefined,gMap) for model in @linked.scope.models
 				else
 					#creating windows with parent markers
@@ -105,10 +106,15 @@
 					if(@firstTime)
 						@watchModels(markersScope)
 						@watchDestroy(markersScope)
+					@setContentKeys(markersScope.models) #only setting content keys once per model array
 					for mm in markersScope.markerModels
 						do(mm) =>
 							@createWindow(mm.model,mm.gMarker,gMap)
 			@firstTime = false
+
+		setContentKeys:(models)=>
+			if(models.length > 0)
+				@contentKeys = Object.keys(models[0])
 						
 		createWindow: (model,gMarker,gMap)=>
 			###
@@ -136,5 +142,5 @@
 		interpolateContent: (content,model) =>
 			exp = @$interpolate(content)
 			interpModel = {}
-			interpModel[key] = model[key] for key in @contentKeysKey
+			interpModel[key] = model[key] for key in @contentKeys
 			exp(interpModel)
