@@ -88,7 +88,8 @@ angular.module('google-maps')
                 markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
-                events: '=events'           // optional
+                events: '=events',          // optional
+                options: '=options'         // optional
             },
 
             /**
@@ -132,7 +133,7 @@ angular.module('google-maps')
                 // Parse options
                 var opts = {options: {}};
                 if (attrs.options) {
-                    opts.options = angular.fromJson(attrs.options);
+                    opts.options = scope.options;
                 }
 
                 if (attrs.type) {
