@@ -33,6 +33,7 @@
 				@watchCoords(scope)
 				@watchIcon(scope)
 				@watchDestroy(scope)
+				@onTimeOut(scope)
 			)
 
 		onTimeOut:(scope)=>
