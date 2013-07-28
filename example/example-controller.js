@@ -50,7 +50,7 @@ function ExampleController ($scope, $timeout, $log) {
                     icon: 'plane.png',
                     latitude: 35,
                     longitude: -125,
-                    showWindow: false
+                    showWindow: true
                 }
             ],
             dynamicMarkers: [],
@@ -142,6 +142,7 @@ function ExampleController ($scope, $timeout, $log) {
         $log.info("Clearing markers. They should disappear from the map now");
         $scope.map.markers.length = 0;
         $scope.map.markers2.length = 0;
+        $scope.map.dynamicMarkers.length = 0;
         $scope.map.clickedMarker = null;
     };
 
@@ -166,10 +167,10 @@ function ExampleController ($scope, $timeout, $log) {
                 }
         ];
        _.each(dynamicMarkers,function(marker){
-        marker.closeClick = function(){                        
-            this.showWindow = false;
-            $scope.$apply();
-        };
+            marker.closeClick = function(){                        
+                this.showWindow = false;
+                $scope.$apply();
+            };
         });
         $scope.map.dynamicMarkers = dynamicMarkers;
     }, 2000);

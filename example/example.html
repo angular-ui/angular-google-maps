@@ -129,6 +129,22 @@
 							</td>
 						</tr>
 						<tr>
+							<td>dynamicMarkers</td>
+							<td>
+								<div class="well sidebar-nav">
+									<ul class="nav nav-list">
+										<li  ng-repeat="m in map.dynamicMarkers" ng-click="m.showWindow = true">
+											<a href="#">
+												<i class="i" title="Click me to Show InfoWindow!">
+													Marker: {{m}}
+												</i>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</td>
+						</tr>
+						<tr>
 							<td>center</td>
 							<td><pre><span ng-show="map.center.latitude >= 0">&nbsp;</span>{{ map.center.latitude | number:4 }} lat<br><span ng-show="map.center.longitude >= 0">&nbsp;</span>{{ map.center.longitude | number:4 }} lng</pre></td>
 						</tr>

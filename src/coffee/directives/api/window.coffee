@@ -4,8 +4,8 @@
 ###	
 @module "directives.api", ->
 	class @Window extends directives.api.IWindow
-
-		constructor: ($timeout, $compile, $http, $templateCache,$interpolate) ->
+		@include directives.api.utils.GmapUtil
+		constructor: ($timeout, $compile, $http, $templateCache) ->
 			super($timeout, $compile, $http, $templateCache)
 			self = @
 			@clsName = "Window"
@@ -24,7 +24,7 @@
 				opts = @createWindowOptions(markerCtrl,scope,element.html(),@DEFAULTS)
 
 				if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
-					new directives.api.models.WindowModel(
+					new directives.api.models.child.WindowChildModel(
 						scope,opts,isIconVisibleOnClick,mapCtrl,
 						markerCtrl,@$http,@$templateCache,@$compile
 					)

@@ -1,5 +1,5 @@
-@module "directives.api.models", ->
-	class @MarkerModel extends oo.BaseObject
+@module "directives.api.models.child", ->
+	class @MarkerChildModel extends oo.BaseObject
 		@include directives.api.utils.GmapUtil
 		constructor:(index,model,parentScope,gMap,$timeout,notifyLocalDestroy,defaults,doClick)->
 			@index = index

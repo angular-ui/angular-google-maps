@@ -161,13 +161,13 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api.models", function() {
-    return this.MarkerModel = (function(_super) {
-      __extends(MarkerModel, _super);
+  this.module("directives.api.models.child", function() {
+    return this.MarkerChildModel = (function(_super) {
+      __extends(MarkerChildModel, _super);
 
-      MarkerModel.include(directives.api.utils.GmapUtil);
+      MarkerChildModel.include(directives.api.utils.GmapUtil);
 
-      function MarkerModel(index, model, parentScope, gMap, $timeout, notifyLocalDestroy, defaults, doClick) {
+      function MarkerChildModel(index, model, parentScope, gMap, $timeout, notifyLocalDestroy, defaults, doClick) {
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
@@ -197,11 +197,11 @@ angular.module('google-maps', []);;(function() {
         });
       }
 
-      MarkerModel.prototype.destroy = function() {
+      MarkerChildModel.prototype.destroy = function() {
         return this.myScope.$destroy();
       };
 
-      MarkerModel.prototype.watchCoords = function(scope) {
+      MarkerChildModel.prototype.watchCoords = function(scope) {
         var _this = this;
         return scope.$watch('coords', function(newValue, oldValue) {
           if (newValue !== oldValue) {
@@ -216,7 +216,7 @@ angular.module('google-maps', []);;(function() {
         }, true);
       };
 
-      MarkerModel.prototype.watchIcon = function(scope) {
+      MarkerChildModel.prototype.watchIcon = function(scope) {
         var _this = this;
         return scope.$watch('icon', function(newValue, oldValue) {
           if (newValue !== oldValue) {
@@ -229,7 +229,7 @@ angular.module('google-maps', []);;(function() {
         }, true);
       };
 
-      MarkerModel.prototype.watchDestroy = function(scope) {
+      MarkerChildModel.prototype.watchDestroy = function(scope) {
         var _this = this;
         return scope.$on("$destroy", function() {
           _this.gMarker.setMap(null);
@@ -239,7 +239,53 @@ angular.module('google-maps', []);;(function() {
         });
       };
 
-      return MarkerModel;
+      return MarkerChildModel;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api.models.child", function() {
+    return this.WindowChildModel = (function(_super) {
+      __extends(WindowChildModel, _super);
+
+      WindowChildModel.include(directives.api.models.child.WindowFunctions);
+
+      function WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile) {
+        this.destroy = __bind(this.destroy, this);
+        this.scope = scope;
+        this.opts = opts;
+        this.mapCtrl = mapCtrl;
+        this.markerCtrl = markerCtrl;
+        this.isIconVisibleOnClick = isIconVisibleOnClick;
+        this.initialMarkerVisibility = this.markerCtrl != null ? this.markerCtrl.getVisible() : false;
+        this.$log = directives.api.utils.Logger;
+        this.$http = $http;
+        this.$templateCache = $templateCache;
+        this.$compile = $compile;
+        this.gWin = new google.maps.InfoWindow(opts);
+        if (this.markerCtrl != null) {
+          this.markerCtrl.setClickable(true);
+        }
+        this.handleClick(this.scope, this.mapCtrl, this.markerCtrl, this.gWin, this.isIconVisibleOnClick, this.initialMarkerVisibility);
+        this.watchShow(scope, $http, $templateCache, this.$compile, this.gWin, this.showWindow, this.hideWindow, this.mapCtrl);
+        this.$log.info(this);
+      }
+
+      WindowChildModel.prototype.destroy = function() {
+        this.hideWindow(this.gWin);
+        this.scope.$destroy();
+        delete this.gWin;
+        return delete this;
+      };
+
+      return WindowChildModel;
 
     })(oo.BaseObject);
   });
@@ -255,10 +301,10 @@ angular.module('google-maps', []);;(function() {
 */
 
 (function() {
-  this.module("directives.api.models", function() {
+  this.module("directives.api.models.child", function() {
     return this.WindowFunctions = {
       watchShow: function(scope, $http, $templateCache, $compile, gWin, showHandle, hideHandle, mapCtrl) {
-        return scope.$watch('show()', function(newValue, oldValue) {
+        return scope.$watch('show', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             if (newValue) {
               return showHandle(scope, $http, $templateCache, $compile, gWin, mapCtrl);
@@ -311,52 +357,6 @@ angular.module('google-maps', []);;(function() {
 
 }).call(this);
 
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  this.module("directives.api.models", function() {
-    return this.WindowModel = (function(_super) {
-      __extends(WindowModel, _super);
-
-      WindowModel.include(directives.api.models.WindowFunctions);
-
-      function WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile) {
-        this.destroy = __bind(this.destroy, this);
-        this.scope = scope;
-        this.opts = opts;
-        this.mapCtrl = mapCtrl;
-        this.markerCtrl = markerCtrl;
-        this.isIconVisibleOnClick = isIconVisibleOnClick;
-        this.initialMarkerVisibility = this.markerCtrl != null ? this.markerCtrl.getVisible() : false;
-        this.$log = directives.api.utils.Logger;
-        this.$http = $http;
-        this.$templateCache = $templateCache;
-        this.$compile = $compile;
-        this.gWin = new google.maps.InfoWindow(opts);
-        if (this.markerCtrl != null) {
-          this.markerCtrl.setClickable(true);
-        }
-        this.handleClick(this.scope, this.mapCtrl, this.markerCtrl, this.gWin, this.isIconVisibleOnClick, this.initialMarkerVisibility);
-        this.watchShow(scope, $http, $templateCache, this.$compile, this.gWin, this.showWindow, this.hideWindow, this.mapCtrl);
-        this.$log.info(this);
-      }
-
-      WindowModel.prototype.destroy = function() {
-        this.hideWindow(this.gWin);
-        this.scope.$destroy();
-        delete this.gWin;
-        return delete this;
-      };
-
-      return WindowModel;
-
-    })(oo.BaseObject);
-  });
-
-}).call(this);
-
 
 /*
 	- interface for all markers to derrive from
@@ -372,47 +372,52 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
-    return this.IMarker = (function(_super) {
-      __extends(IMarker, _super);
+  this.module("directives.api.models.parent", function() {
+    return this.IMarkerParentModel = (function(_super) {
+      __extends(IMarkerParentModel, _super);
 
-      IMarker.prototype.DEFAULTS = {
+      IMarkerParentModel.prototype.DEFAULTS = {
         animation: google.maps.Animation.DROP
       };
 
-      IMarker.prototype.isFalse = function(value) {
+      IMarkerParentModel.prototype.isFalse = function(value) {
         return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
       };
 
-      function IMarker($timeout) {
+      function IMarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
         this.linkInit = __bind(this.linkInit, this);
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
-        this.link = __bind(this.link, this);
-        this.validateLinkedScope = __bind(this.validateLinkedScope, this);
-        var self;
+        this.validateScope = __bind(this.validateScope, this);
+        var self,
+          _this = this;
         self = this;
+        if (this.validateScope(scope)) {
+          return;
+        }
+        this.mapCtrl = mapCtrl;
+        this.doClick = doClick;
+        this.animate = animate;
         this.clsName = "IMarker";
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
-        this.restrict = 'ECMA';
-        this.require = '^googleMap';
-        this.priority = -1;
-        this.transclude = true;
-        this.replace = true;
-        this.scope = {
-          coords: '=coords',
-          icon: '=icon',
-          click: '&click'
-        };
+        this.$timeout(function() {
+          var animate;
+          animate = angular.isDefined(attrs.animate) && _this.isFalse(attrs.animate);
+          _this.watchModels(scope);
+          _this.createMarkers(scope);
+          _this.watchCoords(scope);
+          _this.watchIcon(scope);
+          return _this.watchDestroy(scope);
+        });
       }
 
-      IMarker.prototype.controller = function($scope, $element) {
+      IMarkerParentModel.prototype.controller = function($scope, $element) {
         throw new Exception("Not Implemented!!");
       };
 
-      IMarker.prototype.validateLinkedScope = function(scope) {
+      IMarkerParentModel.prototype.validateScope = function(scope) {
         var ret;
         ret = angular.isUndefined(scope.coords) || scope.coords === void 0;
         if (ret) {
@@ -421,38 +426,23 @@ angular.module('google-maps', []);;(function() {
         return ret;
       };
 
-      IMarker.prototype.link = function(scope, element, attrs, mapCtrl) {
-        var _this = this;
-        if (this.validateLinkedScope(scope)) {
-          return;
-        }
-        return this.$timeout(function() {
-          var animate;
-          animate = angular.isDefined(attrs.animate) && _this.isFalse(attrs.animate);
-          _this.linkInit(element, mapCtrl, scope, animate, angular.isDefined(attrs.click));
-          _this.watchCoords(scope);
-          _this.watchIcon(scope);
-          return _this.watchDestroy(scope);
-        });
-      };
-
-      IMarker.prototype.watchCoords = function(scope) {
+      IMarkerParentModel.prototype.watchCoords = function(scope) {
         throw new Exception("Not Implemented!!");
       };
 
-      IMarker.prototype.watchIcon = function(scope) {
+      IMarkerParentModel.prototype.watchIcon = function(scope) {
         throw new Exception("Not Implemented!!");
       };
 
-      IMarker.prototype.watchDestroy = function(scope) {
+      IMarkerParentModel.prototype.watchDestroy = function(scope) {
         throw new Exception("Not Implemented!!");
       };
 
-      IMarker.prototype.linkInit = function(element, mapCtrl, scope, animate) {
+      IMarkerParentModel.prototype.linkInit = function(element, mapCtrl, scope, animate) {
         throw new Exception("Not Implemented!!");
       };
 
-      return IMarker;
+      return IMarkerParentModel;
 
     })(oo.BaseObject);
   });
@@ -465,48 +455,35 @@ angular.module('google-maps', []);;(function() {
 */
 
 (function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
+  var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
-    return this.IWindow = (function(_super) {
-      __extends(IWindow, _super);
+  this.module("directives.api.models.parent", function() {
+    var _ref;
+    return this.IWindowParentModel = (function(_super) {
+      __extends(IWindowParentModel, _super);
 
-      IWindow.include(directives.api.utils.GmapUtil);
+      function IWindowParentModel() {
+        _ref = IWindowParentModel.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
 
-      IWindow.prototype.DEFAULTS = {};
+      IWindowParentModel.include(directives.api.utils.GmapUtil);
 
-      function IWindow($timeout, $compile, $http, $templateCache) {
-        this.link = __bind(this.link, this);
+      IWindowParentModel.prototype.DEFAULTS = {};
+
+      IWindowParentModel.prototype.link = function(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache) {
         var self;
         self = this;
-        this.clsName = "IWindow";
-        this.restrict = 'ECMA';
-        this.template = void 0;
-        this.transclude = true;
-        this.priority = -100;
-        this.require = void 0;
-        this.scope = {
-          coords: '=coords',
-          show: '&show',
-          templateUrl: '=templateurl',
-          templateParameter: '=templateparameter',
-          isIconVisibleOnClick: '=isiconvisibleonclick',
-          closeClick: '&closeclick'
-        };
+        this.clsName = "directives.api.models.parent.IWindow";
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         this.$compile = $compile;
         this.$http = $http;
-        this.$templateCache = $templateCache;
-      }
-
-      IWindow.prototype.link = function(scope, element, attrs, ctrls) {
-        throw new Exception("Not Implemented!!");
+        return this.$templateCache = $templateCache;
       };
 
-      return IWindow;
+      return IWindowParentModel;
 
     })(oo.BaseObject);
   });
@@ -524,168 +501,137 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
-    return this.Marker = (function(_super) {
-      __extends(Marker, _super);
+  this.module("directives.api.models.parent", function() {
+    return this.MarkerParentModel = (function(_super) {
+      __extends(MarkerParentModel, _super);
 
-      Marker.include(directives.api.utils.GmapUtil);
+      MarkerParentModel.include(directives.api.utils.GmapUtil);
 
-      function Marker($timeout) {
+      function MarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
-        this.linkInit = __bind(this.linkInit, this);
-        this.validateLinkedScope = __bind(this.validateLinkedScope, this);
-        var self;
-        Marker.__super__.constructor.call(this, $timeout);
+        this.validateScope = __bind(this.validateScope, this);
+        var opts, self;
+        MarkerParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
-        this.clsName = "Marker";
+        this.clsName = "MarkerParentModel";
         this.$log.info(this);
-        this.markers = {};
-        this.mapCtrl = void 0;
-      }
-
-      Marker.prototype.controller = function($scope, $element) {
-        return this.getMarker = function() {
-          return $element.data('instance');
-        };
-      };
-
-      Marker.prototype.validateLinkedScope = function(scope) {
-        return Marker.__super__.validateLinkedScope.call(this, scope) || angular.isUndefined(scope.coords.latitude) || angular.isUndefined(scope.coords.longitude);
-      };
-
-      Marker.prototype.linkInit = function(element, mapCtrl, scope, animate, doClick) {
-        var gMarker, opts;
-        this.mapCtrl = mapCtrl;
         opts = this.createMarkerOptions(mapCtrl, scope.coords, scope.icon, animate, this.DEFAULTS);
-        gMarker = new google.maps.Marker(opts);
-        this.markers[scope.$id] = gMarker;
-        element.data('instance', gMarker);
-        return google.maps.event.addListener(gMarker, 'click', function() {
+        this.gMarker = new google.maps.Marker(opts);
+        this.scope = scope;
+        google.maps.event.addListener(gMarker, 'click', function() {
           if (doClick && (scope.click != null)) {
             return scope.click();
           }
         });
+      }
+
+      MarkerParentModel.prototype.validateScope = function(scope) {
+        return MarkerParentModel.__super__.validateScope.call(this, scope) || angular.isUndefined(scope.coords.latitude) || angular.isUndefined(scope.coords.longitude);
       };
 
-      Marker.prototype.watchCoords = function(scope) {
+      MarkerParentModel.prototype.controller = function($scope, $element) {
+        return this.getMarker = function() {
+          return this.gMarker;
+        };
+      };
+
+      MarkerParentModel.prototype.watchCoords = function(scope) {
         var _this = this;
         return scope.$watch('coords', function(newValue, oldValue) {
           if (newValue !== oldValue) {
-            if (newValue) {
-              _this.markers[scope.$id].setMap(_this.mapCtrl.getMap());
-              _this.markers[scope.$id].setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
-              return _this.markers[scope.$id].setVisible((newValue.latitude != null) && (newValue.longitude != null));
+            if (newValue && (typeof gMarker !== "undefined" && gMarker !== null)) {
+              _this.gMarker.setMap(_this.mapCtrl.getMap());
+              _this.gMarker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              return _this.gMarker.setVisible((newValue.latitude != null) && (newValue.longitude != null));
             } else {
-              return _this.markers[scope.$id].setMap(null);
+              return _this.gMarker.setMap(null);
             }
           }
         }, true);
       };
 
-      Marker.prototype.watchIcon = function(scope) {
+      MarkerParentModel.prototype.watchIcon = function(scope) {
         var _this = this;
         return scope.$watch('icon', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            _this.markers[scope.$id].icon = newValue;
-            _this.markers[scope.$id].setMap(null);
-            _this.markers[scope.$id].setMap(_this.mapCtrl.getMap());
-            _this.markers[scope.$id].setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
-            return _this.markers[scope.$id].setVisible(coords.latitude && (coords.longitude != null));
+          if (newValue !== oldValue && (typeof gMarker !== "undefined" && gMarker !== null)) {
+            _this.gMarker.icon = newValue;
+            _this.gMarker.setMap(null);
+            _this.gMarker.setMap(_this.mapCtrl.getMap());
+            _this.gMarker.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
+            return _this.gMarker.setVisible(coords.latitude && (coords.longitude != null));
           }
         }, true);
       };
 
-      Marker.prototype.watchDestroy = function(scope) {
+      MarkerParentModel.prototype.watchDestroy = function(scope) {
         var _this = this;
         return scope.$on("$destroy", function() {
-          _this.markers[scope.$id].setMap(null);
-          return delete _this.markers[scope.$id];
+          if (_this.gMarker === void 0) {
+            delete _this;
+            return;
+          }
+          _this.gMarker.setMap(null);
+          delete _this.gMarker;
+          return delete _this;
         });
       };
 
-      return Marker;
+      return MarkerParentModel;
 
-    })(directives.api.IMarker);
+    })(directives.api.models.parent.IMarkerParent);
   });
 
 }).call(this);
-
-
-/*
-Markers will map icon and coords differently than directibes.api.Marker. This is because Scope and the model marker are
-not 1:1 in this setting.
-	
-	- icon - will be the iconKey to the marker value ie: to get the icon marker[iconKey]
-	- coords - will be the coordsKey to the marker value ie: to get the icon marker[coordsKey]
-
-    - watches from IMarker reflect that the look up key for a value has changed and not the actual icon or coords itself
-    - actual changes to a model are tracked inside directives.api.model.MarkerModel
-*/
 
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
-    return this.Markers = (function(_super) {
-      __extends(Markers, _super);
+  this.module("directives.api.models", function() {
+    return this.MarkersParentModel = (function(_super) {
+      __extends(MarkersParentModel, _super);
 
-      function Markers($timeout) {
+      function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchIcon = __bind(this.watchIcon, this);
         this.watchCoords = __bind(this.watchCoords, this);
         this.watchModels = __bind(this.watchModels, this);
         this.createMarkers = __bind(this.createMarkers, this);
-        this.linkInit = __bind(this.linkInit, this);
-        this.validateLinkedScope = __bind(this.validateLinkedScope, this);
+        this.validateScope = __bind(this.validateScope, this);
         var self;
-        Markers.__super__.constructor.call(this, $timeout);
+        MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
-        this.clsName = "Markers";
-        this.scope.models = '=models';
+        this.clsName = "MarkersParentModel";
         this.markers = [];
         this.markersIndex = 0;
-        this.mapCtrl = void 0;
-        this.$timeout = $timeout;
-        this.doClick = void 0;
-        this.animate = void 0;
+        this.scope = scope;
         this.$log.info(this);
       }
 
-      Markers.prototype.controller = function($scope, $element) {
+      MarkersParentModel.prototype.controller = function($scope, $element) {
         return this.getMarkersScope = function() {
           return $scope;
         };
       };
 
-      Markers.prototype.validateLinkedScope = function(scope) {
+      MarkersParentModel.prototype.validateScope = function(scope) {
         var modelsNotDefined;
         modelsNotDefined = angular.isUndefined(scope.models) || scope.models === void 0;
         if (modelsNotDefined) {
           this.$log.error(this.clsName + ": no valid models attribute found");
         }
-        return Markers.__super__.validateLinkedScope.call(this, scope) || modelsNotDefined;
+        return MarkersParentModel.__super__.validateScope.call(this, scope) || modelsNotDefined;
       };
 
-      Markers.prototype.linkInit = function(element, mapCtrl, scope, animate, doClick) {
-        this.mapCtrl = mapCtrl;
-        this.doClick = doClick;
-        this.animate = animate;
-        this.watchModels(scope);
-        return this.createMarkers(scope);
-      };
-
-      Markers.prototype.createMarkers = function(scope) {
+      MarkersParentModel.prototype.createMarkers = function(scope) {
         var model, _fn, _i, _len, _ref,
           _this = this;
         _ref = scope.models;
         _fn = function(model) {
-          _this.markers.push(new directives.api.models.MarkerModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, function(index) {
+          _this.markers.push(new directives.api.models.child.MarkerChildModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, function(index) {
             return delete _this.markers[index];
           }, _this.DEFAULTS, _this.doClick));
           return _this.markersIndex++;
@@ -697,7 +643,7 @@ not 1:1 in this setting.
         return scope.markerModels = this.markers;
       };
 
-      Markers.prototype.watchModels = function(scope) {
+      MarkersParentModel.prototype.watchModels = function(scope) {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
           var oldM, _fn, _i, _len, _ref;
@@ -718,7 +664,7 @@ not 1:1 in this setting.
         }, true);
       };
 
-      Markers.prototype.watchCoords = function(scope) {
+      MarkersParentModel.prototype.watchCoords = function(scope) {
         var _this = this;
         return scope.$watch('coords', function(newValue, oldValue) {
           var model, _i, _len, _ref, _results;
@@ -734,7 +680,7 @@ not 1:1 in this setting.
         }, true);
       };
 
-      Markers.prototype.watchIcon = function(scope) {
+      MarkersParentModel.prototype.watchIcon = function(scope) {
         var _this = this;
         return scope.$watch('icon', function(newValue, oldValue) {
           var model, _i, _len, _ref, _results;
@@ -750,7 +696,7 @@ not 1:1 in this setting.
         }, true);
       };
 
-      Markers.prototype.watchDestroy = function(scope) {
+      MarkersParentModel.prototype.watchDestroy = function(scope) {
         var _this = this;
         return scope.$on("$destroy", function() {
           var model, _i, _len, _ref, _results;
@@ -764,59 +710,9 @@ not 1:1 in this setting.
         });
       };
 
-      return Markers;
+      return MarkersParentModel;
 
-    })(directives.api.IMarker);
-  });
-
-}).call(this);
-
-
-/*
-	Window directive for GoogleMap Info Windows, where ng-repeat is being used....
-	Where Html DOM element is 1:1 on Scope and a Model
-*/
-
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  this.module("directives.api", function() {
-    return this.Window = (function(_super) {
-      __extends(Window, _super);
-
-      function Window($timeout, $compile, $http, $templateCache, $interpolate) {
-        this.link = __bind(this.link, this);
-        var self;
-        Window.__super__.constructor.call(this, $timeout, $compile, $http, $templateCache);
-        self = this;
-        this.clsName = "Window";
-        this.require = ['^googleMap', '^?marker'];
-        this.template = '<span class="angular-google-maps-window" ng-transclude></span>';
-        this.$log.info(self);
-      }
-
-      Window.prototype.link = function(scope, element, attrs, ctrls) {
-        var _this = this;
-        return this.$timeout(function() {
-          var isIconVisibleOnClick, mapCtrl, markerCtrl, opts;
-          isIconVisibleOnClick = true;
-          if (angular.isDefined(attrs.isiconvisibleonclick)) {
-            isIconVisibleOnClick = scope.isIconVisibleOnClick;
-          }
-          mapCtrl = ctrls[0].getMap();
-          markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
-          opts = _this.createWindowOptions(markerCtrl, scope, element.html(), _this.DEFAULTS);
-          if (mapCtrl != null) {
-            return new directives.api.models.WindowModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile);
-          }
-        }, 50);
-      };
-
-      return Window;
-
-    })(directives.api.IWindow);
+    })(directives.api.models.parent.IMarkerParentModel);
   });
 
 }).call(this);
@@ -831,28 +727,25 @@ not 1:1 in this setting.
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
-    return this.Windows = (function(_super) {
-      __extends(Windows, _super);
+  this.module("directives.api.models.parent", function() {
+    return this.WindowsParentModel = (function(_super) {
+      __extends(WindowsParentModel, _super);
 
-      function Windows($timeout, $compile, $http, $templateCache, $interpolate) {
+      function WindowsParentModel(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate) {
         this.interpolateContent = __bind(this.interpolateContent, this);
         this.createWindow = __bind(this.createWindow, this);
         this.setContentKeys = __bind(this.setContentKeys, this);
         this.createChildScopesWindows = __bind(this.createChildScopesWindows, this);
-        this.link = __bind(this.link, this);
         this.watchOurScope = __bind(this.watchOurScope, this);
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchModels = __bind(this.watchModels, this);
         this.watch = __bind(this.watch, this);
-        var name, self, _i, _len, _ref;
-        Windows.__super__.constructor.call(this, $timeout, $compile, $http, $templateCache);
+        var name, self, _i, _len, _ref,
+          _this = this;
+        WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate);
         self = this;
         this.$interpolate = $interpolate;
-        this.clsName = "Windows";
-        this.require = ['^googleMap', '^?markers'];
-        this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
-        this.scope.models = '=models';
+        this.clsName = "WindowsParentModel";
         this.windows = [];
         this.windwsIndex = 0;
         this.scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
@@ -861,15 +754,19 @@ not 1:1 in this setting.
           name = _ref[_i];
           this[name + 'Key'] = void 0;
         }
-        this.linked = void 0;
+        this.linked = new directives.api.utils.Linked(scope, element, attrs, ctrls);
         this.models = void 0;
         this.contentKeys = void 0;
         this.isIconVisibleOnClick = void 0;
         this.firstTime = true;
         this.$log.info(self);
+        this.$timeout(function() {
+          _this.watchOurScope(scope);
+          return _this.createChildScopesWindows();
+        }, 50);
       }
 
-      Windows.prototype.watch = function(scope, name, nameKey) {
+      WindowsParentModel.prototype.watch = function(scope, name, nameKey) {
         var _this = this;
         return scope.$watch(name, function(newValue, oldValue) {
           var model, _i, _len, _ref, _results;
@@ -880,7 +777,7 @@ not 1:1 in this setting.
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               model = _ref[_i];
               _results.push((function(model) {
-                return model.scope[name] = _this[nameKey] === 'self' || _this[nameKey] === void 0 ? model : model[_this[nameKey]];
+                return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
               })(model));
             }
             return _results;
@@ -888,7 +785,7 @@ not 1:1 in this setting.
         }, true);
       };
 
-      Windows.prototype.watchModels = function(scope) {
+      WindowsParentModel.prototype.watchModels = function(scope) {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
           var model, _fn, _i, _len, _ref;
@@ -908,7 +805,7 @@ not 1:1 in this setting.
         }, true);
       };
 
-      Windows.prototype.watchDestroy = function(scope) {
+      WindowsParentModel.prototype.watchDestroy = function(scope) {
         var _this = this;
         return scope.$on("$destroy", function() {
           var model, _i, _len, _ref;
@@ -923,7 +820,7 @@ not 1:1 in this setting.
         });
       };
 
-      Windows.prototype.watchOurScope = function(scope) {
+      WindowsParentModel.prototype.watchOurScope = function(scope) {
         var name, _i, _len, _ref, _results,
           _this = this;
         _ref = this.scopePropNames;
@@ -940,16 +837,7 @@ not 1:1 in this setting.
         return _results;
       };
 
-      Windows.prototype.link = function(scope, element, attrs, ctrls) {
-        var _this = this;
-        this.linked = new directives.api.utils.Linked(scope, element, attrs, ctrls);
-        return this.$timeout(function() {
-          _this.watchOurScope(scope);
-          return _this.createChildScopesWindows();
-        }, 50);
-      };
-
-      Windows.prototype.createChildScopesWindows = function() {
+      WindowsParentModel.prototype.createChildScopesWindows = function() {
 
         /*
         			being that we cannot tell the difference in Key String vs. a normal value string (TemplateUrl)
@@ -1004,13 +892,13 @@ not 1:1 in this setting.
         return this.firstTime = false;
       };
 
-      Windows.prototype.setContentKeys = function(models) {
+      WindowsParentModel.prototype.setContentKeys = function(models) {
         if (models.length > 0) {
           return this.contentKeys = Object.keys(models[0]);
         }
       };
 
-      Windows.prototype.createWindow = function(model, gMarker, gMap) {
+      WindowsParentModel.prototype.createWindow = function(model, gMarker, gMap) {
 
         /*
         			Create ChildScope to Mimmick an ng-repeat created scope, must define the below scope
@@ -1030,7 +918,7 @@ not 1:1 in this setting.
         _fn = function(name) {
           var nameKey;
           nameKey = name + 'Key';
-          return childScope[name] = _this[nameKey] === 'self' || _this[nameKey] === void 0 ? model : model[_this[nameKey]];
+          return childScope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
         };
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
@@ -1041,7 +929,7 @@ not 1:1 in this setting.
         return this.windows.push(new directives.api.models.WindowModel(childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile));
       };
 
-      Windows.prototype.interpolateContent = function(content, model) {
+      WindowsParentModel.prototype.interpolateContent = function(content, model) {
         var exp, interpModel, key, _i, _len, _ref;
         if (this.contentKeys === void 0 || this.contentKeys.length === 0) {
           return;
@@ -1054,6 +942,273 @@ not 1:1 in this setting.
           interpModel[key] = model[key];
         }
         return exp(interpModel);
+      };
+
+      return WindowsParentModel;
+
+    })(directives.api.IWindow);
+  });
+
+}).call(this);
+
+
+/*
+	- interface for all markers to derrive from
+ 	- to enforce a minimum set of requirements
+ 		- attributes
+ 			- coords
+ 			- icon
+		- implementation needed on watches
+*/
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.IMarker = (function(_super) {
+      __extends(IMarker, _super);
+
+      function IMarker($timeout) {
+        this.link = __bind(this.link, this);
+        var self;
+        self = this;
+        this.clsName = "IMarker";
+        this.$log = directives.api.utils.Logger;
+        this.$timeout = $timeout;
+        this.restrict = 'ECMA';
+        this.require = '^googleMap';
+        this.priority = -1;
+        this.transclude = true;
+        this.replace = true;
+        this.scope = {
+          coords: '=coords',
+          icon: '=icon',
+          click: '&click'
+        };
+      }
+
+      IMarker.prototype.link = function(scope, element, attrs, mapCtrl) {
+        throw new Exception("Not implemented!!");
+      };
+
+      return IMarker;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
+
+/*
+	- interface directive for all window(s) to derrive from
+*/
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.IWindow = (function(_super) {
+      __extends(IWindow, _super);
+
+      function IWindow($timeout, $compile, $http, $templateCache) {
+        this.link = __bind(this.link, this);
+        var self;
+        self = this;
+        this.clsName = "IWindow";
+        this.restrict = 'ECMA';
+        this.template = void 0;
+        this.transclude = true;
+        this.priority = -100;
+        this.require = void 0;
+        this.scope = {
+          coords: '=coords',
+          show: '=show',
+          templateUrl: '=templateurl',
+          templateParameter: '=templateparameter',
+          isIconVisibleOnClick: '=isiconvisibleonclick',
+          closeClick: '&closeclick'
+        };
+        this.$log = directives.api.utils.Logger;
+        this.$timeout = $timeout;
+        this.$compile = $compile;
+        this.$http = $http;
+        this.$templateCache = $templateCache;
+      }
+
+      IWindow.prototype.link = function(scope, element, attrs, mapCtrl) {
+        throw new Exception("Not Implemented!!");
+      };
+
+      return IWindow;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
+
+/*
+	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
+	Thus there will be one html element per marker within the directive.
+*/
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.Marker = (function(_super) {
+      __extends(Marker, _super);
+
+      function Marker($timeout) {
+        this.link = __bind(this.link, this);
+        var self;
+        Marker.__super__.constructor.call(this, $timeout);
+        self = this;
+        this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
+        this.clsName = "Marker";
+        this.$log.info(this);
+      }
+
+      Marker.prototype.link = function(scope, element, attrs, mapCtrl) {
+        return new directives.api.models.MarkerParentModel(scope, element, attrs, mapCtrl, this.$timeout);
+      };
+
+      return Marker;
+
+    })(directives.api.IMarker);
+  });
+
+}).call(this);
+
+
+/*
+Markers will map icon and coords differently than directibes.api.Marker. This is because Scope and the model marker are
+not 1:1 in this setting.
+	
+	- icon - will be the iconKey to the marker value ie: to get the icon marker[iconKey]
+	- coords - will be the coordsKey to the marker value ie: to get the icon marker[coordsKey]
+
+    - watches from IMarker reflect that the look up key for a value has changed and not the actual icon or coords itself
+    - actual changes to a model are tracked inside directives.api.model.MarkerModel
+*/
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.Markers = (function(_super) {
+      __extends(Markers, _super);
+
+      function Markers($timeout) {
+        this.link = __bind(this.link, this);
+        var self;
+        Markers.__super__.constructor.call(this, $timeout);
+        self = this;
+        this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
+        this.clsName = "Markers";
+        this.scope.models = '=models';
+        this.$timeout = $timeout;
+        this.$log.info(this);
+      }
+
+      Markers.prototype.link = function(scope, element, attrs, ctrl) {
+        return new directives.api.models.parent.MarkersParentModel(element, ctrl, scope, animate, doClick, this.$timeout);
+      };
+
+      return Markers;
+
+    })(directives.api.directives.IMarker);
+  });
+
+}).call(this);
+
+
+/*
+	Window directive for GoogleMap Info Windows, where ng-repeat is being used....
+	Where Html DOM element is 1:1 on Scope and a Model
+*/
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.Window = (function(_super) {
+      __extends(Window, _super);
+
+      function Window($timeout, $compile, $http, $templateCache) {
+        this.link = __bind(this.link, this);
+        var self;
+        Window.__super__.constructor.call(this, $timeout, $compile, $http, $templateCache);
+        self = this;
+        this.clsName = "Window";
+        this.require = ['^googleMap', '^?marker'];
+        this.template = '<span class="angular-google-maps-window" ng-transclude></span>';
+        this.$log.info(self);
+      }
+
+      Window.prototype.link = function(scope, element, attrs, ctrls) {
+        var _this = this;
+        return this.$timeout(function() {
+          var isIconVisibleOnClick, mapCtrl, markerCtrl, opts;
+          isIconVisibleOnClick = true;
+          if (angular.isDefined(attrs.isiconvisibleonclick)) {
+            isIconVisibleOnClick = scope.isIconVisibleOnClick;
+          }
+          mapCtrl = ctrls[0].getMap();
+          markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
+          opts = _this.createWindowOptions(markerCtrl, scope, element.html(), _this.DEFAULTS);
+          if (mapCtrl != null) {
+            return new directives.api.models.child.WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile);
+          }
+        }, 50);
+      };
+
+      return Window;
+
+    })(directives.api.IWindow);
+  });
+
+}).call(this);
+
+
+/*
+	Windows directive where many windows map to the models property
+*/
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.module("directives.api", function() {
+    return this.Windows = (function(_super) {
+      __extends(Windows, _super);
+
+      function Windows($timeout, $compile, $http, $templateCache, $interpolate) {
+        this.link = __bind(this.link, this);
+        var self;
+        Windows.__super__.constructor.call(this, $timeout, $compile, $http, $templateCache);
+        self = this;
+        this.$interpolate = $interpolate;
+        this.clsName = "Windows";
+        this.require = ['^googleMap', '^?markers'];
+        this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
+        this.scope.models = '=models';
+        this.$log.info(self);
+      }
+
+      Windows.prototype.link = function(scope, element, attrs, ctrls) {
+        return new directives.api.models.parent.WindowsParentModel(scope, element, attrs, ctrls, this.$timeout, this.$compile, this.$http, this.$templateCache, this.$interpolate);
       };
 
       return Windows;
@@ -1389,8 +1544,9 @@ angular.module('google-maps')
  * {attribute animate optional} if set to false, the marker won't be animated (on by default)
  */
 
-angular.module('google-maps').directive('marker', ['$timeout', function($timeout){ 
-	return new directives.api.Marker($timeout);}]);
+angular.module('google-maps').directive('marker', ['$timeout', function ($timeout) { 
+	return new directives.api.Marker($timeout);
+}]);
 ;/**!
  * The MIT License
  *
@@ -1431,8 +1587,9 @@ angular.module('google-maps').directive('marker', ['$timeout', function($timeout
  * {attribute animate optional} if set to false, the marker won't be animated (on by default)
  */
 
-angular.module('google-maps').directive('markers', ['$timeout', function($timeout){ 
-	return new directives.api.Markers($timeout);}]);
+angular.module('google-maps').directive('markers', ['$timeout', function ($timeout) { 
+	return new directives.api.Markers($timeout);
+}]);
 ;/**!
  * The MIT License
  *

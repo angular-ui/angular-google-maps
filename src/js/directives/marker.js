@@ -38,5 +38,6 @@
  * {attribute animate optional} if set to false, the marker won't be animated (on by default)
  */
 
-angular.module('google-maps').directive('marker', ['$timeout', function($timeout){ 
-	return new directives.api.Marker($timeout);}]);
+angular.module('google-maps').directive('marker', ['$timeout', function ($timeout) { 
+	return new directives.api.Marker($timeout);
+}]);

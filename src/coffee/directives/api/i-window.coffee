@@ -3,10 +3,6 @@
 ###	
 @module "directives.api", ->
 	class @IWindow extends oo.BaseObject
-		@include directives.api.utils.GmapUtil
-		# Animation is enabled by default
-		DEFAULTS: {}
-
 		constructor: ($timeout, $compile, $http, $templateCache) ->
 			self = @
 			@clsName = "IWindow"
@@ -17,7 +13,7 @@
 			@require = undefined
 			@scope= {
 				coords: '=coords',
-				show: '&show',
+				show: '=show',
 				templateUrl: '=templateurl',
 				templateParameter: '=templateparameter',
 				isIconVisibleOnClick: '=isiconvisibleonclick',
