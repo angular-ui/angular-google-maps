@@ -10,11 +10,11 @@
 			@clickKey = parentScope.click()
 			@animateKey = parentScope.animate
 			@myScope = parentScope.$new(false)
-			@myScope.icon = if @iconKey == 'self' then model else model[@iconKey]
-			@myScope.coords = if @coordsKey == 'self' then model else model[@coordsKey]
-			@myScope.click = if @clickKey == 'self' then model else model[@clickKey]
-			@myScope.animate = if @animateKey == 'self' then model else model[@animateKey]
-			@myScope.animate = if @animateKey == undefined then false else @myScope.animate
+			@setMyScope(model)
+			@myScope.$watch('model',(newValue, oldValue) =>
+				if (newValue != oldValue)
+					@setMyScope(newValue) 
+			,true)
 			@defaults = defaults
 			@gMap = gMap
 			@opts = @createMarkerOptions(@gMap,@myScope.coords,@myScope.icon,@myScope.animate,@defaults)
@@ -33,6 +33,14 @@
 				@watchIcon(@myScope)
 				@watchDestroy(@myScope)
 			)
+		setMyScope:(model)=>
+			@myScope.icon = if @iconKey == 'self' then model else model[@iconKey]
+			@myScope.coords = if @coordsKey == 'self' then model else model[@coordsKey]
+			@myScope.click = if @clickKey == 'self' then model else model[@clickKey]
+			@myScope.animate = if @animateKey == 'self' then model else model[@animateKey]
+			@myScope.animate = if @animateKey == undefined then false else @myScope.animate
+			@myScope.model = model
+
 		destroy:() =>
 			@myScope.$destroy()
 
