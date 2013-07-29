@@ -69,7 +69,7 @@
 			scope.$watch('coords', (newValue, oldValue) =>
 				if (newValue != oldValue)
 					@parentScope.doRebuild = false
-					@setCoords(newValue)
+					@setCoords(scope)
 					@parentScope.doRebuild = true
 			, true)
 					
@@ -77,7 +77,7 @@
 			scope.$watch('icon', (newValue, oldValue) =>
 				if (newValue != oldValue) 
 					@parentScope.doRebuild = false
-					@setIcon(newValue)
+					@setIcon(scope)
 					@parentScope.doRebuild = true
 			, true)
 

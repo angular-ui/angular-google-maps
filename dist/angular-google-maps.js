@@ -252,7 +252,7 @@ angular.module('google-maps', []);;(function() {
         return scope.$watch('coords', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             _this.parentScope.doRebuild = false;
-            _this.setCoords(newValue);
+            _this.setCoords(scope);
             return _this.parentScope.doRebuild = true;
           }
         }, true);
@@ -263,7 +263,7 @@ angular.module('google-maps', []);;(function() {
         return scope.$watch('icon', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             _this.parentScope.doRebuild = false;
-            _this.setIcon(newValue);
+            _this.setIcon(scope);
             return _this.parentScope.doRebuild = true;
           }
         }, true);
