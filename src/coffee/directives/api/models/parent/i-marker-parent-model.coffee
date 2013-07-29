@@ -21,7 +21,7 @@
 			self = @
 			# Validate required properties
 			if (@validateScope(scope))
-					return
+				return
 			@animate = angular.isDefined(attrs.animate) and @isFalse(attrs.animate)
 			@doClick = angular.isDefined(attrs.click)
 			@mapCtrl = mapCtrl

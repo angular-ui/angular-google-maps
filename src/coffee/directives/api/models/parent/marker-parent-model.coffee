@@ -14,9 +14,9 @@
 			@gMarker = new google.maps.Marker(opts)
 			element.data('instance', @gMarker)
 			@scope = scope
-			google.maps.event.addListener(@gMarker, 'click', ->
+			google.maps.event.addListener(@gMarker, 'click', =>
 				if @doClick and scope.click?
-					scope.click()
+					@scope.click()
 			)
 			@$log.info(@)
 		

@@ -9,6 +9,11 @@ function ExampleController ($scope, $timeout, $log) {
     // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
     google.maps.visualRefresh = true;
 
+    onMarkerClicked = function(marker){
+        marker.showWindow = true;
+        window.alert("Marker: lat: " + marker.latitude +", lon: " + marker.longitude + " clicked!!")
+    };
+
     angular.extend($scope, {
         map: {
             center: {
@@ -126,15 +131,21 @@ function ExampleController ($scope, $timeout, $log) {
 
     _.each($scope.map.markers,function(marker){
         marker.closeClick = function(){                        
-            this.showWindow = false;
+            marker.showWindow = false;
             $scope.$apply();
+        };
+        marker.onClicked = function(){
+            onMarkerClicked(marker);
         };
     });
 
     _.each($scope.map.markers2,function(marker){
         marker.closeClick = function(){                        
-            this.showWindow = false;
+            marker.showWindow = false;
             $scope.$apply();
+        };
+        marker.onClicked = function(){
+            onMarkerClicked(marker);
         };
     });
 
@@ -145,6 +156,8 @@ function ExampleController ($scope, $timeout, $log) {
         $scope.map.dynamicMarkers.length = 0;
         $scope.map.clickedMarker = null;
     };
+
+    $scope.onMarkerClicked = onMarkerClicked
 
     $timeout(function () {
         $scope.map.infoWindow.show = true;
@@ -168,8 +181,11 @@ function ExampleController ($scope, $timeout, $log) {
         ];
        _.each(dynamicMarkers,function(marker){
             marker.closeClick = function(){                        
-                this.showWindow = false;
+                marker.showWindow = false;
                 $scope.$apply();
+            };
+            marker.onClicked = function(){
+                onMarkerClicked(marker);
             };
         });
         $scope.map.dynamicMarkers = dynamicMarkers;

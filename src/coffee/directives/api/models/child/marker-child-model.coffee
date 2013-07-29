@@ -6,9 +6,11 @@
 			@model = model
 			@iconKey = parentScope.icon
 			@coordsKey = parentScope.coords
+			@clickKey = parentScope.click()
 			@myScope = parentScope.$new(false)
 			@myScope.icon = if @iconKey == 'self' then model else model[@iconKey]
 			@myScope.coords = if @coordsKey == 'self' then model else model[@coordsKey]
+			@myScope.click = if @clickKey == 'self' then model else model[@clickKey]
 			@gMap = gMap
 			@opts = @createMarkerOptions(@gMap,@myScope.coords,@myScope.icon,defaults)
 			@gMarker = new google.maps.Marker(@opts)
