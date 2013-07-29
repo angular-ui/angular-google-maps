@@ -32,29 +32,31 @@
 			#put MarkerModels into local scope					
 			scope.markerModels = @markers
 
+		reBuildMarkers:(scope) =>
+			for oldM in @markers
+				do(oldM) =>
+					oldM.destroy()
+			delete @markers
+			@markers = []
+			@markersIndex = 0
+			@createMarkers(scope)
+
 		watchModels:(scope) =>
 			scope.$watch('models', (newValue, oldValue) =>
 				if (newValue != oldValue) 
-					for oldM in @markers
-						do(oldM) =>
-							oldM.destroy()
-					delete @markers
-					@markers = []
-					@markersIndex = 0
-					@createMarkers(scope)
-
+					@reBuildMarkers(scope)
 			, true)
 
 		watchCoords:(scope) =>
 			scope.$watch('coords', (newValue, oldValue) =>
 				if (newValue != oldValue) 
-					model.coordsKey = newValue for model in @markers
+					@reBuildMarkers(scope)
 			, true)
 					
 		watchIcon:(scope) =>
 			scope.$watch('icon', (newValue, oldValue) =>
 				if (newValue != oldValue) 
-					model.iconKey = newValue for model in @markers
+					@reBuildMarkers(scope)
 			, true)
 
 		watchDestroy:(scope)=>

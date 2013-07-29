@@ -7,12 +7,15 @@
 			@iconKey = parentScope.icon
 			@coordsKey = parentScope.coords
 			@clickKey = parentScope.click()
+			@animateKey = parentScope.animate
 			@myScope = parentScope.$new(false)
 			@myScope.icon = if @iconKey == 'self' then model else model[@iconKey]
 			@myScope.coords = if @coordsKey == 'self' then model else model[@coordsKey]
 			@myScope.click = if @clickKey == 'self' then model else model[@clickKey]
+			@myScope.animate = if @animateKey == 'self' then model else model[@animateKey]
+			@defaults = defaults
 			@gMap = gMap
-			@opts = @createMarkerOptions(@gMap,@myScope.coords,@myScope.icon,defaults)
+			@opts = @createMarkerOptions(@gMap,@myScope.coords,@myScope.icon,@myScope.animate,@defaults)
 			@gMarker = new google.maps.Marker(@opts)
 			@doClick = doClick
 			@$log = directives.api.utils.Logger
