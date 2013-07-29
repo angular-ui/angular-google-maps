@@ -23,6 +23,7 @@
 		createMarkers:(scope) =>
 			for model in scope.models
 				do(model) =>
+					scope.doRebuild = true
 					@markers.push( 
 						new directives.api.models.child.MarkerChildModel(@markersIndex,model,scope,@mapCtrl,@$timeout,(index) =>
 							delete @markers[index]
@@ -33,6 +34,8 @@
 			scope.markerModels = @markers
 
 		reBuildMarkers:(scope) =>
+			if(!scope.doRebuild and scope.doRebuild != undefined)
+				return
 			for oldM in @markers
 				do(oldM) =>
 					oldM.destroy()
@@ -41,7 +44,9 @@
 			@markersIndex = 0
 			@createMarkers(scope)
 
-		onWatch:(propNameToWatch,scope) =>
+		onWatch:(propNameToWatch,scope,newValue,oldValue) =>
+			if(propNameToWatch == 'models' and newValue.length == oldValue.length)
+				return
 			@reBuildMarkers(scope)
 
 		onDestroy:(scope)=>

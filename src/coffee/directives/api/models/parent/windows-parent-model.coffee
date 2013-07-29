@@ -39,7 +39,7 @@
 
 		watchModels:(scope) =>
 			scope.$watch('models', (newValue, oldValue) =>
-				if (newValue != oldValue) 
+				if (newValue != oldValue and newValue.length != oldValue.length) 
 					for model in @windows
 						do(model) =>
 							model.destroy()
@@ -74,7 +74,7 @@
 			###
 			@isIconVisibleOnClick = true
 			if angular.isDefined(@linked.attrs.isiconvisibleonclick) 
-				isIconVisibleOnClick = @linked.scope.isIconVisibleOnClick
+				@isIconVisibleOnClick = @linked.scope.isIconVisibleOnClick
 			gMap = @linked.ctrls[0].getMap()
 			markersScope = if @linked.ctrls.length > 1 and @linked.ctrls[1]? then @linked.ctrls[1].getMarkersScope() else undefined
 
@@ -122,15 +122,25 @@
 				}
 			###
 			childScope = @linked.scope.$new(false)
-			for name in @scopePropNames
-				do (name) =>
-					nameKey = name + 'Key'
-					childScope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
+			@setChildScope(childScope,model)
+			childScope.$watch('model',(newValue, oldValue) =>
+				if(newValue != oldValue)
+					@setChildScope(childScope,newValue)
+			,true)
 			parsedContent = @interpolateContent(@linked.element.html(),model)
 			opts = @createWindowOptions(gMarker,childScope,parsedContent,@DEFAULTS)
 			@windows.push( 
 				new directives.api.models.child.WindowChildModel( childScope,opts,@isIconVisibleOnClick,gMap,gMarker,@$http,@$templateCache,@$compile,true)
 			)
+
+		setChildScope:(childScope,model) =>
+			for name in @scopePropNames
+				do (name) =>
+					nameKey = name + 'Key'
+					newValue = if @[nameKey] == 'self' then model else model[@[nameKey]]
+					if(newValue != childScope[name])
+						childScope[name] = newValue
+			childScope.model = model
 
 		interpolateContent: (content,model) =>
 			if @contentKeys == undefined or @contentKeys.length == 0

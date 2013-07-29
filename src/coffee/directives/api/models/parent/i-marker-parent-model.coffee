@@ -51,10 +51,10 @@
 		watch:(propNameToWatch,scope) =>
 			scope.$watch(propNameToWatch, (newValue, oldValue) =>
 				if (newValue != oldValue) 
-					@onWatch(propNameToWatch,scope)
+					@onWatch(propNameToWatch,scope,newValue,oldValue)
 			, true)
 
-		onWatch:(propNameToWatch,scope) =>
+		onWatch:(propNameToWatch,scope,newValue,oldValue) =>
 			throw new Exception("Not Implemented!!")
 
 		onDestroy:(scope) =>

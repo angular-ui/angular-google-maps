@@ -4,6 +4,7 @@
 		constructor:(index,model,parentScope,gMap,$timeout,notifyLocalDestroy,defaults,doClick)->
 			@index = index
 			@model = model
+			@parentScope = parentScope
 			@iconKey = parentScope.icon
 			@coordsKey = parentScope.coords
 			@clickKey = parentScope.click()
@@ -25,6 +26,8 @@
 				if @doClick and @myScope.click?
 					@myScope.click()
 			)
+			@setCoords(@myScope)
+			@setIcon(@myScope)
 			$timeout( =>
 				@watchCoords(@myScope)
 				@watchIcon(@myScope)
@@ -33,26 +36,41 @@
 		destroy:() =>
 			@myScope.$destroy()
 
+		setCoords:(scope) =>
+			if(scope.$id != @myScope.$id)
+				return
+			if (scope.coords?) 
+				@gMarker.setMap(@gMap.getMap())
+				@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
+				@gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
+			else
+				# Remove marker
+				@gMarker.setMap(null)			
+
+		setIcon:(scope) =>
+			if(scope.$id != @myScope.$id)
+				return
+			@gMarker.icon = scope.icon	
+			@gMarker.setMap(null)
+			@gMarker.setMap(@gMap.getMap())
+			@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
+			@gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
+			
+
 		watchCoords:(scope) =>
 			scope.$watch('coords', (newValue, oldValue) =>
-				if (newValue != oldValue) 
-					if (newValue) 
-						@gMarker.setMap(@gMap.getMap())
-						@gMarker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
-						@gMarker.setVisible(newValue.latitude? and newValue.longitude?)
-					else
-						# Remove marker
-						@gMarker.setMap(null)			
+				if (newValue != oldValue)
+					@parentScope.doRebuild = false
+					@setCoords(newValue)
+					@parentScope.doRebuild = true
 			, true)
 					
 		watchIcon:(scope) =>
 			scope.$watch('icon', (newValue, oldValue) =>
 				if (newValue != oldValue) 
-					@gMarker.icon = newValue	
-					@gMarker.setMap(null)
-					@gMarker.setMap(@gMap.getMap())
-					@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-					@gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
+					@parentScope.doRebuild = false
+					@setIcon(newValue)
+					@parentScope.doRebuild = true
 			, true)
 
 		watchDestroy:(scope)=>

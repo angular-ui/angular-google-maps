@@ -184,6 +184,7 @@ angular.module('google-maps', []);;(function() {
         this.myScope.coords = this.coordsKey === 'self' ? model : model[this.coordsKey];
         this.myScope.click = this.clickKey === 'self' ? model : model[this.clickKey];
         this.myScope.animate = this.animateKey === 'self' ? model : model[this.animateKey];
+        this.myScope.animate = this.animateKey === void 0 ? false : this.myScope.animate;
         this.defaults = defaults;
         this.gMap = gMap;
         this.opts = this.createMarkerOptions(this.gMap, this.myScope.coords, this.myScope.icon, this.myScope.animate, this.defaults);
@@ -228,8 +229,8 @@ angular.module('google-maps', []);;(function() {
             _this.gMarker.icon = newValue;
             _this.gMarker.setMap(null);
             _this.gMarker.setMap(_this.gMap.getMap());
-            _this.gMarker.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
-            return _this.gMarker.setVisible(coords.latitude && (coords.longitude != null));
+            _this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
+            return _this.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
           }
         }, true);
       };
@@ -260,7 +261,10 @@ angular.module('google-maps', []);;(function() {
     return this.WindowChildModel = (function(_super) {
       __extends(WindowChildModel, _super);
 
-      function WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile) {
+      function WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile, needToManualDestroy) {
+        if (needToManualDestroy == null) {
+          needToManualDestroy = false;
+        }
         this.destroy = __bind(this.destroy, this);
         this.scope = scope;
         this.opts = opts;
@@ -278,6 +282,7 @@ angular.module('google-maps', []);;(function() {
         }
         this.handleClick(this.scope, this.mapCtrl, this.markerCtrl, this.gWin, this.isIconVisibleOnClick, this.initialMarkerVisibility);
         this.watchShow(scope, $http, $templateCache, this.$compile, this.gWin, this.showWindow, this.hideWindow, this.mapCtrl);
+        this.needToManualDestroy = needToManualDestroy;
         this.$log.info(this);
       }
 
@@ -336,7 +341,9 @@ angular.module('google-maps', []);;(function() {
 
       WindowChildModel.prototype.destroy = function() {
         this.hideWindow(this.gWin);
-        this.scope.$destroy();
+        if ((this.scope != null) && this.needToManualDestroy) {
+          this.scope.$destroy();
+        }
         delete this.gWin;
         return delete this;
       };
@@ -377,9 +384,10 @@ angular.module('google-maps', []);;(function() {
 
       function IMarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
         this.linkInit = __bind(this.linkInit, this);
-        this.watchDestroy = __bind(this.watchDestroy, this);
-        this.watchIcon = __bind(this.watchIcon, this);
-        this.watchCoords = __bind(this.watchCoords, this);
+        this.onDestroy = __bind(this.onDestroy, this);
+        this.onWatch = __bind(this.onWatch, this);
+        this.watchShallow = __bind(this.watchShallow, this);
+        this.watchDeep = __bind(this.watchDeep, this);
         this.validateScope = __bind(this.validateScope, this);
         this.onTimeOut = __bind(this.onTimeOut, this);
         var self,
@@ -395,10 +403,13 @@ angular.module('google-maps', []);;(function() {
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         this.$timeout(function() {
-          _this.watchCoords(scope);
-          _this.watchIcon(scope);
-          _this.watchDestroy(scope);
-          return _this.onTimeOut(scope);
+          _this.watchDeep('coords', scope);
+          _this.watchDeep('icon', scope);
+          _this.watchDeep('animate', scope);
+          _this.onTimeOut(scope);
+          return scope.$on("$destroy", function() {
+            return _this.onDestroy(scope);
+          });
         });
       }
 
@@ -413,15 +424,29 @@ angular.module('google-maps', []);;(function() {
         return ret;
       };
 
-      IMarkerParentModel.prototype.watchCoords = function(scope) {
+      IMarkerParentModel.prototype.watchDeep = function(propNameToWatch, scope) {
+        var _this = this;
+        return scope.$watch(propNameToWatch, function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            return _this.onWatch(propNameToWatch, scope);
+          }
+        }, true);
+      };
+
+      IMarkerParentModel.prototype.watchShallow = function(propNameToWatch, scope) {
+        var _this = this;
+        return scope.$watch(propNameToWatch, function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            return _this.onWatch(propNameToWatch, scope);
+          }
+        }, false);
+      };
+
+      IMarkerParentModel.prototype.onWatch = function(propNameToWatch, scope) {
         throw new Exception("Not Implemented!!");
       };
 
-      IMarkerParentModel.prototype.watchIcon = function(scope) {
-        throw new Exception("Not Implemented!!");
-      };
-
-      IMarkerParentModel.prototype.watchDestroy = function(scope) {
+      IMarkerParentModel.prototype.onDestroy = function(scope) {
         throw new Exception("Not Implemented!!");
       };
 
@@ -489,9 +514,8 @@ angular.module('google-maps', []);;(function() {
       MarkerParentModel.include(directives.api.utils.GmapUtil);
 
       function MarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
-        this.watchDestroy = __bind(this.watchDestroy, this);
-        this.watchIcon = __bind(this.watchIcon, this);
-        this.watchCoords = __bind(this.watchCoords, this);
+        this.onDestroy = __bind(this.onDestroy, this);
+        this.onWatch = __bind(this.onWatch, this);
         this.validateScope = __bind(this.validateScope, this);
         var opts, self,
           _this = this;
@@ -514,45 +538,39 @@ angular.module('google-maps', []);;(function() {
         return MarkerParentModel.__super__.validateScope.call(this, scope) || angular.isUndefined(scope.coords.latitude) || angular.isUndefined(scope.coords.longitude);
       };
 
-      MarkerParentModel.prototype.watchCoords = function(scope) {
-        var _this = this;
-        return scope.$watch('coords', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            if (newValue && (_this.gMarker != null)) {
-              _this.gMarker.setMap(_this.mapCtrl.getMap());
-              _this.gMarker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
-              return _this.gMarker.setVisible((newValue.latitude != null) && (newValue.longitude != null));
+      MarkerParentModel.prototype.onWatch = function(propNameToWatch, scope) {
+        switch (propNameToWatch) {
+          case 'coords':
+            if ((scope.coords != null) && (this.gMarker != null)) {
+              this.gMarker.setMap(this.mapCtrl.getMap());
+              this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
+              return this.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
             } else {
-              return _this.gMarker.setMap(null);
+              return this.gMarker.setMap(null);
             }
-          }
-        }, true);
+            break;
+          case 'icon':
+            if ((scope.icon != null) && (scope.coords != null) && (this.gMarker != null)) {
+              this.gMarker.icon = scope.icon;
+              this.gMarker.setMap(null);
+              this.gMarker.setMap(this.mapCtrl.getMap());
+              this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
+              return this.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
+            }
+            break;
+          case 'animate':
+            break;
+        }
       };
 
-      MarkerParentModel.prototype.watchIcon = function(scope) {
-        var _this = this;
-        return scope.$watch('icon', function(newValue, oldValue) {
-          if (newValue !== oldValue && (_this.gMarker != null)) {
-            _this.gMarker.icon = newValue;
-            _this.gMarker.setMap(null);
-            _this.gMarker.setMap(_this.mapCtrl.getMap());
-            _this.gMarker.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude));
-            return _this.gMarker.setVisible(coords.latitude && (coords.longitude != null));
-          }
-        }, true);
-      };
-
-      MarkerParentModel.prototype.watchDestroy = function(scope) {
-        var _this = this;
-        return scope.$on("$destroy", function() {
-          if (_this.gMarker === void 0) {
-            delete _this;
-            return;
-          }
-          _this.gMarker.setMap(null);
-          delete _this.gMarker;
-          return delete _this;
-        });
+      MarkerParentModel.prototype.onDestroy = function(scope) {
+        if (this.gMarker === void 0) {
+          delete this;
+          return;
+        }
+        this.gMarker.setMap(null);
+        delete this.gMarker;
+        return delete this;
       };
 
       return MarkerParentModel;
@@ -572,10 +590,8 @@ angular.module('google-maps', []);;(function() {
       __extends(MarkersParentModel, _super);
 
       function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
-        this.watchDestroy = __bind(this.watchDestroy, this);
-        this.watchIcon = __bind(this.watchIcon, this);
-        this.watchCoords = __bind(this.watchCoords, this);
-        this.watchModels = __bind(this.watchModels, this);
+        this.onDestroy = __bind(this.onDestroy, this);
+        this.onWatch = __bind(this.onWatch, this);
         this.reBuildMarkers = __bind(this.reBuildMarkers, this);
         this.createMarkers = __bind(this.createMarkers, this);
         this.validateScope = __bind(this.validateScope, this);
@@ -591,7 +607,7 @@ angular.module('google-maps', []);;(function() {
       }
 
       MarkersParentModel.prototype.onTimeOut = function(scope) {
-        this.watchModels(scope);
+        this.watchShallow('models', scope);
         return this.createMarkers(scope);
       };
 
@@ -638,45 +654,19 @@ angular.module('google-maps', []);;(function() {
         return this.createMarkers(scope);
       };
 
-      MarkersParentModel.prototype.watchModels = function(scope) {
-        var _this = this;
-        return scope.$watch('models', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            return _this.reBuildMarkers(scope);
-          }
-        }, true);
+      MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope) {
+        return this.reBuildMarkers(scope);
       };
 
-      MarkersParentModel.prototype.watchCoords = function(scope) {
-        var _this = this;
-        return scope.$watch('coords', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            return _this.reBuildMarkers(scope);
-          }
-        }, true);
-      };
-
-      MarkersParentModel.prototype.watchIcon = function(scope) {
-        var _this = this;
-        return scope.$watch('icon', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            return _this.reBuildMarkers(scope);
-          }
-        }, true);
-      };
-
-      MarkersParentModel.prototype.watchDestroy = function(scope) {
-        var _this = this;
-        return scope.$on("$destroy", function() {
-          var model, _i, _len, _ref, _results;
-          _ref = _this.markers;
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            model = _ref[_i];
-            _results.push(model.destroy());
-          }
-          return _results;
-        });
+      MarkersParentModel.prototype.onDestroy = function(scope) {
+        var model, _i, _len, _ref, _results;
+        _ref = this.markers;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          model = _ref[_i];
+          _results.push(model.destroy());
+        }
+        return _results;
       };
 
       return MarkersParentModel;
@@ -895,7 +885,7 @@ angular.module('google-maps', []);;(function() {
         }
         parsedContent = this.interpolateContent(this.linked.element.html(), model);
         opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS);
-        return this.windows.push(new directives.api.models.child.WindowChildModel(childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile));
+        return this.windows.push(new directives.api.models.child.WindowChildModel(childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile, true));
       };
 
       WindowsParentModel.prototype.interpolateContent = function(content, model) {
@@ -1146,7 +1136,7 @@ not 1:1 in this setting.
       Window.prototype.link = function(scope, element, attrs, ctrls) {
         var _this = this;
         return this.$timeout(function() {
-          var isIconVisibleOnClick, mapCtrl, markerCtrl, opts;
+          var isIconVisibleOnClick, mapCtrl, markerCtrl, opts, window;
           isIconVisibleOnClick = true;
           if (angular.isDefined(attrs.isiconvisibleonclick)) {
             isIconVisibleOnClick = scope.isIconVisibleOnClick;
@@ -1155,8 +1145,11 @@ not 1:1 in this setting.
           markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
           opts = _this.createWindowOptions(markerCtrl, scope, element.html(), _this.DEFAULTS);
           if (mapCtrl != null) {
-            return new directives.api.models.child.WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile);
+            window = new directives.api.models.child.WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile);
           }
+          return scope.$on("$destroy", function() {
+            return window.destroy();
+          });
         }, 50);
       };
 
