@@ -194,15 +194,19 @@ angular.module('google-maps')
                         });
                     }
                 });
-
+                var settingCenterFromScope = false;
                 google.maps.event.addListener(_m, 'center_changed', function () {
                     var c = _m.center;
 
+                    if(settingCenterFromScope) 
+                        return; //if the scope notified this change then there is no reason to update scope otherwise infinite loop
                     $timeout(function () {
                         scope.$apply(function (s) {
                             if (!_m.dragging) {
-                                s.center.latitude = c.lat();
-                                s.center.longitude = c.lng();
+                                if(s.center.latitude !== c.lat())
+                                    s.center.latitude = c.lat();
+                                if(s.center.longitude !== c.lng())
+                                    s.center.longitude = c.lng();
                             }
                         });
                     });
@@ -255,7 +259,7 @@ angular.module('google-maps')
                     if (newValue === oldValue) {
                         return;
                     }
-
+                    settingCenterFromScope = true;
                     if (!dragging) {
 
                         var coords = new google.maps.LatLng(newValue.latitude, newValue.longitude);
@@ -269,6 +273,7 @@ angular.module('google-maps')
 
                         //_m.draw();
                     }
+                    settingCenterFromScope = false;
                 }, true);
 
                 scope.$watch('zoom', function (newValue, oldValue) {
