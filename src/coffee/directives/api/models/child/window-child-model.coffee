@@ -1,6 +1,6 @@
 @module "directives.api.models.child", ->
 	class @WindowChildModel extends oo.BaseObject
-		constructor:(scope,opts,isIconVisibleOnClick,mapCtrl, markerCtrl,$http,$templateCache,$compile)->
+		constructor:(scope,opts,isIconVisibleOnClick,mapCtrl, markerCtrl,$http,$templateCache,$compile,needToManualDestroy = false)->
 			@scope = scope
 			@opts = opts
 			@mapCtrl = mapCtrl
@@ -17,7 +17,7 @@
 
 			@handleClick(@scope,@mapCtrl,@markerCtrl,@gWin,@isIconVisibleOnClick,@initialMarkerVisibility)
 			@watchShow(scope,$http,$templateCache,@$compile,@gWin,@showWindow,@hideWindow,@mapCtrl)
-
+			@needToManualDestroy = needToManualDestroy
 			@$log.info(@)
 
 		watchShow:(scope,$http,$templateCache,$compile,gWin,showHandle,hideHandle,mapCtrl) ->
@@ -65,7 +65,8 @@
 
 		destroy:()=>
 			@hideWindow(@gWin)
-			@scope.$destroy()
+			if(@scope? and @needToManualDestroy)
+				@scope.$destroy()
 			delete @gWin
 			delete @
 

@@ -22,7 +22,7 @@
 			# Validate required properties
 			if (@validateScope(scope))
 				return
-			@animate = angular.isDefined(attrs.animate) and @isFalse(attrs.animate)
+			@animate = if angular.isDefined(attrs.animate) then !@isFalse(attrs.animate) else false
 			@doClick = angular.isDefined(attrs.click)
 			@mapCtrl = mapCtrl
 			@clsName = "IMarker"
@@ -30,10 +30,13 @@
 			@$timeout = $timeout
 			# Wrap marker initialization inside a $timeout() call to make sure the map is created already
 			@$timeout( =>
-				@watchCoords(scope)
-				@watchIcon(scope)
-				@watchDestroy(scope)
+				@watch('coords',scope)
+				@watch('icon',scope)
+				@watch('animate',scope)
 				@onTimeOut(scope)
+				scope.$on("$destroy", => 
+					@onDestroy(scope)
+				)
 			)
 
 		onTimeOut:(scope)=>
@@ -45,12 +48,16 @@
 				@$log.error(@clsName + ": no valid coords attribute found")
 			ret
 
-		watchCoords:(scope) =>
+		watch:(propNameToWatch,scope) =>
+			scope.$watch(propNameToWatch, (newValue, oldValue) =>
+				if (newValue != oldValue) 
+					@onWatch(propNameToWatch,scope)
+			, true)
+
+		onWatch:(propNameToWatch,scope) =>
 			throw new Exception("Not Implemented!!")
 
-		watchIcon:(scope) =>
-			throw new Exception("Not Implemented!!")
-		watchDestroy:(scope) =>
+		onDestroy:(scope) =>
 			throw new Exception("Not Implemented!!")
 
 		linkInit:(element,mapCtrl,scope,animate)=>

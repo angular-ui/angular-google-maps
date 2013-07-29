@@ -129,7 +129,7 @@
 			parsedContent = @interpolateContent(@linked.element.html(),model)
 			opts = @createWindowOptions(gMarker,childScope,parsedContent,@DEFAULTS)
 			@windows.push( 
-				new directives.api.models.child.WindowChildModel( childScope,opts,@isIconVisibleOnClick,gMap,gMarker,@$http,@$templateCache,@$compile)
+				new directives.api.models.child.WindowChildModel( childScope,opts,@isIconVisibleOnClick,gMap,gMarker,@$http,@$templateCache,@$compile,true)
 			)
 
 		interpolateContent: (content,model) =>

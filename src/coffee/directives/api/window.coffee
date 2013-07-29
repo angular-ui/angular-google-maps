@@ -24,8 +24,11 @@
 				opts = @createWindowOptions(markerCtrl,scope,element.html(),@DEFAULTS)
 
 				if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
-					new directives.api.models.child.WindowChildModel(
+					window = new directives.api.models.child.WindowChildModel(
 						scope,opts,isIconVisibleOnClick,mapCtrl,
 						markerCtrl,@$http,@$templateCache,@$compile
 					)
+				scope.$on("$destroy", => 
+					window.destroy()
+				)
 			,50)

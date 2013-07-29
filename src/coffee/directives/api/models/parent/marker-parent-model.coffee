@@ -23,35 +23,34 @@
 		validateScope:(scope)=>
 			super(scope) or angular.isUndefined(scope.coords.latitude) or angular.isUndefined(scope.coords.longitude)
 
-		watchCoords:(scope) =>
-			scope.$watch('coords', (newValue, oldValue) =>
-				if (newValue != oldValue) 
-					if (newValue and @gMarker?) 
+		onWatch:(propNameToWatch,scope) =>
+			
+			switch propNameToWatch
+				when 'coords'
+					if (scope.coords? and @gMarker?) 
 						@gMarker.setMap(@mapCtrl.getMap())
-						@gMarker.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
-						@gMarker.setVisible(newValue.latitude? and newValue.longitude?)
+						@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
+						@gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
 					else
 						# Remove marker
 						@gMarker.setMap(null)			
-			, true)
+				when 'icon' 
+					if (scope.icon? and scope.coords? and @gMarker?) 
+						@gMarker.icon = scope.icon	
+						@gMarker.setMap(null)
+						@gMarker.setMap(@mapCtrl.getMap())
+						@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
+						@gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
+				when 'animate'
+				else 			
 					
-		watchIcon:(scope) =>
-			scope.$watch('icon', (newValue, oldValue) =>
-				if (newValue != oldValue and @gMarker?) 
-					@gMarker.icon = newValue	
-					@gMarker.setMap(null)
-					@gMarker.setMap(@mapCtrl.getMap())
-					@gMarker.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude))
-					@gMarker.setVisible(coords.latitude and coords.longitude?)
-			, true)
 
-		watchDestroy:(scope)=>
-			scope.$on("$destroy", => 
-				if @gMarker == undefined
-					delete @
-					return
-				#remove from gMaps and then free resources
-				@gMarker.setMap(null)
-				delete @gMarker
+		onDestroy:(scope)=>
+			if @gMarker == undefined
 				delete @
-			)
+				return
+			#remove from gMaps and then free resources
+			@gMarker.setMap(null)
+			delete @gMarker
+			delete @
+

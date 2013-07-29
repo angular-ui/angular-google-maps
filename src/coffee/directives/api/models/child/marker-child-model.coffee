@@ -13,6 +13,7 @@
 			@myScope.coords = if @coordsKey == 'self' then model else model[@coordsKey]
 			@myScope.click = if @clickKey == 'self' then model else model[@clickKey]
 			@myScope.animate = if @animateKey == 'self' then model else model[@animateKey]
+			@myScope.animate = if @animateKey == undefined then false else @myScope.animate
 			@defaults = defaults
 			@gMap = gMap
 			@opts = @createMarkerOptions(@gMap,@myScope.coords,@myScope.icon,@myScope.animate,@defaults)
@@ -50,8 +51,8 @@
 					@gMarker.icon = newValue	
 					@gMarker.setMap(null)
 					@gMarker.setMap(@gMap.getMap())
-					@gMarker.setPosition(new google.maps.LatLng(coords.latitude, coords.longitude))
-					@gMarker.setVisible(coords.latitude and coords.longitude?)
+					@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
+					@gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
 			, true)
 
 		watchDestroy:(scope)=>

@@ -10,7 +10,7 @@
 			@$log.info(@)
 
 		onTimeOut:(scope)=>
-			@watchModels(scope)
+			@watch('models',scope)
 			@createMarkers(scope)
 
 		validateScope:(scope)=>
@@ -41,29 +41,13 @@
 			@markersIndex = 0
 			@createMarkers(scope)
 
-		watchModels:(scope) =>
-			scope.$watch('models', (newValue, oldValue) =>
-				if (newValue != oldValue) 
-					@reBuildMarkers(scope)
-			, true)
+		onWatch:(propNameToWatch,scope) =>
+			@reBuildMarkers(scope)
 
-		watchCoords:(scope) =>
-			scope.$watch('coords', (newValue, oldValue) =>
-				if (newValue != oldValue) 
-					@reBuildMarkers(scope)
-			, true)
-					
-		watchIcon:(scope) =>
-			scope.$watch('icon', (newValue, oldValue) =>
-				if (newValue != oldValue) 
-					@reBuildMarkers(scope)
-			, true)
-
-		watchDestroy:(scope)=>
+		onDestroy:(scope)=>
 			#need to figure out how to handle individual destroys
 			#slap index to the external model so that when they pass external back
 			#for destroy we have a lookup? 
 			#this will require another attribute for destroySingle(marker)
-			scope.$on("$destroy", => 
-				model.destroy() for model in @markers
-			)
+			model.destroy() for model in @markers
+		

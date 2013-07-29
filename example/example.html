@@ -57,7 +57,7 @@
 				</markers>
 
 
-				<markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'">
+				<markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
 					<windows show="'showWindow'" closeClick="'closeClick'">
 						<p>Dynamic Marker created via a delay!</p>
 						<p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
@@ -74,7 +74,7 @@
 				</marker>
 
 				<!-- marker for clicked position -->
-				<marker coords="map.clickedMarker" animate="false" >
+				<marker coords="map.clickedMarker" animate="true" >
 					<window isIconVisibleOnClick="false">This is my clicked marker!
 						<p class="muted">My marker will reappear when you close me.</p>
 					</window>
