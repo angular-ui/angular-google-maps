@@ -50,7 +50,7 @@ function ExampleController ($scope, $timeout, $log) {
                     icon: 'plane.png',
                     latitude: 35,
                     longitude: -125,
-                    showWindow: true
+                    showWindow: false
                 }
             ],
             dynamicMarkers: [],
