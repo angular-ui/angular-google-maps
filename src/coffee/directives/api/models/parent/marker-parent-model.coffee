@@ -16,7 +16,9 @@
 			@scope = scope
 			google.maps.event.addListener(@gMarker, 'click', =>
 				if @doClick and scope.click?
-					@scope.click()
+					$timeout( =>
+						@scope.click()
+					)
 			)
 			@$log.info(@)
 		

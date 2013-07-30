@@ -198,7 +198,9 @@ angular.module('google-maps', []);;(function() {
         this.$log = directives.api.utils.Logger;
         google.maps.event.addListener(this.gMarker, 'click', function() {
           if (_this.doClick && (_this.myScope.click != null)) {
-            return _this.myScope.click();
+            return $timeout(function() {
+              return _this.myScope.click();
+            });
           }
         });
         this.setCoords(this.myScope);
@@ -552,7 +554,9 @@ angular.module('google-maps', []);;(function() {
         this.scope = scope;
         google.maps.event.addListener(this.gMarker, 'click', function() {
           if (_this.doClick && (scope.click != null)) {
-            return _this.scope.click();
+            return $timeout(function() {
+              return _this.scope.click();
+            });
           }
         });
         this.$log.info(this);

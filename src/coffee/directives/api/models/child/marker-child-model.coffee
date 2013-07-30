@@ -24,7 +24,9 @@
 			google.maps.event.addListener(@gMarker, 'click', =>
 				#this needs to be thought about as scope is not 1:1 on clicking..... hmmmmm :/
 				if @doClick and @myScope.click?
-					@myScope.click()
+					$timeout(=>
+						@myScope.click()
+					)
 			)
 			@setCoords(@myScope)
 			@setIcon(@myScope)
