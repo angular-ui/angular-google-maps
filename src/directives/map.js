@@ -215,9 +215,9 @@ angular.module('google-maps')
                 });
 
                 google.maps.event.addListener(_m, 'idle', function () {
-                    var b = _m.getBounds()
-                    var ne = b.getNorthEast()
-                    var sw = b.getSouthWest()
+                    var b = _m.getBounds();
+                    var ne = b.getNorthEast();
+                    var sw = b.getSouthWest();
 
                     $timeout(function () {
 
