@@ -61,7 +61,8 @@ module.exports = function(grunt) {
               'src/js/directives/markers.js', 
               'src/js/directives/polyline.js',
               'src/js/directives/window.js',
-              'src/js/directives/windows.js'],
+              'src/js/directives/windows.js',
+              'src/js/directives/trafficlayer.js'],
         dest: 'tmp/output.js'
       },
       example: {
@@ -72,7 +73,8 @@ module.exports = function(grunt) {
               'src/js/directives/markers.js', 
               'src/js/directives/polyline.js',
               'src/js/directives/window.js',
-              'src/js/directives/windows.js'],
+              'src/js/directives/windows.js',
+              'src/js/directives/trafficlayer.js'],
         dest: 'example/<%= pkg.name %>.js'
       }
     },

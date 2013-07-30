@@ -48,6 +48,7 @@
 				draggable="true"
 				dragging="map.dragging"
 				events="map.events">
+				<trafficlayer show="map.showTraffic" />
 
 				<markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'">
 					<windows show="'showWindow'" closeClick="'closeClick'">
@@ -64,6 +65,7 @@
 						<p class="muted">My marker will stay open when the window is popped up!</p>
 					</windows>
 				</markers>
+
 				<!-- prefedined markers -->
 				<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
 				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
@@ -96,6 +98,12 @@
 			<fieldset>
 				<table class="table">
 					<tbody>
+						<tr>
+							<td>TrafficLayer</td>
+							<td>
+								<input type="checkbox" text="TrafficLayer On/Off" ng-model="map.showTraffic">
+							</td>
+						</tr>
 						<tr>
 							<td>markers</td>
 							<td>
@@ -180,7 +188,7 @@
 <script src="templates/infoController.js"></script>
 <script src="http://localhost:35729/livereload.js"></script>
 <script type="text/javascript">
-	directives.api.utils.Logger.doLog = true;
+directives.api.utils.Logger.doLog = true;
 </script>
 </body>
 
