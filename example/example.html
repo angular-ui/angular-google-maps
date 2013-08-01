@@ -70,7 +70,8 @@
 					<window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords" templateUrl="map.templatedInfoWindow.templateUrl" templateParameter="map.templatedInfoWindow.templateParameter">
 					</window>
 
-					<polyline path="map.polyline.path" stroke="map.polyline.stroke" fit="true"></polyline>
+
+					<polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" geodesic='true' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
 				</div>
 			</div>
 			<div class="span4">
@@ -99,6 +100,22 @@
 									</div>
 								</td>
 							</tr>
+                            <tr>
+                                <td>polylines</td>
+                                <td>
+                                    <div class="well sidebar-nav">
+                                        <ul class="nav nav-list">
+                                            <li  ng-repeat="p in map.polylines" ng-click="p.editable = !p.editable">
+                                                <a href="#">
+                                                    <i class="i" title="Click me to Show InfoWindow!">
+                                                        Polyline: {{p}}
+                                                    </i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
 							<tr>
 								<td>center</td>
 								<td><pre><span ng-show="map.center.latitude >= 0">&nbsp;</span>{{ map.center.latitude | number:4 }} lat<br><span ng-show="map.center.longitude >= 0">&nbsp;</span>{{ map.center.longitude | number:4 }} lng</pre></td>
@@ -127,9 +144,9 @@
 	</div>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 	<script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
 	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-	<script src="http://underscorejs.org/underscore-min.js"></script>
+	<script src="http://underscorejs.org/underscore.js"></script>
 	<script src="angular-google-maps.js"></script>
 	<script src="example-controller.js"></script>
 	<script src="templates/infoController.js"></script>
