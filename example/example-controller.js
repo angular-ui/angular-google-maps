@@ -103,7 +103,8 @@ function ExampleController ($scope, $timeout, $log) {
                     weight: 3
                 },
                 editable:true,
-                draggable:true
+                draggable:false,
+                geodesic:false
                },
                 {
                     path: [
@@ -129,7 +130,8 @@ function ExampleController ($scope, $timeout, $log) {
                         weight: 3
                     },
                     editable:true,
-                    draggable:true
+                    draggable:true,
+                    geodesic:true
                 }
             ]
         }
