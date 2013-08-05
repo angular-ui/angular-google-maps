@@ -35,7 +35,9 @@ module.exports = function(grunt) {
         separator: ';'
       },
       dist: {
-        src: ['src/module.js', 
+        src: ['src/module.js',
+              'src/utils/LatLngArraySync.js',
+              'src/utils/MapEvents.js',
               'src/directives/map.js', 
               'src/directives/marker.js', 
               'src/directives/polyline.js',
@@ -45,6 +47,8 @@ module.exports = function(grunt) {
       },
       example: {
         src: ['src/module.js',
+              'src/utils/LatLngArraySync.js',
+              'src/utils/MapEvents.js',
               'src/directives/map.js', 
               'src/directives/marker.js', 
               'src/directives/polyline.js',
@@ -87,8 +91,8 @@ module.exports = function(grunt) {
       all: {
         options: { livereload: true },
         files: ['src/**/*.js'],
-        tasks: ['clean:example', 'concat:example'],
-      },
+        tasks: ['clean:example', 'concat:example']
+      }
     },
     
     open: {

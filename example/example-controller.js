@@ -104,7 +104,8 @@ function ExampleController ($scope, $timeout, $log) {
                 },
                 editable:true,
                 draggable:false,
-                geodesic:false
+                geodesic:false,
+                visible:true
                },
                 {
                     path: [
@@ -131,7 +132,8 @@ function ExampleController ($scope, $timeout, $log) {
                     },
                     editable:true,
                     draggable:true,
-                    geodesic:true
+                    geodesic:true,
+                    visible:true
                 }
             ]
         }
