@@ -105,7 +105,9 @@ angular.module('google-maps')
 
                     google.maps.event.addListener(marker, 'click', function () {
                         if (angular.isDefined(attrs.click) && scope.click !== null)
-                            scope.click();
+                            $timeout(function() {
+                                scope.click();
+                            });
                     });
 
                     scope.$watch('coords', function (newValue, oldValue) {

@@ -47,6 +47,7 @@
 				zoom="map.zoom"
 				draggable="true"
 				dragging="map.dragging"
+				bounds="map.bounds"
 				events="map.events">
 				<trafficlayer show="map.showTraffic" />
 				<!-- prefedined markers -->
@@ -106,6 +107,12 @@
 							<tr>
 								<td>zoom</td>
 								<td>{{ map.zoom }}</td>
+							</tr>
+							<tr>
+								<td>bounds</td>
+								<td>
+									<pre>north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }} <br>south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}</pre>
+								</td>
 							</tr>
 							<tr>
 								<td>dragging</td>
