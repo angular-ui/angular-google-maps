@@ -303,6 +303,18 @@ angular.module('google-maps')
 
                     //_m.draw();
                 });
+				
+				scope.$watch('bounds', function (newValue, oldValue) {
+                    if (newValue === oldValue) {
+                        return;
+                    }
+
+                    var ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude);
+                    var sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude);
+                    var bounds = new google.maps.LatLngBounds(sw, ne);
+
+                    _m.fitBounds(bounds);
+                });
             }
         };
     }]);
