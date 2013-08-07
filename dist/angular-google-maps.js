@@ -1340,7 +1340,8 @@ angular.module('google-maps')
                 markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
-                events: '=events'           // optional
+                events: '=events',           // optional
+                bounds: '=bounds'
             },
 
             /**
@@ -1402,7 +1403,8 @@ angular.module('google-maps')
                 var _m = new google.maps.Map(el.find('div')[1], angular.extend({}, DEFAULTS, opts, {
                     center: new google.maps.LatLng(scope.center.latitude, scope.center.longitude),
                     draggable: isTrue(attrs.draggable),
-                    zoom: scope.zoom
+                    zoom: scope.zoom,
+                    bounds: scope.bounds
                 }));
 
                 var dragging = false;
@@ -1461,6 +1463,22 @@ angular.module('google-maps')
                                     s.center.longitude = c.lng();
                             }
                         });
+                    });
+                });
+
+                google.maps.event.addListener(_m, 'idle', function () {
+                    var b = _m.getBounds();
+                    var ne = b.getNorthEast();
+                    var sw = b.getSouthWest();
+
+                    $timeout(function () {
+
+                      scope.$apply(function (s) {
+
+                        s.bounds.northeast = {latitude: ne.lat(), longitude: ne.lng()} ;
+                        s.bounds.southwest = {latitude: sw.lat(), longitude: sw.lng()} ;
+                        
+                      });
                     });
                 });
 
@@ -1536,6 +1554,18 @@ angular.module('google-maps')
                     _m.setZoom(newValue);
 
                     //_m.draw();
+                });
+				
+				scope.$watch('bounds', function (newValue, oldValue) {
+                    if (newValue === oldValue) {
+                        return;
+                    }
+
+                    var ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude);
+                    var sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude);
+                    var bounds = new google.maps.LatLngBounds(sw, ne);
+
+                    _m.fitBounds(bounds);
                 });
             }
         };
