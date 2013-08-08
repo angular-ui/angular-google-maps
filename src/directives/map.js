@@ -222,11 +222,10 @@ angular.module('google-maps')
                     $timeout(function () {
 
                       scope.$apply(function (s) {
-                        if(s !== null){
+                        if(s.bounds !== null){
                             s.bounds.northeast = {latitude: ne.lat(), longitude: ne.lng()} ;
                             s.bounds.southwest = {latitude: sw.lat(), longitude: sw.lng()} ;
                         }
-                        
                       });
                     });
                 });
