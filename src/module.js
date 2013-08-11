@@ -27,4 +27,25 @@
  * @author Nicolas Laplante https://plus.google.com/108189012221374960701
  */
 
-angular.module('google-maps', []);
+(function(){
+    var app = angular.module('google-maps', []);
+
+    app.factory('debounce', ['$timeout', function ($timeout) {
+        return function(fn){ // debounce fn
+            var nthCall = 0;
+            return function(){ // intercepting fn
+                var that = this;
+                var argz = arguments;
+                nthCall++;
+                var later = (function(version){
+                    return function(){
+                        if (version === nthCall){
+                            return fn.apply(that, argz);
+                        }
+                    };
+                })(nthCall);
+                return $timeout(later,0, true);
+            };
+        };
+    }]);
+})();

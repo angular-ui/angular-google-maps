@@ -80,7 +80,7 @@ function ExampleController ($scope, $timeout, $log) {
                     message: 'passed in from the opener'
                 }
             },
-            polyline: {
+            polylines: [{
                 path: [
                     {
                         latitude: 45,
@@ -100,11 +100,48 @@ function ExampleController ($scope, $timeout, $log) {
                     }
                 ],
                 stroke: {
-                  color: '#6060FB',
-                  weight: 3
+                    color: '#6060FB',
+                    weight: 3
+                },
+                editable:true,
+                draggable:false,
+                geodesic:false,
+                visible:true
+               },
+                {
+                    path: [
+                        {
+                            latitude: 47,
+                            longitude: -74
+                        },
+                        {
+                            latitude: 32,
+                            longitude: -89
+                        },
+                        {
+                            latitude: 39,
+                            longitude: -122
+                        },
+                        {
+                            latitude: 62,
+                            longitude: -95
+                        }
+                    ],
+                    stroke: {
+                        color: '#6060FB',
+                        weight: 3
+                    },
+                    editable:true,
+                    draggable:true,
+                    geodesic:true,
+                    visible:true
                 }
-            }
+            ]
+        },
+        toggleColor:function(color){
+            return color == 'red' ? '#6060FB' : 'red';
         }
+
     });
 
     _.each($scope.map.markers,function(marker){
