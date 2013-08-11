@@ -9,37 +9,15 @@ angular.module("google-maps")
                    var value = mapArray.getAt(index);
                    scopeArray[index].latitude = value.lat();
                    scopeArray[index].longitude = value.lng();
-                  // scope.$apply();
                },
                'insert_at':function(index){
                    var value = mapArray.getAt(index);
                    scopeArray.splice(index,0,{latitude:value.lat(),longitude:value.lng()});
-                //   scope.$apply();
                },
                'remove_at':function(index){
                    scopeArray.splice(index,1);
-               //    scope.$apply();
                }
             });
-                                  /*
-            var mapSetAtListener = google.maps.event.addListener(mapArray,'set_at',function(index){
-                var value = mapArray.getAt(index);
-                scopeArray[index].latitude = value.lat();
-                scopeArray[index].longitude = value.lng();
-                scope.$apply();
-            });
-
-            var mapInsertAtListener = google.maps.event.addListener(mapArray,'insert_at',function(index){
-                var value = mapArray.getAt(index);
-                scopeArray.splice(index,0,{latitude:value.lat(),longitude:value.lng()});
-                scope.$apply();
-            });
-
-            var mapRemoveAtListener = google.maps.event.addListener(mapArray,'remove_at',function(index){
-                scopeArray.splice(index,1);
-                scope.$apply();
-            });                          */
-
 
             var watchListener =  scope.$watch(pathEval, function (newArray) {
                 var oldArray = mapArray;
@@ -68,18 +46,6 @@ angular.module("google-maps")
             }, true);
 
             return function(){
-               /* if(mapSetAtListener){
-                    mapSetAtListener();
-                    mapSetAtListener = null;
-                }
-                if(mapInsertAtListener){
-                    mapInsertAtListener();
-                    mapInsertAtListener = null;
-                }
-                if(mapRemoveAtListener){
-                    mapRemoveAtListener();
-                    mapRemoveAtListener = null;
-                }   */
                 if(mapArrayListener){
                     mapArrayListener();
                     mapArrayListener = null;

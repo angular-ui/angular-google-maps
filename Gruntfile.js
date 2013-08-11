@@ -36,6 +36,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: ['src/module.js',
+            'src/controllers/polyline-display.js',
               'src/utils/LatLngArraySync.js',
               'src/utils/MapEvents.js',
               'src/directives/map.js', 
@@ -47,6 +48,7 @@ module.exports = function(grunt) {
       },
       example: {
         src: ['src/module.js',
+              'src/controllers/polyline-display.js',
               'src/utils/LatLngArraySync.js',
               'src/utils/MapEvents.js',
               'src/directives/map.js', 

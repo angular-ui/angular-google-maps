@@ -136,7 +136,11 @@ function ExampleController ($scope, $timeout, $log) {
                     visible:true
                 }
             ]
+        },
+        toggleColor:function(color){
+            return color == 'red' ? '#6060FB' : 'red';
         }
+
     });
 
     _.each($scope.map.markers,function(marker){

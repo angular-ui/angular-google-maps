@@ -172,6 +172,19 @@ angular.module("google-maps")
                         });
                     }
 
+                    if(angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)){
+                        scope.$watch('stroke.weight',function(newValue,oldValue){
+                            polyline.setOptions(buildOpts(polyline.getPath()));
+                        });
+                    }
+
+
+                    if(angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)){
+                        scope.$watch('stroke.color',function(newValue,oldValue){
+                            polyline.setOptions(buildOpts(polyline.getPath()));
+                        });
+                    }
+
 
 
 
