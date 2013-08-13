@@ -54,11 +54,12 @@ angular.module("google-maps").
           require: ['^googleMap', '^?marker'],
           scope: {
             coords: '=coords',
-            show: '&show',
+            show: '=show',
             templateUrl: '=templateurl',
             templateParameter: '=templateparameter',
             isIconVisibleOnClick: '=isiconvisibleonclick',
-            closeClick: '&closeclick'           //scope glue to gmap InfoWindow closeclick
+            closeClick: '&closeclick',          //scope glue to gmap InfoWindow closeclick
+            openClick: '&openclick'
           },
           link: function (scope, element, attrs, ctrls) {
               $timeout(function () {
@@ -88,12 +89,19 @@ angular.module("google-maps").
                       // Show the window and hide the marker on click
                       var initialMarkerVisibility;
                       google.maps.event.addListener(markerInstance, 'click', function () {
+                          
+                          scope.openClick();
+                          
                           win.setPosition(markerInstance.getPosition());
                           win.open(mapCtrl.getMap());
 
                           initialMarkerVisibility = markerInstance.getVisible();
 
                           markerInstance.setVisible(isIconVisibleOnClick);
+                          
+                          scope.show = true;
+                          
+                          scope.$apply();
                       });
 
                       // Set visibility of marker back to what it was before opening the window
@@ -124,7 +132,7 @@ angular.module("google-maps").
                     win.close();
                   }
 
-                  scope.$watch('show()', function (newValue, oldValue) {
+                  scope.$watch('show', function (newValue, oldValue) {
                     if (newValue !== oldValue) {
                         if (newValue) {
                             showWindow();

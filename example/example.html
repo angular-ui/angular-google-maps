@@ -66,7 +66,7 @@
 				<trafficlayer show="map.showTraffic" />
 				<!-- prefedined markers -->
 				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
-					<window show="m.showWindow" closeClick="m.closeClick()">
+					<window show="m.showWindow" closeClick="m.closeClick()" openClick="m.openClick()">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
 					</window>
