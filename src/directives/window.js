@@ -58,7 +58,8 @@ angular.module("google-maps").
             templateUrl: '=templateurl',
             templateParameter: '=templateparameter',
             isIconVisibleOnClick: '=isiconvisibleonclick',
-            closeClick: '&closeclick'           //scope glue to gmap InfoWindow closeclick
+            closeClick: '&closeclick',          //scope glue to gmap InfoWindow closeclick
+            openClick: '&openclick'
           },
           link: function (scope, element, attrs, ctrls) {
               $timeout(function () {
@@ -97,6 +98,7 @@ angular.module("google-maps").
                           
                           scope.show = true;
                           
+                          scope.openClick();
                           scope.$apply();
                       });
 
