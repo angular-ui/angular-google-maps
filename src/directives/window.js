@@ -54,7 +54,7 @@ angular.module("google-maps").
           require: ['^googleMap', '^?marker'],
           scope: {
             coords: '=coords',
-            show: '&show',
+            show: '=show',
             templateUrl: '=templateurl',
             templateParameter: '=templateparameter',
             isIconVisibleOnClick: '=isiconvisibleonclick',
@@ -94,6 +94,10 @@ angular.module("google-maps").
                           initialMarkerVisibility = markerInstance.getVisible();
 
                           markerInstance.setVisible(isIconVisibleOnClick);
+                          
+                          scope.show = true;
+                          
+                          scope.$apply();
                       });
 
                       // Set visibility of marker back to what it was before opening the window
@@ -124,7 +128,7 @@ angular.module("google-maps").
                     win.close();
                   }
 
-                  scope.$watch('show()', function (newValue, oldValue) {
+                  scope.$watch('show', function (newValue, oldValue) {
                     if (newValue !== oldValue) {
                         if (newValue) {
                             showWindow();
