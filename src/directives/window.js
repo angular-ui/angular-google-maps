@@ -89,6 +89,9 @@ angular.module("google-maps").
                       // Show the window and hide the marker on click
                       var initialMarkerVisibility;
                       google.maps.event.addListener(markerInstance, 'click', function () {
+                          
+                          scope.openClick();
+                          
                           win.setPosition(markerInstance.getPosition());
                           win.open(mapCtrl.getMap());
 
@@ -98,7 +101,6 @@ angular.module("google-maps").
                           
                           scope.show = true;
                           
-                          scope.openClick();
                           scope.$apply();
                       });
 
