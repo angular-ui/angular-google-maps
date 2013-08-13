@@ -149,8 +149,21 @@ function ExampleController ($scope, $timeout, $log) {
             this.showWindow = false;
             $scope.$apply();
         };
+        
+        marker.openClick = function(){                        
+            $scope.forceCloseAllWindows();
+        };
+        
     });
-
+    
+    // ensures all windows are closed, by setting each marker showWindow variable to false
+    $scope.forceCloseAllWindows = function() {
+        _.each($scope.map.markers, function(marker){
+            marker.showWindow = false;
+            $scope.$apply();
+        });
+    };
+        
     $scope.removeMarkers = function () {
         $log.info("Clearing markers. They should disappear from the map now");
         $scope.map.markers.length = 0;
