@@ -1,7 +1,7 @@
 ###
 	- interface directive for all window(s) to derrive from
 ###	
-@module "directives.api.models.parent", ->
+@ngGmapModule "directives.api.models.parent", ->
 	class @IWindowParentModel extends oo.BaseObject
 		@include directives.api.utils.GmapUtil
 		# Animation is enabled by default

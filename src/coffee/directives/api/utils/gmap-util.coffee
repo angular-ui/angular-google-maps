@@ -1,4 +1,4 @@
-@module "directives.api.utils", ->
+@ngGmapModule "directives.api.utils", ->
 	@GmapUtil =
 		createMarkerOptions:(map,coords,icon,animate,defaults) ->
 			opts = angular.extend({}, defaults, {

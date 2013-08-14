@@ -38,7 +38,7 @@ module.exports = function(grunt) {
         files: {
           'tmp/output_coffee.js': 
           ['src/coffee/*.coffee',
-          'src/coffee/oo/module.coffee',
+          'src/coffee/oo/ng-gmap-module.coffee',
           'src/coffee/oo/base-object.coffee',
           'src/coffee/directives/api/utils/*.coffee',
           'src/coffee/directives/api/models/child/*.coffee',

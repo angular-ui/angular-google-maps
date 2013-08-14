@@ -1,4 +1,4 @@
-@module "directives.api.models.child", ->
+@ngGmapModule "directives.api.models.child", ->
 	class @WindowChildModel extends oo.BaseObject
 		constructor:(scope,opts,isIconVisibleOnClick,mapCtrl, markerCtrl,$http,$templateCache,$compile,needToManualDestroy = false)->
 			@scope = scope

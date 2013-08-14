@@ -28,15 +28,15 @@
  */
 
 angular.module('google-maps', []);;(function() {
-  this.module = function(names, fn) {
+  this.ngGmapModule = function(names, fn) {
     var space, _name;
     if (typeof names === 'string') {
       names = names.split('.');
     }
     space = this[_name = names.shift()] || (this[_name] = {});
-    space.module || (space.module = this.module);
+    space.ngGmapModule || (space.ngGmapModule = this.ngGmapModule);
     if (names.length) {
-      return space.module(names, fn);
+      return space.ngGmapModule(names, fn);
     } else {
       return fn.call(space);
     }
@@ -47,7 +47,7 @@ angular.module('google-maps', []);;(function() {
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  this.module("oo", function() {
+  this.ngGmapModule("oo", function() {
     var baseObjectKeywords;
     baseObjectKeywords = ['extended', 'included'];
     return this.BaseObject = (function() {
@@ -88,8 +88,52 @@ angular.module('google-maps', []);;(function() {
 
 }).call(this);
 
+/*
+    Author: Nicholas McCready & jfriend00
+    AsyncProcessor handles things asynchronous-like :), to allow the UI to be free'd to do other things
+    Code taken from http://stackoverflow.com/questions/10344498/best-way-to-iterate-over-an-array-without-blocking-the-ui
+*/
+
+
 (function() {
-  this.module("directives.api.utils", function() {
+  this.ngGmapModule("directives.api.utils", function() {
+    return this.AsyncProcessor = {
+      handleLargeArray: function(array, callback, pausedCallBack, chunk, index) {
+        var doChunk;
+        if (chunk == null) {
+          chunk = 100;
+        }
+        if (index == null) {
+          index = 0;
+        }
+        if (array === void 0 || array.length <= 0) {
+          return;
+        }
+        doChunk = function() {
+          var cnt, i;
+          cnt = chunk;
+          i = index;
+          while (cnt-- && i < array.length) {
+            callback(array[i]);
+            ++i;
+          }
+          if (i < array.length) {
+            index = i;
+            if (pausedCallBack != null) {
+              pausedCallBack();
+            }
+            return setTimeout(doChunk(), 1);
+          }
+        };
+        return doChunk();
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
+  this.ngGmapModule("directives.api.utils", function() {
     return this.GmapUtil = {
       createMarkerOptions: function(map, coords, icon, animate, defaults) {
         var opts;
@@ -119,7 +163,7 @@ angular.module('google-maps', []);;(function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api.utils", function() {
+  this.ngGmapModule("directives.api.utils", function() {
     return this.Linked = (function(_super) {
       __extends(Linked, _super);
 
@@ -138,7 +182,7 @@ angular.module('google-maps', []);;(function() {
 }).call(this);
 
 (function() {
-  this.module("directives.api.utils", function() {
+  this.ngGmapModule("directives.api.utils", function() {
     return this.Logger = {
       logger: void 0,
       doLog: false,
@@ -161,7 +205,7 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api.models.child", function() {
+  this.ngGmapModule("directives.api.models.child", function() {
     return this.MarkerChildModel = (function(_super) {
       __extends(MarkerChildModel, _super);
 
@@ -293,7 +337,7 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api.models.child", function() {
+  this.ngGmapModule("directives.api.models.child", function() {
     return this.WindowChildModel = (function(_super) {
       __extends(WindowChildModel, _super);
 
@@ -406,7 +450,7 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api.models.parent", function() {
+  this.ngGmapModule("directives.api.models.parent", function() {
     return this.IMarkerParentModel = (function(_super) {
       __extends(IMarkerParentModel, _super);
 
@@ -496,7 +540,7 @@ angular.module('google-maps', []);;(function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api.models.parent", function() {
+  this.ngGmapModule("directives.api.models.parent", function() {
     return this.IWindowParentModel = (function(_super) {
       __extends(IWindowParentModel, _super);
 
@@ -533,7 +577,7 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api.models.parent", function() {
+  this.ngGmapModule("directives.api.models.parent", function() {
     return this.MarkerParentModel = (function(_super) {
       __extends(MarkerParentModel, _super);
 
@@ -613,7 +657,7 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api.models.parent", function() {
+  this.ngGmapModule("directives.api.models.parent", function() {
     return this.MarkersParentModel = (function(_super) {
       __extends(MarkersParentModel, _super);
 
@@ -632,6 +676,7 @@ angular.module('google-maps', []);;(function() {
         this.markersIndex = 0;
         this.scope = scope;
         this.$log.info(this);
+        this.bigGulp = directives.api.utils.AsyncProcessor;
       }
 
       MarkersParentModel.prototype.onTimeOut = function(scope) {
@@ -649,20 +694,14 @@ angular.module('google-maps', []);;(function() {
       };
 
       MarkersParentModel.prototype.createMarkers = function(scope) {
-        var model, _fn, _i, _len, _ref,
-          _this = this;
-        _ref = scope.models;
-        _fn = function(model) {
+        var _this = this;
+        this.bigGulp.handleLargeArray(scope.models, function(model) {
           scope.doRebuild = true;
           _this.markers.push(new directives.api.models.child.MarkerChildModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, function(index) {
             return delete _this.markers[index];
           }, _this.DEFAULTS, _this.doClick));
           return _this.markersIndex++;
-        };
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          model = _ref[_i];
-          _fn(model);
-        }
+        });
         return scope.markerModels = this.markers;
       };
 
@@ -721,7 +760,7 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api.models.parent", function() {
+  this.ngGmapModule("directives.api.models.parent", function() {
     return this.WindowsParentModel = (function(_super) {
       __extends(WindowsParentModel, _super);
 
@@ -976,7 +1015,7 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
+  this.ngGmapModule("directives.api", function() {
     return this.IMarker = (function(_super) {
       __extends(IMarker, _super);
 
@@ -1024,7 +1063,7 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
+  this.ngGmapModule("directives.api", function() {
     return this.IWindow = (function(_super) {
       __extends(IWindow, _super);
 
@@ -1075,7 +1114,7 @@ angular.module('google-maps', []);;(function() {
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
+  this.ngGmapModule("directives.api", function() {
     return this.Marker = (function(_super) {
       __extends(Marker, _super);
 
@@ -1123,7 +1162,7 @@ not 1:1 in this setting.
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
+  this.ngGmapModule("directives.api", function() {
     return this.Markers = (function(_super) {
       __extends(Markers, _super);
 
@@ -1167,7 +1206,7 @@ not 1:1 in this setting.
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
+  this.ngGmapModule("directives.api", function() {
     return this.Window = (function(_super) {
       __extends(Window, _super);
 
@@ -1221,7 +1260,7 @@ not 1:1 in this setting.
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.module("directives.api", function() {
+  this.ngGmapModule("directives.api", function() {
     return this.Windows = (function(_super) {
       __extends(Windows, _super);
 

@@ -1,4 +1,4 @@
-@module "directives.api.models.child", ->
+@ngGmapModule "directives.api.models.child", ->
 	class @MarkerChildModel extends oo.BaseObject
 		@include directives.api.utils.GmapUtil
 		constructor:(index,model,parentScope,gMap,$timeout,notifyLocalDestroy,defaults,doClick)->

@@ -2,7 +2,7 @@
 	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
 	Thus there will be one html element per marker within the directive.
 ###
-@module "directives.api", ->
+@ngGmapModule "directives.api", ->
 	class @Marker extends directives.api.IMarker
 		constructor: ($timeout) ->
 			super($timeout)

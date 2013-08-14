@@ -1,4 +1,4 @@
-@module "directives.api.utils", ->
+@ngGmapModule "directives.api.utils", ->
 	@Logger =
 		logger: undefined
 		doLog: false

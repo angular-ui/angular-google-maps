@@ -9,7 +9,7 @@ not 1:1 in this setting.
     - actual changes to a model are tracked inside directives.api.model.MarkerModel
 
 ###
-@module "directives.api", ->
+@ngGmapModule "directives.api", ->
 	class @Markers extends directives.api.IMarker
 		constructor: ($timeout) ->
 			super($timeout)
