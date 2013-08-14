@@ -4,17 +4,18 @@
 		constructor:(index,model,parentScope,gMap,$timeout,notifyLocalDestroy,defaults,doClick)->
 			@index = index
 			@model = model
-			@parentScope = parentScope
+			# @parentScope = parentScope
 			@iconKey = parentScope.icon
 			@coordsKey = parentScope.coords
 			@clickKey = parentScope.click()
 			@animateKey = parentScope.animate
-			@myScope = parentScope.$new(false)
+			# @myScope = parentScope.$new(false)
+			@myScope = {}
 			@setMyScope(model)
-			@myScope.$watch('model',(newValue, oldValue) =>
-				if (newValue != oldValue)
-					@setMyScope(newValue) 
-			,true)
+			# @myScope.$watch('model',(newValue, oldValue) =>
+			# 	if (newValue != oldValue)
+			# 		@setMyScope(newValue) 
+			# ,true)
 			@defaults = defaults
 			@gMap = gMap
 			@opts = @createMarkerOptions(@gMap,@myScope.coords,@myScope.icon,@myScope.animate,@defaults)
@@ -44,7 +45,9 @@
 			@myScope.model = model
 
 		destroy:() =>
-			@myScope.$destroy()
+			@gMarker.setMap(null)
+			notifyLocalDestroy(@index) if notifyLocalDestroy?
+			#@myScope.$destroy()
 
 		setCoords:(scope) =>
 			if(scope.$id != @myScope.$id)
@@ -67,24 +70,24 @@
 			@gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
 			
 
-		watchCoords:(scope) =>
-			scope.$watch('coords', (newValue, oldValue) =>
-				if (newValue != oldValue)
-					@parentScope.doRebuild = false
-					@setCoords(scope)
-					@parentScope.doRebuild = true
-			, true)
+		# watchCoords:(scope) =>
+		# 	scope.$watch('coords', (newValue, oldValue) =>
+		# 		if (newValue != oldValue)
+		# 			@parentScope.doRebuild = false
+		# 			@setCoords(scope)
+		# 			@parentScope.doRebuild = true
+		# 	, true)
 					
-		watchIcon:(scope) =>
-			scope.$watch('icon', (newValue, oldValue) =>
-				if (newValue != oldValue) 
-					@parentScope.doRebuild = false
-					@setIcon(scope)
-					@parentScope.doRebuild = true
-			, true)
+		# watchIcon:(scope) =>
+		# 	scope.$watch('icon', (newValue, oldValue) =>
+		# 		if (newValue != oldValue) 
+		# 			@parentScope.doRebuild = false
+		# 			@setIcon(scope)
+		# 			@parentScope.doRebuild = true
+		# 	, true)
 
-		watchDestroy:(scope)=>
-			scope.$on("$destroy", => 
-				@gMarker.setMap(null)
-				notifyLocalDestroy(@index) if notifyLocalDestroy?
-			)
+		# watchDestroy:(scope)=>
+		# 	scope.$on("$destroy", => 
+		# 		@gMarker.setMap(null)
+		# 		notifyLocalDestroy(@index) if notifyLocalDestroy?
+		# 	)

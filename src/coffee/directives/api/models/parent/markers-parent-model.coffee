@@ -8,7 +8,6 @@
 			@markersIndex = 0
 			@scope = scope
 			@$log.info(@)
-			@bigGulp = directives.api.utils.AsyncProcessor
 
 		onTimeOut:(scope)=>
 			@watch('models',scope)
@@ -22,7 +21,7 @@
 			super(scope) or modelsNotDefined
 
 		createMarkers:(scope) =>
-			@bigGulp.handleLargeArray(scope.models,(model) =>
+			_.each(scope.models,(model) =>
 				scope.doRebuild = true
 				@markers.push( 
 					new directives.api.models.child.MarkerChildModel(@markersIndex,model,scope,@mapCtrl,@$timeout,(index) =>
