@@ -6,7 +6,7 @@
  			- icon
 		- implementation needed on watches
 ###	
-@module "directives.api.models.parent", ->
+@ngGmapModule "directives.api.models.parent", ->
 	class @IMarkerParentModel extends oo.BaseObject
 		# Animation is enabled by default
 		DEFAULTS: { animation: google.maps.Animation.DROP }

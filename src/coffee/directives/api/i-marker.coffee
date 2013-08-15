@@ -6,7 +6,7 @@
  			- icon
 		- implementation needed on watches
 ###	
-@module "directives.api", ->
+@ngGmapModule "directives.api", ->
 	class @IMarker extends oo.BaseObject
 		constructor: ($timeout) ->
 			self = @

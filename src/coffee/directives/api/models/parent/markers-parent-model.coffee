@@ -1,4 +1,4 @@
-@module "directives.api.models.parent", ->
+@ngGmapModule "directives.api.models.parent", ->
 	class @MarkersParentModel extends directives.api.models.parent.IMarkerParentModel
 		constructor: (scope, element, attrs, mapCtrl,$timeout) ->
 			super(scope, element, attrs, mapCtrl,$timeout)
@@ -7,6 +7,7 @@
 			@markers = []
 			@markersIndex = 0
 			@scope = scope
+			@bigGulp =  directives.api.utils.AsyncProcessor
 			@$log.info(@)
 
 		onTimeOut:(scope)=>
@@ -21,15 +22,15 @@
 			super(scope) or modelsNotDefined
 
 		createMarkers:(scope) =>
-			for model in scope.models
-				do(model) =>
-					scope.doRebuild = true
-					@markers.push( 
-						new directives.api.models.child.MarkerChildModel(@markersIndex,model,scope,@mapCtrl,@$timeout,(index) =>
-							delete @markers[index]
-						,@DEFAULTS,@doClick)
-					)
-					@markersIndex++
+			@bigGulp.handleLargeArray(scope.models,(model) =>
+				scope.doRebuild = true
+				@markers.push( 
+					new directives.api.models.child.MarkerChildModel(@markersIndex,model,scope,@mapCtrl,@$timeout,(index) =>
+						delete @markers[index]
+					,@DEFAULTS,@doClick)
+				)
+				@markersIndex++
+			)
 			#put MarkerModels into local scope					
 			scope.markerModels = @markers
 

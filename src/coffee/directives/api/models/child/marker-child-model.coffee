@@ -1,4 +1,4 @@
-@module "directives.api.models.child", ->
+@ngGmapModule "directives.api.models.child", ->
 	class @MarkerChildModel extends oo.BaseObject
 		@include directives.api.utils.GmapUtil
 		constructor:(index,model,parentScope,gMap,$timeout,notifyLocalDestroy,defaults,doClick)->
@@ -10,6 +10,7 @@
 			@clickKey = parentScope.click()
 			@animateKey = parentScope.animate
 			@myScope = parentScope.$new(false)
+			# @myScope = {}
 			@setMyScope(model)
 			@myScope.$watch('model',(newValue, oldValue) =>
 				if (newValue != oldValue)
@@ -28,13 +29,11 @@
 						@myScope.click()
 					)
 			)
-			@setCoords(@myScope)
-			@setIcon(@myScope)
-			$timeout( =>
-				@watchCoords(@myScope)
-				@watchIcon(@myScope)
-				@watchDestroy(@myScope)
-			)
+			# $timeout( =>
+			@watchCoords(@myScope)
+			@watchIcon(@myScope)
+			@watchDestroy(@myScope)
+			# )
 		setMyScope:(model)=>
 			@myScope.icon = if @iconKey == 'self' then model else model[@iconKey]
 			@myScope.coords = if @coordsKey == 'self' then model else model[@coordsKey]

@@ -2,7 +2,7 @@
 	Window directive for GoogleMap Info Windows, where ng-repeat is being used....
 	Where Html DOM element is 1:1 on Scope and a Model
 ###	
-@module "directives.api", ->
+@ngGmapModule "directives.api", ->
 	class @Window extends directives.api.IWindow
 		@include directives.api.utils.GmapUtil
 		constructor: ($timeout, $compile, $http, $templateCache) ->

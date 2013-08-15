@@ -1,4 +1,4 @@
-@module "oo", ->
+@ngGmapModule "oo", ->
 	baseObjectKeywords = ['extended', 'included']
 
 	class @BaseObject

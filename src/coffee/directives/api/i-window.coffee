@@ -1,7 +1,7 @@
 ###
 	- interface directive for all window(s) to derrive from
 ###	
-@module "directives.api", ->
+@ngGmapModule "directives.api", ->
 	class @IWindow extends oo.BaseObject
 		constructor: ($timeout, $compile, $http, $templateCache) ->
 			self = @

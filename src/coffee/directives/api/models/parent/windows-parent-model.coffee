@@ -1,7 +1,7 @@
 ###
 	Windows directive where many windows map to the models property
 ###	
-@module "directives.api.models.parent", ->
+@ngGmapModule "directives.api.models.parent", ->
 	class @WindowsParentModel extends directives.api.models.parent.IWindowParentModel
 		constructor: (scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache,$interpolate) ->
 			super(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache,$interpolate)
@@ -19,6 +19,7 @@
 			@contentKeys = undefined #model keys to parse html angular content
 			@isIconVisibleOnClick = undefined
 			@firstTime = true
+			@bigGulp = directives.api.utils.AsyncProcessor
 			@$log.info(self)
 			
 			@$timeout( => 
@@ -40,9 +41,9 @@
 		watchModels:(scope) =>
 			scope.$watch('models', (newValue, oldValue) =>
 				if (newValue != oldValue and newValue.length != oldValue.length) 
-					for model in @windows
-						do(model) =>
-							model.destroy()
+					@bigGulp.handleLargeArray(@windows,(model) =>
+						model.destroy()
+					)
 					# delete @windows
 					@windows = []
 					@windowsIndex = 0
@@ -51,7 +52,9 @@
 
 		watchDestroy:(scope)=>
 			scope.$on("$destroy", => 
-				model.destroy() for model in @windows
+				@bigGulp.handleLargeArray(@windows,(model) =>
+					model.destroy()
+				)
 				delete @windows
 				@windows = []
 				@windowsIndex = 0
@@ -92,7 +95,9 @@
 						@watchModels(@linked.scope)
 						@watchDestroy(@linked.scope)
 					@setContentKeys(@linked.scope.models) #only setting content keys once per model array
-					@createWindow(model,undefined,gMap) for model in @linked.scope.models
+					@bigGulp.handleLargeArray(@linked.scope.models,(model) =>
+						@createWindow(model,undefined,gMap)
+					)
 				else
 					#creating windows with parent markers
 					@models = markersScope.models
@@ -100,9 +105,9 @@
 						@watchModels(markersScope)
 						@watchDestroy(markersScope)
 					@setContentKeys(markersScope.models) #only setting content keys once per model array
-					for mm in markersScope.markerModels
-						do(mm) =>
-							@createWindow(mm.model,mm.gMarker,gMap)
+					@bigGulp.handleLargeArray(markersScope.markerModels,(mm) =>
+						@createWindow(mm.model,mm.gMarker,gMap)
+					)
 			@firstTime = false
 
 		setContentKeys:(models)=>

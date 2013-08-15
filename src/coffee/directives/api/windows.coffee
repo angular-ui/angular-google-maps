@@ -1,7 +1,7 @@
 ###
 	Windows directive where many windows map to the models property
 ###	
-@module "directives.api", ->
+@ngGmapModule "directives.api", ->
 	class @Windows extends directives.api.IWindow
 		constructor: ($timeout, $compile, $http, $templateCache,$interpolate) ->
 			super($timeout, $compile, $http, $templateCache)
