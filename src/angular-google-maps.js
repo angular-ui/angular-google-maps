@@ -417,7 +417,7 @@
         
         if (angular.isDefined(scope.events)) {
           for (var eventName in scope.events) {
-            if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+            if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName]) && eventName != 'click') {
               _m.on(eventName, function () {
                 scope.events[eventName].apply(scope, [_m, eventName, arguments]);
               });
@@ -449,6 +449,10 @@
                 scope.latitude = cm.latitude;
                 scope.longitude = cm.longitude;
                 scope.$apply();
+
+                if (scope.events.hasOwnProperty('click') && angular.isFunction(scope.events['click'])) {
+                  scope.events['click'].apply(scope, [_m, 'click', arguments]);
+                }
               });
             });
           }());
