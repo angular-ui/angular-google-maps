@@ -54,6 +54,6 @@ angular.module("google-maps")
                     watchListener();
                     watchListener = null;
                 }
-            }
-        }
+            };
+        };
     }]);
