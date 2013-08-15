@@ -179,6 +179,20 @@
           "handler": handler
         });
       };
+
+      this.attachInfoWindow = function (marker, infoWindowContent) {
+        marker.infoWindow = new google.maps.InfoWindow({
+          content: infoWindowContent
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          if (currentInfoWindow != null) {
+            currentInfoWindow.close();
+          }
+          marker.infoWindow.open(_instance, marker);
+          currentInfoWindow = marker.infoWindow;
+        });
+      };
       
       this.addMarker = function (lat, lng, icon, infoWindowContent, label, url,
           thumbnail) {
@@ -202,17 +216,7 @@
         }
 
         if (infoWindowContent != null) {
-          marker.infoWindow = new google.maps.InfoWindow({
-            content: infoWindowContent
-          });
-
-          google.maps.event.addListener(marker, 'click', function() {
-            if (currentInfoWindow != null) {
-              currentInfoWindow.close();
-            }
-            marker.infoWindow.open(_instance, marker);
-            currentInfoWindow = marker.infoWindow;
-          });
+          that.attachInfoWindow(marker, infoWindowContent);
         }
         
         // Cache marker 
@@ -257,9 +261,7 @@
           }
         }
         else {
-          marker.infoWindow = new google.maps.InfoWindow({
-            content: infoWindowContent
-          });
+          that.attachInfoWindow(marker, infoWindowContent);
         }
 
         // Return marker instance
