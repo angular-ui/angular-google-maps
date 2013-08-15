@@ -179,6 +179,20 @@
           "handler": handler
         });
       };
+
+      this.attachInfoWindow = function (marker, infoWindowContent) {
+        marker.infoWindow = new google.maps.InfoWindow({
+          content: infoWindowContent
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+          if (currentInfoWindow != null) {
+            currentInfoWindow.close();
+          }
+          marker.infoWindow.open(_instance, marker);
+          currentInfoWindow = marker.infoWindow;
+        });
+      };
       
       this.addMarker = function (lat, lng, icon, infoWindowContent, label, url,
           thumbnail) {
@@ -202,17 +216,7 @@
         }
 
         if (infoWindowContent != null) {
-          var infoWindow = new google.maps.InfoWindow({
-            content: infoWindowContent
-          });
-
-          google.maps.event.addListener(marker, 'click', function() {
-            if (currentInfoWindow != null) {
-              currentInfoWindow.close();
-            }
-            infoWindow.open(_instance, marker);
-            currentInfoWindow = infoWindow;
-          });
+          that.attachInfoWindow(marker, infoWindowContent);
         }
         
         // Cache marker 
@@ -233,6 +237,36 @@
         // Return marker instance
         return marker;
       };      
+
+      this.updateMarker = function (lat, lng, icon, infoWindowContent, label, url,
+          thumbnail) {
+
+        var marker = that.findMarker(lat, lng);
+
+        if (marker == null) {
+          return;
+        }
+
+        if (marker.icon != icon) {
+          marker.setIcon(icon);
+        }
+        if (marker.infoWindow) {
+          if (marker.infoWindow.content != infoWindowContent) {
+            marker.infoWindow.content = infoWindowContent;
+            // Refresh marker info window if it's the current one
+            if (marker.infoWindow == currentInfoWindow) {
+              currentInfoWindow.close();
+              currentInfoWindow.open(_instance, marker);
+            }
+          }
+        }
+        else {
+          that.attachInfoWindow(marker, infoWindowContent);
+        }
+
+        // Return marker instance
+        return marker;
+      };
       
       this.findMarker = function (lat, lng) {
         for (var i = 0; i < _markers.length; i++) {
@@ -478,6 +512,9 @@
             angular.forEach(newValue, function (v, i) {
               if (!_m.hasMarker(v.latitude, v.longitude)) {
                 _m.addMarker(v.latitude, v.longitude, v.icon, v.infoWindow);
+              }
+              else {
+                _m.updateMarker(v.latitude, v.longitude, v.icon, v.infoWindow);
               }
             });
             
