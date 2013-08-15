@@ -363,6 +363,11 @@
           needToManualDestroy = false;
         }
         this.destroy = __bind(this.destroy, this);
+        this.hideWindow = __bind(this.hideWindow, this);
+        this.showWindow = __bind(this.showWindow, this);
+        this.handleClick = __bind(this.handleClick, this);
+        this.watchCoords = __bind(this.watchCoords, this);
+        this.watchShow = __bind(this.watchShow, this);
         this.scope = scope;
         this.opts = opts;
         this.mapCtrl = mapCtrl;
@@ -377,63 +382,75 @@
         if (this.markerCtrl != null) {
           this.markerCtrl.setClickable(true);
         }
-        this.handleClick(this.scope, this.mapCtrl, this.markerCtrl, this.gWin, this.isIconVisibleOnClick, this.initialMarkerVisibility);
-        this.watchShow(scope, $http, $templateCache, this.$compile, this.gWin, this.showWindow, this.hideWindow, this.mapCtrl);
+        this.handleClick();
+        this.watchShow();
+        this.watchCoords();
         this.needToManualDestroy = needToManualDestroy;
         this.$log.info(this);
       }
 
-      WindowChildModel.prototype.watchShow = function(scope, $http, $templateCache, $compile, gWin, showHandle, hideHandle, mapCtrl) {
-        return scope.$watch('show', function(newValue, oldValue) {
+      WindowChildModel.prototype.watchShow = function() {
+        var _this = this;
+        return this.scope.$watch('show', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             if (newValue) {
-              return showHandle(scope, $http, $templateCache, $compile, gWin, mapCtrl);
+              return _this.showWindow();
             } else {
-              return hideHandle(gWin);
+              return _this.hideWindow();
             }
           } else {
-            if (newValue && !gWin.getMap()) {
-              return showHandle(scope, $http, $templateCache, $compile, gWin, mapCtrl);
+            if (newValue && !_this.gWin.getMap()) {
+              return _this.showWindow();
             }
           }
         }, true);
       };
 
-      WindowChildModel.prototype.handleClick = function(scope, mapCtrl, markerInstance, gWin, isIconVisibleOnClick, initialMarkerVisibility) {
-        if (markerInstance != null) {
-          google.maps.event.addListener(markerInstance, 'click', function() {
-            gWin.setPosition(markerInstance.getPosition());
-            gWin.open(mapCtrl);
-            return markerInstance.setVisible(isIconVisibleOnClick);
+      WindowChildModel.prototype.watchCoords = function() {
+        var _this = this;
+        return this.scope.$watch('coords', function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            return _this.gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+          }
+        }, true);
+      };
+
+      WindowChildModel.prototype.handleClick = function() {
+        if (this.markerCtrl != null) {
+          google.maps.event.addListener(this.markerCtrl, 'click', function() {
+            this.gWin.setPosition(this.markerCtrl.getPosition());
+            this.gWin.open(mapCtrl);
+            return this.markerCtrl.setVisible(this.isIconVisibleOnClick);
           });
-          return google.maps.event.addListener(gWin, 'closeclick', function() {
-            markerInstance.setVisible(initialMarkerVisibility);
-            return scope.closeClick();
+          return google.maps.event.addListener(this.gWin, 'closeclick', function() {
+            this.markerCtrl.setVisible(this.initialMarkerVisibility);
+            return this.scope.closeClick();
           });
         }
       };
 
-      WindowChildModel.prototype.showWindow = function(scope, $http, $templateCache, $compile, gWin, mapCtrl) {
-        if (scope.templateUrl) {
-          return $http.get(scope.templateUrl, {
-            cache: $templateCache
+      WindowChildModel.prototype.showWindow = function() {
+        var _this = this;
+        if (this.scope.templateUrl) {
+          return this.$http.get(scope.templateUrl, {
+            cache: this.$templateCache
           }).then(function(content) {
             var compiled, templateScope;
             templateScope = scope.$new();
-            if (angular.isDefined(scope.templateParameter)) {
-              templateScope.parameter = scope.templateParameter;
+            if (angular.isDefined(_this.scope.templateParameter)) {
+              templateScope.parameter = _this.scope.templateParameter;
             }
-            compiled = $compile(content.data)(templateScope);
-            gWin.setContent(compiled.get(0));
-            return gWin.open(mapCtrl);
+            compiled = _this.$compile(content.data)(templateScope);
+            _this.gWin.setContent(compiled.get(0));
+            return _this.gWin.open(_this.mapCtrl);
           });
         } else {
-          return gWin.open(mapCtrl);
+          return this.gWin.open(this.mapCtrl);
         }
       };
 
-      WindowChildModel.prototype.hideWindow = function(gWin) {
-        return gWin.close();
+      WindowChildModel.prototype.hideWindow = function() {
+        return this.gWin.close();
       };
 
       WindowChildModel.prototype.destroy = function() {

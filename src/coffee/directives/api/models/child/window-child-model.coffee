@@ -15,53 +15,60 @@
 			# Open window on click
 			@markerCtrl.setClickable(true) if @markerCtrl?
 
-			@handleClick(@scope,@mapCtrl,@markerCtrl,@gWin,@isIconVisibleOnClick,@initialMarkerVisibility)
-			@watchShow(scope,$http,$templateCache,@$compile,@gWin,@showWindow,@hideWindow,@mapCtrl)
+			@handleClick()
+			@watchShow()
+			@watchCoords()
 			@needToManualDestroy = needToManualDestroy
 			@$log.info(@)
 
-		watchShow:(scope,$http,$templateCache,$compile,gWin,showHandle,hideHandle,mapCtrl) ->
-			scope.$watch('show', (newValue, oldValue) ->
+		watchShow:() =>
+			@scope.$watch('show', (newValue, oldValue) =>
 				if (newValue != oldValue)
 					if (newValue)
-						showHandle(scope,$http,$templateCache,$compile,gWin,mapCtrl)
+						@showWindow()
 					else
-						hideHandle(gWin)
+						@hideWindow()
 				else 
-					if (newValue and !gWin.getMap())
+					if (newValue and !@gWin.getMap())
 						# If we're initially showing the marker and it's not yet visible, show it.
-						showHandle(scope,$http,$templateCache,$compile,gWin,mapCtrl)
+						@showWindow()
 			,true)
 
-		handleClick:(scope,mapCtrl,markerInstance,gWin,isIconVisibleOnClick,initialMarkerVisibility) ->
-			if markerInstance?
+		watchCoords:()=>
+			@scope.$watch('coords', (newValue, oldValue) =>
+				if (newValue != oldValue)
+					@gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
+			,true)
+
+		handleClick:()=>
+			if @markerCtrl?
 				# Show the window and hide the marker on click
-				google.maps.event.addListener(markerInstance, 'click', ->
-					gWin.setPosition(markerInstance.getPosition())
-					gWin.open(mapCtrl)
-					markerInstance.setVisible(isIconVisibleOnClick)
+				google.maps.event.addListener(@markerCtrl, 'click', ->
+					@gWin.setPosition(@markerCtrl.getPosition())
+					@gWin.open(mapCtrl)
+					@markerCtrl.setVisible(@isIconVisibleOnClick)
 				)
 				# Set visibility of marker back to what it was before opening the window
-				google.maps.event.addListener(gWin, 'closeclick', ->
-					markerInstance.setVisible(initialMarkerVisibility)
-					scope.closeClick()
+				google.maps.event.addListener(@gWin, 'closeclick', ->
+					@markerCtrl.setVisible(@initialMarkerVisibility)
+					@scope.closeClick()
 				)
 		
-		showWindow:(scope,$http,$templateCache,$compile,gWin,mapCtrl) ->
-			if scope.templateUrl
-				$http.get(scope.templateUrl, { cache: $templateCache }).then((content) ->
+		showWindow:() =>
+			if @scope.templateUrl
+				@$http.get(scope.templateUrl, { cache: @$templateCache }).then((content) =>
 					templateScope = scope.$new()
-					if angular.isDefined(scope.templateParameter)
-						templateScope.parameter = scope.templateParameter
-					compiled = $compile(content.data)(templateScope)
-					gWin.setContent(compiled.get(0))
-					gWin.open(mapCtrl)
+					if angular.isDefined(@scope.templateParameter)
+						templateScope.parameter = @scope.templateParameter
+					compiled = @$compile(content.data)(templateScope)
+					@gWin.setContent(compiled.get(0))
+					@gWin.open(@mapCtrl)
 				)
 			else
-				gWin.open(mapCtrl)
+				@gWin.open(@mapCtrl)
 
-		hideWindow: (gWin) ->
-			gWin.close()
+		hideWindow:() =>
+			@gWin.close()
 
 		destroy:()=>
 			@hideWindow(@gWin)
