@@ -10,13 +10,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-open');
   grunt.loadNpmTasks('grunt-mkdir');
+  grunt.loadNpmTasks('grunt-contrib-coffee');
   
+
   // Project configuration.
   grunt.initConfig({
     
     pkg: grunt.file.readJSON('package.json'),
     
     clean: {
+      coffee: ['tmp/output_coffee.js'],
       dist: ['dist/*', 'tmp'],
       example: ['example/<%= pkg.name %>.js']
     },
@@ -29,33 +32,57 @@ module.exports = function(grunt) {
         }
       }
     },
+
+    coffee: {
+      compile: {
+        files: {
+          'tmp/output_coffee.js': 
+          ['src/coffee/*.coffee',
+          'src/coffee/oo/ng-gmap-module.coffee',
+          'src/coffee/oo/base-object.coffee',
+          'src/coffee/directives/api/utils/*.coffee',
+          'src/coffee/directives/api/models/child/*.coffee',
+          'src/coffee/directives/api/models/parent/*.coffee',
+          'src/coffee/directives/api/*.coffee',
+          'src/coffee/directives/*.coffee'] // concat then compile into single file
+        }
+      }
+    },
     
     concat: {
       options: {
         separator: ';'
       },
       dist: {
-        src: ['src/module.js',
-            'src/controllers/polyline-display.js',
-              'src/utils/LatLngArraySync.js',
-              'src/utils/MapEvents.js',
-              'src/directives/map.js', 
-              'src/directives/marker.js', 
-              'src/directives/polyline.js',
-              'src/directives/window.js',
-              'src/directives/trafficlayer.js'],
+        src: ['src/js/module.js', 
+              'tmp/output_coffee.js',
+              'src/js/utils/LatLngArraySync.js', 
+              'src/js/utils/MapEvents.js', 
+              'src/js/controllers/polyline-display.js',
+              'src/js/directives/map.js', 
+              'src/js/directives/marker.js', 
+              'src/js/directives/markers.js', 
+              'src/js/directives/polygon.js',
+              'src/js/directives/polyline.js',
+              'src/js/directives/window.js',
+              'src/js/directives/windows.js',
+              'src/js/directives/trafficlayer.js'],
         dest: 'tmp/output.js'
       },
       example: {
-        src: ['src/module.js',
-              'src/controllers/polyline-display.js',
-              'src/utils/LatLngArraySync.js',
-              'src/utils/MapEvents.js',
-              'src/directives/map.js', 
-              'src/directives/marker.js', 
-              'src/directives/polyline.js',
-              'src/directives/window.js',
-              'src/directives/trafficlayer.js'],
+        src: ['src/js/module.js',
+              'tmp/output_coffee.js',
+              'src/js/utils/LatLngArraySync.js', 
+              'src/js/utils/MapEvents.js', 
+              'src/js/controllers/polyline-display.js',
+              'src/js/directives/map.js', 
+              'src/js/directives/marker.js', 
+              'src/js/directives/markers.js', 
+              'src/js/directives/polygon.js',
+              'src/js/directives/polyline.js',
+              'src/js/directives/window.js',
+              'src/js/directives/windows.js',
+              'src/js/directives/trafficlayer.js'],
         dest: 'example/<%= pkg.name %>.js'
       }
     },
@@ -82,7 +109,7 @@ module.exports = function(grunt) {
     },
     
     jshint: {
-      all: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js']
+      all: ['Gruntfile.js', 'src/js/**/*.js', 'test/js/**/*.js']
     },
     
     test: {
@@ -92,9 +119,9 @@ module.exports = function(grunt) {
     watch: {
       all: {
         options: { livereload: true },
-        files: ['src/**/*.js'],
-        tasks: ['clean:example', 'concat:example']
-      }
+        files: ['src/js/**/*.js','src/coffee/**/*.coffee','src/coffee/*.coffee'],
+        tasks: ['clean:example','coffee','concat:example'],
+      },
     },
     
     open: {
@@ -122,6 +149,7 @@ module.exports = function(grunt) {
                                  'test', 
                                  'jshint', 
                                  'mkdir', 
+                                 'coffee',
                                  'concat:dist', 
                                  'copy:dist',
                                  'uglify']);

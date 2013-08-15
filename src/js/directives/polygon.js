@@ -197,14 +197,14 @@ angular.module("google-maps")
                                     var newLength = newArray.length;
                                     var l = Math.min(oldLength,newLength);
                                     for(;i < l; i++){
-                                        var oldValue = oldArray.getAt(i);
-                                        var newValue = newArray[i];
+                                        oldValue = oldArray.getAt(i);
+                                        newValue = newArray[i];
                                         if((oldValue.lat() != newValue.latitude) || (oldValue.lng() != newValue.longitude)){
                                             oldArray.setAt(i,new google.maps.LatLng(newValue.latitude, newValue.longitude));
                                         }
                                     }
                                     for(; i < newLength; i++){
-                                        var newValue = newArray[i];
+                                        newValue = newArray[i];
                                         oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
                                     }
                                     for(; i < oldLength; i++){

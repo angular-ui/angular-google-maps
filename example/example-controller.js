@@ -9,6 +9,11 @@ function ExampleController ($scope, $timeout, $log) {
     // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
     google.maps.visualRefresh = true;
 
+    onMarkerClicked = function(marker){
+        marker.showWindow = true;
+        window.alert("Marker: lat: " + marker.latitude +", lon: " + marker.longitude + " clicked!!")
+    };
+
     angular.extend($scope, {
         map: {
             showTraffic: true,
@@ -37,6 +42,25 @@ function ExampleController ($scope, $timeout, $log) {
                     showWindow: false
                 }
             ],
+            markers2: [
+                {
+                    latitude: 46,
+                    longitude: -77,
+                    showWindow: false
+                },
+                {
+                    latitude: 33,
+                    longitude: -77,
+                    showWindow: false
+                },
+                {
+                    icon: 'plane.png',
+                    latitude: 35,
+                    longitude: -125,
+                    showWindow: false
+                }
+            ],
+            dynamicMarkers: [],
             clickedMarker: {
                 latitude: null,
                 longitude: null
@@ -146,18 +170,63 @@ function ExampleController ($scope, $timeout, $log) {
 
     _.each($scope.map.markers,function(marker){
         marker.closeClick = function(){                        
-            this.showWindow = false;
+            marker.showWindow = false;
             $scope.$apply();
+        };
+        marker.onClicked = function(){
+            onMarkerClicked(marker);
+        };
+    });
+
+    _.each($scope.map.markers2,function(marker){
+        marker.closeClick = function(){                        
+            marker.showWindow = false;
+            $scope.$apply();
+        };
+        marker.onClicked = function(){
+            onMarkerClicked(marker);
         };
     });
 
     $scope.removeMarkers = function () {
         $log.info("Clearing markers. They should disappear from the map now");
         $scope.map.markers.length = 0;
+        $scope.map.markers2.length = 0;
+        $scope.map.dynamicMarkers.length = 0;
         $scope.map.clickedMarker = null;
     };
 
+    $scope.onMarkerClicked = onMarkerClicked
+
     $timeout(function () {
         $scope.map.infoWindow.show = true;
+        dynamicMarkers = [
+                {
+                    latitude: 46,
+                    longitude: -79,
+                    showWindow: false
+                },
+                {
+                    latitude: 33,
+                    longitude: -79,
+                    showWindow: false
+                },
+                {
+                    icon: 'plane.png',
+                    latitude: 35,
+                    longitude: -127,
+                    showWindow: false
+                }
+        ];
+       _.each(dynamicMarkers,function(marker){
+            marker.closeClick = function(){                        
+                marker.showWindow = false;
+                $scope.$apply();
+            };
+            marker.onClicked = function(){
+                onMarkerClicked(marker);
+            };
+        });
+        $scope.map.dynamicMarkers = dynamicMarkers;
     }, 2000);
 }
