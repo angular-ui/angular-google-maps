@@ -118,8 +118,6 @@
 				<window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords" templateUrl="map.templatedInfoWindow.templateUrl" templateParameter="map.templatedInfoWindow.templateParameter">
 				</window>
 
-				<polyline path="map.polyline.path" stroke="map.polyline.stroke" fit="true"></polyline>
-
 				<polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible' geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
 			</div>
 		</div>
