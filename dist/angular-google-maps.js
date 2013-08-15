@@ -789,6 +789,7 @@ angular.module('google-maps', []);;(function() {
         this.contentKeys = void 0;
         this.isIconVisibleOnClick = void 0;
         this.firstTime = true;
+        this.bigGulp = directives.api.utils.AsyncProcessor;
         this.$log.info(self);
         this.$timeout(function() {
           _this.watchOurScope(scope);
@@ -819,7 +820,7 @@ angular.module('google-maps', []);;(function() {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
           if (newValue !== oldValue && newValue.length !== oldValue.length) {
-            _.each(_this.windows, function(model) {
+            _this.bigGulp.handleLargeArray(_this.windows, function(model) {
               return model.destroy();
             });
             _this.windows = [];
@@ -832,7 +833,7 @@ angular.module('google-maps', []);;(function() {
       WindowsParentModel.prototype.watchDestroy = function(scope) {
         var _this = this;
         return scope.$on("$destroy", function() {
-          _.each(_this.windows, function(model) {
+          _this.bigGulp.handleLargeArray(_this.windows, function(model) {
             return model.destroy();
           });
           delete _this.windows;
@@ -888,7 +889,7 @@ angular.module('google-maps', []);;(function() {
               this.watchDestroy(this.linked.scope);
             }
             this.setContentKeys(this.linked.scope.models);
-            _.each(this.linked.scope.models, function(model) {
+            this.bigGulp.handleLargeArray(this.linked.scope.models, function(model) {
               return _this.createWindow(model, void 0, gMap);
             });
           } else {
@@ -898,7 +899,7 @@ angular.module('google-maps', []);;(function() {
               this.watchDestroy(markersScope);
             }
             this.setContentKeys(markersScope.models);
-            _.each(markersScope.markerModels, function(mm) {
+            this.bigGulp.handleLargeArray(markersScope.markerModels, function(mm) {
               return _this.createWindow(mm.model, mm.gMarker, gMap);
             });
           }
