@@ -8,7 +8,6 @@
 		constructor: ($timeout, $compile, $http, $templateCache) ->
 			super($timeout, $compile, $http, $templateCache)
 			self = @
-			@clsName = "Window"
 			@require= ['^googleMap', '^?marker']
 			@template = '<span class="angular-google-maps-window" ng-transclude></span>'
 			@$log.info(self)

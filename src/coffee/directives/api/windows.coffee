@@ -7,7 +7,6 @@
 			super($timeout, $compile, $http, $templateCache)
 			self = @
 			@$interpolate = $interpolate
-			@clsName = "Windows"
 			@require= ['^googleMap', '^?markers']
 			@template = '<span class="angular-google-maps-windows" ng-transclude></span>'
 			@scope.models = '=models' #if undefined it will try get a markers models

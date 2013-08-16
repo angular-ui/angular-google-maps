@@ -5,7 +5,6 @@
 	class @IWindow extends oo.BaseObject
 		constructor: ($timeout, $compile, $http, $templateCache) ->
 			self = @
-			@clsName = "IWindow"
 			@restrict= 'ECMA'
 			@template= undefined
 			@transclude= true

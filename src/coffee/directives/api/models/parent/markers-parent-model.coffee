@@ -3,7 +3,6 @@
 		constructor: (scope, element, attrs, mapCtrl,$timeout) ->
 			super(scope, element, attrs, mapCtrl,$timeout)
 			self = @
-			@clsName = "MarkersParentModel"
 			@markers = []
 			@markersIndex = 0
 			@scope = scope
@@ -17,7 +16,7 @@
 		validateScope:(scope)=>
 			modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
 			if(modelsNotDefined)
-				@$log.error(@clsName + ": no valid models attribute found")
+				@$log.error(@constructor.name + ": no valid models attribute found")
 
 			super(scope) or modelsNotDefined
 

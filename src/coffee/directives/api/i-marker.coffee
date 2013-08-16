@@ -10,7 +10,6 @@
 	class @IMarker extends oo.BaseObject
 		constructor: ($timeout) ->
 			self = @
-			@clsName = "IMarker"
 			@$log = directives.api.utils.Logger
 			@$timeout = $timeout
 			@restrict = 'ECMA'

@@ -8,7 +8,6 @@
 			super($timeout)
 			self = @
 			@template = '<span class="angular-google-map-marker" ng-transclude></span>'
-			@clsName = "Marker"
 			@$log.info(@)
 		
 		controller:($scope, $element) ->

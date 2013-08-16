@@ -25,7 +25,6 @@
 			@animate = if angular.isDefined(attrs.animate) then !@isFalse(attrs.animate) else false
 			@doClick = angular.isDefined(attrs.click)
 			@mapCtrl = mapCtrl
-			@clsName = "IMarker"
 			@$log = directives.api.utils.Logger
 			@$timeout = $timeout
 			# Wrap marker initialization inside a $timeout() call to make sure the map is created already
@@ -45,7 +44,7 @@
 			ret = angular.isUndefined(scope.coords) or 
 				scope.coords == undefined 
 			if(ret)
-				@$log.error(@clsName + ": no valid coords attribute found")
+				@$log.error(@constructor.name + ": no valid coords attribute found")
 			ret
 
 		watch:(propNameToWatch,scope) =>

@@ -7,7 +7,6 @@
 			super(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache,$interpolate)
 			self = @
 			@$interpolate = $interpolate
-			@clsName = "WindowsParentModel"
 			@windows = []
 			@windwsIndex = 0
 			@scopePropNames = ['show','coords','templateUrl','templateParameter',

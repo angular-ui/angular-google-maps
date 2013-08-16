@@ -9,7 +9,6 @@
 
 		constructor: (scope, element, attrs, ctrls,$timeout, $compile, $http, $templateCache) ->
 			self = @
-			@clsName = "directives.api.models.parent.IWindow"
 			@$log = directives.api.utils.Logger
 			@$timeout = $timeout
 			@$compile = $compile

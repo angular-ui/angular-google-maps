@@ -8,7 +8,6 @@
 		constructor: (scope, element, attrs, mapCtrl,$timeout) ->
 			super(scope, element, attrs, mapCtrl,$timeout)
 			self = @
-			@clsName = "MarkerParentModel"
 			opts = @createMarkerOptions(mapCtrl,scope.coords,scope.icon,@animate,@DEFAULTS)
 			#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
 			@gMarker = new google.maps.Marker(opts)

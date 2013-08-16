@@ -512,7 +512,6 @@
         this.animate = angular.isDefined(attrs.animate) ? !this.isFalse(attrs.animate) : false;
         this.doClick = angular.isDefined(attrs.click);
         this.mapCtrl = mapCtrl;
-        this.clsName = "IMarker";
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         this.$timeout(function() {
@@ -532,7 +531,7 @@
         var ret;
         ret = angular.isUndefined(scope.coords) || scope.coords === void 0;
         if (ret) {
-          this.$log.error(this.clsName + ": no valid coords attribute found");
+          this.$log.error(this.constructor.name + ": no valid coords attribute found");
         }
         return ret;
       };
@@ -585,7 +584,6 @@
       function IWindowParentModel(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache) {
         var self;
         self = this;
-        this.clsName = "directives.api.models.parent.IWindow";
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         this.$compile = $compile;
@@ -625,7 +623,6 @@
           _this = this;
         MarkerParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        this.clsName = "MarkerParentModel";
         opts = this.createMarkerOptions(mapCtrl, scope.coords, scope.icon, this.animate, this.DEFAULTS);
         this.gMarker = new google.maps.Marker(opts);
         element.data('instance', this.gMarker);
@@ -705,7 +702,6 @@
         var self;
         MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        this.clsName = "MarkersParentModel";
         this.markers = [];
         this.markersIndex = 0;
         this.scope = scope;
@@ -722,7 +718,7 @@
         var modelsNotDefined;
         modelsNotDefined = angular.isUndefined(scope.models) || scope.models === void 0;
         if (modelsNotDefined) {
-          this.$log.error(this.clsName + ": no valid models attribute found");
+          this.$log.error(this.constructor.name + ": no valid models attribute found");
         }
         return MarkersParentModel.__super__.validateScope.call(this, scope) || modelsNotDefined;
       };
@@ -813,7 +809,6 @@
         WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate);
         self = this;
         this.$interpolate = $interpolate;
-        this.clsName = "WindowsParentModel";
         this.windows = [];
         this.windwsIndex = 0;
         this.scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
@@ -1042,7 +1037,6 @@
         this.link = __bind(this.link, this);
         var self;
         self = this;
-        this.clsName = "IMarker";
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         this.restrict = 'ECMA';
@@ -1090,7 +1084,6 @@
         this.link = __bind(this.link, this);
         var self;
         self = this;
-        this.clsName = "IWindow";
         this.restrict = 'ECMA';
         this.template = void 0;
         this.transclude = true;
@@ -1143,7 +1136,6 @@
         Marker.__super__.constructor.call(this, $timeout);
         self = this;
         this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
-        this.clsName = "Marker";
         this.$log.info(this);
       }
 
@@ -1191,7 +1183,6 @@ not 1:1 in this setting.
         Markers.__super__.constructor.call(this, $timeout);
         self = this;
         this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
-        this.clsName = "Markers";
         this.scope.models = '=models';
         this.$timeout = $timeout;
         this.$log.info(this);
@@ -1236,7 +1227,6 @@ not 1:1 in this setting.
         var self;
         Window.__super__.constructor.call(this, $timeout, $compile, $http, $templateCache);
         self = this;
-        this.clsName = "Window";
         this.require = ['^googleMap', '^?marker'];
         this.template = '<span class="angular-google-maps-window" ng-transclude></span>';
         this.$log.info(self);
@@ -1289,7 +1279,6 @@ not 1:1 in this setting.
         Windows.__super__.constructor.call(this, $timeout, $compile, $http, $templateCache);
         self = this;
         this.$interpolate = $interpolate;
-        this.clsName = "Windows";
         this.require = ['^googleMap', '^?markers'];
         this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
         this.scope.models = '=models';

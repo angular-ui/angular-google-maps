@@ -56,8 +56,8 @@
 		
 		showWindow:() =>
 			if @scope.templateUrl
-				@$http.get(scope.templateUrl, { cache: @$templateCache }).then((content) =>
-					templateScope = scope.$new()
+				@$http.get(@scope.templateUrl, { cache: @$templateCache }).then((content) =>
+					templateScope = @scope.$new()
 					if angular.isDefined(@scope.templateParameter)
 						templateScope.parameter = @scope.templateParameter
 					compiled = @$compile(content.data)(templateScope)
