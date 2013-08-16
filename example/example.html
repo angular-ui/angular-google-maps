@@ -5,6 +5,18 @@
 <head>
 	<meta charset="UTF-8">
 	<title>angular-google-maps example page</title>
+	<!--[if IE]>
+	<script>
+        window.html5 = {
+          'elements': 'marker window windows markers trafficlayer polyline' 
+        };
+	</script>
+	
+	<script src="es5-shim.js"></script>
+	<script src="event-shim.js"></script>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	
 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700' rel='stylesheet' type='text/css'>
 	<style>
@@ -22,8 +34,22 @@
 		max-width: inherit;
 	}
 
+
+	.angular-google-map {
+		top:80px;
+
+	}
 	.shrink{
 		font-size: 8;
+	}
+
+	.true:hover {
+		background-color: lightgreen;
+	}
+
+
+	.false:hover {
+		background-color: lightpink;
 	}
 
   /* uncomment this if you are using the <google-map> element instead of a div
@@ -36,20 +62,40 @@
 <body ng-controller="ExampleController">
 	<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
-	<div class="container">
-		<div class="page-title">
-			<h1>angular-google-maps example</h1>
-		</div>
-		<div class="row">
-			<div class="span8">
-				<div class="google-map"
+	<div class="page-title affix">
+		<h1>angular-google-maps example</h1>
+	</div>
+	<div class="container-fluid">
+		<div class="row-fluid" >
+			<div class="span7">
+				<div class="google-map affix span7"
 				center="map.center"
 				zoom="map.zoom"
 				draggable="true"
 				dragging="map.dragging"
+				bounds="map.bounds"
 				events="map.events">
+				<trafficlayer show="map.showTraffic" />
+
+				<markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'">
+					<windows show="'showWindow'" closeClick="'closeClick'">
+						<p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+						<p class="muted">My marker will stay open when the window is popped up!</p>
+					</windows>
+				</markers>
+
+
+				<markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
+					<windows show="'showWindow'" closeClick="'closeClick'">
+						<p>Dynamic Marker created via a delay!</p>
+						<p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+						<p class="muted">My marker will stay open when the window is popped up!</p>
+					</windows>
+				</markers>
+
 				<!-- prefedined markers -->
-				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" >
+				<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
+				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
 					<window show="m.showWindow" closeClick="m.closeClick()">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
@@ -57,76 +103,161 @@
 				</marker>
 
 				<!-- marker for clicked position -->
-				<marker coords="map.clickedMarker" animate="false" >
+				<marker coords="map.clickedMarker" animate="true" >
 					<window isIconVisibleOnClick="false">This is my clicked marker!
 						<p class="muted">My marker will reappear when you close me.</p>
 					</window>
 				</marker>
 
-				<window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false">I should not be attached to a
-					marker.</window>
+				<!--WINDOWS without markers-->
+				<window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false">
+					I should not be attached to a
+					marker.
+				</window>
 
-					<window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords" templateUrl="map.templatedInfoWindow.templateUrl" templateParameter="map.templatedInfoWindow.templateParameter">
-					</window>
+				<window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords" templateUrl="map.templatedInfoWindow.templateUrl" templateParameter="map.templatedInfoWindow.templateParameter">
+				</window>
 
-					<polyline path="map.polyline.path" stroke="map.polyline.stroke" fit="true"></polyline>
-				</div>
-			</div>
-			<div class="span4">
-				<fieldset>
-					<table class="table">
-						<tbody>
-							<tr>
-								<td>markers</td>
-								<td>
-									<div class="well sidebar-nav">
-										<ul class="nav nav-list">
-											<li  ng-repeat="m in map.markers" ng-click="m.showWindow = true">
-												<a href="#">
-													<i class="i" title="Click me to Show InfoWindow!">
-														Marker: {{m}}
-													</i>
-												</a>
-											</li>
-										</ul>
-									</div>
-								</td>
-							</tr>
-							<tr>
-								<td>center</td>
-								<td><pre><span ng-show="map.center.latitude >= 0">&nbsp;</span>{{ map.center.latitude | number:4 }} lat<br><span ng-show="map.center.longitude >= 0">&nbsp;</span>{{ map.center.longitude | number:4 }} lng</pre></td>
-							</tr>
-							<tr>
-								<td>zoom</td>
-								<td>{{ map.zoom }}</td>
-							</tr>
-							<tr>
-								<td>dragging</td>
-								<td>{{ map.dragging }}</td>
-							</tr>
-							<tr>
-								<td>clicked position</td>
-								<td>
-									<pre ng-show="map.clickedMarker.latitude != null && map.clickedMarker.longitude != null"><span ng-show="map.clickedMarker.latitude >= 0">&nbsp;</span>{{ map.clickedMarker.latitude | number:4 }} lat<br><span ng-show="map.clickedMarker.longitude >= 0">&nbsp;</span>{{ map.clickedMarker.longitude | number:4 }} lng</pre>
-									<span ng-show="map.clickedMarker.latitude == null || map.clickedMarker.longitude == null">Click the map to see</span>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-					<button class="btn btn-danger" ng-click="removeMarkers()">Clear markers</button>
-				</fieldset>
+				<polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible' geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
 			</div>
 		</div>
-	</div>
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-	<script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
-	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
-	<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-	<script src="http://underscorejs.org/underscore-min.js"></script>
-	<script src="angular-google-maps.js"></script>
-	<script src="example-controller.js"></script>
-	<script src="templates/infoController.js"></script>
-	<script src="http://localhost:35729/livereload.js"></script>
+		<div class="span5">
+			<fieldset>
+				<table class="table">
+					<tbody>
+						<tr>
+							<td>TrafficLayer</td>
+							<td>
+								<input type="checkbox" text="TrafficLayer On/Off" ng-model="map.showTraffic">
+							</td>
+						</tr>
+						<tr>
+							<td>markers</td>
+							<td>
+								<div class="well sidebar-nav">
+									<ul class="nav nav-list">
+										<li  ng-repeat="m in map.markers" ng-click="m.showWindow = true">
+											<a href="#">
+												<i class="i" title="Click me to Show InfoWindow!">
+													Marker: {{m}}
+												</i>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>markers2</td>
+							<td>
+								<div class="well sidebar-nav">
+									<ul class="nav nav-list">
+										<li  ng-repeat="m in map.markers2" ng-click="m.showWindow = true">
+											<a href="#">
+												<i class="i" title="Click me to Show InfoWindow!">
+													Marker: {{m}}
+												</i>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>dynamicMarkers</td>
+							<td>
+								<div class="well sidebar-nav">
+									<ul class="nav nav-list">
+										<li  ng-repeat="m in map.dynamicMarkers" ng-click="m.showWindow = true">
+											<a href="#">
+												<i class="i" title="Click me to Show InfoWindow!">
+													Marker: {{m}}
+												</i>
+											</a>
+										</li>
+									</ul>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>center</td>
+							<td><pre><span ng-show="map.center.latitude >= 0">&nbsp;</span>{{ map.center.latitude | number:4 }} lat<br><span ng-show="map.center.longitude >= 0">&nbsp;</span>{{ map.center.longitude | number:4 }} lng</pre></td>
+						</tr>
+						<tr>
+							<td>zoom</td>
+							<td>{{ map.zoom }}</td>
+						</tr>
+						<tr>
+							<td>bounds</td>
+							<td>
+								<pre>north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }} <br>south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}</pre>
+							</td>
+						</tr>
+						<tr>
+							<td>dragging</td>
+							<td>{{ map.dragging }}</td>
+						</tr>
+						<tr>
+							<td>clicked position</td>
+							<td>
+								<pre ng-show="map.clickedMarker.latitude != null && map.clickedMarker.longitude != null"><span ng-show="map.clickedMarker.latitude >= 0">&nbsp;</span>{{ map.clickedMarker.latitude | number:4 }} lat<br><span ng-show="map.clickedMarker.longitude >= 0">&nbsp;</span>{{ map.clickedMarker.longitude | number:4 }} lng</pre>
+								<span ng-show="map.clickedMarker.latitude == null || map.clickedMarker.longitude == null">Click the map to see</span>
+							</td>
+						</tr>
+						<tr>
+							<td>polylines</td>
+							<td>
+								<div class="well sidebar-nav">
+									<ul class="nav nav-list">
+										<li  ng-repeat="p in map.polylines" >
+											<a href="#">
+												<i class="i" title="Click me to Show InfoWindow!">
+													<span class="{{p.visible}}" ng-click="p.visible = !p.visible">Polyline:</span> {<br/>
+													<span style="padding-left: 5em" class="{{p.visible}}" ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
+													<span style="padding-left: 5em" class="{{p.editable}}" ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,  <br/>
+													<span style="padding-left: 5em" class="{{p.draggable}}" ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,  <br/>
+													<span style="padding-left: 5em" class="{{p.geodesic}}" ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,  <br/>
+													<span style="padding-left: 5em">stroke: {</span>  <br/>
+													<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1" style="padding-left: 10em">weight: {{p.stroke.weight}}</span>  <br/>
+													<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"  style="padding-left: 10em">color: {{p.stroke.color}}</span>  <br/>
+													<span style="padding-left: 5em">},</span>  <br/>
+													<span style="padding-left: 5em">path: [ </span>  <br/>
+													<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path" ng-click="p.path.splice($index,1)">
+														{
+														latitude:{{pt.latitude | number:2}},
+														longitude:{{pt.longitude | number:2}}
+													},
+													<br/>
+												</span>
+												<span style="padding-left: 5em">] </span> <br/>
+
+											}
+										</i>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<button class="btn btn-danger" ng-click="removeMarkers()">Clear markers</button>
+	</fieldset>
+</div>
+</div>
+</div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="http://underscorejs.org/underscore-min.js"></script>
+<script src="angular-google-maps.js"></script>
+<script src="example-controller.js"></script>
+<script src="templates/infoController.js"></script>
+<script src="http://localhost:35729/livereload.js"></script>
+<script type="text/javascript">
+directives.api.utils.Logger.doLog = true;
+</script>
 </body>
 
 </html>

@@ -28,7 +28,7 @@
  */
 
 angular.module("google-maps")
-    .directive("polyline", ['$log', '$timeout', function ($log, $timeout) {
+    .directive("polyline", ['$log', '$timeout','array-sync', function ($log, $timeout,arraySync) {
 
         "use strict";
 
@@ -48,7 +48,7 @@ angular.module("google-maps")
         }
 
         function convertPathPoints(path) {
-            var result = [];
+            var result = new google.maps.MVCArray();
 
             for (var i = 0; i < path.length; i++) {
                 result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
@@ -61,7 +61,7 @@ angular.module("google-maps")
             var bounds = new google.maps.LatLngBounds();
 
             for (var i = 0; i < points.length; i++) {
-                bounds.extend(points[i]);
+                bounds.extend(points.getAt(i));
             }
 
             map.fitBounds(bounds);
@@ -88,7 +88,13 @@ angular.module("google-maps")
             require: '^googleMap',
             scope: {
                 path: '=path',
-                stroke: '=stroke'
+                stroke: '=stroke',
+                clickable: '=',
+                draggable: '=',
+                editable: '=',
+                geodesic: '=',
+                icons:'=icons',
+                visible:'='
             },
             link: function (scope, element, attrs, mapCtrl) {
                 // Validate required properties
@@ -101,48 +107,102 @@ angular.module("google-maps")
                     return;
                 }
 
+
                 // Wrap polyline initialization inside a $timeout() call to make sure the map is created already
                 $timeout(function () {
                     var map = mapCtrl.getMap();
 
-                    var pathPoints = convertPathPoints(scope.path);
 
-                    var opts = angular.extend({}, DEFAULTS, {
-                        map: map,
-                        path: pathPoints,
-                        strokeColor: scope.stroke && scope.stroke.color,
-                        strokeOpacity: scope.stroke && scope.stroke.opacity,
-                        strokeWeight: scope.stroke && scope.stroke.weight
-                    });
 
-                    var polyline = new google.maps.Polyline(opts);
+
+                    function buildOpts (pathPoints){
+
+
+                        var opts = angular.extend({}, DEFAULTS, {
+                            map: map,
+                            path: pathPoints,
+                            strokeColor: scope.stroke && scope.stroke.color,
+                            strokeOpacity: scope.stroke && scope.stroke.opacity,
+                            strokeWeight: scope.stroke && scope.stroke.weight
+                        });
+
+
+                        angular.forEach({
+                            clickable:true,
+                            draggable:false,
+                            editable:false,
+                            geodesic:false,
+                            visible:true
+                        },function (defaultValue, key){
+                            if(angular.isUndefined(scope[key]) || scope[key] === null){
+                                opts[key] = defaultValue;
+                            }
+                            else {
+                                opts[key] = scope[key];
+                            }
+                        });
+
+                        return opts;
+                    }
+
+                    var polyline = new google.maps.Polyline(buildOpts(convertPathPoints(scope.path)));
 
                     if (isTrue(attrs.fit)) {
                         extendMapBounds(map, pathPoints);
                     }
 
-                    scope.$watch('path', function (newValue, oldValue) {
-                        if (newValue !== oldValue) {
-                            if (newValue) {
-                                var newPathPoints = convertPathPoints(newValue);
+                    if(angular.isDefined(scope.editable)) {
+                        scope.$watch('editable',function(newValue,oldValue){
+                            polyline.setEditable(newValue);
+                        });
+                    }
+                    if(angular.isDefined(scope.draggable)){
+                        scope.$watch('draggable',function(newValue,oldValue){
+                            polyline.setDraggable(newValue);
+                        });
+                    }
+                    if(angular.isDefined(scope.visible)){
+                        scope.$watch('visible',function(newValue,oldValue){
+                            polyline.setVisible(newValue);
+                        });
+                    }
+                    if(angular.isDefined(scope.geodesic)){
+                        scope.$watch('geodesic',function(newValue,oldValue){
+                            polyline.setOptions(buildOpts(polyline.getPath()));
+                        });
+                    }
 
-                                polyline.setMap(map);
-                                polyline.setPath(newPathPoints);
+                    if(angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)){
+                        scope.$watch('stroke.weight',function(newValue,oldValue){
+                            polyline.setOptions(buildOpts(polyline.getPath()));
+                        });
+                    }
 
-                                if (isTrue(attrs.fit)) {
-                                    extendMapBounds(map, newPathPoints);
-                                }
-                            }
-                            else {
-                                // Remove polyline
-                                polyline.setMap(null);
-                            }
-                        }
-                    }, true);
+
+                    if(angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)){
+                        scope.$watch('stroke.color',function(newValue,oldValue){
+                            polyline.setOptions(buildOpts(polyline.getPath()));
+                        });
+                    }
+
+
+
+
+                    var arraySyncer = arraySync(polyline.getPath(),scope,'path');
+
+
+
+
 
                     // Remove polyline on scope $destroy
                     scope.$on("$destroy", function () {
                         polyline.setMap(null);
+
+                        if(arraySyncer) {
+                            arraySyncer();
+                            arraySyncer= null;
+                        }
+
                     });
                 });
             }
