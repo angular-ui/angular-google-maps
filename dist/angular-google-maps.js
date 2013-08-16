@@ -234,8 +234,6 @@
 
       function MarkerChildModel(index, model, parentScope, gMap, $timeout, notifyLocalDestroy, defaults, doClick) {
         this.watchDestroy = __bind(this.watchDestroy, this);
-        this.watchIcon = __bind(this.watchIcon, this);
-        this.watchCoords = __bind(this.watchCoords, this);
         this.setIcon = __bind(this.setIcon, this);
         this.setCoords = __bind(this.setCoords, this);
         this.destroy = __bind(this.destroy, this);
@@ -249,12 +247,8 @@
         this.clickKey = parentScope.click();
         this.animateKey = parentScope.animate;
         this.myScope = parentScope.$new(false);
-        this.setMyScope(model);
-        this.myScope.$watch('model', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            return _this.setMyScope(newValue);
-          }
-        }, true);
+        this.myScope.model = model;
+        this.setMyScope(model, void 0, true);
         this.defaults = defaults;
         this.gMap = gMap;
         this.opts = this.createMarkerOptions(this.gMap, this.myScope.coords, this.myScope.icon, this.myScope.animate, this.defaults);
@@ -268,18 +262,64 @@
             });
           }
         });
-        this.watchCoords(this.myScope);
-        this.watchIcon(this.myScope);
+        this.myScope.$watch('model', function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            return _this.setMyScope(newValue, oldValue);
+          }
+        }, true);
         this.watchDestroy(this.myScope);
       }
 
-      MarkerChildModel.prototype.setMyScope = function(model) {
-        this.myScope.icon = this.iconKey === 'self' ? model : model[this.iconKey];
-        this.myScope.coords = this.coordsKey === 'self' ? model : model[this.coordsKey];
-        this.myScope.click = this.clickKey === 'self' ? model : model[this.clickKey];
-        this.myScope.animate = this.animateKey === 'self' ? model : model[this.animateKey];
-        this.myScope.animate = this.animateKey === void 0 ? false : this.myScope.animate;
-        return this.myScope.model = model;
+      MarkerChildModel.prototype.setMyScope = function(model, oldModel, isInit) {
+        var _this = this;
+        if (oldModel == null) {
+          oldModel = void 0;
+        }
+        if (isInit == null) {
+          isInit = false;
+        }
+        this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon);
+        this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
+        this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
+        return this.maybeSetScopeValue('animate', model, oldModel, this.animateKey, function(lModel, lModelKey) {
+          var value;
+          value = lModelKey === 'self' ? lModel : lModel[lModelKey];
+          return value = lModelKey === void 0 ? false : _this.myScope.animate;
+        }, isInit);
+      };
+
+      MarkerChildModel.prototype.evalModelHandle = function(model, modelKey) {
+        if (modelKey === 'self') {
+          return model;
+        } else {
+          return model[modelKey];
+        }
+      };
+
+      MarkerChildModel.prototype.maybeSetScopeValue = function(scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter) {
+        var newValue, oldVal;
+        if (gSetter == null) {
+          gSetter = void 0;
+        }
+        if (oldModel === void 0) {
+          this.myScope[scopePropName] = evaluate(model, modelKey);
+          if (!isInit) {
+            if (gSetter != null) {
+              gSetter(this.myScope);
+            }
+          }
+          return;
+        }
+        oldVal = evaluate(oldModel, modelKey);
+        newValue = evaluate(model, modelKey);
+        if (newValue !== oldVal && this.myScope[scopePropName] !== newValue) {
+          this.myScope[scopePropName] = newValue;
+          if (!isInit) {
+            if (gSetter != null) {
+              return gSetter(this.myScope);
+            }
+          }
+        }
       };
 
       MarkerChildModel.prototype.destroy = function() {
@@ -308,28 +348,6 @@
         this.gMarker.setMap(this.gMap.getMap());
         this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
         return this.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
-      };
-
-      MarkerChildModel.prototype.watchCoords = function(scope) {
-        var _this = this;
-        return scope.$watch('coords', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            _this.parentScope.doRebuild = false;
-            _this.setCoords(scope);
-            return _this.parentScope.doRebuild = true;
-          }
-        }, true);
-      };
-
-      MarkerChildModel.prototype.watchIcon = function(scope) {
-        var _this = this;
-        return scope.$watch('icon', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            _this.parentScope.doRebuild = false;
-            _this.setIcon(scope);
-            return _this.parentScope.doRebuild = true;
-          }
-        }, true);
       };
 
       MarkerChildModel.prototype.watchDestroy = function(scope) {
@@ -432,11 +450,11 @@
       WindowChildModel.prototype.showWindow = function() {
         var _this = this;
         if (this.scope.templateUrl) {
-          return this.$http.get(scope.templateUrl, {
+          return this.$http.get(this.scope.templateUrl, {
             cache: this.$templateCache
           }).then(function(content) {
             var compiled, templateScope;
-            templateScope = scope.$new();
+            templateScope = _this.scope.$new();
             if (angular.isDefined(_this.scope.templateParameter)) {
               templateScope.parameter = _this.scope.templateParameter;
             }

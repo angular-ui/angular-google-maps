@@ -10,12 +10,9 @@
 			@clickKey = parentScope.click()
 			@animateKey = parentScope.animate
 			@myScope = parentScope.$new(false)
-			# @myScope = {}
-			@setMyScope(model)
-			@myScope.$watch('model',(newValue, oldValue) =>
-				if (newValue != oldValue)
-					@setMyScope(newValue) 
-			,true)
+
+			@myScope.model = model
+			@setMyScope(model,undefined,true)
 			@defaults = defaults
 			@gMap = gMap
 			@opts = @createMarkerOptions(@gMap,@myScope.coords,@myScope.icon,@myScope.animate,@defaults)
@@ -23,24 +20,44 @@
 			@doClick = doClick
 			@$log = directives.api.utils.Logger
 			google.maps.event.addListener(@gMarker, 'click', =>
-				#this needs to be thought about as scope is not 1:1 on clicking..... hmmmmm :/
+
 				if @doClick and @myScope.click?
 					$timeout(=>
 						@myScope.click()
 					)
 			)
-			# $timeout( =>
-			@watchCoords(@myScope)
-			@watchIcon(@myScope)
+			@myScope.$watch('model',(newValue, oldValue) =>
+				if (newValue != oldValue)
+					@setMyScope(newValue,oldValue) 
+			,true)
+
 			@watchDestroy(@myScope)
-			# )
-		setMyScope:(model)=>
-			@myScope.icon = if @iconKey == 'self' then model else model[@iconKey]
-			@myScope.coords = if @coordsKey == 'self' then model else model[@coordsKey]
-			@myScope.click = if @clickKey == 'self' then model else model[@clickKey]
-			@myScope.animate = if @animateKey == 'self' then model else model[@animateKey]
-			@myScope.animate = if @animateKey == undefined then false else @myScope.animate
-			@myScope.model = model
+
+		setMyScope:(model, oldModel = undefined,isInit = false) =>
+			@maybeSetScopeValue('icon',model,oldModel,@iconKey,@evalModelHandle,isInit,@setIcon)
+			@maybeSetScopeValue('coords',model,oldModel,@coordsKey,@evalModelHandle,isInit,@setCoords)
+			@maybeSetScopeValue('click',model,oldModel,@clickKey,@evalModelHandle,isInit)
+			@maybeSetScopeValue('animate',model,oldModel,@animateKey,(lModel,lModelKey) =>
+				value = if lModelKey == 'self' then lModel else lModel[lModelKey]
+				value = if lModelKey == undefined then false else @myScope.animate
+			,isInit)			
+
+		evalModelHandle:(model,modelKey) ->
+			if modelKey == 'self' then model else model[modelKey]
+
+		maybeSetScopeValue:(scopePropName,model,oldModel,modelKey,evaluate,isInit,gSetter = undefined) ->
+			if oldModel == undefined
+				@myScope[scopePropName] = evaluate(model,modelKey)
+				unless isInit
+					gSetter(@myScope) if gSetter?
+				return
+
+			oldVal = evaluate(oldModel,modelKey)
+			newValue = evaluate(model,modelKey)
+			if(newValue != oldVal and @myScope[scopePropName] != newValue)
+				@myScope[scopePropName] = newValue
+				unless isInit
+					gSetter(@myScope) if gSetter?
 
 		destroy:() =>
 			@myScope.$destroy()
@@ -64,23 +81,6 @@
 			@gMarker.setMap(@gMap.getMap())
 			@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
 			@gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
-			
-
-		watchCoords:(scope) =>
-			scope.$watch('coords', (newValue, oldValue) =>
-				if (newValue != oldValue)
-					@parentScope.doRebuild = false
-					@setCoords(scope)
-					@parentScope.doRebuild = true
-			, true)
-					
-		watchIcon:(scope) =>
-			scope.$watch('icon', (newValue, oldValue) =>
-				if (newValue != oldValue) 
-					@parentScope.doRebuild = false
-					@setIcon(scope)
-					@parentScope.doRebuild = true
-			, true)
 
 		watchDestroy:(scope)=>
 			scope.$on("$destroy", => 
