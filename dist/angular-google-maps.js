@@ -156,18 +156,13 @@
 (function() {
   this.ngGmapModule("directives.api.utils", function() {
     return this.GmapUtil = {
-      createMarkerOptions: function(map, coords, icon, animate, defaults) {
-        var opts;
-        opts = angular.extend({}, defaults, {
+      createMarkerOptions: function(map, coords, icon, defaults) {
+        return angular.extend({}, defaults, {
           position: new google.maps.LatLng(coords.latitude, coords.longitude),
           map: map.getMap(),
           icon: icon,
           visible: (coords.latitude != null) && (coords.longitude != null)
         });
-        if (!animate) {
-          delete opts.animation;
-        }
-        return opts;
       },
       createWindowOptions: function(gMarker, scope, content, defaults) {
         return angular.extend({}, defaults, {
@@ -232,36 +227,30 @@
 
       MarkerChildModel.include(directives.api.utils.GmapUtil);
 
-      function MarkerChildModel(index, model, parentScope, gMap, $timeout, notifyLocalDestroy, defaults, doClick) {
+      function MarkerChildModel(index, model, parentScope, gMap, $timeout, defaults, doClick) {
         this.watchDestroy = __bind(this.watchDestroy, this);
+        this.setOptions = __bind(this.setOptions, this);
         this.setIcon = __bind(this.setIcon, this);
         this.setCoords = __bind(this.setCoords, this);
         this.destroy = __bind(this.destroy, this);
+        this.createMarker = __bind(this.createMarker, this);
         this.setMyScope = __bind(this.setMyScope, this);
         var _this = this;
         this.index = index;
         this.model = model;
+        this.defaults = defaults;
         this.parentScope = parentScope;
         this.iconKey = parentScope.icon;
         this.coordsKey = parentScope.coords;
         this.clickKey = parentScope.click();
-        this.animateKey = parentScope.animate;
+        this.optionsKey = parentScope.options;
         this.myScope = parentScope.$new(false);
         this.myScope.model = model;
-        this.setMyScope(model, void 0, true);
-        this.defaults = defaults;
         this.gMap = gMap;
-        this.opts = this.createMarkerOptions(this.gMap, this.myScope.coords, this.myScope.icon, this.myScope.animate, this.defaults);
-        this.gMarker = new google.maps.Marker(this.opts);
+        this.setMyScope(model, void 0, true);
+        this.createMarker(model);
         this.doClick = doClick;
         this.$log = directives.api.utils.Logger;
-        google.maps.event.addListener(this.gMarker, 'click', function() {
-          if (_this.doClick && (_this.myScope.click != null)) {
-            return $timeout(function() {
-              return _this.myScope.click();
-            });
-          }
-        });
         this.myScope.$watch('model', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             return _this.setMyScope(newValue, oldValue);
@@ -271,7 +260,6 @@
       }
 
       MarkerChildModel.prototype.setMyScope = function(model, oldModel, isInit) {
-        var _this = this;
         if (oldModel == null) {
           oldModel = void 0;
         }
@@ -281,14 +269,35 @@
         this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon);
         this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
         this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
-        return this.maybeSetScopeValue('animate', model, oldModel, this.animateKey, function(lModel, lModelKey) {
+        return this.createMarker(model, oldModel, isInit);
+      };
+
+      MarkerChildModel.prototype.createMarker = function(model, oldModel, isInit) {
+        var _this = this;
+        if (oldModel == null) {
+          oldModel = void 0;
+        }
+        if (isInit == null) {
+          isInit = false;
+        }
+        return this.maybeSetScopeValue('options', model, oldModel, this.optionsKey, function(lModel, lModelKey) {
           var value;
+          if (lModel === void 0) {
+            return void 0;
+          }
           value = lModelKey === 'self' ? lModel : lModel[lModelKey];
-          return value = lModelKey === void 0 ? false : _this.myScope.animate;
-        }, isInit);
+          if (value === void 0) {
+            return value = lModelKey === void 0 ? _this.defaults : _this.myScope.options;
+          } else {
+            return value;
+          }
+        }, isInit, this.setOptions);
       };
 
       MarkerChildModel.prototype.evalModelHandle = function(model, modelKey) {
+        if (model === void 0) {
+          return void 0;
+        }
         if (modelKey === 'self') {
           return model;
         } else {
@@ -327,7 +336,7 @@
       };
 
       MarkerChildModel.prototype.setCoords = function(scope) {
-        if (scope.$id !== this.myScope.$id) {
+        if (scope.$id !== this.myScope.$id || this.gMarker === void 0) {
           return;
         }
         if ((scope.coords != null)) {
@@ -340,23 +349,46 @@
       };
 
       MarkerChildModel.prototype.setIcon = function(scope) {
-        if (scope.$id !== this.myScope.$id) {
+        if (scope.$id !== this.myScope.$id || this.gMarker === void 0) {
           return;
         }
-        this.gMarker.icon = scope.icon;
+        this.gMarker.setIcon(scope.icon);
         this.gMarker.setMap(null);
         this.gMarker.setMap(this.gMap.getMap());
         this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
         return this.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
       };
 
+      MarkerChildModel.prototype.setOptions = function(scope) {
+        var _ref,
+          _this = this;
+        if (scope.$id !== this.myScope.$id) {
+          return;
+        }
+        if (this.gMarker != null) {
+          this.gMarker.setMap(null);
+          delete this.gMarker;
+        }
+        if (!((_ref = scope.coords) != null ? _ref : typeof scope.icon === "function" ? scope.icon(scope.options != null) : void 0)) {
+          return;
+        }
+        this.opts = this.createMarkerOptions(this.gMap, scope.coords, scope.icon, scope.options);
+        this.gMarker = new google.maps.Marker(this.opts);
+        return google.maps.event.addListener(this.gMarker, 'click', function() {
+          if (_this.doClick && (_this.myScope.click != null)) {
+            return _this.myScope.click();
+          }
+        });
+      };
+
       MarkerChildModel.prototype.watchDestroy = function(scope) {
         var _this = this;
         return scope.$on("$destroy", function() {
-          _this.gMarker.setMap(null);
-          if (typeof notifyLocalDestroy !== "undefined" && notifyLocalDestroy !== null) {
-            return notifyLocalDestroy(_this.index);
+          if (_this.gMarker != null) {
+            _this.gMarker.setMap(null);
+            delete _this.gMarker;
           }
+          return delete _this;
         });
       };
 
@@ -434,15 +466,16 @@
       };
 
       WindowChildModel.prototype.handleClick = function() {
+        var _this = this;
         if (this.markerCtrl != null) {
           google.maps.event.addListener(this.markerCtrl, 'click', function() {
-            this.gWin.setPosition(this.markerCtrl.getPosition());
-            this.gWin.open(mapCtrl);
-            return this.markerCtrl.setVisible(this.isIconVisibleOnClick);
+            _this.gWin.setPosition(_this.markerCtrl.getPosition());
+            _this.gWin.open(_this.mapCtrl);
+            return _this.markerCtrl.setVisible(_this.isIconVisibleOnClick);
           });
           return google.maps.event.addListener(this.gWin, 'closeclick', function() {
-            this.markerCtrl.setVisible(this.initialMarkerVisibility);
-            return this.scope.closeClick();
+            _this.markerCtrl.setVisible(_this.initialMarkerVisibility);
+            return _this.scope.closeClick();
           });
         }
       };
@@ -506,9 +539,7 @@
     return this.IMarkerParentModel = (function(_super) {
       __extends(IMarkerParentModel, _super);
 
-      IMarkerParentModel.prototype.DEFAULTS = {
-        animation: google.maps.Animation.DROP
-      };
+      IMarkerParentModel.prototype.DEFAULTS = {};
 
       IMarkerParentModel.prototype.isFalse = function(value) {
         return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
@@ -527,15 +558,17 @@
         if (this.validateScope(scope)) {
           return;
         }
-        this.animate = angular.isDefined(attrs.animate) ? !this.isFalse(attrs.animate) : false;
         this.doClick = angular.isDefined(attrs.click);
         this.mapCtrl = mapCtrl;
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
+        if (scope.options != null) {
+          this.DEFAULTS = scope.options;
+        }
         this.$timeout(function() {
           _this.watch('coords', scope);
           _this.watch('icon', scope);
-          _this.watch('animate', scope);
+          _this.watch('options', scope);
           _this.onTimeOut(scope);
           return scope.$on("$destroy", function() {
             return _this.onDestroy(scope);
@@ -607,6 +640,9 @@
         this.$compile = $compile;
         this.$http = $http;
         this.$templateCache = $templateCache;
+        if (scope.options != null) {
+          this.DEFAULTS = scope.options;
+        }
       }
 
       return IWindowParentModel;
@@ -641,7 +677,7 @@
           _this = this;
         MarkerParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        opts = this.createMarkerOptions(mapCtrl, scope.coords, scope.icon, this.animate, this.DEFAULTS);
+        opts = this.createMarkerOptions(mapCtrl, scope.coords, scope.icon, scope.options);
         this.gMarker = new google.maps.Marker(opts);
         element.data('instance', this.gMarker);
         this.scope = scope;
@@ -665,21 +701,28 @@
             if ((scope.coords != null) && (this.gMarker != null)) {
               this.gMarker.setMap(this.mapCtrl.getMap());
               this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-              return this.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
+              this.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
+              return this.gMarker.setOptions(scope.options);
             } else {
               return this.gMarker.setMap(null);
             }
             break;
           case 'icon':
             if ((scope.icon != null) && (scope.coords != null) && (this.gMarker != null)) {
-              this.gMarker.icon = scope.icon;
+              this.gMarker.setOptions(scope.options);
+              this.gMarker.setIcon(scope.icon);
               this.gMarker.setMap(null);
               this.gMarker.setMap(this.mapCtrl.getMap());
               this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
               return this.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
             }
             break;
-          case 'animate':
+          case 'options':
+            if ((scope.coords != null) && (scope.icon != null) && scope.options) {
+              this.gMarker.setMap(null);
+              delete this.gMarker;
+              return this.gMarker = new google.maps.Marker(this.createMarkerOptions(this.mapCtrl, scope.coords, scope.icon, scope.options));
+            }
             break;
         }
       };
@@ -745,9 +788,7 @@
         var _this = this;
         this.bigGulp.handleLargeArray(scope.models, function(model) {
           scope.doRebuild = true;
-          _this.markers.push(new directives.api.models.child.MarkerChildModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, function(index) {
-            return delete _this.markers[index];
-          }, _this.DEFAULTS, _this.doClick));
+          _this.markers.push(new directives.api.models.child.MarkerChildModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.DEFAULTS, _this.doClick));
           return _this.markersIndex++;
         });
         return scope.markerModels = this.markers;
@@ -775,6 +816,10 @@
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
         if (propNameToWatch === 'models' && newValue.length === oldValue.length) {
+          return;
+        }
+        if (propNameToWatch === 'options' && (newValue != null)) {
+          this.DEFAULTS = newValue;
           return;
         }
         return this.reBuildMarkers(scope);
@@ -1065,7 +1110,8 @@
         this.scope = {
           coords: '=coords',
           icon: '=icon',
-          click: '&click'
+          click: '&click',
+          options: '=options'
         };
       }
 
@@ -1113,7 +1159,8 @@
           templateUrl: '=templateurl',
           templateParameter: '=templateparameter',
           isIconVisibleOnClick: '=isiconvisibleonclick',
-          closeClick: '&closeclick'
+          closeClick: '&closeclick',
+          options: '=options'
         };
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
@@ -1253,14 +1300,15 @@ not 1:1 in this setting.
       Window.prototype.link = function(scope, element, attrs, ctrls) {
         var _this = this;
         return this.$timeout(function() {
-          var isIconVisibleOnClick, mapCtrl, markerCtrl, opts, window;
+          var defaults, isIconVisibleOnClick, mapCtrl, markerCtrl, opts, window;
           isIconVisibleOnClick = true;
           if (angular.isDefined(attrs.isiconvisibleonclick)) {
             isIconVisibleOnClick = scope.isIconVisibleOnClick;
           }
           mapCtrl = ctrls[0].getMap();
           markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
-          opts = _this.createWindowOptions(markerCtrl, scope, element.html(), _this.DEFAULTS);
+          defaults = scope.options != null ? scope.options : {};
+          opts = _this.createWindowOptions(markerCtrl, scope, element.html(), defaults);
           if (mapCtrl != null) {
             window = new directives.api.models.child.WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile);
           }

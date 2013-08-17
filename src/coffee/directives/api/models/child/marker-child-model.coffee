@@ -1,31 +1,22 @@
 @ngGmapModule "directives.api.models.child", ->
 	class @MarkerChildModel extends oo.BaseObject
 		@include directives.api.utils.GmapUtil
-		constructor:(index,model,parentScope,gMap,$timeout,notifyLocalDestroy,defaults,doClick)->
+		constructor:(index,model,parentScope,gMap,$timeout,defaults,doClick)->
 			@index = index
 			@model = model
+			@defaults = defaults
 			@parentScope = parentScope
 			@iconKey = parentScope.icon
 			@coordsKey = parentScope.coords
 			@clickKey = parentScope.click()
-			@animateKey = parentScope.animate
+			@optionsKey = parentScope.options
 			@myScope = parentScope.$new(false)
-
 			@myScope.model = model
-			@setMyScope(model,undefined,true)
-			@defaults = defaults
 			@gMap = gMap
-			@opts = @createMarkerOptions(@gMap,@myScope.coords,@myScope.icon,@myScope.animate,@defaults)
-			@gMarker = new google.maps.Marker(@opts)
+			@setMyScope(model,undefined,true)
+			@createMarker(model)
 			@doClick = doClick
 			@$log = directives.api.utils.Logger
-			google.maps.event.addListener(@gMarker, 'click', =>
-
-				if @doClick and @myScope.click?
-					$timeout(=>
-						@myScope.click()
-					)
-			)
 			@myScope.$watch('model',(newValue, oldValue) =>
 				if (newValue != oldValue)
 					@setMyScope(newValue,oldValue) 
@@ -37,13 +28,26 @@
 			@maybeSetScopeValue('icon',model,oldModel,@iconKey,@evalModelHandle,isInit,@setIcon)
 			@maybeSetScopeValue('coords',model,oldModel,@coordsKey,@evalModelHandle,isInit,@setCoords)
 			@maybeSetScopeValue('click',model,oldModel,@clickKey,@evalModelHandle,isInit)
-			@maybeSetScopeValue('animate',model,oldModel,@animateKey,(lModel,lModelKey) =>
+			@createMarker(model,oldModel,isInit)		
+
+		createMarker:(model, oldModel = undefined,isInit = false)=>
+			@maybeSetScopeValue('options',model,oldModel,@optionsKey,(lModel,lModelKey) =>
+				if lModel == undefined
+					return undefined
 				value = if lModelKey == 'self' then lModel else lModel[lModelKey]
-				value = if lModelKey == undefined then false else @myScope.animate
-			,isInit)			
+				if value == undefined # we still dont have a value see if this is something up the tree or default it
+					value = if lModelKey == undefined then @defaults else @myScope.options
+				else
+					value
+			,isInit,@setOptions)
 
 		evalModelHandle:(model,modelKey) ->
-			if modelKey == 'self' then model else model[modelKey]
+			if model == undefined
+				return undefined
+			if modelKey == 'self'
+				model 
+			else 
+				model[modelKey]
 
 		maybeSetScopeValue:(scopePropName,model,oldModel,modelKey,evaluate,isInit,gSetter = undefined) ->
 			if oldModel == undefined
@@ -63,7 +67,7 @@
 			@myScope.$destroy()
 
 		setCoords:(scope) =>
-			if(scope.$id != @myScope.$id)
+			if(scope.$id != @myScope.$id or @gMarker == undefined)
 				return
 			if (scope.coords?) 
 				@gMarker.setMap(@gMap.getMap())
@@ -74,16 +78,34 @@
 				@gMarker.setMap(null)			
 
 		setIcon:(scope) =>
-			if(scope.$id != @myScope.$id)
+			if(scope.$id != @myScope.$id or @gMarker == undefined)
 				return
-			@gMarker.icon = scope.icon	
+			@gMarker.setIcon(scope.icon)
 			@gMarker.setMap(null)
 			@gMarker.setMap(@gMap.getMap())
 			@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
 			@gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
 
+		setOptions:(scope) =>
+			if(scope.$id != @myScope.$id)
+				return
+
+			if @gMarker?
+				@gMarker.setMap(null)
+				delete @gMarker		
+			unless scope.coords ? scope.icon? scope.options?
+				return
+			@opts = @createMarkerOptions(@gMap,scope.coords,scope.icon,scope.options)
+			@gMarker = new google.maps.Marker(@opts)
+			google.maps.event.addListener(@gMarker, 'click', =>
+				if @doClick and @myScope.click?
+					@myScope.click()
+			)
+
 		watchDestroy:(scope)=>
 			scope.$on("$destroy", => 
-				@gMarker.setMap(null)
-				notifyLocalDestroy(@index) if notifyLocalDestroy?
+				if @gMarker? #this is possible due to AsyncProcessor in that we created some Children but no gMarker yet
+					@gMarker.setMap(null)
+					delete @gMarker
+				delete @
 			)

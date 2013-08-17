@@ -20,7 +20,8 @@
 			@scope = {
 				coords: '=coords',
 				icon: '=icon',
-				click: '&click'
+				click: '&click',
+				options: '=options'
 			}
 		controller: ($scope, $element) ->
 			throw new Exception("Not Implemented!!")

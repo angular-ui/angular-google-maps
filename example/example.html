@@ -103,11 +103,14 @@
 				</marker>
 
 				<!-- marker for clicked position -->
-				<marker coords="map.clickedMarker" animate="true" >
-					<window isIconVisibleOnClick="false">This is my clicked marker!
-						<p class="muted">My marker will reappear when you close me.</p>
-					</window>
-				</marker>
+				<!-- can not put google.map.animations.BOUNCE , since it is not initiaized yet -->
+				<div ng-init="opts = {animation:1}" >
+					<marker coords="map.clickedMarker" options="opts" >
+						<window isIconVisibleOnClick="false">This is my clicked marker!
+							<p class="muted">My marker will reappear when you close me.</p>
+						</window>
+					</marker>
+				</div>
 
 				<!--WINDOWS without markers-->
 				<window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false">

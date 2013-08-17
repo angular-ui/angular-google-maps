@@ -23,10 +23,8 @@
 		createMarkers:(scope) =>
 			@bigGulp.handleLargeArray(scope.models,(model) =>
 				scope.doRebuild = true
-				@markers.push( 
-					new directives.api.models.child.MarkerChildModel(@markersIndex,model,scope,@mapCtrl,@$timeout,(index) =>
-						delete @markers[index]
-					,@DEFAULTS,@doClick)
+				@markers.push(
+					new directives.api.models.child.MarkerChildModel(@markersIndex,model,scope,@mapCtrl,@$timeout,@DEFAULTS,@doClick)
 				)
 				@markersIndex++
 			)
@@ -46,6 +44,9 @@
 
 		onWatch:(propNameToWatch,scope,newValue,oldValue) =>
 			if(propNameToWatch == 'models' and newValue.length == oldValue.length)
+				return
+			if propNameToWatch == 'options' and newValue?
+				@DEFAULTS = newValue
 				return
 			@reBuildMarkers(scope)
 

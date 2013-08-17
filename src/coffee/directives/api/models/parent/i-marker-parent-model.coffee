@@ -8,8 +8,7 @@
 ###	
 @ngGmapModule "directives.api.models.parent", ->
 	class @IMarkerParentModel extends oo.BaseObject
-		# Animation is enabled by default
-		DEFAULTS: { animation: google.maps.Animation.DROP }
+		DEFAULTS: {}
 		  
 		# Check if a value is literally false
 		# @param value the value to test
@@ -22,16 +21,17 @@
 			# Validate required properties
 			if (@validateScope(scope))
 				return
-			@animate = if angular.isDefined(attrs.animate) then !@isFalse(attrs.animate) else false
 			@doClick = angular.isDefined(attrs.click)
 			@mapCtrl = mapCtrl
 			@$log = directives.api.utils.Logger
 			@$timeout = $timeout
+			if scope.options?
+				@DEFAULTS = scope.options
 			# Wrap marker initialization inside a $timeout() call to make sure the map is created already
 			@$timeout( =>
 				@watch('coords',scope)
 				@watch('icon',scope)
-				@watch('animate',scope)
+				@watch('options',scope)
 				@onTimeOut(scope)
 				scope.$on("$destroy", => 
 					@onDestroy(scope)

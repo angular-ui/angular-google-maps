@@ -43,13 +43,13 @@
 		handleClick:()=>
 			if @markerCtrl?
 				# Show the window and hide the marker on click
-				google.maps.event.addListener(@markerCtrl, 'click', ->
+				google.maps.event.addListener(@markerCtrl, 'click', =>
 					@gWin.setPosition(@markerCtrl.getPosition())
-					@gWin.open(mapCtrl)
+					@gWin.open(@mapCtrl)
 					@markerCtrl.setVisible(@isIconVisibleOnClick)
 				)
 				# Set visibility of marker back to what it was before opening the window
-				google.maps.event.addListener(@gWin, 'closeclick', ->
+				google.maps.event.addListener(@gWin, 'closeclick', =>
 					@markerCtrl.setVisible(@initialMarkerVisibility)
 					@scope.closeClick()
 				)
