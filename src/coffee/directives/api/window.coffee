@@ -19,8 +19,8 @@
 					isIconVisibleOnClick = scope.isIconVisibleOnClick
 				mapCtrl = ctrls[0].getMap()
 				markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1].getMarker() else undefined
-
-				opts = @createWindowOptions(markerCtrl,scope,element.html(),@DEFAULTS)
+				defaults = if scope.options? then scope.options else {}
+				opts = @createWindowOptions(markerCtrl,scope,element.html(),defaults)
 
 				if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
 					window = new directives.api.models.child.WindowChildModel(

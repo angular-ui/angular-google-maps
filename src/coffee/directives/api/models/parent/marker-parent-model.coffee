@@ -8,7 +8,7 @@
 		constructor: (scope, element, attrs, mapCtrl,$timeout) ->
 			super(scope, element, attrs, mapCtrl,$timeout)
 			self = @
-			opts = @createMarkerOptions(mapCtrl,scope.coords,scope.icon,@animate,@DEFAULTS)
+			opts = @createMarkerOptions(mapCtrl,scope.coords,scope.icon,scope.options)
 			#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
 			@gMarker = new google.maps.Marker(opts)
 			element.data('instance', @gMarker)
@@ -28,21 +28,27 @@
 			
 			switch propNameToWatch
 				when 'coords'
-					if (scope.coords? and @gMarker?) 
+					if (scope.coords? and @gMarker?)
 						@gMarker.setMap(@mapCtrl.getMap())
 						@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
 						@gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
+						@gMarker.setOptions(scope.options)
 					else
 						# Remove marker
 						@gMarker.setMap(null)			
 				when 'icon' 
 					if (scope.icon? and scope.coords? and @gMarker?) 
-						@gMarker.icon = scope.icon	
+						@gMarker.setOptions(scope.options) 
+						@gMarker.setIcon(scope.icon)
 						@gMarker.setMap(null)
 						@gMarker.setMap(@mapCtrl.getMap())
 						@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
 						@gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
-				when 'animate'
+				when 'options'
+					if scope.coords? and scope.icon? and scope.options
+						@gMarker.setMap(null)
+						delete @gMarker			
+						@gMarker = new google.maps.Marker(@createMarkerOptions(@mapCtrl,scope.coords,scope.icon,scope.options))
 				else 			
 					
 

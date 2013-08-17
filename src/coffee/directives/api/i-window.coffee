@@ -16,7 +16,8 @@
 				templateUrl: '=templateurl',
 				templateParameter: '=templateparameter',
 				isIconVisibleOnClick: '=isiconvisibleonclick',
-				closeClick: '&closeclick'           #scope glue to gmap InfoWindow closeclick
+				closeClick: '&closeclick',           #scope glue to gmap InfoWindow closeclick
+				options: '=options'
 			}
 			@$log = directives.api.utils.Logger
 			@$timeout = $timeout

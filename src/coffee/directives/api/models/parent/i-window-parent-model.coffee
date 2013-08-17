@@ -14,3 +14,5 @@
 			@$compile = $compile
 			@$http = $http
 			@$templateCache = $templateCache
+			if scope.options?
+				@DEFAULTS =  scope.options
