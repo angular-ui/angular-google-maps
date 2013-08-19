@@ -1,8 +1,9 @@
 @ngGmapModule "directives.api.models.child", ->
 	class @MarkerChildModel extends oo.BaseObject
 		@include directives.api.utils.GmapUtil
-		constructor:(index,model,parentScope,gMap,$timeout,defaults,doClick)->
+		constructor:(index,model,parentScope,gMap,$timeout,defaults,doClick,gMarkerManager)->
 			@index = index
+			@gMarkerManager =  gMarkerManager
 			@model = model
 			@defaults = defaults
 			@parentScope = parentScope
@@ -62,6 +63,7 @@
 				@myScope[scopePropName] = newValue
 				unless isInit
 					gSetter(@myScope) if gSetter?
+					@gMarkerManager.draw()
 
 		destroy:() =>
 			@myScope.$destroy()
@@ -70,19 +72,19 @@
 			if(scope.$id != @myScope.$id or @gMarker == undefined)
 				return
 			if (scope.coords?) 
-				@gMarker.setMap(@gMap.getMap())
 				@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
 				@gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
+				@gMarkerManager.remove(@gMarker)
+				@gMarkerManager.add(@gMarker)
 			else
-				# Remove marker
-				@gMarker.setMap(null)			
+				@gMarkerManager.remove(@gMarker)
 
 		setIcon:(scope) =>
 			if(scope.$id != @myScope.$id or @gMarker == undefined)
 				return
+			@gMarkerManager.remove(@gMarker)
 			@gMarker.setIcon(scope.icon)
-			@gMarker.setMap(null)
-			@gMarker.setMap(@gMap.getMap())
+			@gMarkerManager.add(@gMarker)
 			@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
 			@gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
 
@@ -91,12 +93,14 @@
 				return
 
 			if @gMarker?
-				@gMarker.setMap(null)
+				@gMarkerManager.remove(@gMarker)
 				delete @gMarker		
 			unless scope.coords ? scope.icon? scope.options?
 				return
-			@opts = @createMarkerOptions(@gMap,scope.coords,scope.icon,scope.options)
+			@opts = @createMarkerOptions(scope.coords,scope.icon,scope.options)
+			delete @gMarker
 			@gMarker = new google.maps.Marker(@opts)
+			@gMarkerManager.add(@gMarker)
 			google.maps.event.addListener(@gMarker, 'click', =>
 				if @doClick and @myScope.click?
 					@myScope.click()
@@ -105,7 +109,7 @@
 		watchDestroy:(scope)=>
 			scope.$on("$destroy", => 
 				if @gMarker? #this is possible due to AsyncProcessor in that we created some Children but no gMarker yet
-					@gMarker.setMap(null)
+					@gMarkerManager.remove(@gMarker)
 					delete @gMarker
 				delete @
 			)

@@ -40,6 +40,7 @@ module.exports = function(grunt) {
           ['src/coffee/*.coffee',
           'src/coffee/oo/ng-gmap-module.coffee',
           'src/coffee/oo/base-object.coffee',
+          'src/coffee/directives/api/managers/*.coffee',
           'src/coffee/directives/api/utils/*.coffee',
           'src/coffee/directives/api/models/child/*.coffee',
           'src/coffee/directives/api/models/parent/*.coffee',
@@ -56,8 +57,9 @@ module.exports = function(grunt) {
       dist: {
         src: ['src/js/module.js',
               'tmp/output_coffee.js',
-              'src/js/utils/LatLngArraySync.js',
-              'src/js/utils/MapEvents.js',
+              'src/js/utils/markerclusterer-r438.js',
+              'src/js/utils/LatLngArraySync.js', 
+              'src/js/utils/MapEvents.js', 
               'src/js/controllers/polyline-display.js',
               'src/js/directives/map.js',
               'src/js/directives/marker.js',
@@ -72,8 +74,9 @@ module.exports = function(grunt) {
       example: {
         src: ['src/js/module.js',
               'tmp/output_coffee.js',
-              'src/js/utils/LatLngArraySync.js',
-              'src/js/utils/MapEvents.js',
+              'src/js/utils/markerclusterer-r438.js', 
+              'src/js/utils/LatLngArraySync.js', 
+              'src/js/utils/MapEvents.js', 
               'src/js/controllers/polyline-display.js',
               'src/js/directives/map.js',
               'src/js/directives/marker.js',
@@ -109,7 +112,8 @@ module.exports = function(grunt) {
     },
 
     jshint: {
-      all: ['Gruntfile.js', 'src/js/**/*.js', 'test/js/**/*.js']
+      all: ['Gruntfile.js', 'src/js/**/*.js', 'test/js/**/*.js'],
+      options: {ignores: ['src/js/utils/markerclusterer-r438.js']}
     },
 
     test: {
