@@ -11,19 +11,19 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-open');
   grunt.loadNpmTasks('grunt-mkdir');
   grunt.loadNpmTasks('grunt-contrib-coffee');
-  
+
 
   // Project configuration.
   grunt.initConfig({
-    
+
     pkg: grunt.file.readJSON('package.json'),
-    
+
     clean: {
       coffee: ['tmp/output_coffee.js'],
       dist: ['dist/*', 'tmp'],
       example: ['example/<%= pkg.name %>.js']
     },
-    
+
     mkdir: {
       all: {
         options: {
@@ -36,7 +36,7 @@ module.exports = function(grunt) {
     coffee: {
       compile: {
         files: {
-          'tmp/output_coffee.js': 
+          'tmp/output_coffee.js':
           ['src/coffee/*.coffee',
           'src/coffee/oo/ng-gmap-module.coffee',
           'src/coffee/oo/base-object.coffee',
@@ -48,20 +48,20 @@ module.exports = function(grunt) {
         }
       }
     },
-    
+
     concat: {
       options: {
         separator: ';'
       },
       dist: {
-        src: ['src/js/module.js', 
+        src: ['src/js/module.js',
               'tmp/output_coffee.js',
-              'src/js/utils/LatLngArraySync.js', 
-              'src/js/utils/MapEvents.js', 
+              'src/js/utils/LatLngArraySync.js',
+              'src/js/utils/MapEvents.js',
               'src/js/controllers/polyline-display.js',
-              'src/js/directives/map.js', 
-              'src/js/directives/marker.js', 
-              'src/js/directives/markers.js', 
+              'src/js/directives/map.js',
+              'src/js/directives/marker.js',
+              'src/js/directives/markers.js',
               'src/js/directives/polygon.js',
               'src/js/directives/polyline.js',
               'src/js/directives/window.js',
@@ -72,12 +72,12 @@ module.exports = function(grunt) {
       example: {
         src: ['src/js/module.js',
               'tmp/output_coffee.js',
-              'src/js/utils/LatLngArraySync.js', 
-              'src/js/utils/MapEvents.js', 
+              'src/js/utils/LatLngArraySync.js',
+              'src/js/utils/MapEvents.js',
               'src/js/controllers/polyline-display.js',
-              'src/js/directives/map.js', 
-              'src/js/directives/marker.js', 
-              'src/js/directives/markers.js', 
+              'src/js/directives/map.js',
+              'src/js/directives/marker.js',
+              'src/js/directives/markers.js',
               'src/js/directives/polygon.js',
               'src/js/directives/polyline.js',
               'src/js/directives/window.js',
@@ -86,7 +86,7 @@ module.exports = function(grunt) {
         dest: 'example/<%= pkg.name %>.js'
       }
     },
-    
+
     copy: {
       dist: {
         files: [{
@@ -95,7 +95,7 @@ module.exports = function(grunt) {
         }]
       }
     },
-    
+
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n',
@@ -107,15 +107,15 @@ module.exports = function(grunt) {
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
-    
+
     jshint: {
       all: ['Gruntfile.js', 'src/js/**/*.js', 'test/js/**/*.js']
     },
-    
+
     test: {
-      
+
     },
-    
+
     watch: {
       all: {
         options: { livereload: true },
@@ -123,13 +123,13 @@ module.exports = function(grunt) {
         tasks: ['clean:example','coffee','concat:example'],
       },
     },
-    
+
     open: {
       example: {
         path: 'http://localhost:3000/example.html'
       }
     },
-    
+
     connect: {
       server: {
         options: {
@@ -147,14 +147,14 @@ module.exports = function(grunt) {
 
   // Default task: build a release in dist/
   grunt.registerTask('default', ['clean:dist',
-                                 'test', 
-                                 'jshint', 
-                                 'mkdir', 
+                                 'test',
+                                 'jshint',
+                                 'mkdir',
                                  'coffee',
-                                 'concat:dist', 
+                                 'concat:dist',
                                  'copy:dist',
                                  'uglify']);
-  
+
   // Run the example page by creating a local copy of angular-google-maps.js
   // and running a webserver on port 3000 with livereload. Web page is opened
   // automatically in the default browser.
