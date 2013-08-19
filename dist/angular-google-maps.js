@@ -1333,8 +1333,12 @@
         };
       }
 
-      IMarker.prototype.controller = function($scope, $element) {
-        throw new Exception("Not Implemented!!");
+      IMarker.prototype.controller = {
+        controller: [
+          '$scope', '$element', function($scope, $element) {
+            throw new Exception("Not Implemented!!");
+          }
+        ]
       };
 
       IMarker.prototype.link = function(scope, element, attrs, ctrl) {
@@ -1422,11 +1426,13 @@
         this.$log.info(this);
       }
 
-      Marker.prototype.controller = function($scope, $element) {
-        return this.getMarker = function() {
-          return $element.data('instance');
-        };
-      };
+      Marker.prototype.controller = [
+        '$scope', '$element', function($scope, $element) {
+          return this.getMarker = function() {
+            return $element.data('instance');
+          };
+        }
+      ];
 
       Marker.prototype.link = function(scope, element, attrs, ctrl) {
         return new directives.api.models.parent.MarkerParentModel(scope, element, attrs, ctrl, this.$timeout);
@@ -1472,11 +1478,13 @@ not 1:1 in this setting.
         this.$log.info(this);
       }
 
-      Markers.prototype.controller = function($scope, $element) {
-        return this.getMarkersScope = function() {
-          return $scope;
-        };
-      };
+      Markers.prototype.controller = [
+        '$scope', '$element', function($scope, $element) {
+          return this.getMarkersScope = function() {
+            return $scope;
+          };
+        }
+      ];
 
       Markers.prototype.link = function(scope, element, attrs, ctrl) {
         return new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, this.$timeout);
