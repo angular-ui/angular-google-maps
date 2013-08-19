@@ -676,11 +676,15 @@
             _this.gWin.open(_this.mapCtrl);
             return _this.markerCtrl.setVisible(_this.isIconVisibleOnClick);
           });
-          return google.maps.event.addListener(this.gWin, 'closeclick', function() {
-            _this.markerCtrl.setVisible(_this.initialMarkerVisibility);
-            return _this.scope.closeClick();
-          });
         }
+        return google.maps.event.addListener(this.gWin, 'closeclick', function() {
+          if (_this.markerCtrl != null) {
+            _this.markerCtrl.setVisible(_this.initialMarkerVisibility);
+          }
+          if (_this.scope.closeClick != null) {
+            return _this.scope.closeClick();
+          }
+        });
       };
 
       WindowChildModel.prototype.showWindow = function() {
