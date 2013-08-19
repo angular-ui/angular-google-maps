@@ -7,3 +7,4 @@ tmp/
 *~
 app/components
 /nbproject
+.idea

@@ -358,9 +358,7 @@
           visible: (coords.latitude != null) && (coords.longitude != null)
         });
         if (map != null) {
-          opts.map = {
-            map: map.getMap()
-          };
+          opts.map = map;
         }
         return opts;
       },
@@ -882,7 +880,7 @@
           _this = this;
         MarkerParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, mapCtrl);
+        opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, mapCtrl.getMap());
         this.gMarker = new google.maps.Marker(opts);
         element.data('instance', this.gMarker);
         this.scope = scope;
@@ -926,7 +924,7 @@
             if ((scope.coords != null) && (scope.icon != null) && scope.options) {
               this.gMarker.setMap(null);
               delete this.gMarker;
-              return this.gMarker = new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl));
+              return this.gMarker = new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap()));
             }
             break;
         }
@@ -3347,7 +3345,7 @@ angular.module('google-maps')
     .directive('googleMap', ['$log', '$timeout', function ($log, $timeout) {
 
         "use strict";
-        
+
         directives.api.utils.Logger.logger = $log;
 
         var DEFAULTS = {
@@ -3406,7 +3404,8 @@ angular.module('google-maps')
                 markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
-                events: '=events',           // optional
+                options: '=options',        // optional
+                events: '=events',          // optional
                 bounds: '=bounds'
             },
 
@@ -3451,7 +3450,7 @@ angular.module('google-maps')
                 // Parse options
                 var opts = {options: {}};
                 if (attrs.options) {
-                    opts.options = angular.fromJson(attrs.options);
+                    opts.options = scope.options;
                 }
 
                 if (attrs.type) {
@@ -3518,7 +3517,7 @@ angular.module('google-maps')
                 google.maps.event.addListener(_m, 'center_changed', function () {
                     var c = _m.center;
 
-                    if(settingCenterFromScope) 
+                    if(settingCenterFromScope)
                         return; //if the scope notified this change then there is no reason to update scope otherwise infinite loop
                     $timeout(function () {
                         scope.$apply(function (s) {
@@ -3621,7 +3620,7 @@ angular.module('google-maps')
 
                     //_m.draw();
                 });
-				
+
 				scope.$watch('bounds', function (newValue, oldValue) {
                     if (newValue === oldValue) {
                         return;

@@ -40,6 +40,10 @@ function ExampleController ($scope, $timeout, $log) {
                 latitude: 45,
                 longitude: -73
             },
+            options: {
+              streetViewControl: false,
+              panControl: false
+            },
             zoom: 3,
             dragging: false,
             bounds: {},
@@ -189,7 +193,7 @@ function ExampleController ($scope, $timeout, $log) {
     });
 
     _.each($scope.map.markers,function(marker){
-        marker.closeClick = function(){                        
+        marker.closeClick = function(){
             marker.showWindow = false;
             $scope.$apply();
         };
@@ -199,7 +203,7 @@ function ExampleController ($scope, $timeout, $log) {
     });
 
     _.each($scope.map.markers2,function(marker){
-        marker.closeClick = function(){                        
+        marker.closeClick = function(){
             marker.showWindow = false;
             $scope.$apply();
         };
@@ -244,7 +248,7 @@ function ExampleController ($scope, $timeout, $log) {
                 }
         ];
        _.each(dynamicMarkers,function(marker){
-            marker.closeClick = function(){                        
+            marker.closeClick = function(){
                 marker.showWindow = false;
                 $scope.$apply();
             };
