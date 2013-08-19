@@ -6,7 +6,7 @@
 				icon: icon,
 				visible: coords.latitude? and coords.longitude?
 			})
-			opts.map = map: map.getMap() if map?
+			opts.map = map if map?
 			opts
 
 		createWindowOptions:(gMarker,scope,content,defaults) ->

@@ -77,6 +77,9 @@
 				events="map.events">
 				<trafficlayer show="map.showTraffic" />
 
+				<markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'" doCluster="true">
+				</markers>
+
 				<markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'">
 					<windows show="'showWindow'" closeClick="'closeClick'">
 						<p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
@@ -132,6 +135,15 @@
 							<td>TrafficLayer</td>
 							<td>
 								<input type="checkbox" text="TrafficLayer On/Off" ng-model="map.showTraffic">
+							</td>
+						</tr>
+						<tr>	
+							<td>Generate Random Markers</td>
+							<td>
+								<div ng-init="numOfMarkers = 1000">
+									<input type="text" text="Number of Markers" ng-model="numOfMarkers">
+									<button ng-click="genRandomMarkers(numOfMarkers)">Generate</button>
+								</div>
 							</td>
 						</tr>
 						<tr>

@@ -14,6 +14,25 @@ function ExampleController ($scope, $timeout, $log) {
         window.alert("Marker: lat: " + marker.latitude +", lon: " + marker.longitude + " clicked!!")
     };
 
+    genRandomMarkers = function(numberOfMarkers,scope){
+        markers = []
+        for(var i=0; i < numberOfMarkers; i++){
+            markers.push(createRandomMarker(scope.map.bounds))
+        }
+        scope.map.randomMarkers = markers;
+    };
+    
+    createRandomMarker = function(bounds) {
+      var lat_min = bounds.southwest.latitude,
+          lat_range = bounds.northeast.latitude - lat_min,
+          lng_min = bounds.southwest.longitude,
+          lng_range = bounds.northeast.longitude - lng_min;
+
+        latitude = lat_min + (Math.random() * lat_range);
+        longitude = lng_min + (Math.random() * lng_range);
+        return {latitude:latitude,longitude:longitude};
+    };
+
     angular.extend($scope, {
         map: {
             showTraffic: true,
@@ -61,6 +80,7 @@ function ExampleController ($scope, $timeout, $log) {
                 }
             ],
             dynamicMarkers: [],
+            randomMarkers: [],
             clickedMarker: {
                 latitude: null,
                 longitude: null
@@ -193,8 +213,13 @@ function ExampleController ($scope, $timeout, $log) {
         $scope.map.markers.length = 0;
         $scope.map.markers2.length = 0;
         $scope.map.dynamicMarkers.length = 0;
+        $scope.map.randomMarkers.length = 0;
         $scope.map.clickedMarker = null;
     };
+
+    $scope.genRandomMarkers = function(numberOfMarkers) {
+        genRandomMarkers(numberOfMarkers,$scope);
+    }
 
     $scope.onMarkerClicked = onMarkerClicked
 
