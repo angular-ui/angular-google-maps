@@ -1,12 +1,13 @@
 @ngGmapModule "directives.api.utils", ->
 	@GmapUtil =
-		createMarkerOptions:(map,coords,icon,defaults) ->
-			angular.extend({}, defaults, {
+		createMarkerOptions:(coords,icon,defaults,map = undefined) ->
+			opts = angular.extend({}, defaults, {
 				position: new google.maps.LatLng(coords.latitude, coords.longitude),
-				map: map.getMap(),
 				icon: icon,
 				visible: coords.latitude? and coords.longitude?
 			})
+			opts.map = map: map.getMap() if map?
+			opts
 
 		createWindowOptions:(gMarker,scope,content,defaults) ->
 			angular.extend({}, defaults, {

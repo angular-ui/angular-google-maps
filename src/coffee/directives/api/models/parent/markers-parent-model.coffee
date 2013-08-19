@@ -5,6 +5,7 @@
 			self = @
 			@markers = []
 			@markersIndex = 0
+			@gMarkerManager = undefined
 			@scope = scope
 			@bigGulp =  directives.api.utils.AsyncProcessor
 			@$log.info(@)
@@ -21,14 +22,21 @@
 			super(scope) or modelsNotDefined
 
 		createMarkers:(scope) =>
+			if scope.doCluster? and scope.doCluster == true and @gMarkerManager == undefined
+				@gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap())
+			else
+				if(@gMarkerManager == undefined)
+					@gMarkerManager = new directives.api.managers.MarkerManager(@mapCtrl.getMap())
+				
 			@bigGulp.handleLargeArray(scope.models,(model) =>
 				scope.doRebuild = true
-				@markers.push(
-					new directives.api.models.child.MarkerChildModel(@markersIndex,model,scope,@mapCtrl,@$timeout,@DEFAULTS,@doClick)
-				)
+				child = new directives.api.models.child.MarkerChildModel(@markersIndex,model,scope,@mapCtrl,@$timeout,
+					@DEFAULTS,@doClick,@gMarkerManager)
+				@markers.push(child)
 				@markersIndex++
 			)
-			#put MarkerModels into local scope					
+			@gMarkerManager.draw()
+			#put MarkerModels into local scope
 			scope.markerModels = @markers
 
 		reBuildMarkers:(scope) =>
@@ -40,6 +48,7 @@
 			delete @markers
 			@markers = []
 			@markersIndex = 0
+			@gMarkerManager.clear() if @gMarkerManager?
 			@createMarkers(scope)
 
 		onWatch:(propNameToWatch,scope,newValue,oldValue) =>
@@ -56,4 +65,5 @@
 			#for destroy we have a lookup? 
 			#this will require another attribute for destroySingle(marker)
 			model.destroy() for model in @markers
+			@gMarkerManager.clear() if @gMarkerManager?
 		

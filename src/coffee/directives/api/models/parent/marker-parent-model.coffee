@@ -8,7 +8,7 @@
 		constructor: (scope, element, attrs, mapCtrl,$timeout) ->
 			super(scope, element, attrs, mapCtrl,$timeout)
 			self = @
-			opts = @createMarkerOptions(mapCtrl,scope.coords,scope.icon,scope.options)
+			opts = @createMarkerOptions(scope.coords,scope.icon,scope.options,mapCtrl)
 			#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
 			@gMarker = new google.maps.Marker(opts)
 			element.data('instance', @gMarker)
@@ -48,7 +48,7 @@
 					if scope.coords? and scope.icon? and scope.options
 						@gMarker.setMap(null)
 						delete @gMarker			
-						@gMarker = new google.maps.Marker(@createMarkerOptions(@mapCtrl,scope.coords,scope.icon,scope.options))
+						@gMarker = new google.maps.Marker(@createMarkerOptions(scope.coords,scope.icon,scope.options,@mapCtrl))
 				else 			
 					
 

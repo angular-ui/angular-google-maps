@@ -15,7 +15,8 @@ not 1:1 in this setting.
 			super($timeout)
 			self = @
 			@template = '<span class="angular-google-map-markers" ng-transclude></span>'
-			@scope.models = '=models'			
+			@scope.models = '=models'
+			@scope.doCluster= '=docluster'
 			@$timeout = $timeout
 			@$log.info(@)
 		
