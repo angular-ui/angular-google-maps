@@ -31,7 +31,7 @@ angular.module('google-maps')
     .directive('googleMap', ['$log', '$timeout', function ($log, $timeout) {
 
         "use strict";
-        
+
         directives.api.utils.Logger.logger = $log;
 
         var DEFAULTS = {
@@ -90,7 +90,7 @@ angular.module('google-maps')
                 markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
-                options: '=options'         // optional
+                options: '=options',        // optional
                 events: '=events',          // optional
                 bounds: '=bounds'
             },
@@ -203,7 +203,7 @@ angular.module('google-maps')
                 google.maps.event.addListener(_m, 'center_changed', function () {
                     var c = _m.center;
 
-                    if(settingCenterFromScope) 
+                    if(settingCenterFromScope)
                         return; //if the scope notified this change then there is no reason to update scope otherwise infinite loop
                     $timeout(function () {
                         scope.$apply(function (s) {
@@ -306,7 +306,7 @@ angular.module('google-maps')
 
                     //_m.draw();
                 });
-				
+
 				scope.$watch('bounds', function (newValue, oldValue) {
                     if (newValue === oldValue) {
                         return;

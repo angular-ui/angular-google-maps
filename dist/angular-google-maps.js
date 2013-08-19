@@ -1,18 +1,18 @@
 /**!
  * The MIT License
- *
+ * 
  * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,12 +20,13 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- *
+ * 
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
- *
+ * 
  * @author Nicolas Laplante https://plus.google.com/108189012221374960701
  */
+
 (function(){
     var app = angular.module('google-maps', []);
 
@@ -652,7 +653,7 @@
 }).call(this);
 
 /*
-	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model.
+	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
 	Thus there will be one html element per marker within the directive.
 */
 
@@ -957,9 +958,9 @@
       WindowsParentModel.prototype.createChildScopesWindows = function() {
         /*
         			being that we cannot tell the difference in Key String vs. a normal value string (TemplateUrl)
-        			we will assume that all scope values are string expressions either pointing to a key (propName) or using
-        			'self' to point the model as container/object of interest.
-
+        			we will assume that all scope values are string expressions either pointing to a key (propName) or using 
+        			'self' to point the model as container/object of interest.	
+        
         			This may force redundant information into the model, but this appears to be the most flexible approach.
         */
 
@@ -1180,7 +1181,7 @@
 }).call(this);
 
 /*
-	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model.
+	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
 	Thus there will be one html element per marker within the directive.
 */
 
@@ -1223,7 +1224,7 @@
 /*
 Markers will map icon and coords differently than directibes.api.Marker. This is because Scope and the model marker are
 not 1:1 in this setting.
-
+	
 	- icon - will be the iconKey to the marker value ie: to get the icon marker[iconKey]
 	- coords - will be the coordsKey to the marker value ie: to get the icon marker[coordsKey]
 
@@ -1812,7 +1813,7 @@ angular.module('google-maps')
  * {attribute animate optional} if set to false, the marker won't be animated (on by default)
  */
 
-angular.module('google-maps').directive('marker', ['$timeout', function ($timeout) {
+angular.module('google-maps').directive('marker', ['$timeout', function ($timeout) { 
 	return new directives.api.Marker($timeout);
 }]);
 ;/**!
@@ -1855,7 +1856,7 @@ angular.module('google-maps').directive('marker', ['$timeout', function ($timeou
  * {attribute animate optional} if set to false, the marker won't be animated (on by default)
  */
 
-angular.module('google-maps').directive('markers', ['$timeout', function ($timeout) {
+angular.module('google-maps').directive('markers', ['$timeout', function ($timeout) { 
 	return new directives.api.Markers($timeout);
 }]);
 ;/**!
@@ -2348,7 +2349,7 @@ angular.module("google-maps")
  * {attribute show optional}    map will show when this expression returns true
  */
 
-angular.module("google-maps").directive("window", ['$timeout','$compile', '$http', '$templateCache',
+angular.module("google-maps").directive("window", ['$timeout','$compile', '$http', '$templateCache', 
   function ($timeout, $compile, $http, $templateCache) {
     return new directives.api.Window($timeout, $compile, $http, $templateCache);
   }]);;/**!
@@ -2377,8 +2378,8 @@ angular.module("google-maps").directive("window", ['$timeout','$compile', '$http
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @authors:
- *			- Nicolas Laplante https://plus.google.com/108189012221374960701
+ * @authors: 
+ *			- Nicolas Laplante https://plus.google.com/108189012221374960701 
  *			- Nicholas McCready  https://plus.google.com/112199819969944829348
  */
 
@@ -2421,7 +2422,7 @@ angular.module("google-maps").directive("windows", ['$timeout','$compile', '$htt
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @authors:
+ * @authors: 
  *   - Nicolas Laplante https://plus.google.com/108189012221374960701
  *   - Nicholas McCready
  */
@@ -2457,7 +2458,7 @@ angular.module('google-maps')
                     gMap = mapCtrl.getMap();
                     if (angular.isDefined(attrs.show))
                         doShow = scope.show;
-                    if(doShow !== null && doShow && gMap !== null)
+                    if(doShow !== null && doShow && gMap !== null)                        
                         trafficLayer.setMap(gMap);
 
                     scope.$watch('show', function (newValue, oldValue) {
@@ -2465,9 +2466,9 @@ angular.module('google-maps')
                             doShow = newValue;
                             if (newValue)
                                 trafficLayer.setMap(gMap);
-                            else
+                            else 
                                 trafficLayer.setMap(null);
-
+                            
                         }
                     }, true);
 
