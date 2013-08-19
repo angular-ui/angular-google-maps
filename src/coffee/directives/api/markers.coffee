@@ -20,9 +20,10 @@ not 1:1 in this setting.
 			@$timeout = $timeout
 			@$log.info(@)
 		
-		controller:($scope, $element) ->
+		controller: ['$scope','$element',($scope, $element) ->
 			@getMarkersScope = ->
 				$scope
+		]
 
 		link: (scope, element, attrs, ctrl) =>
 			new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, @$timeout)

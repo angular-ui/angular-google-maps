@@ -10,9 +10,9 @@
 			@template = '<span class="angular-google-map-marker" ng-transclude></span>'
 			@$log.info(@)
 		
-		controller:($scope, $element) ->
+		controller: ['$scope','$element', ($scope, $element) ->
 			@getMarker = ->
 				$element.data('instance')
-
+		]
 		link: (scope, element, attrs, ctrl) =>
 			new directives.api.models.parent.MarkerParentModel(scope, element, attrs, ctrl, @$timeout)

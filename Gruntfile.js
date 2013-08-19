@@ -72,20 +72,7 @@ module.exports = function(grunt) {
         dest: 'tmp/output.js'
       },
       example: {
-        src: ['src/js/module.js',
-              'tmp/output_coffee.js',
-              'src/js/utils/markerclusterer-r438.js', 
-              'src/js/utils/LatLngArraySync.js', 
-              'src/js/utils/MapEvents.js', 
-              'src/js/controllers/polyline-display.js',
-              'src/js/directives/map.js',
-              'src/js/directives/marker.js',
-              'src/js/directives/markers.js',
-              'src/js/directives/polygon.js',
-              'src/js/directives/polyline.js',
-              'src/js/directives/window.js',
-              'src/js/directives/windows.js',
-              'src/js/directives/trafficlayer.js'],
+        src: ['dist/angular-google-maps.min.js'],
         dest: 'example/<%= pkg.name %>.js'
       }
     },
