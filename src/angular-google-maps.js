@@ -77,6 +77,7 @@
       this.selector = o.container;
       this.markers = [];
       this.options = o.options;
+      this.theme = o.theme;
       
       this.draw = function () {
         
@@ -87,14 +88,34 @@
         
         if (_instance == null) {
           
-          // Create a new map instance
-          
-          _instance = new google.maps.Map(that.selector, angular.extend(that.options, {
+          var options = {
             center: that.center,
             zoom: that.zoom,
             draggable: that.draggable,
             mapTypeId : google.maps.MapTypeId.ROADMAP
-          }));
+          }
+
+          // Create a new map instance
+          if( that.theme ) {
+            options = {
+              center: that.center,
+              zoom: that.zoom,
+              draggable: that.draggable,
+              mapTypeControlOptions: {
+                mapTypeIds: [google.maps.MapTypeId.ROADMAP, that.theme.id ]
+              },
+              mapTypeId: that.theme.id 
+            }
+
+            _instance = new google.maps.Map(that.selector, angular.extend(that.options, options));
+
+            // Add map style
+            _instance.mapTypes.set( that.theme.id , new google.maps.StyledMapType( that.theme.styles , that.theme.options ) );
+
+          } else
+            _instance = new google.maps.Map(that.selector, angular.extend(that.options, options));
+
+          
           
           google.maps.event.addListener(_instance, "dragstart",
               
@@ -342,20 +363,19 @@
       },
       controller: controller,      
       link: function (scope, element, attrs, ctrl) {
-        
         // Center property must be specified and provide lat & 
         // lng properties
         if (!angular.isDefined(scope.center) || 
             (!angular.isDefined(scope.center.latitude) || 
                 !angular.isDefined(scope.center.longitude))) {
-        	
+          
           $log.error("angular-google-maps: could not find a valid center property");          
           return;
         }
         
         if (!angular.isDefined(scope.zoom)) {
-        	$log.error("angular-google-maps: map zoom property not set");
-        	return;
+          $log.error("angular-google-maps: map zoom property not set");
+          return;
         }
         
         angular.element(element).addClass("angular-google-map");
@@ -363,7 +383,12 @@
         // Parse options
         var opts = {options: {}};
         if (attrs.options) {
-          opts.options = angular.fromJson(attrs.options);
+          opts.options = typeof attrs.options == "string" ? angular.fromJson(attrs.options) : attrs.options;
+        }
+
+        // Parse theme
+        if (attrs.theme) {
+         opts.theme = typeof attrs.options == "string" ? angular.fromJson(attrs.theme) : attrs.theme;
         }
         
         // Create our model
