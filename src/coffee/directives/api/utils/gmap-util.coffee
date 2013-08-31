@@ -1,5 +1,12 @@
 @ngGmapModule "directives.api.utils", ->
 	@GmapUtil =
+		getLabelPositionPoint:(anchor) ->
+			anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor)
+			xPos = anchor[1]
+			yPos = anchor[2]
+			if xPos && yPos
+				new google.maps.Point(xPos,yPos)
+
 		createMarkerOptions:(coords,icon,defaults,map = undefined) ->
 			opts = angular.extend({}, defaults, {
 				position: new google.maps.LatLng(coords.latitude, coords.longitude),

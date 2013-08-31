@@ -51,18 +51,21 @@ function ExampleController ($scope, $timeout, $log) {
                 {
                     latitude: 45,
                     longitude: -74,
-                    showWindow: false
+                    showWindow: false,
+                    title: 'Marker 2'
                 },
                 {
                     latitude: 15,
                     longitude: 30,
-                    showWindow: false
+                    showWindow: false,
+                    title: 'Marker 2'
                 },
                 {
                     icon: 'plane.png',
                     latitude: 37,
                     longitude: -122,
-                    showWindow: false
+                    showWindow: false,
+                    title: 'Plane'
                 }
             ],
             markers2: [
@@ -86,6 +89,7 @@ function ExampleController ($scope, $timeout, $log) {
             dynamicMarkers: [],
             randomMarkers: [],
             clickedMarker: {
+                title: 'You clicked here',
                 latitude: null,
                 longitude: null
             },
@@ -98,6 +102,7 @@ function ExampleController ($scope, $timeout, $log) {
 
                     if (!$scope.map.clickedMarker) {
                         $scope.map.clickedMarker = {
+                            title: 'You clicked here',
                             latitude: e.latLng.lat(),
                             longitude: e.latLng.lng()
                         };
