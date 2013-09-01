@@ -12,9 +12,9 @@
 			self = @
 			@restrict= 'ECMA'
 			@template= undefined
+			@require= undefined
 			@transclude= true
 			@priority= -100
-			@require = [ '^googleMap', '^marker' ]
 			@scope= {
 				labelContent: '=content',
 				labelAnchor: '@anchor',
@@ -23,5 +23,5 @@
 			}
 			@$log = directives.api.utils.Logger
 			@$timeout = $timeout
-		link: (scope, element, attrs, ctrls) =>
+		link: (scope, element, attrs, ctrl) =>
 			throw new Exception("Not Implemented!!")

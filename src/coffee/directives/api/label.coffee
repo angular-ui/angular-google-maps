@@ -7,12 +7,13 @@
 		constructor: ($timeout) ->
 			super($timeout)
 			self = @
+			@require = '^marker'
+			@template = '<span class="angular-google-maps-marker-label" ng-transclude></span>'
 			@$log.info(@)
-		link: (scope, element, attrs, ctrls) =>
+		link: (scope, element, attrs, ctrl) =>
 			@$timeout( =>
-				mapCtrl = ctrls[0].getMap()
-				markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1].getMarker() else undefined
-				if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
+				markerCtrl = ctrl.getMarker()
+				if markerCtrl?
 					label = new directives.api.models.child.MarkerLabelChildModel(markerCtrl, scope)
 				scope.$on("$destroy", => 
 					label.destroy()

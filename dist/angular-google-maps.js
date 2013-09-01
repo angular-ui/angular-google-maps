@@ -1445,9 +1445,9 @@
         self = this;
         this.restrict = 'ECMA';
         this.template = void 0;
+        this.require = void 0;
         this.transclude = true;
         this.priority = -100;
-        this.require = ['^googleMap', '^marker'];
         this.scope = {
           labelContent: '=content',
           labelAnchor: '@anchor',
@@ -1458,7 +1458,7 @@
         this.$timeout = $timeout;
       }
 
-      ILabel.prototype.link = function(scope, element, attrs, ctrls) {
+      ILabel.prototype.link = function(scope, element, attrs, ctrl) {
         throw new Exception("Not Implemented!!");
       };
 
@@ -1596,16 +1596,17 @@
         var self;
         Label.__super__.constructor.call(this, $timeout);
         self = this;
+        this.require = '^marker';
+        this.template = '<span class="angular-google-maps-marker-label" ng-transclude></span>';
         this.$log.info(this);
       }
 
-      Label.prototype.link = function(scope, element, attrs, ctrls) {
+      Label.prototype.link = function(scope, element, attrs, ctrl) {
         var _this = this;
         return this.$timeout(function() {
-          var label, mapCtrl, markerCtrl;
-          mapCtrl = ctrls[0].getMap();
-          markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
-          if (mapCtrl != null) {
+          var label, markerCtrl;
+          markerCtrl = ctrl.getMarker();
+          if (markerCtrl != null) {
             label = new directives.api.models.child.MarkerLabelChildModel(markerCtrl, scope);
           }
           return scope.$on("$destroy", function() {
