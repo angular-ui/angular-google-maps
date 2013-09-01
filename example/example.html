@@ -76,6 +76,7 @@
 				bounds="map.bounds"
 				events="map.events"
         		options="map.options">
+
 				<trafficlayer show="map.showTraffic" />
 
 				<markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'" doCluster="true">
@@ -100,6 +101,7 @@
 				<!-- prefedined markers -->
 				<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
 				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
+					<marker-label content="m.title" anchor="24 40" class="marker-labels" />
 					<window show="m.showWindow" closeClick="m.closeClick()">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
@@ -110,6 +112,7 @@
 				<!-- can not put google.map.animations.BOUNCE , since it is not initiaized yet -->
 				<div ng-init="opts = {animation:1}" >
 					<marker coords="map.clickedMarker" options="opts" >
+						<marker-label content="map.clickedMarker.title" anchor="24 40" class="marker-labels" />
 						<window isIconVisibleOnClick="false">This is my clicked marker!
 							<p class="muted">My marker will reappear when you close me.</p>
 						</window>

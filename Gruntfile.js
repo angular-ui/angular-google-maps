@@ -57,13 +57,15 @@ module.exports = function(grunt) {
       dist: {
         src: ['src/js/module.js',
               'tmp/output_coffee.js',
+              'src/js/controllers/polyline-display.js',
               'src/js/utils/markerclusterer-r438.js',
+              'src/js/utils/markerwithlabel-r1.1.9.js',
               'src/js/utils/LatLngArraySync.js', 
               'src/js/utils/MapEvents.js', 
-              'src/js/controllers/polyline-display.js',
               'src/js/directives/map.js',
               'src/js/directives/marker.js',
               'src/js/directives/markers.js',
+              'src/js/directives/label.js',
               'src/js/directives/polygon.js',
               'src/js/directives/polyline.js',
               'src/js/directives/window.js',
@@ -100,7 +102,7 @@ module.exports = function(grunt) {
 
     jshint: {
       all: ['Gruntfile.js', 'src/js/**/*.js', 'test/js/**/*.js'],
-      options: {ignores: ['src/js/utils/markerclusterer-r438.js']}
+      options: {ignores: ['src/js/utils/markerclusterer-r438.js', 'src/js/utils/markerwithlabel-r1.1.9.js']}
     },
 
     test: {
