@@ -8,6 +8,7 @@
 			@gMarkerManager = undefined
 			@scope = scope
 			@bigGulp =  directives.api.utils.AsyncProcessor
+			@$timeout = $timeout
 			@$log.info(@)
 
 		onTimeOut:(scope)=>

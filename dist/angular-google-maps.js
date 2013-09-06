@@ -376,7 +376,8 @@
           content: content,
           position: angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
         });
-      }
+      },
+      defaultDelay: 50
     };
   });
 
@@ -883,6 +884,8 @@
         var self,
           _this = this;
         self = this;
+        this.scope = scope;
+        this.element = element;
         if (this.validateScope(scope)) {
           return;
         }
@@ -1001,22 +1004,24 @@
         this.onDestroy = __bind(this.onDestroy, this);
         this.onWatch = __bind(this.onWatch, this);
         this.validateScope = __bind(this.validateScope, this);
-        var opts, self,
+        var self,
           _this = this;
         MarkerParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, mapCtrl.getMap());
-        this.gMarker = new google.maps.Marker(opts);
-        element.data('instance', this.gMarker);
-        this.scope = scope;
-        google.maps.event.addListener(this.gMarker, 'click', function() {
-          if (_this.doClick && (scope.click != null)) {
-            return $timeout(function() {
-              return _this.scope.click();
-            });
-          }
-        });
-        this.$log.info(this);
+        $timeout(function() {
+          var opts;
+          opts = _this.createMarkerOptions(_this.scope.coords, _this.scope.icon, _this.scope.options, _this.mapCtrl.getMap());
+          _this.gMarker = new google.maps.Marker(opts);
+          _this.element.data('instance', _this.gMarker);
+          google.maps.event.addListener(_this.gMarker, 'click', function() {
+            if (_this.doClick && (scope.click != null)) {
+              return $timeout(function() {
+                return _this.scope.click();
+              });
+            }
+          });
+          return _this.$log.info(_this);
+        }, directives.api.utils.GmapUtil.defaultDelay);
       }
 
       MarkerParentModel.prototype.validateScope = function(scope) {
@@ -1096,6 +1101,7 @@
         this.gMarkerManager = void 0;
         this.scope = scope;
         this.bigGulp = directives.api.utils.AsyncProcessor;
+        this.$timeout = $timeout;
         this.$log.info(this);
       }
 
@@ -1507,13 +1513,11 @@
         };
       }
 
-      IMarker.prototype.controller = {
-        controller: [
-          '$scope', '$element', function($scope, $element) {
-            throw new Exception("Not Implemented!!");
-          }
-        ]
-      };
+      IMarker.prototype.controller = [
+        '$scope', '$element', function($scope, $element) {
+          throw new Exception("Not Implemented!!");
+        }
+      ];
 
       IMarker.prototype.link = function(scope, element, attrs, ctrl) {
         throw new Exception("Not implemented!!");
@@ -1612,7 +1616,7 @@
           return scope.$on("$destroy", function() {
             return label.destroy();
           });
-        }, 50);
+        }, directives.api.utils.GmapUtil.defaultDelay + 25);
       };
 
       return Label;
@@ -1762,7 +1766,7 @@ not 1:1 in this setting.
           return scope.$on("$destroy", function() {
             return window.destroy();
           });
-        }, 50);
+        }, directives.api.utils.GmapUtil.defaultDelay + 25);
       };
 
       return Window;

@@ -18,6 +18,8 @@
 
 		constructor: (scope, element, attrs, mapCtrl,$timeout) ->
 			self = @
+			@scope = scope
+			@element = element
 			# Validate required properties
 			if (@validateScope(scope))
 				return

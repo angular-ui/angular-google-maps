@@ -8,18 +8,19 @@
 		constructor: (scope, element, attrs, mapCtrl,$timeout) ->
 			super(scope, element, attrs, mapCtrl,$timeout)
 			self = @
-			opts = @createMarkerOptions(scope.coords,scope.icon,scope.options,mapCtrl.getMap())
-			#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
-			@gMarker = new google.maps.Marker(opts)
-			element.data('instance', @gMarker)
-			@scope = scope
-			google.maps.event.addListener(@gMarker, 'click', =>
-				if @doClick and scope.click?
-					$timeout( =>
-						@scope.click()
-					)
-			)
-			@$log.info(@)
+			$timeout( =>
+				opts = @createMarkerOptions(@scope.coords,@scope.icon,@scope.options,@mapCtrl.getMap())
+				#using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
+				@gMarker = new google.maps.Marker(opts)
+				@element.data('instance', @gMarker)
+				google.maps.event.addListener(@gMarker, 'click', =>
+					if @doClick and scope.click?
+						$timeout( =>
+							@scope.click()
+						)
+				)
+				@$log.info(@)
+			,directives.api.utils.GmapUtil.defaultDelay)
 		
 		validateScope:(scope)=>
 			super(scope) or angular.isUndefined(scope.coords.latitude) or angular.isUndefined(scope.coords.longitude)

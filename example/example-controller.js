@@ -230,9 +230,17 @@ function ExampleController ($scope, $timeout, $log) {
         genRandomMarkers(numberOfMarkers,$scope);
     }
 
+    $scope.searchLocation = {
+        latitude: 30.1451,
+        longitude: -99.6680
+    };
     $scope.onMarkerClicked = onMarkerClicked
 
     $timeout(function () {
+        // $scope.searchLocation = {
+        // latitude: 30.0,
+        // longitude: -100
+        // };
         $scope.map.infoWindow.show = true;
         dynamicMarkers = [
                 {

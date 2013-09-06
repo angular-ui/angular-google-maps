@@ -30,4 +30,4 @@
 				scope.$on("$destroy", => 
 					window.destroy()
 				)
-			,50)
+			,directives.api.utils.GmapUtil.defaultDelay + 25)
