@@ -376,7 +376,8 @@
           content: content,
           position: angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
         });
-      }
+      },
+      defaultDelay: 50
     };
   });
 
@@ -883,6 +884,8 @@
         var self,
           _this = this;
         self = this;
+        this.scope = scope;
+        this.element = element;
         if (this.validateScope(scope)) {
           return;
         }
@@ -1007,10 +1010,9 @@
         self = this;
         $timeout(function() {
           var opts;
-          opts = _this.createMarkerOptions(scope.coords, scope.icon, scope.options, mapCtrl.getMap());
+          opts = _this.createMarkerOptions(_this.scope.coords, _this.scope.icon, _this.scope.options, _this.mapCtrl.getMap());
           _this.gMarker = new google.maps.Marker(opts);
-          element.data('instance', _this.gMarker);
-          _this.scope = scope;
+          _this.element.data('instance', _this.gMarker);
           google.maps.event.addListener(_this.gMarker, 'click', function() {
             if (_this.doClick && (scope.click != null)) {
               return $timeout(function() {
@@ -1019,7 +1021,7 @@
             }
           });
           return _this.$log.info(_this);
-        });
+        }, directives.api.utils.GmapUtil.defaultDelay);
       }
 
       MarkerParentModel.prototype.validateScope = function(scope) {
@@ -1099,6 +1101,7 @@
         this.gMarkerManager = void 0;
         this.scope = scope;
         this.bigGulp = directives.api.utils.AsyncProcessor;
+        this.$timeout = $timeout;
         this.$log.info(this);
       }
 
@@ -1613,7 +1616,7 @@
           return scope.$on("$destroy", function() {
             return label.destroy();
           });
-        }, 50);
+        }, directives.api.utils.GmapUtil.defaultDelay + 25);
       };
 
       return Label;
@@ -1763,7 +1766,7 @@ not 1:1 in this setting.
           return scope.$on("$destroy", function() {
             return window.destroy();
           });
-        }, 50);
+        }, directives.api.utils.GmapUtil.defaultDelay + 25);
       };
 
       return Window;

@@ -24,4 +24,6 @@
 						gMarker.getPosition() 
 					else 
 						new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
-			})	
+			})
+
+		defaultDelay:50
