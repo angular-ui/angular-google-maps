@@ -8,3 +8,5 @@ tmp/
 app/components
 /nbproject
 .idea
+.grunt
+_SpecRunner.html
