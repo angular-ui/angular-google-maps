@@ -11,7 +11,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-open');
   grunt.loadNpmTasks('grunt-mkdir');
   grunt.loadNpmTasks('grunt-contrib-coffee');
-
+  grunt.loadNpmTasks('grunt-contrib-jasmine');
 
   // Project configuration.
   grunt.initConfig({
@@ -131,7 +131,18 @@ module.exports = function(grunt) {
           base: 'example'
         }
       }
+    },
+    jasmine: {
+      taskName: {
+        src: 'dist/angular-google-maps.min.js',
+        options: {
+          specs: 'spec/*Spec.js',
+          helpers: 'spec/*Helper.js',
+          host: 'http://127.0.0.1:8000/',
+          template: require('grunt-template-jasmine-requirejs')
+        }
     }
+  }
   });
 
   grunt.registerTask('test', 'Execute unit tests', function () {
