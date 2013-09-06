@@ -23,7 +23,7 @@
 				click: '&click',
 				options: '=options'
 			}
-		controller: controller: ['$scope','$element', ($scope, $element) ->
+		controller: ['$scope','$element', ($scope, $element) ->
 			throw new Exception("Not Implemented!!")
 		]
 		link: (scope, element, attrs, ctrl) =>

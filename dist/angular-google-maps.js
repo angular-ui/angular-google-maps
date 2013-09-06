@@ -1001,22 +1001,25 @@
         this.onDestroy = __bind(this.onDestroy, this);
         this.onWatch = __bind(this.onWatch, this);
         this.validateScope = __bind(this.validateScope, this);
-        var opts, self,
+        var self,
           _this = this;
         MarkerParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, mapCtrl.getMap());
-        this.gMarker = new google.maps.Marker(opts);
-        element.data('instance', this.gMarker);
-        this.scope = scope;
-        google.maps.event.addListener(this.gMarker, 'click', function() {
-          if (_this.doClick && (scope.click != null)) {
-            return $timeout(function() {
-              return _this.scope.click();
-            });
-          }
+        $timeout(function() {
+          var opts;
+          opts = _this.createMarkerOptions(scope.coords, scope.icon, scope.options, mapCtrl.getMap());
+          _this.gMarker = new google.maps.Marker(opts);
+          element.data('instance', _this.gMarker);
+          _this.scope = scope;
+          google.maps.event.addListener(_this.gMarker, 'click', function() {
+            if (_this.doClick && (scope.click != null)) {
+              return $timeout(function() {
+                return _this.scope.click();
+              });
+            }
+          });
+          return _this.$log.info(_this);
         });
-        this.$log.info(this);
       }
 
       MarkerParentModel.prototype.validateScope = function(scope) {
@@ -1507,13 +1510,11 @@
         };
       }
 
-      IMarker.prototype.controller = {
-        controller: [
-          '$scope', '$element', function($scope, $element) {
-            throw new Exception("Not Implemented!!");
-          }
-        ]
-      };
+      IMarker.prototype.controller = [
+        '$scope', '$element', function($scope, $element) {
+          throw new Exception("Not Implemented!!");
+        }
+      ];
 
       IMarker.prototype.link = function(scope, element, attrs, ctrl) {
         throw new Exception("Not implemented!!");
