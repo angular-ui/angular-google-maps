@@ -111,5 +111,5 @@
 				if @gMarker? #this is possible due to AsyncProcessor in that we created some Children but no gMarker yet
 					@gMarkerManager.remove(@gMarker)
 					delete @gMarker
-				delete @
+				self = undefined
 			)

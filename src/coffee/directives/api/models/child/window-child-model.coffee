@@ -76,5 +76,5 @@
 			if(@scope? and @needToManualDestroy)
 				@scope.$destroy()
 			delete @gWin
-			delete @
+			self = undefined
 
