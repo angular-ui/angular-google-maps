@@ -55,10 +55,10 @@
 
 		onDestroy:(scope)=>
 			if @gMarker == undefined
-				delete @
+				self = undefined
 				return
 			#remove from gMaps and then free resources
 			@gMarker.setMap(null)
 			delete @gMarker
-			delete @
+			self = undefined
 

@@ -709,11 +709,12 @@
       MarkerChildModel.prototype.watchDestroy = function(scope) {
         var _this = this;
         return scope.$on("$destroy", function() {
+          var self;
           if (_this.gMarker != null) {
             _this.gMarkerManager.remove(_this.gMarker);
             delete _this.gMarker;
           }
-          return delete _this;
+          return self = void 0;
         });
       };
 
@@ -834,12 +835,13 @@
       };
 
       WindowChildModel.prototype.destroy = function() {
+        var self;
         this.hideWindow(this.gWin);
         if ((this.scope != null) && this.needToManualDestroy) {
           this.scope.$destroy();
         }
         delete this.gWin;
-        return delete this;
+        return self = void 0;
       };
 
       return WindowChildModel;
@@ -1061,13 +1063,14 @@
       };
 
       MarkerParentModel.prototype.onDestroy = function(scope) {
+        var self;
         if (this.gMarker === void 0) {
-          delete this;
+          self = void 0;
           return;
         }
         this.gMarker.setMap(null);
         delete this.gMarker;
-        return delete this;
+        return self = void 0;
       };
 
       return MarkerParentModel;
