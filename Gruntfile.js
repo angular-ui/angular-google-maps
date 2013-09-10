@@ -19,7 +19,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     clean: {
-      coffee: ['tmp/output_coffee.js'],
+      coffee: ['tmp/output_coffee.js', 'tmp'],
       dist: ['dist/*', 'tmp'],
       example: ['example/<%= pkg.name %>.js']
     },
@@ -45,7 +45,9 @@ module.exports = function(grunt) {
           'src/coffee/directives/api/models/child/*.coffee',
           'src/coffee/directives/api/models/parent/*.coffee',
           'src/coffee/directives/api/*.coffee',
-          'src/coffee/directives/*.coffee'] // concat then compile into single file
+          'src/coffee/directives/*.coffee'],
+          //specs
+          'tmp/spec/js/directives/api/utils/async-processor.spec.js':'spec/coffee/directives/api/utils/async-processor.spec.coffee'
         }
       }
     },
@@ -113,7 +115,7 @@ module.exports = function(grunt) {
       all: {
         options: { livereload: true },
         files: ['src/js/**/*.js','src/coffee/**/*.coffee','src/coffee/*.coffee'],
-        tasks: ['clean:example','coffee','concat:example'],
+        tasks: ['clean:example','coffee','concat:example','jasmine:pivotal:build'],
       },
     },
 
@@ -134,24 +136,30 @@ module.exports = function(grunt) {
     },
     jasmine: {
       taskName: {
-        src: 'dist/angular-google-maps.min.js',
+        src: ['lib/*.js','dist/angular-google-maps.js'],
         options: {
-          specs: 'spec/*Spec.js',
-          helpers: 'spec/*Helper.js',
-          host: 'http://127.0.0.1:8000/',
+          specs: ['spec/*.spec.js','spec/**/*.spec.js','spec/**/**/*-spec.js','spec/**/**/**/*.spec.js',
+          'tmp/spec/js/*/spec.js','tmp/spec/**/*.spec.js','tmp/spec/**/**/*-spec.js','tmp/spec/**/**/**/*.spec.js'
+          ],
+          helpers: ['spec/js/helpers/*.js','tmp/spec/js/helpers/*.js'],
+          // host: 'http://127.0.0.1:3000/',
           template: require('grunt-template-jasmine-requirejs')
         }
     }
   }
   });
-
-  grunt.registerTask('test', 'Execute unit tests', function () {
-    grunt.log.writeln('TODO task not implemented yet');
-  });
+  // Default task: build a release in dist/
+  grunt.registerTask('spec', ['clean:dist',
+                                 'jshint',
+                                 'mkdir',
+                                 'coffee',
+                                 'concat:dist',
+                                 'copy:dist',
+                                 'uglify',
+                                 'jasmine']);
 
   // Default task: build a release in dist/
   grunt.registerTask('default', ['clean:dist',
-                                 'test',
                                  'jshint',
                                  'mkdir',
                                  'coffee',
@@ -167,5 +175,6 @@ module.exports = function(grunt) {
                                  'connect:server',
                                  'open:example',
                                  'watch']);
+
 
 };
