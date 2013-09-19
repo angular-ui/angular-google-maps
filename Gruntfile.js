@@ -58,8 +58,8 @@ module.exports = function(grunt) {
         src: ['src/js/module.js',
               'tmp/output_coffee.js',
               'src/js/controllers/polyline-display.js',
-              'src/js/utils/markerclusterer-r438.js',
-              'src/js/utils/markerwithlabel-r1.1.9.js',
+              'src/js/utils/markerclusterer-2.0.16.js',
+              'src/js/utils/markerwithlabel-1.1.9.js',
               'src/js/utils/LatLngArraySync.js', 
               'src/js/utils/MapEvents.js', 
               'src/js/directives/map.js',
@@ -74,7 +74,7 @@ module.exports = function(grunt) {
         dest: 'tmp/output.js'
       },
       example: {
-        src: ['dist/angular-google-maps.min.js'],
+        src: ['dist/angular-google-maps.js'], //src: ['dist/angular-google-maps.min.js'], //use min for release, otherwise other for testing
         dest: 'example/<%= pkg.name %>.js'
       }
     },
@@ -102,7 +102,7 @@ module.exports = function(grunt) {
 
     jshint: {
       all: ['Gruntfile.js', 'src/js/**/*.js', 'test/js/**/*.js'],
-      options: {ignores: ['src/js/utils/markerclusterer-r438.js', 'src/js/utils/markerwithlabel-r1.1.9.js']}
+      options: {ignores: ['src/js/utils/markerclusterer-2.0.16.js', 'src/js/utils/markerwithlabel-1.1.9.js']}
     },
 
     test: {
