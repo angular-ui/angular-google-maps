@@ -17,6 +17,7 @@ not 1:1 in this setting.
 			@template = '<span class="angular-google-map-markers" ng-transclude></span>'
 			@scope.models = '=models'
 			@scope.doCluster= '=docluster'
+			@scope.clusterOptions= '=clusteroptions'
 			@$timeout = $timeout
 			@$log.info(@)
 		

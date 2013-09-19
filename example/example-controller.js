@@ -88,6 +88,7 @@ function ExampleController ($scope, $timeout, $log) {
             ],
             dynamicMarkers: [],
             randomMarkers: [],
+            doClusterRandomMarkers: true,
             clickedMarker: {
                 title: 'You clicked here',
                 latitude: null,

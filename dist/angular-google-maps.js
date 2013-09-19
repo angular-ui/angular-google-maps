@@ -1110,6 +1110,8 @@
 
       MarkersParentModel.prototype.onTimeOut = function(scope) {
         this.watch('models', scope);
+        this.watch('doCluster', scope);
+        this.watch('clusterOptions', scope);
         return this.createMarkers(scope);
       };
 
@@ -1124,12 +1126,14 @@
 
       MarkersParentModel.prototype.createMarkers = function(scope) {
         var _this = this;
-        if ((scope.doCluster != null) && scope.doCluster === true && this.gMarkerManager === void 0) {
-          this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap());
-        } else {
-          if (this.gMarkerManager === void 0) {
-            this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
+        if ((scope.doCluster != null) && scope.doCluster === true) {
+          if (scope.clusterOptions != null) {
+            this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), scope.clusterOptions);
+          } else {
+            this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap());
           }
+        } else {
+          this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
         }
         this.bigGulp.handleLargeArray(scope.models, function(model) {
           var child;
@@ -1701,6 +1705,7 @@ not 1:1 in this setting.
         this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
         this.scope.models = '=models';
         this.scope.doCluster = '=docluster';
+        this.scope.clusterOptions = '=clusteroptions';
         this.$timeout = $timeout;
         this.$log.info(this);
       }
@@ -1824,7 +1829,7 @@ not 1:1 in this setting.
 
 /**
  * @name MarkerClustererPlus for Google Maps V3
- * @version 2.0.15 [October 18, 2012]
+ * @version 2.0.16 [October 18, 2012]
  * @author Gary Little
  * @fileoverview
  * The library creates and manages per-zoom-level clusters for large amounts of markers.
