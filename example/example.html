@@ -20,7 +20,7 @@
 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700' rel='stylesheet' type='text/css'>
 
-  <style type="text/css">
+	<style type="text/css">
 	body {
 		font-family: 'Open Sans', sans-serif;
 	}
@@ -53,17 +53,17 @@
 		background-color: lightpink;
 	}
 
-  .marker-labels {
-    color: red;
-    background-color: white;
-    font-family: "Lucida Grande", "Arial", sans-serif;
-    font-size: 10px;
-    font-weight: bold;
-    text-align: center;
-    width: 40px;     
-    border: 2px solid black;
-    white-space: nowrap;
-  }
+	.marker-labels {
+		color: red;
+		background-color: white;
+		font-family: "Lucida Grande", "Arial", sans-serif;
+		font-size: 10px;
+		font-weight: bold;
+		text-align: center;
+		width: 40px;     
+		border: 2px solid black;
+		white-space: nowrap;
+	}
 
   /* uncomment this if you are using the <google-map> element instead of a div
   .angular-google-map {
@@ -88,16 +88,17 @@
 				dragging="map.dragging"
 				bounds="map.bounds"
 				events="map.events"
-        		options="map.options">
+				options="map.options">
 
 				<trafficlayer show="map.showTraffic" />
 
 				<marker coords="searchLocation">
 				</marker>
-				<markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'" doCluster="true">
-				</markers>
+				<markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'" 
+				doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
+			</markers>
 
-				<markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'">
+			<!-- 	<markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'">
 					<windows show="'showWindow'" closeClick="'closeClick'">
 						<p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
@@ -111,31 +112,31 @@
 						<p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
 					</windows>
-				</markers>
+				</markers> -->
 
 				<!-- prefedined markers -->
 				<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
-				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
+			<!-- 	<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
 					<marker-label content="m.title" anchor="22 0" class="marker-labels" />
 					<window show="m.showWindow" closeClick="m.closeClick()">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
 					</window>
-				</marker>
+				</marker> -->
 
 				<!-- marker for clicked position -->
 				<!-- can not put google.map.animations.BOUNCE , since it is not initiaized yet -->
-				<div ng-init="opts = {animation:1}" >
+			<!-- 	<div ng-init="opts = {animation:1}" >
 					<marker coords="map.clickedMarker" options="opts" >
 						<marker-label content="map.clickedMarker.title" anchor="24 40" class="marker-labels" />
 						<window isIconVisibleOnClick="false">This is my clicked marker!
 							<p class="muted">My marker will reappear when you close me.</p>
 						</window>
 					</marker>
-				</div>
+				</div> -->
 
 				<!--WINDOWS without markers-->
-				<window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false">
+				<!-- <window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false">
 					I should not be attached to a
 					marker.
 				</window>
@@ -143,7 +144,7 @@
 				<window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords" templateUrl="map.templatedInfoWindow.templateUrl" templateParameter="map.templatedInfoWindow.templateParameter">
 				</window>
 
-				<polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible' geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
+				<polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible' geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline> -->
 			</div>
 		</div>
 		<div class="span5">
@@ -159,6 +160,10 @@
 						<tr>	
 							<td>Generate Random Markers</td>
 							<td>
+								<div>Do Cluster?: <input type="checkbox" ng-model="map.doClusterRandomMarkers"> </div>
+								<div>Cluster Options: <input type="text" ng-model='map.clusterOptionsText'> 
+								<div>Use Ugly Cluster Image?: <input type="checkbox" ng-model="map.doUgly"> </div>
+								</div>
 								<div ng-init="numOfMarkers = 1000">
 									<input type="text" text="Number of Markers" ng-model="numOfMarkers">
 									<button ng-click="genRandomMarkers(numOfMarkers)">Generate</button>
