@@ -89,6 +89,9 @@ function ExampleController ($scope, $timeout, $log) {
             dynamicMarkers: [],
             randomMarkers: [],
             doClusterRandomMarkers: true,
+            doUgly: true, //great name :)
+            clusterOptions:{title:'Hi I am a Cluster!', gridSize:60, ignoreHidden:true,minimumClusterSize:2,
+                imageExtension:'png',imagePath:'http://localhost:3000/cluster',imageSizes:[72]},
             clickedMarker: {
                 title: 'You clicked here',
                 latitude: null,
@@ -226,10 +229,28 @@ function ExampleController ($scope, $timeout, $log) {
         $scope.map.randomMarkers.length = 0;
         $scope.map.clickedMarker = null;
     };
+    $scope.map.clusterOptionsText = JSON.stringify($scope.map.clusterOptions);
+    $scope.$watch('map.clusterOptionsText', function (newValue, oldValue) {
+        if(newValue !== oldValue)
+            $scope.map.clusterOptions = angular.fromJson($scope.map.clusterOptionsText);    
+    });
+
+     $scope.$watch('map.doUgly', function (newValue, oldValue) {
+        var json;
+        if(newValue !== oldValue){
+            if (newValue)
+                json = {title:'Hi I am a Cluster!', gridSize:60, ignoreHidden:true,minimumClusterSize:2,
+                    imageExtension:'png',imagePath:'http://localhost:3000/cluster',imageSizes:[72]};
+            else
+                json = {title:'Hi I am a Cluster!', gridSize:60, ignoreHidden:true,minimumClusterSize:2};
+            $scope.map.clusterOptions = json;
+            $scope.map.clusterOptionsText = angular.toJson(json);
+        }
+    });
 
     $scope.genRandomMarkers = function(numberOfMarkers) {
         genRandomMarkers(numberOfMarkers,$scope);
-    }
+    };
 
     $scope.searchLocation = {
         latitude: 30.1451,

@@ -128,7 +128,14 @@
         var self;
         ClustererMarkerManager.__super__.constructor.call(this);
         self = this;
-        this.clusterer = new MarkerClusterer(gMap);
+        this.opt_options = opt_options;
+        if ((opt_options != null) && opt_markers === void 0) {
+          this.clusterer = new MarkerClusterer(gMap, void 0, opt_options);
+        } else if ((opt_options != null) && (opt_markers != null)) {
+          this.clusterer = new MarkerClusterer(gMap, opt_markers, opt_options);
+        } else {
+          this.clusterer = new MarkerClusterer(gMap);
+        }
         this.clusterer.setIgnoreHidden(true);
         this.$log = directives.api.utils.Logger;
         this.noDrawOnSingleAddRemoves = true;
@@ -1128,7 +1135,13 @@
         var _this = this;
         if ((scope.doCluster != null) && scope.doCluster === true) {
           if (scope.clusterOptions != null) {
-            this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), scope.clusterOptions);
+            if (this.gMarkerManager === void 0) {
+              this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
+            } else {
+              if (this.gMarkerManager.opt_options !== scope.clusterOptions) {
+                this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
+              }
+            }
           } else {
             this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap());
           }

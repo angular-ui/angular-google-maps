@@ -27,7 +27,10 @@
 		createMarkers:(scope) =>
 			if scope.doCluster? and scope.doCluster == true
 				if scope.clusterOptions?
-					@gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap(),scope.clusterOptions)
+					if @gMarkerManager == undefined
+						@gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap(),undefined,scope.clusterOptions)
+					else
+						@gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap(),undefined,scope.clusterOptions) if @gMarkerManager.opt_options != scope.clusterOptions
 				else
 					@gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap())
 			else

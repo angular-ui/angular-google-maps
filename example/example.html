@@ -20,7 +20,7 @@
 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700' rel='stylesheet' type='text/css'>
 
-  <style type="text/css">
+	<style type="text/css">
 	body {
 		font-family: 'Open Sans', sans-serif;
 	}
@@ -53,17 +53,17 @@
 		background-color: lightpink;
 	}
 
-  .marker-labels {
-    color: red;
-    background-color: white;
-    font-family: "Lucida Grande", "Arial", sans-serif;
-    font-size: 10px;
-    font-weight: bold;
-    text-align: center;
-    width: 40px;     
-    border: 2px solid black;
-    white-space: nowrap;
-  }
+	.marker-labels {
+		color: red;
+		background-color: white;
+		font-family: "Lucida Grande", "Arial", sans-serif;
+		font-size: 10px;
+		font-weight: bold;
+		text-align: center;
+		width: 40px;     
+		border: 2px solid black;
+		white-space: nowrap;
+	}
 
   /* uncomment this if you are using the <google-map> element instead of a div
   .angular-google-map {
@@ -88,14 +88,15 @@
 				dragging="map.dragging"
 				bounds="map.bounds"
 				events="map.events"
-        		options="map.options">
+				options="map.options">
 
 				<trafficlayer show="map.showTraffic" />
 
 				<marker coords="searchLocation">
 				</marker>
-				<markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'" doCluster="map.doClusterRandomMarkers">
-				</markers>
+				<markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'" 
+				doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
+			</markers>
 
 			<!-- 	<markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'">
 					<windows show="'showWindow'" closeClick="'closeClick'">
@@ -160,6 +161,9 @@
 							<td>Generate Random Markers</td>
 							<td>
 								<div>Do Cluster?: <input type="checkbox" ng-model="map.doClusterRandomMarkers"> </div>
+								<div>Cluster Options: <input type="text" ng-model='map.clusterOptionsText'> 
+								<div>Use Ugly Cluster Image?: <input type="checkbox" ng-model="map.doUgly"> </div>
+								</div>
 								<div ng-init="numOfMarkers = 1000">
 									<input type="text" text="Number of Markers" ng-model="numOfMarkers">
 									<button ng-click="genRandomMarkers(numOfMarkers)">Generate</button>
