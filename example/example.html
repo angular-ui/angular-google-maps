@@ -7,9 +7,9 @@
 	<title>angular-google-maps example page</title>
 	<!--[if IE]>
 	<script>
-        window.html5 = {
-          'elements': 'marker window windows markers trafficlayer polyline'
-        };
+    window.html5 = {
+      'elements': 'marker window windows markers trafficlayer polyline'
+    };
 	</script>
 
 	<script src="es5-shim.js"></script>
@@ -19,7 +19,8 @@
 
 	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700' rel='stylesheet' type='text/css'>
-	<style>
+
+  <style type="text/css">
 	body {
 		font-family: 'Open Sans', sans-serif;
 	}
@@ -51,6 +52,18 @@
 	.false:hover {
 		background-color: lightpink;
 	}
+
+  .marker-labels {
+    color: red;
+    background-color: white;
+    font-family: "Lucida Grande", "Arial", sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    width: 40px;     
+    border: 2px solid black;
+    white-space: nowrap;
+  }
 
   /* uncomment this if you are using the <google-map> element instead of a div
   .angular-google-map {
@@ -103,7 +116,7 @@
 				<!-- prefedined markers -->
 				<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
 				<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
-					<marker-label content="m.title" anchor="24 40" class="marker-labels" />
+					<marker-label content="m.title" anchor="22 0" class="marker-labels" />
 					<window show="m.showWindow" closeClick="m.closeClick()">
 						<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 						<p class="muted">My marker will stay open when the window is popped up!</p>
