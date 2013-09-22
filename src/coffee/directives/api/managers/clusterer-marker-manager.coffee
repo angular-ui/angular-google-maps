@@ -3,7 +3,13 @@
 		constructor: (gMap,opt_markers,opt_options) ->
 			super()
 			self = @
-			@clusterer = new MarkerClusterer(gMap)
+			@opt_options = opt_options
+			if opt_options? and opt_markers == undefined
+				@clusterer = new MarkerClusterer(gMap,undefined,opt_options)
+			else if opt_options? and opt_markers?
+				@clusterer = new MarkerClusterer(gMap,opt_markers,opt_options)
+			else
+				@clusterer = new MarkerClusterer(gMap)
 			@clusterer.setIgnoreHidden(true)
 			@$log = directives.api.utils.Logger
 			@noDrawOnSingleAddRemoves = true

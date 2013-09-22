@@ -128,7 +128,14 @@
         var self;
         ClustererMarkerManager.__super__.constructor.call(this);
         self = this;
-        this.clusterer = new MarkerClusterer(gMap);
+        this.opt_options = opt_options;
+        if ((opt_options != null) && opt_markers === void 0) {
+          this.clusterer = new MarkerClusterer(gMap, void 0, opt_options);
+        } else if ((opt_options != null) && (opt_markers != null)) {
+          this.clusterer = new MarkerClusterer(gMap, opt_markers, opt_options);
+        } else {
+          this.clusterer = new MarkerClusterer(gMap);
+        }
         this.clusterer.setIgnoreHidden(true);
         this.$log = directives.api.utils.Logger;
         this.noDrawOnSingleAddRemoves = true;
@@ -1110,6 +1117,8 @@
 
       MarkersParentModel.prototype.onTimeOut = function(scope) {
         this.watch('models', scope);
+        this.watch('doCluster', scope);
+        this.watch('clusterOptions', scope);
         return this.createMarkers(scope);
       };
 
@@ -1124,12 +1133,20 @@
 
       MarkersParentModel.prototype.createMarkers = function(scope) {
         var _this = this;
-        if ((scope.doCluster != null) && scope.doCluster === true && this.gMarkerManager === void 0) {
-          this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap());
-        } else {
-          if (this.gMarkerManager === void 0) {
-            this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
+        if ((scope.doCluster != null) && scope.doCluster === true) {
+          if (scope.clusterOptions != null) {
+            if (this.gMarkerManager === void 0) {
+              this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
+            } else {
+              if (this.gMarkerManager.opt_options !== scope.clusterOptions) {
+                this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
+              }
+            }
+          } else {
+            this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap());
           }
+        } else {
+          this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
         }
         this.bigGulp.handleLargeArray(scope.models, function(model) {
           var child;
@@ -1701,6 +1718,7 @@ not 1:1 in this setting.
         this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
         this.scope.models = '=models';
         this.scope.doCluster = '=docluster';
+        this.scope.clusterOptions = '=clusteroptions';
         this.$timeout = $timeout;
         this.$log.info(this);
       }
@@ -1824,7 +1842,7 @@ not 1:1 in this setting.
 
 /**
  * @name MarkerClustererPlus for Google Maps V3
- * @version 2.0.15 [October 18, 2012]
+ * @version 2.0.16 [October 18, 2012]
  * @author Gary Little
  * @fileoverview
  * The library creates and manages per-zoom-level clusters for large amounts of markers.
