@@ -1,4 +1,4 @@
-describe "AsyncProcessor", ->
+describe "MarkerChildModel", ->
 	beforeEach( ->
 		@subject = directives.api.utils.AsyncProcessor
 	)

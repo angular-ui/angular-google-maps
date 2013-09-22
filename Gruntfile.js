@@ -58,21 +58,21 @@ module.exports = function(grunt) {
       },
       dist: {
         src: ['src/js/module.js',
-              'tmp/output_coffee.js',
-              'src/js/controllers/polyline-display.js',
-              'src/js/utils/markerclusterer-2.0.16.js',
-              'src/js/utils/markerwithlabel-1.1.9.js',
-              'src/js/utils/LatLngArraySync.js', 
-              'src/js/utils/MapEvents.js', 
-              'src/js/directives/map.js',
-              'src/js/directives/marker.js',
-              'src/js/directives/markers.js',
-              'src/js/directives/label.js',
-              'src/js/directives/polygon.js',
-              'src/js/directives/polyline.js',
-              'src/js/directives/window.js',
-              'src/js/directives/windows.js',
-              'src/js/directives/trafficlayer.js'],
+        'tmp/output_coffee.js',
+        'src/js/controllers/polyline-display.js',
+        'src/js/utils/markerclusterer-2.0.16.js',
+        'src/js/utils/markerwithlabel-1.1.9.js',
+        'src/js/utils/LatLngArraySync.js', 
+        'src/js/utils/MapEvents.js', 
+        'src/js/directives/map.js',
+        'src/js/directives/marker.js',
+        'src/js/directives/markers.js',
+        'src/js/directives/label.js',
+        'src/js/directives/polygon.js',
+        'src/js/directives/polyline.js',
+        'src/js/directives/window.js',
+        'src/js/directives/windows.js',
+        'src/js/directives/trafficlayer.js'],
         dest: 'tmp/output.js'
       },
       example: {
@@ -123,6 +123,9 @@ module.exports = function(grunt) {
     open: {
       example: {
         path: 'http://localhost:3000/example.html'
+      },
+      jasmine: {
+        path: 'http://localhost:3000/_SpecRunner.html'
       }
     },
 
@@ -137,45 +140,57 @@ module.exports = function(grunt) {
     },
     jasmine: {
       taskName: {
-        src: ['lib/*.js','dist/angular-google-maps.js'],
+        src: ['dist/angular-google-maps.js'],
         options: {
+          vendor:['http://maps.googleapis.com/maps/api/js?sensor=false&language=en','lib/*.js'],
           specs: ['spec/*.spec.js','spec/**/*.spec.js','spec/**/**/*-spec.js','spec/**/**/**/*.spec.js',
           'tmp/spec/js/*/spec.js','tmp/spec/**/*.spec.js','tmp/spec/**/**/*-spec.js','tmp/spec/**/**/**/*.spec.js'
           ],
           helpers: ['spec/js/helpers/*.js','tmp/spec/js/helpers/*.js'],
-          // host: 'http://127.0.0.1:3000/',
-          template: require('grunt-template-jasmine-requirejs')
+          template: require('grunt-template-jasmine-requirejs','grunt-template-jasmine-istanbul'),
+          templateOptions: {
+            coverage: 'spec/coverage/coverage.json',
+            report: 'spec/coverage',
+            thresholds: {
+              lines: 75,
+              statements: 75,
+              branches: 75,
+              functions: 90
+            }
+          }
         }
+      }
     }
-  }
   });
   // Default task: build a release in dist/
   grunt.registerTask('spec', ['clean:dist',
-                                 'jshint',
-                                 'mkdir',
-                                 'coffee',
-                                 'concat:dist',
-                                 'copy:dist',
-                                 'uglify',
-                                 'jasmine']);
+   'jshint',
+   'mkdir',
+   'coffee',
+   'concat:dist',
+   'copy:dist',
+   'uglify',
+   // 'connect:server',
+   // 'open:jasmine',
+   'jasmine']);
 
   // Default task: build a release in dist/
   grunt.registerTask('default', ['clean:dist',
-                                 'jshint',
-                                 'mkdir',
-                                 'coffee',
-                                 'concat:dist',
-                                 'copy:dist',
-                                 'uglify']);
+   'jshint',
+   'mkdir',
+   'coffee',
+   'concat:dist',
+   'copy:dist',
+   'uglify']);
 
   // Run the example page by creating a local copy of angular-google-maps.js
   // and running a webserver on port 3000 with livereload. Web page is opened
   // automatically in the default browser.
   grunt.registerTask('example', ['clean:example',
-                                 'concat:example',
-                                 'connect:server',
-                                 'open:example',
-                                 'watch']);
+   'concat:example',
+   'connect:server',
+   'open:example',
+   'watch']);
 
 
 };

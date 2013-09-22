@@ -32,7 +32,8 @@
     "grunt-contrib-watch": "~0.4.4",
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-jasmine":"~0.5.2",
-    "grunt-template-jasmine-requirejs":"~0.1.4"
+    "grunt-template-jasmine-requirejs":"~0.1.4",
+    "grunt-template-jasmine-istanbul":"~0.2.5"
   },
   "dependencies": {
     "grunt-cli": "~0.1.9",
