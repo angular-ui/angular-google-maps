@@ -172,8 +172,7 @@ module.exports = function(grunt) {
    'coffee',
    'concat:dist',
    'copy:dist',
-   'uglify',
-   // 'connect:server',
+   // 'connect:server', //hangs right now and runs specs only on command line
    // 'open:jasmine',
    'jasmine']);
 
@@ -184,7 +183,8 @@ module.exports = function(grunt) {
    'coffee',
    'concat:dist',
    'copy:dist',
-   'uglify']);
+   'uglify',
+   'jasmine']);
 
   // Run the example page by creating a local copy of angular-google-maps.js
   // and running a webserver on port 3000 with livereload. Web page is opened
