@@ -144,13 +144,13 @@ module.exports = function(grunt) {
       taskName: {
         src: ['dist/angular-google-maps.js'],
         options: {
-          keepRunner: true,
+          keepRunner: false,
           vendor:['http://maps.googleapis.com/maps/api/js?sensor=false&language=en','lib/*.js','dist/angular-google-maps.js'],
           specs: ['spec/*.spec.js','spec/**/*.spec.js','spec/**/**/*-spec.js','spec/**/**/**/*.spec.js',
           'tmp/spec/js/*/spec.js','tmp/spec/**/*.spec.js','tmp/spec/**/**/*-spec.js','tmp/spec/**/**/**/*.spec.js'
           ],
           helpers: ['tmp/spec/js/helpers/helpers.js'],
-          template: 'spec/templates/angular-google-maps.html',
+          template: require('grunt-template-jasmine-requirejs', 'spec/templates/angular-google-maps.html'),
           templateOptions: {
             coverage: 'spec/coverage/coverage.json',
             report: 'spec/coverage',
