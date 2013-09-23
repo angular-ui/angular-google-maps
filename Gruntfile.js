@@ -47,6 +47,8 @@ module.exports = function(grunt) {
           'src/coffee/directives/api/*.coffee',
           'src/coffee/directives/*.coffee'],
           //specs
+          'tmp/spec/js/helpers/helpers.js':'spec/coffee/helpers/*.coffee',
+          'tmp/spec/js/directives/api/models/child/children.spec.js':'spec/coffee/directives/api/models/child/*.spec.coffee',
           'tmp/spec/js/directives/api/utils/async-processor.spec.js':'spec/coffee/directives/api/utils/async-processor.spec.coffee'
         }
       }
@@ -142,12 +144,13 @@ module.exports = function(grunt) {
       taskName: {
         src: ['dist/angular-google-maps.js'],
         options: {
-          vendor:['http://maps.googleapis.com/maps/api/js?sensor=false&language=en','lib/*.js'],
+          keepRunner: true,
+          vendor:['http://maps.googleapis.com/maps/api/js?sensor=false&language=en','lib/*.js','dist/angular-google-maps.js'],
           specs: ['spec/*.spec.js','spec/**/*.spec.js','spec/**/**/*-spec.js','spec/**/**/**/*.spec.js',
           'tmp/spec/js/*/spec.js','tmp/spec/**/*.spec.js','tmp/spec/**/**/*-spec.js','tmp/spec/**/**/**/*.spec.js'
           ],
-          helpers: ['spec/js/helpers/*.js','tmp/spec/js/helpers/*.js'],
-          template: require('grunt-template-jasmine-requirejs','grunt-template-jasmine-istanbul'),
+          helpers: ['tmp/spec/js/helpers/helpers.js'],
+          template: 'spec/templates/angular-google-maps.html',
           templateOptions: {
             coverage: 'spec/coverage/coverage.json',
             report: 'spec/coverage',
