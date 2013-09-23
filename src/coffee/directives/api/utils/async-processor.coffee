@@ -6,20 +6,22 @@
 ###
 @ngGmapModule "directives.api.utils", ->
     @AsyncProcessor =
-            handleLargeArray:(array, callback, pausedCallBack ,chunk = 100, index = 0) ->
-                if array == undefined or array.length <= 0
-                    return
-                # set this to whatever number of items you can process at once
-                doChunk = () ->
-                    cnt = chunk
-                    i = index
+        handleLargeArray:(array, callback, pausedCallBack, doneCallBack ,chunk = 100, index = 0) ->
+            if array == undefined or array.length <= 0
+                return
+            # set this to whatever number of items you can process at once
+            doChunk = () ->
+                cnt = chunk
+                i = index
 
-                    while cnt-- and i < array.length
-                        # process array[index] here
-                        callback(array[i])
-                        ++i
-                    if i < array.length
-                        index = i
-                        pausedCallBack() if pausedCallBack?
-                        setTimeout(doChunk(), 1)
-                doChunk()
+                while cnt-- and i < array.length
+                    # process array[index] here
+                    callback(array[i])
+                    ++i
+                if i < array.length
+                    index = i
+                    pausedCallBack() if pausedCallBack?
+                    setTimeout(doChunk, 1)
+                else
+                    doneCallBack()
+            doChunk()

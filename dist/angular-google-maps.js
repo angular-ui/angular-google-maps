@@ -317,7 +317,7 @@
 (function() {
   this.ngGmapModule("directives.api.utils", function() {
     return this.AsyncProcessor = {
-      handleLargeArray: function(array, callback, pausedCallBack, chunk, index) {
+      handleLargeArray: function(array, callback, pausedCallBack, doneCallBack, chunk, index) {
         var doChunk;
         if (chunk == null) {
           chunk = 100;
@@ -341,7 +341,9 @@
             if (pausedCallBack != null) {
               pausedCallBack();
             }
-            return setTimeout(doChunk(), 1);
+            return setTimeout(doChunk, 1);
+          } else {
+            return doneCallBack();
           }
         };
         return doChunk();
@@ -1151,18 +1153,19 @@
         } else {
           this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
         }
-        this.bigGulp.handleLargeArray(scope.models, function(model) {
+        return this.bigGulp.handleLargeArray(scope.models, function(model) {
           var child;
           scope.doRebuild = true;
           child = new directives.api.models.child.MarkerChildModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.DEFAULTS, _this.doClick, _this.gMarkerManager);
           _this.markers.push(child);
           return _this.markersIndex++;
+        }, (function() {}), function() {
+          _this.gMarkerManager.draw();
+          if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
+            _this.fit();
+          }
+          return scope.markerModels = _this.markers;
         });
-        this.gMarkerManager.draw();
-        if (angular.isDefined(this.attrs.fit) && (scope.fit != null) && scope.fit) {
-          this.fit();
-        }
-        return scope.markerModels = this.markers;
       };
 
       MarkersParentModel.prototype.reBuildMarkers = function(scope) {
