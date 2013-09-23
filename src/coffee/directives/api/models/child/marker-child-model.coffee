@@ -3,7 +3,7 @@
 		@include directives.api.utils.GmapUtil
 		constructor:(index,model,parentScope,gMap,$timeout,defaults,doClick,gMarkerManager)->
 			@index = index
-			@gMarkerManager =  gMarkerManager
+			@gMarkerManager = gMarkerManager
 			@model = model
 			@defaults = defaults
 			@parentScope = parentScope
