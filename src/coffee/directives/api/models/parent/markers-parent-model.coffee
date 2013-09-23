@@ -15,6 +15,7 @@
 			@watch('models',scope)
 			@watch('doCluster',scope)
 			@watch('clusterOptions',scope)
+			@watch('fit',scope)
 			@createMarkers(scope)
 
 		validateScope:(scope)=>
@@ -44,6 +45,7 @@
 				@markersIndex++
 			)
 			@gMarkerManager.draw()
+			@fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit
 			#put MarkerModels into local scope
 			scope.markerModels = @markers
 
@@ -74,4 +76,15 @@
 			#this will require another attribute for destroySingle(marker)
 			model.destroy() for model in @markers
 			@gMarkerManager.clear() if @gMarkerManager?
+
+		fit:()=>
+			if (@mapCtrl and @markers? and @markers.length)
+				bounds = new google.maps.LatLngBounds();
+				everSet = false
+				_.each(@markers, (childModelMarker) =>
+					if childModelMarker.gMarker?
+						everSet = true unless everSet
+						bounds.extend(childModelMarker.gMarker.getPosition())
+				)
+				@mapCtrl.getMap().fitBounds(bounds) if everSet
 		

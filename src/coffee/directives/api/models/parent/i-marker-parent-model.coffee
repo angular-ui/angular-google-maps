@@ -20,6 +20,7 @@
 			self = @
 			@scope = scope
 			@element = element
+			@attrs = attrs
 			# Validate required properties
 			if (@validateScope(scope))
 				return

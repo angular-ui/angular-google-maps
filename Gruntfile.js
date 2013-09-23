@@ -78,8 +78,8 @@ module.exports = function(grunt) {
         dest: 'tmp/output.js'
       },
       example: {
-        //src: ['dist/angular-google-maps.js'], 
-        src: ['dist/angular-google-maps.min.js'], //use min for release, otherwise other for testing
+        src: ['dist/angular-google-maps.js'], 
+        // src: ['dist/angular-google-maps.min.js'], //use min for release, otherwise other for testing
         dest: 'example/<%= pkg.name %>.js'
       }
     },

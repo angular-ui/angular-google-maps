@@ -895,6 +895,7 @@
         self = this;
         this.scope = scope;
         this.element = element;
+        this.attrs = attrs;
         if (this.validateScope(scope)) {
           return;
         }
@@ -1097,6 +1098,7 @@
       __extends(MarkersParentModel, _super);
 
       function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
+        this.fit = __bind(this.fit, this);
         this.onDestroy = __bind(this.onDestroy, this);
         this.onWatch = __bind(this.onWatch, this);
         this.reBuildMarkers = __bind(this.reBuildMarkers, this);
@@ -1119,6 +1121,7 @@
         this.watch('models', scope);
         this.watch('doCluster', scope);
         this.watch('clusterOptions', scope);
+        this.watch('fit', scope);
         return this.createMarkers(scope);
       };
 
@@ -1156,6 +1159,9 @@
           return _this.markersIndex++;
         });
         this.gMarkerManager.draw();
+        if (angular.isDefined(this.attrs.fit) && (scope.fit != null) && scope.fit) {
+          this.fit();
+        }
         return scope.markerModels = this.markers;
       };
 
@@ -1202,6 +1208,26 @@
         }
         if (this.gMarkerManager != null) {
           return this.gMarkerManager.clear();
+        }
+      };
+
+      MarkersParentModel.prototype.fit = function() {
+        var bounds, everSet,
+          _this = this;
+        if (this.mapCtrl && (this.markers != null) && this.markers.length) {
+          bounds = new google.maps.LatLngBounds();
+          everSet = false;
+          _.each(this.markers, function(childModelMarker) {
+            if (childModelMarker.gMarker != null) {
+              if (!everSet) {
+                everSet = true;
+              }
+              return bounds.extend(childModelMarker.gMarker.getPosition());
+            }
+          });
+          if (everSet) {
+            return this.mapCtrl.getMap().fitBounds(bounds);
+          }
         }
       };
 
@@ -1719,6 +1745,7 @@ not 1:1 in this setting.
         this.scope.models = '=models';
         this.scope.doCluster = '=docluster';
         this.scope.clusterOptions = '=clusteroptions';
+        this.scope.fit = '=fit';
         this.$timeout = $timeout;
         this.$log.info(this);
       }

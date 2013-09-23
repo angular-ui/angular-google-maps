@@ -18,6 +18,7 @@ not 1:1 in this setting.
 			@scope.models = '=models'
 			@scope.doCluster= '=docluster'
 			@scope.clusterOptions= '=clusteroptions'
+			@scope.fit= '=fit'
 			@$timeout = $timeout
 			@$log.info(@)
 		
