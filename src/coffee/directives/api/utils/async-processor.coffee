@@ -8,6 +8,7 @@
     @AsyncProcessor =
         handleLargeArray:(array, callback, pausedCallBack, doneCallBack ,chunk = 100, index = 0) ->
             if array == undefined or array.length <= 0
+                doneCallBack()
                 return
             # set this to whatever number of items you can process at once
             doChunk = () ->

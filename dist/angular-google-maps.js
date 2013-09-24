@@ -326,6 +326,7 @@
           index = 0;
         }
         if (array === void 0 || array.length <= 0) {
+          doneCallBack();
           return;
         }
         doChunk = function() {
@@ -1314,12 +1315,13 @@
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
           if (newValue !== oldValue && newValue.length !== oldValue.length) {
-            _this.bigGulp.handleLargeArray(_this.windows, function(model) {
+            return _this.bigGulp.handleLargeArray(_this.windows, function(model) {
               return model.destroy();
+            }, (function() {}), function() {
+              _this.windows = [];
+              _this.windowsIndex = 0;
+              return _this.createChildScopesWindows();
             });
-            _this.windows = [];
-            _this.windowsIndex = 0;
-            return _this.createChildScopesWindows();
           }
         }, true);
       };
@@ -1327,12 +1329,13 @@
       WindowsParentModel.prototype.watchDestroy = function(scope) {
         var _this = this;
         return scope.$on("$destroy", function() {
-          _this.bigGulp.handleLargeArray(_this.windows, function(model) {
+          return _this.bigGulp.handleLargeArray(_this.windows, function(model) {
             return model.destroy();
+          }, (function() {}), function() {
+            delete _this.windows;
+            _this.windows = [];
+            return _this.windowsIndex = 0;
           });
-          delete _this.windows;
-          _this.windows = [];
-          return _this.windowsIndex = 0;
         });
       };
 
@@ -1370,8 +1373,8 @@
         }
         gMap = this.linked.ctrls[0].getMap();
         markersScope = this.linked.ctrls.length > 1 && (this.linked.ctrls[1] != null) ? this.linked.ctrls[1].getMarkersScope() : void 0;
-        modelsNotDefined = angular.isUndefined(this.linked.scope.models) || scope.models === void 0;
-        if (modelsNotDefined && (markersScope === void 0 || markersScope.markerModels === void 0 || markersScope.models === void 0)) {
+        modelsNotDefined = angular.isUndefined(this.linked.scope.models);
+        if (modelsNotDefined && (markersScope === void 0 || (markersScope.markerModels === void 0 && markersScope.models === void 0))) {
           this.$log.info("No models to create windows from! Need direct models or models derrived from markers!");
           return;
         }
@@ -1383,8 +1386,10 @@
               this.watchDestroy(this.linked.scope);
             }
             this.setContentKeys(this.linked.scope.models);
-            this.bigGulp.handleLargeArray(this.linked.scope.models, function(model) {
+            return this.bigGulp.handleLargeArray(this.linked.scope.models, function(model) {
               return _this.createWindow(model, void 0, gMap);
+            }, (function() {}), function() {
+              return _this.firstTime = false;
             });
           } else {
             this.models = markersScope.models;
@@ -1393,12 +1398,13 @@
               this.watchDestroy(markersScope);
             }
             this.setContentKeys(markersScope.models);
-            this.bigGulp.handleLargeArray(markersScope.markerModels, function(mm) {
+            return this.bigGulp.handleLargeArray(markersScope.markerModels, function(mm) {
               return _this.createWindow(mm.model, mm.gMarker, gMap);
+            }, (function() {}), function() {
+              return _this.firstTime = false;
             });
           }
         }
-        return this.firstTime = false;
       };
 
       WindowsParentModel.prototype.setContentKeys = function(models) {

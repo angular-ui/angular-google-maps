@@ -42,21 +42,24 @@
 				if (newValue != oldValue and newValue.length != oldValue.length) 
 					@bigGulp.handleLargeArray(@windows,(model) =>
 						model.destroy()
+					,(()->),() => #handle done callBack	
+						# delete @windows
+						@windows = []
+						@windowsIndex = 0
+						@createChildScopesWindows()
 					)
-					# delete @windows
-					@windows = []
-					@windowsIndex = 0
-					@createChildScopesWindows()
+					
 			, true)
 
 		watchDestroy:(scope)=>
 			scope.$on("$destroy", => 
 				@bigGulp.handleLargeArray(@windows,(model) =>
 					model.destroy()
+				,(()->),() => #handle done callBack	
+					delete @windows
+					@windows = []
+					@windowsIndex = 0
 				)
-				delete @windows
-				@windows = []
-				@windowsIndex = 0
 			)
 
 		watchOurScope:(scope) =>
@@ -80,9 +83,9 @@
 			gMap = @linked.ctrls[0].getMap()
 			markersScope = if @linked.ctrls.length > 1 and @linked.ctrls[1]? then @linked.ctrls[1].getMarkersScope() else undefined
 
-			modelsNotDefined = angular.isUndefined(@linked.scope.models) or scope.models == undefined
+			modelsNotDefined = angular.isUndefined(@linked.scope.models)
 			
-			if(modelsNotDefined and (markersScope == undefined or markersScope.markerModels == undefined or markersScope.models == undefined ))
+			if(modelsNotDefined and (markersScope == undefined or (markersScope.markerModels == undefined and markersScope.models == undefined)))
 				@$log.info("No models to create windows from! Need direct models or models derrived from markers!")
 				return
 			if gMap? 
@@ -96,6 +99,8 @@
 					@setContentKeys(@linked.scope.models) #only setting content keys once per model array
 					@bigGulp.handleLargeArray(@linked.scope.models,(model) =>
 						@createWindow(model,undefined,gMap)
+					,(()->),() => #handle done callBack
+						@firstTime = false
 					)
 				else
 					#creating windows with parent markers
@@ -106,8 +111,10 @@
 					@setContentKeys(markersScope.models) #only setting content keys once per model array
 					@bigGulp.handleLargeArray(markersScope.markerModels,(mm) =>
 						@createWindow(mm.model,mm.gMarker,gMap)
+					,(()->),() => #handle done callBack
+						@firstTime = false
 					)
-			@firstTime = false
+			
 
 		setContentKeys:(models)=>
 			if(models.length > 0)
