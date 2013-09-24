@@ -4109,14 +4109,16 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
             var mapArrayListener = mapEvents(mapArray,{
                'set_at':function(index){
                     var value = mapArray.getAt(index);
-                  if(value && value.lat && value.lng){
-                    scopeArray[index].latitude = value.lat();
-                    scopeArray[index].longitude = value.lng();
-                  }
+                  if (!value) return;
+                  if (!value.lng || !value.lat) return;
+                  scopeArray[index].latitude = value.lat();
+                  scopeArray[index].longitude = value.lng();
+                  
                },
                'insert_at':function(index){
                    var value = mapArray.getAt(index);
                    if (!value) return;
+                   if (!value.lng || !value.lat) return;
                    scopeArray.splice(index,0,{latitude:value.lat(),longitude:value.lng()});
                },
                'remove_at':function(index){
@@ -4816,12 +4818,17 @@ angular.module("google-maps")
 
                     pathSetAtListener = google.maps.event.addListener(polyPath, 'set_at',function(index){
                         var value = polyPath.getAt(index);
+                        if (!value) return;
+                        if (!value.lng || !value.lat) return;
                         scope.path[index].latitude = value.lat();
                         scope.path[index].longitude = value.lng();
                         scope.$apply();
+                        
                     });
                     pathInsertAtListener = google.maps.event.addListener(polyPath, 'insert_at',function(index){
                         var value = polyPath.getAt(index);
+                        if (!value) return;
+                        if (!value.lng || !value.lat) return;
                         scope.path.splice(index,0,{latitude:value.lat(),longitude:value.lng()});
                         scope.$apply();
                     });

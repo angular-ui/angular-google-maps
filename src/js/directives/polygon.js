@@ -169,12 +169,17 @@ angular.module("google-maps")
 
                     pathSetAtListener = google.maps.event.addListener(polyPath, 'set_at',function(index){
                         var value = polyPath.getAt(index);
+                        if (!value) return;
+                        if (!value.lng || !value.lat) return;
                         scope.path[index].latitude = value.lat();
                         scope.path[index].longitude = value.lng();
                         scope.$apply();
+                        
                     });
                     pathInsertAtListener = google.maps.event.addListener(polyPath, 'insert_at',function(index){
                         var value = polyPath.getAt(index);
+                        if (!value) return;
+                        if (!value.lng || !value.lat) return;
                         scope.path.splice(index,0,{latitude:value.lat(),longitude:value.lng()});
                         scope.$apply();
                     });
