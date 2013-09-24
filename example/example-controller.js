@@ -227,7 +227,12 @@ function ExampleController ($scope, $timeout, $log) {
         $scope.map.markers2.length = 0;
         $scope.map.dynamicMarkers.length = 0;
         $scope.map.randomMarkers.length = 0;
+        $scope.map.polylines.length = 0;
         $scope.map.clickedMarker = null;
+        $scope.searchLocation = null;
+        $scope.map.infoWindow.show = false;
+        $scope.map.templatedInfoWindow.show = false;
+        // $scope.map.infoWindow.coords = null;
     };
     $scope.map.clusterOptionsText = JSON.stringify($scope.map.clusterOptions);
     $scope.$watch('map.clusterOptionsText', function (newValue, oldValue) {

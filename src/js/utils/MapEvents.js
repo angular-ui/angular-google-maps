@@ -18,7 +18,12 @@ angular.module('google-maps').factory('add-events', ['$timeout',function($timeou
         });
 
         return function(){
-            angular.forEach(remove,function(fn){fn();});
+            angular.forEach(remove,function(fn){
+                if(_.isFunction(fn))
+                    fn();
+                if(fn.e !== null && _.isFunction(fn.e))
+                    fn.e();
+            });
             remove = null;
         };
     }

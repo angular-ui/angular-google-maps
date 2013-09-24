@@ -6,12 +6,15 @@ angular.module("google-maps")
 
             var mapArrayListener = mapEvents(mapArray,{
                'set_at':function(index){
-                   var value = mapArray.getAt(index);
-                   scopeArray[index].latitude = value.lat();
-                   scopeArray[index].longitude = value.lng();
+                    var value = mapArray.getAt(index);
+                  if(value && value.lat && value.lng){
+                    scopeArray[index].latitude = value.lat();
+                    scopeArray[index].longitude = value.lng();
+                  }
                },
                'insert_at':function(index){
                    var value = mapArray.getAt(index);
+                   if (!value) return;
                    scopeArray.splice(index,0,{latitude:value.lat(),longitude:value.lng()});
                },
                'remove_at':function(index){

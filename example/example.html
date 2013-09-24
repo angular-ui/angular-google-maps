@@ -105,6 +105,7 @@
         <polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'
                   geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
     </div>
+    <button class="btn btn-danger pull-right" ng-click="removeMarkers()">Clear Map</button>
 </div>
 <div class="span5">
     <fieldset>
@@ -288,7 +289,6 @@
             </tr>
             </tbody>
         </table>
-        <button class="btn btn-danger" ng-click="removeMarkers()">Clear markers</button>
     </fieldset>
 </div>
 </div>

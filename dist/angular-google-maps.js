@@ -536,7 +536,9 @@
       };
 
       MarkerLabelChildModel.prototype.destroy = function() {
-        return this.markerLabel.onRemove();
+        if ((this.markerLabel.labelDiv_.parentNode != null) && (this.markerLabel.eventDiv_.parentNode != null)) {
+          return this.markerLabel.onRemove();
+        }
       };
 
       return MarkerLabelChildModel;
@@ -3837,8 +3839,10 @@ MarkerLabel_.prototype.onAdd = function () {
  */
 MarkerLabel_.prototype.onRemove = function () {
   var i;
-  this.labelDiv_.parentNode.removeChild(this.labelDiv_);
-  this.eventDiv_.parentNode.removeChild(this.eventDiv_);
+  if (this.labelDiv_.parentNode !== null)
+    this.labelDiv_.parentNode.removeChild(this.labelDiv_);
+  if (this.eventDiv_.parentNode !== null)
+    this.eventDiv_.parentNode.removeChild(this.eventDiv_);
 
   // Remove event listeners:
   for (i = 0; i < this.listeners_.length; i++) {
@@ -4104,12 +4108,15 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 
             var mapArrayListener = mapEvents(mapArray,{
                'set_at':function(index){
-                   var value = mapArray.getAt(index);
-                   scopeArray[index].latitude = value.lat();
-                   scopeArray[index].longitude = value.lng();
+                    var value = mapArray.getAt(index);
+                  if(value && value.lat && value.lng){
+                    scopeArray[index].latitude = value.lat();
+                    scopeArray[index].longitude = value.lng();
+                  }
                },
                'insert_at':function(index){
                    var value = mapArray.getAt(index);
+                   if (!value) return;
                    scopeArray.splice(index,0,{latitude:value.lat(),longitude:value.lng()});
                },
                'remove_at':function(index){
@@ -4174,7 +4181,12 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
         });
 
         return function(){
-            angular.forEach(remove,function(fn){fn();});
+            angular.forEach(remove,function(fn){
+                if(_.isFunction(fn))
+                    fn();
+                if(fn.e !== null && _.isFunction(fn.e))
+                    fn.e();
+            });
             remove = null;
         };
     }

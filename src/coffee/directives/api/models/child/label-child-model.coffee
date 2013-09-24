@@ -62,4 +62,5 @@
 		draw:()=>
 			@markerLabel.draw()
 		destroy:()=>
-			@markerLabel.onRemove()
+			#bug in MarkerLabel_ so we will check it here and maybe submit a patch
+			@markerLabel.onRemove() if @markerLabel.labelDiv_.parentNode? and @markerLabel.eventDiv_.parentNode?
