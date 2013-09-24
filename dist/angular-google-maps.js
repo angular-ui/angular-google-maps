@@ -1505,6 +1505,7 @@
         var self;
         self = this;
         this.restrict = 'ECMA';
+        this.replace = true;
         this.template = void 0;
         this.require = void 0;
         this.transclude = true;
@@ -1556,6 +1557,7 @@
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         this.restrict = 'ECMA';
+        this.replace = true;
         this.require = '^googleMap';
         this.priority = -1;
         this.transclude = true;
@@ -1608,6 +1610,7 @@
         this.transclude = true;
         this.priority = -100;
         this.require = void 0;
+        this.replace = true;
         this.scope = {
           coords: '=coords',
           show: '=show',
@@ -4718,6 +4721,7 @@ angular.module("google-maps")
         return {
             restrict: 'ECA',
             require: '^googleMap',
+            replace: true,
             scope: {
                 path: '=path',
                 stroke: '=stroke',
@@ -4958,6 +4962,7 @@ angular.module("google-maps")
 
         return {
             restrict: 'ECA',
+            replace: true,
             require: '^googleMap',
             scope: {
                 path: '=path',

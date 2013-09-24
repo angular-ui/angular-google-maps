@@ -11,6 +11,7 @@
 		constructor: ($timeout) ->
 			self = @
 			@restrict= 'ECMA'
+			@replace = true
 			@template= undefined
 			@require= undefined
 			@transclude= true

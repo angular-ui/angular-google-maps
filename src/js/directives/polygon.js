@@ -86,6 +86,7 @@ angular.module("google-maps")
         return {
             restrict: 'ECA',
             require: '^googleMap',
+            replace: true,
             scope: {
                 path: '=path',
                 stroke: '=stroke',

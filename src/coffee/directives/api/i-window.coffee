@@ -10,6 +10,7 @@
 			@transclude= true
 			@priority= -100
 			@require = undefined
+			@replace = true
 			@scope= {
 				coords: '=coords',
 				show: '=show',
