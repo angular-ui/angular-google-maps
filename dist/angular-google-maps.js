@@ -565,6 +565,7 @@
         this.setIcon = __bind(this.setIcon, this);
         this.setCoords = __bind(this.setCoords, this);
         this.destroy = __bind(this.destroy, this);
+        this.maybeSetScopeValue = __bind(this.maybeSetScopeValue, this);
         this.createMarker = __bind(this.createMarker, this);
         this.setMyScope = __bind(this.setMyScope, this);
         var _this = this;

@@ -52,8 +52,8 @@ describe "MarkerChildModel", ->
 		it 'scope values are equal to the model values by key',->
 			#since evalHModelHandle does not use => and uses ->
 			#it is a prototype function which is more static, and kinda private.. as in not obvious to find
-			#2 ways to get to it instance.__proto__.function or classType.prototype.function
-			# equates to @subject.__proto_.evalModelHandle or directives.api.model.child.MarkerChildModel.prototype.evalModelHandle
+			#2 ways to get to it instance.__proto___.function or classType.prototype.function
+			# equates to @subject.__proto__.evalModelHandle or directives.api.model.child.MarkerChildModel.prototype.evalModelHandle
 			expect(@subject.__proto__.evalModelHandle(@model,@iconKey)).toEqual(@model.icon)
 			expect(@subject.__proto__.evalModelHandle(@model,@coordsKey)).toEqual(@model.coords)
 			expect(@subject.__proto__.evalModelHandle(@model,@optionsKey)).toEqual(@model.options)
@@ -73,6 +73,21 @@ describe "MarkerChildModel", ->
 			expect(@subject.__proto__.evalModelHandle(@model,'self')).toEqual(@model)
 		it 'modelKey of undefined returns undefined',->
 			expect(@subject.__proto__.evalModelHandle(@model,undefined)).toEqual(undefined)
+
+	describe 'maybeSetScopeValue()', ->	
+		beforeEach( ->
+			@gSetterCalled = false
+			@isInit = false
+			@gSetter = (scope)=>
+				@gSetterCalled = true
+		)
+		it "oldModel undefined, isInit false - changes scope's models value, and calls gSetter ",->
+			newModel = icon:'someIcon'
+			@subject.myScope.icon = 'junk'
+			@subject.maybeSetScopeValue('icon',newModel,undefined,@iconKey,
+				@subject.__proto__.evalModelHandle,@isInit,@gSetter)
+			expect(@gSetterCalled).toEqual(true)
+			expect(@subject.myScope.icon).toEqual(newModel.icon)
 
 
 	describe 'destroy()', ->

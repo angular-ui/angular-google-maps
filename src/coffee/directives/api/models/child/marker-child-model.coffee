@@ -50,7 +50,7 @@
 			else 
 				model[modelKey]
 
-		maybeSetScopeValue:(scopePropName,model,oldModel,modelKey,evaluate,isInit,gSetter = undefined) ->
+		maybeSetScopeValue:(scopePropName,model,oldModel,modelKey,evaluate,isInit,gSetter = undefined) =>
 			if oldModel == undefined
 				@myScope[scopePropName] = evaluate(model,modelKey)
 				unless isInit

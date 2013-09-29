@@ -181,9 +181,10 @@ module.exports = function(grunt) {
    'copy:dist',
    'connect:jasmineServer',
    'uglify',
-   'jasmine',
    'open:jasmine',
-   'watch']);
+   'watch',
+   'jasmine',
+   ]);
 
   // Default task: build a release in dist/
   grunt.registerTask('default', ['clean:dist',
