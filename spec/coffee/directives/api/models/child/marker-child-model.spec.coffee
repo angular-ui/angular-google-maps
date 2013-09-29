@@ -63,12 +63,14 @@ describe "MarkerChildModel", ->
 		it 'updates an existing models properties via watch, coords',->
 			@model.coords.latitude = 91
 			expect(@subject.__proto__.evalModelHandle(@model,@coordsKey)).toEqual(@model.coords)
+		it 'updates an existing models properties via watch, options',->
+			@model.options = 'options2'
+			expect(@subject.__proto__.evalModelHandle(@model,@optionsKey)).toEqual(@model.options)
+		it 'evalModelHandle, undefined model returns undefined',->
+			expect(@subject.__proto__.evalModelHandle(undefined,@optionsKey)).toEqual(undefined)
 
-		xit 'evalModelHandle, undefined model returns undefined',->
-
-		xit 'evalModelHandle modelKey of self returns model',->
-
-		xit 'evalModelHandle modelKey of !self returns model[modelKey]',->
+		it 'evalModelHandle modelKey of self returns model',->
+			expect(@subject.__proto__.evalModelHandle(@model,'self')).toEqual(@model)
 
 
 	describe 'destroy()', ->
