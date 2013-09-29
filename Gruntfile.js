@@ -127,7 +127,7 @@ module.exports = function(grunt) {
         path: 'http://localhost:3000/example.html'
       },
       jasmine: {
-        path: 'http://localhost:3000/_SpecRunner.html'
+        path: 'http://localhost:8080/_SpecRunner.html'
       }
     },
 
@@ -138,13 +138,20 @@ module.exports = function(grunt) {
           port: 3000,
           base: 'example'
         }
+      },
+      jasmineServer: {
+        options: {
+          hostname: '0.0.0.0',
+          port: 8080,
+          base: ''
+        }
       }
     },
     jasmine: {
       taskName: {
         src: ['dist/angular-google-maps.js'],
         options: {
-          keepRunner: false,
+          keepRunner: true,
           vendor:['http://maps.googleapis.com/maps/api/js?sensor=false&language=en','lib/*.js','dist/angular-google-maps.js'],
           specs: ['spec/*.spec.js','spec/**/*.spec.js','spec/**/**/*-spec.js','spec/**/**/**/*.spec.js',
           'tmp/spec/js/*/spec.js','tmp/spec/**/*.spec.js','tmp/spec/**/**/*-spec.js','tmp/spec/**/**/**/*.spec.js'
@@ -172,9 +179,11 @@ module.exports = function(grunt) {
    'coffee',
    'concat:dist',
    'copy:dist',
-   // 'connect:server', //hangs right now and runs specs only on command line
-   // 'open:jasmine',
-   'jasmine']);
+   'connect:jasmineServer',
+   'uglify',
+   'jasmine',
+   'open:jasmine',
+   'watch']);
 
   // Default task: build a release in dist/
   grunt.registerTask('default', ['clean:dist',

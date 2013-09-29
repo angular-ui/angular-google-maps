@@ -48,23 +48,27 @@ describe "MarkerChildModel", ->
 		expect(@subject.coordsKey).toEqual(@coordsKey)
 		expect(@subject.optionsKey).toEqual(@optionsKey)
 
-	it 'scope values are equal to the model values by key',->
-		#since evalHModelHandle does not use => and uses ->
-		#it is a prototype function which is more static, and kinda private.. as in not obvious to find
-		#2 ways to get to it instance.__proto__.function or classType.prototype.function
-		# equates to @subject.__proto_.evalModelHandle or directives.api.model.child.MarkerChildModel.prototype.evalModelHandle
-		expect(@subject.__proto__.evalModelHandle(@model,@iconKey)).toEqual(@model.icon)
-		expect(@subject.__proto__.evalModelHandle(@model,@coordsKey)).toEqual(@model.coords)
-		expect(@subject.__proto__.evalModelHandle(@model,@optionsKey)).toEqual(@model.options)
-	xit 'updates an existing models properties via watch, icon',->
-		@model.icon = 'test.png'
-		expect(@subject.__proto__.evalModelHandle(@model,@iconKey)).toEqual(@model.icon)
+	describe 'evalModelHandle()', ->	
+		it 'scope values are equal to the model values by key',->
+			#since evalHModelHandle does not use => and uses ->
+			#it is a prototype function which is more static, and kinda private.. as in not obvious to find
+			#2 ways to get to it instance.__proto__.function or classType.prototype.function
+			# equates to @subject.__proto_.evalModelHandle or directives.api.model.child.MarkerChildModel.prototype.evalModelHandle
+			expect(@subject.__proto__.evalModelHandle(@model,@iconKey)).toEqual(@model.icon)
+			expect(@subject.__proto__.evalModelHandle(@model,@coordsKey)).toEqual(@model.coords)
+			expect(@subject.__proto__.evalModelHandle(@model,@optionsKey)).toEqual(@model.options)
+		it 'updates an existing models properties via watch, icon',->
+			@model.icon = 'test.png'
+			expect(@subject.__proto__.evalModelHandle(@model,@iconKey)).toEqual(@model.icon)
+		it 'updates an existing models properties via watch, coords',->
+			@model.coords.latitude = 91
+			expect(@subject.__proto__.evalModelHandle(@model,@coordsKey)).toEqual(@model.coords)
 
-	xit 'evalModelHandle, undefined model returns undefined',->
+		xit 'evalModelHandle, undefined model returns undefined',->
 
-	xit 'evalModelHandle modelKey of self returns model',->
+		xit 'evalModelHandle modelKey of self returns model',->
 
-	xit 'evalModelHandle modelKey of !self returns model[modelKey]',->
+		xit 'evalModelHandle modelKey of !self returns model[modelKey]',->
 
 
 	describe 'destroy()', ->
