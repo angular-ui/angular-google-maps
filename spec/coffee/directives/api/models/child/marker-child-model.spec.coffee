@@ -66,11 +66,13 @@ describe "MarkerChildModel", ->
 		it 'updates an existing models properties via watch, options',->
 			@model.options = 'options2'
 			expect(@subject.__proto__.evalModelHandle(@model,@optionsKey)).toEqual(@model.options)
-		it 'evalModelHandle, undefined model returns undefined',->
+		it 'undefined model returns undefined',->
 			expect(@subject.__proto__.evalModelHandle(undefined,@optionsKey)).toEqual(undefined)
 
-		it 'evalModelHandle modelKey of self returns model',->
+		it 'modelKey of self returns model',->
 			expect(@subject.__proto__.evalModelHandle(@model,'self')).toEqual(@model)
+		it 'modelKey of undefined returns undefined',->
+			expect(@subject.__proto__.evalModelHandle(@model,undefined)).toEqual(undefined)
 
 
 	describe 'destroy()', ->
