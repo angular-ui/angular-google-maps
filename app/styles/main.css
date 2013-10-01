@@ -1,0 +1,49 @@
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+body {
+	background: #fff url('../images/light_wool.png') 0 0 repeat;
+}
+
+/** style for the map on the main page */
+.main .angular-google-map-container {
+	height: 400px;
+	margin-bottom: 30px;
+	border: 10px #fff solid;
+	box-shadow: 0 0 5px #ccc;
+}
+
+/* fix for Twitter Bootstrap handling of responsive images */
+.angular-google-map img {
+    max-width: inherit;
+}
+
+footer {
+	background: #333 url('../images/use_your_illusion.png') 0 0 repeat;
+	border-top: 1px #660000 solid;
+	color: #ddd;
+	padding-top: 40px;
+	padding-bottom: 40px;
+	margin-top: 40px;
+}
+
+footer .copyright {
+	margin-top: 60px;
+}
+
+.text-tiny {
+	font-size: 80%;
+}
+
+ol.steps {
+	margin-top: 40px;
+}
+
+ol.steps li {
+	margin-bottom: 30px;
+}
+
+ol.steps li pre {
+	margin-top: 10px;
+}
