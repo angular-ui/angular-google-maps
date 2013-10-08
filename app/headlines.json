@@ -1,0 +1,16 @@
+{
+	"items": [{
+			"title": "master branch moving to legacy soon",
+			"date": "Oct. 8 2013",
+			"content": "<p>For users of the current <code>master</code> branch, please note that it will renamed to <code>legacy</code> as soon as <code>r1-dev</code> has been completed and tagged as a release. The angular-google-maps website will reflect the api of the new <code>master</code> branch.</p>"
+		}, {
+			"title": "AngularJS 1.2 support",
+			"date": "Sept. 21 2013",
+			"content": "<p>angular-google-maps supports AngularJS 1.2 in the <code>r1-dev</code> branch, which will become the <code>master</code> branch once released.</p>"
+		}, {
+			"title": "Code overhaul",
+			"date": "May 11 2013",
+			"content": "<p>A new branch has been created which will be used to rewrite most of angular-google-maps and split it in separate directives. This will allow a simplified development process and easier overall integration in your projects.</p><p>Check out the <a href='https://github.com/nlaplante/angular-google-maps/tree/r1-dev'>r1-dev</a> branch now!"
+		}
+	]
+}
