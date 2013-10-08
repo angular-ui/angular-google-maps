@@ -47,3 +47,13 @@ ol.steps li {
 ol.steps li pre {
 	margin-top: 10px;
 }
+
+.btn.btn-large [class^="icon-"], .btn.btn-large [class*=" icon-"] {
+	display: inline-block;
+	width: 30px;
+	margin-top: 5px;
+}
+
+article {
+	margin-bottom: 20px;
+}
