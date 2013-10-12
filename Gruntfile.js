@@ -117,7 +117,8 @@ module.exports = function(grunt) {
     watch: {
       all: {
         options: { livereload: true },
-        files: ['src/js/**/*.js','src/coffee/**/*.coffee','src/coffee/*.coffee'],
+        files: ['src/js/**/*.js','src/coffee/**/*.coffee','src/coffee/*.coffee','tmp/spec/**/*.js','tmp/spec/*.js',
+        'tmp/spec/**/***/.js'],
         tasks: ['clean:example','coffee','concat:example','jasmine:pivotal:build'],
       },
     },

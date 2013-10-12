@@ -1,5 +1,5 @@
-describe "WindowChildModel", ->
-  beforeEach( ->
+describe("WindowChildModel", ->
+	beforeEach( ->
 		#dependencies
 		#(scope,opts,isIconVisibleOnClick,mapCtrl, markerCtrl,$http,$templateCache,$compile)
 		@scope = 
@@ -17,6 +17,7 @@ describe "WindowChildModel", ->
 		.value('mapCtrl',document.gMap)
 		.value('markerCtrl',@gMarker)
 		.value('opts',@windowOpts)
+		.value('needToManualDestroy',false)
 		.controller('childModel', directives.api.models.child.WindowChildModel)
 
 		angular.mock.module('mockModule')
@@ -26,8 +27,10 @@ describe "WindowChildModel", ->
 			_.extend(@scope,scope)
 			@subject = $controller('childModel', scope : scope )
 		)
-  )
+	)
 
-	it 'can be created', ->
+	it( 'can be created', ->
 		expect(@subject != undefined).toEqual(true)
 		expect(@subject.index).toEqual(@index)
+	)
+)
