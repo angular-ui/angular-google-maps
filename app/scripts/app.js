@@ -18,7 +18,7 @@ angular.module('angularGoogleMapsApp')
       })
       .when('/api', {
       	templateUrl: 'views/api.html',
-      	controller: 'ApiCtrl'
+      	controller: 'ApiCtrl',
       })
       .when('/demo', {
       	templateUrl: 'views/demo.html',

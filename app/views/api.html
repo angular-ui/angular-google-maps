@@ -5,7 +5,7 @@
 		<div class="well">
 			<ul class="nav nav-list">
 				<li class="nav-header">Directives</li>
-				<li ng-repeat='d in directives'><a href='/#!/api/{{ d }}'>{{ d }}</a></li>
+				<li ng-repeat='d in directives'><a href='/#!/api#{{ d }}'>{{ d }}</a></li>
 				<li class="nav-header">Services</li>
 			</ul>
 		</div>
@@ -14,5 +14,15 @@
 	<div class="span9">
 		<p>This is the API documentation. All information needed to use the various directives is present on this page.
 			Choose the directive you're interested in in the left panel to begin.</p>
+
+		<h2>Directives</h2>
+
+		<section ng-repeat='d in directives' id="{{ d }}">
+			<h3>{{ d }}</h3>
+
+			<ng-include src="viewUrl(d)"></ng-include>
+
+			<hr>
+		</section>
 	</div>
 </div>

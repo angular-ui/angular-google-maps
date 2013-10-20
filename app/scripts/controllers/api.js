@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('angularGoogleMapsApp')
-  .controller('ApiCtrl', function ($scope) {
+angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope, $anchorScroll, $timeout, $location) {
+
     $scope.directives = [
     	'google-map',
     	'marker',
@@ -13,4 +13,12 @@ angular.module('angularGoogleMapsApp')
     	'window',
     	'windows'
     ];
+
+
+
+    $scope.viewUrl = function (directive) {
+    	return 'views/directive/' + directive + '.html';
+    };
+
+	$anchorScroll();    
   });
