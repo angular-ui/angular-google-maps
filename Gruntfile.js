@@ -11,6 +11,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-mkdir');
     grunt.loadNpmTasks('grunt-contrib-coffee');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-template-jasmine-istanbul');
 
     // Project configuration.
     grunt.initConfig({
@@ -75,8 +76,8 @@ module.exports = function (grunt) {
                 dest: 'tmp/output.js'
             },
             example: {
-                src: ['dist/angular-google-maps.js'],
-                // src: ['dist/angular-google-maps.min.js'], //use min for release, otherwise other for testing
+                //src: ['dist/angular-google-maps.js'],
+                src: ['dist/angular-google-maps.min.js'], //use min for release, otherwise other for testing
                 dest: 'example/<%= pkg.name %>.js'
             }
         },
@@ -148,13 +149,14 @@ module.exports = function (grunt) {
             taskName: {
                 src: ['dist/angular-google-maps.js'],
                 options: {
-                    keepRunner: true,
+                    keepRunner: false,
                     vendor: ['http://maps.googleapis.com/maps/api/js?sensor=false&language=en', 'lib/*.js', 'dist/angular-google-maps.js'],
                     specs: ['spec/*.spec.js', 'spec/**/*.spec.js', 'spec/**/**/*-spec.js', 'spec/**/**/**/*.spec.js',
                         'tmp/spec/js/*/spec.js', 'tmp/spec/**/*.spec.js', 'tmp/spec/**/**/*-spec.js', 'tmp/spec/**/**/**/*.spec.js'
                     ],
                     helpers: ['tmp/spec/js/helpers/helpers.js'],
-                    template: require('grunt-template-jasmine-requirejs', 'spec/templates/angular-google-maps.html'),
+                    template: require('grunt-template-jasmine-istanbul',
+                            'grunt-template-jasmine-requirejs', 'spec/templates/angular-google-maps.html'),
                     templateOptions: {
                         coverage: 'spec/coverage/coverage.json',
                         report: 'spec/coverage',

@@ -10,3 +10,4 @@ app/components
 .idea
 .grunt
 _SpecRunner.html
+/spec/coverage
