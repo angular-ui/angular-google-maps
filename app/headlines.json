@@ -1,5 +1,9 @@
 {
 	"items": [{
+			"title": "New website in the works",
+			"date": "Oct. 20 2013",
+			"content": "<p>A brand new website for angular-google-maps is in the works. It will be more complete than the actual one and actually provide a complete API documentation as well as a quickstart guide. It will replace the existing site as soon as the next library version is released.</p>"
+		}, {
 			"title": "master branch moving to legacy soon",
 			"date": "Oct. 8 2013",
 			"content": "<p>For users of the current <code>master</code> branch, please note that it will renamed to <code>legacy</code> as soon as <code>r1-dev</code> has been completed and tagged as a release. The angular-google-maps website will reflect the api of the new <code>master</code> branch.</p>"
