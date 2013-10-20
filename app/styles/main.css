@@ -1,10 +1,127 @@
+@font-face {
+    font-family: 'bebas_neueregular';
+    src: url('BebasNeue-webfont.eot');
+    src: url('BebasNeue-webfont.eot?#iefix') format('embedded-opentype'),
+         url('BebasNeue-webfont.woff') format('woff'),
+         url('BebasNeue-webfont.ttf') format('truetype'),
+         url('BebasNeue-webfont.svg#bebas_neueregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'colaborate-boldregular';
+    src: url('colabbol-webfont.eot');
+    src: url('colabbol-webfont.eot?#iefix') format('embedded-opentype'),
+         url('colabbol-webfont.woff') format('woff'),
+         url('colabbol-webfont.ttf') format('truetype'),
+         url('colabbol-webfont.svg#colaborate-boldregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'colaboratelightregular';
+    src: url('colablig-webfont.eot');
+    src: url('colablig-webfont.eot?#iefix') format('embedded-opentype'),
+         url('colablig-webfont.woff') format('woff'),
+         url('colablig-webfont.ttf') format('truetype'),
+         url('colablig-webfont.svg#colaboratelightregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'colaborate-mediumregular';
+    src: url('colabmed-webfont.eot');
+    src: url('colabmed-webfont.eot?#iefix') format('embedded-opentype'),
+         url('colabmed-webfont.woff') format('woff'),
+         url('colabmed-webfont.ttf') format('truetype'),
+         url('colabmed-webfont.svg#colaborate-mediumregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'colaborate-thinregular';
+    src: url('colabthi-webfont.eot');
+    src: url('colabthi-webfont.eot?#iefix') format('embedded-opentype'),
+         url('colabthi-webfont.woff') format('woff'),
+         url('colabthi-webfont.ttf') format('truetype'),
+         url('colabthi-webfont.svg#colaborate-thinregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'colaborate-regularregular';
+    src: url('colabreg-webfont.eot');
+    src: url('colabreg-webfont.eot?#iefix') format('embedded-opentype'),
+         url('colabreg-webfont.woff') format('woff'),
+         url('colabreg-webfont.ttf') format('truetype'),
+         url('colabreg-webfont.svg#colaborate-regularregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'chunkfiveroman';
+    src: url('chunkfive-webfont.eot');
+    src: url('chunkfive-webfont.eot?#iefix') format('embedded-opentype'),
+         url('chunkfive-webfont.woff') format('woff'),
+         url('chunkfive-webfont.ttf') format('truetype'),
+         url('chunkfive-webfont.svg#chunkfiveroman') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
 }
 
 body {
 	background: #fff url('../images/light_wool.png') 0 0 repeat;
+	font-family: 'colaborate-regularregular';
 }
+
+h1 {
+	font-family: 'chunkfiveroman', 'bebas_neueregular';
+	font-size: 54px;
+	text-align: center;
+	font-weight: normal;
+}
+
+a.brand, h2, h3 {
+	font-family: 'chunkfiveroman', 'bebas_neueregular';
+	font-weight: normal;
+}
+
+/*h1:before {
+	content: "\f0a4";
+	font-family: 'FontAwesome';
+	font-size: 0.8em;
+	position: relative;
+	top: -5px;
+	left: -20px;
+	color: #999;
+}
+
+h1:after {
+	content: "\f0a5";
+	font-family: 'FontAwesome';
+	font-size: 0.8em;
+	position: relative;
+	top: -5px;
+	right: -20px;
+	color: #999;
+}*/
 
 /** style for the map on the main page */
 .main .angular-google-map-container {
@@ -25,7 +142,24 @@ footer {
 	color: #ddd;
 	padding-top: 40px;
 	padding-bottom: 40px;
-	margin-top: 40px;
+	margin-top: 60px;
+}
+
+/* github logo on footer */
+footer:before {
+	content: "\f09b";
+	font-family: "FontAwesome";
+	font-size: 80px;
+	position: relative;
+	top: 0px;
+	left: 50%;
+	margin-left: -40px;
+	width: 100%;
+	border-bottom: 1px #555 dotted;
+}
+
+footer > .container {
+	margin-top: 20px;
 }
 
 footer .copyright {
@@ -56,4 +190,11 @@ ol.steps li pre {
 
 article {
 	margin-bottom: 20px;
+}
+
+.nav-header {
+	margin-left: -20px !important;
+	margin-right: -20px !important;
+	background: #ddd;
+	margin-bottom: 9px !important;
 }
