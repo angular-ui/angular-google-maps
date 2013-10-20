@@ -21,10 +21,11 @@ angular.module('angularGoogleMapsApp')
 			var deferred = $q.defer();
 
     		$http({
+    			cache: true,
     			method: 'GET',
-    			url: api + '/collaborators' + (branch ? '?sha=' + branch : '')
+    			url: api + '/collaborators?callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
     		}).then(function (res) {
-    			deferred.resolve(res.data);
+    			deferred.resolve(res.data.data);
     		}, function (res) {
     			deferred.reject(res);
     		});
@@ -36,10 +37,11 @@ angular.module('angularGoogleMapsApp')
 			var deferred = $q.defer();
 
     		$http({
-    			method: 'GET',
-    			url: api + '/contributors' + (branch ? '?sha=' + branch : '')
+    			cache: true,
+    			method: 'JSONP',
+    			url: api + '/contributors?callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
     		}).then(function (res) {
-    			deferred.resolve(res.data);
+    			deferred.resolve(res.data.data);
     		}, function (res) {
     			deferred.reject(res);
     		});
@@ -52,10 +54,11 @@ angular.module('angularGoogleMapsApp')
     		var deferred = $q.defer();
 
     		$http({
-    			method: 'GET',
-    			url: api + '/commits' + (branch ? '?sha=' + branch : '')
+    			cache: true,
+    			method: 'JSONP',
+    			url: api + '/commits?callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
     		}).then(function (res) {
-    			deferred.resolve(res.data);
+    			deferred.resolve(res.data.data);
     		}, function (res) {
     			deferred.reject(res);
     		});
@@ -63,6 +66,22 @@ angular.module('angularGoogleMapsApp')
     		return deferred.promise;
     	};
 
+    	this.getIssuesCount = function () {
+
+    		var deferred = $q.defer();
+
+    		$http({
+    			cache: true,
+    			method: 'JSONP',
+    			url: api + '/issues?callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
+    		}).then(function (res) {
+    			deferred.resolve(res.data.data.length);
+    		}, function (res) {
+    			deferred.reject(res);
+    		});
+
+    		return deferred.promise;
+    	};
     }
 
     // Public API for configuration
