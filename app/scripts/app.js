@@ -32,12 +32,13 @@ angular.module('angularGoogleMapsApp')
   	$rootScope.$location = $location;
 
   	// GitHub api calls
-  	$q.all([$github.getCommits(), $github.getCollaborators(), $github.getContributors()])
+  	$q.all([$github.getCommits(), $github.getCollaborators(), $github.getContributors(), $github.getIssuesCount()])
   		.then(function (results) {
   		
 	  		var commits = results[0],
 	  			collaborators = results[1],
-	  			contributors = results[2];
+	  			contributors = results[2],
+	  			issuesCount = results[3];
 
 	  		angular.extend($rootScope, {
 	  			github: {
@@ -45,6 +46,7 @@ angular.module('angularGoogleMapsApp')
 	  					latest: _.first(commits),
 	  					all: commits
 	  				},
+	  				issuesCount: issuesCount,
 	  				collaborators: collaborators,
 	  				contributors: contributors
 	  			}

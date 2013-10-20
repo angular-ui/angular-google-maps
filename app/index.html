@@ -12,10 +12,10 @@
     <meta name="fragment" content="!">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
-    <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="styles/bootstrap.css">
+    <!-- build:css(.tmp) styles/main.css -->    
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
 </head>
@@ -38,7 +38,7 @@
 	    		<li ng-class="{'active': $location.path() == '/api'}"><a href="#!/api">API documentation</a></li>
 	    		<li ng-class="{'active': $location.path() == '/demo'}"><a href="#!/demo">Demo</a></li>
 	    		<li><a href="https://github.com/nlaplante/angular-google-maps"><i class="icon-github-alt"></i> Code</a></li>
-	    		<li><a href="https://github.com/nlaplante/angular-google-maps/issues?state=open"><i class="icon-github-alt"></i> Issue tracker</a></li>
+	    		<li><a href="https://github.com/nlaplante/angular-google-maps/issues?state=open"><i class="icon-github-alt"></i> Issue tracker ({{ github.issuesCount }})</a></li>
 	    		<li><a href="https://developers.google.com/maps/documentation/javascript/"><i class="icon-question-sign"></i> Google Maps Javascript API</a></li>
 
     		</ul>
@@ -54,16 +54,26 @@
 	<footer>
 		<div class="container">			
 			<div class="row" ng-show='github != null' ng-cloak>
-				<div class="span6">
+				<div class="span4">
 					<h3>Latest commit</h3>
 
 					{{ github.commits.latest.commit.committer.date | date:"MMM d, y h:mm:ss a Z" }}<br>
 					<a href="#!/">{{ github.commits.latest.author.login }}</a>
 					<p class="muted">{{ github.commits.latest.commit.message }}</p>
 					<a class="btn btn-small" href="{{ github.commits.latest.html_url }}">View on GitHub</a>
+
+					
+					
 				</div>
 
-				<div class="span6">
+				<div class="span4">
+					<h3>Issues</h3>
+					
+					<p><ng-pluralize count="github.issuesCount" when="{'0': 'No issues currently open! Yay!', '1': 'There is only one open issue!', 'other': 'There are {} open issues'}"></ng-pluralize>
+						<a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">View open issues</a>. </p>
+				</div>
+
+				<div class="span4">
 					<h3>Contributors &amp; collaborators</h3>
 					
 					<ul class="inline">
