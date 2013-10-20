@@ -41,8 +41,8 @@
 		<h2>Headlines</h2>
 
 		<article ng-repeat="headline in headlines">
-				<h4><small>{{ headline.date }}</small> {{ headline.title }}</h4>
-				<section ng-bind-html-unsafe="headline.content"></section>
+			<h4><small>{{ headline.date }}</small> {{ headline.title }}</h4>
+			<section ng-bind-html-unsafe="headline.content"></section>
 		</article>		
 	</section>
 </div>
