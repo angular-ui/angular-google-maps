@@ -36,6 +36,8 @@ function ExampleController ($scope, $timeout, $log) {
     angular.extend($scope, {
         map: {
             showTraffic: true,
+            showBicycling: false,
+            showWeather: false,
             center: {
                 latitude: 45,
                 longitude: -73

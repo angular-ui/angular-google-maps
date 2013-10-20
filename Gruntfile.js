@@ -71,7 +71,7 @@ module.exports = function (grunt) {
                     'src/js/directives/polyline.js',
                     'src/js/directives/window.js',
                     'src/js/directives/windows.js',
-                    'src/js/directives/trafficlayer.js'],
+                    'src/js/directives/layer.js'],
                 dest: 'tmp/output.js'
             },
             example: {

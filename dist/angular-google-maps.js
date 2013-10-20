@@ -1687,6 +1687,73 @@
 
 }).call(this);
 
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.ngGmapModule("directives.api", function() {
+    return this.Layer = (function(_super) {
+      __extends(Layer, _super);
+
+      function Layer($timeout) {
+        this.link = __bind(this.link, this);
+        this.$log = directives.api.utils.Logger;
+        this.$timeout = $timeout;
+        this.restrict = "ECMA";
+        this.require = "^googleMap";
+        this.priority = -1;
+        this.transclude = true;
+        this.template = '<span class=\"angular-google-map-layer\" ng-transclude></span>';
+        this.replace = true;
+        this.scope = {
+          show: "=show",
+          type: "=type",
+          namespace: "=namespace",
+          options: '=options'
+        };
+      }
+
+      Layer.prototype.link = function(scope, element, attrs, mapCtrl) {
+        var doShow, gMap, layer;
+        if (attrs.type == null) {
+          this.$log.info("type attribute for the layer directive is mandatory. Layer creation aborted!!");
+          return;
+        }
+        layer = attrs.namespace === void 0 ? new google.maps[attrs.type]() : new google.maps[attrs.namespace][attrs.type]();
+        gMap = void 0;
+        doShow = true;
+        this.$timeout(function() {
+          gMap = mapCtrl.getMap();
+          if (angular.isDefined(attrs.show)) {
+            doShow = scope.show;
+          }
+          if (doShow !== null && doShow && gMap !== null) {
+            layer.setMap(gMap);
+          }
+          return scope.$watch("show", function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              doShow = newValue;
+              if (newValue) {
+                return layer.setMap(gMap);
+              } else {
+                return layer.setMap(null);
+              }
+            }
+          }, true);
+        });
+        return scope.$on("$destroy", function() {
+          return layer.setMap(null);
+        });
+      };
+
+      return Layer;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
 /*
 	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
 	Thus there will be one html element per marker within the directive.
@@ -4562,7 +4629,7 @@ angular.module('google-maps')
 angular.module('google-maps').directive('marker', ['$timeout', function ($timeout) { 
 	return new directives.api.Marker($timeout);
 }]);
-;/**!
+; /**!
  * The MIT License
  *
  * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
@@ -5218,61 +5285,20 @@ angular.module("google-maps").directive("windows", ['$timeout','$compile', '$htt
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @authors: 
+ * @authors:
  *   - Nicolas Laplante https://plus.google.com/108189012221374960701
- *   - Nicholas McCready
+ *   - Nicholas McCready - https://twitter.com/nmccready
  */
 
 /**
- * Map TrafficLayer directive
+ * Map Layer directive
  *
- * This directive is used to create a TrafficLayer on an existing map.
+ * This directive is used to create any type of Layer from the google maps sdk.
  * This directive creates a new scope.
  *
  * {attribute show optional}  true (default) shows the trafficlayer otherwise it is hidden
  */
 
-angular.module('google-maps')
-    .directive('trafficlayer', ['$log', '$timeout', function ($log, $timeout) {
-        "use strict";
-        return {
-            restrict: 'ECMA',
-            require: '^googleMap',
-            priority: -1,
-            transclude: true,
-            template: '<span class="angular-google-map-trafficlayer" ng-transclude></span>',
-            replace: true,
-            scope: {
-                show: '=show' //not required and will default to true
-            },
-            link: function (scope, element, attrs, mapCtrl) {
-                var trafficLayer = new google.maps.TrafficLayer();
-                var gMap;
-                var doShow = true;
-                // Wrap marker initialization inside a $timeout() call to make sure the map is created already
-                $timeout(function () {
-                    gMap = mapCtrl.getMap();
-                    if (angular.isDefined(attrs.show))
-                        doShow = scope.show;
-                    if(doShow !== null && doShow && gMap !== null)                        
-                        trafficLayer.setMap(gMap);
-
-                    scope.$watch('show', function (newValue, oldValue) {
-                        if (newValue !== oldValue) {
-                            doShow = newValue;
-                            if (newValue)
-                                trafficLayer.setMap(gMap);
-                            else 
-                                trafficLayer.setMap(null);
-                            
-                        }
-                    }, true);
-
-                    // remove marker on scope $destroy
-                    scope.$on("$destroy", function () {
-                        trafficLayer.setMap(null);
-                    });
-                });
-            }
-        };
-    }]);
+angular.module('google-maps').directive('layer', ['$timeout', function($timeout){
+    return new directives.api.Layer($timeout);
+}]);

@@ -11,14 +11,15 @@
             'elements': 'marker window windows markers trafficlayer polyline marker-label ng-controller ng-repeat ng-init ng-model'
         };
 	</script>
-	
+
     <script src="https://rawgithub.com/bestiejs/json3/v3.2.5a/lib/json3.min.js"></script>
     <script src="https://rawgithub.com/kriskowal/es5-shim/v2.1.0/es5-shim.min.js"></script>
     <script src="https://rawgithub.com/jwmcpeak/EventShim/master/eventShim.js"></script>
     <script src="https://rawgithub.com/aFarkas/html5shiv/3.7.0/src/html5shiv.js"></script>
     <![endif]-->
 
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" type="text/css">
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet"
+          type="text/css">
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700'
           rel='stylesheet' type='text/css'>
     <link href="example.css" rel="stylesheet" type="text/css">
@@ -42,7 +43,9 @@
          events="map.events"
          options="map.options">
 
-        <trafficlayer show="map.showTraffic"></trafficlayer>
+        <layer type="TrafficLayer" show="map.showTraffic"></layer>
+        <layer type="BicyclingLayer" show="map.showBicycling"></layer>
+        <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>
 
         <marker coords="searchLocation">
         </marker>
@@ -72,19 +75,19 @@
         <!-- prefedined markers -->
         <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
         <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
-            <marker-label content="m.title" anchor="22 0" class="marker-labels" />
+            <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
             <window show="m.showWindow" closeClick="m.closeClick()">
                 <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 
                 <p class="muted">My marker will stay open when the window is popped up!</p>
             </window>
-         </marker>
+        </marker>
 
         <!-- marker for clicked position -->
         <!-- can not put google.map.animations.BOUNCE , since it is not initiaized yet -->
         <div ng-init="opts = {animation:1}">
             <marker coords="map.clickedMarker" options="opts">
-                <marker-label content="map.clickedMarker.title" anchor="24 40" class="marker-labels" />
+                <marker-label content="map.clickedMarker.title" anchor="24 40" class="marker-labels"/>
                 <window isIconVisibleOnClick="false">This is my clicked marker!
                     <p class="muted">My marker will reappear when you close me.</p>
                 </window>
@@ -112,27 +115,31 @@
         <table class="table">
             <tbody>
             <tr>
-            	<td>
-	                <ul>
-	                    <li class="dropdown">
-	                        <a class="dropdown-toggle"
-	                           data-toggle="dropdown"
-	                           href="#">
-	                            Products
-	                            <b class="caret"></b>
-	                        </a>
-	                        <ul class="dropdown-menu">
-	                            <li><a href="#">Consumer</a></li>
-	                            <li><a href="#>">Broadcast</a></li>
-	                        </ul>
+                <td>
+                    <ul>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle"
+                               data-toggle="dropdown"
+                               href="#">
+                                Products
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Consumer</a></li>
+                                <li><a href="#>">Broadcast</a></li>
+                            </ul>
 
-	                </ul>
-            	</td>
+                    </ul>
+                </td>
             </tr>
             <tr>
-                <td>TrafficLayer</td>
                 <td>
-                    <input type="checkbox" text="TrafficLayer On/Off" ng-model="map.showTraffic">
+                    <strong>Layers</strong>
+                </td>
+                <td>
+                    Traffic: <input type="checkbox" text="TrafficLayer On/Off" ng-model="map.showTraffic">
+                    Bicycling: <input type="checkbox" text="BicyclingLayer On/Off" ng-model="map.showBicycling">
+                    Weather: <input type="checkbox" text="Weather On/Off" ng-model="map.showWeather">
                 </td>
             </tr>
             <tr>
@@ -294,7 +301,7 @@
 </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en"></script>
+<script src="http://maps.googleapis.com/maps/api/js?libraries=weather&sensor=false&language=en&v=3.13"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.js"></script>
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script src="http://underscorejs.org/underscore-min.js"></script>

@@ -18,12 +18,12 @@
 			@priority = -1
 			@transclude = true
 			@replace = true
-			@scope = {
+			@scope =
 				coords: '=coords',
 				icon: '=icon',
 				click: '&click',
 				options: '=options'
-			}
+
 		controller: ['$scope','$element', ($scope, $element) ->
 			throw new Exception("Not Implemented!!")
 		]

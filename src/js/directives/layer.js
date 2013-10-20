@@ -1,4 +1,4 @@
- /**!
+/**!
  * The MIT License
  *
  * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
@@ -24,20 +24,20 @@
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @author Nicolas Laplante, Nicholas McCready https://plus.google.com/108189012221374960701
+ * @authors:
+ *   - Nicolas Laplante https://plus.google.com/108189012221374960701
+ *   - Nicholas McCready - https://twitter.com/nmccready
  */
 
 /**
- * Map marker directive
+ * Map Layer directive
  *
- * This directive is used to create a marker on an existing map.
+ * This directive is used to create any type of Layer from the google maps sdk.
  * This directive creates a new scope.
  *
- * {attribute coords required}  object containing latitude and longitude properties
- * {attribute icon optional}	string url to image used for marker icon
- * {attribute animate optional} if set to false, the marker won't be animated (on by default)
+ * {attribute show optional}  true (default) shows the trafficlayer otherwise it is hidden
  */
 
-angular.module('google-maps').directive('markers', ['$timeout', function ($timeout) { 
-	return new directives.api.Markers($timeout);
+angular.module('google-maps').directive('layer', ['$timeout', function($timeout){
+    return new directives.api.Layer($timeout);
 }]);
