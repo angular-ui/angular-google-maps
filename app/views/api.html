@@ -1,1 +1,18 @@
-<p>This is the api view.</p>
+<h1 class="page-header">API documentation</h1>
+
+<div class="row">
+	<div class="span3">
+		<div class="well">
+			<ul class="nav nav-list">
+				<li class="nav-header">Directives</li>
+				<li ng-repeat='d in directives'><a href='/#!/api/{{ d }}'>{{ d }}</a></li>
+				<li class="nav-header">Services</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="span9">
+		<p>This is the API documentation. All information needed to use the various directives is present on this page.
+			Choose the directive you're interested in in the left panel to begin.</p>
+	</div>
+</div>

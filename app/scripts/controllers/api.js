@@ -2,9 +2,15 @@
 
 angular.module('angularGoogleMapsApp')
   .controller('ApiCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
+    $scope.directives = [
+    	'google-map',
+    	'marker',
+    	'markers',
+    	'label',
+    	'polygon',
+    	'polyline',
+    	'trafficlayer',
+    	'window',
+    	'windows'
     ];
   });
