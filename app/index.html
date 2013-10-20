@@ -57,25 +57,6 @@
 		<div class="container">			
 			<div class="row" ng-show='github != null' ng-cloak>
 				<div class="span4">
-					<h3>Latest commit</h3>
-
-					{{ github.commits.latest.commit.committer.date | date:"MMM d, y h:mm:ss a Z" }}<br>
-					<a href="#!/">{{ github.commits.latest.author.login }}</a>
-					<p class="muted">{{ github.commits.latest.commit.message }}</p>
-					<a class="btn btn-small" href="{{ github.commits.latest.html_url }}">View on GitHub</a>
-
-					
-					
-				</div>
-
-				<div class="span4">
-					<h3>Issues</h3>
-					
-					<p><ng-pluralize count="github.issuesCount" when="{'0': 'No issues currently open! Yay!', '1': 'There is only one open issue!', 'other': 'There are {} open issues'}"></ng-pluralize>
-						<a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">View open issues</a>. </p>
-				</div>
-
-				<div class="span4">
 					<h3>Contributors &amp; collaborators</h3>
 					
 					<ul class="inline">
@@ -85,6 +66,23 @@
 
 					<p>Thanks to everyone above for your time and efforts on this project. All contributions are welcome!</p>
 				</div>
+
+				<div class="span4">
+					<h3>Latest commit</h3>
+
+					{{ github.commits.latest.commit.committer.date | date:"MMM d, y h:mm:ss a Z" }}<br>
+					<a href="#!/">{{ github.commits.latest.author.login }}</a>
+					<p class="muted">{{ github.commits.latest.commit.message }}</p>
+					<a class="btn btn-small" href="{{ github.commits.latest.html_url }}">View on GitHub</a>	
+					
+				</div>
+
+				<div class="span4">
+					<h3>Issues</h3>
+					
+					<p><ng-pluralize count="github.issuesCount" when="{'0': 'No issues currently open! Yay!', '1': 'There is only one open issue!', 'other': 'There are {} open issues'}"></ng-pluralize>
+						<a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">View open issues</a>. </p>
+				</div>				
 			</div>
 			<div class="row" ng-show='github == null' ng-cloak>
 				<div class="alert alert-block">
