@@ -22,7 +22,7 @@ angular.module('angularGoogleMapsApp')
 
     		$http({
     			cache: true,
-    			method: 'GET',
+    			method: 'JSONP',
     			url: api + '/collaborators?callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
     		}).then(function (res) {
     			deferred.resolve(res.data.data);
