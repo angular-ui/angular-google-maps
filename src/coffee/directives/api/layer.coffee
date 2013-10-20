@@ -16,27 +16,5 @@
                 options: '=options'
 
         link: (scope, element, attrs, mapCtrl) =>
-            unless attrs.type?
-                @$log.info("type attribute for the layer directive is mandatory. Layer creation aborted!!")
-                return
-            layer = if attrs.namespace == undefined then new google.maps[attrs.type]() else new google.maps[attrs.namespace][attrs.type]()
-            gMap = undefined
-            doShow = true
-
-            @$timeout ->
-                gMap = mapCtrl.getMap()
-                doShow = scope.show  if angular.isDefined(attrs.show)
-                layer.setMap gMap  if doShow isnt null and doShow and gMap isnt null
-                scope.$watch("show", (newValue, oldValue) ->
-                    if newValue isnt oldValue
-                        doShow = newValue
-                        if newValue
-                            layer.setMap gMap
-                        else
-                            layer.setMap null
-                , true)
-
-            # remove marker on scope $destroy
-            scope.$on "$destroy", ->
-                layer.setMap null
+            new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl,@$timeout)
 

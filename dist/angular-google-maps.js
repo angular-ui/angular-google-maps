@@ -999,6 +999,77 @@
 
 }).call(this);
 
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.ngGmapModule("directives.api.models.parent", function() {
+    return this.LayerParentModel = (function(_super) {
+      __extends(LayerParentModel, _super);
+
+      function LayerParentModel(scope, element, attrs, mapCtrl, $timeout, $log) {
+        var _this = this;
+        this.scope = scope;
+        this.element = element;
+        this.attrs = attrs;
+        this.mapCtrl = mapCtrl;
+        this.$timeout = $timeout;
+        this.$log = $log != null ? $log : directives.api.utils.Logger;
+        this.createGoogleLayer = __bind(this.createGoogleLayer, this);
+        if (this.attrs.type == null) {
+          this.$log.info("type attribute for the layer directive is mandatory. Layer creation aborted!!");
+          return;
+        }
+        this.createGoogleLayer();
+        this.gMap = void 0;
+        this.doShow = true;
+        this.$timeout(function() {
+          _this.gMap = mapCtrl.getMap();
+          if (angular.isDefined(_this.attrs.show)) {
+            _this.doShow = _this.scope.show;
+          }
+          if (_this.doShow !== null && _this.doShow && _this.Map !== null) {
+            _this.layer.setMap(_this.gMap);
+          }
+          _this.scope.$watch("show", function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              _this.doShow = newValue;
+              if (newValue) {
+                return _this.layer.setMap(_this.gMap);
+              } else {
+                return _this.layer.setMap(null);
+              }
+            }
+          }, true);
+          _this.scope.$watch("options", function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              _this.layer.setMap(null);
+              _this.layer = null;
+              return _this.createGoogleLayer();
+            }
+          }, true);
+          return _this.scope.$on("$destroy", function() {
+            return this.layer.setMap(null);
+          });
+        });
+      }
+
+      LayerParentModel.prototype.createGoogleLayer = function() {
+        if (this.attrs.options != null) {
+          return this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type]() : new google.maps[this.attrs.namespace][this.attrs.type]();
+        } else {
+          return this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type](this.scope.options) : new google.maps[this.attrs.namespace][this.attrs.type](this.scope.options);
+        }
+      };
+
+      return LayerParentModel;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
 /*
 	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
 	Thus there will be one html element per marker within the directive.
@@ -1715,36 +1786,7 @@
       }
 
       Layer.prototype.link = function(scope, element, attrs, mapCtrl) {
-        var doShow, gMap, layer;
-        if (attrs.type == null) {
-          this.$log.info("type attribute for the layer directive is mandatory. Layer creation aborted!!");
-          return;
-        }
-        layer = attrs.namespace === void 0 ? new google.maps[attrs.type]() : new google.maps[attrs.namespace][attrs.type]();
-        gMap = void 0;
-        doShow = true;
-        this.$timeout(function() {
-          gMap = mapCtrl.getMap();
-          if (angular.isDefined(attrs.show)) {
-            doShow = scope.show;
-          }
-          if (doShow !== null && doShow && gMap !== null) {
-            layer.setMap(gMap);
-          }
-          return scope.$watch("show", function(newValue, oldValue) {
-            if (newValue !== oldValue) {
-              doShow = newValue;
-              if (newValue) {
-                return layer.setMap(gMap);
-              } else {
-                return layer.setMap(null);
-              }
-            }
-          }, true);
-        });
-        return scope.$on("$destroy", function() {
-          return layer.setMap(null);
-        });
+        return new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout);
       };
 
       return Layer;
