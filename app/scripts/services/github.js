@@ -73,7 +73,7 @@ angular.module('angularGoogleMapsApp')
     		$http({
     			cache: true,
     			method: 'JSONP',
-    			url: api + '/issues?callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
+    			url: api + '/issues?callback=JSON_CALLBACK'
     		}).then(function (res) {
     			deferred.resolve(res.data.data.length);
     		}, function (res) {
