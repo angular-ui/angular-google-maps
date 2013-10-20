@@ -87,7 +87,7 @@
 }
 
 body {
-	background: #fff url('../images/light_wool.png') 0 0 repeat;
+	background: #fff;
 	font-family: 'colaborate-regularregular';
 }
 
@@ -137,7 +137,7 @@ h1:after {
 }
 
 footer {
-	background: #333 url('../images/use_your_illusion.png') 0 0 repeat;
+	background: #222;
 	border-top: 1px #660000 solid;
 	color: #ddd;
 	padding-top: 40px;
@@ -154,8 +154,6 @@ footer:before {
 	top: 0px;
 	left: 50%;
 	margin-left: -40px;
-	width: 100%;
-	border-bottom: 1px #555 dotted;
 }
 
 footer > .container {
