@@ -48,6 +48,7 @@ module.exports = function (grunt) {
                     'tmp/spec/js/oo/oo.spec.js': 'spec/coffee/oo/*.spec.coffee',
 
                     'tmp/spec/js/directives/api/models/child/children.spec.js': 'spec/coffee/directives/api/models/child/*.spec.coffee',
+                    'tmp/spec/js/directives/api/models/parent/parents.spec.js': 'spec/coffee/directives/api/models/parent/*.spec.coffee',
                     'tmp/spec/js/directives/api/utils/async-processor.spec.js': 'spec/coffee/directives/api/utils/async-processor.spec.coffee'
                 }
             }
@@ -76,8 +77,8 @@ module.exports = function (grunt) {
                 dest: 'tmp/output.js'
             },
             example: {
-                //src: ['dist/angular-google-maps.js'],
-                src: ['dist/angular-google-maps.min.js'], //use min for release, otherwise other for testing
+                src: ['dist/angular-google-maps.js'],
+//                src: ['dist/angular-google-maps.min.js'], //use min for release, otherwise other for testing
                 dest: 'example/<%= pkg.name %>.js'
             }
         },
@@ -149,17 +150,17 @@ module.exports = function (grunt) {
             taskName: {
                 src: ['dist/angular-google-maps.js'],
                 options: {
-                    keepRunner: false,
+                    keepRunner: true,
                     vendor: ['http://maps.googleapis.com/maps/api/js?sensor=false&language=en', 'lib/*.js', 'dist/angular-google-maps.js'],
                     specs: ['spec/*.spec.js', 'spec/**/*.spec.js', 'spec/**/**/*-spec.js', 'spec/**/**/**/*.spec.js',
                         'tmp/spec/js/*/spec.js', 'tmp/spec/**/*.spec.js', 'tmp/spec/**/**/*-spec.js', 'tmp/spec/**/**/**/*.spec.js'
                     ],
                     helpers: ['tmp/spec/js/helpers/helpers.js'],
-                    template: require('grunt-template-jasmine-istanbul',
+                    template: require(//'grunt-template-jasmine-istanbul',
                             'grunt-template-jasmine-requirejs', 'spec/templates/angular-google-maps.html'),
                     templateOptions: {
-                        coverage: 'spec/coverage/coverage.json',
-                        report: 'spec/coverage',
+//                        coverage: 'spec/coverage/coverage.json',
+//                        report: 'spec/coverage',
                         thresholds: {
                             lines: 75,
                             statements: 75,

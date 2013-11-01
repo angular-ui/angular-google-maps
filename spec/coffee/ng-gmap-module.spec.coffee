@@ -6,9 +6,13 @@ describe "ngGmapModule", ->
 @ngGmapModule "test", ->
     hidden = 10
     @open  = hidden
+@ngGmapModule "testWithoutFn"
+
 describe "ngGmapModule - creation tests", ->
     it "has no hidden", ->
         expect(test.hidden?).toEqual(false)
 
     it "has open", ->
         expect(test.open?).toEqual(true)
+    it "ng-module created without function", ->
+        expect(testWithoutFn?).toEqual(true)

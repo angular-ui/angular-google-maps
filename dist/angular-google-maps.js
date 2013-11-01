@@ -51,6 +51,9 @@
 })();;(function() {
   this.ngGmapModule = function(names, fn) {
     var space, _name;
+    if (fn == null) {
+      fn = function() {};
+    }
     if (typeof names === 'string') {
       names = names.split('.');
     }
@@ -417,19 +420,30 @@
 
 (function() {
   this.ngGmapModule("directives.api.utils", function() {
-    return this.Logger = {
+    var logger;
+    this.Logger = {
       logger: void 0,
       doLog: false,
       info: function(msg) {
-        if (directives.api.utils.Logger.doLog) {
-          if (directives.api.utils.Logger.logger != null) {
-            return directives.api.utils.Logger.logger.info(msg);
+        if (logger.doLog) {
+          if (logger.logger != null) {
+            return logger.logger.info(msg);
           } else {
             return console.info(msg);
           }
         }
+      },
+      error: function(msg) {
+        if (logger.doLog) {
+          if (logger.logger != null) {
+            return logger.logger.error(msg);
+          } else {
+            return console.error(msg);
+          }
+        }
       }
     };
+    return logger = this.Logger;
   });
 
 }).call(this);
@@ -900,14 +914,14 @@
           _this = this;
         self = this;
         this.scope = scope;
+        this.$log = directives.api.utils.Logger;
         this.element = element;
         this.attrs = attrs;
-        if (this.validateScope(scope)) {
+        if (!this.validateScope(scope)) {
           return;
         }
         this.doClick = angular.isDefined(attrs.click);
         this.mapCtrl = mapCtrl;
-        this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         if (scope.options != null) {
           this.DEFAULTS = scope.options;
@@ -927,8 +941,11 @@
 
       IMarkerParentModel.prototype.validateScope = function(scope) {
         var ret;
-        ret = angular.isUndefined(scope.coords) || scope.coords === void 0;
-        if (ret) {
+        if (scope == null) {
+          return false;
+        }
+        ret = scope.coords != null;
+        if (!ret) {
           this.$log.error(this.constructor.name + ": no valid coords attribute found");
         }
         return ret;
@@ -1112,7 +1129,14 @@
       }
 
       MarkerParentModel.prototype.validateScope = function(scope) {
-        return MarkerParentModel.__super__.validateScope.call(this, scope) || angular.isUndefined(scope.coords.latitude) || angular.isUndefined(scope.coords.longitude);
+        if (scope == null) {
+          return false;
+        }
+        if (scope.coords != null) {
+          return MarkerParentModel.__super__.validateScope.call(this, scope) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
+        } else {
+          return MarkerParentModel.__super__.validateScope.call(this, scope);
+        }
       };
 
       MarkerParentModel.prototype.onWatch = function(propNameToWatch, scope) {
