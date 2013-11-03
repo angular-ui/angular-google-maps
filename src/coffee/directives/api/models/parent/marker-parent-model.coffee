@@ -8,26 +8,19 @@
         constructor: (scope, element, attrs, mapCtrl, $timeout) ->
             super(scope, element, attrs, mapCtrl, $timeout)
             self = @
-            $timeout(=>
-                opts = @createMarkerOptions(@scope.coords, @scope.icon, @scope.options, @mapCtrl.getMap())
-                #using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
-                @gMarker = new google.maps.Marker(opts)
-                @element.data('instance', @gMarker)
-                google.maps.event.addListener(@gMarker, 'click', =>
-                    if @doClick and scope.click?
-                        $timeout(=>
-                            @scope.click()
-                        )
-                )
-                @$log.info(@)
-            , directives.api.utils.GmapUtil.defaultDelay)
 
-        validateScope: (scope)=>
-            return false unless scope?
-            if scope.coords?
-                super(scope) and scope.coords.latitude? and scope.coords.longitude?
-            else
-                super(scope)
+        onTimeOut:(scope)=>
+            opts = @createMarkerOptions(scope.coords, scope.icon, scope.options, @mapCtrl.getMap())
+            #using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
+            @gMarker = new google.maps.Marker(opts)
+            @element.data('instance', @gMarker)
+            google.maps.event.addListener(@gMarker, 'click', =>
+                if @doClick and scope.click?
+                    $timeout(=>
+                        @scope.click()
+                    )
+            )
+            @$log.info(@)
 
         onWatch: (propNameToWatch, scope) =>
             switch propNameToWatch

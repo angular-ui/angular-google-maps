@@ -822,7 +822,9 @@
         var _this = this;
         if (this.markerCtrl != null) {
           google.maps.event.addListener(this.markerCtrl, 'click', function() {
-            _this.gWin.setPosition(_this.markerCtrl.getPosition());
+            var pos;
+            pos = _this.markerCtrl.getPosition();
+            _this.gWin.setPosition(pos);
             _this.gWin.open(_this.mapCtrl);
             return _this.markerCtrl.setVisible(_this.isIconVisibleOnClick);
           });
@@ -1107,36 +1109,26 @@
       function MarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
         this.onDestroy = __bind(this.onDestroy, this);
         this.onWatch = __bind(this.onWatch, this);
-        this.validateScope = __bind(this.validateScope, this);
-        var self,
-          _this = this;
+        this.onTimeOut = __bind(this.onTimeOut, this);
+        var self;
         MarkerParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        $timeout(function() {
-          var opts;
-          opts = _this.createMarkerOptions(_this.scope.coords, _this.scope.icon, _this.scope.options, _this.mapCtrl.getMap());
-          _this.gMarker = new google.maps.Marker(opts);
-          _this.element.data('instance', _this.gMarker);
-          google.maps.event.addListener(_this.gMarker, 'click', function() {
-            if (_this.doClick && (scope.click != null)) {
-              return $timeout(function() {
-                return _this.scope.click();
-              });
-            }
-          });
-          return _this.$log.info(_this);
-        }, directives.api.utils.GmapUtil.defaultDelay);
       }
 
-      MarkerParentModel.prototype.validateScope = function(scope) {
-        if (scope == null) {
-          return false;
-        }
-        if (scope.coords != null) {
-          return MarkerParentModel.__super__.validateScope.call(this, scope) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
-        } else {
-          return MarkerParentModel.__super__.validateScope.call(this, scope);
-        }
+      MarkerParentModel.prototype.onTimeOut = function(scope) {
+        var opts,
+          _this = this;
+        opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap());
+        this.gMarker = new google.maps.Marker(opts);
+        this.element.data('instance', this.gMarker);
+        google.maps.event.addListener(this.gMarker, 'click', function() {
+          if (_this.doClick && (scope.click != null)) {
+            return $timeout(function() {
+              return _this.scope.click();
+            });
+          }
+        });
+        return this.$log.info(this);
       };
 
       MarkerParentModel.prototype.onWatch = function(propNameToWatch, scope) {
@@ -1947,7 +1939,7 @@ not 1:1 in this setting.
       Window.prototype.link = function(scope, element, attrs, ctrls) {
         var _this = this;
         return this.$timeout(function() {
-          var defaults, isIconVisibleOnClick, mapCtrl, markerCtrl, opts, window;
+          var defaults, hasScopeCoords, isIconVisibleOnClick, mapCtrl, markerCtrl, opts, window;
           isIconVisibleOnClick = true;
           if (angular.isDefined(attrs.isiconvisibleonclick)) {
             isIconVisibleOnClick = scope.isIconVisibleOnClick;
@@ -1955,7 +1947,8 @@ not 1:1 in this setting.
           mapCtrl = ctrls[0].getMap();
           markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
           defaults = scope.options != null ? scope.options : {};
-          opts = _this.createWindowOptions(markerCtrl, scope, element.html(), defaults);
+          hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
+          opts = (markerCtrl != null) && hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : {};
           if (mapCtrl != null) {
             window = new directives.api.models.child.WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile);
           }

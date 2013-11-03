@@ -41,6 +41,6 @@ describe "MarkerParentModel", ->
         it 'returns fals with scope.coords undefined', ->
             expect(@subject.validateScope({coords:undefined})).toEqual(false)
         it 'returns fals with scope.coords,latitude undefined', ->
-            expect(@subject.validateScope({coords:{latitude:undefined,longitude:{}}})).toEqual(false)
+            expect(@subject.validateScope({coords:{latitude:undefined,longitude:{}}})).toEqual(true)
         it 'returns fals with scope.coords.longtitude undefined', ->
-            expect(@subject.validateScope({coords:{latitude:{},longitude:undefined }})).toEqual(false)
+            expect(@subject.validateScope({coords:{latitude:{},longitude:undefined }})).toEqual(true)
