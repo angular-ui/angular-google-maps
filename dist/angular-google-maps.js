@@ -491,8 +491,6 @@
           return self.markerLabel.setMap(theMap);
         });
         this.marker.setMap(this.marker.getMap());
-        this.$log = directives.api.utils.Logger;
-        this.$log.info(this);
       }
 
       MarkerLabelChildModel.prototype.getSharedCross = function(crossUrl) {
@@ -1171,6 +1169,85 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   this.ngGmapModule("directives.api.models.parent", function() {
+    return this.MarkersLabelsParentModel = (function(_super) {
+      __extends(MarkersLabelsParentModel, _super);
+
+      function MarkersLabelsParentModel(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate) {
+        var self,
+          _this = this;
+        this.scope = scope;
+        this.element = element;
+        this.attrs = attrs;
+        this.ctrls = ctrls;
+        this.$timeout = $timeout;
+        this.$compile = $compile;
+        this.$http = $http;
+        this.$templateCache = $templateCache;
+        this.$interpolate = $interpolate;
+        this.watchForRebuild = __bind(this.watchForRebuild, this);
+        this.createChildMarkerLabels = __bind(this.createChildMarkerLabels, this);
+        self = this;
+        this.labels = [];
+        this.bigGulp = directives.api.utils.AsyncProcessor;
+        this.markersScope = this.ctrls[0].getMarkersScope();
+        this.$log = directives.api.utils.Logger;
+        this.$log.info(self);
+        this.$timeout(function() {
+          _this.createChildMarkerLabels();
+          return _this.watchForRebuild(_this.markersScope);
+        }, 50);
+      }
+
+      MarkersLabelsParentModel.prototype.createChildMarkerLabels = function() {
+        var _this = this;
+        return this.bigGulp.handleLargeArray(this.markersScope.markerModels, function(marker) {
+          var childScope, content_key, label;
+          childScope = _this.scope.$new(false);
+          /*
+          				markers-labels directive will specify a content attribute which will used 
+          				as the label content. This attribute is expected to exist in the marker model
+          
+          				TODO: this is dirty, need a better way to handle this
+          */
+
+          content_key = childScope.labelContent;
+          if (marker.model[content_key]) {
+            childScope.labelContent = marker.model[content_key];
+            label = new directives.api.models.child.MarkerLabelChildModel(marker.gMarker, childScope);
+            _this.labels.push(label);
+            return _this.scope.$on("$destroy", function() {
+              return label.destroy();
+            });
+          } else {
+            return _this.$log.info("marker content not specified: " + content_key);
+          }
+        }, (function() {}), function() {
+          return _this.scope.labelModels = _this.labels;
+        });
+      };
+
+      MarkersLabelsParentModel.prototype.watchForRebuild = function(scope) {
+        var _this = this;
+        return scope.$on('markersRebuild', function(event, data) {
+          _this.$log.info('### REBUILD');
+          _this.labels = [];
+          return _this.createChildMarkerLabels();
+        });
+      };
+
+      return MarkersLabelsParentModel;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.ngGmapModule("directives.api.models.parent", function() {
     return this.MarkersParentModel = (function(_super) {
       __extends(MarkersParentModel, _super);
 
@@ -1235,11 +1312,12 @@
           _this.markers.push(child);
           return _this.markersIndex++;
         }, (function() {}), function() {
+          scope.markerModels = _this.markers;
+          scope.$broadcast('markersRebuild');
           _this.gMarkerManager.draw();
           if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
-            _this.fit();
+            return _this.fit();
           }
-          return scope.markerModels = _this.markers;
         });
       };
 
@@ -1752,6 +1830,37 @@
       };
 
       return Label;
+
+    })(directives.api.ILabel);
+  });
+
+}).call(this);
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.ngGmapModule("directives.api", function() {
+    return this.Labels = (function(_super) {
+      __extends(Labels, _super);
+
+      function Labels($timeout) {
+        this.link = __bind(this.link, this);
+        var self;
+        Labels.__super__.constructor.call(this, $timeout);
+        self = this;
+        this.require = ['^markers'];
+        this.template = '<span class="angular-google-map-markers-labels" ng-transclude></span>';
+        this.scope.models = '=models';
+        this.$log.info(this);
+      }
+
+      Labels.prototype.link = function(scope, element, attrs, ctrl) {
+        return new directives.api.models.parent.MarkersLabelsParentModel(scope, element, attrs, ctrl, this.$timeout);
+      };
+
+      return Labels;
 
     })(directives.api.ILabel);
   });
@@ -4756,6 +4865,49 @@ angular.module('google-maps').directive('markers', ['$timeout', function ($timeo
 
 angular.module('google-maps').directive('markerLabel', ['$log', '$timeout', function ($log, $timeout) {
     return new directives.api.Label($timeout);
+}]);
+;/**!
+ * The MIT License
+ *
+ * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ * angular-google-maps
+ * https://github.com/nlaplante/angular-google-maps
+ *
+ * @authors Fernando Witzke, pigroxalot@gmail.com
+ */
+
+/**
+ * Markers labels directive
+ *
+ * This directive is used to create marker labels for the markers directive
+ *
+ * {attribute content required}  content of the label
+ * {attribute anchor required}	string that contains the x and y point position of the label
+ * {attribute class optional} class to DOM object
+ * {attribute style optional} style for the label
+ */
+
+angular.module('google-maps').directive('markersLabels', ['$timeout', function ($timeout) {
+    return new directives.api.Labels($timeout);
 }]);
 ;/**!
  * The MIT License

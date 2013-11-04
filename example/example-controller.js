@@ -17,12 +17,12 @@ function ExampleController ($scope, $timeout, $log) {
     genRandomMarkers = function(numberOfMarkers,scope){
         markers = []
         for(var i=0; i < numberOfMarkers; i++){
-            markers.push(createRandomMarker(scope.map.bounds))
+            markers.push(createRandomMarker(i, scope.map.bounds))
         }
         scope.map.randomMarkers = markers;
     };
     
-    createRandomMarker = function(bounds) {
+    createRandomMarker = function(i, bounds) {
       var lat_min = bounds.southwest.latitude,
           lat_range = bounds.northeast.latitude - lat_min,
           lng_min = bounds.southwest.longitude,
@@ -30,7 +30,11 @@ function ExampleController ($scope, $timeout, $log) {
 
         latitude = lat_min + (Math.random() * lat_range);
         longitude = lng_min + (Math.random() * lng_range);
-        return {latitude:latitude,longitude:longitude};
+        return {
+            latitude: latitude,
+            longitude: longitude, 
+            title: 'm' + i
+        };
     };
 
     angular.extend($scope, {
@@ -74,18 +78,21 @@ function ExampleController ($scope, $timeout, $log) {
                 {
                     latitude: 46,
                     longitude: -77,
-                    showWindow: false
+                    showWindow: false,
+                    title: '46, -77'
                 },
                 {
                     latitude: 33,
                     longitude: -77,
-                    showWindow: false
+                    showWindow: false,
+                    title: '33, -77'
                 },
                 {
                     icon: 'plane.png',
                     latitude: 35,
                     longitude: -125,
-                    showWindow: false
+                    showWindow: false,
+                    title: 'plane'
                 }
             ],
             dynamicMarkers: [],
