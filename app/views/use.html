@@ -10,8 +10,10 @@
 		<pre>bower install angular-google-maps</pre>
 	</li>
 	<li>
-		Include angular-google.maps.js in your index.html or layout template:
-		<pre>&lt;script src='/path/to/angular-google-maps[.min].js'&gt;&lt;/script&gt;</pre>
+		Include the Google Maps API v3 script and angular-google.maps.js in your index.html or layout template:
+
+		<pre>&lt;script src='//maps.googleapis.com/maps/api/js?sensor=false'&gt;&lt;/script&gt;
+&lt;script src='/path/to/angular-google-maps[.min].js'&gt;&lt;/script&gt;</pre>
 	</li>
 	<li>
 		Make your application module depend on the <code>google-maps</code> module:
