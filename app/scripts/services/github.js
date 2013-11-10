@@ -23,7 +23,7 @@ angular.module('angularGoogleMapsApp')
     		$http({
     			cache: true,
     			method: 'JSONP',
-    			url: api + '/collaborators?callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
+    			url: api + '/collaborators?per_page=1000&callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
     		}).then(function (res) {
     			deferred.resolve(res.data.data);
     		}, function (res) {
@@ -39,7 +39,7 @@ angular.module('angularGoogleMapsApp')
     		$http({
     			cache: true,
     			method: 'JSONP',
-    			url: api + '/contributors?callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
+    			url: api + '/contributors?per_page=1000&callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
     		}).then(function (res) {
     			deferred.resolve(res.data.data);
     		}, function (res) {
@@ -73,7 +73,7 @@ angular.module('angularGoogleMapsApp')
     		$http({
     			cache: true,
     			method: 'JSONP',
-    			url: api + '/issues?callback=JSON_CALLBACK'
+    			url: api + '/issues?per_page=1000&state=open&callback=JSON_CALLBACK'
     		}).then(function (res) {
     			deferred.resolve(res.data.data.length);
     		}, function (res) {
