@@ -101,11 +101,8 @@
 			@opts = @createMarkerOptions(scope.coords, scope.icon, scope.options)
 
 			delete @gMarker
-			if scope.labelContent?
-				@opts.labelAnchor= @getLabelPositionPoint(scope.labelAnchor)
-				@opts.labelClass= scope.labelClass
-				@opts.labelContent= scope.labelContent
-				@gMarker = new MarkerWithLabel(@opts)
+			if @isLabelDefined(scope)
+				@gMarker = new MarkerWithLabel(@setLabelOptions(@opts, scope))
 			else
 				@gMarker = new google.maps.Marker(@opts)	
 			
@@ -114,6 +111,15 @@
 				if @doClick and @myScope.click?
 					@myScope.click()
 			)
+
+		isLabelDefined:(scope) =>
+			scope.labelContent?
+
+		setLabelOptions:(opts, scope) =>
+			opts.labelAnchor= @getLabelPositionPoint(scope.labelAnchor)
+			opts.labelClass= scope.labelClass
+			opts.labelContent= scope.labelContent
+			opts
 
 		watchDestroy:(scope)=>
 			scope.$on("$destroy", => 

@@ -571,6 +571,8 @@
         this.doClick = doClick;
         this.gMarkerManager = gMarkerManager;
         this.watchDestroy = __bind(this.watchDestroy, this);
+        this.setLabelOptions = __bind(this.setLabelOptions, this);
+        this.isLabelDefined = __bind(this.isLabelDefined, this);
         this.setOptions = __bind(this.setOptions, this);
         this.setIcon = __bind(this.setIcon, this);
         this.setCoords = __bind(this.setCoords, this);
@@ -717,11 +719,8 @@
         }
         this.opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options);
         delete this.gMarker;
-        if (scope.labelContent != null) {
-          this.opts.labelAnchor = this.getLabelPositionPoint(scope.labelAnchor);
-          this.opts.labelClass = scope.labelClass;
-          this.opts.labelContent = scope.labelContent;
-          this.gMarker = new MarkerWithLabel(this.opts);
+        if (this.isLabelDefined(scope)) {
+          this.gMarker = new MarkerWithLabel(this.setLabelOptions(this.opts, scope));
         } else {
           this.gMarker = new google.maps.Marker(this.opts);
         }
@@ -731,6 +730,17 @@
             return _this.myScope.click();
           }
         });
+      };
+
+      MarkerChildModel.prototype.isLabelDefined = function(scope) {
+        return scope.labelContent != null;
+      };
+
+      MarkerChildModel.prototype.setLabelOptions = function(opts, scope) {
+        opts.labelAnchor = this.getLabelPositionPoint(scope.labelAnchor);
+        opts.labelClass = scope.labelClass;
+        opts.labelContent = scope.labelContent;
+        return opts;
       };
 
       MarkerChildModel.prototype.watchDestroy = function(scope) {
@@ -1249,11 +1259,11 @@
           _this.markers.push(child);
           return _this.markersIndex++;
         }, (function() {}), function() {
-          scope.markerModels = _this.markers;
           _this.gMarkerManager.draw();
           if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
-            return _this.fit();
+            _this.fit();
           }
+          return scope.markerModels = _this.markers;
         });
       };
 
