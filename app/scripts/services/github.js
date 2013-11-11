@@ -66,7 +66,7 @@ angular.module('angularGoogleMapsApp')
     		return deferred.promise;
     	};
 
-    	this.getIssuesCount = function () {
+    	this.getIssues = function () {
 
     		var deferred = $q.defer();
 
@@ -75,7 +75,7 @@ angular.module('angularGoogleMapsApp')
     			method: 'JSONP',
     			url: api + '/issues?per_page=1000&state=open&callback=JSON_CALLBACK'
     		}).then(function (res) {
-    			deferred.resolve(res.data.data.length);
+    			deferred.resolve(res.data.data);
     		}, function (res) {
     			deferred.reject(res);
     		});
