@@ -32,7 +32,7 @@ function ExampleController ($scope, $timeout, $log) {
         longitude = lng_min + (Math.random() * lng_range);
         return {
             latitude: latitude,
-            longitude: longitude, 
+            longitude: longitude,
             title: 'm' + i
         };
     };
@@ -79,20 +79,20 @@ function ExampleController ($scope, $timeout, $log) {
                     latitude: 46,
                     longitude: -77,
                     showWindow: false,
-                    title: '46, -77'
+                    title: '[46,-77]'
                 },
                 {
                     latitude: 33,
                     longitude: -77,
                     showWindow: false,
-                    title: '33, -77'
+                    title: '[33,-77]'
                 },
                 {
                     icon: 'plane.png',
                     latitude: 35,
                     longitude: -125,
                     showWindow: false,
-                    title: 'plane'
+                    title: '[35,-125]'
                 }
             ],
             dynamicMarkers: [],

@@ -1,6 +1,9 @@
 @ngGmapModule "directives.api.utils", ->
 	@GmapUtil =
 		getLabelPositionPoint:(anchor) ->
+			if anchor == undefined
+				return undefined
+
 			anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor)
 			xPos = anchor[1]
 			yPos = anchor[2]

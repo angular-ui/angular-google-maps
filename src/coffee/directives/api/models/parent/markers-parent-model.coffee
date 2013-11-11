@@ -46,7 +46,6 @@
 			,(()->) #nothing for pause
 			,() => #handle done callBack
 				scope.markerModels = @markers
-				scope.$broadcast('markersRebuild')
 
 				@gMarkerManager.draw()
 				@fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit
