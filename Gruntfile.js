@@ -68,7 +68,6 @@ module.exports = function (grunt) {
                     'src/js/directives/marker.js',
                     'src/js/directives/markers.js',
                     'src/js/directives/label.js',
-                    'src/js/directives/labels.js',
                     'src/js/directives/polygon.js',
                     'src/js/directives/polyline.js',
                     'src/js/directives/window.js',
