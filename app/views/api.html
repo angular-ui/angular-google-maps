@@ -1,7 +1,7 @@
 <h1 class="page-header">API documentation</h1>
 
 <div class="row">
-	<div class="span3">
+	<div class="col-md-3">
 		<div class="well">
 			<ul class="nav nav-list">
 				<li class="nav-header">Directives</li>
@@ -11,18 +11,27 @@
 		</div>
 	</div>
 
-	<div class="span9">
+	<div class="col-md-9">
 		<p>This is the API documentation. All information needed to use the various directives is present on this page.
 			Choose the directive you're interested in in the left panel to begin.</p>
 
 		<h2>Directives</h2>
 
-		<section ng-repeat='d in directives' id="{{ d }}">
-			<h3>{{ d }}</h3>
-
-			<ng-include src="viewUrl(d)"></ng-include>
-
-			<hr>
-		</section>
+		<div class="panel-group" id="directivesAccordion">
+			<div class="panel panel-default" ng-repeat='d in directives' id='{{ d }}'>
+				<div class="panel-heading">
+					<div class="panel-title">
+						<a href='' data-toggle="collapse" data-parent="#directivesAccordion" data-target="#content{{ d }}">
+							{{ d }}
+						</a>
+					</div>
+				</div>
+				<div id="content{{ d }}" class="panel-collapse collapse" ng-class="{'in': $first}">
+					<div class="panel-body">
+						<ng-include src="viewUrl(d)"></ng-include>
+					</div>
+				</div>			
+			</div>
+		</div>
 	</div>
 </div>

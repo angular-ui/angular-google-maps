@@ -1,5 +1,3 @@
-<h4>Description</h4>
-
 <p>The <code>google-map</code> directive is the core of all other directives. It is used to instantiate a Google Map object in
 	your page. Every other directive must be contained within a <code>google-map</code> for them to work.</p>
 
@@ -33,44 +31,44 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td class="text-error">center</td>
-			<td><span class="label">expression</span></td>
+			<td class="text-danger">center</td>
+			<td><span class="label label-info">expression</span></td>
 			<td>Expression to evaluate as an object representing the map center. The object must have <code>latitude</code> and
 				<code>longitude</code> numeric properties.</td>
 		</tr>
 		<tr>
-			<td class="text-error">zoom</td>
-			<td><span class="label">expression</span></td>
+			<td class="text-danger">zoom</td>
+			<td><span class="label label-info">expression</span></td>
 			<td>Expression to evaluate as the map's zoom level. This must be a number between 1<sup>[1]</sup> and 20<sup>[2]</sup>.</td>
 		</tr>
 		<tr>
 			<td>draggable</td>
-			<td><span class="label">string</span></td>
+			<td><span class="label label-info">string</span></td>
 			<td><code>true</code> if map must be draggable, <code>false</code> otherwise</td>
 		</tr>
 		<tr>
 			<td>refresh</td>
-			<td><span class="label">expression</span></td>
+			<td><span class="label label-info">expression</span></td>
 			<td>Expression which, if it evaluates to <code>true</code>, will trigger a map refresh.</td>
 		</tr>
 		<tr>
 			<td>options</td>
-			<td><span class="label">expression</span></td>
+			<td><span class="label label-info">expression</span></td>
 			<td>Additional options to pass to the google.maps.Map constructor</td>
 		</tr>
 		<tr>
 			<td>events</td>
-			<td><span class="label">expression</span></td>
+			<td><span class="label label-info">expression</span></td>
 			<td>Custom events to apply to the map. This is an associative array, where keys are event names and values are handler functions.</td>
 		</tr>
 		<tr>
 			<td>bounds</td>
-			<td><span class="label">expression</span></td>
+			<td><span class="label label-info">expression</span></td>
 			<td></td>
 		</tr>
 		<tr>
 			<td>markers</td>
-			<td><span class="label">expression</span></td>
+			<td><span class="label label-info">expression</span></td>
 			<td></td>
 		</tr>
 	</tbody>
