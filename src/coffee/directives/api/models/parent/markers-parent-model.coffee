@@ -45,11 +45,10 @@
 				@markersIndex++
 			,(()->) #nothing for pause
 			,() => #handle done callBack
-				scope.markerModels = @markers
-
 				@gMarkerManager.draw()
 				@fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit
 				#put MarkerModels into local scope
+				scope.markerModels = @markers
 			)
 			
 
