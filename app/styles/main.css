@@ -87,8 +87,9 @@
 }
 
 body {
-	background: #fff;
-	font-family: 'colaborate-regularregular';
+	padding-top: 60px;
+	/*background: #fff;*/
+	/*font-family: 'colaborate-regularregular';*/
 }
 
 h1 {
@@ -99,7 +100,7 @@ h1 {
 }
 
 a.brand, h2, h3 {
-	font-family: 'chunkfiveroman', 'bebas_neueregular';
+	/*font-family: 'chunkfiveroman', 'bebas_neueregular';*/
 	font-weight: normal;
 }
 
@@ -137,7 +138,7 @@ h1:after {
 }
 
 footer {
-	background: #222;
+	background: #202d3b;
 	border-top: 1px #660000 solid;
 	color: #ddd;
 	padding-top: 40px;
@@ -190,9 +191,9 @@ article {
 	margin-bottom: 20px;
 }
 
-.nav-header {
+/*.nav-header {
 	margin-left: -20px !important;
 	margin-right: -20px !important;
 	background: #ddd;
 	margin-bottom: 9px !important;
-}
+}*/

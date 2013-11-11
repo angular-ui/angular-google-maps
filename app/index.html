@@ -12,7 +12,7 @@
     <meta name="fragment" content="!">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <link href="//netdna.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.1/flatly/bootstrap.min.css" rel="stylesheet">
 	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
     <!-- build:css(.tmp) styles/main.css -->    
@@ -29,22 +29,31 @@
       <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
 
-    <nav class="navbar">
-    	<div class="navbar-inner">
-    		<ul class="nav">
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    	<div class="navbar-header">
+    		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+		      <span class="sr-only">Toggle navigation</span>
+		      <span class="icon-bar"></span>
+		      <span class="icon-bar"></span>
+		      <span class="icon-bar"></span>
+		    </button>
+    	</div>
+    	<div class="collapse navbar-collapse" id="navbar-collapse">
+    		<ul class="nav navbar-nav">
     			<li ng-class="{'active': $location.path() == '/'}"><a href="#!/" rel="start">Home</a></li>
 	    		<li ng-class="{'active': $location.path() == '/use'}"><a href="#!/use">Quickstart</a></li>
 	    		<li ng-class="{'active': $location.path() == '/api'}"><a href="#!/api">API documentation</a></li>
-	    		<li ng-class="{'active': $location.path() == '/demo'}"><a href="#!/demo">Demo</a></li>
+	    		<li ng-class="{'active': $location.path() == '/demo'}"><a href="#!/demo">Demo</a></li>	    		
 	    		<li><a href="https://github.com/nlaplante/angular-google-maps"><i class="icon-github-alt"></i> Code</a></li>
 	    		<li><a href="https://github.com/nlaplante/angular-google-maps/issues?state=open"><i class="icon-github-alt"></i> Issue tracker <span class="badge badge-important">{{ github.issuesCount }}</span></a></li>
+    		</ul>
+    		<ul class="nav navbar-nav navbar-right">    			
 	    		<li><a href="https://developers.google.com/maps/documentation/javascript/"><i class="icon-question-sign"></i> Google Maps Javascript API</a></li>
 	    		<li><a href="https://trello.com/b/WwTRrkfh/angular-google-maps"><i class="icon-trello"></i>
 	    			Trello project management board</a></li>
 	    		<li><a href="https://travis-ci.org/nlaplante/angular-google-maps">
 	    			<img src="https://travis-ci.org/nlaplante/angular-google-maps.png?branch=r1-dev" alt="current build status" />
 	    		</a></li>
-
     		</ul>
     	</div>
     </nav>
@@ -58,10 +67,10 @@
 	<footer>
 		<div class="container">			
 			<div class="row" ng-show='github != null' ng-cloak>
-				<div class="span4">
+				<div class="col-md-4">
 					<h3>Contributors &amp; collaborators</h3>
 					
-					<ul class="inline">
+					<ul class="list-inline">
 						<li ng-repeat="c in github.contributors"><a href="{{ c.html_url }}">{{ c.login }}</a></li>
 						<li ng-repeat="c in github.collaborators"><a href="{{ c.html_url }}">{{ c.login }}</a></li>
 					</ul>
@@ -71,21 +80,31 @@
 						as soon as they are merged.</p>
 				</div>
 
-				<div class="span4">
+				<div class="col-md-4">
 					<h3>Latest commit</h3>
 
 					{{ github.commits.latest.commit.committer.date | date:"MMM d, y h:mm:ss a Z" }}<br>
 					<a href="#!/">{{ github.commits.latest.author.login }}</a>
 					<p class="muted">{{ github.commits.latest.commit.message }}</p>
-					<a class="btn btn-small" href="{{ github.commits.latest.html_url }}">View on GitHub</a>	
+					<a class="btn btn-sm btn-primary" href="{{ github.commits.latest.html_url }}">View on GitHub</a>	
 					
 				</div>
 
-				<div class="span4">
+				<div class="col-md-4">
 					<h3>Issues</h3>
 					
-					<p><ng-pluralize count="github.issuesCount" when="{'0': 'No issues currently open! Yay!', '1': 'There is only one open issue!', 'other': 'There are {} open issues'}"></ng-pluralize>
-						<a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">View open issues</a>. </p>
+					<p><ng-pluralize count="github.issuesCount" when="{'0': 'No issues currently open! Yay!', '1': 'There is only one open issue!', 'other': 'There are {} open issues'}"></ng-pluralize>. 
+						<a class="btn btn-sm btn-warning" href="https://github.com/nlaplante/angular-google-maps/issues?state=open">View on GitHub</a></p>
+
+					
+
+					<h4>Latest issues</h4>
+
+					<ul class="list-unstyled">
+						<li ng-repeat="issue in github.issues | limitTo:5 ">
+							<a ng-href="{{ issue.url }}">{{ issue.title }}</a>
+						</li>
+					</ul>
 
 				</div>				
 			</div>
@@ -117,22 +136,10 @@
 
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?sensor=false">
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 
     <!-- build:js scripts/plugins.js -->
-    <script src="bower_components/bootstrap-sass/js/bootstrap-affix.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-alert.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-dropdown.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-tooltip.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-modal.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-transition.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-button.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-popover.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-typeahead.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-carousel.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-scrollspy.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-collapse.js"></script>
-    <script src="bower_components/bootstrap-sass/js/bootstrap-tab.js"></script>
     <script src="bower_components/underscore/underscore.js"></script>
     <!-- endbuild -->
 
