@@ -51,6 +51,9 @@
 })();;(function() {
   this.ngGmapModule = function(names, fn) {
     var space, _name;
+    if (fn == null) {
+      fn = function() {};
+    }
     if (typeof names === 'string') {
       names = names.split('.');
     }
@@ -385,10 +388,12 @@
         return opts;
       },
       createWindowOptions: function(gMarker, scope, content, defaults) {
-        return angular.extend({}, defaults, {
-          content: content,
-          position: angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
-        });
+        if ((content != null) && (defaults != null)) {
+          return angular.extend({}, defaults, {
+            content: content,
+            position: angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+          });
+        }
       },
       defaultDelay: 50
     };
@@ -420,19 +425,30 @@
 
 (function() {
   this.ngGmapModule("directives.api.utils", function() {
-    return this.Logger = {
+    var logger;
+    this.Logger = {
       logger: void 0,
       doLog: false,
       info: function(msg) {
-        if (directives.api.utils.Logger.doLog) {
-          if (directives.api.utils.Logger.logger != null) {
-            return directives.api.utils.Logger.logger.info(msg);
+        if (logger.doLog) {
+          if (logger.logger != null) {
+            return logger.logger.info(msg);
           } else {
             return console.info(msg);
           }
         }
+      },
+      error: function(msg) {
+        if (logger.doLog) {
+          if (logger.logger != null) {
+            return logger.logger.error(msg);
+          } else {
+            return console.error(msg);
+          }
+        }
       }
     };
+    return logger = this.Logger;
   });
 
 }).call(this);
@@ -771,7 +787,10 @@
     return this.WindowChildModel = (function(_super) {
       __extends(WindowChildModel, _super);
 
-      function WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile, needToManualDestroy) {
+      WindowChildModel.include(directives.api.utils.GmapUtil);
+
+      function WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile, element, needToManualDestroy) {
+        this.element = element;
         if (needToManualDestroy == null) {
           needToManualDestroy = false;
         }
@@ -781,6 +800,7 @@
         this.handleClick = __bind(this.handleClick, this);
         this.watchCoords = __bind(this.watchCoords, this);
         this.watchShow = __bind(this.watchShow, this);
+        this.createGWin = __bind(this.createGWin, this);
         this.scope = scope;
         this.opts = opts;
         this.mapCtrl = mapCtrl;
@@ -791,7 +811,7 @@
         this.$http = $http;
         this.$templateCache = $templateCache;
         this.$compile = $compile;
-        this.gWin = new google.maps.InfoWindow(opts);
+        this.createGWin();
         if (this.markerCtrl != null) {
           this.markerCtrl.setClickable(true);
         }
@@ -801,6 +821,27 @@
         this.needToManualDestroy = needToManualDestroy;
         this.$log.info(this);
       }
+
+      WindowChildModel.prototype.createGWin = function(createOpts) {
+        var _this = this;
+        if (createOpts == null) {
+          createOpts = false;
+        }
+        if ((this.gWin == null) && createOpts) {
+          this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, this.element.html(), {}) : {};
+        }
+        if ((this.opts != null) && this.gWin === void 0) {
+          this.gWin = new google.maps.InfoWindow(this.opts);
+          return google.maps.event.addListener(this.gWin, 'closeclick', function() {
+            if (_this.markerCtrl != null) {
+              _this.markerCtrl.setVisible(_this.initialMarkerVisibility);
+            }
+            if (_this.scope.closeClick != null) {
+              return _this.scope.closeClick();
+            }
+          });
+        }
+      };
 
       WindowChildModel.prototype.watchShow = function() {
         var _this = this;
@@ -812,8 +853,10 @@
               return _this.hideWindow();
             }
           } else {
-            if (newValue && !_this.gWin.getMap()) {
-              return _this.showWindow();
+            if (_this.gWin != null) {
+              if (newValue && !_this.gWin.getMap()) {
+                return _this.showWindow();
+              }
             }
           }
         }, true);
@@ -831,44 +874,47 @@
       WindowChildModel.prototype.handleClick = function() {
         var _this = this;
         if (this.markerCtrl != null) {
-          google.maps.event.addListener(this.markerCtrl, 'click', function() {
-            _this.gWin.setPosition(_this.markerCtrl.getPosition());
-            _this.gWin.open(_this.mapCtrl);
+          return google.maps.event.addListener(this.markerCtrl, 'click', function() {
+            var pos;
+            _this.createGWin(true);
+            pos = _this.markerCtrl.getPosition();
+            if (_this.gWin != null) {
+              _this.gWin.setPosition(pos);
+              _this.gWin.open(_this.mapCtrl);
+            }
             return _this.markerCtrl.setVisible(_this.isIconVisibleOnClick);
           });
         }
-        return google.maps.event.addListener(this.gWin, 'closeclick', function() {
-          if (_this.markerCtrl != null) {
-            _this.markerCtrl.setVisible(_this.initialMarkerVisibility);
-          }
-          if (_this.scope.closeClick != null) {
-            return _this.scope.closeClick();
-          }
-        });
       };
 
       WindowChildModel.prototype.showWindow = function() {
         var _this = this;
         if (this.scope.templateUrl) {
-          return this.$http.get(this.scope.templateUrl, {
-            cache: this.$templateCache
-          }).then(function(content) {
-            var compiled, templateScope;
-            templateScope = _this.scope.$new();
-            if (angular.isDefined(_this.scope.templateParameter)) {
-              templateScope.parameter = _this.scope.templateParameter;
-            }
-            compiled = _this.$compile(content.data)(templateScope);
-            _this.gWin.setContent(compiled.get(0));
-            return _this.gWin.open(_this.mapCtrl);
-          });
+          if (this.gWin) {
+            return this.$http.get(this.scope.templateUrl, {
+              cache: this.$templateCache
+            }).then(function(content) {
+              var compiled, templateScope;
+              templateScope = _this.scope.$new();
+              if (angular.isDefined(_this.scope.templateParameter)) {
+                templateScope.parameter = _this.scope.templateParameter;
+              }
+              compiled = _this.$compile(content.data)(templateScope);
+              _this.gWin.setContent(compiled.get(0));
+              return _this.gWin.open(_this.mapCtrl);
+            });
+          }
         } else {
-          return this.gWin.open(this.mapCtrl);
+          if (this.gWin != null) {
+            return this.gWin.open(this.mapCtrl);
+          }
         }
       };
 
       WindowChildModel.prototype.hideWindow = function() {
-        return this.gWin.close();
+        if (this.gWin != null) {
+          return this.gWin.close();
+        }
       };
 
       WindowChildModel.prototype.destroy = function() {
@@ -914,25 +960,25 @@
       };
 
       function IMarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
+        var self,
+          _this = this;
+        this.scope = scope;
+        this.element = element;
+        this.attrs = attrs;
+        this.mapCtrl = mapCtrl;
+        this.$timeout = $timeout;
         this.linkInit = __bind(this.linkInit, this);
         this.onDestroy = __bind(this.onDestroy, this);
         this.onWatch = __bind(this.onWatch, this);
         this.watch = __bind(this.watch, this);
         this.validateScope = __bind(this.validateScope, this);
         this.onTimeOut = __bind(this.onTimeOut, this);
-        var self,
-          _this = this;
         self = this;
-        this.scope = scope;
-        this.element = element;
-        this.attrs = attrs;
-        if (this.validateScope(scope)) {
+        this.$log = directives.api.utils.Logger;
+        if (!this.validateScope(scope)) {
           return;
         }
         this.doClick = angular.isDefined(attrs.click);
-        this.mapCtrl = mapCtrl;
-        this.$log = directives.api.utils.Logger;
-        this.$timeout = $timeout;
         if (scope.options != null) {
           this.DEFAULTS = scope.options;
         }
@@ -951,8 +997,11 @@
 
       IMarkerParentModel.prototype.validateScope = function(scope) {
         var ret;
-        ret = angular.isUndefined(scope.coords) || scope.coords === void 0;
-        if (ret) {
+        if (scope == null) {
+          return false;
+        }
+        ret = scope.coords != null;
+        if (!ret) {
           this.$log.error(this.constructor.name + ": no valid coords attribute found");
         }
         return ret;
@@ -1114,29 +1163,26 @@
       function MarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
         this.onDestroy = __bind(this.onDestroy, this);
         this.onWatch = __bind(this.onWatch, this);
-        this.validateScope = __bind(this.validateScope, this);
-        var self,
-          _this = this;
+        this.onTimeOut = __bind(this.onTimeOut, this);
+        var self;
         MarkerParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        $timeout(function() {
-          var opts;
-          opts = _this.createMarkerOptions(_this.scope.coords, _this.scope.icon, _this.scope.options, _this.mapCtrl.getMap());
-          _this.gMarker = new google.maps.Marker(opts);
-          _this.element.data('instance', _this.gMarker);
-          google.maps.event.addListener(_this.gMarker, 'click', function() {
-            if (_this.doClick && (scope.click != null)) {
-              return $timeout(function() {
-                return _this.scope.click();
-              });
-            }
-          });
-          return _this.$log.info(_this);
-        }, directives.api.utils.GmapUtil.defaultDelay);
       }
 
-      MarkerParentModel.prototype.validateScope = function(scope) {
-        return MarkerParentModel.__super__.validateScope.call(this, scope) || angular.isUndefined(scope.coords.latitude) || angular.isUndefined(scope.coords.longitude);
+      MarkerParentModel.prototype.onTimeOut = function(scope) {
+        var opts,
+          _this = this;
+        opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap());
+        this.gMarker = new google.maps.Marker(opts);
+        this.element.data('instance', this.gMarker);
+        google.maps.event.addListener(this.gMarker, 'click', function() {
+          if (_this.doClick && (scope.click != null)) {
+            return _this.$timeout(function() {
+              return _this.scope.click();
+            });
+          }
+        });
+        return this.$log.info(this);
       };
 
       MarkerParentModel.prototype.onWatch = function(propNameToWatch, scope) {
@@ -1950,7 +1996,7 @@ not 1:1 in this setting.
       Window.prototype.link = function(scope, element, attrs, ctrls) {
         var _this = this;
         return this.$timeout(function() {
-          var defaults, isIconVisibleOnClick, mapCtrl, markerCtrl, opts, window;
+          var defaults, hasScopeCoords, isIconVisibleOnClick, mapCtrl, markerCtrl, opts, window;
           isIconVisibleOnClick = true;
           if (angular.isDefined(attrs.isiconvisibleonclick)) {
             isIconVisibleOnClick = scope.isIconVisibleOnClick;
@@ -1958,9 +2004,10 @@ not 1:1 in this setting.
           mapCtrl = ctrls[0].getMap();
           markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
           defaults = scope.options != null ? scope.options : {};
-          opts = _this.createWindowOptions(markerCtrl, scope, element.html(), defaults);
+          hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
+          opts = (markerCtrl != null) && hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : void 0;
           if (mapCtrl != null) {
-            window = new directives.api.models.child.WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile);
+            window = new directives.api.models.child.WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile, element);
           }
           return scope.$on("$destroy", function() {
             return window.destroy();
