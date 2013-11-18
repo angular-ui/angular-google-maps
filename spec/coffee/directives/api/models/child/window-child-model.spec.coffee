@@ -17,6 +17,7 @@ describe("WindowChildModel", ->
 		.value('mapCtrl',document.gMap)
 		.value('markerCtrl',@gMarker)
 		.value('opts',@windowOpts)
+        .value('element','<span>hi</span>')
 		.value('needToManualDestroy',false)
 		.controller('childModel', directives.api.models.child.WindowChildModel)
 

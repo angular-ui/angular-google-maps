@@ -16,17 +16,12 @@
         isFalse: (value) ->
             ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) != -1
 
-        constructor: (scope, element, attrs, mapCtrl, $timeout) ->
+        constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout) ->
             self = @
-            @scope = scope
             @$log = directives.api.utils.Logger
-            @element = element
-            @attrs = attrs
             # Validate required properties
             return unless @validateScope scope
             @doClick = angular.isDefined attrs.click
-            @mapCtrl = mapCtrl
-            @$timeout = $timeout
             if scope.options?
                 @DEFAULTS = scope.options
             # Wrap marker initialization inside a $timeout() call to make sure the map is created already
