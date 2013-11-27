@@ -14,7 +14,11 @@
                 type: "=type"
                 namespace: "=namespace"
                 options: '=options'
+                onCreated: '&oncreated'
 
         link: (scope, element, attrs, mapCtrl) =>
-            new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl,@$timeout)
-
+            if scope.onCreated?
+                new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, scope.onCreated,
+                        @$timeout)
+            else
+                new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, @$timeout)
