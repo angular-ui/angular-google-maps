@@ -1701,7 +1701,6 @@
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         this.restrict = 'ECMA';
-        this.replace = true;
         this.require = '^googleMap';
         this.priority = -1;
         this.transclude = true;
@@ -1892,8 +1891,10 @@
 
       Marker.prototype.controller = [
         '$scope', '$element', function($scope, $element) {
-          return this.getMarker = function() {
-            return $element.data('instance');
+          return {
+            getMarker: function() {
+              return $element.data('instance');
+            }
           };
         }
       ];
@@ -1949,8 +1950,10 @@ not 1:1 in this setting.
 
       Markers.prototype.controller = [
         '$scope', '$element', function($scope, $element) {
-          return this.getMarkersScope = function() {
-            return $scope;
+          return {
+            getMarkersScope: function() {
+              return $scope;
+            }
           };
         }
       ];

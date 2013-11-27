@@ -151,7 +151,8 @@ module.exports = function (grunt) {
                 src: ['dist/angular-google-maps.js'],
                 options: {
                     keepRunner: true,
-                    vendor: ['http://maps.googleapis.com/maps/api/js?sensor=false&language=en', 'lib/*.js', 'dist/angular-google-maps.js'],
+                    vendor: ['http://maps.googleapis.com/maps/api/js?sensor=false&language=en','lib/jquery.js',
+                        'lib/angular.js','lib/angular-mock.js','lib/lodash.js','dist/angular-google-maps.js'],
                     specs: ['spec/*.spec.js', 'spec/**/*.spec.js', 'spec/**/**/*-spec.js', 'spec/**/**/**/*.spec.js',
                         'tmp/spec/js/*/spec.js', 'tmp/spec/**/*.spec.js', 'tmp/spec/**/**/*-spec.js', 'tmp/spec/**/**/**/*.spec.js'
                     ],

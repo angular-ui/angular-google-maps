@@ -13,7 +13,6 @@
 			@$log = directives.api.utils.Logger
 			@$timeout = $timeout
 			@restrict = 'ECMA'
-			@replace = true
 			@require = '^googleMap'
 			@priority = -1
 			@transclude = true
