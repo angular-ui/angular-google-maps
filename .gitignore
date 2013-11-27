@@ -11,3 +11,4 @@ app/components
 .grunt
 _SpecRunner.html
 /spec/coverage
+*.iml
