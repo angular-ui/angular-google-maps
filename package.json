@@ -1,6 +1,6 @@
 {
   "name": "angular-google-maps",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "AngularJS directives for Google Maps",
   "repository": {
     "type": "git",

@@ -1,7 +1,7 @@
 /**!
  * The MIT License
  * 
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +23,10 @@
  * 
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
- * 
- * @author Nicolas Laplante https://plus.google.com/108189012221374960701
+ *
+ * @authors
+ *  Nicolas Laplante - https://plus.google.com/108189012221374960701
+ *  Nicholas McCready - https://twitter.com/nmccready
  */
 
 (function(){
@@ -4385,7 +4387,7 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 }]);;/**!
  * The MIT License
  *
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -4408,7 +4410,9 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @author Nicolas Laplante https://plus.google.com/108189012221374960701
+ * @authors
+ *  Nicolas Laplante - https://plus.google.com/108189012221374960701
+ *  Nicholas McCready - https://twitter.com/nmccready
  */
 
 angular.module('google-maps')
@@ -4708,7 +4712,7 @@ angular.module('google-maps')
 ;/**!
  * The MIT License
  *
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -4731,7 +4735,9 @@ angular.module('google-maps')
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @authors Nicolas Laplante, Nicholas McCready https://plus.google.com/108189012221374960701
+ * @authors
+ *  Nicolas Laplante - https://plus.google.com/108189012221374960701
+ *  Nicholas McCready - https://twitter.com/nmccready
  */
 
 /**
@@ -4751,7 +4757,7 @@ angular.module('google-maps').directive('marker', ['$timeout', function ($timeou
 ; /**!
  * The MIT License
  *
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -4774,7 +4780,9 @@ angular.module('google-maps').directive('marker', ['$timeout', function ($timeou
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @author Nicolas Laplante, Nicholas McCready https://plus.google.com/108189012221374960701
+  * @authors
+  *  Nicolas Laplante - https://plus.google.com/108189012221374960701
+  *  Nicholas McCready - https://twitter.com/nmccready
  */
 
 /**
@@ -4794,7 +4802,7 @@ angular.module('google-maps').directive('markers', ['$timeout', function ($timeo
 ;/**!
  * The MIT License
  *
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -4837,7 +4845,7 @@ angular.module('google-maps').directive('markerLabel', ['$log', '$timeout', func
 ;/**!
  * The MIT License
  *
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -4860,7 +4868,9 @@ angular.module('google-maps').directive('markerLabel', ['$log', '$timeout', func
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @author Nicolas Laplante https://plus.google.com/108189012221374960701
+ * @authors
+ *  Nicolas Laplante - https://plus.google.com/108189012221374960701
+ *  Nicholas McCready - https://twitter.com/nmccready
  */
 
 angular.module("google-maps")
@@ -5084,7 +5094,7 @@ angular.module("google-maps")
 ;/**!
  * The MIT License
  *
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -5107,7 +5117,9 @@ angular.module("google-maps")
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @author Nicolas Laplante https://plus.google.com/108189012221374960701
+ * @authors
+ *  Nicolas Laplante - https://plus.google.com/108189012221374960701
+ *  Nicholas McCready - https://twitter.com/nmccready
  */
 
 angular.module("google-maps")
@@ -5295,7 +5307,7 @@ angular.module("google-maps")
 ;/**!
  * The MIT License
  *
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -5318,7 +5330,9 @@ angular.module("google-maps")
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @author Nicolas Laplante https://plus.google.com/108189012221374960701
+ * @authors
+ *  Nicolas Laplante - https://plus.google.com/108189012221374960701
+ *  Nicholas McCready - https://twitter.com/nmccready
  */
 
 /**
@@ -5337,7 +5351,7 @@ angular.module("google-maps").directive("window", ['$timeout','$compile', '$http
   }]);;/**!
  * The MIT License
  *
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -5360,9 +5374,9 @@ angular.module("google-maps").directive("window", ['$timeout','$compile', '$http
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @authors: 
- *			- Nicolas Laplante https://plus.google.com/108189012221374960701 
- *			- Nicholas McCready  https://plus.google.com/112199819969944829348
+ * @authors
+ *  Nicolas Laplante - https://plus.google.com/108189012221374960701
+ *  Nicholas McCready - https://twitter.com/nmccready
  */
 
 /**
@@ -5381,7 +5395,7 @@ angular.module("google-maps").directive("windows", ['$timeout','$compile', '$htt
   }]);;/**!
  * The MIT License
  *
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal

@@ -84,6 +84,9 @@ module.exports = function (grunt) {
         },
 
         copy: {
+            options:{
+                banner: '/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n'
+            },
             dist: {
                 files: [
                     {

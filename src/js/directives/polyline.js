@@ -1,7 +1,7 @@
 /**!
  * The MIT License
  *
- * Copyright (c) 2010-2012 Google, Inc. http://angularjs.org
+ * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,9 @@
  * angular-google-maps
  * https://github.com/nlaplante/angular-google-maps
  *
- * @author Nicolas Laplante https://plus.google.com/108189012221374960701
+ * @authors
+ *  Nicolas Laplante - https://plus.google.com/108189012221374960701
+ *  Nicholas McCready - https://twitter.com/nmccready
  */
 
 angular.module("google-maps")
