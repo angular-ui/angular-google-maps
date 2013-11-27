@@ -4,6 +4,7 @@
 		constructor: (gMarker,opt_options) ->
 			super()
 			self = @
+
 			@marker = gMarker
 			@marker.set("labelContent" , opt_options.labelContent)
 			@marker.set("labelAnchor" , @getLabelPositionPoint( opt_options.labelAnchor ))
@@ -39,8 +40,6 @@
 
 			@marker.setMap( @marker.getMap() )
 
-			@$log = directives.api.utils.Logger
-			@$log.info(@)
 		getSharedCross:(crossUrl)=>
 			@markerLabel.getSharedCross(crossUrl)
 		setTitle:()=>

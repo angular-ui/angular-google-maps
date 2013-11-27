@@ -47,13 +47,14 @@
         <layer type="BicyclingLayer" show="map.showBicycling"></layer>
         <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>
 
-        <marker coords="searchLocation">
-        </marker>
+        <marker coords="searchLocation"/>
+        
         <markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
-                 doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
+                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
         </markers>
-
-        <markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'">
+        
+        <markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" 
+                    labelContent="'title'" labelAnchor="22 0" labelClass="marker-labels">
             <windows show="'showWindow'" closeClick="'closeClick'">
                 <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 
@@ -114,24 +115,6 @@
     <fieldset>
         <table class="table">
             <tbody>
-            <tr>
-                <td>
-                    <ul>
-                        <li class="dropdown">
-                            <a class="dropdown-toggle"
-                               data-toggle="dropdown"
-                               href="#">
-                                Products
-                                <b class="caret"></b>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Consumer</a></li>
-                                <li><a href="#>">Broadcast</a></li>
-                            </ul>
-
-                    </ul>
-                </td>
-            </tr>
             <tr>
                 <td>
                     <strong>Layers</strong>

@@ -362,6 +362,9 @@
     return this.GmapUtil = {
       getLabelPositionPoint: function(anchor) {
         var xPos, yPos;
+        if (anchor === void 0) {
+          return void 0;
+        }
         anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor);
         xPos = anchor[1];
         yPos = anchor[2];
@@ -507,8 +510,6 @@
           return self.markerLabel.setMap(theMap);
         });
         this.marker.setMap(this.marker.getMap());
-        this.$log = directives.api.utils.Logger;
-        this.$log.info(this);
       }
 
       MarkerLabelChildModel.prototype.getSharedCross = function(crossUrl) {
@@ -576,7 +577,18 @@
       MarkerChildModel.include(directives.api.utils.GmapUtil);
 
       function MarkerChildModel(index, model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager) {
+        var self,
+          _this = this;
+        this.index = index;
+        this.model = model;
+        this.parentScope = parentScope;
+        this.gMap = gMap;
+        this.defaults = defaults;
+        this.doClick = doClick;
+        this.gMarkerManager = gMarkerManager;
         this.watchDestroy = __bind(this.watchDestroy, this);
+        this.setLabelOptions = __bind(this.setLabelOptions, this);
+        this.isLabelDefined = __bind(this.isLabelDefined, this);
         this.setOptions = __bind(this.setOptions, this);
         this.setIcon = __bind(this.setIcon, this);
         this.setCoords = __bind(this.setCoords, this);
@@ -584,28 +596,24 @@
         this.maybeSetScopeValue = __bind(this.maybeSetScopeValue, this);
         this.createMarker = __bind(this.createMarker, this);
         this.setMyScope = __bind(this.setMyScope, this);
-        var _this = this;
-        this.index = index;
-        this.gMarkerManager = gMarkerManager;
-        this.model = model;
-        this.defaults = defaults;
-        this.parentScope = parentScope;
-        this.iconKey = parentScope.icon;
-        this.coordsKey = parentScope.coords;
-        this.clickKey = parentScope.click();
-        this.optionsKey = parentScope.options;
-        this.myScope = parentScope.$new(false);
-        this.myScope.model = model;
-        this.gMap = gMap;
-        this.setMyScope(model, void 0, true);
-        this.createMarker(model);
-        this.doClick = doClick;
-        this.$log = directives.api.utils.Logger;
+        self = this;
+        this.iconKey = this.parentScope.icon;
+        this.coordsKey = this.parentScope.coords;
+        this.clickKey = this.parentScope.click();
+        this.labelContentKey = this.parentScope.labelContent;
+        this.optionsKey = this.parentScope.options;
+        this.labelOptionsKey = this.parentScope.labelOptions;
+        this.myScope = this.parentScope.$new(false);
+        this.myScope.model = this.model;
+        this.setMyScope(this.model, void 0, true);
+        this.createMarker(this.model);
         this.myScope.$watch('model', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             return _this.setMyScope(newValue, oldValue);
           }
         }, true);
+        this.$log = directives.api.utils.Logger;
+        this.$log.info(self);
         this.watchDestroy(this.myScope);
       }
 
@@ -618,6 +626,7 @@
         }
         this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon);
         this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
+        this.maybeSetScopeValue('labelContent', model, oldModel, this.labelContentKey, this.evalModelHandle, isInit);
         this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
         return this.createMarker(model, oldModel, isInit);
       };
@@ -726,13 +735,28 @@
         }
         this.opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options);
         delete this.gMarker;
-        this.gMarker = new google.maps.Marker(this.opts);
+        if (this.isLabelDefined(scope)) {
+          this.gMarker = new MarkerWithLabel(this.setLabelOptions(this.opts, scope));
+        } else {
+          this.gMarker = new google.maps.Marker(this.opts);
+        }
         this.gMarkerManager.add(this.gMarker);
         return google.maps.event.addListener(this.gMarker, 'click', function() {
           if (_this.doClick && (_this.myScope.click != null)) {
             return _this.myScope.click();
           }
         });
+      };
+
+      MarkerChildModel.prototype.isLabelDefined = function(scope) {
+        return scope.labelContent != null;
+      };
+
+      MarkerChildModel.prototype.setLabelOptions = function(opts, scope) {
+        opts.labelAnchor = this.getLabelPositionPoint(scope.labelAnchor);
+        opts.labelClass = scope.labelClass;
+        opts.labelContent = scope.labelContent;
+        return opts;
       };
 
       MarkerChildModel.prototype.watchDestroy = function(scope) {
@@ -1916,6 +1940,9 @@ not 1:1 in this setting.
         this.scope.doCluster = '=docluster';
         this.scope.clusterOptions = '=clusteroptions';
         this.scope.fit = '=fit';
+        this.scope.labelContent = '=labelcontent';
+        this.scope.labelAnchor = '@labelanchor';
+        this.scope.labelClass = '@labelclass';
         this.$timeout = $timeout;
         this.$log.info(this);
       }
