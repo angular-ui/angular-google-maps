@@ -15,4 +15,7 @@
 				$element.data('instance')
 		]
 		link: (scope, element, attrs, ctrl) =>
-			new directives.api.models.parent.MarkerParentModel(scope, element, attrs, ctrl, @$timeout)
+            scope.$on('$includeContentLoaded', (evt) ->
+                ctrl.init(element.next())
+            )
+            new directives.api.models.parent.MarkerParentModel(scope, element, attrs, ctrl, @$timeout)

@@ -10,27 +10,30 @@ not 1:1 in this setting.
 
 ###
 @ngGmapModule "directives.api", ->
-	class @Markers extends directives.api.IMarker
-		constructor: ($timeout) ->
-			super($timeout)
-			self = @
-			@template = '<span class="angular-google-map-markers" ng-transclude></span>'
-			
-			@scope.models = '=models'
-			@scope.doCluster= '=docluster'
-			@scope.clusterOptions= '=clusteroptions'
-			@scope.fit= '=fit'
-			@scope.labelContent= '=labelcontent'
-			@scope.labelAnchor= '@labelanchor'
-			@scope.labelClass= '@labelclass'
+    class @Markers extends directives.api.IMarker
+        constructor: ($timeout) ->
+            super($timeout)
+            self = @
+            @template = '<span class="angular-google-map-markers" ng-transclude></span>'
 
-			@$timeout = $timeout
-			@$log.info(@)
-		
-		controller: ['$scope','$element',($scope, $element) ->
-			@getMarkersScope = ->
-				$scope
-		]
+            @scope.models = '=models'
+            @scope.doCluster = '=docluster'
+            @scope.clusterOptions = '=clusteroptions'
+            @scope.fit = '=fit'
+            @scope.labelContent = '=labelcontent'
+            @scope.labelAnchor = '@labelanchor'
+            @scope.labelClass = '@labelclass'
 
-		link: (scope, element, attrs, ctrl) =>
-			new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, @$timeout)
+            @$timeout = $timeout
+            @$log.info(@)
+
+        controller: ['$scope', '$element', ($scope, $element) ->
+            @getMarkersScope = ->
+                $scope
+        ]
+
+        link: (scope, element, attrs, ctrl) =>
+            scope.$on('$includeContentLoaded', (evt) ->
+                ctrl.init(element.next())
+            )
+            new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, @$timeout)
