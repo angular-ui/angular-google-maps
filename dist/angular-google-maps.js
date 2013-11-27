@@ -1701,7 +1701,6 @@
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
         this.restrict = 'ECMA';
-        this.replace = true;
         this.require = '^googleMap';
         this.priority = -1;
         this.transclude = true;
@@ -1892,16 +1891,15 @@
 
       Marker.prototype.controller = [
         '$scope', '$element', function($scope, $element) {
-          return this.getMarker = function() {
-            return $element.data('instance');
+          return {
+            getMarker: function() {
+              return $element.data('instance');
+            }
           };
         }
       ];
 
       Marker.prototype.link = function(scope, element, attrs, ctrl) {
-        scope.$on('$includeContentLoaded', function(evt) {
-          return ctrl.init(element.next());
-        });
         return new directives.api.models.parent.MarkerParentModel(scope, element, attrs, ctrl, this.$timeout);
       };
 
@@ -1952,16 +1950,15 @@ not 1:1 in this setting.
 
       Markers.prototype.controller = [
         '$scope', '$element', function($scope, $element) {
-          return this.getMarkersScope = function() {
-            return $scope;
+          return {
+            getMarkersScope: function() {
+              return $scope;
+            }
           };
         }
       ];
 
       Markers.prototype.link = function(scope, element, attrs, ctrl) {
-        scope.$on('$includeContentLoaded', function(evt) {
-          return ctrl.init(element.next());
-        });
         return new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, this.$timeout);
       };
 
@@ -4501,12 +4498,6 @@ angular.module('google-maps')
              * @param attrs
              */
             link: function (scope, element, attrs) {
-                //new as of angular 1.2.1+
-                //https://github.com/angular/angular.js/issues/4935
-                //http://plnkr.co/edit/oeWTQbzrBGSBzi1iu2WQ?p=preview
-                scope.$on('$includeContentLoaded', function(evt) {
-                    ctrl.init(element.next());
-                });
 
                 // Center property must be specified and provide lat &
                 // lng properties

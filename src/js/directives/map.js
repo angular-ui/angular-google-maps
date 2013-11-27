@@ -114,12 +114,6 @@ angular.module('google-maps')
              * @param attrs
              */
             link: function (scope, element, attrs) {
-                //new as of angular 1.2.1+
-                //https://github.com/angular/angular.js/issues/4935
-                //http://plnkr.co/edit/oeWTQbzrBGSBzi1iu2WQ?p=preview
-                scope.$on('$includeContentLoaded', function(evt) {
-                    ctrl.init(element.next());
-                });
 
                 // Center property must be specified and provide lat &
                 // lng properties

@@ -11,11 +11,8 @@
             @$log.info(@)
 
         controller: ['$scope', '$element', ($scope, $element) ->
-            @getMarker = ->
+            getMarker: ->
                 $element.data('instance')
         ]
         link: (scope, element, attrs, ctrl) =>
-            scope.$on('$includeContentLoaded', (evt) ->
-                ctrl.init(element.next())
-            )
             new directives.api.models.parent.MarkerParentModel(scope, element, attrs, ctrl, @$timeout)

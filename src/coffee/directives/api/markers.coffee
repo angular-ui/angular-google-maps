@@ -28,12 +28,9 @@ not 1:1 in this setting.
             @$log.info(@)
 
         controller: ['$scope', '$element', ($scope, $element) ->
-            @getMarkersScope = ->
+            getMarkersScope: ->
                 $scope
         ]
 
         link: (scope, element, attrs, ctrl) =>
-            scope.$on('$includeContentLoaded', (evt) ->
-                ctrl.init(element.next())
-            )
             new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, @$timeout)
