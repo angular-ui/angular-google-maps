@@ -4418,7 +4418,7 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 /*jshint indent:4 */
 /*globals directives,google*/
 angular.module('google-maps')
-    .directive('googleMap', ['$log', '$timeout', '$parse', function ($log, $timeout, $parse) {
+    .directive('googleMap', ['$log', '$timeout', function ($log, $timeout) {
 
         "use strict";
 
@@ -4528,10 +4528,10 @@ angular.module('google-maps')
                 var opts = {options: {}};
 
                 if (attrs.options)
-                    opts.options = $parse(attrs.options)(scope);
+                    opts.options = scope.options;
 
                 if (attrs.styles)
-                    opts.styles = $parse(attrs.styles)(scope);
+                    opts.styles = scope.styles;
 
                 if (attrs.type) {
                     var type = attrs.type.toUpperCase();
