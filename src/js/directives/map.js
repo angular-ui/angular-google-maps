@@ -27,11 +27,12 @@
  * @authors
  *  Nicolas Laplante - https://plus.google.com/108189012221374960701
  *  Nicholas McCready - https://twitter.com/nmccready
+ *  Nick Baugh - https://github.com/niftylettuce
  */
 /*jshint indent:4 */
 /*globals directives,google*/
 angular.module('google-maps')
-    .directive('googleMap', ['$log', '$timeout', function ($log, $timeout) {
+    .directive('googleMap', ['$log', '$timeout', '$parse', function ($log, $timeout, $parse) {
 
         "use strict";
 
@@ -95,6 +96,7 @@ angular.module('google-maps')
                 windows: '=windows',        // optional
                 options: '=options',        // optional
                 events: '=events',          // optional
+                styles: '=styles',          // optional
                 bounds: '=bounds'
             },
 
@@ -140,10 +142,10 @@ angular.module('google-maps')
                 var opts = {options: {}};
 
                 if (attrs.options)
-                    opts.options = scope.options;
+                    opts.options = $parse(attrs.options)(scope)
 
                 if (attrs.styles)
-                    opts.styles = scope.styles;
+                    opts.styles = $parse(attrs.styles)(scope)
 
                 if (attrs.type) {
                     var type = attrs.type.toUpperCase();
