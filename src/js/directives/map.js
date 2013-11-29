@@ -140,10 +140,10 @@ angular.module('google-maps')
                 var opts = {options: {}};
 
                 if (attrs.options)
-                    opts.options = scope.options
+                    opts.options = scope.options;
 
                 if (attrs.styles)
-                    opts.styles = scope.styles
+                    opts.styles = scope.styles;
 
                 if (attrs.type) {
                     var type = attrs.type.toUpperCase();
