@@ -28,7 +28,8 @@
  *  Nicolas Laplante - https://plus.google.com/108189012221374960701
  *  Nicholas McCready - https://twitter.com/nmccready
  */
-
+/*jshint indent:4 */
+/*globals directives,google*/
 angular.module('google-maps')
     .directive('googleMap', ['$log', '$timeout', function ($log, $timeout) {
 
@@ -37,7 +38,7 @@ angular.module('google-maps')
         directives.api.utils.Logger.logger = $log;
 
         var DEFAULTS = {
-          mapTypeId: google.maps.MapTypeId.ROADMAP
+            mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
         /*
@@ -137,9 +138,9 @@ angular.module('google-maps')
 
                 // Parse options
                 var opts = {options: {}};
-                if (attrs.options) {
-                    opts.options = scope.options;
-                }
+
+                if (attrs.options)
+                    opts.options = scope[attrs.options];
 
                 if (attrs.type) {
                     var type = attrs.type.toUpperCase();
@@ -151,6 +152,8 @@ angular.module('google-maps')
                         $log.error('angular-google-maps: invalid map type "' + attrs.type + '"');
                     }
                 }
+
+                console.log('opts', opts);
 
                 // Create the map
                 var _m = new google.maps.Map(el.find('div')[1], angular.extend({}, DEFAULTS, opts, {
@@ -192,7 +195,7 @@ angular.module('google-maps')
                 });
 
                 google.maps.event.addListener(_m, 'zoom_changed', function () {
-                    if (scope.zoom != _m.zoom) {
+                    if (scope.zoom !== _m.zoom) {
 
                         $timeout(function () {
                             scope.$apply(function (s) {
@@ -225,13 +228,12 @@ angular.module('google-maps')
                     var sw = b.getSouthWest();
 
                     $timeout(function () {
-
-                      scope.$apply(function (s) {
-                        if(s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0){
-                            s.bounds.northeast = {latitude: ne.lat(), longitude: ne.lng()} ;
-                            s.bounds.southwest = {latitude: sw.lat(), longitude: sw.lng()} ;
-                        }
-                      });
+                        scope.$apply(function (s) {
+                            if(s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0){
+                                s.bounds.northeast = {latitude: ne.lat(), longitude: ne.lng()} ;
+                                s.bounds.southwest = {latitude: sw.lat(), longitude: sw.lng()} ;
+                            }
+                        });
                     });
                 });
 
@@ -309,7 +311,7 @@ angular.module('google-maps')
                     //_m.draw();
                 });
 
-				scope.$watch('bounds', function (newValue, oldValue) {
+                scope.$watch('bounds', function (newValue, oldValue) {
                     if (newValue === oldValue) {
                         return;
                     }
