@@ -140,7 +140,10 @@ angular.module('google-maps')
                 var opts = {options: {}};
 
                 if (attrs.options)
-                    opts.options = scope[attrs.options];
+                    opts.options = scope.options
+
+                if (attrs.styles)
+                    opts.styles = scope.styles
 
                 if (attrs.type) {
                     var type = attrs.type.toUpperCase();
@@ -152,8 +155,6 @@ angular.module('google-maps')
                         $log.error('angular-google-maps: invalid map type "' + attrs.type + '"');
                     }
                 }
-
-                console.log('opts', opts);
 
                 // Create the map
                 var _m = new google.maps.Map(el.find('div')[1], angular.extend({}, DEFAULTS, opts, {
