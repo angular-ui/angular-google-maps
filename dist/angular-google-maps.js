@@ -1090,7 +1090,7 @@
         this.attrs = attrs;
         this.mapCtrl = mapCtrl;
         this.$timeout = $timeout;
-        this.onLayerCreated = onLayerCreated != null ? onLayerCreated : (function(layer) {});
+        this.onLayerCreated = onLayerCreated != null ? onLayerCreated : void 0;
         this.$log = $log != null ? $log : directives.api.utils.Logger;
         this.createGoogleLayer = __bind(this.createGoogleLayer, this);
         if (this.attrs.type == null) {
@@ -1132,14 +1132,17 @@
       }
 
       LayerParentModel.prototype.createGoogleLayer = function() {
+        var _this = this;
         if (this.attrs.options != null) {
           this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type]() : new google.maps[this.attrs.namespace][this.attrs.type]();
         } else {
           this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type](this.scope.options) : new google.maps[this.attrs.namespace][this.attrs.type](this.scope.options);
         }
-        if ((this.layer != null) && (this.onLayerCreated != null)) {
-          return this.onLayerCreated(this.layer);
-        }
+        return this.$timeout(function() {
+          if ((_this.layer != null) && (_this.onLayerCreated != null)) {
+            return _this.onLayerCreated(_this.layer);
+          }
+        });
       };
 
       return LayerParentModel;
@@ -1843,9 +1846,9 @@
       __extends(Layer, _super);
 
       function Layer($timeout) {
+        this.$timeout = $timeout;
         this.link = __bind(this.link, this);
         this.$log = directives.api.utils.Logger;
-        this.$timeout = $timeout;
         this.restrict = "ECMA";
         this.require = "^googleMap";
         this.priority = -1;
@@ -1862,8 +1865,8 @@
       }
 
       Layer.prototype.link = function(scope, element, attrs, mapCtrl) {
-        if (scope.onCreated != null) {
-          return new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, scope.onCreated, this.$timeout);
+        if (attrs.oncreated != null) {
+          return new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout, scope.onCreated);
         } else {
           return new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout);
         }
