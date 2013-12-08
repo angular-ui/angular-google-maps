@@ -44,15 +44,19 @@
 	    		<li ng-class="{'active': $location.path() == '/use'}"><a href="#!/use">Quickstart</a></li>
 	    		<li ng-class="{'active': $location.path() == '/api'}"><a href="#!/api">API documentation</a></li>
 	    		<li ng-class="{'active': $location.path() == '/demo'}"><a href="#!/demo">Demo</a></li>	    		
-	    		<li><a href="https://github.com/nlaplante/angular-google-maps"><i class="icon-github-alt"></i> Code</a></li>
-	    		<li><a href="https://github.com/nlaplante/angular-google-maps/issues?state=open"><i class="icon-github-alt"></i> Issue tracker <span class="badge badge-important">{{ github.issuesCount }}</span></a></li>
+	    		<li class="dropdown">
+	    			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Developer resources <b class="caret"></b></a>
+	    			<ul class="dropdown-menu">
+	    				<li><a href="https://github.com/nlaplante/angular-google-maps"><i class="icon-github-alt"></i> Code</a></li>
+	    				<li><a href="https://github.com/nlaplante/angular-google-maps/issues?state=open"><i class="icon-github-alt"></i> Issue tracker <span class="badge badge-important">{{ github.issuesCount }}</span></a></li>
+	    				<li><a href="https://developers.google.com/maps/documentation/javascript/"><i class="icon-question-sign"></i> Google Maps Javascript API</a></li>		
+	    				<li><a href="https://trello.com/b/WwTRrkfh/angular-google-maps"><i class="icon-trello"></i> Trello project management board</a></li>
+	    			</ul>
+	    		</li>
     		</ul>
     		<ul class="nav navbar-nav navbar-right">    			
-	    		<li><a href="https://developers.google.com/maps/documentation/javascript/"><i class="icon-question-sign"></i> Google Maps Javascript API</a></li>
-	    		<li><a href="https://trello.com/b/WwTRrkfh/angular-google-maps"><i class="icon-trello"></i>
-	    			Trello project management board</a></li>
 	    		<li><a href="https://travis-ci.org/nlaplante/angular-google-maps">
-	    			<img src="https://travis-ci.org/nlaplante/angular-google-maps.png?branch=r1-dev" alt="current build status" />
+	    			<img src="https://travis-ci.org/nlaplante/angular-google-maps.png?branch=master" alt="current build status" />
 	    		</a></li>
     		</ul>
     	</div>
