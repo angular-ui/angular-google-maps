@@ -1,3 +1,3 @@
 'use strict';
 
-angular.module('angularGoogleMapsApp', ['google-maps']);
+angular.module('angularGoogleMapsApp', ['ngRoute', 'ngAnimate', 'google-maps']);
