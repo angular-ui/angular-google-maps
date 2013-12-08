@@ -42,7 +42,7 @@
 
 		<article ng-repeat="headline in headlines">
 			<h4><small>{{ headline.date }}</small> {{ headline.title }}</h4>
-			<section ng-bind-html-unsafe="headline.content"></section>
+			<section ng-bind-html="headline.content"></section>
 		</article>		
 	</section>
 </div>
