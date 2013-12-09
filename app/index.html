@@ -67,7 +67,6 @@
 	    	<div ng-view></div>
 	</div>
 
-
 	<footer ng-controller="FooterCtrl">
 		<div class="container">			
 			<div class="row" ng-show='github != null' ng-cloak>
@@ -121,9 +120,7 @@
 			<p class="text-center text-tiny copyright">
 				&copy; 2013, <a href="https://github.com/nlaplante/angular-google-maps">angular-google-maps</a>
 			</p>
-		</div>
-		
-		
+		</div>				
 	</footer>
 
     <script>
@@ -149,7 +146,6 @@
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
 
-
     <!-- build:js scripts/plugins.js -->
     <script src="bower_components/underscore/underscore.js"></script>
     <!-- endbuild -->
@@ -161,21 +157,17 @@
     <script src="bower_components/angular-cookies/angular-cookies.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
-
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/module.js"></script>
-	
     <script src="scripts/controllers/main.js"></script>
     <script src="scripts/controllers/use.js"></script>
     <script src="scripts/controllers/api.js"></script>
     <script src="scripts/controllers/demo.js"></script>
     <script src="scripts/controllers/headlines.js"></script>    
     <script src="scripts/controllers/footer.js"></script>
-
     <script src="scripts/services/github.js"></script>
-
     <script src="scripts/app.js"></script>
     <!-- endbuild -->
 </body>
