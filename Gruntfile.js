@@ -11,6 +11,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-mkdir');
     grunt.loadNpmTasks('grunt-contrib-coffee');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-template-jasmine-requirejs');
     grunt.loadNpmTasks('grunt-template-jasmine-istanbul');
 
     // Project configuration.
@@ -46,7 +47,7 @@ module.exports = function (grunt) {
                     'tmp/spec/js/ng-gmap-module.spec.spec.js': 'spec/coffee/ng-gmap-module.spec.coffee',
 
                     'tmp/spec/js/oo/oo.spec.js': 'spec/coffee/oo/*.spec.coffee',
-
+                    'tmp/spec/js/directives/api/apis.spec.js': 'spec/coffee/directives/api//*.spec.coffee',
                     'tmp/spec/js/directives/api/models/child/children.spec.js': 'spec/coffee/directives/api/models/child/*.spec.coffee',
                     'tmp/spec/js/directives/api/models/parent/parents.spec.js': 'spec/coffee/directives/api/models/parent/*.spec.coffee',
                     'tmp/spec/js/directives/api/utils/async-processor.spec.js': 'spec/coffee/directives/api/utils/async-processor.spec.coffee'
@@ -155,13 +156,12 @@ module.exports = function (grunt) {
                 options: {
                     keepRunner: true,
                     vendor: ['http://maps.googleapis.com/maps/api/js?sensor=false&language=en','lib/jquery.js',
-                        'lib/angular.js','lib/angular-mock.js','lib/lodash.js','dist/angular-google-maps.js'],
+                        'lib/angular.js','lib/angular-mock.js','lib/underscore.js','dist/angular-google-maps.js'],
                     specs: ['spec/*.spec.js', 'spec/**/*.spec.js', 'spec/**/**/*-spec.js', 'spec/**/**/**/*.spec.js',
                         'tmp/spec/js/*/spec.js', 'tmp/spec/**/*.spec.js', 'tmp/spec/**/**/*-spec.js', 'tmp/spec/**/**/**/*.spec.js'
                     ],
                     helpers: ['tmp/spec/js/helpers/helpers.js'],
-                    template: require('grunt-template-jasmine-istanbul',
-                            'grunt-template-jasmine-requirejs', 'spec/templates/angular-google-maps.html'),
+                    template: require('grunt-template-jasmine-istanbul','grunt-template-jasmine-requirejs'),
                     templateOptions: {
                         coverage: 'spec/coverage/coverage.json',
                         report: 'spec/coverage',

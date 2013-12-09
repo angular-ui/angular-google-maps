@@ -359,6 +359,23 @@
 
 }).call(this);
 
+/*
+    Useful function callbacks that should be defined at later time.
+    Mainly to be used for specs to verify creation / linking.
+
+    This is to lead a common design in notifying child stuff.
+*/
+
+
+(function() {
+  this.ngGmapModule("directives.api.utils", function() {
+    return this.ChildEvents = {
+      onChildCreation: function(child) {}
+    };
+  });
+
+}).call(this);
+
 (function() {
   this.ngGmapModule("directives.api.utils", function() {
     return this.GmapUtil = {
@@ -1746,9 +1763,15 @@
     return this.IWindow = (function(_super) {
       __extends(IWindow, _super);
 
+      IWindow.include(directives.api.utils.ChildEvents);
+
       function IWindow($timeout, $compile, $http, $templateCache) {
-        this.link = __bind(this.link, this);
         var self;
+        this.$timeout = $timeout;
+        this.$compile = $compile;
+        this.$http = $http;
+        this.$templateCache = $templateCache;
+        this.link = __bind(this.link, this);
         self = this;
         this.restrict = 'ECMA';
         this.template = void 0;
@@ -1766,10 +1789,6 @@
           options: '=options'
         };
         this.$log = directives.api.utils.Logger;
-        this.$timeout = $timeout;
-        this.$compile = $compile;
-        this.$http = $http;
-        this.$templateCache = $templateCache;
       }
 
       IWindow.prototype.link = function(scope, element, attrs, ctrls) {
@@ -2010,13 +2029,16 @@ not 1:1 in this setting.
           markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
           defaults = scope.options != null ? scope.options : {};
           hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
-          opts = (markerCtrl != null) && hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : void 0;
+          opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : void 0;
           if (mapCtrl != null) {
             window = new directives.api.models.child.WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile, element);
           }
-          return scope.$on("$destroy", function() {
+          scope.$on("$destroy", function() {
             return window.destroy();
           });
+          if ((_this.onChildCreation != null) && (window != null)) {
+            return _this.onChildCreation(window);
+          }
         }, directives.api.utils.GmapUtil.defaultDelay + 25);
       };
 
