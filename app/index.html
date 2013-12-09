@@ -68,7 +68,7 @@
 	</div>
 
 
-	<footer>
+	<footer ng-controller="FooterCtrl">
 		<div class="container">			
 			<div class="row" ng-show='github != null' ng-cloak>
 				<div class="col-md-4">
@@ -97,10 +97,9 @@
 				<div class="col-md-4">
 					<h3>Issues</h3>
 					
-					<p><ng-pluralize count="github.issuesCount" when="{'0': 'No issues currently open! Yay!', '1': 'There is only one open issue!', 'other': 'There are {} open issues'}"></ng-pluralize>. 
-						<a class="btn btn-sm btn-warning" href="https://github.com/nlaplante/angular-google-maps/issues?state=open">View on GitHub</a></p>
+					<p><ng-pluralize count="github.issuesCount" when="{'0': 'No issues currently open! Yay!', '1': 'There is only one open issue!', 'other': 'There are {} open issues'}"></ng-pluralize>.</p>
 
-					
+					<a class="btn btn-sm btn-warning" href="https://github.com/nlaplante/angular-google-maps/issues?state=open">View on GitHub</a>					
 
 					<h4>Latest issues</h4>
 
@@ -136,11 +135,20 @@
        ga('create', 'UA-XXXXX-X');
        ga('send', 'pageview');
     </script>
+    
+    <script>
+	  (function() {
+    	var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+	    po.src = 'https://apis.google.com/js/plusone.js?onload=onLoadCallback';
+    	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+	  })();
+	</script>	
 
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+
 
     <!-- build:js scripts/plugins.js -->
     <script src="bower_components/underscore/underscore.js"></script>
@@ -163,6 +171,8 @@
     <script src="scripts/controllers/use.js"></script>
     <script src="scripts/controllers/api.js"></script>
     <script src="scripts/controllers/demo.js"></script>
+    <script src="scripts/controllers/headlines.js"></script>    
+    <script src="scripts/controllers/footer.js"></script>
 
     <script src="scripts/services/github.js"></script>
 
