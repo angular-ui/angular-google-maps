@@ -1356,7 +1356,7 @@
       };
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
-        if (propNameToWatch === 'models' && newValue.length === oldValue.length) {
+        if (propNameToWatch === 'models' && newValue === oldValue && newValue.length === oldValue.length) {
           return;
         }
         if (propNameToWatch === 'options' && (newValue != null)) {
