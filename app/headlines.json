@@ -1,5 +1,9 @@
 {
 	"items": [{
+			"title": "angular-google-maps 1.0.0 released!",
+			"date": "Nov. 27 2013",
+			"content": "<p>We are proud to announce that the first stable version of angular-google-maps has just be released!</p><p>The r1-dev branch has been merged back in master, and the old library is available in the legacy branch.</p>"
+		}, {
 			"title": "New website in the works",
 			"date": "Oct. 20 2013",
 			"content": "<p>A brand new website for angular-google-maps is in the works. It will be more complete than the actual one and actually provide a complete API documentation as well as a quickstart guide. It will replace the existing site as soon as the next library version is released.</p>"
