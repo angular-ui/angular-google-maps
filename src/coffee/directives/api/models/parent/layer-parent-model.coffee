@@ -39,4 +39,6 @@
 
             @$timeout =>
                 if @layer? and @onLayerCreated?
-                    @onLayerCreated(@layer)
+                    fn = @onLayerCreated(@scope, @layer)
+                    if fn
+                      fn(@layer)	
