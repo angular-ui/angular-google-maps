@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('angularGoogleMapsApp')
+  .value('headlinesFetchInterval', 300000)
   .config(function ($routeProvider, $locationProvider, $githubProvider) {
   	
   	$locationProvider.html5Mode(false).hashPrefix('!');
@@ -30,30 +31,9 @@ angular.module('angularGoogleMapsApp')
   })
   .run(function ($rootScope, $log, $location, $q, $github) {
   	$rootScope.$location = $location;
-
-  	// GitHub api calls
-  	$q.all([$github.getCommits(), $github.getCollaborators(), $github.getContributors(), $github.getIssues()])
-  		.then(function (results) {
-  		
-	  		var commits = results[0],
-	  			collaborators = results[1],
-	  			contributors = results[2],
-	  			issues = results[3];
-
-	  		angular.extend($rootScope, {
-	  			github: {
-	  				commits: {
-	  					latest: _.first(commits),
-	  					all: commits
-	  				},
-	  				issuesCount: issues.length,
-	  				issues: issues,
-	  				collaborators: collaborators,
-	  				contributors: contributors
-	  			}
-	  		});
-	  	}, function (err) {
-	  		$log.error(err);
-	  		$rootScope.github = null;
-	  	});
+  	
+  	$rootScope.$on('$viewContentLoaded', function () {
+  		$log.info('calling plusone()');
+  		gapi.plusone.go();
+  	});
   });
