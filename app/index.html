@@ -14,6 +14,7 @@
 
     <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.1/flatly/bootstrap.min.css" rel="stylesheet">
 	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+	<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,500,700,900,100' rel='stylesheet' type='text/css'>
 
     <!-- build:css(.tmp) styles/main.css -->    
     <link rel="stylesheet" href="styles/main.css">
@@ -54,10 +55,8 @@
 	    			</ul>
 	    		</li>
     		</ul>
-    		<ul class="nav navbar-nav navbar-right">    			
-	    		<li><a href="https://travis-ci.org/nlaplante/angular-google-maps">
-	    			<img src="https://travis-ci.org/nlaplante/angular-google-maps.png?branch=master" alt="current build status" />
-	    		</a></li>
+    		<ul class="nav navbar-nav navbar-right">    	
+	    		<li></li>
     		</ul>
     	</div>
     </nav>
@@ -67,48 +66,49 @@
 	    	<div ng-view></div>
 	</div>
 
+	<span id="forkongithub"><a href="https://github.com/nlaplante/angular-google-maps">Fork me on GitHub</a></span>
+	
 	<footer ng-controller="FooterCtrl">
 		<div class="container">			
-			<div class="row" ng-show='github != null' ng-cloak>
-				<div class="col-md-4">
-					<h3>Contributors &amp; collaborators</h3>
-					
-					<ul class="list-inline">
-						<li ng-repeat="c in github.contributors"><a href="{{ c.html_url }}">{{ c.login }}</a></li>
-						<li ng-repeat="c in github.collaborators"><a href="{{ c.html_url }}">{{ c.login }}</a></li>
-					</ul>
-
-					<p>Thanks to everyone above for your time and efforts on this project. All contributions are welcome!</p>
-					<p>Want to see your name above? Contribute by issuing pull requests and your name will be added there
-						as soon as they are merged.</p>
-				</div>
-
-				<div class="col-md-4">
+			<div ng-show='github != null' ng-cloak>
+				<div class="well">
+				<div class="row">
+								<div class="col-md-3">
 					<h3>Latest commit</h3>
 
-					{{ github.commits.latest.commit.committer.date | date:"MMM d, y h:mm:ss a Z" }}<br>
-					<a href="#!/">{{ github.commits.latest.author.login }}</a>
-					<p class="muted">{{ github.commits.latest.commit.message }}</p>
-					<a class="btn btn-sm btn-primary" href="{{ github.commits.latest.html_url }}">View on GitHub</a>	
+					<a href="#!/">{{ github.commits.latest.author.login }}</a> on
+					{{ github.commits.latest.commit.committer.date | date:"MMM d, y hh:mm" }}<br>
+
+					<blockquote class="muted"><i>{{ github.commits.latest.commit.message }}</i></blockquote>
+					<a class="btn btn-sm btn-primary" href="{{ github.commits.latest.html_url }}">More details</a>	
 					
 				</div>
 
-				<div class="col-md-4">
-					<h3>Issues</h3>
-					
-					<p><ng-pluralize count="github.issuesCount" when="{'0': 'No issues currently open! Yay!', '1': 'There is only one open issue!', 'other': 'There are {} open issues'}"></ng-pluralize>.</p>
-
-					<a class="btn btn-sm btn-warning" href="https://github.com/nlaplante/angular-google-maps/issues?state=open">View on GitHub</a>					
-
-					<h4>Latest issues</h4>
+				<div class="col-md-9">
+					<h3>Issues <span class="badge">{{ github.issuesCount }}</h3>
 
 					<ul class="list-unstyled">
 						<li ng-repeat="issue in github.issues | limitTo:5 ">
 							<a ng-href="{{ issue.url }}">{{ issue.title }}</a>
 						</li>
 					</ul>
+					
+					<a class="btn btn-sm btn-warning" href="https://github.com/nlaplante/angular-google-maps/issues?state=open">All issues</a>										
 
 				</div>				
+				</div>
+				</div>
+				<div class="well">
+				
+					<h1>Thank you for your collaborations!</h1>					
+					
+
+							<img ng-repeat="c in github.contributors" style="max-width: 15%; max-height: 64px" ng-src="{{ c.avatar_url }}" alt="{{ c.login }}" title="{{ c.login }}">
+
+				</div>
+				
+
+
 			</div>
 			<div class="row" ng-show='github == null' ng-cloak>
 				<div class="alert alert-block">
@@ -133,13 +133,9 @@
        ga('send', 'pageview');
     </script>
     
-    <script>
-	  (function() {
-    	var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-	    po.src = 'https://apis.google.com/js/plusone.js?onload=onLoadCallback';
-    	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-	  })();
-	</script>	
+    <script type="text/javascript" src="https://apis.google.com/js/platform.js">
+	  {parsetags: 'explicit'}
+	</script>
 
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
