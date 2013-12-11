@@ -127,7 +127,10 @@ module.exports = function (grunt) {
         },
         open: {
             example: {
-                path: 'http://localhost:3000/example.html'
+                path: 'http://localhost:3000/example/example.html'
+            },
+            version: {
+                path: 'http://localhost:3000/package.json'
             },
             jasmine: {
                 path: 'http://localhost:8080/_SpecRunner.html'
@@ -139,7 +142,7 @@ module.exports = function (grunt) {
                 options: {
                     hostname: '0.0.0.0',
                     port: 3000,
-                    base: 'example'
+                    base: ''
                 }
             },
             jasmineServer: {

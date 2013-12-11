@@ -3,11 +3,17 @@
     var module = angular.module("angular-google-maps-example", ["google-maps"]);
 }());
 
-function ExampleController ($scope, $timeout, $log) {
+function ExampleController ($scope, $timeout, $log, $http) {
 
     // Enable the new Google Maps visuals until it gets enabled by default.
     // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
     google.maps.visualRefresh = true;
+
+    $http.get("/package.json").success(function(data){
+        if(!data)
+            console.error("no version object found!!");
+        $scope.version = data.version;
+    });
 
     onMarkerClicked = function(marker){
         marker.showWindow = true;
@@ -39,6 +45,7 @@ function ExampleController ($scope, $timeout, $log) {
 
     angular.extend($scope, {
         map: {
+            version: "uknown",
             heatLayerCallback: function (layer) {
                 //set the heat layers backend data
                 var mockHeatLayer = new MockHeatLayer(layer);
