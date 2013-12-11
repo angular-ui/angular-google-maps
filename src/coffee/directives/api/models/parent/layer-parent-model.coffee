@@ -1,6 +1,6 @@
 @ngGmapModule "directives.api.models.parent", ->
     class @LayerParentModel extends oo.BaseObject
-        constructor:(@scope, @element, @attrs, @mapCtrl,@$timeout,@$log = directives.api.utils.Logger) ->
+        constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout, @onLayerCreated = undefined, @$log = directives.api.utils.Logger) ->
             unless @attrs.type?
                 @$log.info("type attribute for the layer directive is mandatory. Layer creation aborted!!")
                 return
@@ -29,10 +29,16 @@
                 @scope.$on "$destroy", ->
                     @layer.setMap null
 
-        createGoogleLayer:()=>
+        createGoogleLayer: ()=>
             if @attrs.options?
-                @layer = if @attrs.namespace == undefined then new google.maps[@attrs.type]() \
+                @layer = if @attrs.namespace == undefined then new google.maps[@attrs.type]()
                 else new google.maps[@attrs.namespace][@attrs.type]()
             else
-                @layer = if@attrs.namespace == undefined then new google.maps[@attrs.type](@scope.options) \
+                @layer = if@attrs.namespace == undefined then new google.maps[@attrs.type](@scope.options)
                 else new google.maps[@attrs.namespace][@attrs.type](@scope.options)
+
+            @$timeout =>
+                if @layer? and @onLayerCreated?
+                    fn = @onLayerCreated(@scope, @layer)
+                    if fn
+                      fn(@layer)	

@@ -1,8 +1,7 @@
 @ngGmapModule "directives.api", ->
     class @Layer extends oo.BaseObject
-        constructor: ($timeout) ->
+        constructor: (@$timeout) ->
             @$log = directives.api.utils.Logger
-            @$timeout = $timeout
             @restrict = "ECMA"
             @require = "^googleMap"
             @priority = -1
@@ -14,7 +13,11 @@
                 type: "=type"
                 namespace: "=namespace"
                 options: '=options'
+                onCreated: '&oncreated'
 
         link: (scope, element, attrs, mapCtrl) =>
-            new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl,@$timeout)
-
+            if attrs.oncreated?
+                new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, @$timeout,
+                        scope.onCreated)
+            else
+                new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, @$timeout)

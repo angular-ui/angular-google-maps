@@ -1100,13 +1100,14 @@
     return this.LayerParentModel = (function(_super) {
       __extends(LayerParentModel, _super);
 
-      function LayerParentModel(scope, element, attrs, mapCtrl, $timeout, $log) {
+      function LayerParentModel(scope, element, attrs, mapCtrl, $timeout, onLayerCreated, $log) {
         var _this = this;
         this.scope = scope;
         this.element = element;
         this.attrs = attrs;
         this.mapCtrl = mapCtrl;
         this.$timeout = $timeout;
+        this.onLayerCreated = onLayerCreated != null ? onLayerCreated : void 0;
         this.$log = $log != null ? $log : directives.api.utils.Logger;
         this.createGoogleLayer = __bind(this.createGoogleLayer, this);
         if (this.attrs.type == null) {
@@ -1148,11 +1149,21 @@
       }
 
       LayerParentModel.prototype.createGoogleLayer = function() {
+        var _this = this;
         if (this.attrs.options != null) {
-          return this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type]() : new google.maps[this.attrs.namespace][this.attrs.type]();
+          this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type]() : new google.maps[this.attrs.namespace][this.attrs.type]();
         } else {
-          return this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type](this.scope.options) : new google.maps[this.attrs.namespace][this.attrs.type](this.scope.options);
+          this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type](this.scope.options) : new google.maps[this.attrs.namespace][this.attrs.type](this.scope.options);
         }
+        return this.$timeout(function() {
+          var fn;
+          if ((_this.layer != null) && (_this.onLayerCreated != null)) {
+            fn = _this.onLayerCreated(_this.scope, _this.layer);
+            if (fn) {
+              return fn(_this.layer);
+            }
+          }
+        });
       };
 
       return LayerParentModel;
@@ -1858,9 +1869,9 @@
       __extends(Layer, _super);
 
       function Layer($timeout) {
+        this.$timeout = $timeout;
         this.link = __bind(this.link, this);
         this.$log = directives.api.utils.Logger;
-        this.$timeout = $timeout;
         this.restrict = "ECMA";
         this.require = "^googleMap";
         this.priority = -1;
@@ -1871,12 +1882,17 @@
           show: "=show",
           type: "=type",
           namespace: "=namespace",
-          options: '=options'
+          options: '=options',
+          onCreated: '&oncreated'
         };
       }
 
       Layer.prototype.link = function(scope, element, attrs, mapCtrl) {
-        return new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout);
+        if (attrs.oncreated != null) {
+          return new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout, scope.onCreated);
+        } else {
+          return new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout);
+        }
       };
 
       return Layer;

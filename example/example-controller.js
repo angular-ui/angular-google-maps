@@ -39,9 +39,14 @@ function ExampleController ($scope, $timeout, $log) {
 
     angular.extend($scope, {
         map: {
+            heatLayerCallback: function (layer) {
+                //set the heat layers backend data
+                var mockHeatLayer = new MockHeatLayer(layer);
+            },
             showTraffic: true,
             showBicycling: false,
             showWeather: false,
+            showHeat: false,
             center: {
                 latitude: 45,
                 longitude: -73

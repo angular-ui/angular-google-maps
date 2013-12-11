@@ -46,6 +46,7 @@
         <layer type="TrafficLayer" show="map.showTraffic"></layer>
         <layer type="BicyclingLayer" show="map.showBicycling"></layer>
         <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>
+        <layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></layer>
 
         <marker coords="searchLocation"/>
 
@@ -123,6 +124,7 @@
                     Traffic: <input type="checkbox" text="TrafficLayer On/Off" ng-model="map.showTraffic">
                     Bicycling: <input type="checkbox" text="BicyclingLayer On/Off" ng-model="map.showBicycling">
                     Weather: <input type="checkbox" text="Weather On/Off" ng-model="map.showWeather">
+                    Heat: <input type="checkbox" text="Heat On/Off" ng-model="map.showHeat">
                 </td>
             </tr>
             <tr>
@@ -284,11 +286,12 @@
 </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="http://maps.googleapis.com/maps/api/js?libraries=weather&sensor=false&language=en&v=3.13"></script>
+<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization&sensor=false&language=en&v=3.13"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.2/angular.js"></script>
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script src="//cdn.jsdelivr.net/lodash/2.4.0/lodash.backbone.js" type="text/javascript"></script>
 <script src="angular-google-maps.js"></script>
+<script src="mock-heat-layer.js"></script>
 <script src="example-controller.js"></script>
 <script src="templates/infoController.js"></script>
 <script src="http://localhost:35729/livereload.js"></script>
