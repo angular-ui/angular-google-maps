@@ -1139,8 +1139,12 @@
           this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type](this.scope.options) : new google.maps[this.attrs.namespace][this.attrs.type](this.scope.options);
         }
         return this.$timeout(function() {
+          var fn;
           if ((_this.layer != null) && (_this.onLayerCreated != null)) {
-            return _this.onLayerCreated(_this.layer);
+            fn = _this.onLayerCreated(_this.scope, _this.layer);
+            if (fn) {
+              return fn(_this.layer);
+            }
           }
         });
       };
