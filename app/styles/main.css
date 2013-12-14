@@ -1,10 +1,10 @@
 @font-face {
     font-family: 'chunkfiveroman';
-    src: url('chunkfive-webfont.eot');
-    src: url('chunkfive-webfont.eot?#iefix') format('embedded-opentype'),
-         url('chunkfive-webfont.woff') format('woff'),
-         url('chunkfive-webfont.ttf') format('truetype'),
-         url('chunkfive-webfont.svg#chunkfiveroman') format('svg');
+    src: url('fonts/chunkfive-webfont.eot');
+    src: url('fonts/chunkfive-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/chunkfive-webfont.woff') format('woff'),
+         url('fonts/chunkfive-webfont.ttf') format('truetype'),
+         url('fonts/chunkfive-webfont.svg#chunkfiveroman') format('svg');
     font-weight: normal;
     font-style: normal;
 
