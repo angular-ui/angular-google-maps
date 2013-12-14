@@ -1,55 +1,59 @@
 <h1 class="page-header">Google Maps for AngularJS</h1>
 
-<google-map class="main" center="map.center" zoom="map.zoom" draggable='true'></google-map>
-
-<p class="lead">
-	This is a set of directives to integrate <a href="http://maps.google.com/" rel="external">Google Maps&trade;</a> 
-	into yout <a href="http://www.angularjs.org/" rel="external">AngularJS</a> applications. It works with both 1.0.x and 1.2.x versions of AngularJS.
-</p>
-
-<p class="text-center">
-	<a class="btn btn-primary" href="#!/use">Use it now</a>
-	<a class="btn btn-default" href="https://github.com/nlaplante/angular-google-maps"><i class="icon-github"></i> View on GitHub</a></p>
-
-	<div class="g-plusone" data-size="tall" data-annotation="inline" data-width="300"></div>
-
-<hr>
-
 <div class="row">
-	<section class="col-md-6">
+	<div class="col-md-6">
 		<div class="well">
-			<h2>All new API!</h2>
+			<p class="lead">
+				This is a set of directives to integrate <a href="http://maps.google.com/" rel="external">Google Maps&trade;</a> 
+				into your <a href="http://www.angularjs.org/" rel="external">AngularJS</a> applications. It works with both 1.0.x and 1.2.x versions of AngularJS.
+			</p>
 
-			<p>The complete angular-google-maps code has been overhauled to simplify its use and to make
-				the development process more straightforward. Directives have been split in separate source files and test specs
-				have been added to the project (thanks to <a href="https://github.com/nmcready">nmcready</a>).</p>
-
-			<p>This results in an easier integration in your project, a better <a href="#!/api">API documentation</a> and much more simplified bug hunting.</p>
-
-			<h2>Features</h2>
-
-			<p>angular-google-maps offers directives for the following Google Maps elements:</p>
-
-			<ul class="icons-ul">
-				<li><i class="icon-li icon-ok"></i> <a href="#!/api#google-map">Map</a></li>
-				<li><i class="icon-li icon-ok"></i> <a href="#!/api#marker">Marker</a></li>
-				<li><i class="icon-li icon-ok"></i> <a href="#!/api#label">Label</a></li>
-				<li><i class="icon-li icon-ok"></i> <a href="#!/api#polygon">Polygon</a></li>
-				<li><i class="icon-li icon-ok"></i> <a href="#!/api#polyline">Polyline</a></li>
-				<li><i class="icon-li icon-ok"></i> <a href="#!/api#trafficlayer">TrafficLayer</a></li>
-				<li><i class="icon-li icon-ok"></i> <a href="#!/api#window">InfoWindow</a></li>
-			</ul>
-
-			<p>If you need a feature which isn't implemented yet, please use our <a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">issue tracker</a> to open a feature request, or fork our repository and issue a pull request!</p>
-
+			<hr>
+			
+			<a class="btn btn-primary" href="https://raw.github.com/nlaplante/angular-google-maps/master/dist/angular-google-maps.min.js">
+				Download (v1.0.2)				
+			</a>
+			
+			<a class="btn btn-warning" href="https://raw.github.com/nlaplante/angular-google-maps/legacy/src/angular-google-maps.js">
+				Download (legacy)
+			</a>
+			
+			<a class="pull-right" href="https://travis-ci.org/nlaplante/angular-google-maps">
+    			<img src="https://travis-ci.org/nlaplante/angular-google-maps.png?branch=master" alt="current build status" />
+    		</a>
 		</div>
-	</section>
-	<section class="col-md-6" ng-controller="HeadlinesCtrl">
-		<h2>Headlines</h2>
 
-		<article ng-repeat="headline in headlines track by headline.title">
-			<h4><small>{{ headline.date }}</small> {{ headline.title }}</h4>
-			<section ng-bind-html="headline.content"></section>
-		</article>		
-	</section>
+		<section ng-controller="HeadlinesCtrl">
+			<h2>Headlines</h2>
+
+			<div class="headlines-body">
+				<article ng-repeat="headline in displayed() track by headline.title" class="headline">
+					<h4><small class="label label-default pull-right">{{ headline.date }}</small> {{ headline.title }}</h4>
+					<section ng-bind-html="headline.content"></section>
+				</article>		
+			</div>
+			
+			<button class="btn btn-sm" ng-click="loadMore()" ng-if="displayed().length < count">Show older headlines</button>			
+		</section>
+	</div>
+	<div class="col-md-6">
+		<google-map class="main" center="map.center" zoom="map.zoom" draggable='true'></google-map>
+
+		<h2>Use cases</h2>
+		
+		<p class="lead">TODO</p>
+		
+		<h2>Features</h2>
+
+		<p>There are directives for most of the widely-used Google Maps objects, including markers, windows, lines and 
+		shapes. We're currently working on integrating more layer objects, including the HeatMap and such.</p>
+
+		<h2>Contributing</h2>
+		
+		<p>If you need a feature which isn't implemented yet, please use our
+		<a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">issue tracker</a> to open a feature request, 
+		or fork our repository, implement the feature and issue a pull request. Contributions are more than welcome!</p>
+
+	</div>
 </div>
+

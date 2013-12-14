@@ -3,7 +3,11 @@
 <div class="row">
 	<div class="col-md-3">
 		<div class="well">
-			<ul class="nav nav-list">
+
+			<input type="search" class="form-control" ng-model="query" placeholder="Search API..." />
+			
+			<ul class="nav nav-list" id="docs-api-menu">
+				<li class="delimiter"></li>
 				<li class="nav-header">Directives</li>
 				<li ng-repeat='d in directives'><a href='/#!/api#{{ d }}'>{{ d }}</a></li>
 				<li class="nav-header">Services</li>

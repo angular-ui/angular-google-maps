@@ -14,11 +14,15 @@ angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope, $
     	'windows'
     ];
 
-
-
     $scope.viewUrl = function (directive) {
     	return 'views/directive/' + directive + '.html';
     };
+    
+    $scope.query = null;
+    
+    $scope.$watch('query', function (nVal, oVal) {
+    	
+    });
 
 	$anchorScroll();    
   });

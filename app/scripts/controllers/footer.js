@@ -3,11 +3,10 @@
 angular.module('angularGoogleMapsApp').controller('FooterCtrl', function ($scope, $log, $q, $github) {
 
     // GitHub api calls
-  	$q.all([$github.getCommits(), /*$github.getCollaborators(),*/ $github.getContributors(), $github.getIssues()])
+  	$q.all([$github.getCommits(), $github.getContributors(), $github.getIssues()])
   		.then(function (results) {
   		
 	  		var commits = results[0],
-//	  			collaborators = results[1],
 	  			contributors = results[1],
 	  			issues = results[2];
 
@@ -19,7 +18,6 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', function ($scope
 	  				},
 	  				issuesCount: issues.length,
 	  				issues: issues,
-//	  				collaborators: collaborators,
 	  				contributors: contributors,
 	  				actors: (function () {
 	  					

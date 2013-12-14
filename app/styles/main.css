@@ -1,76 +1,4 @@
 @font-face {
-    font-family: 'bebas_neueregular';
-    src: url('BebasNeue-webfont.eot');
-    src: url('BebasNeue-webfont.eot?#iefix') format('embedded-opentype'),
-         url('BebasNeue-webfont.woff') format('woff'),
-         url('BebasNeue-webfont.ttf') format('truetype'),
-         url('BebasNeue-webfont.svg#bebas_neueregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'colaborate-boldregular';
-    src: url('colabbol-webfont.eot');
-    src: url('colabbol-webfont.eot?#iefix') format('embedded-opentype'),
-         url('colabbol-webfont.woff') format('woff'),
-         url('colabbol-webfont.ttf') format('truetype'),
-         url('colabbol-webfont.svg#colaborate-boldregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'colaboratelightregular';
-    src: url('colablig-webfont.eot');
-    src: url('colablig-webfont.eot?#iefix') format('embedded-opentype'),
-         url('colablig-webfont.woff') format('woff'),
-         url('colablig-webfont.ttf') format('truetype'),
-         url('colablig-webfont.svg#colaboratelightregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'colaborate-mediumregular';
-    src: url('colabmed-webfont.eot');
-    src: url('colabmed-webfont.eot?#iefix') format('embedded-opentype'),
-         url('colabmed-webfont.woff') format('woff'),
-         url('colabmed-webfont.ttf') format('truetype'),
-         url('colabmed-webfont.svg#colaborate-mediumregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'colaborate-thinregular';
-    src: url('colabthi-webfont.eot');
-    src: url('colabthi-webfont.eot?#iefix') format('embedded-opentype'),
-         url('colabthi-webfont.woff') format('woff'),
-         url('colabthi-webfont.ttf') format('truetype'),
-         url('colabthi-webfont.svg#colaborate-thinregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
-    font-family: 'colaborate-regularregular';
-    src: url('colabreg-webfont.eot');
-    src: url('colabreg-webfont.eot?#iefix') format('embedded-opentype'),
-         url('colabreg-webfont.woff') format('woff'),
-         url('colabreg-webfont.ttf') format('truetype'),
-         url('colabreg-webfont.svg#colaborate-regularregular') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
-}
-
-@font-face {
     font-family: 'chunkfiveroman';
     src: url('chunkfive-webfont.eot');
     src: url('chunkfive-webfont.eot?#iefix') format('embedded-opentype'),
@@ -87,16 +15,21 @@
 }
 
 body {
-	padding-top: 60px;
-	/*background: #fff;*/
-	/*font-family: 'colaborate-regularregular';*/
+	font-family: Roboto;
+	font-weight: 300;
 }
 
-h1 {
-	font-family: 'chunkfiveroman', 'bebas_neueregular';
-	font-size: 54px;
+h1.page-header {
+	color: #536a81 !important;
+	font-family: 'chunkfiveroman', Roboto, serif;
+	font-size: 60px;
 	text-align: center;
 	font-weight: normal;
+	padding-bottom: 20px !important;
+}
+
+h2, h3, h4, h5, h6 {
+	font-family: 'Roboto';
 }
 
 a.brand, h2, h3 {
@@ -104,29 +37,14 @@ a.brand, h2, h3 {
 	font-weight: normal;
 }
 
-/*h1:before {
-	content: "\f0a4";
-	font-family: 'FontAwesome';
-	font-size: 0.8em;
-	position: relative;
-	top: -5px;
-	left: -20px;
-	color: #999;
+.well a {
+	font-weight: 400;
 }
 
-h1:after {
-	content: "\f0a5";
-	font-family: 'FontAwesome';
-	font-size: 0.8em;
-	position: relative;
-	top: -5px;
-	right: -20px;
-	color: #999;
-}*/
 
 /** style for the map on the main page */
 .main .angular-google-map-container {
-	height: 400px;
+	height: 200px;
 	margin-bottom: 30px;
 	border: 10px #fff solid;
 	box-shadow: 0 0 5px #ccc;
@@ -138,10 +56,10 @@ h1:after {
 }
 
 footer {
-	background: #202d3b;
-	border-top: 1px #660000 solid;
-	color: #ddd;
-	padding-top: 40px;
+	background: #f9f9f9;
+	border-top: 4px #ecf0f1 solid;
+/*	color: #ddd;*/
+	padding-top: 20px;
 	padding-bottom: 40px;
 	margin-top: 60px;
 }
@@ -155,6 +73,7 @@ footer:before {
 	top: 0px;
 	left: 50%;
 	margin-left: -40px;
+	line-height: 0px;
 }
 
 footer > .container {
@@ -197,3 +116,31 @@ article {
 	background: #ddd;
 	margin-bottom: 9px !important;
 }*/
+
+#docs-api-menu {
+	margin-top: 10px;
+}
+
+.headline {
+	padding-bottom: 20px;
+	margin-bottom: 30px;
+	border-bottom: 1px #eee solid;
+}
+
+.headline:last-child {
+	border-bottom: none;
+}
+
+h2 {
+	border-bottom: 1px solid #ecf0f1;
+	padding-bottom: 4px;
+	font-weight: 900;
+}
+
+.dropdown-menu>li>a  {
+	font-weight: 300;
+}
+
+/** fork me */
+#forkongithub a{background:#e47600;color:#fff;text-decoration:none;font-family:arial, sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;line-height:2rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:#ff8400;color:#fff;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;top:1px;left:0;height:1px;background:#fff;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:absolute;display:block;top:0;right:0;width:200px;overflow:hidden;height:200px;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.2);}}
+
