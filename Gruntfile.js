@@ -259,6 +259,11 @@ module.exports = function (grunt) {
           src: [
             'generated/*'
           ]
+        }, {
+        	expand: true,
+        	cwd: '.',
+        	dest: '<%= yeoman.dist %>',
+        	src: ['CNAME']
         }]
       },
       styles: {
