@@ -1,3 +1,17 @@
+.DS_Store
+/.settings
+/.project
+old/
+tmp/
+*~
+/nbproject
+.idea
+.grunt
+_SpecRunner.html
+/spec/coverage
+*.iml
+
+##original
 node_modules
 dist
 .tmp
