@@ -2,7 +2,7 @@ language: node_js
 node_js:
     - "0.8"
 before_script: 
-    - sudo npm install -g bower
+    - npm install -g bower
     - bower install
 script: grunt test --force
 branches:
