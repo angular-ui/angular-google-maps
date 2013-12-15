@@ -7,12 +7,13 @@ describe('Service: github', function () {
 
   // instantiate service
   var github;
-  beforeEach(inject(function (_github_) {
-    github = _github_;
+  beforeEach(inject(function ($github) {
+    github = $github;
   }));
 
   it('should do something', function () {
     expect(!!github).toBe(true);
   });
 
+  // TODO write more tests
 });
