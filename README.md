@@ -1,6 +1,8 @@
 angular-google-maps
 ===================
 
+[![Build Status](https://travis-ci.org/nlaplante/angular-google-maps.png?branch=gh-pages-new2)](https://travis-ci.org/nlaplante/angular-google-maps)
+
 This is the angular google maps website branch. This is where you'll find sources for the official 
 website including the API documentation and the live example.
 
