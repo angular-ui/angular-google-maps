@@ -37,12 +37,12 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome'],
+    browsers: ['Chrome', 'PhantomJS', 'IE'],
 
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: false
+    singleRun: true
 
     // Uncomment the following lines if you are using grunt's server to run the tests
     // proxies: {
