@@ -11,10 +11,17 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      'https://maps.googleapis.com/maps/api/js?sensor=false',
       'app/bower_components/angular/angular.js',
+      'app/bower_components/angular-route/angular-route.js',
+      'app/bower_components/angular-sanitize/angular-sanitize.js',
+      'app/bower_components/angular-animate/angular-animate.js',
       'app/bower_components/angular-mocks/angular-mocks.js',
-      'app/scripts/*.js',
-      'app/scripts/**/*.js',
+      'app/bower_components/angular-google-maps/dist/angular-google-maps.js',
+      'app/scripts/module.js',      
+      'app/scripts/controllers/*.js',
+      'app/scripts/services/*.js',
+      'app/scripts/app.js',      
       'test/mock/**/*.js',
       'test/spec/**/*.js'
     ],
@@ -42,11 +49,11 @@ module.exports = function(config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome'],
+    browsers: ['PhantomJS', 'Chrome', 'IE'],
 
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: false
+    singleRun: true
   });
 };
