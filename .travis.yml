@@ -3,7 +3,7 @@ node_js:
     - "0.8"
 before_script: 
     - npm install -g bower
-    - bower clean-cache
+    - bower cache clean
     - bower install
 script: grunt test --force
 branches:
