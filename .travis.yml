@@ -9,3 +9,4 @@ branches:
     - master
     - develop
     - legacy
+    - gh-pages-new2
