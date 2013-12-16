@@ -3,18 +3,72 @@
 
 <h4>Usage</h4>
 
-<pre>&lt;google-map center='{expression}' 
+<ul class="nav nav-tabs">
+	<li class="active"><a href="#google-map-spec" data-toggle="tab">Spec</a></li>
+	<li><a href="#google-map-html" data-toggle="tab">Example HTML</a></li>
+	<li><a href="#google-map-script" data-toggle="tab">Script</a></li>
+</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="google-map-spec">
+		<pre>&lt;google-map center='{expression}' 
 	zoom='{expression}'
 	draggable='{string}'
 	dragging='{expression}'
 	refresh='{expression}'
 	options='{expression}'
 	events='{expression}'
-	bounds='{expression'}}&gt;
+	bounds='{expression}'&gt;
 
 	...
 
 &lt;/google-map&gt;</pre>
+	</div>
+	<div class="tab-pane" id="google-map-html">
+		<pre>&lt;google-map center='map.center' 
+	zoom='map.zoom'
+	draggable='true'
+	dragging='{expression}'
+	refresh='isMapVisible()'
+	options='map.options'
+	events='map.events'
+	bounds='map.bounds'&gt;
+
+	...
+
+&lt;/google-map&gt;</pre>
+	</div>
+	<div class="tab-pane" id="google-map-script">
+		<pre>$scope.map = {
+	options: {
+		mapTypeId: google.maps.MapTypeId.TERRAIN, // default value: ROADMAP
+		zoomControl: false // disable zoom controls on map
+	},
+	center: {
+		latitude: 43,
+		longitude: -73
+	},
+	zoom: 8,
+	events: {
+
+	},
+	bounds: {
+		northeast: {
+			latitude: 60,
+			longitude: -60
+		},
+		southwest: {
+			latitude: 20,
+			longitude: -84
+		}
+	}
+};
+
+$scope.isMapVisible = function () {
+	return true; // implement your own visibility logic
+}</pre>
+	</div>
+</div>
 
 <h4>Parameters</h4>
 
@@ -30,40 +84,41 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td class="text-danger">center</td>
-			<td><span class="label label-info">expression</span></td>
+			<td>center</td>
+			<td><span class="label label-danger">expression</span></td>
 			<td>Expression to evaluate as an object representing the map center. The object must have <code>latitude</code> and
 				<code>longitude</code> numeric properties.</td>
 		</tr>
 		<tr>
-			<td class="text-danger">zoom</td>
-			<td><span class="label label-info">expression</span></td>
+			<td>zoom</td>
+			<td><span class="label label-danger">expression</span></td>
 			<td>Expression to evaluate as the map's zoom level. This must be a number between 1<sup>[1]</sup> and 20<sup>[2]</sup>.</td>
 		</tr>
 		<tr>
 			<td>draggable</td>
-			<td><span class="label label-info">string</span></td>
+			<td><span class="label label-default">string</span></td>
 			<td><code>true</code> if map must be draggable, <code>false</code> otherwise</td>
 		</tr>
 		<tr>
 			<td>refresh</td>
-			<td><span class="label label-info">expression</span></td>
-			<td>Expression which, if it evaluates to <code>true</code>, will trigger a map refresh.</td>
+			<td><span class="label label-default">expression</span></td>
+			<td>Expression which, if it evaluates to <code>true</code>, will trigger a map refresh. Useful when the map is
+				initially hidden.</td>
 		</tr>
 		<tr>
 			<td>options</td>
-			<td><span class="label label-info">expression</span></td>
-			<td>Additional options to pass to the google.maps.Map constructor</td>
+			<td><span class="label label-default">expression</span></td>
+			<td>Additional options to pass to the google.maps.Map constructor. See <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" rel="extrnal">all map options</a></td>
 		</tr>
 		<tr>
 			<td>events</td>
-			<td><span class="label label-info">expression</span></td>
+			<td><span class="label label-default">expression</span></td>
 			<td>Custom events to apply to the map. This is an associative array, where keys are event names and values are handler functions.</td>
 		</tr>
 		<tr>
 			<td>bounds</td>
-			<td><span class="label label-info">expression</span></td>
-			<td></td>
+			<td><span class="label label-default">expression</span></td>
+			<td>Fit the map in the specified bounds. The expression must resolve to an object having both <code>northeast</code> and <code>southwest</code> properties. Each of those properties must have a <code>latitude</code> and a <code>longitude</code> properties.</td>
 		</tr>
 	</tbody>
 </table>
