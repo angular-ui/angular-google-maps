@@ -2,6 +2,7 @@
   "name": "angular-google-maps",
   "version": "0.0.0",
   "dependencies": {},
+  "repository": "https://github.com/nlaplante/angular-google-maps",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-copy": "~0.4.1",
