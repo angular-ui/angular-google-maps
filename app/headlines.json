@@ -1,5 +1,9 @@
 {
 	"items": [{
+		 	"title": "Official Google+ community",
+		 	"date": "Dec. 17 2013",
+		 	"content": "<p>We now have our <a href='https://plus.google.com/communities/101653511105172739950' rel='external'>Google+ community</a>! Please join to share your experience with this library, tips and tricks and to receive official announcements.</p>"
+	        }, {
 			"title": "angular-google-maps 1.0.0 released!",
 			"date": "Nov. 27 2013",
 			"content": "<p>We are proud to announce that the first stable version of angular-google-maps has just be released!</p><p>The r1-dev branch has been merged back in master, and the old library is available in the legacy branch.</p>"
