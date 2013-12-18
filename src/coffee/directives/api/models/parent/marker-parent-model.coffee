@@ -20,6 +20,11 @@
                         @scope.click()
                     )
             )
+            if angular.isDefined(scope.events) and scope.events != null and angular.isObject(scope.events)
+                for eventName, eventHandler of scope.events
+                    if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
+                        _m = @gMarker
+                        google.maps.event.addListener(@gMarker, eventName, -> eventHandler.apply(scope, [_m, eventName, arguments]))
             @$log.info(@)
 
         onWatch: (propNameToWatch, scope) =>

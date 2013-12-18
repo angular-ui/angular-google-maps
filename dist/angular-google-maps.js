@@ -1200,7 +1200,7 @@
       }
 
       MarkerParentModel.prototype.onTimeOut = function(scope) {
-        var opts,
+        var eventHandler, eventName, opts, _m, _ref,
           _this = this;
         opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap());
         this.gMarker = new google.maps.Marker(opts);
@@ -1212,6 +1212,18 @@
             });
           }
         });
+        if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
+          _ref = scope.events;
+          for (eventName in _ref) {
+            eventHandler = _ref[eventName];
+            if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+              _m = this.gMarker;
+              google.maps.event.addListener(this.gMarker, eventName, function() {
+                return eventHandler.apply(scope, [_m, eventName, arguments]);
+              });
+            }
+          }
+        }
         return this.$log.info(this);
       };
 
@@ -1739,7 +1751,8 @@
           coords: '=coords',
           icon: '=icon',
           click: '&click',
-          options: '=options'
+          options: '=options',
+          events: '=events'
         };
       }
 
@@ -4515,7 +4528,6 @@ angular.module('google-maps')
                 center: '=center',          // required
                 zoom: '=zoom',              // required
                 dragging: '=dragging',      // optional
-                markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
                 options: '=options',        // optional
