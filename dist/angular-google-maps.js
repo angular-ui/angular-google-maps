@@ -1200,7 +1200,7 @@
       }
 
       MarkerParentModel.prototype.onTimeOut = function(scope) {
-        var opts,
+        var eventHandler, eventName, getEventHandler, opts, _marker, _ref,
           _this = this;
         opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap());
         this.gMarker = new google.maps.Marker(opts);
@@ -1212,6 +1212,21 @@
             });
           }
         });
+        _marker = this.gMarker;
+        if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
+          getEventHandler = function(eventName) {
+            return function() {
+              return scope.events[eventName].apply(scope, [_marker, eventName, arguments]);
+            };
+          };
+          _ref = scope.events;
+          for (eventName in _ref) {
+            eventHandler = _ref[eventName];
+            if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+              google.maps.event.addListener(this.gMarker, eventName, getEventHandler(eventName));
+            }
+          }
+        }
         return this.$log.info(this);
       };
 
@@ -1739,7 +1754,8 @@
           coords: '=coords',
           icon: '=icon',
           click: '&click',
-          options: '=options'
+          options: '=options',
+          events: '=events'
         };
       }
 
@@ -4515,7 +4531,6 @@ angular.module('google-maps')
                 center: '=center',          // required
                 zoom: '=zoom',              // required
                 dragging: '=dragging',      // optional
-                markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
                 options: '=options',        // optional
