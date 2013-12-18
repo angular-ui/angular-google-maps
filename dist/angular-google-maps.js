@@ -1200,7 +1200,7 @@
       }
 
       MarkerParentModel.prototype.onTimeOut = function(scope) {
-        var eventHandler, eventName, opts, _marker, _ref,
+        var eventHandler, eventName, opts, _m, _ref,
           _this = this;
         opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap());
         this.gMarker = new google.maps.Marker(opts);
@@ -1213,13 +1213,13 @@
           }
         });
         if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
-          _marker = this.gMarker;
           _ref = scope.events;
           for (eventName in _ref) {
             eventHandler = _ref[eventName];
             if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+              _m = this.gMarker;
               google.maps.event.addListener(this.gMarker, eventName, function() {
-                return eventHandler.apply(scope, [_marker, eventName, arguments]);
+                return eventHandler.apply(scope, [_m, eventName, arguments]);
               });
             }
           }
