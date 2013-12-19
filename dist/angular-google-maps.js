@@ -4515,7 +4515,6 @@ angular.module('google-maps')
                 center: '=center',          // required
                 zoom: '=zoom',              // required
                 dragging: '=dragging',      // optional
-                markers: '=markers',        // optional
                 refresh: '&refresh',        // optional
                 windows: '=windows',        // optional
                 options: '=options',        // optional
