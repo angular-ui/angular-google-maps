@@ -13,7 +13,7 @@ angular.module('google-maps').factory('add-events', ['$timeout',function($timeou
         }
         var remove = [];
         angular.forEach(eventName,function(_handler,key){
-            console.log('adding listener: ' + key + ": " + _handler.toString() + " to : " + target);
+            //console.log('adding listener: ' + key + ": " + _handler.toString() + " to : " + target);
             remove.push(addEvent(target,key,_handler));
         });
 

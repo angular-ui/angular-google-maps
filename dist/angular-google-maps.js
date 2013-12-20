@@ -4405,7 +4405,7 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
         }
         var remove = [];
         angular.forEach(eventName,function(_handler,key){
-            console.log('adding listener: ' + key + ": " + _handler.toString() + " to : " + target);
+            //console.log('adding listener: ' + key + ": " + _handler.toString() + " to : " + target);
             remove.push(addEvent(target,key,_handler));
         });
 
@@ -4422,7 +4422,8 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 
     return addEvents;
 
-}]);;/**!
+}]);
+;/**!
  * The MIT License
  *
  * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
