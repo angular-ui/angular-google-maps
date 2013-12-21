@@ -27,7 +27,7 @@ function ExampleController ($scope, $timeout, $log, $http) {
         }
         scope.map.randomMarkers = markers;
     };
-    
+
     createRandomMarker = function(i, bounds) {
       var lat_min = bounds.southwest.latitude,
           lat_range = bounds.northeast.latitude - lat_min,
@@ -112,7 +112,7 @@ function ExampleController ($scope, $timeout, $log, $http) {
             doClusterRandomMarkers: true,
             doUgly: true, //great name :)
             clusterOptions:{title:'Hi I am a Cluster!', gridSize:60, ignoreHidden:true,minimumClusterSize:2,
-                imageExtension:'png',imagePath:'http://localhost:3000/cluster',imageSizes:[72]},
+                imageExtension:'png',imagePath:'http://localhost:3000/example/cluster',imageSizes:[72]},
             clickedMarker: {
                 title: 'You clicked here',
                 latitude: null,
@@ -258,7 +258,7 @@ function ExampleController ($scope, $timeout, $log, $http) {
     $scope.map.clusterOptionsText = JSON.stringify($scope.map.clusterOptions);
     $scope.$watch('map.clusterOptionsText', function (newValue, oldValue) {
         if(newValue !== oldValue)
-            $scope.map.clusterOptions = angular.fromJson($scope.map.clusterOptionsText);    
+            $scope.map.clusterOptions = angular.fromJson($scope.map.clusterOptionsText);
     });
 
      $scope.$watch('map.doUgly', function (newValue, oldValue) {
