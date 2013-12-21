@@ -48,7 +48,7 @@
         <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>
         <layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></layer>
 
-        <marker coords="searchLocation"/>
+        <marker coords="searchLocationMarker.coords" options="searchLocationMarker.options" events="searchLocationMarker.events" />
 
         <markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
                     doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
