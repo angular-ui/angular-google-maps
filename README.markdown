@@ -38,7 +38,7 @@ are OUTDATED and updates will come as soon as possible.
 
 Pull requests more than welcome! If you're adding new features, it would be appreciated if you would provide some docs about the feature. This can be done either by adding a card to our [Trello board](https://trello.com/b/WwTRrkfh/angular-google-maps), forking gh-pages-new2 and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
 
-[![Branching Model w Git Flow](http://nvie.com/posts/a-successful-git-branching-model/)
+[Branching Model w Git Flow](http://nvie.com/posts/a-successful-git-branching-model/)
 We are trying to follow the git flow branching model where all bugs that are considered urgent / patches will be pull
 requested against master. If the PR (pull request) is an improvement and a non urgent fix it will go towards develop
 which is the working(SNAPSHOT) next version of what master will be.
