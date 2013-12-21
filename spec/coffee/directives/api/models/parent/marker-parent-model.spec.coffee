@@ -9,6 +9,8 @@ describe "MarkerParentModel", ->
                 longitude:90
             options:
                 animation:google.maps.Animation.BOUNCE
+            events:
+              click: (marker, eventName, args) ->
 
         #define / inject values into the item we are testing... not a controller but it allows us to inject
         angular.module('mockModule',[])
