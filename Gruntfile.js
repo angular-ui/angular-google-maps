@@ -33,15 +33,27 @@ module.exports = function (grunt) {
         coffee: {
             compile: {
                 files: {
-                    'tmp/output_coffee.js': ['src/coffee/*.coffee',
+                    'tmp/output_coffee.js': [
+                        'src/coffee/module.coffee',
                         'src/coffee/ng-gmap-module.coffee',
+                        'src/coffee/controllers/polyline-display.js',
+                        'src/coffee/utils/LatLngArraySync.coffee',
+                        'src/coffee/utils/MapEvents.coffee',
                         'src/coffee/oo/base-object.coffee',
                         'src/coffee/directives/api/managers/*.coffee',
                         'src/coffee/directives/api/utils/*.coffee',
                         'src/coffee/directives/api/models/child/*.coffee',
                         'src/coffee/directives/api/models/parent/*.coffee',
                         'src/coffee/directives/api/*.coffee',
-                        'src/coffee/directives/*.coffee'],
+                        'src/coffee/directives/map.coffee',
+                        'src/coffee/directives/marker.coffee',
+                        'src/coffee/directives/markers.coffee',
+                        'src/coffee/directives/label.coffee',
+                        'src/coffee/directives/polygon.coffee',
+                        'src/coffee/directives/polyline.coffee',
+                        'src/coffee/directives/window.coffee',
+                        'src/coffee/directives/windows.coffee',
+                        'src/coffee/directives/layer.coffee'],
                     //specs
                     'tmp/spec/js/helpers/helpers.js': 'spec/coffee/helpers/*.coffee',
                     'tmp/spec/js/ng-gmap-module.spec.spec.js': 'spec/coffee/ng-gmap-module.spec.coffee',
@@ -59,22 +71,10 @@ module.exports = function (grunt) {
                 separator: ';'
             },
             dist: {
-                src: ['src/js/module.js',
+                src: [
                     'tmp/output_coffee.js',
-                    'src/js/controllers/polyline-display.js',
                     'src/js/utils/markerclusterer-2.0.16.js',
-                    'src/js/utils/markerwithlabel-1.1.9-patched.js',
-                    'src/js/utils/LatLngArraySync.js',
-                    'src/js/utils/MapEvents.js',
-                    'src/js/directives/map.js',
-                    'src/js/directives/marker.js',
-                    'src/js/directives/markers.js',
-                    'src/js/directives/label.js',
-                    'src/js/directives/polygon.js',
-                    'src/js/directives/polyline.js',
-                    'src/js/directives/window.js',
-                    'src/js/directives/windows.js',
-                    'src/js/directives/layer.js'],
+                    'src/js/utils/markerwithlabel-1.1.9-patched.js'],
                 dest: 'tmp/output.js'
             },
             example: {

@@ -1,56 +1,67 @@
-/**!
- * The MIT License
- * 
- * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * 
- * angular-google-maps
- * https://github.com/nlaplante/angular-google-maps
- *
- * @authors
- *  Nicolas Laplante - https://plus.google.com/108189012221374960701
- *  Nicholas McCready - https://twitter.com/nmccready
- */
+/*
+!
+The MIT License
 
-(function(){
-    var app = angular.module('google-maps', []);
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
 
-    app.factory('debounce', ['$timeout', function ($timeout) {
-        return function(fn){ // debounce fn
-            var nthCall = 0;
-            return function(){ // intercepting fn
-                var that = this;
-                var argz = arguments;
-                nthCall++;
-                var later = (function(version){
-                    return function(){
-                        if (version === nthCall){
-                            return fn.apply(that, argz);
-                        }
-                    };
-                })(nthCall);
-                return $timeout(later,0, true);
-            };
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicolas Laplante - https://plus.google.com/108189012221374960701
+Nicholas McCready - https://twitter.com/nmccready
+*/
+
+
+(function() {
+  (function() {
+    var app;
+    app = angular.module("google-maps", []);
+    return app.factory("debounce", [
+      "$timeout", function($timeout) {
+        return function(fn) {
+          var nthCall;
+          nthCall = 0;
+          return function() {
+            var argz, later, that;
+            that = this;
+            argz = arguments;
+            nthCall++;
+            later = (function(version) {
+              return function() {
+                if (version === nthCall) {
+                  return fn.apply(that, argz);
+                }
+              };
+            })(nthCall);
+            return $timeout(later, 0, true);
+          };
         };
-    }]);
-})();;(function() {
+      }
+    ]);
+  })();
+
+}).call(this);
+
+(function() {
   this.ngGmapModule = function(names, fn) {
     var space, _name;
     if (fn == null) {
@@ -67,6 +78,127 @@
       return fn.call(space);
     }
   };
+
+}).call(this);
+
+(function() {
+  angular.module("google-maps").factory("array-sync", [
+    "add-events", function(mapEvents) {
+      var LatLngArraySync;
+      return LatLngArraySync = function(mapArray, scope, pathEval) {
+        var mapArrayListener, scopeArray, watchListener;
+        scopeArray = scope.$eval(pathEval);
+        mapArrayListener = mapEvents(mapArray, {
+          set_at: function(index) {
+            var value;
+            value = mapArray.getAt(index);
+            if (!value) {
+              return;
+            }
+            if (!value.lng || !value.lat) {
+              return;
+            }
+            scopeArray[index].latitude = value.lat();
+            return scopeArray[index].longitude = value.lng();
+          },
+          insert_at: function(index) {
+            var value;
+            value = mapArray.getAt(index);
+            if (!value) {
+              return;
+            }
+            if (!value.lng || !value.lat) {
+              return;
+            }
+            return scopeArray.splice(index, 0, {
+              latitude: value.lat(),
+              longitude: value.lng()
+            });
+          },
+          remove_at: function(index) {
+            return scopeArray.splice(index, 1);
+          }
+        });
+        watchListener = scope.$watch(pathEval, function(newArray) {
+          var i, l, newLength, newValue, oldArray, oldLength, oldValue, _results;
+          oldArray = mapArray;
+          if (newArray) {
+            i = 0;
+            oldLength = oldArray.getLength();
+            newLength = newArray.length;
+            l = Math.min(oldLength, newLength);
+            newValue = void 0;
+            while (i < l) {
+              oldValue = oldArray.getAt(i);
+              newValue = newArray[i];
+              if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
+                oldArray.setAt(i, new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              }
+              i++;
+            }
+            while (i < newLength) {
+              newValue = newArray[i];
+              oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              i++;
+            }
+            _results = [];
+            while (i < oldLength) {
+              oldArray.pop();
+              _results.push(i++);
+            }
+            return _results;
+          }
+        }, true);
+        return function() {
+          if (mapArrayListener) {
+            mapArrayListener();
+            mapArrayListener = null;
+          }
+          if (watchListener) {
+            watchListener();
+            return watchListener = null;
+          }
+        };
+      };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
+  angular.module("google-maps").factory("add-events", [
+    "$timeout", function($timeout) {
+      var addEvent, addEvents;
+      addEvent = function(target, eventName, handler) {
+        return google.maps.event.addListener(target, eventName, function() {
+          handler.apply(this, arguments);
+          return $timeout((function() {}), true);
+        });
+      };
+      addEvents = function(target, eventName, handler) {
+        var remove;
+        if (handler) {
+          return addEvent(target, eventName, handler);
+        }
+        remove = [];
+        angular.forEach(eventName, function(_handler, key) {
+          return remove.push(addEvent(target, key, _handler));
+        });
+        return function() {
+          angular.forEach(remove, function(fn) {
+            if (_.isFunction(fn)) {
+              fn();
+            }
+            if (fn.e !== null && _.isFunction(fn.e)) {
+              return fn.e();
+            }
+          });
+          return remove = null;
+        };
+      };
+      return addEvents;
+    }
+  ]);
 
 }).call(this);
 
@@ -2101,11 +2233,980 @@ not 1:1 in this setting.
   });
 
 }).call(this);
-;angular.module('google-maps').controller('PolylineDisplayController',['$scope',function($scope){
-    $scope.toggleStrokeColor = function(){
-        $scope.stroke.color = ($scope.stroke.color == "#6060FB") ? "red" : "#6060FB";
-    };
-}]);;/*jslint browser: true, confusion: true, sloppy: true, vars: true, nomen: false, plusplus: false, indent: 2 */
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicolas Laplante - https://plus.google.com/108189012221374960701
+Nicholas McCready - https://twitter.com/nmccready
+Nick Baugh - https://github.com/niftylettuce
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("googleMap", [
+    "$log", "$timeout", function($log, $timeout) {
+      "use strict";
+      var DEFAULTS, isTrue;
+      isTrue = function(val) {
+        return angular.isDefined(val) && val !== null && val === true || val === "1" || val === "y" || val === "true";
+      };
+      directives.api.utils.Logger.logger = $log;
+      DEFAULTS = {
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+      return {
+        self: this,
+        restrict: "ECMA",
+        transclude: true,
+        replace: false,
+        template: "<div class=\"angular-google-map\"><div class=\"angular-google-map-container\"></div><div ng-transclude style=\"display: none\"></div></div>",
+        scope: {
+          center: "=center",
+          zoom: "=zoom",
+          dragging: "=dragging",
+          refresh: "&refresh",
+          windows: "=windows",
+          options: "=options",
+          events: "=events",
+          styles: "=styles",
+          bounds: "=bounds"
+        },
+        controller: [
+          "$scope", function($scope) {
+            return {
+              getMap: function() {
+                return $scope.map;
+              }
+            };
+          }
+        ],
+        /*
+        @param scope
+        @param element
+        @param attrs
+        */
+
+        link: function(scope, element, attrs) {
+          var dragging, el, eventName, getEventHandler, opts, settingCenterFromScope, type, _m;
+          if (!angular.isDefined(scope.center) || (!angular.isDefined(scope.center.latitude) || !angular.isDefined(scope.center.longitude))) {
+            $log.error("angular-google-maps: could not find a valid center property");
+            return;
+          }
+          if (!angular.isDefined(scope.zoom)) {
+            $log.error("angular-google-maps: map zoom property not set");
+            return;
+          }
+          el = angular.element(element);
+          el.addClass("angular-google-map");
+          opts = {
+            options: {}
+          };
+          if (attrs.options) {
+            opts.options = scope.options;
+          }
+          if (attrs.styles) {
+            opts.styles = scope.styles;
+          }
+          if (attrs.type) {
+            type = attrs.type.toUpperCase();
+            if (google.maps.MapTypeId.hasOwnProperty(type)) {
+              opts.mapTypeId = google.maps.MapTypeId[attrs.type.toUpperCase()];
+            } else {
+              $log.error("angular-google-maps: invalid map type \"" + attrs.type + "\"");
+            }
+          }
+          _m = new google.maps.Map(el.find("div")[1], angular.extend({}, DEFAULTS, opts, {
+            center: new google.maps.LatLng(scope.center.latitude, scope.center.longitude),
+            draggable: isTrue(attrs.draggable),
+            zoom: scope.zoom,
+            bounds: scope.bounds
+          }));
+          dragging = false;
+          google.maps.event.addListener(_m, "dragstart", function() {
+            dragging = true;
+            return $timeout(function() {
+              return scope.$apply(function(s) {
+                return s.dragging = dragging;
+              });
+            });
+          });
+          google.maps.event.addListener(_m, "dragend", function() {
+            dragging = false;
+            return $timeout(function() {
+              return scope.$apply(function(s) {
+                return s.dragging = dragging;
+              });
+            });
+          });
+          google.maps.event.addListener(_m, "drag", function() {
+            var c;
+            c = _m.center;
+            return $timeout(function() {
+              return scope.$apply(function(s) {
+                s.center.latitude = c.lat();
+                return s.center.longitude = c.lng();
+              });
+            });
+          });
+          google.maps.event.addListener(_m, "zoom_changed", function() {
+            if (scope.zoom !== _m.zoom) {
+              return $timeout(function() {
+                return scope.$apply(function(s) {
+                  return s.zoom = _m.zoom;
+                });
+              });
+            }
+          });
+          settingCenterFromScope = false;
+          google.maps.event.addListener(_m, "center_changed", function() {
+            var c;
+            c = _m.center;
+            if (settingCenterFromScope) {
+              return;
+            }
+            return $timeout(function() {
+              return scope.$apply(function(s) {
+                if (!_m.dragging) {
+                  if (s.center.latitude !== c.lat()) {
+                    s.center.latitude = c.lat();
+                  }
+                  if (s.center.longitude !== c.lng()) {
+                    return s.center.longitude = c.lng();
+                  }
+                }
+              });
+            });
+          });
+          google.maps.event.addListener(_m, "idle", function() {
+            var b, ne, sw;
+            b = _m.getBounds();
+            ne = b.getNorthEast();
+            sw = b.getSouthWest();
+            return $timeout(function() {
+              return scope.$apply(function(s) {
+                if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
+                  s.bounds.northeast = {
+                    latitude: ne.lat(),
+                    longitude: ne.lng()
+                  };
+                  return s.bounds.southwest = {
+                    latitude: sw.lat(),
+                    longitude: sw.lng()
+                  };
+                }
+              });
+            });
+          });
+          if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
+            getEventHandler = function(eventName) {
+              return function() {
+                return scope.events[eventName].apply(scope, [_m, eventName, arguments]);
+              };
+            };
+            for (eventName in scope.events) {
+              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+                google.maps.event.addListener(_m, eventName, getEventHandler(eventName));
+              }
+            }
+          }
+          scope.map = _m;
+          google.maps.event.trigger(_m, "resize");
+          if (!angular.isUndefined(scope.refresh())) {
+            scope.$watch("refresh()", function(newValue, oldValue) {
+              var coords;
+              if (newValue && !oldValue) {
+                coords = new google.maps.LatLng(newValue.latitude, newValue.longitude);
+                if (isTrue(attrs.pan)) {
+                  return _m.panTo(coords);
+                } else {
+                  return _m.setCenter(coords);
+                }
+              }
+            });
+          }
+          scope.$watch("center", (function(newValue, oldValue) {
+            var coords;
+            if (newValue === oldValue) {
+              return;
+            }
+            settingCenterFromScope = true;
+            if (!dragging) {
+              coords = new google.maps.LatLng(newValue.latitude, newValue.longitude);
+              if (isTrue(attrs.pan)) {
+                _m.panTo(coords);
+              } else {
+                _m.setCenter(coords);
+              }
+            }
+            return settingCenterFromScope = false;
+          }), true);
+          scope.$watch("zoom", function(newValue, oldValue) {
+            if (newValue === oldValue) {
+              return;
+            }
+            return _m.setZoom(newValue);
+          });
+          return scope.$watch("bounds", function(newValue, oldValue) {
+            var bounds, ne, sw;
+            if (newValue === oldValue) {
+              return;
+            }
+            ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude);
+            sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude);
+            bounds = new google.maps.LatLngBounds(sw, ne);
+            return _m.fitBounds(bounds);
+          });
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicolas Laplante - https://plus.google.com/108189012221374960701
+Nicholas McCready - https://twitter.com/nmccready
+*/
+
+
+/*
+Map marker directive
+
+This directive is used to create a marker on an existing map.
+This directive creates a new scope.
+
+{attribute coords required}  object containing latitude and longitude properties
+{attribute icon optional}    string url to image used for marker icon
+{attribute animate optional} if set to false, the marker won't be animated (on by default)
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("marker", [
+    "$timeout", function($timeout) {
+      return new directives.api.Marker($timeout);
+    }
+  ]);
+
+}).call(this);
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicolas Laplante - https://plus.google.com/108189012221374960701
+Nicholas McCready - https://twitter.com/nmccready
+*/
+
+
+/*
+Map marker directive
+
+This directive is used to create a marker on an existing map.
+This directive creates a new scope.
+
+{attribute coords required}  object containing latitude and longitude properties
+{attribute icon optional}    string url to image used for marker icon
+{attribute animate optional} if set to false, the marker won't be animated (on by default)
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("markers", [
+    "$timeout", function($timeout) {
+      return new directives.api.Markers($timeout);
+    }
+  ]);
+
+}).call(this);
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors Bruno Queiroz, creativelikeadog@gmail.com
+*/
+
+
+/*
+Marker label directive
+
+This directive is used to create a marker label on an existing map.
+
+{attribute content required}  content of the label
+{attribute anchor required}    string that contains the x and y point position of the label
+{attribute class optional} class to DOM object
+{attribute style optional} style for the label
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("markerLabel", [
+    "$log", "$timeout", function($log, $timeout) {
+      return new directives.api.Label($timeout);
+    }
+  ]);
+
+}).call(this);
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicolas Laplante - https://plus.google.com/108189012221374960701
+Nicholas McCready - https://twitter.com/nmccready
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("polygon", [
+    "$log", "$timeout", function($log, $timeout) {
+      var DEFAULTS, convertPathPoints, extendMapBounds, isTrue, validatePathPoints;
+      validatePathPoints = function(path) {
+        var i;
+        i = 0;
+        while (i < path.length) {
+          if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
+            return false;
+          }
+          i++;
+        }
+        return true;
+      };
+      convertPathPoints = function(path) {
+        var i, result;
+        result = new google.maps.MVCArray();
+        i = 0;
+        while (i < path.length) {
+          result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
+          i++;
+        }
+        return result;
+      };
+      extendMapBounds = function(map, points) {
+        var bounds, i;
+        bounds = new google.maps.LatLngBounds();
+        i = 0;
+        while (i < points.length) {
+          bounds.extend(points.getAt(i));
+          i++;
+        }
+        return map.fitBounds(bounds);
+      };
+      /*
+      Check if a value is true
+      */
+
+      isTrue = function(val) {
+        return angular.isDefined(val) && val !== null && val === true || val === "1" || val === "y" || val === "true";
+      };
+      "use strict";
+      DEFAULTS = {};
+      return {
+        restrict: "ECA",
+        require: "^googleMap",
+        replace: true,
+        scope: {
+          path: "=path",
+          stroke: "=stroke",
+          clickable: "=",
+          draggable: "=",
+          editable: "=",
+          geodesic: "=",
+          icons: "=icons",
+          visible: "="
+        },
+        link: function(scope, element, attrs, mapCtrl) {
+          if (angular.isUndefined(scope.path) || scope.path === null || scope.path.length < 2 || !validatePathPoints(scope.path)) {
+            $log.error("polyline: no valid path attribute found");
+            return;
+          }
+          return $timeout(function() {
+            var map, opts, pathInsertAtListener, pathPoints, pathRemoveAtListener, pathSetAtListener, polyPath, polyline;
+            map = mapCtrl.getMap();
+            pathPoints = convertPathPoints(scope.path);
+            opts = angular.extend({}, DEFAULTS, {
+              map: map,
+              path: pathPoints,
+              strokeColor: scope.stroke && scope.stroke.color,
+              strokeOpacity: scope.stroke && scope.stroke.opacity,
+              strokeWeight: scope.stroke && scope.stroke.weight
+            });
+            angular.forEach({
+              clickable: true,
+              draggable: false,
+              editable: false,
+              geodesic: false,
+              visible: true
+            }, function(defaultValue, key) {
+              if (angular.isUndefined(scope[key]) || scope[key] === null) {
+                return opts[key] = defaultValue;
+              } else {
+                return opts[key] = scope[key];
+              }
+            });
+            polyline = new google.maps.Polyline(opts);
+            if (isTrue(attrs.fit)) {
+              extendMapBounds(map, pathPoints);
+            }
+            if (angular.isDefined(scope.editable)) {
+              scope.$watch("editable", function(newValue, oldValue) {
+                return polyline.setEditable(newValue);
+              });
+            }
+            if (angular.isDefined(scope.draggable)) {
+              scope.$watch("draggable", function(newValue, oldValue) {
+                return polyline.setDraggable(newValue);
+              });
+            }
+            if (angular.isDefined(scope.visible)) {
+              scope.$watch("visible", function(newValue, oldValue) {
+                return polyline.setVisible(newValue);
+              });
+            }
+            pathSetAtListener = void 0;
+            pathInsertAtListener = void 0;
+            pathRemoveAtListener = void 0;
+            polyPath = polyline.getPath();
+            pathSetAtListener = google.maps.event.addListener(polyPath, "set_at", function(index) {
+              var value;
+              value = polyPath.getAt(index);
+              if (!value) {
+                return;
+              }
+              if (!value.lng || !value.lat) {
+                return;
+              }
+              scope.path[index].latitude = value.lat();
+              scope.path[index].longitude = value.lng();
+              return scope.$apply();
+            });
+            pathInsertAtListener = google.maps.event.addListener(polyPath, "insert_at", function(index) {
+              var value;
+              value = polyPath.getAt(index);
+              if (!value) {
+                return;
+              }
+              if (!value.lng || !value.lat) {
+                return;
+              }
+              scope.path.splice(index, 0, {
+                latitude: value.lat(),
+                longitude: value.lng()
+              });
+              return scope.$apply();
+            });
+            pathRemoveAtListener = google.maps.event.addListener(polyPath, "remove_at", function(index) {
+              scope.path.splice(index, 1);
+              return scope.$apply();
+            });
+            scope.$watch("path", (function(newArray) {
+              var i, l, newLength, newValue, oldArray, oldLength, oldValue;
+              oldArray = polyline.getPath();
+              if (newArray !== oldArray) {
+                if (newArray) {
+                  polyline.setMap(map);
+                  i = 0;
+                  oldLength = oldArray.getLength();
+                  newLength = newArray.length;
+                  l = Math.min(oldLength, newLength);
+                  while (i < l) {
+                    oldValue = oldArray.getAt(i);
+                    newValue = newArray[i];
+                    if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
+                      oldArray.setAt(i, new google.maps.LatLng(newValue.latitude, newValue.longitude));
+                    }
+                    i++;
+                  }
+                  while (i < newLength) {
+                    newValue = newArray[i];
+                    oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+                    i++;
+                  }
+                  while (i < oldLength) {
+                    oldArray.pop();
+                    i++;
+                  }
+                  if (isTrue(attrs.fit)) {
+                    return extendMapBounds(map, oldArray);
+                  }
+                } else {
+                  return polyline.setMap(null);
+                }
+              }
+            }), true);
+            return scope.$on("$destroy", function() {
+              polyline.setMap(null);
+              pathSetAtListener();
+              pathSetAtListener = null;
+              pathInsertAtListener();
+              pathInsertAtListener = null;
+              pathRemoveAtListener();
+              return pathRemoveAtListener = null;
+            });
+          });
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicolas Laplante - https://plus.google.com/108189012221374960701
+Nicholas McCready - https://twitter.com/nmccready
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("polyline", [
+    "$log", "$timeout", "array-sync", function($log, $timeout, arraySync) {
+      var DEFAULTS, convertPathPoints, extendMapBounds, isTrue, validatePathPoints;
+      validatePathPoints = function(path) {
+        var i;
+        i = 0;
+        while (i < path.length) {
+          if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
+            return false;
+          }
+          i++;
+        }
+        return true;
+      };
+      convertPathPoints = function(path) {
+        var i, result;
+        result = new google.maps.MVCArray();
+        i = 0;
+        while (i < path.length) {
+          result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
+          i++;
+        }
+        return result;
+      };
+      extendMapBounds = function(map, points) {
+        var bounds, i;
+        bounds = new google.maps.LatLngBounds();
+        i = 0;
+        while (i < points.length) {
+          bounds.extend(points.getAt(i));
+          i++;
+        }
+        return map.fitBounds(bounds);
+      };
+      /*
+      Check if a value is true
+      */
+
+      isTrue = function(val) {
+        return angular.isDefined(val) && val !== null && val === true || val === "1" || val === "y" || val === "true";
+      };
+      "use strict";
+      DEFAULTS = {};
+      return {
+        restrict: "ECA",
+        replace: true,
+        require: "^googleMap",
+        scope: {
+          path: "=path",
+          stroke: "=stroke",
+          clickable: "=",
+          draggable: "=",
+          editable: "=",
+          geodesic: "=",
+          icons: "=icons",
+          visible: "="
+        },
+        link: function(scope, element, attrs, mapCtrl) {
+          if (angular.isUndefined(scope.path) || scope.path === null || scope.path.length < 2 || !validatePathPoints(scope.path)) {
+            $log.error("polyline: no valid path attribute found");
+            return;
+          }
+          return $timeout(function() {
+            var arraySyncer, buildOpts, map, polyline;
+            buildOpts = function(pathPoints) {
+              var opts;
+              opts = angular.extend({}, DEFAULTS, {
+                map: map,
+                path: pathPoints,
+                strokeColor: scope.stroke && scope.stroke.color,
+                strokeOpacity: scope.stroke && scope.stroke.opacity,
+                strokeWeight: scope.stroke && scope.stroke.weight
+              });
+              angular.forEach({
+                clickable: true,
+                draggable: false,
+                editable: false,
+                geodesic: false,
+                visible: true
+              }, function(defaultValue, key) {
+                if (angular.isUndefined(scope[key]) || scope[key] === null) {
+                  return opts[key] = defaultValue;
+                } else {
+                  return opts[key] = scope[key];
+                }
+              });
+              return opts;
+            };
+            map = mapCtrl.getMap();
+            polyline = new google.maps.Polyline(buildOpts(convertPathPoints(scope.path)));
+            if (isTrue(attrs.fit)) {
+              extendMapBounds(map, pathPoints);
+            }
+            if (angular.isDefined(scope.editable)) {
+              scope.$watch("editable", function(newValue, oldValue) {
+                return polyline.setEditable(newValue);
+              });
+            }
+            if (angular.isDefined(scope.draggable)) {
+              scope.$watch("draggable", function(newValue, oldValue) {
+                return polyline.setDraggable(newValue);
+              });
+            }
+            if (angular.isDefined(scope.visible)) {
+              scope.$watch("visible", function(newValue, oldValue) {
+                return polyline.setVisible(newValue);
+              });
+            }
+            if (angular.isDefined(scope.geodesic)) {
+              scope.$watch("geodesic", function(newValue, oldValue) {
+                return polyline.setOptions(buildOpts(polyline.getPath()));
+              });
+            }
+            if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
+              scope.$watch("stroke.weight", function(newValue, oldValue) {
+                return polyline.setOptions(buildOpts(polyline.getPath()));
+              });
+            }
+            if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
+              scope.$watch("stroke.color", function(newValue, oldValue) {
+                return polyline.setOptions(buildOpts(polyline.getPath()));
+              });
+            }
+            arraySyncer = arraySync(polyline.getPath(), scope, "path");
+            return scope.$on("$destroy", function() {
+              polyline.setMap(null);
+              if (arraySyncer) {
+                arraySyncer();
+                return arraySyncer = null;
+              }
+            });
+          });
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicolas Laplante - https://plus.google.com/108189012221374960701
+Nicholas McCready - https://twitter.com/nmccready
+*/
+
+
+/*
+Map info window directive
+
+This directive is used to create an info window on an existing map.
+This directive creates a new scope.
+
+{attribute coords required}  object containing latitude and longitude properties
+{attribute show optional}    map will show when this expression returns true
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("window", [
+    "$timeout", "$compile", "$http", "$templateCache", function($timeout, $compile, $http, $templateCache) {
+      return new directives.api.Window($timeout, $compile, $http, $templateCache);
+    }
+  ]);
+
+}).call(this);
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicolas Laplante - https://plus.google.com/108189012221374960701
+Nicholas McCready - https://twitter.com/nmccready
+*/
+
+
+/*
+Map info window directive
+
+This directive is used to create an info window on an existing map.
+This directive creates a new scope.
+
+{attribute coords required}  object containing latitude and longitude properties
+{attribute show optional}    map will show when this expression returns true
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("windows", [
+    "$timeout", "$compile", "$http", "$templateCache", "$interpolate", function($timeout, $compile, $http, $templateCache, $interpolate) {
+      return new directives.api.Windows($timeout, $compile, $http, $templateCache, $interpolate);
+    }
+  ]);
+
+}).call(this);
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors:
+- Nicolas Laplante https://plus.google.com/108189012221374960701
+- Nicholas McCready - https://twitter.com/nmccready
+*/
+
+
+/*
+Map Layer directive
+
+This directive is used to create any type of Layer from the google maps sdk.
+This directive creates a new scope.
+
+{attribute show optional}  true (default) shows the trafficlayer otherwise it is hidden
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("layer", [
+    "$timeout", function($timeout) {
+      return new directives.api.Layer($timeout);
+    }
+  ]);
+
+}).call(this);
+;/*jslint browser: true, confusion: true, sloppy: true, vars: true, nomen: false, plusplus: false, indent: 2 */
 /*global window,google */
 
 /**
@@ -4327,1154 +5428,4 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 
   // ... then deal with the label:
   this.label.setMap(theMap);
-};;angular.module("google-maps")
-    .factory('array-sync',['add-events',function(mapEvents){
-
-        return function LatLngArraySync(mapArray,scope,pathEval){
-            var scopeArray = scope.$eval(pathEval);
-
-            var mapArrayListener = mapEvents(mapArray,{
-               'set_at':function(index){
-                    var value = mapArray.getAt(index);
-                  if (!value) return;
-                  if (!value.lng || !value.lat) return;
-                  scopeArray[index].latitude = value.lat();
-                  scopeArray[index].longitude = value.lng();
-                  
-               },
-               'insert_at':function(index){
-                   var value = mapArray.getAt(index);
-                   if (!value) return;
-                   if (!value.lng || !value.lat) return;
-                   scopeArray.splice(index,0,{latitude:value.lat(),longitude:value.lng()});
-               },
-               'remove_at':function(index){
-                   scopeArray.splice(index,1);
-               }
-            });
-
-            var watchListener =  scope.$watch(pathEval, function (newArray) {
-                var oldArray = mapArray;
-                if (newArray) {
-                    var i = 0;
-                    var oldLength = oldArray.getLength();
-                    var newLength = newArray.length;
-                    var l = Math.min(oldLength,newLength);
-                    var newValue;
-                    for(;i < l; i++){
-                        var oldValue = oldArray.getAt(i);
-                        newValue = newArray[i];
-                        if((oldValue.lat() != newValue.latitude) || (oldValue.lng() != newValue.longitude)){
-                            oldArray.setAt(i,new google.maps.LatLng(newValue.latitude, newValue.longitude));
-                        }
-                    }
-                    for(; i < newLength; i++){
-                        newValue = newArray[i];
-                        oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
-                    }
-                    for(; i < oldLength; i++){
-                        oldArray.pop();
-                    }
-                }
-
-            }, true);
-
-            return function(){
-                if(mapArrayListener){
-                    mapArrayListener();
-                    mapArrayListener = null;
-                }
-                if(watchListener){
-                    watchListener();
-                    watchListener = null;
-                }
-            };
-        };
-    }]);;angular.module('google-maps').factory('add-events', ['$timeout',function($timeout){
-
-    function addEvent(target,eventName,handler){
-        return google.maps.event.addListener(target,eventName,function(){
-            handler.apply(this,arguments);
-            $timeout(function(){},true);
-        });
-    }
-
-    function addEvents(target,eventName,handler){
-        if(handler){
-            return addEvent(target,eventName,handler);
-        }
-        var remove = [];
-        angular.forEach(eventName,function(_handler,key){
-            //console.log('adding listener: ' + key + ": " + _handler.toString() + " to : " + target);
-            remove.push(addEvent(target,key,_handler));
-        });
-
-        return function(){
-            angular.forEach(remove,function(fn){
-                if(_.isFunction(fn))
-                    fn();
-                if(fn.e !== null && _.isFunction(fn.e))
-                    fn.e();
-            });
-            remove = null;
-        };
-    }
-
-    return addEvents;
-
-}]);
-;/**!
- * The MIT License
- *
- * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * angular-google-maps
- * https://github.com/nlaplante/angular-google-maps
- *
- * @authors
- *  Nicolas Laplante - https://plus.google.com/108189012221374960701
- *  Nicholas McCready - https://twitter.com/nmccready
- *  Nick Baugh - https://github.com/niftylettuce
- */
-/*jshint indent:4 */
-/*globals directives,google*/
-angular.module('google-maps')
-    .directive('googleMap', ['$log', '$timeout', function ($log, $timeout) {
-
-        "use strict";
-
-        directives.api.utils.Logger.logger = $log;
-
-        var DEFAULTS = {
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-
-        /*
-         * Utility functions
-         */
-
-        /**
-         * Check if a value is true
-         */
-        function isTrue(val) {
-            return angular.isDefined(val) &&
-                val !== null &&
-                val === true ||
-                val === '1' ||
-                val === 'y' ||
-                val === 'true';
-        }
-
-        return {
-            /**
-             *
-             */
-            restrict: 'ECMA',
-
-            /**
-             *
-             */
-            transclude: true,
-
-            /**
-             *
-             */
-            replace: false,
-
-            /**
-             *
-             */
-            //priority: 100,
-
-            /**
-             *
-             */
-            template: '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>',
-
-            /**
-             *
-             */
-            scope: {
-                center: '=center',          // required
-                zoom: '=zoom',              // required
-                dragging: '=dragging',      // optional
-                refresh: '&refresh',        // optional
-                windows: '=windows',        // optional
-                options: '=options',        // optional
-                events: '=events',          // optional
-                styles: '=styles',          // optional
-                bounds: '=bounds'
-            },
-
-            /**
-             *
-             */
-            controller: ['$scope', function ($scope) {
-                /**
-                 * @return the map instance
-                 */
-                this.getMap = function () {
-                    return $scope.map;
-                };
-            }],
-
-            /**
-             *
-             * @param scope
-             * @param element
-             * @param attrs
-             */
-            link: function (scope, element, attrs) {
-
-                // Center property must be specified and provide lat &
-                // lng properties
-                if (!angular.isDefined(scope.center) ||
-                    (!angular.isDefined(scope.center.latitude) || !angular.isDefined(scope.center.longitude))) {
-
-                    $log.error("angular-google-maps: could not find a valid center property");
-                    return;
-                }
-
-                if (!angular.isDefined(scope.zoom)) {
-                    $log.error("angular-google-maps: map zoom property not set");
-                    return;
-                }
-
-                var el = angular.element(element);
-
-                el.addClass("angular-google-map");
-
-                // Parse options
-                var opts = {options: {}};
-
-                if (attrs.options)
-                    opts.options = scope.options;
-
-                if (attrs.styles)
-                    opts.styles = scope.styles;
-
-                if (attrs.type) {
-                    var type = attrs.type.toUpperCase();
-
-                    if (google.maps.MapTypeId.hasOwnProperty(type)) {
-                        opts.mapTypeId = google.maps.MapTypeId[attrs.type.toUpperCase()];
-                    }
-                    else {
-                        $log.error('angular-google-maps: invalid map type "' + attrs.type + '"');
-                    }
-                }
-
-                // Create the map
-                var _m = new google.maps.Map(el.find('div')[1], angular.extend({}, DEFAULTS, opts, {
-                    center: new google.maps.LatLng(scope.center.latitude, scope.center.longitude),
-                    draggable: isTrue(attrs.draggable),
-                    zoom: scope.zoom,
-                    bounds: scope.bounds
-                }));
-
-                var dragging = false;
-
-                google.maps.event.addListener(_m, 'dragstart', function () {
-                    dragging = true;
-                    $timeout(function () {
-                        scope.$apply(function (s) {
-                            s.dragging = dragging;
-                        });
-                    });
-                });
-
-                google.maps.event.addListener(_m, 'dragend', function () {
-                    dragging = false;
-                    $timeout(function () {
-                        scope.$apply(function (s) {
-                            s.dragging = dragging;
-                        });
-                    });
-                });
-
-                google.maps.event.addListener(_m, 'drag', function () {
-                    var c = _m.center;
-
-                    $timeout(function () {
-                        scope.$apply(function (s) {
-                            s.center.latitude = c.lat();
-                            s.center.longitude = c.lng();
-                        });
-                    });
-                });
-
-                google.maps.event.addListener(_m, 'zoom_changed', function () {
-                    if (scope.zoom !== _m.zoom) {
-
-                        $timeout(function () {
-                            scope.$apply(function (s) {
-                                s.zoom = _m.zoom;
-                            });
-                        });
-                    }
-                });
-                var settingCenterFromScope = false;
-                google.maps.event.addListener(_m, 'center_changed', function () {
-                    var c = _m.center;
-
-                    if(settingCenterFromScope)
-                        return; //if the scope notified this change then there is no reason to update scope otherwise infinite loop
-                    $timeout(function () {
-                        scope.$apply(function (s) {
-                            if (!_m.dragging) {
-                                if(s.center.latitude !== c.lat())
-                                    s.center.latitude = c.lat();
-                                if(s.center.longitude !== c.lng())
-                                    s.center.longitude = c.lng();
-                            }
-                        });
-                    });
-                });
-
-                google.maps.event.addListener(_m, 'idle', function () {
-                    var b = _m.getBounds();
-                    var ne = b.getNorthEast();
-                    var sw = b.getSouthWest();
-
-                    $timeout(function () {
-                        scope.$apply(function (s) {
-                            if(s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0){
-                                s.bounds.northeast = {latitude: ne.lat(), longitude: ne.lng()} ;
-                                s.bounds.southwest = {latitude: sw.lat(), longitude: sw.lng()} ;
-                            }
-                        });
-                    });
-                });
-
-                if (angular.isDefined(scope.events) &&
-                    scope.events !== null &&
-                    angular.isObject(scope.events)) {
-
-                    var getEventHandler = function (eventName) {
-                        return function () {
-                            scope.events[eventName].apply(scope, [_m, eventName, arguments ]);
-                        };
-                    };
-
-                    for (var eventName in scope.events) {
-
-                        if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-                            google.maps.event.addListener(_m, eventName, getEventHandler(eventName));
-                        }
-                    }
-                }
-
-                // Put the map into the scope
-                scope.map = _m;
-
-                google.maps.event.trigger(_m, "resize");
-
-                // Check if we need to refresh the map
-                if (!angular.isUndefined(scope.refresh())) {
-                    scope.$watch("refresh()", function (newValue, oldValue) {
-                        if (newValue && !oldValue) {
-                            //  _m.draw();
-                            var coords = new google.maps.LatLng(newValue.latitude, newValue.longitude);
-
-                            if (isTrue(attrs.pan)) {
-                                _m.panTo(coords);
-                            }
-                            else {
-                                _m.setCenter(coords);
-                            }
-
-
-                        }
-                    });
-                }
-
-                // Update map when center coordinates change
-                scope.$watch('center', function (newValue, oldValue) {
-                    if (newValue === oldValue) {
-                        return;
-                    }
-                    settingCenterFromScope = true;
-                    if (!dragging) {
-
-                        var coords = new google.maps.LatLng(newValue.latitude, newValue.longitude);
-
-                        if (isTrue(attrs.pan)) {
-                            _m.panTo(coords);
-                        }
-                        else {
-                            _m.setCenter(coords);
-                        }
-
-                        //_m.draw();
-                    }
-                    settingCenterFromScope = false;
-                }, true);
-
-                scope.$watch('zoom', function (newValue, oldValue) {
-                    if (newValue === oldValue) {
-                        return;
-                    }
-
-                    _m.setZoom(newValue);
-
-                    //_m.draw();
-                });
-
-                scope.$watch('bounds', function (newValue, oldValue) {
-                    if (newValue === oldValue) {
-                        return;
-                    }
-
-                    var ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude);
-                    var sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude);
-                    var bounds = new google.maps.LatLngBounds(sw, ne);
-
-                    _m.fitBounds(bounds);
-                });
-            }
-        };
-    }]);
-;/**!
- * The MIT License
- *
- * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * angular-google-maps
- * https://github.com/nlaplante/angular-google-maps
- *
- * @authors
- *  Nicolas Laplante - https://plus.google.com/108189012221374960701
- *  Nicholas McCready - https://twitter.com/nmccready
- */
-
-/**
- * Map marker directive
- *
- * This directive is used to create a marker on an existing map.
- * This directive creates a new scope.
- *
- * {attribute coords required}  object containing latitude and longitude properties
- * {attribute icon optional}	string url to image used for marker icon
- * {attribute animate optional} if set to false, the marker won't be animated (on by default)
- */
-
-angular.module('google-maps').directive('marker', ['$timeout', function ($timeout) { 
-	return new directives.api.Marker($timeout);
-}]);
-; /**!
- * The MIT License
- *
- * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * angular-google-maps
- * https://github.com/nlaplante/angular-google-maps
- *
-  * @authors
-  *  Nicolas Laplante - https://plus.google.com/108189012221374960701
-  *  Nicholas McCready - https://twitter.com/nmccready
- */
-
-/**
- * Map marker directive
- *
- * This directive is used to create a marker on an existing map.
- * This directive creates a new scope.
- *
- * {attribute coords required}  object containing latitude and longitude properties
- * {attribute icon optional}	string url to image used for marker icon
- * {attribute animate optional} if set to false, the marker won't be animated (on by default)
- */
-
-angular.module('google-maps').directive('markers', ['$timeout', function ($timeout) { 
-	return new directives.api.Markers($timeout);
-}]);
-;/**!
- * The MIT License
- *
- * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * angular-google-maps
- * https://github.com/nlaplante/angular-google-maps
- *
- * @authors Bruno Queiroz, creativelikeadog@gmail.com
- */
-
-/**
- * Marker label directive
- *
- * This directive is used to create a marker label on an existing map.
- *
- * {attribute content required}  content of the label
- * {attribute anchor required}	string that contains the x and y point position of the label
- * {attribute class optional} class to DOM object
- * {attribute style optional} style for the label
- */
-
-angular.module('google-maps').directive('markerLabel', ['$log', '$timeout', function ($log, $timeout) {
-    return new directives.api.Label($timeout);
-}]);
-;/**!
- * The MIT License
- *
- * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * angular-google-maps
- * https://github.com/nlaplante/angular-google-maps
- *
- * @authors
- *  Nicolas Laplante - https://plus.google.com/108189012221374960701
- *  Nicholas McCready - https://twitter.com/nmccready
- */
-
-angular.module("google-maps")
-    .directive("polygon", ['$log', '$timeout', function ($log, $timeout) {
-
-        "use strict";
-
-        var DEFAULTS = {
-
-        };
-
-        function validatePathPoints(path) {
-            for (var i = 0; i < path.length; i++) {
-              if (angular.isUndefined(path[i].latitude) ||
-                  angular.isUndefined(path[i].longitude)) {
-                  return false;
-              }
-            }
-
-            return true;
-        }
-
-        function convertPathPoints(path) {
-            var result = new google.maps.MVCArray();
-
-            for (var i = 0; i < path.length; i++) {
-                result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
-            }
-
-            return result;
-        }
-
-        function extendMapBounds(map, points) {
-            var bounds = new google.maps.LatLngBounds();
-
-            for (var i = 0; i < points.length; i++) {
-                bounds.extend(points.getAt(i));
-            }
-
-            map.fitBounds(bounds);
-        }
-
-        /*
-         * Utility functions
-         */
-
-        /**
-         * Check if a value is true
-         */
-        function isTrue(val) {
-            return angular.isDefined(val) &&
-                val !== null &&
-                val === true ||
-                val === '1' ||
-                val === 'y' ||
-                val === 'true';
-        }
-
-        return {
-            restrict: 'ECA',
-            require: '^googleMap',
-            replace: true,
-            scope: {
-                path: '=path',
-                stroke: '=stroke',
-                clickable: '=',
-                draggable: '=',
-                editable: '=',
-                geodesic: '=',
-                icons:'=icons',
-                visible:'='
-            },
-            link: function (scope, element, attrs, mapCtrl) {
-                // Validate required properties
-                if (angular.isUndefined(scope.path) ||
-                    scope.path === null ||
-                    scope.path.length < 2 ||
-                    !validatePathPoints(scope.path)) {
-
-                    $log.error("polyline: no valid path attribute found");
-                    return;
-                }
-
-
-                // Wrap polyline initialization inside a $timeout() call to make sure the map is created already
-                $timeout(function () {
-                    var map = mapCtrl.getMap();
-
-                    var pathPoints = convertPathPoints(scope.path);
-
-
-
-                    var opts = angular.extend({}, DEFAULTS, {
-                        map: map,
-                        path: pathPoints,
-                        strokeColor: scope.stroke && scope.stroke.color,
-                        strokeOpacity: scope.stroke && scope.stroke.opacity,
-                        strokeWeight: scope.stroke && scope.stroke.weight
-                    });
-
-
-                    angular.forEach({
-                        clickable:true,
-                        draggable:false,
-                        editable:false,
-                        geodesic:false,
-                        visible:true
-                    },function (defaultValue, key){
-                        if(angular.isUndefined(scope[key]) || scope[key] === null){
-                            opts[key] = defaultValue;
-                        }
-                        else {
-                            opts[key] = scope[key];
-                        }
-                    });
-
-                    var polyline = new google.maps.Polyline(opts);
-
-                    if (isTrue(attrs.fit)) {
-                        extendMapBounds(map, pathPoints);
-                    }
-
-                    if(angular.isDefined(scope.editable)) {
-                        scope.$watch('editable',function(newValue,oldValue){
-                            polyline.setEditable(newValue);
-                        });
-                    }
-                    if(angular.isDefined(scope.draggable)){
-                        scope.$watch('draggable',function(newValue,oldValue){
-                            polyline.setDraggable(newValue);
-                        });
-                    }
-                    if(angular.isDefined(scope.visible)){
-                        scope.$watch('visible',function(newValue,oldValue){
-                            polyline.setVisible(newValue);
-                        });
-                    }
-
-                    var pathSetAtListener, pathInsertAtListener, pathRemoveAtListener;
-
-                    var polyPath = polyline.getPath();
-
-                    pathSetAtListener = google.maps.event.addListener(polyPath, 'set_at',function(index){
-                        var value = polyPath.getAt(index);
-                        if (!value) return;
-                        if (!value.lng || !value.lat) return;
-                        scope.path[index].latitude = value.lat();
-                        scope.path[index].longitude = value.lng();
-                        scope.$apply();
-                        
-                    });
-                    pathInsertAtListener = google.maps.event.addListener(polyPath, 'insert_at',function(index){
-                        var value = polyPath.getAt(index);
-                        if (!value) return;
-                        if (!value.lng || !value.lat) return;
-                        scope.path.splice(index,0,{latitude:value.lat(),longitude:value.lng()});
-                        scope.$apply();
-                    });
-                    pathRemoveAtListener = google.maps.event.addListener(polyPath, 'remove_at',function(index){
-                        scope.path.splice(index,1);
-                        scope.$apply();
-                    });
-
-
-
-                    scope.$watch('path', function (newArray) {
-                            var oldArray = polyline.getPath();
-                            if (newArray !== oldArray) {
-                                if (newArray) {
-
-                                    polyline.setMap(map);
-
-
-                                    var i = 0;
-                                    var oldLength = oldArray.getLength();
-                                    var newLength = newArray.length;
-                                    var l = Math.min(oldLength,newLength);
-                                    for(;i < l; i++){
-                                        oldValue = oldArray.getAt(i);
-                                        newValue = newArray[i];
-                                        if((oldValue.lat() != newValue.latitude) || (oldValue.lng() != newValue.longitude)){
-                                            oldArray.setAt(i,new google.maps.LatLng(newValue.latitude, newValue.longitude));
-                                        }
-                                    }
-                                    for(; i < newLength; i++){
-                                        newValue = newArray[i];
-                                        oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
-                                    }
-                                    for(; i < oldLength; i++){
-                                        oldArray.pop();
-                                    }
-
-                                    if (isTrue(attrs.fit)) {
-                                        extendMapBounds(map, oldArray);
-                                    }
-                                }
-                                else {
-                                    // Remove polyline
-                                    polyline.setMap(null);
-                                }
-                            }
-
-
-                    }, true);
-
-                    // Remove polyline on scope $destroy
-                    scope.$on("$destroy", function () {
-                        polyline.setMap(null);
-                        pathSetAtListener();
-                        pathSetAtListener = null;
-                        pathInsertAtListener();
-                        pathInsertAtListener = null;
-                        pathRemoveAtListener();
-                        pathRemoveAtListener = null;
-
-                    });
-                });
-            }
-        };
-    }]);
-;/**!
- * The MIT License
- *
- * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * angular-google-maps
- * https://github.com/nlaplante/angular-google-maps
- *
- * @authors
- *  Nicolas Laplante - https://plus.google.com/108189012221374960701
- *  Nicholas McCready - https://twitter.com/nmccready
- */
-
-angular.module("google-maps")
-    .directive("polyline", ['$log', '$timeout','array-sync', function ($log, $timeout,arraySync) {
-
-        "use strict";
-
-        var DEFAULTS = {
-
-        };
-
-        function validatePathPoints(path) {
-            for (var i = 0; i < path.length; i++) {
-              if (angular.isUndefined(path[i].latitude) ||
-                  angular.isUndefined(path[i].longitude)) {
-                  return false;
-              }
-            }
-
-            return true;
-        }
-
-        function convertPathPoints(path) {
-            var result = new google.maps.MVCArray();
-
-            for (var i = 0; i < path.length; i++) {
-                result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
-            }
-
-            return result;
-        }
-
-        function extendMapBounds(map, points) {
-            var bounds = new google.maps.LatLngBounds();
-
-            for (var i = 0; i < points.length; i++) {
-                bounds.extend(points.getAt(i));
-            }
-
-            map.fitBounds(bounds);
-        }
-
-        /*
-         * Utility functions
-         */
-
-        /**
-         * Check if a value is true
-         */
-        function isTrue(val) {
-            return angular.isDefined(val) &&
-                val !== null &&
-                val === true ||
-                val === '1' ||
-                val === 'y' ||
-                val === 'true';
-        }
-
-        return {
-            restrict: 'ECA',
-            replace: true,
-            require: '^googleMap',
-            scope: {
-                path: '=path',
-                stroke: '=stroke',
-                clickable: '=',
-                draggable: '=',
-                editable: '=',
-                geodesic: '=',
-                icons:'=icons',
-                visible:'='
-            },
-            link: function (scope, element, attrs, mapCtrl) {
-                // Validate required properties
-                if (angular.isUndefined(scope.path) ||
-                    scope.path === null ||
-                    scope.path.length < 2 ||
-                    !validatePathPoints(scope.path)) {
-
-                    $log.error("polyline: no valid path attribute found");
-                    return;
-                }
-
-
-                // Wrap polyline initialization inside a $timeout() call to make sure the map is created already
-                $timeout(function () {
-                    var map = mapCtrl.getMap();
-
-
-
-
-                    function buildOpts (pathPoints){
-
-
-                        var opts = angular.extend({}, DEFAULTS, {
-                            map: map,
-                            path: pathPoints,
-                            strokeColor: scope.stroke && scope.stroke.color,
-                            strokeOpacity: scope.stroke && scope.stroke.opacity,
-                            strokeWeight: scope.stroke && scope.stroke.weight
-                        });
-
-
-                        angular.forEach({
-                            clickable:true,
-                            draggable:false,
-                            editable:false,
-                            geodesic:false,
-                            visible:true
-                        },function (defaultValue, key){
-                            if(angular.isUndefined(scope[key]) || scope[key] === null){
-                                opts[key] = defaultValue;
-                            }
-                            else {
-                                opts[key] = scope[key];
-                            }
-                        });
-
-                        return opts;
-                    }
-
-                    var polyline = new google.maps.Polyline(buildOpts(convertPathPoints(scope.path)));
-
-                    if (isTrue(attrs.fit)) {
-                        extendMapBounds(map, pathPoints);
-                    }
-
-                    if(angular.isDefined(scope.editable)) {
-                        scope.$watch('editable',function(newValue,oldValue){
-                            polyline.setEditable(newValue);
-                        });
-                    }
-                    if(angular.isDefined(scope.draggable)){
-                        scope.$watch('draggable',function(newValue,oldValue){
-                            polyline.setDraggable(newValue);
-                        });
-                    }
-                    if(angular.isDefined(scope.visible)){
-                        scope.$watch('visible',function(newValue,oldValue){
-                            polyline.setVisible(newValue);
-                        });
-                    }
-                    if(angular.isDefined(scope.geodesic)){
-                        scope.$watch('geodesic',function(newValue,oldValue){
-                            polyline.setOptions(buildOpts(polyline.getPath()));
-                        });
-                    }
-
-                    if(angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)){
-                        scope.$watch('stroke.weight',function(newValue,oldValue){
-                            polyline.setOptions(buildOpts(polyline.getPath()));
-                        });
-                    }
-
-
-                    if(angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)){
-                        scope.$watch('stroke.color',function(newValue,oldValue){
-                            polyline.setOptions(buildOpts(polyline.getPath()));
-                        });
-                    }
-
-
-
-
-                    var arraySyncer = arraySync(polyline.getPath(),scope,'path');
-
-
-
-
-
-                    // Remove polyline on scope $destroy
-                    scope.$on("$destroy", function () {
-                        polyline.setMap(null);
-
-                        if(arraySyncer) {
-                            arraySyncer();
-                            arraySyncer= null;
-                        }
-
-                    });
-                });
-            }
-        };
-    }]);
-;/**!
- * The MIT License
- *
- * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * angular-google-maps
- * https://github.com/nlaplante/angular-google-maps
- *
- * @authors
- *  Nicolas Laplante - https://plus.google.com/108189012221374960701
- *  Nicholas McCready - https://twitter.com/nmccready
- */
-
-/**
- * Map info window directive
- *
- * This directive is used to create an info window on an existing map.
- * This directive creates a new scope.
- *
- * {attribute coords required}  object containing latitude and longitude properties
- * {attribute show optional}    map will show when this expression returns true
- */
-
-angular.module("google-maps").directive("window", ['$timeout','$compile', '$http', '$templateCache', 
-  function ($timeout, $compile, $http, $templateCache) {
-    return new directives.api.Window($timeout, $compile, $http, $templateCache);
-  }]);;/**!
- * The MIT License
- *
- * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * angular-google-maps
- * https://github.com/nlaplante/angular-google-maps
- *
- * @authors
- *  Nicolas Laplante - https://plus.google.com/108189012221374960701
- *  Nicholas McCready - https://twitter.com/nmccready
- */
-
-/**
- * Map info window directive
- *
- * This directive is used to create an info window on an existing map.
- * This directive creates a new scope.
- *
- * {attribute coords required}  object containing latitude and longitude properties
- * {attribute show optional}    map will show when this expression returns true
- */
-
-angular.module("google-maps").directive("windows", ['$timeout','$compile', '$http', '$templateCache', '$interpolate',
-  function ($timeout, $compile, $http, $templateCache,$interpolate) {
-    return new directives.api.Windows($timeout, $compile, $http, $templateCache, $interpolate);
-  }]);;/**!
- * The MIT License
- *
- * Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * angular-google-maps
- * https://github.com/nlaplante/angular-google-maps
- *
- * @authors:
- *   - Nicolas Laplante https://plus.google.com/108189012221374960701
- *   - Nicholas McCready - https://twitter.com/nmccready
- */
-
-/**
- * Map Layer directive
- *
- * This directive is used to create any type of Layer from the google maps sdk.
- * This directive creates a new scope.
- *
- * {attribute show optional}  true (default) shows the trafficlayer otherwise it is hidden
- */
-
-angular.module('google-maps').directive('layer', ['$timeout', function($timeout){
-    return new directives.api.Layer($timeout);
-}]);
+};
