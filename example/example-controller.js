@@ -266,7 +266,7 @@ function ExampleController ($scope, $timeout, $log, $http) {
         if(newValue !== oldValue){
             if (newValue)
                 json = {title:'Hi I am a Cluster!', gridSize:60, ignoreHidden:true,minimumClusterSize:2,
-                    imageExtension:'png',imagePath:'http://localhost:3000/cluster',imageSizes:[72]};
+                    imageExtension:'png',imagePath:'http://localhost:3000/example/cluster',imageSizes:[72]};
             else
                 json = {title:'Hi I am a Cluster!', gridSize:60, ignoreHidden:true,minimumClusterSize:2};
             $scope.map.clusterOptions = json;
@@ -302,7 +302,7 @@ function ExampleController ($scope, $timeout, $log, $http) {
                     showWindow: false
                 },
                 {
-                    icon: 'plane.png',
+                    icon: 'example/plane.png',
                     latitude: 35,
                     longitude: -127,
                     showWindow: false

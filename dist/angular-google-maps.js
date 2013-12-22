@@ -4850,6 +4850,7 @@ MarkerClusterer.IMAGE_EXTENSION = "png";
  * @constant
  */
 MarkerClusterer.IMAGE_SIZES = [53, 56, 66, 78, 90];;/**
+ * 1.1.9-patched
  * @name MarkerWithLabel for V3
  * @version 1.1.8 [February 26, 2013]
  * @author Gary Little (inspired by code from Marc Ridey of Google).
