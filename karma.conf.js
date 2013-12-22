@@ -21,6 +21,7 @@ module.exports = function(config) {
       'app/scripts/module.js',      
       'app/scripts/controllers/*.js',
       'app/scripts/services/*.js',
+      'app/scripts/directives/*.js',      
       'app/scripts/app.js',      
       'test/mock/**/*.js',
       'test/spec/**/*.js'
@@ -34,7 +35,7 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: LOG_DISABLE || LOG_ERROR || LOG_WARN || LOG_INFO || LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_DEBUG,
 
 
     // enable / disable watching file and executing tests whenever any file changes
