@@ -89,26 +89,24 @@
 
 					<ul class="list-unstyled">
 						<li ng-repeat="issue in github.issues | limitTo:5 ">
-							<a ng-href="{{ issue.url }}">{{ issue.title }}</a>
+							<span class="label label-default">#{{ issue.number }}</span>
+							
+							<span ng-if="issue.labels.length" ng-repeat="label in issue.labels" class="label issue-label" ng-style="{'background-color': '#' + label.color}">
+								{{ label.name }}
+							</span>
+							
+							<a ng-href="{{ issue.html_url }}" rel="external">{{ issue.title }}</a>
 						</li>
 					</ul>
 					
 					<a class="btn btn-sm btn-warning" href="https://github.com/nlaplante/angular-google-maps/issues?state=open">All issues</a>										
-
 				</div>				
 				</div>
 				</div>
-				<div class="well">
-				
-					<h1>Thank you for your collaborations!</h1>					
-					
-
-							<img ng-repeat="c in github.contributors" style="max-width: 15%; max-height: 64px" ng-src="{{ c.avatar_url }}" alt="{{ c.login }}" title="{{ c.login }}">
-
+				<div class="well">				
+					<h2>Thank you for your collaborations!</h2>
+					<img ng-repeat="c in github.contributors" style="max-width: 15%; max-height: 64px" ng-src="{{ c.avatar_url }}" alt="{{ c.login }}" title="{{ c.login }}">
 				</div>
-				
-
-
 			</div>
 			<div class="row" ng-show='github == null' ng-cloak>
 				<div class="alert alert-block">
