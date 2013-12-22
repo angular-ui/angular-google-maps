@@ -50,6 +50,14 @@ a.brand, h2, h3 {
 	box-shadow: 0 0 5px #ccc;
 }
 
+/** style for the map on the demo page */
+.demo .angular-google-map-container {
+	height: 500px;
+	margin-bottom: 30px;
+	border: 10px #fff solid;
+	box-shadow: 0 0 5px #ccc;
+}
+
 /* fix for Twitter Bootstrap handling of responsive images */
 .angular-google-map img {
     max-width: inherit;
