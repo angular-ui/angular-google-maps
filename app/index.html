@@ -48,90 +48,24 @@
 	    		<li class="dropdown">
 	    			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Developer resources <b class="caret"></b></a>
 	    			<ul class="dropdown-menu">
-	    				<li><a href="https://github.com/nlaplante/angular-google-maps"><i class="icon-github-alt"></i> Code</a></li>
-	    				<li><a href="https://github.com/nlaplante/angular-google-maps/issues?state=open"><i class="icon-github-alt"></i> Issue tracker <span class="badge badge-important">{{ github.issuesCount }}</span></a></li>
-	    				<li><a href="https://developers.google.com/maps/documentation/javascript/"><i class="icon-question-sign"></i> Google Maps Javascript API v3</a></li>		
-	    				<li><a href="https://trello.com/b/WwTRrkfh/angular-google-maps"><i class="icon-trello"></i> Trello project management board</a></li>
+	    				<li><a href="https://github.com/nlaplante/angular-google-maps" rel="external"><i class="icon-github-alt"></i> Code</a></li>
+	    				<li><a href="https://github.com/nlaplante/angular-google-maps/issues?state=open" rel="external"><i class="icon-github-alt"></i> Issue tracker <span class="badge badge-important">{{ github.issuesCount }}</span></a></li>
+	    				<li><a href="https://plus.google.com/communities/101653511105172739950?utm_source=websiten&utm_medium=link" rel="external"><i class="icon-google-plus"></i> Google+ community</a></li>
+	    				<li><a href="https://developers.google.com/maps/documentation/javascript/" rel="external"><i class="icon-question-sign"></i> Google Maps Javascript API v3</a></li>		
+	    				<li><a href="https://trello.com/b/WwTRrkfh/angular-google-maps" rel="external"><i class="icon-trello"></i> Trello project management board</a></li>
 	    			</ul>
 	    		</li>
-    		</ul>
-    		<ul class="nav navbar-nav navbar-right">    	
-	    		<li></li>
     		</ul>
     	</div>
     </nav>
 
     <div class="container">
-	    	<!-- Add your site or application content here -->
 	    	<div ng-view></div>
 	</div>
 
-	<a href="https://github.com/you"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+	<a href="https://github.com/nlaplante/angular-google-maps" rel="external" class="hidden-xs"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
 	
-	<footer ng-controller="FooterCtrl">
-		<div class="container">			
-			<div ng-show='github != null' ng-cloak>
-				<div class="well">
-				<div class="row">
-								<div class="col-md-3">
-					<h3>Latest commit</h3>
-
-					<a href="#!/">{{ github.commits.latest.author.login }}</a> on
-					{{ github.commits.latest.commit.committer.date | date:"MMM d, y hh:mm" }}<br>
-
-					<blockquote class="muted"><i>{{ github.commits.latest.commit.message }}</i></blockquote>
-					<a class="btn btn-sm btn-primary" href="{{ github.commits.latest.html_url }}">More details</a>	
-					
-				</div>
-
-				<div class="col-md-9">
-					<h3>Issues <span class="badge">{{ github.issuesCount }}</h3>
-
-					<ul class="list-unstyled">
-						<li ng-repeat="issue in github.issues | limitTo:5 ">
-							<span class="label label-default">#{{ issue.number }}</span>
-							
-							<span ng-if="issue.labels.length" ng-repeat="label in issue.labels" class="label issue-label" ng-style="{'background-color': '#' + label.color}">
-								{{ label.name }}
-							</span>
-							
-							<a ng-href="{{ issue.html_url }}" rel="external">{{ issue.title }}</a>
-						</li>
-					</ul>
-					
-					<a class="btn btn-sm btn-warning" href="https://github.com/nlaplante/angular-google-maps/issues?state=open">All issues</a>										
-				</div>				
-				</div>
-				</div>
-				<div class="well">				
-					<h2>Thank you for your collaborations!</h2>
-					<img ng-repeat="c in github.contributors" style="max-width: 15%; max-height: 64px" ng-src="{{ c.avatar_url }}" alt="{{ c.login }}" title="{{ c.login }}">
-				</div>
-			</div>
-			<div class="row" ng-show='github == null' ng-cloak>
-				<div class="alert alert-block">
-					<h4>Uh oh...</h4>
-					<p>We cannot fetch repository statistics for the moment. Please try again later.</p>
-				</div>
-			</div>
-
-			<div class="row">
-				<p class="text-center text-tiny copyright">
-					&copy; 2013, <a href="https://github.com/nlaplante/angular-google-maps">angular-google-maps</a>
-				</p>
-			
-				<ul class="list-unstyled list-inline text-center">
-					<li><a href="http://angularjs.org/" rel="external"><img src="images/icon-angular.png" alt="AngularJS"></a></li>
-					<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" rel="external"><img src="images/icon-js.png" alt="JavaScript"></a></li>
-					<li><a href="http://gruntjs.com/" rel="external"><img src="images/icon-grunt.png" alt="Grunt"></a></li>
-					<li><a href="http://yeoman.io/" rel="external"><img src="images/icon-yeoman.png" alt="Yeoman"></a></li>
-					<li><a href="http://coffeescript.org/" rel="external"><img src="images/icon-coffeescript.png" alt="CoffeeScript"></a></li>
-					<li><a href="http://getbootstrap.com/" rel="external"><img src="images/icon-bootstrap.png" alt="Bootstrap"></a></li>					
-				</ul>
-			</div>
-
-		</div>				
-	</footer>
+	<ng-include src="'/views/footer.html'"></ng-include>
 
     <script>
        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
