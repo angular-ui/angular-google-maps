@@ -1,5 +1,5 @@
 describe "MarkerParentModel", ->
-    beforeEach( ->
+    beforeEach ->
         #comparison variables
         @index = 0
         @scope=
@@ -28,13 +28,36 @@ describe "MarkerParentModel", ->
             @scope = _.extend @scope,scope
             $controller 'subject',
                 scope : scope
-    )
+
+        #mocking google maps event listener
+        @googleMapListeners = []
+        window.google.maps.event.addListener = (thing, eventName, callBack) =>
+            found = _.find @googleMapListeners,(obj)->
+                obj.obj == thing
+
+            unless found?
+                toPush = {}
+                toPush.obj = thing
+                toPush.events = {}
+                toPush.events[eventName] = callBack
+                @googleMapListeners.push toPush
+
+            else
+                found.events[eventName] = callBack
+
+        @fireListener = (thing,eventName) =>
+            found = _.find @googleMapListeners,(obj)->
+                obj.obj == thing
+
+            found.events[eventName]() if found?
+
     it 'constructor exist', ->
         test = directives.api.models.parent.MarkerParentModel?
         expect(test).toEqual(true)
 
     it 'can be created', ->
         expect(@subject?).toEqual(true)
+
     describe "validateScope", ->
         it 'returns fals with scope undefined', ->
             expect(@subject.validateScope(undefined)).toEqual(false)
@@ -44,3 +67,10 @@ describe "MarkerParentModel", ->
             expect(@subject.validateScope({coords:{latitude:undefined,longitude:{}}})).toEqual(true)
         it 'returns fals with scope.coords.longtitude undefined', ->
             expect(@subject.validateScope({coords:{latitude:{},longitude:undefined }})).toEqual(true)
+
+        it 'fake googleMapListeners can be fired', ->
+            testPass =  false
+            window.google.maps.event.addListener @,"junk",()=>
+                testPass = true
+            @fireListener(@,"junk")
+            expect(testPass).toBeTruthy()
