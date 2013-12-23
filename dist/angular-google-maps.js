@@ -1200,7 +1200,7 @@
       }
 
       MarkerParentModel.prototype.onTimeOut = function(scope) {
-        var eventHandler, eventName, opts, _m, _ref,
+        var opts,
           _this = this;
         opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap());
         this.gMarker = new google.maps.Marker(opts);
@@ -1212,18 +1212,7 @@
             });
           }
         });
-        if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
-          _ref = scope.events;
-          for (eventName in _ref) {
-            eventHandler = _ref[eventName];
-            if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-              _m = this.gMarker;
-              google.maps.event.addListener(this.gMarker, eventName, function() {
-                return eventHandler.apply(scope, [_m, eventName, arguments]);
-              });
-            }
-          }
-        }
+        this.setEvents(this.gMarker, scope);
         return this.$log.info(this);
       };
 
@@ -1268,6 +1257,25 @@
         this.gMarker.setMap(null);
         delete this.gMarker;
         return self = void 0;
+      };
+
+      MarkerParentModel.prototype.setEvents = function(marker, scope) {
+        var eventHandler, eventName, _ref, _results;
+        if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
+          _ref = scope.events;
+          _results = [];
+          for (eventName in _ref) {
+            eventHandler = _ref[eventName];
+            if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+              _results.push(google.maps.event.addListener(marker, eventName, function() {
+                return eventHandler.apply(scope, [marker, eventName, arguments]);
+              }));
+            } else {
+              _results.push(void 0);
+            }
+          }
+          return _results;
+        }
       };
 
       return MarkerParentModel;

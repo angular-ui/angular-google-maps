@@ -1,7 +1,9 @@
 describe "MarkerParentModel", ->
-    beforeEach( ->
+    beforeEach ->
         #comparison variables
         @index = 0
+        @clicked = false
+        self = @
         @scope=
             icon:'icon.png'
             coords:
@@ -10,7 +12,7 @@ describe "MarkerParentModel", ->
             options:
                 animation:google.maps.Animation.BOUNCE
             events:
-              click: (marker, eventName, args) ->
+              click: (marker, eventName, args) -> self.clicked = true
 
         #define / inject values into the item we are testing... not a controller but it allows us to inject
         angular.module('mockModule',[])
@@ -30,7 +32,31 @@ describe "MarkerParentModel", ->
             @scope = _.extend @scope,scope
             $controller 'subject',
                 scope : scope
-    )
+
+        #mocking google maps event listener
+        @googleMapListeners = []
+        window.google.maps.event.addListener = (thing, eventName, callBack) =>
+            found = _.find @googleMapListeners,(obj)->
+                obj.obj == thing
+
+            unless found?
+                toPush = {}
+                toPush.obj = thing
+                toPush.events = {}
+                toPush.events[eventName] = callBack
+                @googleMapListeners.push toPush
+
+            else
+                found.events[eventName] = callBack
+
+        @fireListener = (thing,eventName) =>
+            found = _.find @googleMapListeners,(obj)->
+                obj.obj == thing
+
+            found.events[eventName]() if found?
+
+        @subject.setEvents(@, @scope)
+
     it 'constructor exist', ->
         test = directives.api.models.parent.MarkerParentModel?
         expect(test).toEqual(true)
@@ -46,3 +72,7 @@ describe "MarkerParentModel", ->
             expect(@subject.validateScope({coords:{latitude:undefined,longitude:{}}})).toEqual(true)
         it 'returns fals with scope.coords.longtitude undefined', ->
             expect(@subject.validateScope({coords:{latitude:{},longitude:undefined }})).toEqual(true)
+        it 'fake googleMapListeners can be fired', ->
+            expect(@clicked).toBeFalsy()
+            @fireListener(@,"click")
+            expect(@clicked).toBeTruthy()
