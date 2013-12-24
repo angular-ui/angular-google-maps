@@ -2,6 +2,8 @@ describe "MarkerParentModel", ->
     beforeEach ->
         #comparison variables
         @index = 0
+        @clicked = false
+        self = @
         @scope=
             icon:'icon.png'
             coords:
@@ -9,6 +11,8 @@ describe "MarkerParentModel", ->
                 longitude:90
             options:
                 animation:google.maps.Animation.BOUNCE
+            events:
+              click: (marker, eventName, args) -> self.clicked = true
 
         #define / inject values into the item we are testing... not a controller but it allows us to inject
         angular.module('mockModule',[])
@@ -51,6 +55,8 @@ describe "MarkerParentModel", ->
 
             found.events[eventName]() if found?
 
+        @subject.setEvents(@, @scope)
+
     it 'constructor exist', ->
         test = directives.api.models.parent.MarkerParentModel?
         expect(test).toEqual(true)
@@ -69,8 +75,6 @@ describe "MarkerParentModel", ->
             expect(@subject.validateScope({coords:{latitude:{},longitude:undefined }})).toEqual(true)
 
         it 'fake googleMapListeners can be fired', ->
-            testPass =  false
-            window.google.maps.event.addListener @,"junk",()=>
-                testPass = true
-            @fireListener(@,"junk")
-            expect(testPass).toBeTruthy()
+            expect(@clicked).toBeFalsy()
+            @fireListener(@,"click")
+            expect(@clicked).toBeTruthy()

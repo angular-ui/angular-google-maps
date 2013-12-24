@@ -250,7 +250,7 @@ function ExampleController ($scope, $timeout, $log, $http) {
         $scope.map.randomMarkers.length = 0;
         $scope.map.polylines.length = 0;
         $scope.map.clickedMarker = null;
-        $scope.searchLocation = null;
+        $scope.searchLocationMarker = null;
         $scope.map.infoWindow.show = false;
         $scope.map.templatedInfoWindow.show = false;
         // $scope.map.infoWindow.coords = null;
@@ -278,17 +278,23 @@ function ExampleController ($scope, $timeout, $log, $http) {
         genRandomMarkers(numberOfMarkers,$scope);
     };
 
-    $scope.searchLocation = {
-        latitude: 30.1451,
-        longitude: -99.6680
-    };
+    $scope.searchLocationMarker = {
+        coords: {
+            latitude: 30.1451,
+            longitude: -99.6680
+        },
+        options: { draggable: true },
+        events: {
+            dragend: function(marker, eventName, args) {
+                $log.log('marker dragend');
+                $log.log(marker.getPosition().lat());
+                $log.log(marker.getPosition().lng());
+            }
+        }
+    }
     $scope.onMarkerClicked = onMarkerClicked
 
     $timeout(function () {
-        // $scope.searchLocation = {
-        // latitude: 30.0,
-        // longitude: -100
-        // };
         $scope.map.infoWindow.show = true;
         dynamicMarkers = [
                 {
