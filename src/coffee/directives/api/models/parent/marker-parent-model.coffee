@@ -20,6 +20,7 @@
                         @scope.click()
                     )
             )
+            @setEvents(@gMarker, scope)
             @$log.info(@)
 
         onWatch: (propNameToWatch, scope) =>
@@ -58,3 +59,9 @@
             @gMarker.setMap(null)
             delete @gMarker
             self = undefined
+
+        setEvents: (marker, scope) ->
+            if angular.isDefined(scope.events) and scope.events? and angular.isObject(scope.events)
+                for eventName, eventHandler of scope.events
+                    if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
+                        google.maps.event.addListener(marker, eventName, -> eventHandler.apply(scope, [marker, eventName, arguments]))
