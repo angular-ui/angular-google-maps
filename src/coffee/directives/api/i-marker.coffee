@@ -21,7 +21,8 @@
 				coords: '=coords',
 				icon: '=icon',
 				click: '&click',
-				options: '=options'
+				options: '=options',
+				events: '=events'
 
 		controller: ['$scope','$element', ($scope, $element) ->
 			throw new Exception("Not Implemented!!")

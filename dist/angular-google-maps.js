@@ -1344,6 +1344,7 @@ Nicholas McCready - https://twitter.com/nmccready
             });
           }
         });
+        this.setEvents(this.gMarker, scope);
         return this.$log.info(this);
       };
 
@@ -1388,6 +1389,25 @@ Nicholas McCready - https://twitter.com/nmccready
         this.gMarker.setMap(null);
         delete this.gMarker;
         return self = void 0;
+      };
+
+      MarkerParentModel.prototype.setEvents = function(marker, scope) {
+        var eventHandler, eventName, _ref, _results;
+        if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
+          _ref = scope.events;
+          _results = [];
+          for (eventName in _ref) {
+            eventHandler = _ref[eventName];
+            if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+              _results.push(google.maps.event.addListener(marker, eventName, function() {
+                return eventHandler.apply(scope, [marker, eventName, arguments]);
+              }));
+            } else {
+              _results.push(void 0);
+            }
+          }
+          return _results;
+        }
       };
 
       return MarkerParentModel;
@@ -1871,7 +1891,8 @@ Nicholas McCready - https://twitter.com/nmccready
           coords: '=coords',
           icon: '=icon',
           click: '&click',
-          options: '=options'
+          options: '=options',
+          events: '=events'
         };
       }
 
