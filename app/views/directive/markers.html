@@ -1,11 +1,15 @@
-<p>The <code>markers</code> directive is similar to the <code>marker</code> diective above, but is used when a lot of markers
-	need to be added to a map.</p>
+<p>The <code>markers</code> directive is similar to the <code>marker</code> diective above, 
+but is used when a lot of markers need to be added to a map. It overcomes the high overhead of 
+using the <code>marker</code> directive together with <code>ng-repeat</code>.</p>
 	
 <h4>Usage</h4>
 
 <pre>&lt;markers models='{expression}'
+	doCluster='{expression}'
+	clusterOptions='{expression}'
+	fit='{expression}'
 	coords='{string}'
-	labelContent='{string}'
+	labelContent='{expression}'
 	icon='{expression}'
 	click='{expression}'
 	options='{expression}'&gt;
@@ -28,14 +32,44 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td class="text-danger">models</td>
-			<td><span class="label label-info">expression</span></td>
-			<td></td>
+			<td>models</td>
+			<td><span class="label label-danger">expression</span></td>
+			<td>An array of objects defining each marker to add to the map</td>
 		</tr>
 		<tr>
-			<td class="text-danger">icon</td>
+			<td>coords</td>
+			<td><span class="label label-danger">expression</span></td>
+			<td>The name of the property containing the marker coordinates. Must point to an object having <code>latitude</code> and <code>longitude</code> properties. The special value <code>'self'</code> can be used to tell the directive that the objects in the array directly contain <code>latitude</code> and <code>longitude</code> properties.</td>
+		</tr>
+		<tr>
+			<td>doCluster</td>
 			<td><span class="label label-info">expression</span></td>
-			<td></td>
+			<td>boolean property to tell the directive to use clustering</td>
+		</tr>
+		<tr>
+			<td>clusterOptions</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>object containing options to pass to the marker clusterer</td>
+		</tr>
+		<tr>
+			<td>fit</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to instruct the map to fit its bounds around the markers</td>
+		</tr>
+		<tr>
+			<td>icon</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>url to the icon image to use for each marker</td>
+		</tr>
+		<tr>
+			<td>click</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>event handler executed when clicking a marker</td>
+		</tr>
+		<tr>
+			<td>options</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>additional options to pass to the marker. See <a href="https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions" rel="external">MarkerOptions</a>.</td>
 		</tr>
 	</tbody>
 </table>

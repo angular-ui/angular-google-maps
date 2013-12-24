@@ -5,7 +5,8 @@
 <pre>&lt;marker coords='{expression}'
 	icon='{expression}'
 	click='{expression}'
-	options='{expression}'&gt;
+	options='{expression}'
+	events='{expression}'&gt;
 
 	...
 
@@ -25,9 +26,28 @@
 	</thead>
 	<tbody>
 		<tr>
-			<td class="text-danger">icon</td>
+			<td>coords</td>
+			<td><span class="label label-danger">expression</span></td>
+			<td>Object having <code>latitude</code> and <code>longitude</code> properties representing the position of this marker</td>
+		<tr>
+			<td>icon</td>
 			<td><span class="label label-info">expression</span></td>
-			<td></td>
+			<td>Epxression returning the absolute path to an image used as the marker icon</td>
+		</tr>
+		<tr>
+			<td>click</td>
+			<td><span class="label label-info">expression|function</span></td>
+			<td>Event handler to call when clicking on the marker</td>
+		</tr>
+		<tr>
+			<td>options</td>
+			<td><span class="label label-info">expression</span>
+			<td>Object containing additional options for the marker. See <a href="https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions" rel="external">MarkerOptions</a>.</td>
+		</tr>
+		<tr>
+			<td>events</td>
+			<td><span class="label label-info">events</span></td>
+			<td>Object containing event handlers for this marker. The keys are the event names and the values are the handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Marker" rel="external">Marker documentation</a> (under Events section) for a list of all events.</td>
 		</tr>
 	</tbody>
 </table>
