@@ -3,15 +3,7 @@
 
 <h4>Usage</h4>
 
-<ul class="nav nav-tabs">
-	<li class="active"><a href="#google-map-spec" data-toggle="tab">Spec</a></li>
-	<li><a href="#google-map-html" data-toggle="tab">Example HTML</a></li>
-	<li><a href="#google-map-script" data-toggle="tab">Script</a></li>
-</ul>
-
-<div class="tab-content">
-	<div class="tab-pane active" id="google-map-spec">
-		<pre>&lt;google-map center='{expression}' 
+<pre>&lt;google-map center='{expression}' 
 	zoom='{expression}'
 	draggable='{string}'
 	dragging='{expression}'
@@ -23,52 +15,7 @@
 	...
 
 &lt;/google-map&gt;</pre>
-	</div>
-	<div class="tab-pane" id="google-map-html">
-		<pre>&lt;google-map center='map.center' 
-	zoom='map.zoom'
-	draggable='true'
-	dragging='{expression}'
-	refresh='isMapVisible()'
-	options='map.options'
-	events='map.events'
-	bounds='map.bounds'&gt;
 
-	...
-
-&lt;/google-map&gt;</pre>
-	</div>
-	<div class="tab-pane" id="google-map-script">
-		<pre>$scope.map = {
-	options: {
-		mapTypeId: google.maps.MapTypeId.TERRAIN, // default value: ROADMAP
-		zoomControl: false // disable zoom controls on map
-	},
-	center: {
-		latitude: 43,
-		longitude: -73
-	},
-	zoom: 8,
-	events: {
-
-	},
-	bounds: {
-		northeast: {
-			latitude: 60,
-			longitude: -60
-		},
-		southwest: {
-			latitude: 20,
-			longitude: -84
-		}
-	}
-};
-
-$scope.isMapVisible = function () {
-	return true; // implement your own visibility logic
-}</pre>
-	</div>
-</div>
 
 <h4>Parameters</h4>
 
