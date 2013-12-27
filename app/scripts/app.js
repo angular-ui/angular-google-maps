@@ -31,9 +31,12 @@ angular.module('angularGoogleMapsApp')
   })
   .run(function ($rootScope, $log, $location, $q, $github) {
   	$rootScope.$location = $location;
-  	
-  	$rootScope.$on('$viewContentLoaded', function () {
-  		$log.info('calling plusone()');
-  		gapi.plusone.go();
-  	});
+
+	$rootScope.$on('$routeChangeSuccess', function (e, current, previous) {
+	
+	});
+	
+	$rootScope.$on('$routeChangeError', function (e, current, previous, rejection) {
+		$log.error('could not change route', rejection);
+	});
   });
