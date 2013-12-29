@@ -20,7 +20,7 @@ body {
 }
 
 h1.page-header {
-	font-family: 'chunkfiveroman', Roboto, serif;
+	font-family: 'chunkfiveroman', serif;
 	font-size: 60px;
 	text-align: center;
 	font-weight: normal;
@@ -28,11 +28,7 @@ h1.page-header {
 }
 
 footer h3 {
-	font-family: 'chunkfiveroman', Roboto, serif;
-}
-
-h2, h3, h4, h5, h6 {
-	font-family: 'Roboto';
+	font-family: 'chunkfiveroman', serif;
 }
 
 a.brand, h2, h3 {
