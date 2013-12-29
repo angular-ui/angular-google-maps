@@ -2,32 +2,38 @@
 
 angular.module('angularGoogleMapsApp').controller('FooterCtrl', function ($scope, $log, $q, $github) {
 
-    // GitHub api calls
-  	$q.all([$github.getCommits(), $github.getContributors(), $github.getIssues(), $github.getEvents()])
-  		.then(function (results) {
-  		
-	  		var commits = results[0],
-	  			contributors = results[1],
-	  			issues = results[2],
-	  			events = results[3];
+	var githubCalled = false;
 
-	  		angular.extend($scope, {
-	  			github: {
-	  				commits: {
-	  					latest: commits.length ? commits[0] : {},
-	  					all: commits
-	  				},
-	  				issuesCount: issues.length,
-	  				issues: issues,
-	  				contributors: contributors,
-	  				events: events
-	  			}
-	  		});
+	if (!githubCalled) {
+		// GitHub api calls
+	  	$q.all([$github.getCommits(), $github.getContributors(), $github.getIssues(), $github.getEvents()])
+	  		.then(function (results) {
+	  		
+		  		var commits = results[0],
+		  			contributors = results[1],
+		  			issues = results[2],
+		  			events = results[3];
+
+		  		angular.extend($scope, {
+		  			github: {
+		  				commits: {
+		  					latest: commits.length ? commits[0] : {},
+		  					all: commits
+		  				},
+		  				issuesCount: issues.length,
+		  				issues: issues,
+		  				contributors: contributors,
+		  				events: events
+		  			}
+		  		});
 			
-	  	}, function (err) {
-	  		$log.error(err);
-	  		$scope.github = null;
-	  	});  
+		  	}, function (err) {
+		  		$log.error(err);
+		  		$scope.github = null;
+		  	});
+		  	
+		githubCalled = true;
+	}
 	  	
 	function actorLink (actor) {
 		return '<a href="' + actor.url + '" rel="external">' + actor.login + '</a>';
