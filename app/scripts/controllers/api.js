@@ -8,7 +8,6 @@ angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope, $
         'marker',
         'markers',
         'marker-label',
-        'label',
         'polygon',
         'polyline',
         'trafficlayer',
