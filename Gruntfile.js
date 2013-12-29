@@ -68,7 +68,6 @@ module.exports = function (grunt) {
     connect: {
       options: {
         port: 9000,
-        // Change this to '0.0.0.0' to access the server from outside.
         hostname: '0.0.0.0'
       },
       livereload: {
@@ -249,7 +248,7 @@ module.exports = function (grunt) {
             '*.{ico,png,txt,json}',
             '.htaccess',
             'bower_components/**/*',
-            'images/{,*/}*.{gif,png,jpeg,jpg,webp}',
+            'images/{,*/}*.{gif,webp}',
             'styles/fonts/*'
           ]
         }, {
@@ -361,7 +360,7 @@ module.exports = function (grunt) {
   ]);
 
   grunt.registerTask('default', [
-    'jshint',
+  	'clean',
     'test',
     'build'
   ]);
