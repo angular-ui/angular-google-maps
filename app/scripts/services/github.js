@@ -12,75 +12,73 @@ angular.module('angularGoogleMapsApp')
     function GithubService($log, $http, $q) {
 
     	var api = 'https://api.github.com/repos/' + username + '/' + repository;
+    	
+    	/**
+    	 * @param type
+    	 * @param options
+    	 * @return string
+		 */
+    	function apiURL(type, options) {
+   			var url = api + '/' + type + '?callback=JSON_CALLBACK';
+   			
+   			if (options) {
+   				angular.forEach(options, function (value, key) {
+   					url += ('&' + key + '=' + value);
+   				});
+   			}
+   			
+   			$log.debug('github: api url', url);
+			
+			return url;
+    	}
+    	
+    	function apiCall(type, options) {
+    		var deferred = $q.defer();
+    		
+    		$http({
+    			cache: true,
+    			method: 'JSONP',
+    			url: apiURL(type, angular.extend({}, apiURLOpts, options))
+    		}).then(function (res) {
+    			$log.debug('github:', type, '(' + (res.data.data ? res.data.data.length : 0) + ')', res.data.data);
+    			deferred.resolve(res.data.data);
+    		}, function (res) {
+    			$log.error('github:', type, res);
+    			deferred.reject(res);
+    		});
+    		
+    		return deferred.promise;
+    	}
+    	
+    	var apiURLOpts = branch ? {
+			sha: branch,
+			per_page: 1000
+		} : null;
 
     	this.getRepository = function () {
     		return repository;
     	};
 
-    	this.getCollaborators = function () {
-			var deferred = $q.defer();
-
-    		$http({
-    			cache: true,
-    			method: 'JSONP',
-    			url: api + '/collaborators?per_page=1000&callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
-    		}).then(function (res) {
-    			deferred.resolve(res.data.data);
-    		}, function (res) {
-    			deferred.reject(res);
-    		});
-
-    		return deferred.promise;
+    	this.getCollaborators = function () {    		
+    		return apiCall('collaborators', {});
     	};
 
     	this.getContributors = function () {
-			var deferred = $q.defer();
-
-    		$http({
-    			cache: true,
-    			method: 'JSONP',
-    			url: api + '/contributors?per_page=1000&callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
-    		}).then(function (res) {
-    			deferred.resolve(res.data.data);
-    		}, function (res) {
-    			deferred.reject(res);
-    		});
-
-    		return deferred.promise;
+			return apiCall('contributors', {});
     	};
 
     	this.getCommits = function () {
-
-    		var deferred = $q.defer();
-
-    		$http({
-    			cache: true,
-    			method: 'JSONP',
-    			url: api + '/commits?callback=JSON_CALLBACK' + (branch ? '&sha=' + branch : '')
-    		}).then(function (res) {
-    			deferred.resolve(res.data.data);
-    		}, function (res) {
-    			deferred.reject(res);
+    		return apiCall('commits', {
+    			per_page: 10
     		});
-
-    		return deferred.promise;
     	};
 
     	this.getIssues = function () {
-
-    		var deferred = $q.defer();
-
-    		$http({
-    			cache: true,
-    			method: 'JSONP',
-    			url: api + '/issues?per_page=1000&state=open&callback=JSON_CALLBACK'
-    		}).then(function (res) {
-    			deferred.resolve(res.data.data);
-    		}, function (res) {
-    			deferred.reject(res);
-    		});
-
-    		return deferred.promise;
+    		return apiCall('issues', {});
+    	};
+    	
+    	this.getEvents = function () {
+    		return apiCall('events', {});
     	};
     }
 
