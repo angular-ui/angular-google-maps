@@ -29,7 +29,7 @@ angular.module('angularGoogleMapsApp')
         redirectTo: '/'
       });
   })
-  .run(function ($rootScope, $log, $location, $q, $github) {
+  .run(function ($rootScope, $log, $location) {
   	$rootScope.$location = $location;
 
 	$rootScope.$on('$routeChangeSuccess', function (e, current, previous) {
