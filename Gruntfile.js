@@ -177,7 +177,7 @@ module.exports = function (grunt) {
       }
     },
     usemin: {
-      html: ['<%= yeoman.dist %>/{,*/}*.html'],
+      html: ['<%= yeoman.dist %>/{,*/}*.html', '<%= yeoman.dist %>/views/*.html', '<%= yeoman.dist %>/views/directive/*.html'],
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
       options: {
         dirs: ['<%= yeoman.dist %>']
@@ -249,7 +249,7 @@ module.exports = function (grunt) {
             '*.{ico,png,txt,json}',
             '.htaccess',
             'bower_components/**/*',
-            'images/{,*/}*.{gif,webp}',
+            'images/{,*/}*.{gif,png,jpeg,jpg,webp}',
             'styles/fonts/*'
           ]
         }, {
@@ -298,7 +298,7 @@ module.exports = function (grunt) {
     },
     cdnify: {
       dist: {
-        html: ['<%= yeoman.dist %>/*.html']
+        html: ['<%= yeoman.dist %>/*.html', '<%= yeoman.dist %>/views/*.html', '<%= yeoman.dist %>/views/directive/*.html']
       }
     },
     ngmin: {
