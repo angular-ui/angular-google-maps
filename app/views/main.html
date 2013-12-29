@@ -22,7 +22,33 @@
     			<img src="https://travis-ci.org/nlaplante/angular-google-maps.png?branch=master" alt="current build status" />
     		</a>
 		</div>
+		
+		<h2>About</h2>
+		
+		<p>Google Maps for AngularJs is a set of directives to integrate Google Maps in AngularJS applications. It is written
+		in CoffeeScript and is available via Bower.</p>
+		
+		<h2>Features</h2>
 
+		<p>There are directives for most of the widely-used Google Maps objects, including markers, windows, lines and 
+		shapes. We're currently working on integrating more layer objects, including the HeatMap and such.</p>
+
+		<h2>Community</h2>
+		
+		<p>We have a <a href="https://plus.google.com/communities/101653511105172739950?utm_source=websiten&utm_medium=link" rel="external">Google+ community</a> 
+		and an <a href="https://webchat.freenode.net/?channels=angular-google-maps" rel="external">IRC channel</a> available
+		if you're looking for help.</p>
+		
+		<h2>Contributing</h2>
+		
+		<p>If you need a feature which isn't implemented yet, please use our
+		<a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">issue tracker</a> to open a feature request, 
+		or fork our repository, implement the feature and issue a pull request. Contributions are more than welcome!</p>
+		
+		<p>We use the <a href="https://github.com/nvie/gitflow" rel="external">git flow</a> branching model. So if you are interested in contributing, we encourage you to 
+		<a href="https://github.com/nvie/gitflow" rel="external">learn about it</a>.</p>
+	</div>
+	<div class="col-md-6">
 		<section ng-controller="HeadlinesCtrl">
 			<h2>Headlines</h2>
 
@@ -35,24 +61,8 @@
 			
 			<button class="btn btn-sm" ng-click="loadMore()" ng-if="displayed().length < count">Show older headlines</button>			
 		</section>
-	</div>
-	<div class="col-md-6">
-		<google-map class="main" center="map.center" zoom="map.zoom" draggable='true'></google-map>
 
-		<h2>Use cases</h2>
 		
-		<p class="lead">TODO</p>
-		
-		<h2>Features</h2>
-
-		<p>There are directives for most of the widely-used Google Maps objects, including markers, windows, lines and 
-		shapes. We're currently working on integrating more layer objects, including the HeatMap and such.</p>
-
-		<h2>Contributing</h2>
-		
-		<p>If you need a feature which isn't implemented yet, please use our
-		<a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">issue tracker</a> to open a feature request, 
-		or fork our repository, implement the feature and issue a pull request. Contributions are more than welcome!</p>
 
 	</div>
 </div>
