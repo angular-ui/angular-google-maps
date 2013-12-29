@@ -15,7 +15,7 @@
 }
 
 body {
-	font-family: Roboto;
+/*	font-family: Roboto;*/
 	font-weight: 400;
 }
 
@@ -25,6 +25,10 @@ h1.page-header {
 	text-align: center;
 	font-weight: normal;
 	padding-bottom: 20px !important;
+}
+
+footer h3 {
+	font-family: 'chunkfiveroman', Roboto, serif;
 }
 
 h2, h3, h4, h5, h6 {
@@ -61,15 +65,16 @@ a.brand, h2, h3 {
 }
 
 footer {
-	background: #f9f9f9;
+	background: rgb(44, 62, 80);
 	border-top: 4px #ecf0f1 solid;
-/*	color: #ddd;*/
+	font-size: 85%;
+	color: #ddd;
 	padding-top: 20px;
 	padding-bottom: 40px;
 	margin-top: 60px;
 }
 
-/* github logo on footer */
+/* github logo on footer
 footer:before {
 	content: "\f09b";
 	font-family: "FontAwesome";
@@ -79,7 +84,7 @@ footer:before {
 	left: 50%;
 	margin-left: -40px;
 	line-height: 0px;
-}
+}*/
 
 footer > .container {
 	margin-top: 20px;
@@ -141,6 +146,10 @@ h2 {
 
 .issue-label a {
 	color: inherit !important;
+}
+
+ul.separated li:not(:first-child) {
+	margin-top: 10px;
 }
 
 /** fork me */
