@@ -59,7 +59,7 @@ angular.module('angularGoogleMapsApp')
     		return repository;
     	};
 
-    	this.getCollaborators = function () {    		
+    	this.getCollaborators = function () {
     		return apiCall('collaborators', {});
     	};
 
