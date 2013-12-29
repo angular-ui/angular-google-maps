@@ -13,23 +13,23 @@ angular.module('angularGoogleMapsApp')
 		}).then(function (res) {
 			$scope.headlines = res.data.items;
 			$scope.count = res.data.items.length;
+			$log.debug('headlines: fetched', res.data.items.length, 'headlines')
 		}, function (res) {
 			$log.error('could not fetch headlines', res.status);
 		});
 	};
 	
-	$log.info('will fetch headlines every ' + (headlinesFetchInterval / 1000 / 60) + ' minute(s)');
+	$log.debug('headlines: fetch updates every ' + (headlinesFetchInterval / 1000 / 60) + ' minute(s)');
 	
-	var promise = $interval(fetchHeadlines, headlinesFetchInterval);
-	
-	promise.then(function () {
-		// noop
-	}, function (e) {
-		$log.error('an error has occured in interval', e);
-	}, function (headlines) {
-		$log.info('fetched headlines');
-	});
-	
+	$interval(fetchHeadlines, headlinesFetchInterval).then(function () {
+			// noop
+		}, function (e) {
+			$log.error('an error has occured in interval', e);
+		}, function (headlines) {
+			$log.info('fetched headlines');
+		}
+	);
+		
 	$scope.displayed = function () {
 		return _.first($scope.headlines, showAtMost);
 	};
