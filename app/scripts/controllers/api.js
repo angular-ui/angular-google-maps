@@ -19,7 +19,7 @@ angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope, $
     $scope.displayedDirectives = documentedDirectives;
 
     $scope.viewUrl = function (directive) {
-    	return 'views/directive/' + directive + '.html';
+    	return '/views/directive/' + directive + '.html';
     };
     
     $scope.query = null;
