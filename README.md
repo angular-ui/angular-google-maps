@@ -13,7 +13,7 @@ The website is built using [yo](http://yeoman.io/) and [generator-angular](https
 ```
 $ git clone https://github.com/nlaplante/angular-google-maps
 $ cd angular-google-maps
-$ git checkout gh-pages-new2
+$ git checkout website
 $ npm install 
 $ bower install
 $ grunt server
