@@ -32,8 +32,10 @@ angular.module('angularGoogleMapsApp')
   .run(function ($rootScope, $log, $location) {
   	$rootScope.$location = $location;
 
-	$rootScope.$on('$routeChangeSuccess', function (e, current, previous) {
-	
+	$rootScope.$on('$viewContentLoaded', function (e, current, previous) {
+		// refresh add this if needed
+		addthis.toolbox('.addthis_toolbox');
+		addthis.update('.addthis_toolbox');
 	});
 	
 	$rootScope.$on('$routeChangeError', function (e, current, previous, rejection) {
