@@ -17,6 +17,6 @@ describe('Controller: ApiCtrl', function () {
   }));
 
   it('should attach a list of directives to the scope', function () {
-    expect(scope.displayedDirectives.length).not.toBe(0);
+    expect(scope.directives.length).not.toBe(0);
   });
 });
