@@ -1,7 +1,8 @@
 <h1 class="page-header">Live demo</h1>
 
 <google-map class="demo" center="map.center" zoom="map.zoom" draggable="true">
-	<markers models="map.markers" coords="'self'" labelContent="'title'" />
+	<marker class="animate-repeat" ng-repeat="m in map.markers" coords="m.coords"></marker>
+<!--	<markers models="map.markers" coords="'self'" labelContent="'title'" />-->
 </google-map>
 
 <ul class="nav nav-tabs">

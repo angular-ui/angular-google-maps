@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('angularGoogleMapsApp').controller('DemoCtrl', function ($scope) {
+angular.module('angularGoogleMapsApp').controller('DemoCtrl', function ($scope, $timeout) {
 	
 	$scope.tab = 'status';
 	
@@ -12,24 +12,29 @@ angular.module('angularGoogleMapsApp').controller('DemoCtrl', function ($scope) 
 		zoom: 8,
 		markers: [{
 				id: 0,
-				latitude: 41,
-				longitude: -75,
+				coords: {
+					latitude: 41,
+					longitude: -75
+				},				
 				title: 'Marker 1'
 			}, {
 				id: 1,
-				latitude: 38,
-				longitude: -67,
+				coords: {
+					latitude: 40,
+					longitude: -74.5
+				},				
 				title: 'Marker 2'				
 			}]
-	};
+	};	
 	
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(function (position) {
-			$scope.map.center = {
-				latitude: position.coords.latitude,
-				longitude: position.coords.longitude
-			};
+	$timeout(function () {
+		$scope.map.markers.push({
+			id: 3,
+			coords: {
+				latitude: 40.2,
+				longitude: -74.3
+			},
+			title: 'Marker 3'			
 		});
-	}
-	
+	}, 4000);
 });
