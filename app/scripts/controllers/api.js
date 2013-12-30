@@ -36,5 +36,5 @@ angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope, $
         }
     });
 
-	$anchorScroll();    
+	//$anchorScroll();    
   });
