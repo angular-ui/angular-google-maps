@@ -1,32 +1,54 @@
 <h1 class="page-header">Google Maps for AngularJS</h1>
 
 <div class="row">
-	<div class="col-md-6">
+	<div class="col-md-4">
+	
 		<div class="well">
 			<p class="lead">
-				This is a set of directives to integrate <a href="http://maps.google.com/" rel="external">Google Maps&trade;</a> 
-				into your <a href="http://www.angularjs.org/" rel="external">AngularJS</a> applications. It works with both 1.0.x and 1.2.x versions of AngularJS.
+				<a href="http://www.angularjs.org/" rel="external">AngularJS</a> directives to integrate <a href="http://maps.google.com/" rel="external">Google Maps</a> 
+				into your applications.
 			</p>
-
-			<hr>
 			
-			<a class="btn btn-primary" href="https://raw.github.com/nlaplante/angular-google-maps/master/dist/angular-google-maps.min.js">
+			<a class="btn btn-success btn-sm" href="https://raw.github.com/nlaplante/angular-google-maps/master/dist/angular-google-maps.min.js">
 				Download (v1.0.2)				
 			</a>
 			
-			<a class="btn btn-warning" href="https://raw.github.com/nlaplante/angular-google-maps/legacy/src/angular-google-maps.js">
-				Download (legacy)
+			<a class="btn btn-default btn-sm" href="https://github.com/nlaplante/angular-google-maps">
+				View on GitHub
 			</a>
 			
-			<a class="pull-right" href="https://travis-ci.org/nlaplante/angular-google-maps">
-    			<img src="https://travis-ci.org/nlaplante/angular-google-maps.png?branch=master" alt="current build status" />
-    		</a>
+			<hr>
+			
+			<!-- AddThis Button BEGIN -->
+			<div class="addthis_toolbox addthis_default_style addthis_32x32_style">
+				<a class="addthis_button_preferred_1"></a>
+				<a class="addthis_button_preferred_2"></a>
+				<a class="addthis_button_preferred_3"></a>
+				<a class="addthis_button_preferred_4"></a>
+				<a class="addthis_button_compact"></a>
+				<a class="addthis_counter addthis_bubble_style"></a>
+			</div>
+			<script type="text/javascript">var addthis_config = {"data_track_addressbar":true};</script>
+			<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=nlaplante"></script>
+			<!-- AddThis Button END -->
 		</div>
 		
+		
+	</div>
+	
+	<div class="col-md-8">
+		<google-map center="map.center" zoom="map.zoom" draggable="false" class="main">
+			<marker coords="marker.coords"></marker>
+		</google-map>
+	</div>
+</div>
+		
+<div class="row">
+	<div class="col-md-6">
 		<h2>About</h2>
 		
-		<p>Google Maps for AngularJs is a set of directives to integrate Google Maps in AngularJS applications. It is written
-		in CoffeeScript and is available via Bower.</p>
+		<p>Google Maps for AngularJs is a set of directives written in CoffeeScript which integrate Google Maps in AngularJS applications.</p>
+		<p>It is based on the <a href="" rel="external">Google Maps Javascript API version 3</a>.</p>
 		
 		<h2>Features</h2>
 
@@ -35,9 +57,11 @@
 
 		<h2>Community</h2>
 		
-		<p>We have a <a href="https://plus.google.com/communities/101653511105172739950?utm_source=websiten&utm_medium=link" rel="external">Google+ community</a> 
-		and an <a href="https://webchat.freenode.net/?channels=angular-google-maps" rel="external">IRC channel</a> available
-		if you're looking for help.</p>
+		<p>We currently have 2 official community channels which you can use to get help:</p>
+		<ul class="icons-ul icons-2x">
+			<li><i class="icon-li icon-2x icon-google-plus"></i><a href="https://plus.google.com/communities/101653511105172739950?utm_source=websiten&utm_medium=link" rel="external">Google+ community</a></li>
+			<li><i class="icon-li icon-2x icon-comments"></i><a href="https://webchat.freenode.net/?channels=angular-google-maps" rel="external">IRC channel</a></li>
+		</ul>
 		
 		<h2>Contributing</h2>
 		
@@ -45,12 +69,12 @@
 		<a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">issue tracker</a> to open a feature request, 
 		or fork our repository, implement the feature and issue a pull request. Contributions are more than welcome!</p>
 		
-		<p>We use the <a href="https://github.com/nvie/gitflow" rel="external">git flow</a> branching model. So if you are interested in contributing, we encourage you to 
+		<p>We use the git flow branching model. So if you are interested in contributing, we encourage you to 
 		<a href="https://github.com/nvie/gitflow" rel="external">learn about it</a>.</p>
 	</div>
 	<div class="col-md-6">
 		<section ng-controller="HeadlinesCtrl">
-			<h2>Headlines</h2>
+			<h2>News</h2>
 
 			<div class="headlines-body">
 				<article ng-repeat="headline in displayed() track by headline.title" class="headline">
@@ -58,12 +82,13 @@
 					<section ng-bind-html="headline.content"></section>
 				</article>		
 			</div>
-			
+	
 			<button class="btn btn-sm" ng-click="loadMore()" ng-if="displayed().length < count">Show older headlines</button>			
 		</section>
 
-		
-
 	</div>
 </div>
+		
+
+
 
