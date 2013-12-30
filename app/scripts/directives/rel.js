@@ -10,7 +10,7 @@ angular.module('angularGoogleMapsApp')
       	var el = angular.element(element);
       	
 		if (el.attr('rel').indexOf('external') !== -1) {
-			el.attr('target', '_blank');
+			el.attr('target', '_blank').addClass('link-external');
 		}
       }
     };
