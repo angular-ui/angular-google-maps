@@ -42,7 +42,9 @@
     "karma": "~0.10.2",
     "karma-ng-html2js-preprocessor": "~0.1.0",
     "karma-ie-launcher": "~0.1.1",
-    "grunt-cli": "~0.1.11"
+    "grunt-cli": "~0.1.11",
+    "karma-story-reporter": "~0.2.2",
+    "karma-mocha-reporter": "~0.2.0"
   },
   "engines": {
     "node": ">=0.8.0"
