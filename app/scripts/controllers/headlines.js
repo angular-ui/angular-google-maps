@@ -3,9 +3,9 @@
 angular.module('angularGoogleMapsApp')
   .controller('HeadlinesCtrl', function ($scope, $http, $log, $interval, headlinesFetchInterval) {
   
-  	var showAtMost = 3, loadMoreCount = 10;
+  	var showAtMost = 5, loadMoreCount = 10;
   
-	var fetchHeadlines = function () {
+	function fetchHeadlines() {
 	
 		$http({
 			method: 'GET',
@@ -17,7 +17,7 @@ angular.module('angularGoogleMapsApp')
 		}, function (res) {
 			$log.error('could not fetch headlines', res.status);
 		});
-	};
+	}
 	
 	$log.debug('headlines: fetch updates every ' + (headlinesFetchInterval / 1000 / 60) + ' minute(s)');
 	
