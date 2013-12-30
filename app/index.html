@@ -46,10 +46,10 @@
     	<div class="container">
     	<div class="collapse navbar-collapse" id="navbar-collapse">
     		<ul class="nav navbar-nav">
-    			<li ng-class="{'active': $location.path() == '/'}"><a href="#!/" rel="start">Home</a></li>
-	    		<li ng-class="{'active': $location.path() == '/use'}"><a href="#!/use">Quickstart</a></li>
-	    		<li ng-class="{'active': $location.path() == '/api'}"><a href="#!/api">API documentation</a></li>
-	    		<li ng-class="{'active': $location.path() == '/demo'}"><a href="#!/demo">Demo</a></li>	    		
+    			<li ng-class="{'active': $location.path() == '/'}"><a href="/" rel="start">Home</a></li>
+	    		<li ng-class="{'active': $location.path() == '/use'}"><a href="/use">Quickstart</a></li>
+	    		<li ng-class="{'active': $location.path() == '/api'}"><a href="/api">API documentation</a></li>
+	    		<li ng-class="{'active': $location.path() == '/demo'}"><a href="/demo">Demo</a></li>	    		
 	    		<li class="dropdown">
 	    			<a href="#" class="dropdown-toggle" data-toggle="dropdown">Developer resources <b class="caret"></b></a>
 	    			<ul class="dropdown-menu">
@@ -85,29 +85,22 @@
        ga('create', 'UA-XXXXX-X');
        ga('send', 'pageview');
     </script>
-    
-    <script type="text/javascript" src="https://apis.google.com/js/platform.js">
-	  {parsetags: 'explicit'}
-	</script>
 	
 	<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=nlaplante"></script>
 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>	
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-route.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-animate.min.js"></script>	
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-resource.min.js"></script>	
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-cookies.min.js"></script>	
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-sanitize.min.js"></script>				
-	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular-sanitize.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 
-    <!-- build:js scripts/plugins.js -->
-    <script src="bower_components/underscore/underscore.js"></script>
-    <!-- endbuild -->
-
     <!-- build:js scripts/modules.js -->
-    <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
+    <script src="bower_components/angular-google-maps/dist/angular-google-maps.min.js"></script>
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
