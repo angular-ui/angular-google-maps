@@ -4,19 +4,24 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
   <head>
+  
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Google Maps for AngularJS</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=9">
     <meta name="description" content="This is a set of directives to integrate Google Maps into your AngularJS applications.">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="fragment" content="!">
+    
+    <title>Google Maps for AngularJS</title>
+    
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
     <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.3/yeti/bootstrap.min.css" rel="stylesheet">
 	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+	<link href="//fonts.googleapis.com/css?family=Cantarell:400,700,700italic,400italic" rel="stylesheet">
 
     <!-- build:css(.tmp) styles/main.css -->    
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
     <!-- endbuild -->
 </head>
   <body ng-app="angularGoogleMapsApp">
@@ -62,7 +67,7 @@
     </nav>
 
     <div class="container">
-	    <div ng-view></div>
+	    <div ng-view class="view-animate"></div>
 	</div>
 
 	<a href="https://github.com/nlaplante/angular-google-maps" rel="external" class="hidden-xs">
@@ -84,6 +89,8 @@
     <script type="text/javascript" src="https://apis.google.com/js/platform.js">
 	  {parsetags: 'explicit'}
 	</script>
+	
+	<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=nlaplante"></script>
 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.min.js"></script>
