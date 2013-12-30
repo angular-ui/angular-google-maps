@@ -9,7 +9,7 @@
 			<ul class="nav nav-list" id="docs-api-menu">
 				<li class="delimiter"></li>
 				<li class="nav-header">Directives</li>
-				<li ng-repeat='d in displayedDirectives'><a href='/#!/api#{{ d }}'>{{ d }}</a></li>
+				<li ng-repeat='d in displayedDirectives | filter:query' class="animate-repeat"><a href='/#!/api#{{ d }}'>{{ d }}</a></li>
 			</ul>
 		</div>
 	</div>
@@ -21,7 +21,7 @@
 		<h2>Directives</h2>
 
 		<div class="panel-group" id="directivesAccordion">
-			<div class="panel panel-default" ng-repeat='d in displayedDirectives' id='{{ d }}'>
+			<div class="panel panel-default animate-repeat" ng-repeat='d in displayedDirectives | filter:query' id='{{ d }}'>
 				<div class="panel-heading">
 					<div class="panel-title">
 						<a href='' data-toggle="collapse" data-parent="#directivesAccordion" data-target="#content{{ d }}">

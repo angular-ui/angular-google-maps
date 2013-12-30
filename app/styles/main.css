@@ -16,6 +16,11 @@
 
 body {
 	padding-top: 40px;	
+
+}
+
+body, h1, h2, h3, h4, h5, h6 {
+	font-family: Cantarell, 'Open Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
 h1.page-header {
@@ -154,5 +159,57 @@ ul.separated li:not(:first-child) {
 /* fix addthis bubble */
 .addthis_32x32_style .addthis_counter.addthis_bubble_style {
 	width: 80px !important;
+}
+
+/* ngAnimate */
+
+.animate-repeat {
+/*  line-height:40px;*/
+  list-style:none;
+  box-sizing:border-box;
+}
+ 
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter,
+.animate-repeat.ng-leave {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+}
+ 
+.animate-repeat.ng-leave.ng-leave-active,
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter {
+  opacity:0;
+  max-height:0;
+}
+ 
+.animate-repeat.ng-leave,
+.animate-repeat.ng-move.ng-move-active,
+.animate-repeat.ng-enter.ng-enter-active {
+  opacity:1;
+  max-height:40px;
+}
+
+.view-animate.ng-enter, .view-animate.ng-leave, .animate-repeat.ng-enter, .animate-repeat.ng-leave, .animate-repeat.ng-move {
+	position: relative;
+	-webkit-transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.2s;
+	transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.2s;
+}
+
+.view-animate.ng-enter {
+	opacity: 0;
+	max-height: 0;
+}
+
+.view-animate.ng-enter.ng-enter-active {
+	opacity: 1;
+	max-height: 40px;
+}
+
+.view-animate.ng-leave {
+}
+
+.view-animate.ng-leave.ng-leave-active {
+	opacity: 0;
 }
 
