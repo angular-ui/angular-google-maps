@@ -10,5 +10,4 @@ branches:
   only:
     - master
     - develop
-    - legacy
-    - gh-pages-new2
+    - website
