@@ -1,6 +1,7 @@
 {
   "private": true,
   "name": "angular-google-maps",
+  "description": "Website for angular-google-maps",
   "version": "0.0.0",
   "dependencies": {},
   "repository": "https://github.com/nlaplante/angular-google-maps",
