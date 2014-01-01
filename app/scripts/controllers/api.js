@@ -4,14 +4,15 @@ angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope) {
 
     $scope.directives = [
         'google-map',
+        'layer',
         'marker',
-        'markers',
         'marker-label',
+        'markers',
         'polygon',
         'polyline',
         'trafficlayer',
         'window',
-        'windows'
+        'windows',
     ];    
 
     $scope.viewUrl = function (directive) {
