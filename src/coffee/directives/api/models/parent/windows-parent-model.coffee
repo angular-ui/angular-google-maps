@@ -39,7 +39,8 @@
 
 		watchModels:(scope) =>
 			scope.$watch('models', (newValue, oldValue) =>
-				if (newValue != oldValue and newValue.length != oldValue.length) 
+                #check to make sure that the newValue Array is really a set of new objects
+				if (newValue != oldValue and _.intersectionObjects(newValue, oldValue).length != oldValue.length)
 					@bigGulp.handleLargeArray(@windows,(model) =>
 						model.destroy()
 					,(()->),() => #handle done callBack	

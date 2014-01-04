@@ -1,4 +1,34 @@
 /*
+    Author Nick McCready
+    Intersection of Objects if the arrays have something in common each intersecting object will be returned
+    in an new array.
+*/
+
+
+(function() {
+  _.intersectionObjects = function(array1, array2, comparison) {
+    var res,
+      _this = this;
+    if (comparison == null) {
+      comparison = void 0;
+    }
+    res = _.map(array1, function(obj1) {
+      return _.find(array2, function(obj2) {
+        if (comparison != null) {
+          return comparison(obj1, obj2);
+        } else {
+          return _.isEqual(obj1, obj2);
+        }
+      });
+    });
+    return _.filter(res, function(o) {
+      return o != null;
+    });
+  };
+
+}).call(this);
+
+/*
 !
 The MIT License
 
@@ -1640,7 +1670,7 @@ Nicholas McCready - https://twitter.com/nmccready
       WindowsParentModel.prototype.watchModels = function(scope) {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
-          if (newValue !== oldValue && newValue.length !== oldValue.length) {
+          if (newValue !== oldValue && _.intersectionObjects(newValue, oldValue).length !== oldValue.length) {
             return _this.bigGulp.handleLargeArray(_this.windows, function(model) {
               return model.destroy();
             }, (function() {}), function() {
