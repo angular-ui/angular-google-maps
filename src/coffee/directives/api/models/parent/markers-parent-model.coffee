@@ -65,7 +65,7 @@
 			@createMarkers(scope)
 
 		onWatch:(propNameToWatch,scope,newValue,oldValue) =>
-			if(propNameToWatch == 'models' and newValue == oldValue and newValue.length == oldValue.length)
+			if(propNameToWatch == 'models' and newValue == oldValue and _.intersectionObjects(newValue, oldValue).length != oldValue.length)
 				return
 			if propNameToWatch == 'options' and newValue?
 				@DEFAULTS = newValue

@@ -1549,7 +1549,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
-        if (propNameToWatch === 'models' && newValue === oldValue && newValue.length === oldValue.length) {
+        if (propNameToWatch === 'models' && newValue === oldValue && _.intersectionObjects(newValue, oldValue).length !== oldValue.length) {
           return;
         }
         if (propNameToWatch === 'options' && (newValue != null)) {

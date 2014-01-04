@@ -19,7 +19,7 @@ function ExampleController($scope, $timeout, $log, $http) {
 
     onMarkerClicked = function (marker) {
         marker.showWindow = true;
-        window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
+        //window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
     };
 
     genRandomMarkers = function (numberOfMarkers, scope) {
@@ -165,7 +165,6 @@ function ExampleController($scope, $timeout, $log, $http) {
                             }
                         })
                         $scope.map.mexiMarkers = modified;
-                        //alert("dragged");
                     });
                 }
             },
