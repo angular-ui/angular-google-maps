@@ -2,6 +2,10 @@
 
 <google-map class="demo" center="map.center" zoom="map.zoom" draggable="true">
 	<marker class="animate-repeat" ng-repeat="m in map.markers" coords="m.coords"></marker>
+	<polyline path="map.polyline.path" draggable="map.polyline.draggable" 
+		clickable="map.polyline.clickable"
+		geodesic="map.polyline.geodesic"
+		editable="map.polyline.editable"></polyline>
 <!--	<markers models="map.markers" coords="'self'" labelContent="'title'" />-->
 </google-map>
 

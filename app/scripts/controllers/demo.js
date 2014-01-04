@@ -24,7 +24,26 @@ angular.module('angularGoogleMapsApp').controller('DemoCtrl', function ($scope, 
 					longitude: -74.5
 				},				
 				title: 'Marker 2'				
-			}]
+			}],
+		polyline: {
+			path: [{
+				latitude: 41,
+				longitude: -75
+			}, {
+				latitude: 40,
+				longitude: -74.5			
+			}, {
+				latitude: 40.47,
+				longitude: -73.85
+			}, {
+				latitude: 41.2,
+				longitude: -74.2
+			}],
+			clickable: true,
+			editable: true,
+			geodesic: true,
+			draggable: true
+		}
 	};	
 	
 	$timeout(function () {
