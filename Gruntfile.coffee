@@ -98,7 +98,7 @@ module.exports = (grunt) ->
 
                 files: ["src/js/**/*.js", "src/coffee/**/*.coffee", "src/coffee/*.coffee",
                         "tmp/spec/**/*.js", "tmp/spec/*.js", "tmp/spec/**/***/.js"]
-                tasks: ["clean:example", "coffee", "concat:example", "jasmine:pivotal:build"]
+                tasks: ["clean:example", "coffee", "concat:example"]
 
         open:
             example:
