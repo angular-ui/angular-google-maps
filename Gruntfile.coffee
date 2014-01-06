@@ -11,8 +11,6 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks "grunt-mkdir"
     grunt.loadNpmTasks "grunt-contrib-coffee"
     grunt.loadNpmTasks "grunt-contrib-jasmine"
-    grunt.loadNpmTasks "grunt-template-jasmine-requirejs"
-    grunt.loadNpmTasks "grunt-template-jasmine-istanbul"
 
     # Project configuration.
     grunt.initConfig
