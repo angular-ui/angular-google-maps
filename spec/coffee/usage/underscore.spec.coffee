@@ -57,7 +57,8 @@ describe "UnderScore Examples", ->
                     expect(index).toBe(-1)
                     interArray = _.intersection(@objArray, difArray)
                     expect(interArray.length).toEqual(0)
-        describe "map w find", ->
+
+        describe "_.intersectionObjects - extension", ->
             describe "same length", ->
                 it "when two arrays are identical - same reference", ->
                     interArray = _.intersectionObjects @objArray,@objArray
@@ -72,6 +73,24 @@ describe "UnderScore Examples", ->
                     ,
                         a: 3
                         b: 3
+                    ]
+                    diffArray = @objArray
+                    interArray = _.intersectionObjects @objArray,difArray
+                    expect(interArray.length).toEqual(@objArray.length)
+
+                it "diff reference one added (new), same values (intersected)", ->
+                    difArray = [
+                        a: 1
+                        b: 1
+                    ,
+                        a: 2
+                        b: 2
+                    ,
+                        a: 3
+                        b: 3
+                    ,
+                        a:4
+                        b:4
                     ]
                     diffArray = @objArray
                     interArray = _.intersectionObjects @objArray,difArray

@@ -635,6 +635,30 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
+  this.ngGmapModule("directives.api.utils", function() {
+    return this.ModelsWatcher = {
+      didModelsChange: function(newValue, oldValue) {
+        var didModelsChange, hasIntersectionDiff;
+        if (!_.isArray(newValue)) {
+          directives.api.utils.Logger.error("models property must be an array newValue of: " + (newValue.toString()) + " is not!!");
+          return false;
+        }
+        if (newValue === oldValue) {
+          return false;
+        }
+        hasIntersectionDiff = _.intersectionObjects(newValue, oldValue).length !== oldValue.length;
+        didModelsChange = true;
+        if (!hasIntersectionDiff) {
+          didModelsChange = newValue.length !== oldValue.length;
+        }
+        return didModelsChange;
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1456,6 +1480,8 @@ Nicholas McCready - https://twitter.com/nmccready
     return this.MarkersParentModel = (function(_super) {
       __extends(MarkersParentModel, _super);
 
+      MarkersParentModel.include(directives.api.utils.ModelsWatcher);
+
       function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
         this.fit = __bind(this.fit, this);
         this.onDestroy = __bind(this.onDestroy, this);
@@ -1549,8 +1575,10 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
-        if (propNameToWatch === 'models' && newValue === oldValue && _.intersectionObjects(newValue, oldValue).length !== oldValue.length) {
-          return;
+        if (propNameToWatch === 'models') {
+          if (!this.didModelsChange(newValue, oldValue)) {
+            return;
+          }
         }
         if (propNameToWatch === 'options' && (newValue != null)) {
           this.DEFAULTS = newValue;
@@ -1612,6 +1640,8 @@ Nicholas McCready - https://twitter.com/nmccready
     return this.WindowsParentModel = (function(_super) {
       __extends(WindowsParentModel, _super);
 
+      WindowsParentModel.include(directives.api.utils.ModelsWatcher);
+
       function WindowsParentModel(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate) {
         this.interpolateContent = __bind(this.interpolateContent, this);
         this.setChildScope = __bind(this.setChildScope, this);
@@ -1670,7 +1700,7 @@ Nicholas McCready - https://twitter.com/nmccready
       WindowsParentModel.prototype.watchModels = function(scope) {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
-          if (newValue !== oldValue && _.intersectionObjects(newValue, oldValue).length !== oldValue.length) {
+          if (_this.didModelsChange(newValue, oldValue)) {
             return _this.bigGulp.handleLargeArray(_this.windows, function(model) {
               return model.destroy();
             }, (function() {}), function() {
@@ -1714,11 +1744,11 @@ Nicholas McCready - https://twitter.com/nmccready
 
       WindowsParentModel.prototype.createChildScopesWindows = function() {
         /*
-        			being that we cannot tell the difference in Key String vs. a normal value string (TemplateUrl)
-        			we will assume that all scope values are string expressions either pointing to a key (propName) or using 
-        			'self' to point the model as container/object of interest.	
+        being that we cannot tell the difference in Key String vs. a normal value string (TemplateUrl)
+        we will assume that all scope values are string expressions either pointing to a key (propName) or using
+        'self' to point the model as container/object of interest.
         
-        			This may force redundant information into the model, but this appears to be the most flexible approach.
+        This may force redundant information into the model, but this appears to be the most flexible approach.
         */
 
         var gMap, markersScope, modelsNotDefined,
@@ -1771,15 +1801,15 @@ Nicholas McCready - https://twitter.com/nmccready
 
       WindowsParentModel.prototype.createWindow = function(model, gMarker, gMap) {
         /*
-        			Create ChildScope to Mimmick an ng-repeat created scope, must define the below scope
-        		  		scope= {
-        					coords: '=coords',
-        					show: '&show',
-        					templateUrl: '=templateurl',
-        					templateParameter: '=templateparameter',
-        					isIconVisibleOnClick: '=isiconvisibleonclick',
-        					closeClick: '&closeclick'
-        				}
+        Create ChildScope to Mimmick an ng-repeat created scope, must define the below scope
+              scope= {
+                coords: '=coords',
+                show: '&show',
+                templateUrl: '=templateurl',
+                templateParameter: '=templateparameter',
+                isIconVisibleOnClick: '=isiconvisibleonclick',
+                closeClick: '&closeclick'
+            }
         */
 
         var childScope, opts, parsedContent,
