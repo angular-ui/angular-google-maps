@@ -108,7 +108,7 @@ module.exports = (grunt) ->
                 path: "http://localhost:3000/package.json"
 
             jasmine:
-                path: "http://localhost:8080/_SpecRunner.html"
+                path: "http://localhost:8069/_SpecRunner.html"
 
         connect:
             server:
@@ -120,7 +120,7 @@ module.exports = (grunt) ->
             jasmineServer:
                 options:
                     hostname: "0.0.0.0"
-                    port: 8080
+                    port: 8069
                     base: ""
 
         jasmine:
