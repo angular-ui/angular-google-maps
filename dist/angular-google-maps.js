@@ -1568,6 +1568,7 @@ Nicholas McCready - https://twitter.com/nmccready
           var child;
           scope.doRebuild = true;
           child = new directives.api.models.child.MarkerChildModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.DEFAULTS, _this.doClick, _this.gMarkerManager);
+          _this.$log.info('child', child, 'markers', _this.markers);
           _this.markers.push(child);
           return _this.markersIndex++;
         }, (function() {}), function() {
