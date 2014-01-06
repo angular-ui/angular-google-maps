@@ -44,6 +44,7 @@
                 scope.doRebuild = true
                 child = new directives.api.models.child.MarkerChildModel(@markersIndex, model, scope, @mapCtrl, @$timeout,
                         @DEFAULTS, @doClick, @gMarkerManager)
+                @$log.info('child', child, 'markers', @markers)
                 @markers.push(child)
                 @markersIndex++
             , (()->) #nothing for pause
