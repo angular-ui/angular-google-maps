@@ -12,7 +12,7 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks "grunt-contrib-coffee"
     grunt.loadNpmTasks "grunt-contrib-jasmine"
     grunt.loadNpmTasks "grunt-template-jasmine-requirejs"
-    grunt.loadNpmTasks "grunt-template-jasmine-istanbul"
+#    grunt.loadNpmTasks "grunt-template-jasmine-istanbul"
 
     # Project configuration.
     grunt.initConfig
@@ -136,15 +136,15 @@ module.exports = (grunt) ->
                             "tmp/spec/js/*/spec.js", "tmp/spec/**/*.spec.js", "tmp/spec/**/**/*-spec.js",
                             "tmp/spec/**/**/**/*.spec.js"]
                     helpers: ["tmp/spec/js/helpers/helpers.js"]
-                    template: require("grunt-template-jasmine-istanbul", "grunt-template-jasmine-requirejs")
-                    templateOptions:
-                        coverage: "spec/coverage/coverage.json"
-                        report: "spec/coverage"
-                        thresholds:
-                            lines: 25
-                            statements: 25
-                            branches: 5
-                            functions: 25
+                    template: require "grunt-template-jasmine-requirejs" #, "grunt-template-jasmine-istanbul"
+#                    templateOptions:
+#                        coverage: "spec/coverage/coverage.json"
+#                        report: "spec/coverage"
+#                        thresholds:
+#                            lines: 25
+#                            statements: 25
+#                            branches: 5
+#                            functions: 25
 
 
     # Default task: build a release in dist/

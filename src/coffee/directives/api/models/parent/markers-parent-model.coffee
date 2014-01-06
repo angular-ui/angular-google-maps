@@ -66,6 +66,10 @@
             @gMarkerManager.clear() if @gMarkerManager?
             @createMarkers(scope)
 
+        findMarkersToAdd:(scope)=>
+            _.find
+        findMarkersToRemove:(scope)=>
+
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             if propNameToWatch == 'models'
                 unless @didModelsChange(newValue, oldValue)

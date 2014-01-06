@@ -26,6 +26,32 @@
     });
   };
 
+  _.containsObject = _.includeObject = function(obj, target, comparison) {
+    var _this = this;
+    if (comparison == null) {
+      comparison = void 0;
+    }
+    if (obj === null) {
+      return false;
+    }
+    return _.any(obj, function(value) {
+      if (comparison != null) {
+        return comparison(value, target);
+      } else {
+        return _.isEqual(value, target);
+      }
+    });
+  };
+
+  _.differenceObjects = function(array1, array2, comparison) {
+    if (comparison == null) {
+      comparison = void 0;
+    }
+    return _.filter(array1, function(value) {
+      return !_.containsObject(array2, value);
+    });
+  };
+
 }).call(this);
 
 /*
@@ -1486,6 +1512,8 @@ Nicholas McCready - https://twitter.com/nmccready
         this.fit = __bind(this.fit, this);
         this.onDestroy = __bind(this.onDestroy, this);
         this.onWatch = __bind(this.onWatch, this);
+        this.findMarkersToRemove = __bind(this.findMarkersToRemove, this);
+        this.findMarkersToAdd = __bind(this.findMarkersToAdd, this);
         this.reBuildMarkers = __bind(this.reBuildMarkers, this);
         this.createMarkers = __bind(this.createMarkers, this);
         this.validateScope = __bind(this.validateScope, this);
@@ -1567,6 +1595,12 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         return this.createMarkers(scope);
       };
+
+      MarkersParentModel.prototype.findMarkersToAdd = function(scope) {
+        return _.find;
+      };
+
+      MarkersParentModel.prototype.findMarkersToRemove = function(scope) {};
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
         if (propNameToWatch === 'models') {
