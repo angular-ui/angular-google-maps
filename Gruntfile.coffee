@@ -11,8 +11,6 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks "grunt-mkdir"
     grunt.loadNpmTasks "grunt-contrib-coffee"
     grunt.loadNpmTasks "grunt-contrib-jasmine"
-    grunt.loadNpmTasks "grunt-template-jasmine-requirejs"
-    grunt.loadNpmTasks "grunt-template-jasmine-istanbul"
 
     # Project configuration.
     grunt.initConfig
@@ -100,7 +98,7 @@ module.exports = (grunt) ->
 
                 files: ["src/js/**/*.js", "src/coffee/**/*.coffee", "src/coffee/*.coffee",
                         "tmp/spec/**/*.js", "tmp/spec/*.js", "tmp/spec/**/***/.js"]
-                tasks: ["clean:example", "coffee", "concat:example", "jasmine:pivotal:build"]
+                tasks: ["clean:example", "coffee", "concat:example"]
 
         open:
             example:
@@ -110,7 +108,7 @@ module.exports = (grunt) ->
                 path: "http://localhost:3000/package.json"
 
             jasmine:
-                path: "http://localhost:8080/_SpecRunner.html"
+                path: "http://localhost:8069/_SpecRunner.html"
 
         connect:
             server:
@@ -122,7 +120,7 @@ module.exports = (grunt) ->
             jasmineServer:
                 options:
                     hostname: "0.0.0.0"
-                    port: 8080
+                    port: 8069
                     base: ""
 
         jasmine:
