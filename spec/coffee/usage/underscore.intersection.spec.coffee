@@ -1,5 +1,5 @@
 #SPEC set is to make sure Underscore is being understood and used correctly
-describe "UnderScore Examples", ->
+describe "_.intersectionObjects", ->
     beforeEach ->
         @objArray = [
             a: 1

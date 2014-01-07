@@ -1,5 +1,5 @@
 #SPEC set is to make sure Underscore is being understood and used correctly
-describe "UnderScore Examples", ->
+describe "_.differenceObjects", ->
     beforeEach ->
         @objArray = [
             a: 1
@@ -110,12 +110,19 @@ describe "UnderScore Examples", ->
                     ]
                     interArray = _.differenceObjects difArray, @objArray
                     expect(interArray.length).toEqual(3)
-#
-#                it "diff reference, 1 val identical", ->
-#                    difArray = [
-#                        a: 1
-#                        b: 1
-#                    ]
-#                    interArray = _.intersectionObjects @objArray,difArray
-#                    expect(interArray.length).toEqual(1)
-#                    expect(interArray.length).toNotEqual(@objArray.length)
+
+                it "diff reference, 1 val identical", ->
+                    difArray = [
+                        a: 1
+                        b: 1
+                    ]
+                    interArray = _.differenceObjects difArray,@objArray
+                    expect(interArray.length).toEqual(0)
+            describe "removal", ->
+                it "diff reference, 1 val identical", ->
+                    difArray = [
+                        a: 1
+                        b: 1
+                    ]
+                    interArray = _.withoutObjects @objArray, difArray
+                    expect(interArray.length).toEqual(2)

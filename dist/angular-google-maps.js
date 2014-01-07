@@ -52,6 +52,34 @@
     });
   };
 
+  _.withoutObjects = function(array, array2) {
+    return _.differenceObjects(array, array2);
+  };
+
+  _.indexOfObject = function(array, item, isSorted) {
+    var i, length;
+    if (array == null) {
+      return -1;
+    }
+    i = 0;
+    length = array.length;
+    if (isSorted) {
+      if (typeof isSorted === "number") {
+        i = (isSorted < 0 ? Math.max(0, length + isSorted) : isSorted);
+      } else {
+        i = _.sortedIndex(array, item);
+        return (array[i] === item ? i : -1);
+      }
+    }
+    while (i < length) {
+      if (_.isEqual(array[i], item)) {
+        return i;
+      }
+      i++;
+    }
+    return -1;
+  };
+
 }).call(this);
 
 /*
@@ -678,6 +706,21 @@ Nicholas McCready - https://twitter.com/nmccready
           didModelsChange = newValue.length !== oldValue.length;
         }
         return didModelsChange;
+      },
+      findModelsToAdd: function(scope, childObjects) {
+        var childModels;
+        childModels = getChildModels(childObjects);
+        return _.differenceObjects(scope.models, childModels);
+      },
+      findModelsToRemove: function(scope, childObjects) {
+        var childModels;
+        childModels = getChildModels(childObjects);
+        return _.differenceObjects(childModels, scope.models);
+      },
+      getChildModels: function(childObjects) {
+        return _.map(childObjects, function(child) {
+          return child.model;
+        });
       }
     };
   });
@@ -1512,22 +1555,27 @@ Nicholas McCready - https://twitter.com/nmccready
         this.fit = __bind(this.fit, this);
         this.onDestroy = __bind(this.onDestroy, this);
         this.onWatch = __bind(this.onWatch, this);
-        this.findMarkersToRemove = __bind(this.findMarkersToRemove, this);
-        this.findMarkersToAdd = __bind(this.findMarkersToAdd, this);
+        this.pieceMealMarkers = __bind(this.pieceMealMarkers, this);
         this.reBuildMarkers = __bind(this.reBuildMarkers, this);
-        this.createMarkers = __bind(this.createMarkers, this);
+        this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
         this.validateScope = __bind(this.validateScope, this);
         this.onTimeOut = __bind(this.onTimeOut, this);
-        var self;
+        var self,
+          _this = this;
         MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
         this.markers = [];
         this.markersIndex = 0;
         this.gMarkerManager = void 0;
-        this.scope = scope;
         this.bigGulp = directives.api.utils.AsyncProcessor;
         this.$timeout = $timeout;
         this.$log.info(this);
+        this.doRebuildAll = scope.doRebuildAll != null ? scope.doRebuildAll : true;
+        this.scope.watch('doRebuildAll', function(newValue, oldValue) {
+          if (newValue !== oldValue) {
+            return _this.doRebuildAll = newValue;
+          }
+        });
       }
 
       MarkersParentModel.prototype.onTimeOut = function(scope) {
@@ -1535,7 +1583,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.watch('doCluster', scope);
         this.watch('clusterOptions', scope);
         this.watch('fit', scope);
-        return this.createMarkers(scope);
+        return this.createMarkersFromScratch(scope);
       };
 
       MarkersParentModel.prototype.validateScope = function(scope) {
@@ -1547,7 +1595,7 @@ Nicholas McCready - https://twitter.com/nmccready
         return MarkersParentModel.__super__.validateScope.call(this, scope) || modelsNotDefined;
       };
 
-      MarkersParentModel.prototype.createMarkers = function(scope) {
+      MarkersParentModel.prototype.createMarkersFromScratch = function(scope) {
         var _this = this;
         if ((scope.doCluster != null) && scope.doCluster === true) {
           if (scope.clusterOptions != null) {
@@ -1594,19 +1642,20 @@ Nicholas McCready - https://twitter.com/nmccready
         if (this.gMarkerManager != null) {
           this.gMarkerManager.clear();
         }
-        return this.createMarkers(scope);
+        return this.createMarkersFromScratch(scope);
       };
 
-      MarkersParentModel.prototype.findMarkersToAdd = function(scope) {
-        var childModels,
+      MarkersParentModel.prototype.pieceMealMarkers = function(scope) {
+        var adds, removals,
           _this = this;
-        childModels = _.map(this.markers, function(child) {
-          return child.model;
-        });
-        return _.differenceObjects(scope.models, childModels);
+        if ((this.scope.models != null) && this.scope.models.length > 0 && this.markers.length > 0) {
+          removals = this.findModelsToRemove(scope, this.markers);
+          adds = this.findModelsToAdd(scope, this.markers);
+          return _.each(removals, function(modelToRemove) {});
+        } else {
+          return this.reBuildMarkers(scope);
+        }
       };
-
-      MarkersParentModel.prototype.findMarkersToRemove = function(scope) {};
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
         if (propNameToWatch === 'models') {
@@ -1618,7 +1667,11 @@ Nicholas McCready - https://twitter.com/nmccready
           this.DEFAULTS = newValue;
           return;
         }
-        return this.reBuildMarkers(scope);
+        if (this.doRebuildAll) {
+          return this.reBuildMarkers(scope);
+        } else {
+          return this.pieceMealMarkers(scope);
+        }
       };
 
       MarkersParentModel.prototype.onDestroy = function(scope) {
@@ -2228,6 +2281,7 @@ not 1:1 in this setting.
         this.scope.labelContent = '=labelcontent';
         this.scope.labelAnchor = '@labelanchor';
         this.scope.labelClass = '@labelclass';
+        this.scope.doRebuildAll = '=';
         this.$timeout = $timeout;
         this.$log.info(this);
       }

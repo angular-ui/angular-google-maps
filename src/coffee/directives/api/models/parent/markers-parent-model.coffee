@@ -7,17 +7,20 @@
             @markers = []
             @markersIndex = 0
             @gMarkerManager = undefined
-            @scope = scope
             @bigGulp = directives.api.utils.AsyncProcessor
             @$timeout = $timeout
             @$log.info @
+            @doRebuildAll = if scope.doRebuildAll? then scope.doRebuildAll else true
+            @scope.watch 'doRebuildAll', (newValue, oldValue) =>
+                if (newValue != oldValue)
+                    @doRebuildAll =  newValue
 
         onTimeOut: (scope)=>
             @watch('models', scope)
             @watch('doCluster', scope)
             @watch('clusterOptions', scope)
             @watch('fit', scope)
-            @createMarkers(scope)
+            @createMarkersFromScratch(scope)
 
         validateScope: (scope)=>
             modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
@@ -26,7 +29,7 @@
 
             super(scope) or modelsNotDefined
 
-        createMarkers: (scope) =>
+        createMarkersFromScratch: (scope) =>
             if scope.doCluster? and scope.doCluster == true
                 if scope.clusterOptions?
                     if @gMarkerManager == undefined
@@ -65,14 +68,17 @@
             @markers = []
             @markersIndex = 0
             @gMarkerManager.clear() if @gMarkerManager?
-            @createMarkers(scope)
+            @createMarkersFromScratch(scope)
 
-        findMarkersToAdd:(scope)=>
-            childModels = _.map @markers,(child) =>
-                child.model
-            _.differenceObjects(scope.models,childModels)
+        pieceMealMarkers:(scope)=>
+            if @scope.models? and @scope.models.length > 0 and @markers.length > 0
+                removals = @findModelsToRemove(scope,@markers)
+                adds = @findModelsToAdd(scope,@markers)
+                _.each removals, (modelToRemove)=>
 
-        findMarkersToRemove:(scope)=>
+
+            else
+                @reBuildMarkers(scope)
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             if propNameToWatch == 'models'
@@ -81,7 +87,11 @@
             if propNameToWatch == 'options' and newValue? #do we want to rebuild if options has changed?
                 @DEFAULTS = newValue
                 return
-            @reBuildMarkers(scope)
+
+            if @doRebuildAll
+                @reBuildMarkers(scope)
+            else
+                @pieceMealMarkers(scope)
 
         onDestroy: (scope)=>
             #need to figure out how to handle individual destroys

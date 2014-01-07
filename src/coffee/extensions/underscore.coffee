@@ -30,3 +30,22 @@ _.containsObject = _.includeObject = (obj, target, comparison = undefined) ->
 _.differenceObjects = (array1, array2, comparison = undefined) ->
     _.filter array1, (value) ->
         !_.containsObject array2, value
+
+#alias to differenceObjects
+_.withoutObjects = (array, array2) ->
+    _.differenceObjects(array, array2)
+
+_.indexOfObject = (array, item, isSorted) ->
+    return -1  unless array?
+    i = 0
+    length = array.length
+    if isSorted
+        if typeof isSorted is "number"
+            i = ((if isSorted < 0 then Math.max(0, length + isSorted) else isSorted))
+        else
+            i = _.sortedIndex(array, item)
+            return (if array[i] is item then i else -1)
+    while i < length
+        return i  if _.isEqual array[i], item
+        i++
+    -1

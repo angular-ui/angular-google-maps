@@ -23,6 +23,7 @@ not 1:1 in this setting.
             @scope.labelContent = '=labelcontent'
             @scope.labelAnchor = '@labelanchor'
             @scope.labelClass = '@labelclass'
+            @scope.doRebuildAll = '=' #root level directive attribute not a model level
 
             @$timeout = $timeout
             @$log.info(@)
