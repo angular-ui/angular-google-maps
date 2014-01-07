@@ -30,7 +30,7 @@ module.exports = (grunt) ->
             compile:
                 files:
                     "tmp/output_coffee.js": ["src/coffee/extensions/underscore.coffee",
-                                            "src/coffee/module.coffee", "src/coffee/ng-gmap-module.coffee",
+                                             "src/coffee/module.coffee", "src/coffee/ng-gmap-module.coffee",
                                              "src/coffee/controllers/polyline-display.js",
                                              "src/coffee/utils/LatLngArraySync.coffee", "src/coffee/utils/MapEvents.coffee",
                                              "src/coffee/oo/base-object.coffee", "src/coffee/directives/api/managers/*.coffee",
@@ -47,10 +47,10 @@ module.exports = (grunt) ->
                     "tmp/spec/js/ng-gmap-module.spec.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"
                     "tmp/spec/js/oo/oo.spec.js": "spec/coffee/oo/*.spec.coffee"
                     "tmp/spec/js/usage/usage.spec.js": "spec/coffee/usage/*.spec.coffee"
-                    "tmp/spec/js/directives/api/apis.spec.js": "spec/coffee/directives/api//*.spec.coffee"
+                    "tmp/spec/js/directives/api/apis.spec.js": "spec/coffee/directives/api/*.spec.coffee"
                     "tmp/spec/js/directives/api/models/child/children.spec.js": "spec/coffee/directives/api/models/child/*.spec.coffee"
                     "tmp/spec/js/directives/api/models/parent/parents.spec.js": "spec/coffee/directives/api/models/parent/*.spec.coffee"
-                    "tmp/spec/js/directives/api/utils/async-processor.spec.js": "spec/coffee/directives/api/utils/async-processor.spec.coffee"
+                    "tmp/spec/js/directives/api/utils/utils.spec.js": "spec/coffee/directives/api/utils/*.spec.coffee"
 
         concat:
             options:
