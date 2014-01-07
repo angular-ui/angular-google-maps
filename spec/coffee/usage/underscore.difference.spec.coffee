@@ -53,7 +53,7 @@ describe "UnderScore Examples", ->
                         b: 3
                     ]
                     diffArray = @objArray
-                    index = @objArray.indexOf {a:1,b:1}
+                    index = @objArray.indexOf {a: 1, b: 1}
                     expect(index).toBe(-1)
                     interArray = _.difference(@objArray, difArray)
                     expect(interArray.length).toEqual(3)
@@ -61,7 +61,7 @@ describe "UnderScore Examples", ->
         describe "_.differenceObjects - extension", ->
             describe "same length", ->
                 it "when two arrays are identical - same reference", ->
-                    interArray = _.differenceObjects @objArray,@objArray
+                    interArray = _.differenceObjects @objArray, @objArray
                     expect(interArray.length).toEqual(0)
 
                 it "diff reference, same values", ->
@@ -76,7 +76,7 @@ describe "UnderScore Examples", ->
                         b: 3
                     ]
                     diffArray = @objArray
-                    interArray = _.differenceObjects difArray,@objArray
+                    interArray = _.differenceObjects difArray, @objArray
                     expect(interArray.length).toEqual(0)
 
                 it "diff reference one added (new), same values (intersected)", ->
@@ -90,26 +90,26 @@ describe "UnderScore Examples", ->
                         a: 3
                         b: 3
                     ,
-                        a:4
-                        b:4
+                        a: 4
+                        b: 4
                     ]
                     diffArray = @objArray
-                    interArray = _.differenceObjects difArray,@objArray
+                    interArray = _.differenceObjects difArray, @objArray
                     expect(interArray.length).toEqual(1)
-#            describe "different length - not identical", ->
-#                it "diff reference, diff values", ->
-#                    difArray = [
-#                        a: 1
-#                        b: 2
-#                    ,
-#                        a: 2
-#                        b: 3
-#                    ,
-#                        a: 3
-#                        b: 4
-#                    ]
-#                    interArray = _.intersectionObjects @objArray,difArray
-#                    expect(interArray.length).toEqual(0)
+            describe "different length - not identical", ->
+                it "diff reference, diff values", ->
+                    difArray = [
+                        a: 1
+                        b: 2
+                    ,
+                        a: 2
+                        b: 3
+                    ,
+                        a: 3
+                        b: 4
+                    ]
+                    interArray = _.differenceObjects difArray, @objArray
+                    expect(interArray.length).toEqual(3)
 #
 #                it "diff reference, 1 val identical", ->
 #                    difArray = [

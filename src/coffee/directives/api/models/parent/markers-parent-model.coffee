@@ -68,7 +68,10 @@
             @createMarkers(scope)
 
         findMarkersToAdd:(scope)=>
-            _.find
+            childModels = _.map @markers,(child) =>
+                child.model
+            _.differenceObjects(scope.models,childModels)
+
         findMarkersToRemove:(scope)=>
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>

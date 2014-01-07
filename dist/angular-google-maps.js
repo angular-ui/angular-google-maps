@@ -1598,7 +1598,12 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.findMarkersToAdd = function(scope) {
-        return _.find;
+        var childModels,
+          _this = this;
+        childModels = _.map(this.markers, function(child) {
+          return child.model;
+        });
+        return _.differenceObjects(scope.models, childModels);
       };
 
       MarkersParentModel.prototype.findMarkersToRemove = function(scope) {};
