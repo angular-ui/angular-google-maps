@@ -15,7 +15,6 @@ describe "MarkerChildModel", ->
 
 		#define / inject values into the item we are testing... not a controller but it allows us to inject
 		angular.module('mockModule',[])
-		.value('index',@index)
 		.value('gMap',document.gMap)
 		.value('defaults',{})
 		.value('model', @model)
@@ -40,8 +39,8 @@ describe "MarkerChildModel", ->
 	)
 
 	it 'can be created', ->
-		expect(@subject != undefined).toEqual(true)
-		expect(@subject.index).toEqual(@index)
+		expect(@subject).toBeDefined()
+		expect(@subject.myScope).toBeDefined()
 		
 	it 'parentScope keys are set correctly',->
 		expect(@subject.iconKey).toEqual(@iconKey)

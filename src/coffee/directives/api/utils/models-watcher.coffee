@@ -12,16 +12,14 @@
                 didModelsChange = newValue.length != oldValue.length
             didModelsChange
 
-        #get the models that have been added since we last looked
-        findModelsToAdd: (scope, childObjects)->
+        #putting a payload together in order to not have to flatten twice, and to not have to flatten again later
+        modelsToAddRemovePayload: (scope, childObjects, comparison)->
             childModels = getChildModels(childObjects)
-            _.differenceObjects(scope.models, childModels)
-
-        #get the models that have been removed since we last looked
-        findModelsToRemove: (scope, childObjects)->
-            childModels = getChildModels(childObjects)
-            _.differenceObjects(childModels, scope.models)
+            flattened: childModels
+            adds: _.differenceObjects(scope.models, childModels, comparison)
+            removals: _.differenceObjects(childModels, scope.models, comparison)
 
         getChildModels: (childObjects) ->
             _.map childObjects, (child) ->
+                child.model.$id = child.$id #need some way of getting back to child later to remove it
                 child.model

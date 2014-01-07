@@ -1,4 +1,3 @@
-#SPEC set is to make sure Underscore is being understood and used correctly
 describe "_.indexOfObject", ->
     beforeEach ->
         @objArray = [

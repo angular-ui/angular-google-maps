@@ -56,7 +56,7 @@
     return _.differenceObjects(array, array2);
   };
 
-  _.indexOfObject = function(array, item, isSorted) {
+  _.indexOfObject = function(array, item, comparison, isSorted) {
     var i, length;
     if (array == null) {
       return -1;
@@ -72,8 +72,14 @@
       }
     }
     while (i < length) {
-      if (_.isEqual(array[i], item)) {
-        return i;
+      if (comparison != null) {
+        if (comparison(array[i], item)) {
+          return i;
+        }
+      } else {
+        if (_.isEqual(array[i], item)) {
+          return i;
+        }
       }
       i++;
     }
@@ -690,6 +696,27 @@ Nicholas McCready - https://twitter.com/nmccready
 
 (function() {
   this.ngGmapModule("directives.api.utils", function() {
+    return this.ModelKey = {
+      evalModelHandle: function(model, modelKey) {
+        if (model === void 0) {
+          return void 0;
+        }
+        if (modelKey === 'self') {
+          return model;
+        } else {
+          return model[modelKey];
+        }
+      },
+      modelKeyComparison: function(model1, model2) {
+        return this.evalModelHandle(model1, scope.coords).latitude === this.evalModelHandle(model2, scope.coords).latitude && this.evalModelHandle(model1, scope.icon) === this.evalModelHandle(model2, scope.icon) && this.evalModelHandle(model1, scope.options) === this.evalModelHandle(model2, scope.options);
+      }
+    };
+  });
+
+}).call(this);
+
+(function() {
+  this.ngGmapModule("directives.api.utils", function() {
     return this.ModelsWatcher = {
       didModelsChange: function(newValue, oldValue) {
         var didModelsChange, hasIntersectionDiff;
@@ -707,18 +734,18 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         return didModelsChange;
       },
-      findModelsToAdd: function(scope, childObjects) {
+      modelsToAddRemovePayload: function(scope, childObjects, comparison) {
         var childModels;
         childModels = getChildModels(childObjects);
-        return _.differenceObjects(scope.models, childModels);
-      },
-      findModelsToRemove: function(scope, childObjects) {
-        var childModels;
-        childModels = getChildModels(childObjects);
-        return _.differenceObjects(childModels, scope.models);
+        return {
+          flattened: childModels,
+          adds: _.differenceObjects(scope.models, childModels, comparison),
+          removals: _.differenceObjects(childModels, scope.models, comparison)
+        };
       },
       getChildModels: function(childObjects) {
         return _.map(childObjects, function(child) {
+          child.model.$id = child.$id;
           return child.model;
         });
       }
@@ -850,13 +877,15 @@ Nicholas McCready - https://twitter.com/nmccready
 
       MarkerChildModel.include(directives.api.utils.GmapUtil);
 
-      function MarkerChildModel(index, model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager) {
+      MarkerChildModel.include(directives.api.utils.ModelKey);
+
+      function MarkerChildModel(model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager) {
         var self,
           _this = this;
-        this.index = index;
         this.model = model;
         this.parentScope = parentScope;
         this.gMap = gMap;
+        this.$timeout = $timeout;
         this.defaults = defaults;
         this.doClick = doClick;
         this.gMarkerManager = gMarkerManager;
@@ -925,17 +954,6 @@ Nicholas McCready - https://twitter.com/nmccready
             return value;
           }
         }, isInit, this.setOptions);
-      };
-
-      MarkerChildModel.prototype.evalModelHandle = function(model, modelKey) {
-        if (model === void 0) {
-          return void 0;
-        }
-        if (modelKey === 'self') {
-          return model;
-        } else {
-          return model[modelKey];
-        }
       };
 
       MarkerChildModel.prototype.maybeSetScopeValue = function(scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter) {
@@ -1551,10 +1569,13 @@ Nicholas McCready - https://twitter.com/nmccready
 
       MarkersParentModel.include(directives.api.utils.ModelsWatcher);
 
+      MarkersParentModel.include(directives.api.utils.ModelKey);
+
       function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
         this.fit = __bind(this.fit, this);
         this.onDestroy = __bind(this.onDestroy, this);
         this.onWatch = __bind(this.onWatch, this);
+        this.newChildMarker = __bind(this.newChildMarker, this);
         this.pieceMealMarkers = __bind(this.pieceMealMarkers, this);
         this.reBuildMarkers = __bind(this.reBuildMarkers, this);
         this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
@@ -1565,7 +1586,6 @@ Nicholas McCready - https://twitter.com/nmccready
         MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
         this.markers = [];
-        this.markersIndex = 0;
         this.gMarkerManager = void 0;
         this.bigGulp = directives.api.utils.AsyncProcessor;
         this.$timeout = $timeout;
@@ -1613,12 +1633,8 @@ Nicholas McCready - https://twitter.com/nmccready
           this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
         }
         return this.bigGulp.handleLargeArray(scope.models, function(model) {
-          var child;
           scope.doRebuild = true;
-          child = new directives.api.models.child.MarkerChildModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.DEFAULTS, _this.doClick, _this.gMarkerManager);
-          _this.$log.info('child', child, 'markers', _this.markers);
-          _this.markers.push(child);
-          return _this.markersIndex++;
+          return _this.newChildMarker(model, scope);
         }, (function() {}), function() {
           _this.gMarkerManager.draw();
           if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
@@ -1638,7 +1654,6 @@ Nicholas McCready - https://twitter.com/nmccready
         });
         delete this.markers;
         this.markers = [];
-        this.markersIndex = 0;
         if (this.gMarkerManager != null) {
           this.gMarkerManager.clear();
         }
@@ -1646,15 +1661,37 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.pieceMealMarkers = function(scope) {
-        var adds, removals,
+        var payload,
           _this = this;
         if ((this.scope.models != null) && this.scope.models.length > 0 && this.markers.length > 0) {
-          removals = this.findModelsToRemove(scope, this.markers);
-          adds = this.findModelsToAdd(scope, this.markers);
-          return _.each(removals, function(modelToRemove) {});
+          payload = this.modelsToAddRemovePayload(scope, this.markers, this.modelKeyComparison);
+          _.each(payload.removals, function(modelToRemove) {
+            var toDestroy;
+            toDestroy = _.find(_this.markers, function(m) {
+              return m.$id === modelToRemove.$id;
+            });
+            _this.gMarkerManager.remove(toDestroy.gMarker);
+            return toDestroy.destroy();
+          });
+          this.markers = _.differenceObjects(this.markers, payload.removals, function(obj1, obj2) {
+            return obj1.$id === obj2.$id;
+          });
+          _.each(payload.adds, function(modelToAdd) {
+            return _this.newChildMarker(modelToAdd, scope);
+          });
+          this.gMarkerManager.draw();
+          return scope.markerModels = this.markers;
         } else {
           return this.reBuildMarkers(scope);
         }
+      };
+
+      MarkersParentModel.prototype.newChildMarker = function(model, scope) {
+        var child;
+        child = new directives.api.models.child.MarkerChildModel(model, scope, this.mapCtrl, this.$timeout, this.DEFAULTS, this.doClick, this.gMarkerManager);
+        this.$log.info('child', child, 'markers', this.markers);
+        this.markers.push(child);
+        return child;
       };
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {

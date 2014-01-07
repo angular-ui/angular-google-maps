@@ -35,7 +35,7 @@ _.differenceObjects = (array1, array2, comparison = undefined) ->
 _.withoutObjects = (array, array2) ->
     _.differenceObjects(array, array2)
 
-_.indexOfObject = (array, item, isSorted) ->
+_.indexOfObject = (array, item, comparison, isSorted) ->
     return -1  unless array?
     i = 0
     length = array.length
@@ -46,6 +46,9 @@ _.indexOfObject = (array, item, isSorted) ->
             i = _.sortedIndex(array, item)
             return (if array[i] is item then i else -1)
     while i < length
-        return i  if _.isEqual array[i], item
+        if comparison?
+            return i if comparison array[i], item
+        else
+            return i if _.isEqual array[i], item
         i++
     -1
