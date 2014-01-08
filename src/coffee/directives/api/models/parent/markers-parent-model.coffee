@@ -75,8 +75,9 @@
                         m.$id == modelToRemove.$id
                     @gMarkerManager.remove(toDestroy.gMarker) if toDestroy.gMarker?
                     toDestroy.destroy()
-                @markers = _.differenceObjects @markers, payload.removals, (obj1, obj2) ->
-                    obj1.$id == obj2.$id
+                    toSpliceIndex = _.indexOfObject @markers, toDestroy, (obj1,obj2) ->
+                        obj1.$id == obj2.$id
+                    @markers.splice(toSpliceIndex, 1) if (toSpliceIndex > -1)
 
                 #add stuff
                 _.each payload.adds, (modelToAdd) =>

@@ -746,8 +746,8 @@ Nicholas McCready - https://twitter.com/nmccready
       getChildModels: function(childObjects, gPropToPass) {
         return _.map(childObjects, function(child) {
           child.model.$id = child.$id;
-          child.model;
-          return child.model[gPropToPass] = child[gPropToPass];
+          child.model[gPropToPass] = child[gPropToPass];
+          return child.model;
         });
       }
     };
@@ -1663,27 +1663,31 @@ Nicholas McCready - https://twitter.com/nmccready
       MarkersParentModel.prototype.pieceMealMarkers = function(scope) {
         var payload,
           _this = this;
-        this.isRebuilding = true;
         if ((this.scope.models != null) && this.scope.models.length > 0 && this.markers.length > 0) {
           payload = this.modelsToAddRemovePayload(scope, this.markers, this.modelKeyComparison, 'gMarker');
           _.each(payload.removals, function(modelToRemove) {
-            var toDestroy;
+            var toDestroy, toSpliceIndex;
             toDestroy = _.find(_this.markers, function(m) {
               return m.$id === modelToRemove.$id;
             });
             if (toDestroy.gMarker != null) {
               _this.gMarkerManager.remove(toDestroy.gMarker);
             }
-            return toDestroy.destroy();
+            toDestroy.destroy();
+            toSpliceIndex = _.indexOfObject(_this.markers, toDestroy, function(obj1, obj2) {
+              return obj1.$id === obj2.$id;
+            });
+            if (toSpliceIndex > -1) {
+              return _this.markers.splice(toSpliceIndex, 1);
+            }
           });
-          this.markers = _.differenceObjects(this.markers, payload.removals, function(obj1, obj2) {
-            return obj1.$id === obj2.$id;
+          _.each(payload.adds, function(modelToAdd) {
+            return _this.newChildMarker(modelToAdd, scope);
           });
-          this.gMarkerManager.draw();
+          return this.gMarkerManager.draw();
         } else {
-          this.reBuildMarkers(scope);
+          return this.reBuildMarkers(scope);
         }
-        return this.isRebuilding = false;
       };
 
       MarkersParentModel.prototype.newChildMarker = function(model, scope) {
@@ -1702,9 +1706,6 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         if (propNameToWatch === 'options' && (newValue != null)) {
           this.DEFAULTS = newValue;
-          return;
-        }
-        if (this.isRebuilding) {
           return;
         }
         if (this.doRebuildAll) {
