@@ -104,6 +104,9 @@ module.exports = (grunt) ->
             example:
                 path: "http://localhost:3000/example/example.html"
 
+            example2:
+                path: "http://localhost:3000/example/example2.html"
+
             version:
                 path: "http://localhost:3000/package.json"
 
@@ -157,3 +160,4 @@ module.exports = (grunt) ->
     # and running a webserver on port 3000 with livereload. Web page is opened
     # automatically in the default browser.
     grunt.registerTask "example", ["clean:example", "concat:example", "connect:server", "open:example", "watch"]
+    grunt.registerTask "example2", ["clean:example", "concat:example", "connect:server", "open:example2", "watch"]

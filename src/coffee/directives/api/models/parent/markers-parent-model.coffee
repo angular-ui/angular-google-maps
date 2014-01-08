@@ -10,8 +10,8 @@
             @bigGulp = directives.api.utils.AsyncProcessor
             @$timeout = $timeout
             @$log.info @
-            @doRebuildAll = if scope.doRebuildAll? then scope.doRebuildAll else true
-            @scope.watch 'doRebuildAll', (newValue, oldValue) =>
+            @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else true
+            @scope.$watch 'doRebuildAll', (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @doRebuildAll = newValue
 
@@ -52,8 +52,6 @@
             , () => #handle done callBack
                 @gMarkerManager.draw()
                 @fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit
-                #put MarkerModels into local scope
-                scope.markerModels = @markers
             )
 
 
@@ -69,13 +67,13 @@
 
         pieceMealMarkers: (scope)=>
             if @scope.models? and @scope.models.length > 0 and @markers.length > 0
-                payload = @modelsToAddRemovePayload(scope, @markers, @modelKeyComparison)
+                payload = @modelsToAddRemovePayload(scope, @markers, @modelKeyComparison, 'gMarker')
 
                 #clean up items to remove, first find where, then
                 _.each payload.removals, (modelToRemove)=>
                     toDestroy = _.find @markers, (m)=>
                         m.$id == modelToRemove.$id
-                    @gMarkerManager.remove(toDestroy.gMarker)
+                    @gMarkerManager.remove(toDestroy.gMarker) if toDestroy.gMarker?
                     toDestroy.destroy()
                 @markers = _.differenceObjects @markers, payload.removals, (obj1, obj2) ->
                     obj1.$id == obj2.$id
@@ -85,7 +83,6 @@
                     @newChildMarker(modelToAdd,scope)
                 #finally redraw
                 @gMarkerManager.draw()
-                scope.markerModels = @markers
             else
                 @reBuildMarkers(scope)
 

@@ -13,13 +13,14 @@
             didModelsChange
 
         #putting a payload together in order to not have to flatten twice, and to not have to flatten again later
-        modelsToAddRemovePayload: (scope, childObjects, comparison)->
-            childModels = getChildModels(childObjects)
+        modelsToAddRemovePayload: (scope, childObjects, comparison, gPropToPass)->
+            childModels = @getChildModels(childObjects,gPropToPass)
             flattened: childModels
             adds: _.differenceObjects(scope.models, childModels, comparison)
             removals: _.differenceObjects(childModels, scope.models, comparison)
 
-        getChildModels: (childObjects) ->
+        getChildModels: (childObjects, gPropToPass) ->
             _.map childObjects, (child) ->
                 child.model.$id = child.$id #need some way of getting back to child later to remove it
                 child.model
+                child.model[gPropToPass] = child[gPropToPass]
