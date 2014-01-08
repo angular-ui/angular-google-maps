@@ -69,7 +69,8 @@
             if @scope.models? and @scope.models.length > 0 and @markers.length > 0
                 payload = @modelsToAddRemovePayload(scope, @markers, @modelKeyComparison, 'gMarker')
 
-                #clean up items to remove, first find where, then
+                #payload contains added, removals and flattened (existing models with their gProp appended)
+                #remove all removals from gMarkerManager, clean up scope (destroy), finally remove from @markers
                 _.each payload.removals, (modelToRemove)=>
                     toDestroy = _.find @markers, (m)=>
                         m.$id == modelToRemove.$id
@@ -79,7 +80,7 @@
                         obj1.$id == obj2.$id
                     @markers.splice(toSpliceIndex, 1) if (toSpliceIndex > -1)
 
-                #add stuff
+                #add all adds via creating new ChildMarkers which are appended to @markers
                 _.each payload.adds, (modelToAdd) =>
                     @newChildMarker(modelToAdd,scope)
                 #finally redraw

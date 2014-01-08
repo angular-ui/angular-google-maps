@@ -22,5 +22,5 @@
         getChildModels: (childObjects, gPropToPass) ->
             _.map childObjects, (child) ->
                 child.model.$id = child.$id #need some way of getting back to child later to remove it
-                child.model[gPropToPass] = child[gPropToPass]
+                child.model[gPropToPass] = child[gPropToPass] #passing some gObject, maybe gMarker, maybe gWindow, using class will use reference to be cleaned
                 child.model
