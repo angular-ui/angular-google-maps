@@ -10,9 +10,8 @@ angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope) {
         'markers',
         'polygon',
         'polyline',
-        'trafficlayer',
         'window',
-        'windows',
+        'windows'
     ];    
 
     $scope.viewUrl = function (directive) {

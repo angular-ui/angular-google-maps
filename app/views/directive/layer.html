@@ -1,4 +1,4 @@
-<p>The <code>layer</code> directive is used to draw different types of layers on the map.</p>
+<p>The <code>layer</code> directive is used to draw different types of layers on the map. This has replaced the trafficlayer directive.</p>
 	
 <h4>Usage</h4>
 
@@ -44,6 +44,16 @@
 			<td>show</td>
 			<td><span class="label label-info">expression</span></td>
 			<td>boolean value which shows or hides the layer</td>
+		</tr>
+		<tr>
+			<td>onCreated (develop branch)</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>A function to call when the directive is initialized. This is useful where layers need additional initialization steps. (ie: setting its data to render)
+				See <a href="https://github.com/nlaplante/angular-google-maps/blob/18aeb777ebe79ee6db5dfdaf0981ca734c329180/example/example-controller.js#L51-L53">heatMap onCreated</a> to initialize <a href="https://github.com/nlaplante/angular-google-maps/blob/90f46469e9535ff9e8871273ce4877c4474ca158/example/mock-heat-layer.js">mock data.</a>
+
+				Also see Google's api for <a href="https://developers.google.com/maps/documentation/javascript/reference#HeatmapLayer">HeatmapLayer</a>
+
+			</td>
 		</tr>
 	</tbody>
 </table>
