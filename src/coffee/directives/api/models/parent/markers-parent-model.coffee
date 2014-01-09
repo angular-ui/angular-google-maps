@@ -59,9 +59,8 @@
         reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
                 return
-            for oldM in @markers
-                do(oldM) =>
-                    oldM.destroy()
+            _.each @markers, (oldM) =>
+                oldM.destroy()
             delete @markers
             @markers = []
             @markersIndex = 0
@@ -89,10 +88,9 @@
             if (@mapCtrl and @markers? and @markers.length)
                 bounds = new google.maps.LatLngBounds();
                 everSet = false
-                _.each(@markers, (childModelMarker) =>
+                _.each @markers, (childModelMarker) =>
                     if childModelMarker.gMarker?
                         everSet = true unless everSet
                         bounds.extend(childModelMarker.gMarker.getPosition())
-                )
                 @mapCtrl.getMap().fitBounds(bounds) if everSet
 

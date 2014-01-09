@@ -1553,19 +1553,13 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.reBuildMarkers = function(scope) {
-        var oldM, _fn, _i, _len, _ref,
-          _this = this;
+        var _this = this;
         if (!scope.doRebuild && scope.doRebuild !== void 0) {
           return;
         }
-        _ref = this.markers;
-        _fn = function(oldM) {
+        _.each(this.markers, function(oldM) {
           return oldM.destroy();
-        };
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          oldM = _ref[_i];
-          _fn(oldM);
-        }
+        });
         delete this.markers;
         this.markers = [];
         this.markersIndex = 0;
