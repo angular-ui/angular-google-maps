@@ -1903,7 +1903,9 @@ Nicholas McCready - https://twitter.com/nmccready
           this.isIconVisibleOnClick = this.linked.scope.isIconVisibleOnClick;
         }
         this.gMap = this.linked.ctrls[0].getMap();
-        markersScope = this.linked.ctrls.length > 1 && (this.linked.ctrls[1] != null) ? this.linked.ctrls[1].getMarkersScope() : void 0;
+        if (this.linked.ctrls[1] != null) {
+          markersScope = this.linked.ctrls.length > 1 ? this.linked.ctrls[1].getMarkersScope() : void 0;
+        }
         modelsNotDefined = angular.isUndefined(this.linked.scope.models);
         if (modelsNotDefined && (markersScope === void 0 || (markersScope.markerModels === void 0 && markersScope.models === void 0))) {
           this.$log.info("No models to create windows from! Need direct models or models derrived from markers!");

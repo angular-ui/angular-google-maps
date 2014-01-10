@@ -85,10 +85,12 @@
             if angular.isDefined(@linked.attrs.isiconvisibleonclick)
                 @isIconVisibleOnClick = @linked.scope.isIconVisibleOnClick
             @gMap = @linked.ctrls[0].getMap()
-            markersScope = if @linked.ctrls.length > 1 and @linked.ctrls[1]? then @linked.ctrls[1].getMarkersScope() else undefined
+
+            if @linked.ctrls[1]?
+                markersScope = if @linked.ctrls.length > 1 then @linked.ctrls[1].getMarkersScope() else undefined
             modelsNotDefined = angular.isUndefined(@linked.scope.models)
 
-            if(modelsNotDefined and (markersScope == undefined or (markersScope.markerModels == undefined and markersScope.models == undefined)))
+            if modelsNotDefined and (markersScope == undefined or (markersScope.markerModels == undefined and markersScope.models == undefined))
                 @$log.info("No models to create windows from! Need direct models or models derrived from markers!")
                 return
             if @gMap?
