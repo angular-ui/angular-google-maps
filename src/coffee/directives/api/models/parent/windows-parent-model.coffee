@@ -90,8 +90,8 @@
                 markersScope = if @linked.ctrls.length > 1 then @linked.ctrls[1].getMarkersScope() else undefined
             modelsNotDefined = angular.isUndefined(@linked.scope.models)
 
-            if modelsNotDefined and (markersScope == undefined or (markersScope.markerModels == undefined and markersScope.models == undefined))
-                @$log.info("No models to create windows from! Need direct models or models derrived from markers!")
+            if modelsNotDefined and (markersScope == undefined or (markersScope.markerModels == undefined or markersScope.models == undefined))
+                @$log.error("No models to create windows from! Need direct models or models derrived from markers!")
                 return
             if @gMap?
                 #at the very least we need a Map, the marker is optional as we can create Windows without markers

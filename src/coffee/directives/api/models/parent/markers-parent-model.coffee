@@ -52,6 +52,7 @@
             , () => #handle done callBack
                 @gMarkerManager.draw()
                 @fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit
+                scope.markerModels = @markers #for other directives like windows
             )
 
 
@@ -85,6 +86,7 @@
                     @newChildMarker(modelToAdd,scope)
                 #finally redraw
                 @gMarkerManager.draw()
+                scope.markerModels = @markers #for other directives like windows
             else
                 @reBuildMarkers(scope)
 

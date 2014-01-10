@@ -1642,8 +1642,9 @@ Nicholas McCready - https://twitter.com/nmccready
         }, (function() {}), function() {
           _this.gMarkerManager.draw();
           if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
-            return _this.fit();
+            _this.fit();
           }
+          return scope.markerModels = _this.markers;
         });
       };
 
@@ -1687,7 +1688,8 @@ Nicholas McCready - https://twitter.com/nmccready
           _.each(payload.adds, function(modelToAdd) {
             return _this.newChildMarker(modelToAdd, scope);
           });
-          return this.gMarkerManager.draw();
+          this.gMarkerManager.draw();
+          return scope.markerModels = this.markers;
         } else {
           return this.reBuildMarkers(scope);
         }
@@ -1907,8 +1909,8 @@ Nicholas McCready - https://twitter.com/nmccready
           markersScope = this.linked.ctrls.length > 1 ? this.linked.ctrls[1].getMarkersScope() : void 0;
         }
         modelsNotDefined = angular.isUndefined(this.linked.scope.models);
-        if (modelsNotDefined && (markersScope === void 0 || (markersScope.markerModels === void 0 && markersScope.models === void 0))) {
-          this.$log.info("No models to create windows from! Need direct models or models derrived from markers!");
+        if (modelsNotDefined && (markersScope === void 0 || (markersScope.markerModels === void 0 || markersScope.models === void 0))) {
+          this.$log.error("No models to create windows from! Need direct models or models derrived from markers!");
           return;
         }
         if (this.gMap != null) {
