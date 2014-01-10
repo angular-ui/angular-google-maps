@@ -4,7 +4,6 @@
 @ngGmapModule "directives.api.models.parent", ->
     class @WindowsParentModel extends directives.api.models.parent.IWindowParentModel
         @include directives.api.utils.ModelsWatcher
-        @include directives.api.utils.ModelKey
         constructor: (scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate) ->
             super(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate)
             self = @

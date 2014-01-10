@@ -1,7 +1,6 @@
 @ngGmapModule "directives.api.models.parent", ->
     class @MarkersParentModel extends directives.api.models.parent.IMarkerParentModel
         @include directives.api.utils.ModelsWatcher
-        @include directives.api.utils.ModelKey
         constructor: (scope, element, attrs, mapCtrl, $timeout) ->
             super(scope, element, attrs, mapCtrl, $timeout)
             self = @
@@ -47,7 +46,7 @@
 
             @bigGulp.handleLargeArray(scope.models, (model) =>
                 scope.doRebuild = true
-                @newChildMarker(model,scope)
+                @newChildMarker(model, scope)
             , (()->) #nothing for pause
             , () => #handle done callBack
                 @gMarkerManager.draw()
@@ -77,21 +76,21 @@
                         m.$id == modelToRemove.$id
                     @gMarkerManager.remove(toDestroy.gMarker) if toDestroy.gMarker?
                     toDestroy.destroy()
-                    toSpliceIndex = _.indexOfObject @markers, toDestroy, (obj1,obj2) ->
+                    toSpliceIndex = _.indexOfObject @markers, toDestroy, (obj1, obj2) ->
                         obj1.$id == obj2.$id
                     @markers.splice(toSpliceIndex, 1) if (toSpliceIndex > -1)
 
                 #add all adds via creating new ChildMarkers which are appended to @markers
                 _.each payload.adds, (modelToAdd) =>
-                    @newChildMarker(modelToAdd,scope)
+                    @newChildMarker(modelToAdd, scope)
                 #finally redraw
                 @gMarkerManager.draw()
                 scope.markerModels = @markers #for other directives like windows
             else
                 @reBuildMarkers(scope)
 
-        newChildMarker:(model,scope)=>
-            child = new directives.api.models.child.MarkerChildModel( model, scope, @mapCtrl,
+        newChildMarker: (model, scope)=>
+            child = new directives.api.models.child.MarkerChildModel(model, scope, @mapCtrl,
                     @$timeout,
                     @DEFAULTS, @doClick, @gMarkerManager)
             @$log.info('child', child, 'markers', @markers)
@@ -100,7 +99,7 @@
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             if propNameToWatch == 'models'
-                unless @didModelsChange(newValue, oldValue)
+                unless @didModelsChange newValue, oldValue, @modelKeyComparison
                     return
             if propNameToWatch == 'options' and newValue? #do we want to rebuild if options has changed?
                 @DEFAULTS = newValue

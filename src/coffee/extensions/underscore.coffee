@@ -52,3 +52,9 @@ _.indexOfObject = (array, item, comparison, isSorted) ->
             return i if _.isEqual array[i], item
         i++
     -1
+
+#to easily inherit multiple objects
+_.extends=(arrayOfObjectsToCombine)->
+    _.reduce arrayOfObjectsToCombine,(combined,toAdd)->
+        _.extend(combined,toAdd)
+    ,{}#starting point empty object

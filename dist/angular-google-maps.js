@@ -86,6 +86,12 @@
     return -1;
   };
 
+  _["extends"] = function(arrayOfObjectsToCombine) {
+    return _.reduce(arrayOfObjectsToCombine, function(combined, toAdd) {
+      return _.extend(combined, toAdd);
+    }, {});
+  };
+
 }).call(this);
 
 /*
@@ -310,7 +316,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         }
         if ((_ref = obj.extended) != null) {
-          _ref.apply(0);
+          _ref.apply(this);
         }
         return this;
       };
@@ -324,7 +330,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         }
         if ((_ref = obj.included) != null) {
-          _ref.apply(0);
+          _ref.apply(this);
         }
         return this;
       };
@@ -695,9 +701,21 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   this.ngGmapModule("directives.api.utils", function() {
-    return this.ModelKey = {
-      evalModelHandle: function(model, modelKey) {
+    return this.ModelKey = (function(_super) {
+      __extends(ModelKey, _super);
+
+      function ModelKey(scope) {
+        this.scope = scope;
+        this.modelKeyComparison = __bind(this.modelKeyComparison, this);
+        ModelKey.__super__.constructor.call(this);
+      }
+
+      ModelKey.prototype.evalModelHandle = function(model, modelKey) {
         if (model === void 0) {
           return void 0;
         }
@@ -706,11 +724,15 @@ Nicholas McCready - https://twitter.com/nmccready
         } else {
           return model[modelKey];
         }
-      },
-      modelKeyComparison: function(model1, model2) {
-        return this.evalModelHandle(model1, scope.coords).latitude === this.evalModelHandle(model2, scope.coords).latitude && this.evalModelHandle(model1, scope.coords).longitude === this.evalModelHandle(model2, scope.coords).longitude;
-      }
-    };
+      };
+
+      ModelKey.prototype.modelKeyComparison = function(model1, model2) {
+        return this.evalModelHandle(model1, this.scope.coords).latitude === this.evalModelHandle(model2, this.scope.coords).latitude && this.evalModelHandle(model1, this.scope.coords).longitude === this.evalModelHandle(model2, this.scope.coords).longitude;
+      };
+
+      return ModelKey;
+
+    })(oo.BaseObject);
   });
 
 }).call(this);
@@ -718,7 +740,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   this.ngGmapModule("directives.api.utils", function() {
     return this.ModelsWatcher = {
-      didModelsChange: function(newValue, oldValue) {
+      didModelsChange: function(newValue, oldValue, comparison) {
         var didModelsChange, hasIntersectionDiff;
         if (newValue === void 0) {
           return false;
@@ -730,7 +752,7 @@ Nicholas McCready - https://twitter.com/nmccready
         if (newValue === oldValue) {
           return false;
         }
-        hasIntersectionDiff = _.intersectionObjects(newValue, oldValue).length !== oldValue.length;
+        hasIntersectionDiff = _.intersectionObjects(newValue, oldValue, comparison).length !== oldValue.length;
         didModelsChange = true;
         if (!hasIntersectionDiff) {
           didModelsChange = newValue.length !== oldValue.length;
@@ -881,8 +903,6 @@ Nicholas McCready - https://twitter.com/nmccready
 
       MarkerChildModel.include(directives.api.utils.GmapUtil);
 
-      MarkerChildModel.include(directives.api.utils.ModelKey);
-
       function MarkerChildModel(model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager) {
         var self,
           _this = this;
@@ -904,24 +924,24 @@ Nicholas McCready - https://twitter.com/nmccready
         this.createMarker = __bind(this.createMarker, this);
         this.setMyScope = __bind(this.setMyScope, this);
         self = this;
+        MarkerChildModel.__super__.constructor.call(this, this.parentScope.$new(false));
         this.iconKey = this.parentScope.icon;
         this.coordsKey = this.parentScope.coords;
         this.clickKey = this.parentScope.click();
         this.labelContentKey = this.parentScope.labelContent;
         this.optionsKey = this.parentScope.options;
         this.labelOptionsKey = this.parentScope.labelOptions;
-        this.myScope = this.parentScope.$new(false);
-        this.myScope.model = this.model;
+        this.scope.model = this.model;
         this.setMyScope(this.model, void 0, true);
         this.createMarker(this.model);
-        this.myScope.$watch('model', function(newValue, oldValue) {
+        this.scope.$watch('model', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             return _this.setMyScope(newValue, oldValue);
           }
         }, true);
         this.$log = directives.api.utils.Logger;
         this.$log.info(self);
-        this.watchDestroy(this.myScope);
+        this.watchDestroy(this.scope);
       }
 
       MarkerChildModel.prototype.setMyScope = function(model, oldModel, isInit) {
@@ -953,7 +973,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           value = lModelKey === 'self' ? lModel : lModel[lModelKey];
           if (value === void 0) {
-            return value = lModelKey === void 0 ? _this.defaults : _this.myScope.options;
+            return value = lModelKey === void 0 ? _this.defaults : _this.scope.options;
           } else {
             return value;
           }
@@ -966,21 +986,21 @@ Nicholas McCready - https://twitter.com/nmccready
           gSetter = void 0;
         }
         if (oldModel === void 0) {
-          this.myScope[scopePropName] = evaluate(model, modelKey);
+          this.scope[scopePropName] = evaluate(model, modelKey);
           if (!isInit) {
             if (gSetter != null) {
-              gSetter(this.myScope);
+              gSetter(this.scope);
             }
           }
           return;
         }
         oldVal = evaluate(oldModel, modelKey);
         newValue = evaluate(model, modelKey);
-        if (newValue !== oldVal && this.myScope[scopePropName] !== newValue) {
-          this.myScope[scopePropName] = newValue;
+        if (newValue !== oldVal && this.scope[scopePropName] !== newValue) {
+          this.scope[scopePropName] = newValue;
           if (!isInit) {
             if (gSetter != null) {
-              gSetter(this.myScope);
+              gSetter(this.scope);
             }
             return this.gMarkerManager.draw();
           }
@@ -988,11 +1008,11 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkerChildModel.prototype.destroy = function() {
-        return this.myScope.$destroy();
+        return this.scope.$destroy();
       };
 
       MarkerChildModel.prototype.setCoords = function(scope) {
-        if (scope.$id !== this.myScope.$id || this.gMarker === void 0) {
+        if (scope.$id !== this.scope.$id || this.gMarker === void 0) {
           return;
         }
         if ((scope.coords != null)) {
@@ -1006,7 +1026,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkerChildModel.prototype.setIcon = function(scope) {
-        if (scope.$id !== this.myScope.$id || this.gMarker === void 0) {
+        if (scope.$id !== this.scope.$id || this.gMarker === void 0) {
           return;
         }
         this.gMarkerManager.remove(this.gMarker);
@@ -1019,7 +1039,7 @@ Nicholas McCready - https://twitter.com/nmccready
       MarkerChildModel.prototype.setOptions = function(scope) {
         var _ref,
           _this = this;
-        if (scope.$id !== this.myScope.$id) {
+        if (scope.$id !== this.scope.$id) {
           return;
         }
         if (this.gMarker != null) {
@@ -1038,8 +1058,8 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         this.gMarkerManager.add(this.gMarker);
         return google.maps.event.addListener(this.gMarker, 'click', function() {
-          if (_this.doClick && (_this.myScope.click != null)) {
-            return _this.myScope.click();
+          if (_this.doClick && (_this.scope.click != null)) {
+            return _this.scope.click();
           }
         });
       };
@@ -1069,7 +1089,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
       return MarkerChildModel;
 
-    })(oo.BaseObject);
+    })(directives.api.utils.ModelKey);
   });
 
 }).call(this);
@@ -1269,6 +1289,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.watch = __bind(this.watch, this);
         this.validateScope = __bind(this.validateScope, this);
         this.onTimeOut = __bind(this.onTimeOut, this);
+        IMarkerParentModel.__super__.constructor.call(this, this.scope);
         self = this;
         this.$log = directives.api.utils.Logger;
         if (!this.validateScope(scope)) {
@@ -1326,7 +1347,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
       return IMarkerParentModel;
 
-    })(oo.BaseObject);
+    })(directives.api.utils.ModelKey);
   });
 
 }).call(this);
@@ -1350,6 +1371,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
       function IWindowParentModel(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache) {
         var self;
+        IWindowParentModel.__super__.constructor.call(this, scope);
         self = this;
         this.$log = directives.api.utils.Logger;
         this.$timeout = $timeout;
@@ -1363,7 +1385,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
       return IWindowParentModel;
 
-    })(oo.BaseObject);
+    })(directives.api.utils.ModelKey);
   });
 
 }).call(this);
@@ -1573,8 +1595,6 @@ Nicholas McCready - https://twitter.com/nmccready
 
       MarkersParentModel.include(directives.api.utils.ModelsWatcher);
 
-      MarkersParentModel.include(directives.api.utils.ModelKey);
-
       function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
         this.fit = __bind(this.fit, this);
         this.onDestroy = __bind(this.onDestroy, this);
@@ -1705,7 +1725,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
         if (propNameToWatch === 'models') {
-          if (!this.didModelsChange(newValue, oldValue)) {
+          if (!this.didModelsChange(newValue, oldValue, this.modelKeyComparison)) {
             return;
           }
         }
@@ -1774,8 +1794,6 @@ Nicholas McCready - https://twitter.com/nmccready
       __extends(WindowsParentModel, _super);
 
       WindowsParentModel.include(directives.api.utils.ModelsWatcher);
-
-      WindowsParentModel.include(directives.api.utils.ModelKey);
 
       function WindowsParentModel(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate) {
         this.interpolateContent = __bind(this.interpolateContent, this);

@@ -40,7 +40,7 @@ describe "MarkerChildModel", ->
 
 	it 'can be created', ->
 		expect(@subject).toBeDefined()
-		expect(@subject.myScope).toBeDefined()
+		expect(@subject.scope).toBeDefined()
 		
 	it 'parentScope keys are set correctly',->
 		expect(@subject.iconKey).toEqual(@iconKey)
@@ -82,17 +82,17 @@ describe "MarkerChildModel", ->
 		)
 		it "oldModel undefined, isInit false - changes scope's models value, and calls gSetter ",->
 			newModel = icon:'someIcon'
-			@subject.myScope.icon = 'junk'
+			@subject.scope.icon = 'junk'
 			@subject.maybeSetScopeValue('icon',newModel,undefined,@iconKey,
 				@subject.__proto__.evalModelHandle,@isInit,@gSetter)
 			expect(@gSetterCalled).toEqual(true)
-			expect(@subject.myScope.icon).toEqual(newModel.icon)
+			expect(@subject.scope.icon).toEqual(newModel.icon)
 
 
 	describe 'destroy()', ->
 		it 'wipes internal scope', ->
 			@subject.destroy()
-			expect(@subject.myScope.$$destroyed).toEqual(true)
+			expect(@subject.scope.$$destroyed).toEqual(true)
 
 		it 'wipes gMarker', ->
 			@subject.destroy()
