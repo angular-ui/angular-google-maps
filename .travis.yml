@@ -3,7 +3,7 @@ node_js:
     - "0.11"
     - "0.10"
     - "0.8"
-script: grunt test --force
+script: grunt
 branches:
   only:
     - master
