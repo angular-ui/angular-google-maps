@@ -62,12 +62,12 @@
             </windows>
         </markers>
 
-        <!--<markers models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" dorebuildall="example2.doRebuildAll" >-->
-            <!--<windows show="'showWindow'" closeClick="'closeClick'">-->
-                <!--<p>Mexi!</p>-->
-                <!--<p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
-                <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
-            <!--</windows>-->
+        <markers models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" dorebuildall="example2.doRebuildAll" >
+            <windows show="'showWindow'" closeClick="'closeClick'">
+                <p>Mexi!</p>
+                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                <p class="muted">My marker will stay open when the window is popped up!</p>
+            </windows>
         </markers>
     </div>
     <button class="btn btn-danger pull-right" ng-click="removeMarkers()">Clear Map</button>
