@@ -1,17 +1,9 @@
 @ngGmapModule "directives.api.models.child", ->
     class @WindowChildModel extends oo.BaseObject
         @include directives.api.utils.GmapUtil
-        constructor: (scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile,@element, needToManualDestroy = false)->
-            @scope = scope
-            @opts = opts
-            @mapCtrl = mapCtrl
-            @markerCtrl = markerCtrl
-            @isIconVisibleOnClick = isIconVisibleOnClick
+        constructor: (@scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerCtrl, @$http, @$templateCache, @$compile, @element, @needToManualDestroy = false)->
             @initialMarkerVisibility = if @markerCtrl? then @markerCtrl.getVisible() else false
             @$log = directives.api.utils.Logger
-            @$http = $http
-            @$templateCache = $templateCache
-            @$compile = $compile
             @createGWin()
             # Open window on click
             @markerCtrl.setClickable(true) if @markerCtrl?
@@ -19,10 +11,9 @@
             @handleClick()
             @watchShow()
             @watchCoords()
-            @needToManualDestroy = needToManualDestroy
             @$log.info(@)
 
-        createGWin:(createOpts=false) =>
+        createGWin: (createOpts = false) =>
             if !@gWin? and createOpts
                 @opts = if @markerCtrl? then  @createWindowOptions(@markerCtrl, @scope, @element.html(), {}) else {}
 
@@ -85,9 +76,9 @@
         hideWindow: () =>
             @gWin.close() if @gWin?
 
-        destroy: ()=>
+        destroy: (manualOverride = false)=>
             @hideWindow(@gWin)
-            if(@scope? and @needToManualDestroy)
+            if @scope? and (@needToManualDestroy or manualOverride)
                 @scope.$destroy()
             delete @gWin
             self = undefined
