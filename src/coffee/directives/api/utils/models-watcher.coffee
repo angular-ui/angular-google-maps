@@ -7,7 +7,8 @@
                 return false
             if newValue == oldValue #isSameReference?
                 return false
-            hasIntersectionDiff = _.intersectionObjects(newValue, oldValue, comparison).length != oldValue.length
+            interObjects = _.intersectionObjects(newValue, oldValue, comparison)
+            hasIntersectionDiff = interObjects.length != oldValue.length
             didModelsChange = true
             unless hasIntersectionDiff # we could have same intersection with aditional markers on top
                 didModelsChange = newValue.length != oldValue.length

@@ -14,7 +14,7 @@
             @$log.info(@)
 
         createGWin: (createOpts = false) =>
-            if !@gWin? and createOpts
+            if !@gWin? and createOpts and @element? and @element.html?
                 @opts = if @markerCtrl? then  @createWindowOptions(@markerCtrl, @scope, @element.html(), {}) else {}
 
             if @opts? and @gWin == undefined
@@ -51,7 +51,7 @@
             # Show the window and hide the marker on click
             if @markerCtrl?
                 google.maps.event.addListener(@markerCtrl, 'click', =>
-                    @createGWin(true)
+                    @createGWin(true) unless @gWin?
                     pos = @markerCtrl.getPosition()
                     if @gWin?
                         @gWin.setPosition(pos)
@@ -78,6 +78,10 @@
 
         destroy: (manualOverride = false)=>
             @hideWindow(@gWin)
+            #TODO CLEANING UP EVENTS NEEDS TO BE DONE IN MANY OTHER locations in the code base!!
+            # cleaning up events
+            google.maps.event.clearListeners(@markerCtrl,'click') if @markerCtrl
+            google.maps.event.clearListeners(@gWin,'closeclick') if @gWin
             if @scope? and (@needToManualDestroy or manualOverride)
                 @scope.$destroy()
             delete @gWin

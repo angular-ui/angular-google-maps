@@ -48,7 +48,7 @@
                 #check to make sure that the newValue Array is really a set of new objects
                 if @didModelsChange(newValue, oldValue)
                     if @doRebuildAll
-                        @rebuildAll(scope, true, false)
+                        @rebuildAll(scope, true, true)
                     else
                         @pieceMealWindows(scope)
             , true)
@@ -167,7 +167,7 @@
             parsedContent = @interpolateContent(@linked.element.html(), model)
             opts = @createWindowOptions(gMarker, childScope, parsedContent, @DEFAULTS)
             @windows.push new directives.api.models.child.WindowChildModel(childScope, opts, @isIconVisibleOnClick,
-                    gMap, gMarker, childScope, @$http, @$templateCache, @$compile, true)
+                    gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true)
 
         setChildScope: (childScope, model) =>
             _.each @scopePropNames, (name) =>
