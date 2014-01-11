@@ -5,19 +5,21 @@
             super(scope, element, attrs, mapCtrl, $timeout)
             self = @
             @markers = []
-            @markersIndex = 0
             @gMarkerManager = undefined
-            @scope = scope
             @bigGulp = directives.api.utils.AsyncProcessor
             @$timeout = $timeout
             @$log.info @
+            @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else true
+            @scope.$watch 'doRebuildAll', (newValue, oldValue) =>
+                if (newValue != oldValue)
+                    @doRebuildAll = newValue
 
         onTimeOut: (scope)=>
             @watch('models', scope)
             @watch('doCluster', scope)
             @watch('clusterOptions', scope)
             @watch('fit', scope)
-            @createMarkers(scope)
+            @createMarkersFromScratch(scope)
 
         validateScope: (scope)=>
             modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
@@ -26,14 +28,16 @@
 
             super(scope) or modelsNotDefined
 
-        createMarkers: (scope) =>
+        createMarkersFromScratch: (scope) =>
             if scope.doCluster? and scope.doCluster == true
                 if scope.clusterOptions?
                     if @gMarkerManager == undefined
-                        @gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap(), undefined,
+                        @gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap(),
+                                undefined,
                                 scope.clusterOptions)
                     else
-                        @gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap(), undefined,
+                        @gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap(),
+                                undefined,
                                 scope.clusterOptions) if @gMarkerManager.opt_options != scope.clusterOptions
                 else
                     @gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap())
@@ -42,17 +46,12 @@
 
             @bigGulp.handleLargeArray(scope.models, (model) =>
                 scope.doRebuild = true
-                child = new directives.api.models.child.MarkerChildModel(@markersIndex, model, scope, @mapCtrl, @$timeout,
-                        @DEFAULTS, @doClick, @gMarkerManager)
-                @$log.info('child', child, 'markers', @markers)
-                @markers.push(child)
-                @markersIndex++
+                @newChildMarker(model, scope)
             , (()->) #nothing for pause
             , () => #handle done callBack
                 @gMarkerManager.draw()
                 @fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit
-                #put MarkerModels into local scope
-                scope.markerModels = @markers
+                scope.markerModels = @markers #for other directives like windows
             )
 
 
@@ -63,18 +62,53 @@
                 oldM.destroy()
             delete @markers
             @markers = []
-            @markersIndex = 0
             @gMarkerManager.clear() if @gMarkerManager?
-            @createMarkers(scope)
+            @createMarkersFromScratch(scope)
+
+        pieceMealMarkers: (scope)=>
+            if @scope.models? and @scope.models.length > 0 and @markers.length > 0
+                payload = @modelsToAddRemovePayload(scope, @markers, @modelKeyComparison, 'gMarker')
+
+                #payload contains added, removals and flattened (existing models with their gProp appended)
+                #remove all removals from gMarkerManager, clean up scope (destroy), finally remove from @markers
+                _.each payload.removals, (modelToRemove)=>
+                    toDestroy = _.find @markers, (m)=>
+                        m.$id == modelToRemove.$id
+                    @gMarkerManager.remove(toDestroy.gMarker) if toDestroy.gMarker?
+                    toDestroy.destroy()
+                    toSpliceIndex = _.indexOfObject @markers, toDestroy, (obj1, obj2) ->
+                        obj1.$id == obj2.$id
+                    @markers.splice(toSpliceIndex, 1) if (toSpliceIndex > -1)
+
+                #add all adds via creating new ChildMarkers which are appended to @markers
+                _.each payload.adds, (modelToAdd) =>
+                    @newChildMarker(modelToAdd, scope)
+                #finally redraw
+                @gMarkerManager.draw()
+                scope.markerModels = @markers #for other directives like windows
+            else
+                @reBuildMarkers(scope)
+
+        newChildMarker: (model, scope)=>
+            child = new directives.api.models.child.MarkerChildModel(model, scope, @mapCtrl,
+                    @$timeout,
+                    @DEFAULTS, @doClick, @gMarkerManager)
+            @$log.info('child', child, 'markers', @markers)
+            @markers.push(child)
+            child
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             if propNameToWatch == 'models'
-                unless @didModelsChange(newValue, oldValue)
+                unless @didModelsChange newValue, oldValue, @modelKeyComparison
                     return
             if propNameToWatch == 'options' and newValue? #do we want to rebuild if options has changed?
                 @DEFAULTS = newValue
                 return
-            @reBuildMarkers(scope)
+
+            if @doRebuildAll
+                @reBuildMarkers(scope)
+            else
+                @pieceMealMarkers(scope)
 
         onDestroy: (scope)=>
             #need to figure out how to handle individual destroys

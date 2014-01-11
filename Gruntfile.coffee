@@ -30,16 +30,23 @@ module.exports = (grunt) ->
             compile:
                 files:
                     "tmp/output_coffee.js": ["src/coffee/extensions/underscore.coffee",
-                                            "src/coffee/module.coffee", "src/coffee/ng-gmap-module.coffee",
+                                             "src/coffee/module.coffee", "src/coffee/ng-gmap-module.coffee",
                                              "src/coffee/controllers/polyline-display.js",
-                                             "src/coffee/utils/LatLngArraySync.coffee", "src/coffee/utils/MapEvents.coffee",
-                                             "src/coffee/oo/base-object.coffee", "src/coffee/directives/api/managers/*.coffee",
-                                             "src/coffee/directives/api/utils/*.coffee", "src/coffee/directives/api/models/child/*.coffee",
-                                             "src/coffee/directives/api/models/parent/*.coffee", "src/coffee/directives/api/*.coffee",
+                                             "src/coffee/utils/LatLngArraySync.coffee",
+                                             "src/coffee/utils/MapEvents.coffee",
+                                             "src/coffee/oo/base-object.coffee",
+                                             "src/coffee/directives/api/managers/*.coffee",
+                                             "src/coffee/directives/api/utils/*.coffee",
+                                             "src/coffee/directives/api/models/child/*.coffee",
+                                             "src/coffee/directives/api/models/parent/*.coffee",
+                                             "src/coffee/directives/api/*.coffee",
                                              "src/coffee/directives/map.coffee", "src/coffee/directives/marker.coffee",
-                                             "src/coffee/directives/markers.coffee", "src/coffee/directives/label.coffee",
-                                             "src/coffee/directives/polygon.coffee", "src/coffee/directives/polyline.coffee",
-                                             "src/coffee/directives/window.coffee", "src/coffee/directives/windows.coffee",
+                                             "src/coffee/directives/markers.coffee",
+                                             "src/coffee/directives/label.coffee",
+                                             "src/coffee/directives/polygon.coffee",
+                                             "src/coffee/directives/polyline.coffee",
+                                             "src/coffee/directives/window.coffee",
+                                             "src/coffee/directives/windows.coffee",
                                              "src/coffee/directives/layer.coffee"]
 
                 #specs
@@ -47,10 +54,10 @@ module.exports = (grunt) ->
                     "tmp/spec/js/ng-gmap-module.spec.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"
                     "tmp/spec/js/oo/oo.spec.js": "spec/coffee/oo/*.spec.coffee"
                     "tmp/spec/js/usage/usage.spec.js": "spec/coffee/usage/*.spec.coffee"
-                    "tmp/spec/js/directives/api/apis.spec.js": "spec/coffee/directives/api//*.spec.coffee"
+                    "tmp/spec/js/directives/api/apis.spec.js": "spec/coffee/directives/api/*.spec.coffee"
                     "tmp/spec/js/directives/api/models/child/children.spec.js": "spec/coffee/directives/api/models/child/*.spec.coffee"
                     "tmp/spec/js/directives/api/models/parent/parents.spec.js": "spec/coffee/directives/api/models/parent/*.spec.coffee"
-                    "tmp/spec/js/directives/api/utils/async-processor.spec.js": "spec/coffee/directives/api/utils/async-processor.spec.coffee"
+                    "tmp/spec/js/directives/api/utils/utils.spec.js": "spec/coffee/directives/api/utils/*.spec.coffee"
 
         concat:
             options:
@@ -86,9 +93,7 @@ module.exports = (grunt) ->
                 dest: "dist/<%= pkg.name %>.min.js"
 
         jshint:
-            all: ["Gruntfile.js", "src/js/**/*.js", "spec/js/**/*.js", "temp/spec/js/*.js", "temp/spec/js/**/*.js", "temp/spec/js/**/**/*.js"]
-            options:
-                ignores: ["src/js/utils/markerclusterer-2.0.16.js", "src/js/utils/markerwithlabel-1.1.9.js"]
+            all: ["Gruntfile.js", "temp/spec/js/*.js", "temp/spec/js/**/*.js", "temp/spec/js/**/**/*.js"]
 
         test: {}
         watch:
@@ -96,13 +101,17 @@ module.exports = (grunt) ->
                 options:
                     livereload: true
 
-                files: ["src/js/**/*.js", "src/coffee/**/*.coffee", "src/coffee/*.coffee",
-                        "tmp/spec/**/*.js", "tmp/spec/*.js", "tmp/spec/**/***/.js"]
-                tasks: ["clean:example", "coffee", "concat:example"]
+                files: ["example/example-controller.js", "example/*.html", "example/templates/*",
+                        "src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee"]
+                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine",
+                        "clean:example", "coffee", "concat:example"]
 
         open:
             example:
                 path: "http://localhost:3000/example/example.html"
+
+            example2:
+                path: "http://localhost:3000/example/example2.html"
 
             version:
                 path: "http://localhost:3000/package.json"
@@ -129,20 +138,21 @@ module.exports = (grunt) ->
                 options:
                     keepRunner: true
                     vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en", "lib/jquery.js",
-                             "lib/angular.js", "lib/angular-mock.js", "lib/underscore.js", "dist/angular-google-maps.js"]
+                             "lib/angular.js", "lib/angular-mock.js", "lib/underscore.js",
+                             "dist/angular-google-maps.js"]
                     specs: ["spec/*.spec.js", "spec/**/*.spec.js", "spec/**/**/*-spec.js", "spec/**/**/**/*.spec.js",
                             "tmp/spec/js/*/spec.js", "tmp/spec/**/*.spec.js", "tmp/spec/**/**/*-spec.js",
                             "tmp/spec/**/**/**/*.spec.js"]
                     helpers: ["tmp/spec/js/helpers/helpers.js"]
-                    template: require("grunt-template-jasmine-istanbul", "grunt-template-jasmine-requirejs")
-                    templateOptions:
-                        coverage: "spec/coverage/coverage.json"
-                        report: "spec/coverage"
-                        thresholds:
-                            lines: 25
-                            statements: 25
-                            branches: 5
-                            functions: 25
+                    template: require "grunt-template-jasmine-requirejs" #, "grunt-template-jasmine-istanbul"
+                        templateOptions:
+                            coverage: "spec/coverage/coverage.json"
+                            report: "spec/coverage"
+                            thresholds:
+                                lines: 25
+                                statements: 25
+                                branches: 5
+                                functions: 25
 
 
     # Default task: build a release in dist/
@@ -157,3 +167,4 @@ module.exports = (grunt) ->
     # and running a webserver on port 3000 with livereload. Web page is opened
     # automatically in the default browser.
     grunt.registerTask "example", ["clean:example", "concat:example", "connect:server", "open:example", "watch"]
+    grunt.registerTask "example2", ["clean:example", "concat:example", "connect:server", "open:example2", "watch"]

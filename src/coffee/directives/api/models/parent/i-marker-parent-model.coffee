@@ -7,7 +7,7 @@
 		- implementation needed on watches
 ###
 @ngGmapModule "directives.api.models.parent", ->
-    class @IMarkerParentModel extends oo.BaseObject
+    class @IMarkerParentModel extends directives.api.utils.ModelKey
         DEFAULTS: {}
 
         # Check if a value is literally false
@@ -17,6 +17,7 @@
             ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) != -1
 
         constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout) ->
+            super(@scope)
             self = @
             @$log = directives.api.utils.Logger
             # Validate required properties

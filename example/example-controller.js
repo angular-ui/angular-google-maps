@@ -46,6 +46,9 @@ function ExampleController($scope, $timeout, $log, $http) {
     };
 
     angular.extend($scope, {
+        example2: {
+            doRebuildAll : false
+        },
         map: {
             version: "uknown",
             heatLayerCallback: function (layer) {
@@ -153,7 +156,7 @@ function ExampleController($scope, $timeout, $log, $http) {
                         $scope.map.clickedMarker.longitude = e.latLng.lng();
                     }
 
-                    $scope.$apply();
+//                    $scope.$apply();
                 },
                 dragend: function () {
                     self = this;
@@ -277,6 +280,7 @@ function ExampleController($scope, $timeout, $log, $http) {
         $scope.map.markers2.length = 0;
         $scope.map.dynamicMarkers.length = 0;
         $scope.map.randomMarkers.length = 0;
+        $scope.map.mexiMarkers.length = 0;
         $scope.map.polylines.length = 0;
         $scope.map.clickedMarker = null;
         $scope.searchLocationMarker = null;

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" id='ng-app' ng-app="angular-google-maps-example">
+<head>
+    <meta charset="UTF-8">
+    <title>angular-google-maps example page</title>
+    <!-- See https://rawgithub.com/ as it returns the correct mimetypes that are requested from github.-->
+    <!-- make IE Happy , http://docs.angularjs.org/guide/ie -->
+    <!--[if lte IE 9]>
+    <script>
+	    window.html5 = {
+            'elements': 'marker window windows markers layer polyline marker-label ng-controller ng-repeat ng-init ng-model ng-hide ng-show'
+        };
+	</script>
+
+    <script src="https://rawgithub.com/bestiejs/json3/v3.2.5a/lib/json3.min.js"></script>
+    <script src="https://rawgithub.com/kriskowal/es5-shim/v2.1.0/es5-shim.min.js"></script>
+    <script src="https://rawgithub.com/jwmcpeak/EventShim/master/eventShim.js"></script>
+    <script src="https://rawgithub.com/aFarkas/html5shiv/3.7.0/src/html5shiv.js"></script>
+    <![endif]-->
+
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet"
+          type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700'
+          rel='stylesheet' type='text/css'>
+    <link href="example.css" rel="stylesheet" type="text/css">
+</head>
+
+<body ng-controller="ExampleController">
+<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
+	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
+<div class="page-title affix">
+    <h2>angular-google-maps example {{version}}</h2>
+</div>
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="span7">
+    <div class="google-map affix span7"
+         center="map.center"
+         zoom="map.zoom"
+         draggable="true"
+         dragging="map.dragging"
+         bounds="map.bounds"
+         events="map.events"
+         options="map.options">
+
+        <layer type="TrafficLayer" show="map.showTraffic"></layer>
+        <layer type="BicyclingLayer" show="map.showBicycling"></layer>
+        <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>
+        <layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></layer>
+
+        <markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
+                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions" >
+        </markers>
+
+        <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true' dorebuildall="example2.doRebuildAll"  >
+            <windows show="'showWindow'" closeClick="'closeClick'" >
+                <p>Dynamic Marker created via a delay!</p>
+
+                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+
+                <p class="muted">My marker will stay open when the window is popped up!</p>
+            </windows>
+        </markers>
+
+        <markers models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" dorebuildall="example2.doRebuildAll" >
+            <windows show="'showWindow'" closeClick="'closeClick'" >
+                <p>Mexi!</p>
+                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                <p class="muted">My marker will stay open when the window is popped up!</p>
+            </windows>
+        </markers>
+    </div>
+    <button class="btn btn-danger pull-right" ng-click="removeMarkers()">Clear Map</button>
+</div>
+<div class="span5">
+    <fieldset>
+        <table class="table">
+            <tbody>
+            <tr>
+                <td>
+                    <strong>Layers</strong>
+                </td>
+                <td>
+                    Traffic: <input type="checkbox" text="TrafficLayer On/Off" ng-model="map.showTraffic">
+                    Bicycling: <input type="checkbox" text="BicyclingLayer On/Off" ng-model="map.showBicycling">
+                    Weather: <input type="checkbox" text="Weather On/Off" ng-model="map.showWeather">
+                    Heat: <input type="checkbox" text="Heat On/Off" ng-model="map.showHeat">
+                </td>
+            </tr>
+            <tr>
+                <td>Generate Random Markers</td>
+                <td>
+                    <div>Do Cluster?: <input type="checkbox" ng-model="map.doClusterRandomMarkers"></div>
+                    <div>Cluster Options: <input type="text" ng-model='map.clusterOptionsText'>
+
+                        <div>Use Ugly Cluster Image?: <input type="checkbox" ng-model="map.doUgly"></div>
+                    </div>
+                    <div ng-init="numOfMarkers = 1000">
+                        <input type="text" text="Number of Markers" ng-model="numOfMarkers">
+                        <button ng-click="genRandomMarkers(numOfMarkers)">Generate</button>
+                    </div>
+                </td>
+            </tr>
+            <tr ng-show="map.markers.length >= 0">
+                <td>markers</td>
+                <td>
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li ng-repeat="m in map.markers" ng-click="m.showWindow = true">
+                                <a href="#">
+                                    <i class="i" title="Click me to Show InfoWindow!">
+                                        Marker: {{m}}
+                                    </i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr ng-show="map.markers2.length >= 0">
+                <td>markers2</td>
+                <td>
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li ng-repeat="m in map.markers2" ng-click="m.showWindow = true">
+                                <a href="#">
+                                    <i class="i" title="Click me to Show InfoWindow!">
+                                        Marker: {{m}}
+                                    </i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr ng-show="map.dynamicMarkers.length >= 0">
+                <td>dynamicMarkers</td>
+                <td>
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li ng-repeat="m in map.dynamicMarkers" ng-click="m.showWindow = true">
+                                <a href="#">
+                                    <i class="i" title="Click me to Show InfoWindow!">
+                                        Marker: {{m}}
+                                    </i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>center</td>
+                <td>
+					<pre>
+						<span ng-show="map.center.latitude >= 0">&nbsp;
+						</span>
+						{{ map.center.latitude | number:4 }} lat
+						<br>
+						<span ng-show="map.center.longitude >= 0">&nbsp;
+						</span>{{ map.center.longitude | number:4 }} lng
+					</pre>
+                </td>
+            </tr>
+            <tr>
+                <td>zoom</td>
+                <td>{{ map.zoom }}</td>
+            </tr>
+            <tr>
+                <td>bounds</td>
+                <td>
+                    <pre>
+                    	north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }} 
+                    	<br>
+                    	south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
+                	</pre>
+                </td>
+            </tr>
+            <tr>
+                <td>dragging</td>
+                <td>{{ map.dragging }}</td>
+            </tr>
+            <tr>
+                <td>clicked position</td>
+                <td>
+						<pre ng-show="map.clickedMarker.latitude != null && map.clickedMarker.longitude != null">
+							<span ng-show="map.clickedMarker.latitude >= 0">&nbsp;
+							</span>
+							{{ map.clickedMarker.latitude | number:4 }} lat
+							<br>
+							<span ng-show="map.clickedMarker.longitude >= 0">&nbsp;</span>
+							{{ map.clickedMarker.longitude | number:4 }} lng
+						</pre>
+                    <span ng-show="map.clickedMarker.latitude == null || map.clickedMarker.longitude == null">Click the map to see</span>
+                </td>
+            </tr>
+            <tr>
+                <td>polylines</td>
+                <td>
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li ng-repeat="p in map.polylines">
+                                <a href="#">
+                                    <i class="i" title="Click me to Show InfoWindow!">
+                                        <span class="{{p.visible}}" ng-click="p.visible = !p.visible">Polyline:</span> {<br/>
+											<span style="padding-left: 5em" class="{{p.visible}}"
+                                                  ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
+											<span style="padding-left: 5em" class="{{p.editable}}"
+                                                  ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,
+                                        <br/>
+											<span style="padding-left: 5em" class="{{p.draggable}}"
+                                                  ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,
+                                        <br/>
+											<span style="padding-left: 5em" class="{{p.geodesic}}"
+                                                  ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,
+                                        <br/>
+                                        <span style="padding-left: 5em">stroke: {</span> <br/>
+											<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
+                                                  style="padding-left: 10em">weight: {{p.stroke.weight}}</span> <br/>
+											<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
+                                                  style="padding-left: 10em">color: {{p.stroke.color}}</span> <br/>
+                                        <span style="padding-left: 5em">},</span> <br/>
+                                        <span style="padding-left: 5em">path: [ </span> <br/>
+											<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
+                                                  ng-click="p.path.splice($index,1)">
+											{
+											latitude:{{pt.latitude | number:2}},
+											longitude:{{pt.longitude | number:2}}
+										},
+										<br/>
+									</span>
+                                        <span style="padding-left: 5em">] </span> <br/>
+
+                                        }
+                                    </i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </fieldset>
+</div>
+</div>
+</div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization&sensor=false&language=en&v=3.13"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.js"></script>
+<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="//cdn.jsdelivr.net/lodash/2.4.0/lodash.backbone.js" type="text/javascript"></script>
+<script src="angular-google-maps.js"></script>
+<script src="mock-heat-layer.js"></script>
+<script src="example-controller.js"></script>
+<script src="templates/infoController.js"></script>
+<script src="http://localhost:35729/livereload.js"></script>
+<script type="text/javascript">
+directives.api.utils.Logger.doLog = true;
+</script>
+</body>
+
+</html>

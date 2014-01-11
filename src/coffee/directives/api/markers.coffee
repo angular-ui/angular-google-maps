@@ -16,6 +16,7 @@ not 1:1 in this setting.
             self = @
             @template = '<span class="angular-google-map-markers" ng-transclude></span>'
 
+            @scope.doRebuildAll = '=dorebuildall' #root level directive attribute not a model level
             @scope.models = '=models'
             @scope.doCluster = '=docluster'
             @scope.clusterOptions = '=clusteroptions'
@@ -23,6 +24,7 @@ not 1:1 in this setting.
             @scope.labelContent = '=labelcontent'
             @scope.labelAnchor = '@labelanchor'
             @scope.labelClass = '@labelclass'
+
 
             @$timeout = $timeout
             @$log.info(@)

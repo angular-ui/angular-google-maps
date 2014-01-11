@@ -15,7 +15,6 @@ describe "MarkerChildModel", ->
 
 		#define / inject values into the item we are testing... not a controller but it allows us to inject
 		angular.module('mockModule',[])
-		.value('index',@index)
 		.value('gMap',document.gMap)
 		.value('defaults',{})
 		.value('model', @model)
@@ -40,8 +39,8 @@ describe "MarkerChildModel", ->
 	)
 
 	it 'can be created', ->
-		expect(@subject != undefined).toEqual(true)
-		expect(@subject.index).toEqual(@index)
+		expect(@subject).toBeDefined()
+		expect(@subject.scope).toBeDefined()
 		
 	it 'parentScope keys are set correctly',->
 		expect(@subject.iconKey).toEqual(@iconKey)
@@ -83,17 +82,17 @@ describe "MarkerChildModel", ->
 		)
 		it "oldModel undefined, isInit false - changes scope's models value, and calls gSetter ",->
 			newModel = icon:'someIcon'
-			@subject.myScope.icon = 'junk'
+			@subject.scope.icon = 'junk'
 			@subject.maybeSetScopeValue('icon',newModel,undefined,@iconKey,
 				@subject.__proto__.evalModelHandle,@isInit,@gSetter)
 			expect(@gSetterCalled).toEqual(true)
-			expect(@subject.myScope.icon).toEqual(newModel.icon)
+			expect(@subject.scope.icon).toEqual(newModel.icon)
 
 
 	describe 'destroy()', ->
 		it 'wipes internal scope', ->
 			@subject.destroy()
-			expect(@subject.myScope.$$destroyed).toEqual(true)
+			expect(@subject.scope.$$destroyed).toEqual(true)
 
 		it 'wipes gMarker', ->
 			@subject.destroy()
