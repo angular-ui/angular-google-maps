@@ -18,6 +18,7 @@ module.exports = function(config) {
       'app/bower_components/angular-sanitize/angular-sanitize.js',
       'app/bower_components/angular-animate/angular-animate.js',
       'app/bower_components/angular-mocks/angular-mocks.js',
+      'app/bower_components/underscore/underscore-min.js',
       'app/bower_components/angular-google-maps/dist/angular-google-maps.js',
       'app/scripts/module.js',      
       'app/scripts/controllers/*.js',
