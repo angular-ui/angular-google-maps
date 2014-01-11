@@ -142,9 +142,8 @@ module.exports = (grunt) ->
                              "dist/angular-google-maps.js"]
                     specs: ["tmp/spec/js/**/*spec.js"]
                     helpers: ["tmp/spec/js/helpers/helpers.js"]
-                    #grunt-template-jasmine-requirejs also creates the runner where istanbul does not
-                    #use grunt-template-jasmine-requirejs to remove all coverage meta from angular-google-maps.js to debug
-                    #to get coverage only require "grunt-template-jasmine-istanbul"
+                    #grunt-template-jasmine-requirejs - to remove all coverage meta from angular-google-maps.js (helps debug)
+                    #grunt-template-jasmine-istanbul - to produce coverage report
 #                    template: require  "grunt-template-jasmine-requirejs"
                     template: require  "grunt-template-jasmine-istanbul"
                     templateOptions:
