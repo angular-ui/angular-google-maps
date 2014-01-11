@@ -1,3 +1,5 @@
+/*jshint indent:4 */
+/*globals google, _, MockHeatLayer */
 (function () {
     var module = angular.module("angular-google-maps-example", ["google-maps"]);
 }());
@@ -11,7 +13,7 @@ function ExampleController($scope, $timeout, $log, $http) {
     // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
     google.maps.visualRefresh = true;
 
-    versionUrl = window.location.host === "rawgithub.com" ? "http://rawgithub.com/nlaplante/angular-google-maps/master/package.json" : "/package.json";
+    var versionUrl = window.location.host === "rawgithub.com" ? "http://rawgithub.com/nlaplante/angular-google-maps/master/package.json" : "/package.json";
 
     $http.get(versionUrl).success(function (data) {
         if (!data)
@@ -19,12 +21,12 @@ function ExampleController($scope, $timeout, $log, $http) {
         $scope.version = data.version;
     });
 
-    onMarkerClicked = function (marker) {
+    var onMarkerClicked = function (marker) {
         marker.showWindow = true;
         //window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
     };
 
-    genRandomMarkers = function (numberOfMarkers, scope) {
+    var genRandomMarkers = function (numberOfMarkers, scope) {
         var markers = [];
         for (var i = 0; i < numberOfMarkers; i++) {
             markers.push(createRandomMarker(i, scope.map.bounds))
@@ -32,14 +34,14 @@ function ExampleController($scope, $timeout, $log, $http) {
         scope.map.randomMarkers = markers;
     };
 
-    createRandomMarker = function (i, bounds) {
+    var createRandomMarker = function (i, bounds) {
         var lat_min = bounds.southwest.latitude,
                 lat_range = bounds.northeast.latitude - lat_min,
                 lng_min = bounds.southwest.longitude,
                 lng_range = bounds.northeast.longitude - lng_min;
 
-        latitude = lat_min + (Math.random() * lat_range);
-        longitude = lng_min + (Math.random() * lng_range);
+        var latitude = lat_min + (Math.random() * lat_range);
+        var longitude = lng_min + (Math.random() * lng_range);
         return {
             latitude: latitude,
             longitude: longitude,
@@ -165,15 +167,21 @@ function ExampleController($scope, $timeout, $log, $http) {
                     $scope.$apply();
                 },
                 dragend: function () {
-                    self = this;
+                    var self = this;
                     $timeout(function () {
+                        /*
                         modified = _.map($scope.map.mexiMarkers, function (marker) {
                             return {
                                 latitude: marker.latitude + rndAddToLatLon(),
                                 longitude: marker.longitude + rndAddToLatLon()
                             }
                         })
-                        $scope.map.mexiMarkers = modified;
+                        */
+                        var markers = []
+                        for(var i=0; i<10; i++) {
+                            markers.push(createRandomMarker(i, $scope.map.bounds))
+                        }
+                        $scope.map.mexiMarkers = markers.concat($scope.map.mexiMarkers)
                     });
                 }
             },
@@ -255,7 +263,7 @@ function ExampleController($scope, $timeout, $log, $http) {
             ]
         },
         toggleColor: function (color) {
-            return color == 'red' ? '#6060FB' : 'red';
+            return color === 'red' ? '#6060FB' : 'red';
         }
 
     });
@@ -335,7 +343,7 @@ function ExampleController($scope, $timeout, $log, $http) {
 
     $timeout(function () {
         $scope.map.infoWindow.show = true;
-        dynamicMarkers = [
+        var dynamicMarkers = [
             {
                 latitude: 46,
                 longitude: -79,
