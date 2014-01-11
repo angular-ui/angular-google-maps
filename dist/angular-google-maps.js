@@ -927,13 +927,13 @@ Nicholas McCready - https://twitter.com/nmccready
         this.createMarker = __bind(this.createMarker, this);
         this.setMyScope = __bind(this.setMyScope, this);
         self = this;
-        MarkerChildModel.__super__.constructor.call(this, this.parentScope.$new(false));
         this.iconKey = this.parentScope.icon;
         this.coordsKey = this.parentScope.coords;
         this.clickKey = this.parentScope.click();
         this.labelContentKey = this.parentScope.labelContent;
         this.optionsKey = this.parentScope.options;
         this.labelOptionsKey = this.parentScope.labelOptions;
+        MarkerChildModel.__super__.constructor.call(this, this.parentScope.$new(false));
         this.scope.model = this.model;
         this.setMyScope(this.model, void 0, true);
         this.createMarker(this.model);
@@ -1083,6 +1083,7 @@ Nicholas McCready - https://twitter.com/nmccready
         return scope.$on("$destroy", function() {
           var self;
           if (_this.gMarker != null) {
+            google.maps.event.clearListeners(_this.gMarker, 'click');
             _this.gMarkerManager.remove(_this.gMarker);
             delete _this.gMarker;
           }
@@ -1242,9 +1243,6 @@ Nicholas McCready - https://twitter.com/nmccready
           manualOverride = false;
         }
         this.hideWindow(this.gWin);
-        if (this.markerCtrl) {
-          google.maps.event.clearListeners(this.markerCtrl, 'click');
-        }
         if (this.gWin) {
           google.maps.event.clearListeners(this.gWin, 'closeclick');
         }

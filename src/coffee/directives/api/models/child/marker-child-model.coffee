@@ -1,38 +1,38 @@
 @ngGmapModule "directives.api.models.child", ->
-	class @MarkerChildModel extends directives.api.utils.ModelKey
+    class @MarkerChildModel extends directives.api.utils.ModelKey
         @include directives.api.utils.GmapUtil
-        constructor:(@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager)->
+        constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager)->
             self = @
-            super(@parentScope.$new(false))
             @iconKey = @parentScope.icon
             @coordsKey = @parentScope.coords
             @clickKey = @parentScope.click()
             @labelContentKey = @parentScope.labelContent
             @optionsKey = @parentScope.options
             @labelOptionsKey = @parentScope.labelOptions
+            super(@parentScope.$new(false))
 
             @scope.model = @model
             @setMyScope(@model, undefined, true)
             @createMarker(@model)
 
-            @scope.$watch('model',(newValue, oldValue) =>
+            @scope.$watch('model', (newValue, oldValue) =>
                 if (newValue != oldValue)
-                    @setMyScope(newValue,oldValue)
-            ,true)
+                    @setMyScope(newValue, oldValue)
+            , true)
 
             @$log = directives.api.utils.Logger
             @$log.info(self)
             @watchDestroy(@scope)
 
-        setMyScope:(model, oldModel = undefined,isInit = false) =>
-            @maybeSetScopeValue('icon',model,oldModel,@iconKey,@evalModelHandle,isInit,@setIcon)
-            @maybeSetScopeValue('coords',model,oldModel,@coordsKey,@evalModelHandle,isInit,@setCoords)
-            @maybeSetScopeValue('labelContent',model,oldModel,@labelContentKey,@evalModelHandle,isInit)
-            @maybeSetScopeValue('click',model,oldModel,@clickKey,@evalModelHandle,isInit)
-            @createMarker(model,oldModel,isInit)
+        setMyScope: (model, oldModel = undefined, isInit = false) =>
+            @maybeSetScopeValue('icon', model, oldModel, @iconKey, @evalModelHandle, isInit, @setIcon)
+            @maybeSetScopeValue('coords', model, oldModel, @coordsKey, @evalModelHandle, isInit, @setCoords)
+            @maybeSetScopeValue('labelContent', model, oldModel, @labelContentKey, @evalModelHandle, isInit)
+            @maybeSetScopeValue('click', model, oldModel, @clickKey, @evalModelHandle, isInit)
+            @createMarker(model, oldModel, isInit)
 
-        createMarker:(model, oldModel = undefined,isInit = false)=>
-            @maybeSetScopeValue('options',model,oldModel,@optionsKey,(lModel,lModelKey) =>
+        createMarker: (model, oldModel = undefined, isInit = false)=>
+            @maybeSetScopeValue 'options', model, oldModel, @optionsKey, (lModel, lModelKey) =>
                 if lModel == undefined
                     return undefined
                 value = if lModelKey == 'self' then lModel else lModel[lModelKey]
@@ -40,28 +40,28 @@
                     value = if lModelKey == undefined then @defaults else @scope.options
                 else
                     value
-            ,isInit,@setOptions)
+            , isInit, @setOptions
 
 
-        maybeSetScopeValue:(scopePropName,model,oldModel,modelKey,evaluate,isInit,gSetter = undefined) =>
+        maybeSetScopeValue: (scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter = undefined) =>
             if oldModel == undefined
-                @scope[scopePropName] = evaluate(model,modelKey)
+                @scope[scopePropName] = evaluate(model, modelKey)
                 unless isInit
                     gSetter(@scope) if gSetter?
                 return
 
-            oldVal = evaluate(oldModel,modelKey)
-            newValue = evaluate(model,modelKey)
+            oldVal = evaluate(oldModel, modelKey)
+            newValue = evaluate(model, modelKey)
             if(newValue != oldVal and @scope[scopePropName] != newValue)
                 @scope[scopePropName] = newValue
                 unless isInit
                     gSetter(@scope) if gSetter?
                     @gMarkerManager.draw()
 
-        destroy:() =>
+        destroy: () =>
             @scope.$destroy()
 
-        setCoords:(scope) =>
+        setCoords: (scope) =>
             if(scope.$id != @scope.$id or @gMarker == undefined)
                 return
             if (scope.coords?)
@@ -72,7 +72,7 @@
             else
                 @gMarkerManager.remove(@gMarker)
 
-        setIcon:(scope) =>
+        setIcon: (scope) =>
             if(scope.$id != @scope.$id or @gMarker == undefined)
                 return
             @gMarkerManager.remove(@gMarker)
@@ -81,7 +81,7 @@
             @gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
             @gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
 
-        setOptions:(scope) =>
+        setOptions: (scope) =>
             if(scope.$id != @scope.$id)
                 return
 
@@ -104,18 +104,19 @@
                     @scope.click()
             )
 
-        isLabelDefined:(scope) =>
+        isLabelDefined: (scope) =>
             scope.labelContent?
 
-        setLabelOptions:(opts, scope) =>
-            opts.labelAnchor= @getLabelPositionPoint(scope.labelAnchor)
-            opts.labelClass= scope.labelClass
-            opts.labelContent= scope.labelContent
+        setLabelOptions: (opts, scope) =>
+            opts.labelAnchor = @getLabelPositionPoint(scope.labelAnchor)
+            opts.labelClass = scope.labelClass
+            opts.labelContent = scope.labelContent
             opts
 
-        watchDestroy:(scope)=>
+        watchDestroy: (scope)=>
             scope.$on("$destroy", =>
                 if @gMarker? #this is possible due to AsyncProcessor in that we created some Children but no gMarker yet
+                    google.maps.event.clearListeners(@gMarker,'click')
                     @gMarkerManager.remove(@gMarker)
                     delete @gMarker
                 self = undefined

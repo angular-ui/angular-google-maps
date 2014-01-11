@@ -11,7 +11,6 @@
 
         onTimeOut:(scope)=>
             opts = @createMarkerOptions(scope.coords, scope.icon, scope.options, @mapCtrl.getMap())
-            #using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
             @gMarker = new google.maps.Marker(opts)
             @element.data('instance', @gMarker)
             google.maps.event.addListener(@gMarker, 'click', =>

@@ -155,8 +155,8 @@ function ExampleController($scope, $timeout, $log, $http) {
                         $scope.map.clickedMarker.latitude = e.latLng.lat();
                         $scope.map.clickedMarker.longitude = e.latLng.lng();
                     }
-
-//                    $scope.$apply();
+                    //scope apply required because this event handler is outside of the angular domain
+                    $scope.$apply();
                 },
                 dragend: function () {
                     self = this;

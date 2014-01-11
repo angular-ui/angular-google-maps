@@ -80,7 +80,6 @@
             @hideWindow(@gWin)
             #TODO CLEANING UP EVENTS NEEDS TO BE DONE IN MANY OTHER locations in the code base!!
             # cleaning up events
-            google.maps.event.clearListeners(@markerCtrl,'click') if @markerCtrl
             google.maps.event.clearListeners(@gWin,'closeclick') if @gWin
             if @scope? and (@needToManualDestroy or manualOverride)
                 @scope.$destroy()

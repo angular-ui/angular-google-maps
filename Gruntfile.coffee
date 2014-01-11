@@ -51,7 +51,7 @@ module.exports = (grunt) ->
 
                 #specs
                     "tmp/spec/js/helpers/helpers.js": "spec/coffee/helpers/*.coffee"
-                    "tmp/spec/js/ng-gmap-module.spec.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"
+                    "tmp/spec/js/ng-gmap-module.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"
                     "tmp/spec/js/oo/oo.spec.js": "spec/coffee/oo/*.spec.coffee"
                     "tmp/spec/js/usage/usage.spec.js": "spec/coffee/usage/*.spec.coffee"
                     "tmp/spec/js/directives/api/apis.spec.js": "spec/coffee/directives/api/*.spec.coffee"
@@ -68,8 +68,8 @@ module.exports = (grunt) ->
                 dest: "tmp/output.js"
 
             example:
-                #src: ["dist/angular-google-maps.js"]
-                src: ['dist/angular-google-maps.min.js'], #use min for release, otherwise other for testing
+                src: ["dist/angular-google-maps.js"]
+#                src: ['dist/angular-google-maps.min.js'], #use min for release, otherwise other for testing
                 dest: "example/<%= pkg.name %>.js"
 
         copy:
@@ -140,12 +140,14 @@ module.exports = (grunt) ->
                     vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en", "lib/jquery.js",
                              "lib/angular.js", "lib/angular-mock.js", "lib/underscore.js",
                              "dist/angular-google-maps.js"]
-                    specs: ["spec/*.spec.js", "spec/**/*.spec.js", "spec/**/**/*-spec.js", "spec/**/**/**/*.spec.js",
-                            "tmp/spec/js/*/spec.js", "tmp/spec/**/*.spec.js", "tmp/spec/**/**/*-spec.js",
-                            "tmp/spec/**/**/**/*.spec.js"]
+                    specs: ["tmp/spec/js/**/*spec.js"]
                     helpers: ["tmp/spec/js/helpers/helpers.js"]
-                    template: require "grunt-template-jasmine-requirejs" #, "grunt-template-jasmine-istanbul"
-                        templateOptions:
+                    #grunt-template-jasmine-requirejs also creates the runner where istanbul does not
+                    #use grunt-template-jasmine-requirejs to remove all coverage meta from angular-google-maps.js to debug
+                    #to get coverage only require "grunt-template-jasmine-istanbul"
+#                    template: require  "grunt-template-jasmine-requirejs"
+                    template: require  "grunt-template-jasmine-istanbul"
+                    templateOptions:
                             coverage: "spec/coverage/coverage.json"
                             report: "spec/coverage"
                             thresholds:
@@ -153,7 +155,6 @@ module.exports = (grunt) ->
                                 statements: 25
                                 branches: 5
                                 functions: 25
-
 
     # Default task: build a release in dist/
     grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
