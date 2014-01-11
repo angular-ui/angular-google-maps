@@ -26,7 +26,7 @@
 
                 if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
                     window = new directives.api.models.child.WindowChildModel(
-                            scope, opts, isIconVisibleOnClick, mapCtrl,
+                            {},scope, opts, isIconVisibleOnClick, mapCtrl,
                             markerCtrl, @$http, @$templateCache, @$compile, element
                     )
                 scope.$on("$destroy", =>

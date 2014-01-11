@@ -49,11 +49,11 @@
         <layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></layer>
 
         <markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
-                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions" dorebuildall="example2.doRebuildAll" >
+                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions" >
         </markers>
 
         <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true' dorebuildall="example2.doRebuildAll"  >
-            <windows show="'showWindow'" closeClick="'closeClick'">
+            <windows show="'showWindow'" closeClick="'closeClick'" >
                 <p>Dynamic Marker created via a delay!</p>
 
                 <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
@@ -63,7 +63,7 @@
         </markers>
 
         <markers models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" dorebuildall="example2.doRebuildAll" >
-            <windows show="'showWindow'" closeClick="'closeClick'">
+            <windows show="'showWindow'" closeClick="'closeClick'" >
                 <p>Mexi!</p>
                 <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
                 <p class="muted">My marker will stay open when the window is popped up!</p>

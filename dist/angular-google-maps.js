@@ -769,10 +769,12 @@ Nicholas McCready - https://twitter.com/nmccready
           removals: _.differenceObjects(childModels, scope.models, comparison)
         };
       },
-      getChildModels: function(childObjects, gPropToPass, $idPropName) {
+      getChildModels: function(childObjects, gPropToPass) {
         return _.map(childObjects, function(child) {
           child.model.$id = child.$id;
-          child.model[gPropToPass] = child[gPropToPass];
+          if (gPropToPass != null) {
+            child.model[gPropToPass] = child[gPropToPass];
+          }
           return child.model;
         });
       }
@@ -1106,7 +1108,8 @@ Nicholas McCready - https://twitter.com/nmccready
 
       WindowChildModel.include(directives.api.utils.GmapUtil);
 
-      function WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile, element, needToManualDestroy) {
+      function WindowChildModel(model, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile, element, needToManualDestroy) {
+        this.model = model;
         this.scope = scope;
         this.opts = opts;
         this.isIconVisibleOnClick = isIconVisibleOnClick;
@@ -1875,7 +1878,7 @@ Nicholas McCready - https://twitter.com/nmccready
             if (_this.doRebuildAll) {
               return _this.rebuildAll(scope, true, true);
             } else {
-              return _this.pieceMealWindows(scope);
+              return _this.createChildScopesWindows(false);
             }
           }
         }, true);
@@ -1945,13 +1948,13 @@ Nicholas McCready - https://twitter.com/nmccready
             if (isCreatingFromScratch) {
               return this.createAllNewWindows(this.linked.scope, false);
             } else {
-              return this.pieceMealWindows(this.linked.scope, false);
+              return this.pieceMealWindows(this.linked.scope, false, 'markerModels');
             }
           } else {
             if (isCreatingFromScratch) {
               return this.createAllNewWindows(markersScope, true, 'markerModels');
             } else {
-              return this.pieceMealWindows(markersScope, true);
+              return this.pieceMealWindows(markersScope, true, 'markerModels');
             }
           }
         }
@@ -1978,31 +1981,42 @@ Nicholas McCready - https://twitter.com/nmccready
         });
       };
 
-      WindowsParentModel.prototype.pieceMealWindows = function(scope, hasGMarker) {
+      WindowsParentModel.prototype.pieceMealWindows = function(scope, hasGMarker, modelsPropToIterate) {
         var payload,
           _this = this;
-        if ((this.scope.models != null) && this.scope.models.length > 0 && this.windows.length > 0) {
-          payload = this.modelsToAddRemovePayload(scope, this.windows, this.modelKeyComparison, 'gWin');
-          _.each(payload.removals, function(modelToRemove) {
-            var toDestroy, toSpliceIndex;
-            toDestroy = _.find(_this.windows, function(m) {
-              return m.$id === modelToRemove.$id;
+        if (modelsPropToIterate == null) {
+          modelsPropToIterate = 'models';
+        }
+        this.models = scope.models;
+        if ((scope[modelsPropToIterate] != null) && scope[modelsPropToIterate].length > 0 && this.windows.length > 0) {
+          payload = this.modelsToAddRemovePayload(scope, this.windows, this.modelKeyComparison);
+          if ((payload.removals != null) && payload.removals.length > 0) {
+            _.each(payload.removals, function(modelToRemove) {
+              var toDestroy, toSpliceIndex;
+              toDestroy = _.find(_this.windows, function(m) {
+                return m.scope.$id === modelToRemove.$id;
+              });
+              if (toDestroy != null) {
+                toDestroy.destroy(true);
+              }
+              toSpliceIndex = _.indexOfObject(_this.windows, toDestroy, function(obj1, obj2) {
+                return obj1.$id === obj2.$id;
+              });
+              if (toSpliceIndex > -1) {
+                return _this.windows.splice(toSpliceIndex, 1);
+              }
             });
-            toDestroy.destroy(true);
-            toSpliceIndex = _.indexOfObject(_this.windows, toDestroy, function(obj1, obj2) {
-              return obj1.$id === obj2.$id;
+          }
+          if ((payload.adds != null) && payload.adds.length > 0) {
+            return _.each(payload.adds, function(modelToAdd) {
+              var gMarker, windowModel;
+              gMarker = hasGMarker ? modelToAdd.gMarker : void 0;
+              windowModel = hasGMarker ? modelToAdd.model : modelToAdd;
+              return _this.createWindow(windowModel, gMarker, _this.gMap);
             });
-            if (toSpliceIndex > -1) {
-              return _this.windows.splice(toSpliceIndex, 1);
-            }
-          });
-          return _.each(payload.adds, function(modelToAdd) {
-            var gMarker;
-            gMarker = hasGMarker ? model.gMarker : void 0;
-            return _this.createWindow(modelToAdd, gMarker, _this.gMap);
-          });
+          }
         } else {
-          return this.createAllNewWindows(scope, hasGMarker);
+          return this.createAllNewWindows(scope, hasGMarker, modelsPropToIterate);
         }
       };
 
@@ -2013,18 +2027,6 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       WindowsParentModel.prototype.createWindow = function(model, gMarker, gMap) {
-        /*
-        Create ChildScope to Mimmick an ng-repeat created scope, must define the below scope
-              scope= {
-                coords: '=coords',
-                show: '&show',
-                templateUrl: '=templateurl',
-                templateParameter: '=templateparameter',
-                isIconVisibleOnClick: '=isiconvisibleonclick',
-                closeClick: '&closeclick'
-            }
-        */
-
         var childScope, opts, parsedContent,
           _this = this;
         childScope = this.linked.scope.$new(false);
@@ -2036,7 +2038,7 @@ Nicholas McCready - https://twitter.com/nmccready
         }, true);
         parsedContent = this.interpolateContent(this.linked.element.html(), model);
         opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS);
-        return this.windows.push(new directives.api.models.child.WindowChildModel(childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile, void 0, true));
+        return this.windows.push(new directives.api.models.child.WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile, void 0, true));
       };
 
       WindowsParentModel.prototype.setChildScope = function(childScope, model) {
@@ -2468,7 +2470,7 @@ not 1:1 in this setting.
           hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
           opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : void 0;
           if (mapCtrl != null) {
-            window = new directives.api.models.child.WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile, element);
+            window = new directives.api.models.child.WindowChildModel({}, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile, element);
           }
           scope.$on("$destroy", function() {
             return window.destroy();
@@ -2509,7 +2511,6 @@ not 1:1 in this setting.
         this.require = ['^googleMap', '^?markers'];
         this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
         this.scope.models = '=models';
-        this.scope.doRebuildAll = '=dorebuildall';
         this.$log.info(self);
       }
 

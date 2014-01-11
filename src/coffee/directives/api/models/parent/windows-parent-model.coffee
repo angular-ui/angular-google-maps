@@ -50,7 +50,7 @@
                     if @doRebuildAll
                         @rebuildAll(scope, true, true)
                     else
-                        @pieceMealWindows(scope)
+                        @createChildScopesWindows(false)
             , true)
 
         rebuildAll: (scope, doCreate, doDelete) =>
@@ -99,13 +99,13 @@
                     if isCreatingFromScratch
                         @createAllNewWindows @linked.scope, false
                     else
-                        @pieceMealWindows @linked.scope, false
+                        @pieceMealWindows @linked.scope, false, 'markerModels'
                 else
                     #creating windows with parent markers
                     if isCreatingFromScratch
                         @createAllNewWindows markersScope, true, 'markerModels'
                     else
-                        @pieceMealWindows markersScope, true
+                        @pieceMealWindows markersScope, true, 'markerModels'
 
 
         createAllNewWindows: (scope, hasGMarker, modelsPropToIterate = 'models') =>
@@ -122,42 +122,35 @@
                 @firstTime = false
             )
 
-        pieceMealWindows: (scope, hasGMarker)=>
-            if @scope.models? and @scope.models.length > 0 and @windows.length > 0
-                payload = @modelsToAddRemovePayload(scope, @windows, @modelKeyComparison, 'gWin')
-
+        pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models')=>
+            @models = scope.models
+            if scope[modelsPropToIterate]? and scope[modelsPropToIterate].length > 0 and @windows.length > 0
+                payload = @modelsToAddRemovePayload(scope, @windows, @modelKeyComparison)
+#                payload = {}
                 #payload contains added, removals and flattened (existing models with their gProp appended)
-                _.each payload.removals, (modelToRemove)=>
-                    toDestroy = _.find @windows, (m)=>
-                        m.$id == modelToRemove.$id
-                    toDestroy.destroy(true)
-                    toSpliceIndex = _.indexOfObject @windows, toDestroy, (obj1, obj2) ->
-                        obj1.$id == obj2.$id
-                    @windows.splice(toSpliceIndex, 1) if (toSpliceIndex > -1)
+                if payload.removals? and payload.removals.length > 0
+                    _.each payload.removals, (modelToRemove)=>
+                        toDestroy = _.find @windows, (m)=>
+                            m.scope.$id == modelToRemove.$id
+                        toDestroy.destroy(true) if toDestroy?
+                        toSpliceIndex = _.indexOfObject @windows, toDestroy, (obj1, obj2) ->
+                            obj1.$id == obj2.$id
+                        @windows.splice(toSpliceIndex, 1) if (toSpliceIndex > -1)
 
                 #add all adds via creating new ChildMarkers which are appended to @markers
-                _.each payload.adds, (modelToAdd) =>
-                    gMarker = if hasGMarker then model.gMarker else undefined
-                    @createWindow(modelToAdd, gMarker, @gMap)
+                if payload.adds? and payload.adds.length > 0
+                    _.each payload.adds, (modelToAdd) =>
+                        gMarker = if hasGMarker then modelToAdd.gMarker else undefined
+                        windowModel = if hasGMarker then modelToAdd.model else modelToAdd
+                        @createWindow(windowModel, gMarker, @gMap)
             else
-                @createAllNewWindows(scope, hasGMarker)
+                @createAllNewWindows(scope, hasGMarker, modelsPropToIterate)
 
         setContentKeys: (models)=>
             if(models.length > 0)
                 @contentKeys = Object.keys(models[0])
 
         createWindow: (model, gMarker, gMap)=>
-            ###
-            Create ChildScope to Mimmick an ng-repeat created scope, must define the below scope
-                  scope= {
-                    coords: '=coords',
-                    show: '&show',
-                    templateUrl: '=templateurl',
-                    templateParameter: '=templateparameter',
-                    isIconVisibleOnClick: '=isiconvisibleonclick',
-                    closeClick: '&closeclick'
-                }
-            ###
             childScope = @linked.scope.$new(false)
             @setChildScope(childScope, model)
             childScope.$watch('model', (newValue, oldValue) =>
@@ -166,7 +159,7 @@
             , true)
             parsedContent = @interpolateContent(@linked.element.html(), model)
             opts = @createWindowOptions(gMarker, childScope, parsedContent, @DEFAULTS)
-            @windows.push new directives.api.models.child.WindowChildModel(childScope, opts, @isIconVisibleOnClick,
+            @windows.push new directives.api.models.child.WindowChildModel(model,childScope, opts, @isIconVisibleOnClick,
                     gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true)
 
         setChildScope: (childScope, model) =>

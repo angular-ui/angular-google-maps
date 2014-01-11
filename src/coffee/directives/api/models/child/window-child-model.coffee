@@ -1,7 +1,7 @@
 @ngGmapModule "directives.api.models.child", ->
     class @WindowChildModel extends oo.BaseObject
         @include directives.api.utils.GmapUtil
-        constructor: (@scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerCtrl, @$http, @$templateCache, @$compile, @element, @needToManualDestroy = false)->
+        constructor: (@model,@scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerCtrl, @$http, @$templateCache, @$compile, @element, @needToManualDestroy = false)->
             @initialMarkerVisibility = if @markerCtrl? then @markerCtrl.getVisible() else false
             @$log = directives.api.utils.Logger
             @createGWin()

@@ -21,8 +21,12 @@
             adds: _.differenceObjects(scope.models, childModels, comparison)
             removals: _.differenceObjects(childModels, scope.models, comparison)
 
-        getChildModels: (childObjects, gPropToPass, $idPropName) ->
+        getChildModels: (childObjects, gPropToPass) ->
+#            index = 0
             _.map childObjects, (child) ->
+#                child.model.index = index
+#                index = 1 + index
                 child.model.$id = child.$id #need some way of getting back to child later to remove it
-                child.model[gPropToPass] = child[gPropToPass] #passing some gObject, maybe gMarker, maybe gWindow, using class will use reference to be cleaned
+                #child.model.$id = child.scope.$id #need some way of getting back to child later to remove it
+                child.model[gPropToPass] = child[gPropToPass] if gPropToPass? #passing some gObject, maybe gMarker, maybe gWindow, using class will use reference to be cleaned
                 child.model

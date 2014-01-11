@@ -14,7 +14,8 @@ describe("WindowChildModel", ->
 		#define / inject values into the item we are testing... not a controller but it allows us to inject
 		angular.module('mockModule',[])
 		.value('isIconVisibleOnClick',true)
-		.value('mapCtrl',document.gMap)
+        .value('model',@scope)
+        .value('mapCtrl',document.gMap)
 		.value('markerCtrl',@gMarker)
 		.value('opts',@windowOpts)
         .value('element','<span>hi</span>')
