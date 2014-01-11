@@ -27,6 +27,12 @@ h1, h2, h3 {
 	letter-spacing: -2px;
 }
 
+h1 small,
+h2 small,
+h3 small {
+	letter-spacing: -1px;
+}
+
 h1.page-header {
 	font-size: 70px;
 	text-align: center;
