@@ -4,8 +4,6 @@
 
 [![Build Status](https://travis-ci.org/nlaplante/angular-google-maps.png?branch=r1-dev)](https://travis-ci.org/nlaplante/angular-google-maps)
 
-[![Analytics](https://ga-beacon.appspot.com/UA-34163232-2/angular-google-maps/readme)](https://github.com/igrigorik/ga-beacon)
-
 ## Getting started
 This is a directive for AngularJS `~1.0.7+, ~1.2.2+`.
 
