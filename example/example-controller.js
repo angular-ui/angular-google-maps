@@ -11,7 +11,7 @@ function ExampleController($scope, $timeout, $log, $http) {
     // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
     google.maps.visualRefresh = true;
 
-    $http.get("/package.json").success(function (data) {
+    $http.get("../package.json").success(function (data) {
         if (!data)
             console.error("no version object found!!");
         $scope.version = data.version;
