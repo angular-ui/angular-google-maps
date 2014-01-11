@@ -67,11 +67,6 @@ module.exports = (grunt) ->
                 src: ["tmp/output_coffee.js", "lib/markerclusterer.js", "lib/markerwithlabel.js"]
                 dest: "tmp/output.js"
 
-            example:
-                src: ["dist/angular-google-maps.js"]
-#                src: ['dist/angular-google-maps.min.js'], #use min for release, otherwise other for testing
-                dest: "example/<%= pkg.name %>.js"
-
         copy:
             options:
                 banner: "/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
@@ -166,5 +161,5 @@ module.exports = (grunt) ->
     # Run the example page by creating a local copy of angular-google-maps.js
     # and running a webserver on port 3000 with livereload. Web page is opened
     # automatically in the default browser.
-    grunt.registerTask "example", ["clean:example", "concat:example", "connect:server", "open:example", "watch"]
-    grunt.registerTask "example2", ["clean:example", "concat:example", "connect:server", "open:example2", "watch"]
+    grunt.registerTask "example", ["clean:example", "connect:server", "open:example", "watch"]
+    grunt.registerTask "example2", ["clean:example", "connect:server", "open:example2", "watch"]

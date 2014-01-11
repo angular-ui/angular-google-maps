@@ -11,7 +11,9 @@ function ExampleController($scope, $timeout, $log, $http) {
     // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
     google.maps.visualRefresh = true;
 
-    $http.get("/package.json").success(function (data) {
+    versionUrl = window.location.host === "rawgithub.com" ? "http://rawgithub.com/nlaplante/angular-google-maps/master/package.json" : "/package.json";
+
+    $http.get(versionUrl).success(function (data) {
         if (!data)
             console.error("no version object found!!");
         $scope.version = data.version;
@@ -65,7 +67,9 @@ function ExampleController($scope, $timeout, $log, $http) {
             },
             options: {
                 streetViewControl: false,
-                panControl: false
+                panControl: false,
+                maxZoom:20,
+                minZoom:3
             },
             zoom: 3,
             dragging: false,
@@ -138,6 +142,8 @@ function ExampleController($scope, $timeout, $log, $http) {
                 longitude: null
             },
             events: {
+                tilesloaded: function (map, eventName, originalEventArgs) {
+                },
                 click: function (mapModel, eventName, originalEventArgs) {
                     // 'this' is the directive's scope
                     $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
