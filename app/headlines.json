@@ -1,5 +1,10 @@
 {
 	"items": [{
+			"title": "New website is finally online!",
+			"date": "Jan. 11 2014",
+			"content": "<p>We are pleased to announce that our new website is finally online over at http://angular-google-maps.org ! The demo is still under development and the docs are almost 100% finished. Please leave your feedback over at our <a href='https://plus.google.com/communities/101653511105172739950?utm_source=websiten&utm_medium=link' rel='external'>Google+ community</a> or file issues in our <a href='https://github.com/nlaplante/angular-google-maps/issues?state=open' rel='external'>issue tracker</a>.</p>"
+		},
+		{
 		 	"title": "Official Google+ community",
 		 	"date": "Dec. 17 2013",
 		 	"content": "<p>We now have our <a href='https://plus.google.com/communities/101653511105172739950' rel='external'>Google+ community</a>! Please join to share your experience with this library, tips and tricks and to receive official announcements.</p>"
