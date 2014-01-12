@@ -68,6 +68,9 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', function ($scope
 		case 'IssuesEvent':
 			return pl.action + ' issue ' + pl.issue.number;
 			
+		case 'PullRequestReviewCommentEvent':
+			return 'commented on a <a href="' + pl.comment.html_url + '" rel="external">pull request</a>';
+			
 		case 'GollumEvent':
 			var page = pl.pages && pl.pages.length ? pl.pages[0] : null;
 			
