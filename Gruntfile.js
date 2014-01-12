@@ -260,9 +260,9 @@ module.exports = function (grunt) {
           ]
         }, {
         	expand: true,
-        	cwd: '.',
+        	cwd: '<%= yeoman.app %>',
         	dest: '<%= yeoman.dist %>',
-        	src: ['CNAME']
+        	src: ['CNAME', 'sitemap.xml']
         }]
       },
       styles: {
