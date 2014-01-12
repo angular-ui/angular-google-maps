@@ -27,9 +27,9 @@ h1, h2, h3 {
 	letter-spacing: -2px;
 }
 
-h1 small,
-h2 small,
-h3 small {
+h1 small, footer h1,
+h2 small, footer h2,
+h3 small, footer h3 {
 	letter-spacing: -1px;
 }
 
