@@ -4,7 +4,7 @@ angular.module('angularGoogleMapsApp')
   .value('headlinesFetchInterval', 300000)
   .config(function ($routeProvider, $locationProvider, $logProvider, $githubProvider) {
   	
-  	$locationProvider.html5Mode(false).hashPrefix('!');
+  	$locationProvider.html5Mode(true).hashPrefix('!');
   	$logProvider.debugEnabled(true);
 
   	$githubProvider.username('nlaplante')
