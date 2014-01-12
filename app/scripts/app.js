@@ -2,11 +2,14 @@
 
 angular.module('angularGoogleMapsApp')
   .value('headlinesFetchInterval', 300000)
-  .config(function ($routeProvider, $locationProvider, $githubProvider) {
+  .config(function ($routeProvider, $locationProvider, $logProvider, $githubProvider) {
   	
-  	$locationProvider.html5Mode(true).hashPrefix('!');
+  	$locationProvider.html5Mode(false).hashPrefix('!');
+  	$logProvider.debugEnabled(true);
 
-  	$githubProvider.username('nlaplante').repository('angular-google-maps').branch('master');
+  	$githubProvider.username('nlaplante')
+  		.repository('angular-google-maps')
+  		.branch('master');
 
     $routeProvider
       .when('/', {
@@ -25,11 +28,18 @@ angular.module('angularGoogleMapsApp')
       	templateUrl: 'views/demo.html',
       	controller: 'DemoCtrl'
       })
+      .when('/not-found', {
+		templateUrl: 'views/404.html',
+		controller: 'NotFoundCtrl'
+      })
       .otherwise({
-        redirectTo: '/'
+        redirectTo: function (params, path, search) {
+        	return '/not-found?url=' + path;
+        }
       });
   })
   .run(function ($rootScope, $log, $location) {
+  
   	$rootScope.$location = $location;
 
 	$rootScope.$on('$viewContentLoaded', function (e, current, previous) {
