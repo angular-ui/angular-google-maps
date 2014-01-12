@@ -69,7 +69,7 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', function ($scope
 			return pl.action + ' issue ' + pl.issue.number;
 			
 		case 'GollumEvent':
-			var page = pl.pages[0] || null;
+			var page = pl.pages && pl.pages.length ? pl.pages[0] : null;
 			
 			if (page) {
 				return page.action + ' page <a href="' + page.html_url + '" rel="external">' + page.title + '</a> on the wiki';
