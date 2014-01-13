@@ -3,7 +3,8 @@
   "version": "1.0.4",
   "main": "./dist/angular-google-maps.js",
   "dependencies": {
-    "angular": "~1.2.2"
+    "angular": "~1.2.2",
+    "underscore": "~1.5.2"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.2"
