@@ -4,7 +4,7 @@
         constructor: (scope, element, attrs, mapCtrl, $timeout) ->
             super(scope, element, attrs, mapCtrl, $timeout)
             self = @
-            @markers = []
+            @markers = {}
             @gMarkerManager = undefined
             @bigGulp = directives.api.utils.AsyncProcessor
             @$timeout = $timeout
@@ -58,11 +58,7 @@
         reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
                 return
-            _.each _.values(@markers), (oldM) =>
-                oldM.destroy()
-            delete @markers
-            @markers = {}
-            @gMarkerManager.clear() if @gMarkerManager?
+            @onDestroy(scope)#clean @markers
             @createMarkersFromScratch(scope)
 
         pieceMealMarkers: (scope)=>
@@ -113,7 +109,10 @@
             #slap index to the external model so that when they pass external back
             #for destroy we have a lookup?
             #this will require another attribute for destroySingle(marker)
-            model.destroy() for model in @markers
+            _.each _.values(@markers), (model)->
+                model.destroy() if model?
+            delete @markers
+            @markers = {}
             @gMarkerManager.clear() if @gMarkerManager?
 
         fit: ()=>

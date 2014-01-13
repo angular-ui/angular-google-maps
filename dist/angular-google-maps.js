@@ -1627,7 +1627,7 @@ Nicholas McCready - https://twitter.com/nmccready
           _this = this;
         MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        this.markers = [];
+        this.markers = {};
         this.gMarkerManager = void 0;
         this.bigGulp = directives.api.utils.AsyncProcessor;
         this.$timeout = $timeout;
@@ -1687,18 +1687,10 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.reBuildMarkers = function(scope) {
-        var _this = this;
         if (!scope.doRebuild && scope.doRebuild !== void 0) {
           return;
         }
-        _.each(_.values(this.markers), function(oldM) {
-          return oldM.destroy();
-        });
-        delete this.markers;
-        this.markers = {};
-        if (this.gMarkerManager != null) {
-          this.gMarkerManager.clear();
-        }
+        this.onDestroy(scope);
         return this.createMarkersFromScratch(scope);
       };
 
@@ -1754,12 +1746,13 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.onDestroy = function(scope) {
-        var model, _i, _len, _ref;
-        _ref = this.markers;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          model = _ref[_i];
-          model.destroy();
-        }
+        _.each(_.values(this.markers), function(model) {
+          if (model != null) {
+            return model.destroy();
+          }
+        });
+        delete this.markers;
+        this.markers = {};
         if (this.gMarkerManager != null) {
           return this.gMarkerManager.clear();
         }
