@@ -68,11 +68,10 @@
                 #payload contains added, removals and flattened (existing models with their gProp appended)
                 #remove all removals from gMarkerManager, clean up scope (destroy), finally remove from @markers
                 _.each payload.removals, (modelToRemove)=>
-                    toDestroy = _.find @markers, (m)=>
-                        m.$id == modelToRemove.$id
-                    @gMarkerManager.remove(@markers[toDestroy.$id]) if @markers[toDestroy.$id]?
-                    toDestroy.destroy()
-                    delete @markers[toDestroy.$id]
+                    if @markers[modelToRemove.$id]?
+                        @gMarkerManager.remove(@markers[modelToRemove.$id])
+                        @markers[modelToRemove.$id].destroy()
+                        delete @markers[toDestroy.$id]
 
                 #add all adds via creating new ChildMarkers which are appended to @markers
                 _.each payload.adds, (modelToAdd) =>

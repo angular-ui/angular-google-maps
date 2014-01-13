@@ -4,12 +4,10 @@
 @ngGmapModule "directives.api.models.parent", ->
     class @WindowsParentModel extends directives.api.models.parent.IWindowParentModel
         @include directives.api.utils.ModelsWatcher
-        constructor: (scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate) ->
-            super(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate)
+        constructor: (scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, @$interpolate) ->
+            super(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache)
             self = @
-            @$interpolate = $interpolate
-            @windows = []
-            @windwsIndex = 0
+            @windows = {}
             @scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter',
                                'isIconVisibleOnClick', 'closeClick']
             #setting up local references to propety keys IE: @coordsKey
@@ -38,9 +36,8 @@
             scope.$watch(name, (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
-                    for model in @windows
-                        do(model) =>
-                            model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
+                    _.each _.values(@windows), (model) =>
+                        model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
             , true)
 
         watchModels: (scope) =>
@@ -54,12 +51,11 @@
             , true)
 
         rebuildAll: (scope, doCreate, doDelete) =>
-            @bigGulp.handleLargeArray @windows, (model) =>
+            @bigGulp.handleLargeArray _.values(@windows), (model) =>
                 model.destroy()
             , (()->), () => #handle done callBack
                 delete @windows if doDelete
-                @windows = []
-                @windowsIndex = 0
+                @windows = {}
                 @createChildScopesWindows() if doCreate
 
         watchDestroy: (scope)=>
@@ -127,25 +123,20 @@
         pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true)=>
             @models = scope.models
             toRender = @transformModels scope, modelsPropToIterate, isArray
-            if toRender? and toRender.length > 0 and @windows.length > 0
+            if toRender? and toRender.length > 0 and _.values(@windows).length > 0
                 payload = @modelsToAddRemovePayload(scope, @windows, @modelKeyComparison)
-                #                payload = {}
-                #payload contains added, removals and flattened (existing models with their gProp appended)
-                if payload.removals? and payload.removals.length > 0
-                    _.each payload.removals, (modelToRemove)=>
-                        toDestroy = _.find @windows, (m)=>
-                            m.scope.$id == modelToRemove.$id
-                        toDestroy.destroy(true) if toDestroy?
-                        toSpliceIndex = _.indexOfObject @windows, toDestroy, (obj1, obj2) ->
-                            obj1.$id == obj2.$id
-                        @windows.splice(toSpliceIndex, 1) if (toSpliceIndex > -1)
+
+                _.each payload.removals, (modelToRemove)=>
+                    if @windows[modelToRemove.$id]?
+                        @windows[modelToRemove.$id].destroy()
+                        delete @windows[toDestroy.$id]
 
                 #add all adds via creating new ChildMarkers which are appended to @markers
-                if payload.adds? and payload.adds.length > 0
-                    _.each payload.adds, (modelToAdd) =>
-                        gMarker = if hasGMarker then modelToAdd.gMarker else undefined
-                        windowModel = if hasGMarker then modelToAdd.model else modelToAdd
-                        @createWindow(windowModel, gMarker, @gMap)
+                _.each payload.adds, (modelToAdd) =>
+                    s = scope[modelsPropToIterate][modelToAdd.$id].gMarker
+                    gMarker = if hasGMarker then modelToAdd.gMarker else s
+                    windowModel = if hasGMarker then modelToAdd.model else modelToAdd
+                    @createWindow(windowModel, gMarker, @gMap)
             else
                 @createAllNewWindows(scope, hasGMarker, modelsPropToIterate)
 
@@ -162,9 +153,9 @@
             , true)
             parsedContent = @interpolateContent(@linked.element.html(), model)
             opts = @createWindowOptions(gMarker, childScope, parsedContent, @DEFAULTS)
-            @windows.push new directives.api.models.child.WindowChildModel(model, childScope, opts,
-                    @isIconVisibleOnClick,
-                    gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true)
+            child =  new directives.api.models.child.WindowChildModel(model, childScope, opts,
+                    @isIconVisibleOnClick, gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true)
+            @windows[child.scope.$id] = child
 
         setChildScope: (childScope, model) =>
             _.each @scopePropNames, (name) =>
