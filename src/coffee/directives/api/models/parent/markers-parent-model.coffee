@@ -58,15 +58,15 @@
         reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
                 return
-            _.each @markers, (oldM) =>
+            _.each _.values(@markers), (oldM) =>
                 oldM.destroy()
             delete @markers
-            @markers = []
+            @markers = {}
             @gMarkerManager.clear() if @gMarkerManager?
             @createMarkersFromScratch(scope)
 
         pieceMealMarkers: (scope)=>
-            if @scope.models? and @scope.models.length > 0 and @markers.length > 0
+            if @scope.models? and @scope.models.length > 0 and @markers.length > 0 #and @scope.models.length == @markers.length
                 payload = @modelsToAddRemovePayload(scope, @markers, @modelKeyComparison, 'gMarker')
 
                 #payload contains added, removals and flattened (existing models with their gProp appended)
@@ -74,18 +74,16 @@
                 _.each payload.removals, (modelToRemove)=>
                     toDestroy = _.find @markers, (m)=>
                         m.$id == modelToRemove.$id
-                    @gMarkerManager.remove(toDestroy.gMarker) if toDestroy.gMarker?
+                    @gMarkerManager.remove(@markers[toDestroy.$id]) if @markers[toDestroy.$id]?
                     toDestroy.destroy()
-                    toSpliceIndex = _.indexOfObject @markers, toDestroy, (obj1, obj2) ->
-                        obj1.$id == obj2.$id
-                    @markers.splice(toSpliceIndex, 1) if (toSpliceIndex > -1)
+                    delete @markers[toDestroy.$id]
 
                 #add all adds via creating new ChildMarkers which are appended to @markers
                 _.each payload.adds, (modelToAdd) =>
                     @newChildMarker(modelToAdd, scope)
                 #finally redraw
                 @gMarkerManager.draw()
-                scope.markerModels = @markers #for other directives like windows
+                scope.markerModels =  @markers #for other directives like windows
             else
                 @reBuildMarkers(scope)
 
@@ -94,7 +92,7 @@
                     @$timeout,
                     @DEFAULTS, @doClick, @gMarkerManager)
             @$log.info('child', child, 'markers', @markers)
-            @markers.push(child)
+            @markers[child.scope.$id] = child
             child
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>

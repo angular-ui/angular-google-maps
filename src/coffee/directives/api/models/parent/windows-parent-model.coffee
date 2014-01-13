@@ -99,34 +99,37 @@
                     if isCreatingFromScratch
                         @createAllNewWindows @linked.scope, false
                     else
-                        @pieceMealWindows @linked.scope, false, 'markerModels'
+                        @pieceMealWindows @linked.scope, false
                 else
                     #creating windows with parent markers
                     if isCreatingFromScratch
-                        @createAllNewWindows markersScope, true, 'markerModels'
+                        @createAllNewWindows markersScope, true, 'markerModels', false
                     else
-                        @pieceMealWindows markersScope, true, 'markerModels'
+                        @pieceMealWindows markersScope, true, 'markerModels', false
 
 
-        createAllNewWindows: (scope, hasGMarker, modelsPropToIterate = 'models') =>
+        createAllNewWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true) =>
             @models = scope.models
             if @firstTime
                 @watchModels scope
                 @watchDestroy scope
             @setContentKeys(scope.models) #only setting content keys once per model array
-            @bigGulp.handleLargeArray(scope[modelsPropToIterate], (model) =>
+            toRender = @transformModels scope, modelsPropToIterate, isArray
+            @bigGulp.handleLargeArray toRender, (model) =>
                 gMarker = if hasGMarker then model.gMarker else undefined
                 windowModel = if hasGMarker then model.model else model
                 @createWindow(windowModel, gMarker, @gMap)
             , (()->), () => #handle done callBack
                 @firstTime = false
-            )
 
-        pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models')=>
+
+
+        pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true)=>
             @models = scope.models
-            if scope[modelsPropToIterate]? and scope[modelsPropToIterate].length > 0 and @windows.length > 0
+            toRender = @transformModels scope, modelsPropToIterate, isArray
+            if toRender? and toRender.length > 0 and @windows.length > 0
                 payload = @modelsToAddRemovePayload(scope, @windows, @modelKeyComparison)
-#                payload = {}
+                #                payload = {}
                 #payload contains added, removals and flattened (existing models with their gProp appended)
                 if payload.removals? and payload.removals.length > 0
                     _.each payload.removals, (modelToRemove)=>
@@ -159,7 +162,8 @@
             , true)
             parsedContent = @interpolateContent(@linked.element.html(), model)
             opts = @createWindowOptions(gMarker, childScope, parsedContent, @DEFAULTS)
-            @windows.push new directives.api.models.child.WindowChildModel(model,childScope, opts, @isIconVisibleOnClick,
+            @windows.push new directives.api.models.child.WindowChildModel(model, childScope, opts,
+                    @isIconVisibleOnClick,
                     gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true)
 
         setChildScope: (childScope, model) =>

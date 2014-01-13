@@ -16,17 +16,20 @@
 
         #putting a payload together in order to not have to flatten twice, and to not have to flatten again later
         modelsToAddRemovePayload: (scope, childObjects, comparison, gPropToPass)->
-            childModels = @getChildModels(childObjects,gPropToPass)
+            childModels = @getChildModels(childObjects, gPropToPass)
             flattened: childModels
             adds: _.differenceObjects(scope.models, childModels, comparison)
             removals: _.differenceObjects(childModels, scope.models, comparison)
 
-        getChildModels: (childObjects, gPropToPass) ->
+        getChildModels: (childObjects) ->
 #            index = 0
             _.map childObjects, (child) ->
 #                child.model.index = index
 #                index = 1 + index
                 child.model.$id = child.$id #need some way of getting back to child later to remove it
-                #child.model.$id = child.scope.$id #need some way of getting back to child later to remove it
-                child.model[gPropToPass] = child[gPropToPass] if gPropToPass? #passing some gObject, maybe gMarker, maybe gWindow, using class will use reference to be cleaned
                 child.model
+
+
+        transformModels: (scope, modelsPropToIterate,isArray = true) ->
+            toRender = scope[modelsPropToIterate]
+            toRender = if isArray then toRender else _.values toRender

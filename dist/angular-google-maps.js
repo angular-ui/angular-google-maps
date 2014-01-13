@@ -769,14 +769,19 @@ Nicholas McCready - https://twitter.com/nmccready
           removals: _.differenceObjects(childModels, scope.models, comparison)
         };
       },
-      getChildModels: function(childObjects, gPropToPass) {
+      getChildModels: function(childObjects) {
         return _.map(childObjects, function(child) {
           child.model.$id = child.$id;
-          if (gPropToPass != null) {
-            child.model[gPropToPass] = child[gPropToPass];
-          }
           return child.model;
         });
+      },
+      transformModels: function(scope, modelsPropToIterate, isArray) {
+        var toRender;
+        if (isArray == null) {
+          isArray = true;
+        }
+        toRender = scope[modelsPropToIterate];
+        return toRender = isArray ? toRender : _.values(toRender);
       }
     };
   });
@@ -1243,6 +1248,9 @@ Nicholas McCready - https://twitter.com/nmccready
           manualOverride = false;
         }
         this.hideWindow(this.gWin);
+        if (this.markerCtrl) {
+          google.maps.event.clearListeners(this.markerCtrl, 'click');
+        }
         if (this.gWin) {
           google.maps.event.clearListeners(this.gWin, 'closeclick');
         }
@@ -1683,11 +1691,11 @@ Nicholas McCready - https://twitter.com/nmccready
         if (!scope.doRebuild && scope.doRebuild !== void 0) {
           return;
         }
-        _.each(this.markers, function(oldM) {
+        _.each(_.values(this.markers), function(oldM) {
           return oldM.destroy();
         });
         delete this.markers;
-        this.markers = [];
+        this.markers = {};
         if (this.gMarkerManager != null) {
           this.gMarkerManager.clear();
         }
@@ -1700,20 +1708,15 @@ Nicholas McCready - https://twitter.com/nmccready
         if ((this.scope.models != null) && this.scope.models.length > 0 && this.markers.length > 0) {
           payload = this.modelsToAddRemovePayload(scope, this.markers, this.modelKeyComparison, 'gMarker');
           _.each(payload.removals, function(modelToRemove) {
-            var toDestroy, toSpliceIndex;
+            var toDestroy;
             toDestroy = _.find(_this.markers, function(m) {
               return m.$id === modelToRemove.$id;
             });
-            if (toDestroy.gMarker != null) {
-              _this.gMarkerManager.remove(toDestroy.gMarker);
+            if (_this.markers[toDestroy.$id] != null) {
+              _this.gMarkerManager.remove(_this.markers[toDestroy.$id]);
             }
             toDestroy.destroy();
-            toSpliceIndex = _.indexOfObject(_this.markers, toDestroy, function(obj1, obj2) {
-              return obj1.$id === obj2.$id;
-            });
-            if (toSpliceIndex > -1) {
-              return _this.markers.splice(toSpliceIndex, 1);
-            }
+            return delete _this.markers[toDestroy.$id];
           });
           _.each(payload.adds, function(modelToAdd) {
             return _this.newChildMarker(modelToAdd, scope);
@@ -1729,7 +1732,7 @@ Nicholas McCready - https://twitter.com/nmccready
         var child;
         child = new directives.api.models.child.MarkerChildModel(model, scope, this.mapCtrl, this.$timeout, this.DEFAULTS, this.doClick, this.gMarkerManager);
         this.$log.info('child', child, 'markers', this.markers);
-        this.markers.push(child);
+        this.markers[child.scope.$id] = child;
         return child;
       };
 
@@ -1946,22 +1949,26 @@ Nicholas McCready - https://twitter.com/nmccready
             if (isCreatingFromScratch) {
               return this.createAllNewWindows(this.linked.scope, false);
             } else {
-              return this.pieceMealWindows(this.linked.scope, false, 'markerModels');
+              return this.pieceMealWindows(this.linked.scope, false);
             }
           } else {
             if (isCreatingFromScratch) {
-              return this.createAllNewWindows(markersScope, true, 'markerModels');
+              return this.createAllNewWindows(markersScope, true, 'markerModels', false);
             } else {
-              return this.pieceMealWindows(markersScope, true, 'markerModels');
+              return this.pieceMealWindows(markersScope, true, 'markerModels', false);
             }
           }
         }
       };
 
-      WindowsParentModel.prototype.createAllNewWindows = function(scope, hasGMarker, modelsPropToIterate) {
-        var _this = this;
+      WindowsParentModel.prototype.createAllNewWindows = function(scope, hasGMarker, modelsPropToIterate, isArray) {
+        var toRender,
+          _this = this;
         if (modelsPropToIterate == null) {
           modelsPropToIterate = 'models';
+        }
+        if (isArray == null) {
+          isArray = true;
         }
         this.models = scope.models;
         if (this.firstTime) {
@@ -1969,7 +1976,8 @@ Nicholas McCready - https://twitter.com/nmccready
           this.watchDestroy(scope);
         }
         this.setContentKeys(scope.models);
-        return this.bigGulp.handleLargeArray(scope[modelsPropToIterate], function(model) {
+        toRender = this.transformModels(scope, modelsPropToIterate, isArray);
+        return this.bigGulp.handleLargeArray(toRender, function(model) {
           var gMarker, windowModel;
           gMarker = hasGMarker ? model.gMarker : void 0;
           windowModel = hasGMarker ? model.model : model;
@@ -1979,14 +1987,18 @@ Nicholas McCready - https://twitter.com/nmccready
         });
       };
 
-      WindowsParentModel.prototype.pieceMealWindows = function(scope, hasGMarker, modelsPropToIterate) {
-        var payload,
+      WindowsParentModel.prototype.pieceMealWindows = function(scope, hasGMarker, modelsPropToIterate, isArray) {
+        var payload, toRender,
           _this = this;
         if (modelsPropToIterate == null) {
           modelsPropToIterate = 'models';
         }
+        if (isArray == null) {
+          isArray = true;
+        }
         this.models = scope.models;
-        if ((scope[modelsPropToIterate] != null) && scope[modelsPropToIterate].length > 0 && this.windows.length > 0) {
+        toRender = this.transformModels(scope, modelsPropToIterate, isArray);
+        if ((toRender != null) && toRender.length > 0 && this.windows.length > 0) {
           payload = this.modelsToAddRemovePayload(scope, this.windows, this.modelKeyComparison);
           if ((payload.removals != null) && payload.removals.length > 0) {
             _.each(payload.removals, function(modelToRemove) {

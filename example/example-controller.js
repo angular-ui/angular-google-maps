@@ -49,7 +49,7 @@ function ExampleController($scope, $timeout, $log, $http) {
 
     angular.extend($scope, {
         example2: {
-            doRebuildAll : false
+            doRebuildAll: false
         },
         map: {
             version: "uknown",
@@ -68,8 +68,8 @@ function ExampleController($scope, $timeout, $log, $http) {
             options: {
                 streetViewControl: false,
                 panControl: false,
-                maxZoom:20,
-                minZoom:3
+                maxZoom: 20,
+                minZoom: 3
             },
             zoom: 3,
             dragging: false,
@@ -167,13 +167,18 @@ function ExampleController($scope, $timeout, $log, $http) {
                 dragend: function () {
                     self = this;
                     $timeout(function () {
-                        modified = _.map($scope.map.mexiMarkers, function (marker) {
-                            return {
-                                latitude: marker.latitude + rndAddToLatLon(),
-                                longitude: marker.longitude + rndAddToLatLon()
-                            }
-                        })
-                        $scope.map.mexiMarkers = modified;
+//                        modified = _.map($scope.map.mexiMarkers, function (marker) {
+//                            return {
+//                                latitude: marker.latitude + rndAddToLatLon(),
+//                                longitude: marker.longitude + rndAddToLatLon()
+//                            }
+//                        })
+//                        $scope.map.mexiMarkers = modified;
+                        var markers = [];
+                        for (var i = 0; i < 10; i++) {
+                            markers.push(createRandomMarker(i, $scope.map.bounds))
+                        }
+                        $scope.map.mexiMarkers = markers.concat($scope.map.mexiMarkers)
                     });
                 }
             },
