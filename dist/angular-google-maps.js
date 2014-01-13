@@ -771,7 +771,7 @@ Nicholas McCready - https://twitter.com/nmccready
       },
       getChildModels: function(childObjects) {
         return _.map(childObjects, function(child) {
-          child.model.$id = child.$id;
+          child.model.$id = child.scope.$id;
           return child.model;
         });
       },

@@ -22,11 +22,8 @@
             removals: _.differenceObjects(childModels, scope.models, comparison)
 
         getChildModels: (childObjects) ->
-#            index = 0
             _.map childObjects, (child) ->
-#                child.model.index = index
-#                index = 1 + index
-                child.model.$id = child.$id #need some way of getting back to child later to remove it
+                child.model.$id = child.scope.$id #need some way of getting back to child later to remove it
                 child.model
 
 
