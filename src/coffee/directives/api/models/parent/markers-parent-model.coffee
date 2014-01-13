@@ -62,7 +62,7 @@
             @createMarkersFromScratch(scope)
 
         pieceMealMarkers: (scope)=>
-            if @scope.models? and @scope.models.length > 0 and @markers.length > 0 #and @scope.models.length == @markers.length
+            if @scope.models? and @scope.models.length > 0 and _.keys(@markers).length > 0 #and @scope.models.length == @markers.length
                 payload = @modelsToAddRemovePayload(scope, @markers, @modelKeyComparison, 'gMarker')
 
                 #payload contains added, removals and flattened (existing models with their gProp appended)

@@ -1697,7 +1697,7 @@ Nicholas McCready - https://twitter.com/nmccready
       MarkersParentModel.prototype.pieceMealMarkers = function(scope) {
         var payload,
           _this = this;
-        if ((this.scope.models != null) && this.scope.models.length > 0 && this.markers.length > 0) {
+        if ((this.scope.models != null) && this.scope.models.length > 0 && _.keys(this.markers).length > 0) {
           payload = this.modelsToAddRemovePayload(scope, this.markers, this.modelKeyComparison, 'gMarker');
           _.each(payload.removals, function(modelToRemove) {
             var toDestroy;
