@@ -12,3 +12,4 @@ app/components
 _SpecRunner.html
 /spec/coverage
 *.iml
+/bower_components

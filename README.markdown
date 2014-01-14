@@ -11,6 +11,7 @@ If you plan to hack on the directives or want to run the example, first thing to
 
 ```shell
 npm install
+bower install ( for specs and dev dependencies)
 ```
 
 ### Building

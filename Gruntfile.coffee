@@ -132,7 +132,8 @@ module.exports = (grunt) ->
                 options:
                     keepRunner: true
                     vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en", "lib/jquery.js",
-                             "lib/angular.js", "lib/angular-mock.js", "lib/underscore.js",
+                             "bower_components/angular/angular.js", "bower_components/angular-mocks/angular-mocks.js",
+                             "bower_components/underscore/underscore.js",
                              "dist/angular-google-maps.js"]
                     specs: ["tmp/spec/js/**/*spec.js"]
                     helpers: ["tmp/spec/js/helpers/helpers.js"]

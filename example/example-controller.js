@@ -184,15 +184,21 @@ function ExampleController($scope, $timeout, $log, $http) {
             },
             infoWindow: {
                 coords: {
-                    latitude: 88,
-                    longitude: -89
+                    latitude: 36.270850,
+                    longitude: -44.296875
+                },
+                options:{
+                    disableAutoPan:true
                 },
                 show: false
             },
             templatedInfoWindow: {
                 coords: {
-                    latitude: 80,
-                    longitude: -95
+                    latitude: 48.654686,
+                    longitude: -75.937500
+                },
+                options:{
+                    disableAutoPan:true
                 },
                 show: true,
                 templateUrl: 'templates/info.html',
