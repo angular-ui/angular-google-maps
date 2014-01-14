@@ -1983,15 +1983,22 @@ Nicholas McCready - https://twitter.com/nmccready
           _.each(payload.removals, function(modelToRemove) {
             if (_this.windows[modelToRemove.$id] != null) {
               _this.windows[modelToRemove.$id].destroy();
-              return delete _this.windows[toDestroy.$id];
+              return delete _this.windows[modelToRemove.$id];
             }
           });
           return _.each(payload.adds, function(modelToAdd) {
-            var gMarker, s, windowModel;
-            s = scope[modelsPropToIterate][modelToAdd.$id].gMarker;
-            gMarker = hasGMarker ? modelToAdd.gMarker : s;
-            windowModel = hasGMarker ? modelToAdd.model : modelToAdd;
-            return _this.createWindow(windowModel, gMarker, _this.gMap);
+            var gMarker, maybeMarker;
+            if (modelToAdd.gMarker != null) {
+              gMarker = modelToAdd.gMarker;
+            } else {
+              maybeMarker = _.find(_.values(scope[modelsPropToIterate]), function(mm) {
+                var pos;
+                pos = _this.evalModelHandle(mm.model, scope.coords);
+                return pos.latitude === modelToAdd.latitude && pos.longitude === modelToAdd.longitude;
+              });
+              gMarker = maybeMarker.gMarker;
+            }
+            return _this.createWindow(modelToAdd, gMarker, _this.gMap);
           });
         } else {
           return this.createAllNewWindows(scope, hasGMarker, modelsPropToIterate);
@@ -2490,6 +2497,7 @@ not 1:1 in this setting.
         this.require = ['^googleMap', '^?markers'];
         this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
         this.scope.models = '=models';
+        this.scope.doRebuildAll = '=dorebuildall';
         this.$log.info(self);
       }
 

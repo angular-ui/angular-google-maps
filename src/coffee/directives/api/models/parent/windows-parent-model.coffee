@@ -129,14 +129,18 @@
                 _.each payload.removals, (modelToRemove)=>
                     if @windows[modelToRemove.$id]?
                         @windows[modelToRemove.$id].destroy()
-                        delete @windows[toDestroy.$id]
+                        delete @windows[modelToRemove.$id]
 
                 #add all adds via creating new ChildMarkers which are appended to @markers
                 _.each payload.adds, (modelToAdd) =>
-                    s = scope[modelsPropToIterate][modelToAdd.$id].gMarker
-                    gMarker = if hasGMarker then modelToAdd.gMarker else s
-                    windowModel = if hasGMarker then modelToAdd.model else modelToAdd
-                    @createWindow(windowModel, gMarker, @gMap)
+                    if modelToAdd.gMarker?
+                        gMarker = modelToAdd.gMarker
+                    else
+                        maybeMarker = _.find _.values(scope[modelsPropToIterate]),(mm) =>
+                            pos = @evalModelHandle(mm.model,scope.coords)
+                            pos.latitude == modelToAdd.latitude and pos.longitude == modelToAdd.longitude
+                        gMarker = maybeMarker.gMarker
+                    @createWindow(modelToAdd, gMarker, @gMap)
             else
                 @createAllNewWindows(scope, hasGMarker, modelsPropToIterate)
 

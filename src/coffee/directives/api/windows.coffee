@@ -10,7 +10,7 @@
             @require = ['^googleMap', '^?markers']
             @template = '<span class="angular-google-maps-windows" ng-transclude></span>'
             @scope.models = '=models' #if undefined it will try get a markers models
-            #@scope.doRebuildAll = '=dorebuildall' #root level directive attribute not a model level
+            @scope.doRebuildAll = '=dorebuildall' #root level directive attribute not a model level
             @$log.info(self)
 
         link: (scope, element, attrs, ctrls) =>
