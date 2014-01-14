@@ -96,8 +96,7 @@ module.exports = (grunt) ->
                 options:
                     livereload: true
 
-                files: ["example/example-controller.js", "example/*.html", "example/templates/*",
-                        "src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee"]
+                files: ["src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee"]
                 tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine",
                         "clean:example", "coffee"]
 

@@ -2637,7 +2637,9 @@ Nick Baugh - https://github.com/niftylettuce
             dragging = true;
             return $timeout(function() {
               return scope.$apply(function(s) {
-                return s.dragging = dragging;
+                if (s.dragging != null) {
+                  return s.dragging = dragging;
+                }
               });
             });
           });
@@ -2645,7 +2647,9 @@ Nick Baugh - https://github.com/niftylettuce
             dragging = false;
             return $timeout(function() {
               return scope.$apply(function(s) {
-                return s.dragging = dragging;
+                if (s.dragging != null) {
+                  return s.dragging = dragging;
+                }
               });
             });
           });

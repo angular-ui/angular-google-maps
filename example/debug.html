@@ -34,8 +34,13 @@
 <div class="container-fluid">
 <div class="row-fluid">
 <div class="span7">
-    <google-map center='map.center' zoom='map.zoom' options="map.options" draggable="true">
-        <marker coords='map.center'>
+    <google-map class="affix span7"
+                center="map.center"
+                zoom="map.zoom"
+                options="map.options"
+                dragging="map.dragging"
+                draggable="true">
+        <marker coords="map.marker">
         </marker>
     </google-map>
 </div>

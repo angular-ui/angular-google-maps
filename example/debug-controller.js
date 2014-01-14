@@ -21,21 +21,24 @@ function DebugController($scope, $timeout, $log, $http) {
 
 
     angular.extend($scope, {
-        center: {
-            latitude: 45,
-            longitude: -74
-        },
-        marker:{
-            latitude: 45,
-            longitude: -74
-        },
-        zoom: 16,
-        options: {
-            disableDefaultUI: true,
-            panControl: false,
-            navigationControl: false,
-            scrollwheel: false,
-            scaleControl: false
+        map:{
+            center: {
+                latitude: 45,
+                longitude: -74
+            },
+            marker: {
+                latitude: 45,
+                longitude: -74
+            },
+//            dragging:false, //appears to be required
+            zoom: 7,
+            options: {
+                disableDefaultUI: true,
+                panControl: false,
+                navigationControl: false,
+                scrollwheel: false,
+                scaleControl: false
+            }
         }
     });
 
