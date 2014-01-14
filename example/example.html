@@ -48,6 +48,19 @@
         <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>
         <layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></layer>
 
+        <!--WINDOWS without markers-->
+        <!--NOTICE THEY MUST BE PRIOR TO ANY MARKERS OR THEY WILL ATTACH THEMSELVES walking up the dom tree-->
+        <window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false" options="map.infoWindow.options">
+            I should not be attached to a
+            marker.
+        </window>
+
+        <window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
+                options="map.templatedInfoWindow.options"
+                templateUrl="map.templatedInfoWindow.templateUrl"
+                templateParameter="map.templatedInfoWindow.templateParameter">
+        </window>
+
         <marker coords="searchLocationMarker.coords" options="searchLocationMarker.options" events="searchLocationMarker.events" />
 
         <markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
@@ -93,8 +106,8 @@
             </window>
         </marker>
 
-        <!-- marker for clicked position -->
-        <!-- can not put google.map.animations.BOUNCE , since it is not initiaized yet -->
+         marker for clicked position
+         can not put google.map.animations.BOUNCE , since it is not initiaized yet
         <div ng-init="opts = {animation:1}">
             <marker coords="map.clickedMarker" options="opts">
                 <!--<marker-label content="map.clickedMarker.title" anchor="24 40" class="marker-labels"/>-->
@@ -103,17 +116,6 @@
                 </window>
             </marker>
         </div>
-
-        <!--WINDOWS without markers-->
-        <window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false">
-            I should not be attached to a
-            marker.
-        </window>
-
-        <window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
-                templateUrl="map.templatedInfoWindow.templateUrl"
-                templateParameter="map.templatedInfoWindow.templateParameter">
-        </window>
 
         <polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'
                   geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
