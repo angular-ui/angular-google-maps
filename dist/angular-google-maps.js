@@ -1811,6 +1811,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.watchOurScope = __bind(this.watchOurScope, this);
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.rebuildAll = __bind(this.rebuildAll, this);
+        this.doINeedToWipe = __bind(this.doINeedToWipe, this);
         this.watchModels = __bind(this.watchModels, this);
         this.watch = __bind(this.watch, this);
         WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache);
@@ -1857,13 +1858,19 @@ Nicholas McCready - https://twitter.com/nmccready
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
           if (_this.didModelsChange(newValue, oldValue)) {
-            if (_this.doRebuildAll) {
+            if (_this.doRebuildAll || _this.doINeedToWipe(newValue)) {
               return _this.rebuildAll(scope, true, true);
             } else {
               return _this.createChildScopesWindows(false);
             }
           }
         }, true);
+      };
+
+      WindowsParentModel.prototype.doINeedToWipe = function(newValue) {
+        var newValueIsEmpty;
+        newValueIsEmpty = newValue != null ? newValue.length === 0 : true;
+        return _.values(this.windows).length > 0 && newValueIsEmpty;
       };
 
       WindowsParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
@@ -1948,7 +1955,7 @@ Nicholas McCready - https://twitter.com/nmccready
           modelsPropToIterate = 'models';
         }
         if (isArray == null) {
-          isArray = true;
+          isArray = false;
         }
         this.models = scope.models;
         if (this.firstTime) {

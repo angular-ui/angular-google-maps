@@ -44,11 +44,15 @@
             scope.$watch('models', (newValue, oldValue) =>
                 #check to make sure that the newValue Array is really a set of new objects
                 if @didModelsChange(newValue, oldValue)
-                    if @doRebuildAll
+                    if @doRebuildAll or @doINeedToWipe(newValue)
                         @rebuildAll(scope, true, true)
                     else
                         @createChildScopesWindows(false)
             , true)
+
+        doINeedToWipe:(newValue) =>
+            newValueIsEmpty = if newValue? then newValue.length == 0 else true
+            _.values(@windows).length > 0 and newValueIsEmpty
 
         rebuildAll: (scope, doCreate, doDelete) =>
             @bigGulp.handleLargeArray _.values(@windows), (model) =>
@@ -104,7 +108,7 @@
                         @pieceMealWindows markersScope, true, 'markerModels', false
 
 
-        createAllNewWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true) =>
+        createAllNewWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = false) =>
             @models = scope.models
             if @firstTime
                 @watchModels scope
