@@ -60,7 +60,7 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
             zoom: "=zoom" # required
             dragging: "=dragging" # optional
             refresh: "&refresh" # optional
-            windows: "=windows" # optional
+            windows: "=windows" # optional  TODO is this still needed looks like dead code
             options: "=options" # optional
             events: "=events" # optional
             styles: "=styles" # optional
@@ -113,14 +113,14 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
                 dragging = true
                 $timeout ->
                     scope.$apply (s) ->
-                        s.dragging = dragging
+                        s.dragging = dragging if s.dragging?
 
 
             google.maps.event.addListener _m, "dragend", ->
                 dragging = false
                 $timeout ->
                     scope.$apply (s) ->
-                        s.dragging = dragging
+                        s.dragging = dragging if s.dragging?
 
 
             google.maps.event.addListener _m, "drag", ->
