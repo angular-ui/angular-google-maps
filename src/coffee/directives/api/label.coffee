@@ -12,7 +12,7 @@
 			@$log.info(@)
 		link: (scope, element, attrs, ctrl) =>
 			@$timeout( =>
-				markerCtrl = ctrl.getMarker()
+				markerCtrl = ctrl.getMarkerScope().gMarker
 				if markerCtrl?
 					label = new directives.api.models.child.MarkerLabelChildModel(markerCtrl, scope)
 				scope.$on("$destroy", => 

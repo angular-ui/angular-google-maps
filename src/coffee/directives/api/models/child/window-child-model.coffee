@@ -24,17 +24,16 @@
 
         createGWin:(createOpts=false) =>
             if !@gWin? and createOpts
-                @opts = if @markerCtrl? then  @createWindowOptions(@markerCtrl, @scope, @element.html(), {}) else {}
+                @opts = if @markerCtrl? then @createWindowOptions(@markerCtrl, @scope, @element.html(), {}) else {}
 
             if @opts? and @gWin == undefined
                 @gWin = new google.maps.InfoWindow(@opts)
 
                 # Set visibility of marker back to what it was before opening the window
-                google.maps.event.addListener(@gWin, 'closeclick', =>
+                google.maps.event.addListener @gWin, 'closeclick', =>
                     if @markerCtrl?
                         @markerCtrl.setVisible(@initialMarkerVisibility)
                     @scope.closeClick() if @scope.closeClick?
-                )
 
         watchShow: () =>
             @scope.$watch('show', (newValue, oldValue) =>
@@ -51,16 +50,20 @@
             , true)
 
         watchCoords: ()=>
-            @scope.$watch('coords', (newValue, oldValue) =>
+            scope = if @markerCtrl? then @scope.$parent else @scope
+            scope.$watch('coords', (newValue, oldValue) =>
                 if (newValue != oldValue)
-                    @gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
+                    unless newValue?
+                        @hideWindow()
+                    else
+                        @gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
             , true)
 
         handleClick: ()=>
             # Show the window and hide the marker on click
             if @markerCtrl?
                 google.maps.event.addListener(@markerCtrl, 'click', =>
-                    @createGWin(true)
+                    @createGWin(true) unless @gWin?
                     pos = @markerCtrl.getPosition()
                     if @gWin?
                         @gWin.setPosition(pos)
@@ -81,6 +84,9 @@
                     )
             else
                 @gWin.open(@mapCtrl) if @gWin?
+
+        getLatestPosition:() =>
+            @gWin.setPosition @markerCtrl.getPosition() if @gWin? and @markerCtrl?
 
         hideWindow: () =>
             @gWin.close() if @gWin?

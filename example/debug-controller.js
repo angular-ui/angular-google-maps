@@ -28,7 +28,14 @@ function DebugController($scope, $timeout, $log, $http) {
             },
             marker: {
                 latitude: 45,
-                longitude: -74
+                longitude: -74,
+                options:{
+                    visible:false
+                }
+            },
+            marker2: {
+                latitude: 45.2,
+                longitude: -74.5
             },
 //            dragging:false, //appears to be required
             zoom: 7,

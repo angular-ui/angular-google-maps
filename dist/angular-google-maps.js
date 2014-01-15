@@ -558,10 +558,13 @@ Nicholas McCready - https://twitter.com/nmccready
         if (map == null) {
           map = void 0;
         }
+        if (defaults == null) {
+          defaults = {};
+        }
         opts = angular.extend({}, defaults, {
-          position: new google.maps.LatLng(coords.latitude, coords.longitude),
-          icon: icon,
-          visible: (coords.latitude != null) && (coords.longitude != null)
+          position: defaults.position != null ? defaults.position : new google.maps.LatLng(coords.latitude, coords.longitude),
+          icon: defaults.icon != null ? defaults.icon : icon,
+          visible: defaults.visible != null ? defaults.visible : (coords.latitude != null) && (coords.longitude != null)
         });
         if (map != null) {
           opts.map = map;
@@ -571,8 +574,8 @@ Nicholas McCready - https://twitter.com/nmccready
       createWindowOptions: function(gMarker, scope, content, defaults) {
         if ((content != null) && (defaults != null)) {
           return angular.extend({}, defaults, {
-            content: content,
-            position: angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+            content: defaults.content != null ? defaults.content : content,
+            position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
           });
         }
       },
@@ -1001,6 +1004,7 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         this.destroy = __bind(this.destroy, this);
         this.hideWindow = __bind(this.hideWindow, this);
+        this.getLatestPosition = __bind(this.getLatestPosition, this);
         this.showWindow = __bind(this.showWindow, this);
         this.handleClick = __bind(this.handleClick, this);
         this.watchCoords = __bind(this.watchCoords, this);
@@ -1068,10 +1072,16 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       WindowChildModel.prototype.watchCoords = function() {
-        var _this = this;
-        return this.scope.$watch('coords', function(newValue, oldValue) {
+        var scope,
+          _this = this;
+        scope = this.markerCtrl != null ? this.scope.$parent : this.scope;
+        return scope.$watch('coords', function(newValue, oldValue) {
           if (newValue !== oldValue) {
-            return _this.gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+            if (newValue == null) {
+              return _this.hideWindow();
+            } else {
+              return _this.gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+            }
           }
         }, true);
       };
@@ -1081,7 +1091,9 @@ Nicholas McCready - https://twitter.com/nmccready
         if (this.markerCtrl != null) {
           return google.maps.event.addListener(this.markerCtrl, 'click', function() {
             var pos;
-            _this.createGWin(true);
+            if (_this.gWin == null) {
+              _this.createGWin(true);
+            }
             pos = _this.markerCtrl.getPosition();
             if (_this.gWin != null) {
               _this.gWin.setPosition(pos);
@@ -1113,6 +1125,12 @@ Nicholas McCready - https://twitter.com/nmccready
           if (this.gWin != null) {
             return this.gWin.open(this.mapCtrl);
           }
+        }
+      };
+
+      WindowChildModel.prototype.getLatestPosition = function() {
+        if ((this.gWin != null) && (this.markerCtrl != null)) {
+          return this.gWin.setPosition(this.markerCtrl.getPosition());
         }
       };
 
@@ -1389,59 +1407,59 @@ Nicholas McCready - https://twitter.com/nmccready
         var opts,
           _this = this;
         opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap());
-        this.gMarker = new google.maps.Marker(opts);
-        this.element.data('instance', this.gMarker);
-        google.maps.event.addListener(this.gMarker, 'click', function() {
+        this.scope.gMarker = new google.maps.Marker(opts);
+        google.maps.event.addListener(this.scope.gMarker, 'click', function() {
           if (_this.doClick && (scope.click != null)) {
             return _this.$timeout(function() {
               return _this.scope.click();
             });
           }
         });
-        this.setEvents(this.gMarker, scope);
+        this.setEvents(this.scope.gMarker, scope);
         return this.$log.info(this);
       };
 
       MarkerParentModel.prototype.onWatch = function(propNameToWatch, scope) {
         switch (propNameToWatch) {
           case 'coords':
-            if ((scope.coords != null) && (this.gMarker != null)) {
-              this.gMarker.setMap(this.mapCtrl.getMap());
-              this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-              this.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
-              return this.gMarker.setOptions(scope.options);
+            if ((scope.coords != null) && (this.scope.gMarker != null)) {
+              this.scope.gMarker.setMap(this.mapCtrl.getMap());
+              this.scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
+              this.scope.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
+              return this.scope.gMarker.setOptions(scope.options);
             } else {
-              return this.gMarker.setMap(null);
+              return this.scope.gMarker.setMap(null);
             }
             break;
           case 'icon':
-            if ((scope.icon != null) && (scope.coords != null) && (this.gMarker != null)) {
-              this.gMarker.setOptions(scope.options);
-              this.gMarker.setIcon(scope.icon);
-              this.gMarker.setMap(null);
-              this.gMarker.setMap(this.mapCtrl.getMap());
-              this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-              return this.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
+            if ((scope.icon != null) && (scope.coords != null) && (this.scope.gMarker != null)) {
+              this.scope.gMarker.setOptions(scope.options);
+              this.scope.gMarker.setIcon(scope.icon);
+              this.scope.gMarker.setMap(null);
+              this.scope.gMarker.setMap(this.mapCtrl.getMap());
+              this.scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
+              return this.scope.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
             }
             break;
           case 'options':
             if ((scope.coords != null) && (scope.icon != null) && scope.options) {
-              this.gMarker.setMap(null);
-              delete this.gMarker;
-              return this.gMarker = new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap()));
+              if (this.scope.gMarker != null) {
+                this.scope.gMarker.setMap(null);
+              }
+              delete this.scope.gMarker;
+              return this.scope.gMarker = new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap()));
             }
-            break;
         }
       };
 
       MarkerParentModel.prototype.onDestroy = function(scope) {
         var self;
-        if (this.gMarker === void 0) {
+        if (this.scope.gMarker === void 0) {
           self = void 0;
           return;
         }
-        this.gMarker.setMap(null);
-        delete this.gMarker;
+        this.scope.gMarker.setMap(null);
+        delete this.scope.gMarker;
         return self = void 0;
       };
 
@@ -2050,7 +2068,7 @@ Nicholas McCready - https://twitter.com/nmccready
         var _this = this;
         return this.$timeout(function() {
           var label, markerCtrl;
-          markerCtrl = ctrl.getMarker();
+          markerCtrl = ctrl.getMarkerScope().gMarker;
           if (markerCtrl != null) {
             label = new directives.api.models.child.MarkerLabelChildModel(markerCtrl, scope);
           }
@@ -2137,8 +2155,8 @@ Nicholas McCready - https://twitter.com/nmccready
       Marker.prototype.controller = [
         '$scope', '$element', function($scope, $element) {
           return {
-            getMarker: function() {
-              return $element.data('instance');
+            getMarkerScope: function() {
+              return $scope;
             }
           };
         }
@@ -2244,13 +2262,13 @@ not 1:1 in this setting.
       Window.prototype.link = function(scope, element, attrs, ctrls) {
         var _this = this;
         return this.$timeout(function() {
-          var defaults, hasScopeCoords, isIconVisibleOnClick, mapCtrl, markerCtrl, opts, window;
+          var defaults, hasScopeCoords, isIconVisibleOnClick, mapCtrl, markerCtrl, markerScope, opts, window;
           isIconVisibleOnClick = true;
           if (angular.isDefined(attrs.isiconvisibleonclick)) {
             isIconVisibleOnClick = scope.isIconVisibleOnClick;
           }
           mapCtrl = ctrls[0].getMap();
-          markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarker() : void 0;
+          markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarkerScope().gMarker : void 0;
           defaults = scope.options != null ? scope.options : {};
           hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
           opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : void 0;
@@ -2260,6 +2278,19 @@ not 1:1 in this setting.
           scope.$on("$destroy", function() {
             return window.destroy();
           });
+          if (ctrls[1] != null) {
+            markerScope = ctrls[1].getMarkerScope();
+            markerScope.$watch('coords', function(newValue, oldValue) {
+              if (newValue == null) {
+                return window.hideWindow();
+              }
+            });
+            markerScope.$watch('coords.latitude', function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return window.getLatestPosition();
+              }
+            });
+          }
           if ((_this.onChildCreation != null) && (window != null)) {
             return _this.onChildCreation(window);
           }
