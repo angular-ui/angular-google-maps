@@ -17,7 +17,6 @@
             @contentKeys = undefined #model keys to parse html angular content
             @isIconVisibleOnClick = undefined
             @firstTime = true
-            @bigGulp = directives.api.utils.AsyncProcessor
             @$log.info(self)
 
 
@@ -55,9 +54,9 @@
             _.values(@windows).length > 0 and newValueIsEmpty
 
         rebuildAll: (scope, doCreate, doDelete) =>
-            @bigGulp.handleLargeArray _.values(@windows), (model) =>
+            _async.each _.values(@windows), (model) =>
                 model.destroy()
-            , (()->), () => #handle done callBack
+            , () => #handle done callBack
                 delete @windows if doDelete
                 @windows = {}
                 @createChildScopesWindows() if doCreate
@@ -115,11 +114,11 @@
                 @watchDestroy scope
             @setContentKeys(scope.models) #only setting content keys once per model array
             toRender = @transformModels scope, modelsPropToIterate, isArray
-            @bigGulp.handleLargeArray toRender, (model) =>
+            _async.each toRender, (model) =>
                 gMarker = if hasGMarker then model.gMarker else undefined
                 windowModel = if hasGMarker then model.model else model
                 @createWindow(windowModel, gMarker, @gMap)
-            , (()->), () => #handle done callBack
+            , () => #handle done callBack
                 @firstTime = false
 
 

@@ -550,7 +550,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   this.ngGmapModule("directives.api.utils", function() {
     return this.AsyncProcessor = {
-      handleLargeArray: function(array, callback, pausedCallBack, doneCallBack, chunk, index) {
+      each: function(array, callback, doneCallBack, pausedCallBack, chunk, index) {
         var doChunk;
         if (chunk == null) {
           chunk = 100;
@@ -581,9 +581,23 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         };
         return doChunk();
+      },
+      map: function(objs, iterator, doneCallBack, pausedCallBack) {
+        var results;
+        results = [];
+        if (objs == null) {
+          return results;
+        }
+        return _async.each(objs, function(o) {
+          return results.push(iterator(o));
+        }, function() {
+          return doneCallBack(results);
+        }, pausedCallBack);
       }
     };
   });
+
+  window._async = directives.api.utils.AsyncProcessor;
 
 }).call(this);
 
@@ -1645,7 +1659,6 @@ Nicholas McCready - https://twitter.com/nmccready
         self = this;
         this.markers = {};
         this.gMarkerManager = void 0;
-        this.bigGulp = directives.api.utils.AsyncProcessor;
         this.$timeout = $timeout;
         this.$log.info(this);
         this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : true;
@@ -1690,10 +1703,10 @@ Nicholas McCready - https://twitter.com/nmccready
         } else {
           this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
         }
-        return this.bigGulp.handleLargeArray(scope.models, function(model) {
+        return _async.each(scope.models, function(model) {
           scope.doRebuild = true;
           return _this.newChildMarker(model, scope);
-        }, (function() {}), function() {
+        }, function() {
           _this.gMarkerManager.draw();
           if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
             _this.fit();
@@ -1844,7 +1857,6 @@ Nicholas McCready - https://twitter.com/nmccready
         this.contentKeys = void 0;
         this.isIconVisibleOnClick = void 0;
         this.firstTime = true;
-        this.bigGulp = directives.api.utils.AsyncProcessor;
         this.$log.info(self);
         this.$timeout(function() {
           _this.watchOurScope(scope);
@@ -1891,9 +1903,9 @@ Nicholas McCready - https://twitter.com/nmccready
 
       WindowsParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
         var _this = this;
-        return this.bigGulp.handleLargeArray(_.values(this.windows), function(model) {
+        return _async.each(_.values(this.windows), function(model) {
           return model.destroy();
-        }, (function() {}), function() {
+        }, function() {
           if (doDelete) {
             delete _this.windows;
           }
@@ -1980,12 +1992,12 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         this.setContentKeys(scope.models);
         toRender = this.transformModels(scope, modelsPropToIterate, isArray);
-        return this.bigGulp.handleLargeArray(toRender, function(model) {
+        return _async.each(toRender, function(model) {
           var gMarker, windowModel;
           gMarker = hasGMarker ? model.gMarker : void 0;
           windowModel = hasGMarker ? model.model : model;
           return _this.createWindow(windowModel, gMarker, _this.gMap);
-        }, (function() {}), function() {
+        }, function() {
           return _this.firstTime = false;
         });
       };

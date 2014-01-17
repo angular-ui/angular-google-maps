@@ -6,7 +6,6 @@
             self = @
             @markers = {}
             @gMarkerManager = undefined
-            @bigGulp = directives.api.utils.AsyncProcessor
             @$timeout = $timeout
             @$log.info @
             @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else true
@@ -44,10 +43,9 @@
             else
                 @gMarkerManager = new directives.api.managers.MarkerManager(@mapCtrl.getMap())
 
-            @bigGulp.handleLargeArray(scope.models, (model) =>
+            _async.each(scope.models, (model) =>
                 scope.doRebuild = true
                 @newChildMarker(model, scope)
-            , (()->) #nothing for pause
             , () => #handle done callBack
                 @gMarkerManager.draw()
                 @fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit

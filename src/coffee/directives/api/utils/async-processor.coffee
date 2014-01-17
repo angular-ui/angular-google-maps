@@ -1,4 +1,3 @@
-
 ###
     Author: Nicholas McCready & jfriend00
     AsyncProcessor handles things asynchronous-like :), to allow the UI to be free'd to do other things
@@ -6,7 +5,7 @@
 ###
 @ngGmapModule "directives.api.utils", ->
     @AsyncProcessor =
-        handleLargeArray:(array, callback, pausedCallBack, doneCallBack ,chunk = 100, index = 0) ->
+        each: (array, callback, doneCallBack, pausedCallBack, chunk = 100, index = 0) ->
             if array == undefined or array.length <= 0
                 doneCallBack()
                 return
@@ -26,3 +25,15 @@
                 else
                     doneCallBack()
             doChunk()
+
+    #copied from underscore but to use the async each above
+        map: (objs, iterator, doneCallBack, pausedCallBack) ->
+            results = []
+            return results  unless objs?
+            _async.each objs, (o) ->
+                results.push iterator o
+            , () ->
+                doneCallBack(results)
+            , pausedCallBack
+
+window._async = directives.api.utils.AsyncProcessor
