@@ -11,52 +11,50 @@
 
         onTimeOut:(scope)=>
             opts = @createMarkerOptions(scope.coords, scope.icon, scope.options, @mapCtrl.getMap())
-            @gMarker = new google.maps.Marker(opts)
-            @element.data('instance', @gMarker)
-            google.maps.event.addListener(@gMarker, 'click', =>
+            #using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
+            @scope.gMarker = new google.maps.Marker(opts)
+            
+            google.maps.event.addListener @scope.gMarker, 'click', =>
                 if @doClick and scope.click?
-                    @$timeout(=>
+                    @$timeout =>
                         @scope.click()
-                    )
-            )
-            @setEvents(@gMarker, scope)
+
+            @setEvents(@scope.gMarker, scope)
             @$log.info(@)
 
         onWatch: (propNameToWatch, scope) =>
             switch propNameToWatch
                 when 'coords'
-                    if (scope.coords? and @gMarker?)
-                        @gMarker.setMap(@mapCtrl.getMap())
-                        @gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-                        @gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
-                        @gMarker.setOptions(scope.options)
+                    if (scope.coords? and @scope.gMarker?)
+                        @scope.gMarker.setMap(@mapCtrl.getMap())
+                        @scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
+                        @scope.gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
+                        @scope.gMarker.setOptions(scope.options)
                     else
                         # Remove marker
-                        @gMarker.setMap(null)
+                        @scope.gMarker.setMap(null)
                 when 'icon'
-                    if (scope.icon? and scope.coords? and @gMarker?)
-                        @gMarker.setOptions(scope.options)
-                        @gMarker.setIcon(scope.icon)
-                        @gMarker.setMap(null)
-                        @gMarker.setMap(@mapCtrl.getMap())
-                        @gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-                        @gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
+                    if (scope.icon? and scope.coords? and @scope.gMarker?)
+                        @scope.gMarker.setOptions(scope.options)
+                        @scope.gMarker.setIcon(scope.icon)
+                        @scope.gMarker.setMap(null)
+                        @scope.gMarker.setMap(@mapCtrl.getMap())
+                        @scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
+                        @scope.gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
                 when 'options'
                     if scope.coords? and scope.icon? and scope.options
-                        @gMarker.setMap(null)
-                        delete @gMarker
-                        @gMarker = new google.maps.Marker(@createMarkerOptions(scope.coords, scope.icon, scope.options,
+                        @scope.gMarker.setMap(null) if @scope.gMarker?
+                        delete @scope.gMarker
+                        @scope.gMarker = new google.maps.Marker(@createMarkerOptions(scope.coords, scope.icon, scope.options,
                                 @mapCtrl.getMap()))
-                else
-
 
         onDestroy: (scope)=>
-            if @gMarker == undefined
+            if @scope.gMarker == undefined
                 self = undefined
                 return
             #remove from gMaps and then free resources
-            @gMarker.setMap(null)
-            delete @gMarker
+            @scope.gMarker.setMap(null)
+            delete @scope.gMarker
             self = undefined
 
         setEvents: (marker, scope) ->

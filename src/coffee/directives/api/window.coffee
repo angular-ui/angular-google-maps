@@ -18,7 +18,7 @@
                 if angular.isDefined(attrs.isiconvisibleonclick)
                     isIconVisibleOnClick = scope.isIconVisibleOnClick
                 mapCtrl = ctrls[0].getMap()
-                markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1].getMarker() else undefined
+                markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1].getMarkerScope().gMarker else undefined
                 defaults = if scope.options? then scope.options else {}
                 hasScopeCoords = scope? and scope.coords? and scope.coords.latitude? and scope.coords.longitude?
 
@@ -29,9 +29,17 @@
                             {},scope, opts, isIconVisibleOnClick, mapCtrl,
                             markerCtrl, @$http, @$templateCache, @$compile, element
                     )
-                scope.$on("$destroy", =>
+                scope.$on "$destroy", =>
                     window.destroy()
-                )
+
+                if ctrls[1]?
+                    markerScope = ctrls[1].getMarkerScope()
+                    markerScope.$watch 'coords', (newValue,oldValue) =>
+                        return window.hideWindow() unless newValue?
+                    markerScope.$watch 'coords.latitude', (newValue,oldValue) =>
+                        if newValue != oldValue
+                            window.getLatestPosition()
+
                 @onChildCreation(window) if @onChildCreation? and window?
             , directives.api.utils.GmapUtil.defaultDelay + 25)
             #return child for specs
