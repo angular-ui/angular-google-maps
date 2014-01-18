@@ -757,40 +757,38 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   this.ngGmapModule("directives.api.utils", function() {
     return this.ModelsWatcher = {
-      didModelsChange: function(newValue, oldValue, comparison) {
-        var didModelsChange, hasIntersectionDiff, interObjects;
-        if (newValue === void 0) {
-          return false;
-        }
-        if (!_.isArray(newValue)) {
-          directives.api.utils.Logger.error("models property must be an array newValue of: " + (newValue.toString()) + " is not!!");
-          return false;
-        }
-        if (newValue === oldValue) {
-          return false;
-        }
-        interObjects = _.intersectionObjects(newValue, oldValue, comparison);
-        hasIntersectionDiff = interObjects.length !== oldValue.length;
-        didModelsChange = true;
-        if (!hasIntersectionDiff) {
-          didModelsChange = newValue.length !== oldValue.length;
-        }
-        return didModelsChange;
-      },
-      modelsToAddRemovePayload: function(scope, childObjects, comparison) {
-        var childModels;
-        childModels = this.getChildModels(childObjects);
-        return {
-          flattened: childModels,
-          adds: _.differenceObjects(scope.models, childModels, comparison),
-          removals: _.differenceObjects(childModels, scope.models, comparison)
-        };
-      },
-      getChildModels: function(childObjects) {
-        return _.map(childObjects, function(child) {
-          child.model.$id = child.scope.$id;
-          return child.model;
-        });
+      figureOutState: function(scope, childObjects, comparison, callBack) {
+        var adds, idKey, mappedScopeModelIds, removals;
+        idKey = scope.id;
+        adds = [];
+        mappedScopeModelIds = {};
+        removals = [];
+        return _async.each(scope.models, function(m) {
+          var child;
+          if (m[idKey] != null) {
+            mappedScopeModelIds[m[idKey]] = {};
+            if (childObjects[m[idKey]] == null) {
+              return adds.push(m);
+            } else {
+              child = childObjects[m[idKey]];
+              if (!comparison(m, child)) {
+                adds.push(m);
+                return removals.push(child);
+              }
+            }
+          } else {
+            return directives.api.utils.Logger.error("id missing for model " + (m.toString()) + ", can not use do comparison/insertion");
+          }
+        }, _async.each(childObjects, function(c) {
+          if (mappedScopeModelIds[c.id] == null) {
+            return removals.push(c.id);
+          }
+        }, function() {
+          return callBack({
+            adds: adds,
+            removals: removals
+          });
+        }));
       },
       transformModels: function(scope, modelsPropToIterate, isArray) {
         var toRender;
@@ -1646,12 +1644,12 @@ Nicholas McCready - https://twitter.com/nmccready
       function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
         this.fit = __bind(this.fit, this);
         this.onDestroy = __bind(this.onDestroy, this);
-        this.onWatch = __bind(this.onWatch, this);
         this.newChildMarker = __bind(this.newChildMarker, this);
         this.pieceMealMarkers = __bind(this.pieceMealMarkers, this);
         this.reBuildMarkers = __bind(this.reBuildMarkers, this);
         this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
         this.validateScope = __bind(this.validateScope, this);
+        this.onWatch = __bind(this.onWatch, this);
         this.onTimeOut = __bind(this.onTimeOut, this);
         var self,
           _this = this;
@@ -1661,7 +1659,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.gMarkerManager = void 0;
         this.$timeout = $timeout;
         this.$log.info(this);
-        this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : true;
+        this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : false;
         this.scope.$watch('doRebuildAll', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             return _this.doRebuildAll = newValue;
@@ -1675,6 +1673,26 @@ Nicholas McCready - https://twitter.com/nmccready
         this.watch('clusterOptions', scope);
         this.watch('fit', scope);
         return this.createMarkersFromScratch(scope);
+      };
+
+      MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
+        if (propNameToWatch === 'models') {
+          if (_.isEqualTo(newValue, oldValue)) {
+            return;
+          }
+        }
+        if (propNameToWatch === 'options' && (newValue != null)) {
+          if (_.isEqualTo(newValue, oldValue)) {
+            return;
+          }
+          this.DEFAULTS = newValue;
+          return;
+        }
+        if (this.doRebuildAll) {
+          return this.reBuildMarkers(scope);
+        } else {
+          return this.pieceMealMarkers(scope);
+        }
       };
 
       MarkersParentModel.prototype.validateScope = function(scope) {
@@ -1727,19 +1745,21 @@ Nicholas McCready - https://twitter.com/nmccready
         var payload,
           _this = this;
         if ((this.scope.models != null) && this.scope.models.length > 0 && _.keys(this.markers).length > 0) {
-          payload = this.modelsToAddRemovePayload(scope, this.markers, this.modelKeyComparison, 'gMarker');
-          _.each(payload.removals, function(modelToRemove) {
-            if (_this.markers[modelToRemove.$id] != null) {
-              _this.gMarkerManager.remove(_this.markers[modelToRemove.$id]);
-              _this.markers[modelToRemove.$id].destroy();
-              return delete _this.markers[toDestroy.$id];
-            }
+          return payload = this.figureOutState(scope, this.markers, this.modelKeyComparison, function(state) {
+            return _async.each(payload.removals, function(child) {
+              if (child != null) {
+                child.destroy();
+                return delete _this.markers[child.id];
+              }
+            }, function() {
+              return _async.each(payload.adds, function(modelToAdd) {
+                return _this.newChildMarker(modelToAdd, scope);
+              }, function() {
+                _this.gMarkerManager.draw();
+                return scope.markerModels = _this.markers;
+              });
+            });
           });
-          _.each(payload.adds, function(modelToAdd) {
-            return _this.newChildMarker(modelToAdd, scope);
-          });
-          this.gMarkerManager.draw();
-          return scope.markerModels = this.markers;
         } else {
           return this.reBuildMarkers(scope);
         }
@@ -1749,25 +1769,12 @@ Nicholas McCready - https://twitter.com/nmccready
         var child;
         child = new directives.api.models.child.MarkerChildModel(model, scope, this.mapCtrl, this.$timeout, this.DEFAULTS, this.doClick, this.gMarkerManager);
         this.$log.info('child', child, 'markers', this.markers);
-        this.markers[child.scope.$id] = child;
-        return child;
-      };
-
-      MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
-        if (propNameToWatch === 'models') {
-          if (!this.didModelsChange(newValue, oldValue, this.modelKeyComparison)) {
-            return;
-          }
-        }
-        if (propNameToWatch === 'options' && (newValue != null)) {
-          this.DEFAULTS = newValue;
-          return;
-        }
         if (this.doRebuildAll) {
-          return this.reBuildMarkers(scope);
+          this.markers[child.scope.$id];
         } else {
-          return this.pieceMealMarkers(scope);
+          this.markers[model[this.scope.id]] = child;
         }
+        return child;
       };
 
       MarkersParentModel.prototype.onDestroy = function(scope) {
@@ -2417,7 +2424,7 @@ not 1:1 in this setting.
         Markers.__super__.constructor.call(this, $timeout);
         self = this;
         this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
-        this.scope.doRebuildAll = '=dorebuildall';
+        this.scope.id = '=id';
         this.scope.models = '=models';
         this.scope.doCluster = '=docluster';
         this.scope.clusterOptions = '=clusteroptions';

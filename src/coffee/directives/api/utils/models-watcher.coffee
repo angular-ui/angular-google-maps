@@ -1,32 +1,32 @@
 @ngGmapModule "directives.api.utils", ->
     @ModelsWatcher =
-        didModelsChange: (newValue, oldValue, comparison) ->
-            return false if newValue is undefined
-            unless _.isArray(newValue)
-                directives.api.utils.Logger.error("models property must be an array newValue of: #{newValue.toString()} is not!!")
-                return false
-            if newValue == oldValue #isSameReference?
-                return false
-            interObjects = _.intersectionObjects(newValue, oldValue, comparison)
-            hasIntersectionDiff = interObjects.length != oldValue.length
-            didModelsChange = true
-            unless hasIntersectionDiff # we could have same intersection with aditional markers on top
-                didModelsChange = newValue.length != oldValue.length
-            didModelsChange
+    #putting a payload together in order to not have to flatten twice, and to not have to flatten again later
+        figureOutState: (scope, childObjects, comparison, callBack)->
+            idKey = scope.id #lookup for where I key identifier is to keep things fast
+            adds = [] #models to add or update
+            mappedScopeModelIds = {}
+            removals = [] #childModels to remove
+            _async.each scope.models, (m) ->
+                if m[idKey]?
+                    mappedScopeModelIds[m[idKey]] = {}
+                    unless childObjects[m[idKey]]?
+                        adds.push m
+                    else
+                        child = childObjects[m[idKey]]
+                        #we're update in this case
+                        unless comparison m, child
+                            adds.push m
+                            removals.push child
+                else
+                    directives.api.utils.Logger.error("id missing for model #{m.toString()}, can not use do comparison/insertion")
+            , _async.each childObjects, (c) ->
+                        removals.push c.id unless mappedScopeModelIds[c.id]?
+                            #if we done have the object we can remove it
+                    , () ->
+                        callBack
+                            adds: adds
+                            removals: removals
 
-        #putting a payload together in order to not have to flatten twice, and to not have to flatten again later
-        modelsToAddRemovePayload: (scope, childObjects, comparison)->
-            childModels = @getChildModels(childObjects)
-            flattened: childModels
-            adds: _.differenceObjects(scope.models, childModels, comparison)
-            removals: _.differenceObjects(childModels, scope.models, comparison)
-
-        getChildModels: (childObjects) ->
-            _.map childObjects, (child) ->
-                child.model.$id = child.scope.$id #need some way of getting back to child later to remove it
-                child.model
-
-
-        transformModels: (scope, modelsPropToIterate,isArray = true) ->
+        transformModels: (scope, modelsPropToIterate, isArray = true) ->
             toRender = scope[modelsPropToIterate]
             toRender = if isArray then toRender else _.values toRender

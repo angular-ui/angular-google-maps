@@ -8,17 +8,33 @@
             @gMarkerManager = undefined
             @$timeout = $timeout
             @$log.info @
-            @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else true
+            #assume do rebuild all is false and were lookging for a modelKey prop of id
+            @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
             @scope.$watch 'doRebuildAll', (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @doRebuildAll = newValue
 
         onTimeOut: (scope)=>
+            #watch all the below properties with end up being processed by onWatch below
             @watch('models', scope)
             @watch('doCluster', scope)
             @watch('clusterOptions', scope)
             @watch('fit', scope)
             @createMarkersFromScratch(scope)
+
+        onWatch: (propNameToWatch, scope, newValue, oldValue) =>
+            if propNameToWatch == 'models'
+                return if _.isEqualTo(newValue, oldValue)
+            if propNameToWatch == 'options' and newValue?
+                return if _.isEqualTo(newValue, oldValue)
+                @DEFAULTS = newValue
+                return
+
+            if @doRebuildAll
+                @reBuildMarkers(scope)
+            else
+                @pieceMealMarkers(scope)
+
 
         validateScope: (scope)=>
             modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
@@ -56,27 +72,27 @@
         reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
                 return
-            @onDestroy(scope)#clean @markers
+            @onDestroy(scope) #clean @markers
             @createMarkersFromScratch(scope)
 
         pieceMealMarkers: (scope)=>
             if @scope.models? and @scope.models.length > 0 and _.keys(@markers).length > 0 #and @scope.models.length == @markers.length
-                payload = @modelsToAddRemovePayload(scope, @markers, @modelKeyComparison, 'gMarker')
-
-                #payload contains added, removals and flattened (existing models with their gProp appended)
-                #remove all removals from gMarkerManager, clean up scope (destroy), finally remove from @markers
-                _.each payload.removals, (modelToRemove)=>
-                    if @markers[modelToRemove.$id]?
-                        @gMarkerManager.remove(@markers[modelToRemove.$id])
-                        @markers[modelToRemove.$id].destroy()
-                        delete @markers[toDestroy.$id]
-
-                #add all adds via creating new ChildMarkers which are appended to @markers
-                _.each payload.adds, (modelToAdd) =>
-                    @newChildMarker(modelToAdd, scope)
-                #finally redraw
-                @gMarkerManager.draw()
-                scope.markerModels =  @markers #for other directives like windows
+                #find the current state, async operation that calls back
+                payload = @figureOutState scope, @markers, @modelKeyComparison, (state) =>
+                    #payload contains added, removals and flattened (existing models with their gProp appended)
+                    #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @markers
+                    _async.each payload.removals, (child)=>
+                        if child?
+                            child.destroy()
+                            delete @markers[child.id]
+                    , () =>
+                        #add all adds via creating new ChildMarkers which are appended to @markers
+                        _async.each payload.adds, (modelToAdd) =>
+                            @newChildMarker(modelToAdd, scope)
+                        , () =>
+                            #finally redraw
+                            @gMarkerManager.draw()
+                            scope.markerModels = @markers #for other directives like windows
             else
                 @reBuildMarkers(scope)
 
@@ -85,21 +101,11 @@
                     @$timeout,
                     @DEFAULTS, @doClick, @gMarkerManager)
             @$log.info('child', child, 'markers', @markers)
-            @markers[child.scope.$id] = child
-            child
-
-        onWatch: (propNameToWatch, scope, newValue, oldValue) =>
-            if propNameToWatch == 'models'
-                unless @didModelsChange newValue, oldValue, @modelKeyComparison
-                    return
-            if propNameToWatch == 'options' and newValue? #do we want to rebuild if options has changed?
-                @DEFAULTS = newValue
-                return
-
             if @doRebuildAll
-                @reBuildMarkers(scope)
+                @markers[child.scope.$id]
             else
-                @pieceMealMarkers(scope)
+                @markers[model[@scope.id]] = child #major change this makes model.id a requirement
+            child
 
         onDestroy: (scope)=>
             #need to figure out how to handle individual destroys
