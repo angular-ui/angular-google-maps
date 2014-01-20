@@ -2,6 +2,8 @@
     class @ModelKey extends oo.BaseObject
         constructor:(@scope) ->
             super()
+            @defaultIdKey= "id"
+            @idKey = undefined
 
         evalModelHandle: (model, modelKey) ->
             if model == undefined
@@ -16,3 +18,4 @@
                     @scope.coords).latitude and
             @evalModelHandle(model1, @scope.coords).longitude == @evalModelHandle(model2,
                     @scope.coords).longitude
+

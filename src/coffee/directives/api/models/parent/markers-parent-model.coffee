@@ -9,7 +9,8 @@
             @$timeout = $timeout
             @$log.info @
             #assume do rebuild all is false and were lookging for a modelKey prop of id
-            @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
+            @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else true
+            @idKey = if scope.id? then scope.id else @defaultIdKey
             @scope.$watch 'doRebuildAll', (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @doRebuildAll = newValue
@@ -20,15 +21,19 @@
             @watch('doCluster', scope)
             @watch('clusterOptions', scope)
             @watch('fit', scope)
+            @watch('id', scope)
             @createMarkersFromScratch(scope)
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             if propNameToWatch == 'models'
-                return if _.isEqualTo(newValue, oldValue)
+                return if _.isEqual(newValue, oldValue)
             if propNameToWatch == 'options' and newValue?
-                return if _.isEqualTo(newValue, oldValue)
+                return if _.isEqual(newValue, oldValue)
                 @DEFAULTS = newValue
                 return
+            if propNameToWatch == 'id' and newValue?
+                return if _.isEqual(newValue, oldValue)
+                @idKey = if scope.id? then scope.id else @defaultIdKey
 
             if @doRebuildAll
                 @reBuildMarkers(scope)
@@ -59,14 +64,13 @@
             else
                 @gMarkerManager = new directives.api.managers.MarkerManager(@mapCtrl.getMap())
 
-            _async.each(scope.models, (model) =>
-                scope.doRebuild = true
+            _async.each scope.models, (model) =>
                 @newChildMarker(model, scope)
             , () => #handle done callBack
+                scope.markerModels = @markers #for other directives like windows
                 @gMarkerManager.draw()
                 @fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit
-                scope.markerModels = @markers #for other directives like windows
-            )
+
 
 
         reBuildMarkers: (scope) =>
@@ -78,7 +82,8 @@
         pieceMealMarkers: (scope)=>
             if @scope.models? and @scope.models.length > 0 and _.keys(@markers).length > 0 #and @scope.models.length == @markers.length
                 #find the current state, async operation that calls back
-                payload = @figureOutState scope, @markers, @modelKeyComparison, (state) =>
+                @figureOutState @idKey, scope, @markers, @modelKeyComparison, (state) =>
+                    payload = state
                     #payload contains added, removals and flattened (existing models with their gProp appended)
                     #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @markers
                     _async.each payload.removals, (child)=>
@@ -101,10 +106,10 @@
                     @$timeout,
                     @DEFAULTS, @doClick, @gMarkerManager)
             @$log.info('child', child, 'markers', @markers)
-            if @doRebuildAll
-                @markers[child.scope.$id]
-            else
-                @markers[model[@scope.id]] = child #major change this makes model.id a requirement
+            unless model[@idKey]?
+                $log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
+                return
+            @markers[model[@idKey]] = child #major change this makes model.id a requirement
             child
 
         onDestroy: (scope)=>

@@ -43,7 +43,8 @@ function ExampleController($scope, $timeout, $log, $http) {
         return {
             latitude: latitude,
             longitude: longitude,
-            title: 'm' + i
+            title: 'm' + i,
+            id: i
         };
     };
 
@@ -76,18 +77,21 @@ function ExampleController($scope, $timeout, $log, $http) {
             bounds: {},
             markers: [
                 {
+                    id:1,
                     latitude: 45,
                     longitude: -74,
                     showWindow: false,
                     title: 'Marker 2'
                 },
                 {
+                    id:2,
                     latitude: 15,
                     longitude: 30,
                     showWindow: false,
                     title: 'Marker 2'
                 },
                 {
+                    id:3,
                     icon: 'plane.png',
                     latitude: 37,
                     longitude: -122,
@@ -97,18 +101,21 @@ function ExampleController($scope, $timeout, $log, $http) {
             ],
             markers2: [
                 {
+                    id:1,
                     latitude: 46,
                     longitude: -77,
                     showWindow: false,
                     title: '[46,-77]'
                 },
                 {
+                    id:2,
                     latitude: 33,
                     longitude: -77,
                     showWindow: false,
                     title: '[33,-77]'
                 },
                 {
+                    id:3,
                     icon: 'plane.png',
                     latitude: 35,
                     longitude: -125,
@@ -118,14 +125,17 @@ function ExampleController($scope, $timeout, $log, $http) {
             ],
             mexiMarkers: [
                 {
+                    id:1,
                     latitude: 29.302567,
                     longitude: -106.248779
                 },
                 {
+                    id:2,
                     latitude: 30.369913,
                     longitude: -109.434814
                 },
                 {
+                    id:3,
                     latitude: 26.739478,
                     longitude: -108.61084
                 }
@@ -176,7 +186,8 @@ function ExampleController($scope, $timeout, $log, $http) {
 //                        $scope.map.mexiMarkers = modified;
                         var markers = [];
                         for (var i = 0; i < 10; i++) {
-                            markers.push(createRandomMarker(i, $scope.map.bounds))
+                            nextId = markers.length + 1;
+                            markers.push(createRandomMarker(nextId, $scope.map.bounds))
                         }
                         $scope.map.mexiMarkers = markers.concat($scope.map.mexiMarkers)
                     });

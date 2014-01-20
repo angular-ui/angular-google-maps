@@ -1,8 +1,7 @@
 @ngGmapModule "directives.api.utils", ->
     @ModelsWatcher =
     #putting a payload together in order to not have to flatten twice, and to not have to flatten again later
-        figureOutState: (scope, childObjects, comparison, callBack)->
-            idKey = scope.id #lookup for where I key identifier is to keep things fast
+        figureOutState: (idKey, scope, childObjects, comparison, callBack)->
             adds = [] #models to add or update
             mappedScopeModelIds = {}
             removals = [] #childModels to remove
@@ -19,14 +18,11 @@
                             removals.push child
                 else
                     directives.api.utils.Logger.error("id missing for model #{m.toString()}, can not use do comparison/insertion")
-            , _async.each childObjects, (c) ->
-                        removals.push c.id unless mappedScopeModelIds[c.id]?
-                            #if we done have the object we can remove it
-                    , () ->
-                        callBack
-                            adds: adds
-                            removals: removals
-
-        transformModels: (scope, modelsPropToIterate, isArray = true) ->
-            toRender = scope[modelsPropToIterate]
-            toRender = if isArray then toRender else _.values toRender
+            , () =>
+                _async.each childObjects, (c) ->
+                    removals.push c.id unless mappedScopeModelIds[c.id]?
+                        #if we done have the object we can remove it
+                , () =>
+                    callBack
+                        adds: adds
+                        removals: removals

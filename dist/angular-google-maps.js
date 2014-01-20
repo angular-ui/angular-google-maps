@@ -730,6 +730,8 @@ Nicholas McCready - https://twitter.com/nmccready
         this.scope = scope;
         this.modelKeyComparison = __bind(this.modelKeyComparison, this);
         ModelKey.__super__.constructor.call(this);
+        this.defaultIdKey = "id";
+        this.idKey = void 0;
       }
 
       ModelKey.prototype.evalModelHandle = function(model, modelKey) {
@@ -757,9 +759,9 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   this.ngGmapModule("directives.api.utils", function() {
     return this.ModelsWatcher = {
-      figureOutState: function(scope, childObjects, comparison, callBack) {
-        var adds, idKey, mappedScopeModelIds, removals;
-        idKey = scope.id;
+      figureOutState: function(idKey, scope, childObjects, comparison, callBack) {
+        var adds, mappedScopeModelIds, removals,
+          _this = this;
         adds = [];
         mappedScopeModelIds = {};
         removals = [];
@@ -779,24 +781,18 @@ Nicholas McCready - https://twitter.com/nmccready
           } else {
             return directives.api.utils.Logger.error("id missing for model " + (m.toString()) + ", can not use do comparison/insertion");
           }
-        }, _async.each(childObjects, function(c) {
-          if (mappedScopeModelIds[c.id] == null) {
-            return removals.push(c.id);
-          }
         }, function() {
-          return callBack({
-            adds: adds,
-            removals: removals
+          return _async.each(childObjects, function(c) {
+            if (mappedScopeModelIds[c.id] == null) {
+              return removals.push(c.id);
+            }
+          }, function() {
+            return callBack({
+              adds: adds,
+              removals: removals
+            });
           });
-        }));
-      },
-      transformModels: function(scope, modelsPropToIterate, isArray) {
-        var toRender;
-        if (isArray == null) {
-          isArray = true;
-        }
-        toRender = scope[modelsPropToIterate];
-        return toRender = isArray ? toRender : _.values(toRender);
+        });
       }
     };
   });
@@ -1659,7 +1655,8 @@ Nicholas McCready - https://twitter.com/nmccready
         this.gMarkerManager = void 0;
         this.$timeout = $timeout;
         this.$log.info(this);
-        this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : false;
+        this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : true;
+        this.idKey = scope.id != null ? scope.id : this.defaultIdKey;
         this.scope.$watch('doRebuildAll', function(newValue, oldValue) {
           if (newValue !== oldValue) {
             return _this.doRebuildAll = newValue;
@@ -1672,21 +1669,28 @@ Nicholas McCready - https://twitter.com/nmccready
         this.watch('doCluster', scope);
         this.watch('clusterOptions', scope);
         this.watch('fit', scope);
+        this.watch('id', scope);
         return this.createMarkersFromScratch(scope);
       };
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
         if (propNameToWatch === 'models') {
-          if (_.isEqualTo(newValue, oldValue)) {
+          if (_.isEqual(newValue, oldValue)) {
             return;
           }
         }
         if (propNameToWatch === 'options' && (newValue != null)) {
-          if (_.isEqualTo(newValue, oldValue)) {
+          if (_.isEqual(newValue, oldValue)) {
             return;
           }
           this.DEFAULTS = newValue;
           return;
+        }
+        if (propNameToWatch === 'id' && (newValue != null)) {
+          if (_.isEqual(newValue, oldValue)) {
+            return;
+          }
+          this.idKey = scope.id != null ? scope.id : this.defaultIdKey;
         }
         if (this.doRebuildAll) {
           return this.reBuildMarkers(scope);
@@ -1722,14 +1726,13 @@ Nicholas McCready - https://twitter.com/nmccready
           this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
         }
         return _async.each(scope.models, function(model) {
-          scope.doRebuild = true;
           return _this.newChildMarker(model, scope);
         }, function() {
+          scope.markerModels = _this.markers;
           _this.gMarkerManager.draw();
           if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
-            _this.fit();
+            return _this.fit();
           }
-          return scope.markerModels = _this.markers;
         });
       };
 
@@ -1742,10 +1745,11 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.pieceMealMarkers = function(scope) {
-        var payload,
-          _this = this;
+        var _this = this;
         if ((this.scope.models != null) && this.scope.models.length > 0 && _.keys(this.markers).length > 0) {
-          return payload = this.figureOutState(scope, this.markers, this.modelKeyComparison, function(state) {
+          return this.figureOutState(this.idKey, scope, this.markers, this.modelKeyComparison, function(state) {
+            var payload;
+            payload = state;
             return _async.each(payload.removals, function(child) {
               if (child != null) {
                 child.destroy();
@@ -1769,11 +1773,11 @@ Nicholas McCready - https://twitter.com/nmccready
         var child;
         child = new directives.api.models.child.MarkerChildModel(model, scope, this.mapCtrl, this.$timeout, this.DEFAULTS, this.doClick, this.gMarkerManager);
         this.$log.info('child', child, 'markers', this.markers);
-        if (this.doRebuildAll) {
-          this.markers[child.scope.$id];
-        } else {
-          this.markers[model[this.scope.id]] = child;
+        if (model[this.idKey] == null) {
+          $log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
+          return;
         }
+        this.markers[model[this.idKey]] = child;
         return child;
       };
 
@@ -1867,10 +1871,16 @@ Nicholas McCready - https://twitter.com/nmccready
         this.$log.info(self);
         this.$timeout(function() {
           _this.watchOurScope(scope);
-          _this.doRebuildAll = scope.doRebuildAll != null ? scope.doRebuildAll : true;
+          _this.doRebuildAll = _this.scope.doRebuildAll != null ? _this.scope.doRebuildAll : true;
           scope.$watch('doRebuildAll', function(newValue, oldValue) {
             if (newValue !== oldValue) {
               return _this.doRebuildAll = newValue;
+            }
+          });
+          _this.idKey = scope.id != null ? scope.id : _this.defaultIdKey;
+          scope.$watch('id', function(newValue, oldValue) {
+            if (newValue !== oldValue && (newValue == null)) {
+              return _this.idKey = newValue;
             }
           });
           return _this.createChildScopesWindows();
@@ -1892,7 +1902,7 @@ Nicholas McCready - https://twitter.com/nmccready
       WindowsParentModel.prototype.watchModels = function(scope) {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
-          if (_this.didModelsChange(newValue, oldValue)) {
+          if (!_.isEqual(newValue, oldValue)) {
             if (_this.doRebuildAll || _this.doINeedToWipe(newValue)) {
               return _this.rebuildAll(scope, true, true);
             } else {
@@ -1984,8 +1994,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       WindowsParentModel.prototype.createAllNewWindows = function(scope, hasGMarker, modelsPropToIterate, isArray) {
-        var toRender,
-          _this = this;
+        var _this = this;
         if (modelsPropToIterate == null) {
           modelsPropToIterate = 'models';
         }
@@ -1998,20 +2007,17 @@ Nicholas McCready - https://twitter.com/nmccready
           this.watchDestroy(scope);
         }
         this.setContentKeys(scope.models);
-        toRender = this.transformModels(scope, modelsPropToIterate, isArray);
-        return _async.each(toRender, function(model) {
-          var gMarker, windowModel;
-          gMarker = hasGMarker ? model.gMarker : void 0;
-          windowModel = hasGMarker ? model.model : model;
-          return _this.createWindow(windowModel, gMarker, _this.gMap);
+        return _async.each(scope.models, function(model) {
+          var gMarker;
+          gMarker = hasGMarker ? scope[modelsPropToIterate][[model[_this.idKey]]].gMarker : void 0;
+          return _this.createWindow(model, gMarker, _this.gMap);
         }, function() {
           return _this.firstTime = false;
         });
       };
 
       WindowsParentModel.prototype.pieceMealWindows = function(scope, hasGMarker, modelsPropToIterate, isArray) {
-        var payload, toRender,
-          _this = this;
+        var _this = this;
         if (modelsPropToIterate == null) {
           modelsPropToIterate = 'models';
         }
@@ -2019,28 +2025,22 @@ Nicholas McCready - https://twitter.com/nmccready
           isArray = true;
         }
         this.models = scope.models;
-        toRender = this.transformModels(scope, modelsPropToIterate, isArray);
-        if ((toRender != null) && toRender.length > 0 && _.values(this.windows).length > 0) {
-          payload = this.modelsToAddRemovePayload(scope, this.windows, this.modelKeyComparison);
-          _.each(payload.removals, function(modelToRemove) {
-            if (_this.windows[modelToRemove.$id] != null) {
-              _this.windows[modelToRemove.$id].destroy();
-              return delete _this.windows[modelToRemove.$id];
-            }
-          });
-          return _.each(payload.adds, function(modelToAdd) {
-            var gMarker, maybeMarker;
-            if (modelToAdd.gMarker != null) {
-              gMarker = modelToAdd.gMarker;
-            } else {
-              maybeMarker = _.find(_.values(scope[modelsPropToIterate]), function(mm) {
-                var pos;
-                pos = _this.evalModelHandle(mm.model, scope.coords);
-                return pos.latitude === modelToAdd.latitude && pos.longitude === modelToAdd.longitude;
+        if ((scope != null) && scope.models > 0 && this.windows.length > 0) {
+          return this.figureOutState(this.idKey, scope, this.windows, this.modelKeyComparison, function(state) {
+            var payload;
+            payload = state;
+            return _async.each(payload.removals, function(child) {
+              if (child != null) {
+                child.destroy();
+                return delete _this.windows[child.id];
+              }
+            }, function() {
+              return _async.each(payload.adds, function(modelToAdd) {
+                var gMarker;
+                gMarker = scope[modelsPropToIterate][modelToAdd[scope.id]].gMarker;
+                return _this.createWindow(modelToAdd, gMarker, _this.gMap);
               });
-              gMarker = maybeMarker.gMarker;
-            }
-            return _this.createWindow(modelToAdd, gMarker, _this.gMap);
+            });
           });
         } else {
           return this.createAllNewWindows(scope, hasGMarker, modelsPropToIterate);
@@ -2066,7 +2066,11 @@ Nicholas McCready - https://twitter.com/nmccready
         parsedContent = this.interpolateContent(this.linked.element.html(), model);
         opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS);
         child = new directives.api.models.child.WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile, void 0, true);
-        return this.windows[child.scope.$id] = child;
+        if (model[this.idKey] == null) {
+          $log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
+          return;
+        }
+        return this.windows[model[this.idKey]] = child;
       };
 
       WindowsParentModel.prototype.setChildScope = function(childScope, model) {
@@ -2424,6 +2428,7 @@ not 1:1 in this setting.
         Markers.__super__.constructor.call(this, $timeout);
         self = this;
         this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
+        this.scope.doRebuildAll = '=dorebuildall';
         this.scope.id = '=id';
         this.scope.models = '=models';
         this.scope.doCluster = '=docluster';
@@ -2553,6 +2558,7 @@ not 1:1 in this setting.
         this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
         this.scope.models = '=models';
         this.scope.doRebuildAll = '=dorebuildall';
+        this.scope.id = '=id';
         this.$log.info(self);
       }
 
