@@ -4,7 +4,8 @@
         constructor: (scope, element, attrs, mapCtrl, $timeout) ->
             super(scope, element, attrs, mapCtrl, $timeout)
             self = @
-            @markers = {}
+            @markers = new directives.api.utils.PropMap()
+
             @gMarkerManager = undefined
             @$timeout = $timeout
             @$log.info @
@@ -25,6 +26,7 @@
             @createMarkersFromScratch(scope)
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
+            forceRebuild = false
             if propNameToWatch == 'models'
                 return if _.isEqual(newValue, oldValue)
             if propNameToWatch == 'options' and newValue?
@@ -34,8 +36,9 @@
             if propNameToWatch == 'id' and newValue?
                 return if _.isEqual(newValue, oldValue)
                 @idKey = if scope.id? then scope.id else @defaultIdKey
+                forceRebuild = true
 
-            if @doRebuildAll
+            if @doRebuildAll or forceRebuild
                 @reBuildMarkers(scope)
             else
                 @pieceMealMarkers(scope)
@@ -80,7 +83,7 @@
             @createMarkersFromScratch(scope)
 
         pieceMealMarkers: (scope)=>
-            if @scope.models? and @scope.models.length > 0 and _.keys(@markers).length > 0 #and @scope.models.length == @markers.length
+            if @scope.models? and @scope.models.length > 0 and @markers.length > 0 #and @scope.models.length == @markers.length
                 #find the current state, async operation that calls back
                 @figureOutState @idKey, scope, @markers, @modelKeyComparison, (state) =>
                     payload = state
@@ -89,7 +92,7 @@
                     _async.each payload.removals, (child)=>
                         if child?
                             child.destroy()
-                            delete @markers[child.id]
+                            @markers.remove(child.id)
                     , () =>
                         #add all adds via creating new ChildMarkers which are appended to @markers
                         _async.each payload.adds, (modelToAdd) =>
@@ -109,7 +112,7 @@
             unless model[@idKey]?
                 $log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                 return
-            @markers[model[@idKey]] = child #major change this makes model.id a requirement
+            @markers.put(model[@idKey],child) #major change this makes model.id a requirement
             child
 
         onDestroy: (scope)=>
@@ -120,16 +123,17 @@
             _.each _.values(@markers), (model)->
                 model.destroy() if model?
             delete @markers
-            @markers = {}
+            @markers = new directives.api.utils.PropMap()
             @gMarkerManager.clear() if @gMarkerManager?
 
         fit: ()=>
-            if (@mapCtrl and @markers? and @markers.length)
+            if @mapCtrl and @markers? and @markers.length > 0
                 bounds = new google.maps.LatLngBounds();
                 everSet = false
-                _.each @markers, (childModelMarker) =>
+                _async.each @markers, (childModelMarker) =>
                     if childModelMarker.gMarker?
                         everSet = true unless everSet
                         bounds.extend(childModelMarker.gMarker.getPosition())
-                @mapCtrl.getMap().fitBounds(bounds) if everSet
+                , () =>
+                    @mapCtrl.getMap().fitBounds(bounds) if everSet
 

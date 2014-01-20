@@ -14,8 +14,9 @@
                 model[modelKey]
 
         modelKeyComparison: (model1, model2) =>
-            @evalModelHandle(model1, @scope.coords).latitude == @evalModelHandle(model2,
-                    @scope.coords).latitude and
-            @evalModelHandle(model1, @scope.coords).longitude == @evalModelHandle(model2,
-                    @scope.coords).longitude
+            scope = if @scope.coords? then @scope else @parentScope
+            @evalModelHandle(model1, scope.coords).latitude == @evalModelHandle(model2,
+                    scope.coords).latitude and
+            @evalModelHandle(model1, scope.coords).longitude == @evalModelHandle(model2,
+                    scope.coords).longitude
 

@@ -19,8 +19,15 @@
                 else
                     directives.api.utils.Logger.error("id missing for model #{m.toString()}, can not use do comparison/insertion")
             , () =>
-                _async.each childObjects, (c) ->
-                    removals.push c.id unless mappedScopeModelIds[c.id]?
+                _async.each childObjects.values(), (c) ->
+                    unless c?
+                        directives.api.utils.Logger.error("child undefined in ModelsWatcher.")
+                        return
+                    unless c.model?
+                        directives.api.utils.Logger.error("child.model undefined in ModelsWatcher.")
+                        return
+                    id = c.model[idKey]
+                    removals.push c.model[idKey] unless mappedScopeModelIds[id]?
                         #if we done have the object we can remove it
                 , () =>
                     callBack

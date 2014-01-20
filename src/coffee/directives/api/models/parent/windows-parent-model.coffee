@@ -7,7 +7,8 @@
         constructor: (scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, @$interpolate) ->
             super(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache)
             self = @
-            @windows = {}
+            @windows = new directives.api.utils.PropMap()
+
             @scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter',
                                'isIconVisibleOnClick', 'closeClick']
             #setting up local references to propety keys IE: @coordsKey
@@ -18,6 +19,7 @@
             @isIconVisibleOnClick = undefined
             @firstTime = true
             @$log.info(self)
+            @parentScope = undefined
 
 
             @$timeout(=>
@@ -31,6 +33,7 @@
                 scope.$watch 'id', (newValue, oldValue) =>
                     if (newValue != oldValue and !newValue?)
                         @idKey = newValue
+                        @rebuildAll(scope, true, true)
 
                 @createChildScopesWindows()
             , 50)
@@ -41,8 +44,9 @@
             scope.$watch(name, (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
-                    _.each _.values(@windows), (model) =>
+                    _async.each _.values(@windows), (model) =>
                         model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
+                    , () =>
             , true)
 
         watchModels: (scope) =>
@@ -55,7 +59,7 @@
                         @createChildScopesWindows(false)
             , true)
 
-        doINeedToWipe:(newValue) =>
+        doINeedToWipe: (newValue) =>
             newValueIsEmpty = if newValue? then newValue.length == 0 else true
             _.values(@windows).length > 0 and newValueIsEmpty
 
@@ -64,7 +68,7 @@
                 model.destroy()
             , () => #handle done callBack
                 delete @windows if doDelete
-                @windows = {}
+                @windows = new directives.api.utils.PropMap()
                 @createChildScopesWindows() if doCreate
 
         watchDestroy: (scope)=>
@@ -107,6 +111,7 @@
                         @pieceMealWindows @linked.scope, false
                 else
                     #creating windows with parent markers
+                    @parentScope = markersScope
                     if isCreatingFromScratch
                         @createAllNewWindows markersScope, true, 'markerModels', false
                     else
@@ -129,13 +134,13 @@
 
         pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true)=>
             @models = scope.models
-            if scope? and scope.models > 0 and @windows.length > 0
+            if scope? and scope.models? and scope.models.length > 0 and @windows.length > 0
                 @figureOutState @idKey, scope, @windows, @modelKeyComparison, (state) =>
                     payload = state
                     _async.each payload.removals, (child)=>
                         if child?
                             child.destroy()
-                            delete @windows[child.id]
+                            @windows.remove(child.id)
                     , () =>
                         #add all adds via creating new ChildMarkers which are appended to @markers
                         _async.each payload.adds, (modelToAdd) =>
@@ -157,12 +162,13 @@
             , true)
             parsedContent = @interpolateContent(@linked.element.html(), model)
             opts = @createWindowOptions(gMarker, childScope, parsedContent, @DEFAULTS)
-            child =  new directives.api.models.child.WindowChildModel(model, childScope, opts,
+            child = new directives.api.models.child.WindowChildModel(model, childScope, opts,
                     @isIconVisibleOnClick, gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true)
             unless model[@idKey]?
                 $log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                 return
-            @windows[model[@idKey]] = child
+            @windows.put(model[@idKey], child)
+            child
 
         setChildScope: (childScope, model) =>
             _.each @scopePropNames, (name) =>
