@@ -185,9 +185,16 @@ function ExampleController($scope, $timeout, $log, $http) {
 //                        })
 //                        $scope.map.mexiMarkers = modified;
                         var markers = [];
-                        var id = $scope.map.mexiMarkers.length;
+                        var id = 0;
+                        if($scope.map.mexiMarkers !== null && $scope.map.mexiMarkers.length > 0){
+                            var maxMarker = _.max($scope.map.mexiMarkers, function(marker){
+                                return marker.id;
+                            });
+                            id = maxMarker.id;
+                        }
                         for (var i = 0; i < 4; i++) {
-                            markers.push(createRandomMarker(id++, $scope.map.bounds));
+                            id++;
+                            markers.push(createRandomMarker(id, $scope.map.bounds));
                         }
                         $scope.map.mexiMarkers = markers.concat($scope.map.mexiMarkers);
                     });
@@ -304,12 +311,12 @@ function ExampleController($scope, $timeout, $log, $http) {
 
     $scope.removeMarkers = function () {
         $log.info("Clearing markers. They should disappear from the map now");
-        $scope.map.markers.length = 0;
-        $scope.map.markers2.length = 0;
-        $scope.map.dynamicMarkers.length = 0;
-        $scope.map.randomMarkers.length = 0;
-        $scope.map.mexiMarkers.length = 0;
-        $scope.map.polylines.length = 0;
+        $scope.map.markers = [];
+        $scope.map.markers2 = [];
+        $scope.map.dynamicMarkers = [];
+        $scope.map.randomMarkers = [];
+        $scope.map.mexiMarkers = [];
+        $scope.map.polylines = [];
         $scope.map.clickedMarker = null;
         $scope.searchLocationMarker = null;
         $scope.map.infoWindow.show = false;
@@ -359,16 +366,19 @@ function ExampleController($scope, $timeout, $log, $http) {
         $scope.map.infoWindow.show = true;
         dynamicMarkers = [
             {
+                id: 1,
                 latitude: 46,
                 longitude: -79,
                 showWindow: false
             },
             {
+                id: 2,
                 latitude: 33,
                 longitude: -79,
                 showWindow: false
             },
             {
+                id: 3,
                 icon: 'plane.png',
                 latitude: 35,
                 longitude: -127,

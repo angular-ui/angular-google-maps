@@ -26,19 +26,7 @@
             @createMarkersFromScratch(scope)
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
-            forceRebuild = false
-            if propNameToWatch == 'models'
-                return if _.isEqual(newValue, oldValue)
-            if propNameToWatch == 'options' and newValue?
-                return if _.isEqual(newValue, oldValue)
-                @DEFAULTS = newValue
-                return
-            if propNameToWatch == 'id' and newValue?
-                return if _.isEqual(newValue, oldValue)
-                @idKey = if scope.id? then scope.id else @defaultIdKey
-                forceRebuild = true
-
-            if @doRebuildAll or forceRebuild
+            if @doRebuildAll
                 @reBuildMarkers(scope)
             else
                 @pieceMealMarkers(scope)
@@ -130,10 +118,10 @@
             if @mapCtrl and @markers? and @markers.length > 0
                 bounds = new google.maps.LatLngBounds();
                 everSet = false
-                _async.each @markers, (childModelMarker) =>
-                    if childModelMarker.gMarker?
+                _async.each @markers.values(), (child) =>
+                    if child.gMarker?
                         everSet = true unless everSet
-                        bounds.extend(childModelMarker.gMarker.getPosition())
+                        bounds.extend(child.gMarker.getPosition())
                 , () =>
                     @mapCtrl.getMap().fitBounds(bounds) if everSet
 

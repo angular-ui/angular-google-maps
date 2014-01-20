@@ -1447,7 +1447,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if (newValue !== oldValue) {
             return _this.onWatch(propNameToWatch, scope, newValue, oldValue);
           }
-        }, true);
+        });
       };
 
       IMarkerParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
@@ -1749,28 +1749,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
-        var forceRebuild;
-        forceRebuild = false;
-        if (propNameToWatch === 'models') {
-          if (_.isEqual(newValue, oldValue)) {
-            return;
-          }
-        }
-        if (propNameToWatch === 'options' && (newValue != null)) {
-          if (_.isEqual(newValue, oldValue)) {
-            return;
-          }
-          this.DEFAULTS = newValue;
-          return;
-        }
-        if (propNameToWatch === 'id' && (newValue != null)) {
-          if (_.isEqual(newValue, oldValue)) {
-            return;
-          }
-          this.idKey = scope.id != null ? scope.id : this.defaultIdKey;
-          forceRebuild = true;
-        }
-        if (this.doRebuildAll || forceRebuild) {
+        if (this.doRebuildAll) {
           return this.reBuildMarkers(scope);
         } else {
           return this.pieceMealMarkers(scope);
@@ -1878,12 +1857,12 @@ Nicholas McCready - https://twitter.com/nmccready
         if (this.mapCtrl && (this.markers != null) && this.markers.length > 0) {
           bounds = new google.maps.LatLngBounds();
           everSet = false;
-          return _async.each(this.markers, function(childModelMarker) {
-            if (childModelMarker.gMarker != null) {
+          return _async.each(this.markers.values(), function(child) {
+            if (child.gMarker != null) {
               if (!everSet) {
                 everSet = true;
               }
-              return bounds.extend(childModelMarker.gMarker.getPosition());
+              return bounds.extend(child.gMarker.getPosition());
             }
           }, function() {
             if (everSet) {
@@ -1977,7 +1956,7 @@ Nicholas McCready - https://twitter.com/nmccready
               return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
             }, function() {});
           }
-        }, true);
+        });
       };
 
       WindowsParentModel.prototype.watchModels = function(scope) {
@@ -1990,7 +1969,7 @@ Nicholas McCready - https://twitter.com/nmccready
               return _this.createChildScopesWindows(false);
             }
           }
-        }, true);
+        });
       };
 
       WindowsParentModel.prototype.doINeedToWipe = function(newValue) {

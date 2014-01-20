@@ -41,23 +41,21 @@
         #watch this scope(Parent to all WindowModels), these updates reflect expression / Key changes
         #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
         watch: (scope, name, nameKey) =>
-            scope.$watch(name, (newValue, oldValue) =>
+            scope.$watch name, (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
                     _async.each _.values(@windows), (model) =>
                         model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
                     , () =>
-            , true)
 
         watchModels: (scope) =>
-            scope.$watch('models', (newValue, oldValue) =>
+            scope.$watch 'models', (newValue, oldValue) =>
                 #check to make sure that the newValue Array is really a set of new objects
                 unless _.isEqual(newValue, oldValue)
                     if @doRebuildAll or @doINeedToWipe(newValue)
                         @rebuildAll(scope, true, true)
                     else
                         @createChildScopesWindows(false)
-            , true)
 
         doINeedToWipe: (newValue) =>
             newValueIsEmpty = if newValue? then newValue.length == 0 else true
