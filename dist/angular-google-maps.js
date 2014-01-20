@@ -551,7 +551,7 @@ Nicholas McCready - https://twitter.com/nmccready
   this.ngGmapModule("directives.api.utils", function() {
     return this.PropMap = (function() {
       function PropMap() {
-        this.key = __bind(this.key, this);
+        this.keys = __bind(this.keys, this);
         this.values = __bind(this.values, this);
         this.remove = __bind(this.remove, this);
         this.put = __bind(this.put, this);
@@ -576,11 +576,24 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       PropMap.prototype.values = function() {
-        return _.values(this);
+        var all, propsToPop,
+          _this = this;
+        propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length'];
+        all = _.values(this);
+        _.each(propsToPop, function(prop) {
+          return all.pop();
+        });
+        return all;
       };
 
-      PropMap.prototype.key = function() {
-        return _.keys(this);
+      PropMap.prototype.keys = function() {
+        var all,
+          _this = this;
+        all = _.keys(this);
+        _.each(propsToPop, function(prop) {
+          return all.pop();
+        });
+        return all;
       };
 
       return PropMap;
@@ -1847,7 +1860,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.onDestroy = function(scope) {
-        _.each(_.values(this.markers), function(model) {
+        _.each(this.markers.values(), function(model) {
           if (model != null) {
             return model.destroy();
           }
@@ -1983,12 +1996,12 @@ Nicholas McCready - https://twitter.com/nmccready
       WindowsParentModel.prototype.doINeedToWipe = function(newValue) {
         var newValueIsEmpty;
         newValueIsEmpty = newValue != null ? newValue.length === 0 : true;
-        return _.values(this.windows).length > 0 && newValueIsEmpty;
+        return this.windows.length > 0 && newValueIsEmpty;
       };
 
       WindowsParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
         var _this = this;
-        return _async.each(_.values(this.windows), function(model) {
+        return _async.each(this.windows.values(), function(model) {
           return model.destroy();
         }, function() {
           if (doDelete) {
@@ -2106,13 +2119,13 @@ Nicholas McCready - https://twitter.com/nmccready
             }, function() {
               return _async.each(payload.adds, function(modelToAdd) {
                 var gMarker;
-                gMarker = scope[modelsPropToIterate][modelToAdd[scope.id]].gMarker;
+                gMarker = scope[modelsPropToIterate][modelToAdd[_this.idKey]].gMarker;
                 return _this.createWindow(modelToAdd, gMarker, _this.gMap);
-              });
+              }, function() {});
             });
           });
         } else {
-          return this.createAllNewWindows(scope, hasGMarker, modelsPropToIterate);
+          return this.rebuildAll(this.scope, true, true);
         }
       };
 

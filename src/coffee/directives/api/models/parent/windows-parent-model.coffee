@@ -61,10 +61,10 @@
 
         doINeedToWipe: (newValue) =>
             newValueIsEmpty = if newValue? then newValue.length == 0 else true
-            _.values(@windows).length > 0 and newValueIsEmpty
+            @windows.length > 0 and newValueIsEmpty
 
         rebuildAll: (scope, doCreate, doDelete) =>
-            _async.each _.values(@windows), (model) =>
+            _async.each @windows.values(), (model) =>
                 model.destroy()
             , () => #handle done callBack
                 delete @windows if doDelete
@@ -144,10 +144,11 @@
                     , () =>
                         #add all adds via creating new ChildMarkers which are appended to @markers
                         _async.each payload.adds, (modelToAdd) =>
-                            gMarker = scope[modelsPropToIterate][modelToAdd[scope.id]].gMarker
+                            gMarker = scope[modelsPropToIterate][modelToAdd[@idKey]].gMarker
                             @createWindow(modelToAdd, gMarker, @gMap)
+                        , ()=>
             else
-                @createAllNewWindows(scope, hasGMarker, modelsPropToIterate)
+                @rebuildAll(@scope, true, true)
 
         setContentKeys: (models)=>
             if(models.length > 0)

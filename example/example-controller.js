@@ -185,11 +185,11 @@ function ExampleController($scope, $timeout, $log, $http) {
 //                        })
 //                        $scope.map.mexiMarkers = modified;
                         var markers = [];
-                        for (var i = 0; i < 10; i++) {
-                            nextId = markers.length + 1;
-                            markers.push(createRandomMarker(nextId, $scope.map.bounds))
+                        var id = $scope.map.mexiMarkers.length;
+                        for (var i = 0; i < 4; i++) {
+                            markers.push(createRandomMarker(id++, $scope.map.bounds));
                         }
-                        $scope.map.mexiMarkers = markers.concat($scope.map.mexiMarkers)
+                        $scope.map.mexiMarkers = markers.concat($scope.map.mexiMarkers);
                     });
                 }
             },

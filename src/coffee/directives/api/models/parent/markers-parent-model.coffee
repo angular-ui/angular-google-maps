@@ -120,7 +120,7 @@
             #slap index to the external model so that when they pass external back
             #for destroy we have a lookup?
             #this will require another attribute for destroySingle(marker)
-            _.each _.values(@markers), (model)->
+            _.each @markers.values(), (model)->
                 model.destroy() if model?
             delete @markers
             @markers = new directives.api.utils.PropMap()

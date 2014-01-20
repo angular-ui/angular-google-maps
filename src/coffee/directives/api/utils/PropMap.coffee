@@ -3,20 +3,27 @@
 ###
 @ngGmapModule "directives.api.utils", ->
     class @PropMap
-        constructor:() ->
+        constructor: () ->
             @length = 0
-        get:(key)=>
+        get: (key)=>
             @[key]
         #modify map through put or remove to keep track of length , otherwise the state will be incorrect
-        put:(key,value)=>
+        put: (key, value)=>
             unless @[key]? #if we are adding something new increment length
                 @length++
             @[key] = value
-        remove:(key)=>
+        remove: (key)=>
             delete @[key]
             @length--
 
-        values:()=>
-            _.values @
-        key:()=>
-            _.keys @
+        values: ()=>
+            propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length']
+            all = _.values @
+            _.each propsToPop, (prop)=>
+                all.pop()
+            all
+        keys: ()=>
+            all = _.keys @
+            _.each propsToPop, (prop)=>
+                all.pop()
+            all
