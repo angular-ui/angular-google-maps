@@ -541,69 +541,6 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 /*
-    Simple Object Map with a lenght property to make it easy to track length/size
-*/
-
-
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-  this.ngGmapModule("directives.api.utils", function() {
-    return this.PropMap = (function() {
-      function PropMap() {
-        this.keys = __bind(this.keys, this);
-        this.values = __bind(this.values, this);
-        this.remove = __bind(this.remove, this);
-        this.put = __bind(this.put, this);
-        this.get = __bind(this.get, this);
-        this.length = 0;
-      }
-
-      PropMap.prototype.get = function(key) {
-        return this[key];
-      };
-
-      PropMap.prototype.put = function(key, value) {
-        if (this[key] == null) {
-          this.length++;
-        }
-        return this[key] = value;
-      };
-
-      PropMap.prototype.remove = function(key) {
-        delete this[key];
-        return this.length--;
-      };
-
-      PropMap.prototype.values = function() {
-        var all, propsToPop,
-          _this = this;
-        propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length'];
-        all = _.values(this);
-        _.each(propsToPop, function(prop) {
-          return all.pop();
-        });
-        return all;
-      };
-
-      PropMap.prototype.keys = function() {
-        var all,
-          _this = this;
-        all = _.keys(this);
-        _.each(propsToPop, function(prop) {
-          return all.pop();
-        });
-        return all;
-      };
-
-      return PropMap;
-
-    })();
-  });
-
-}).call(this);
-
-/*
     Author: Nicholas McCready & jfriend00
     AsyncProcessor handles things asynchronous-like :), to allow the UI to be free'd to do other things
     Code taken from http://stackoverflow.com/questions/10344498/best-way-to-iterate-over-an-array-without-blocking-the-ui
@@ -838,9 +775,9 @@ Nicholas McCready - https://twitter.com/nmccready
               return adds.push(m);
             } else {
               child = childObjects[m[idKey]];
-              if (!comparison(m, child)) {
+              if (!comparison(m, child.model)) {
                 adds.push(m);
-                return removals.push(child);
+                return removals.push(child.model);
               }
             }
           } else {
@@ -870,6 +807,69 @@ Nicholas McCready - https://twitter.com/nmccready
         });
       }
     };
+  });
+
+}).call(this);
+
+/*
+    Simple Object Map with a lenght property to make it easy to track length/size
+*/
+
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  this.ngGmapModule("directives.api.utils", function() {
+    return this.PropMap = (function() {
+      function PropMap() {
+        this.keys = __bind(this.keys, this);
+        this.values = __bind(this.values, this);
+        this.remove = __bind(this.remove, this);
+        this.put = __bind(this.put, this);
+        this.get = __bind(this.get, this);
+        this.length = 0;
+      }
+
+      PropMap.prototype.get = function(key) {
+        return this[key];
+      };
+
+      PropMap.prototype.put = function(key, value) {
+        if (this[key] == null) {
+          this.length++;
+        }
+        return this[key] = value;
+      };
+
+      PropMap.prototype.remove = function(key) {
+        delete this[key];
+        return this.length--;
+      };
+
+      PropMap.prototype.values = function() {
+        var all, propsToPop,
+          _this = this;
+        propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length'];
+        all = _.values(this);
+        _.each(propsToPop, function(prop) {
+          return all.pop();
+        });
+        return all;
+      };
+
+      PropMap.prototype.keys = function() {
+        var all,
+          _this = this;
+        all = _.keys(this);
+        _.each(propsToPop, function(prop) {
+          return all.pop();
+        });
+        return all;
+      };
+
+      return PropMap;
+
+    })();
   });
 
 }).call(this);
@@ -1200,7 +1200,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
       WindowChildModel.include(directives.api.utils.GmapUtil);
 
-      function WindowChildModel(model, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile, element, needToManualDestroy) {
+      function WindowChildModel(model, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile, element, needToManualDestroy, markerIsVisibleAfterWindowClose) {
         this.model = model;
         this.scope = scope;
         this.opts = opts;
@@ -1212,6 +1212,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.$compile = $compile;
         this.element = element;
         this.needToManualDestroy = needToManualDestroy != null ? needToManualDestroy : false;
+        this.markerIsVisibleAfterWindowClose = markerIsVisibleAfterWindowClose != null ? markerIsVisibleAfterWindowClose : true;
         this.destroy = __bind(this.destroy, this);
         this.hideWindow = __bind(this.hideWindow, this);
         this.getLatestPosition = __bind(this.getLatestPosition, this);
@@ -1220,7 +1221,6 @@ Nicholas McCready - https://twitter.com/nmccready
         this.watchCoords = __bind(this.watchCoords, this);
         this.watchShow = __bind(this.watchShow, this);
         this.createGWin = __bind(this.createGWin, this);
-        this.initialMarkerVisibility = this.markerCtrl != null ? this.markerCtrl.getVisible() : false;
         this.$log = directives.api.utils.Logger;
         this.createGWin();
         if (this.markerCtrl != null) {
@@ -1242,14 +1242,12 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         if ((this.opts != null) && this.gWin === void 0) {
           this.gWin = new google.maps.InfoWindow(this.opts);
-          return google.maps.event.addListener(this.gWin, 'closeclick', function() {
-            if (_this.markerCtrl != null) {
-              _this.markerCtrl.setVisible(_this.initialMarkerVisibility);
-            }
-            if (_this.scope.closeClick != null) {
-              return _this.scope.closeClick();
-            }
+          google.maps.event.addListener(this.gWin, 'closeclick', function() {
+            return _this.markerCtrl.setVisible(_this.markerIsVisibleAfterWindowClose);
           });
+          if (this.scope.closeClick != null) {
+            return this.scope.closeClick();
+          }
         }
       };
 

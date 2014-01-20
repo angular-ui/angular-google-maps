@@ -13,9 +13,9 @@
                     else
                         child = childObjects[m[idKey]]
                         #we're update in this case
-                        unless comparison m, child
+                        unless comparison m, child.model
                             adds.push m
-                            removals.push child
+                            removals.push child.model
                 else
                     directives.api.utils.Logger.error("id missing for model #{m.toString()}, can not use do comparison/insertion")
             , () =>

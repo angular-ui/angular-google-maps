@@ -168,8 +168,11 @@ function ExampleController($scope, $timeout, $log, $http) {
                         };
                     }
                     else {
-                        $scope.map.clickedMarker.latitude = e.latLng.lat();
-                        $scope.map.clickedMarker.longitude = e.latLng.lng();
+                        var marker = {
+                            latitude: e.latLng.lat(),
+                            longitude: e.latLng.lng()
+                        };
+                        $scope.map.clickedMarker = marker;
                     }
                     //scope apply required because this event handler is outside of the angular domain
                     $scope.$apply();
@@ -292,7 +295,6 @@ function ExampleController($scope, $timeout, $log, $http) {
     _.each($scope.map.markers, function (marker) {
         marker.closeClick = function () {
             marker.showWindow = false;
-            $scope.$apply();
         };
         marker.onClicked = function () {
             onMarkerClicked(marker);
@@ -302,7 +304,6 @@ function ExampleController($scope, $timeout, $log, $http) {
     _.each($scope.map.markers2, function (marker) {
         marker.closeClick = function () {
             marker.showWindow = false;
-            $scope.$apply();
         };
         marker.onClicked = function () {
             onMarkerClicked(marker);
@@ -388,7 +389,6 @@ function ExampleController($scope, $timeout, $log, $http) {
         _.each(dynamicMarkers, function (marker) {
             marker.closeClick = function () {
                 marker.showWindow = false;
-                $scope.$apply();
             };
             marker.onClicked = function () {
                 onMarkerClicked(marker);
