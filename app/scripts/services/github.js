@@ -80,6 +80,10 @@ angular.module('angularGoogleMapsApp')
     	this.getEvents = function () {
     		return apiCall('events', {});
     	};
+    	
+    	this.getTags = function () {
+    		return apiCall('tags', {});
+    	};
     }
 
     // Public API for configuration
