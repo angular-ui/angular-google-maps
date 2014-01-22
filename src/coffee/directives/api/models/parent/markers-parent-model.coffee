@@ -11,7 +11,7 @@
             @$log.info @
             #assume do rebuild all is false and were lookging for a modelKey prop of id
             @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else true
-            @idKey = if scope.id? then scope.id else @defaultIdKey
+            @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
             @scope.$watch 'doRebuildAll', (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @doRebuildAll = newValue
@@ -22,10 +22,12 @@
             @watch('doCluster', scope)
             @watch('clusterOptions', scope)
             @watch('fit', scope)
-            @watch('id', scope)
+            @watch('idKey', scope)
             @createMarkersFromScratch(scope)
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
+            if propNameToWatch == "idKey" and newValue != oldValue
+                @idKey = newValue
             if @doRebuildAll
                 @reBuildMarkers(scope)
             else
@@ -98,7 +100,7 @@
                     @DEFAULTS, @doClick, @gMarkerManager)
             @$log.info('child', child, 'markers', @markers)
             unless model[@idKey]?
-                $log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
+                @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                 return
             @markers.put(model[@idKey],child) #major change this makes model.id a requirement
             child

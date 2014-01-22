@@ -29,12 +29,6 @@
                     if (newValue != oldValue)
                         @doRebuildAll = newValue
 
-                @idKey = if scope.id? then scope.id else @defaultIdKey
-                scope.$watch 'id', (newValue, oldValue) =>
-                    if (newValue != oldValue and !newValue?)
-                        @idKey = newValue
-                        @rebuildAll(scope, true, true)
-
                 @createChildScopesWindows()
             , 50)
 
@@ -103,6 +97,7 @@
                 #at the very least we need a Map, the marker is optional as we can create Windows without markers
                 if @linked.scope.models?
                     #we are creating windows with no markers
+                    @watchIdKey @linked.scope
                     if isCreatingFromScratch
                         @createAllNewWindows @linked.scope, false
                     else
@@ -110,10 +105,18 @@
                 else
                     #creating windows with parent markers
                     @parentScope = markersScope
+                    @watchIdKey @parentScope
                     if isCreatingFromScratch
                         @createAllNewWindows markersScope, true, 'markerModels', false
                     else
                         @pieceMealWindows markersScope, true, 'markerModels', false
+
+        watchIdKey:(scope)=>
+            @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
+            scope.$watch 'idKey', (newValue, oldValue) =>
+                if (newValue != oldValue and !newValue?)
+                    @idKey = newValue
+                    @rebuildAll(scope, true, true)
 
 
         createAllNewWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = false) =>
@@ -164,7 +167,7 @@
             child = new directives.api.models.child.WindowChildModel(model, childScope, opts,
                     @isIconVisibleOnClick, gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true)
             unless model[@idKey]?
-                $log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
+                @$log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                 return
             @windows.put(model[@idKey], child)
             child

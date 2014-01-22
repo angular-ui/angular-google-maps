@@ -32,20 +32,24 @@ function ExampleController($scope, $timeout, $log, $http) {
         scope.map.randomMarkers = markers;
     };
 
-    createRandomMarker = function (i, bounds) {
+    createRandomMarker = function (i, bounds, idKey) {
         var lat_min = bounds.southwest.latitude,
                 lat_range = bounds.northeast.latitude - lat_min,
                 lng_min = bounds.southwest.longitude,
                 lng_range = bounds.northeast.longitude - lng_min;
 
+        if(idKey == null)
+            idKey = "id";
+
         latitude = lat_min + (Math.random() * lat_range);
         longitude = lng_min + (Math.random() * lng_range);
-        return {
+        var ret =  {
             latitude: latitude,
             longitude: longitude,
-            title: 'm' + i,
-            id: i
+            title: 'm' + i
         };
+        ret[idKey] = i;
+        return ret;
     };
 
     angular.extend($scope, {
@@ -123,19 +127,20 @@ function ExampleController($scope, $timeout, $log, $http) {
                     title: '[35,-125]'
                 }
             ],
+            mexiIdKey: 'mid',
             mexiMarkers: [
                 {
-                    id:1,
+                    mid:1,
                     latitude: 29.302567,
                     longitude: -106.248779
                 },
                 {
-                    id:2,
+                    mid:2,
                     latitude: 30.369913,
                     longitude: -109.434814
                 },
                 {
-                    id:3,
+                    mid:3,
                     latitude: 26.739478,
                     longitude: -108.61084
                 }
@@ -191,13 +196,13 @@ function ExampleController($scope, $timeout, $log, $http) {
                         var id = 0;
                         if($scope.map.mexiMarkers !== null && $scope.map.mexiMarkers.length > 0){
                             var maxMarker = _.max($scope.map.mexiMarkers, function(marker){
-                                return marker.id;
+                                return marker.mid;
                             });
-                            id = maxMarker.id;
+                            id = maxMarker.mid;
                         }
                         for (var i = 0; i < 4; i++) {
                             id++;
-                            markers.push(createRandomMarker(id, $scope.map.bounds));
+                            markers.push(createRandomMarker(id, $scope.map.bounds,"mid"));
                         }
                         $scope.map.mexiMarkers = markers.concat($scope.map.mexiMarkers);
                     });
