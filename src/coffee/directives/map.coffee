@@ -195,6 +195,8 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
                 return  if newValue is oldValue
                 settingCenterFromScope = true
                 unless dragging
+                    if !newValue.latitude? or !newValue.longitude?
+                        $log.error("Invalid center for newVa;ue: #{JSON.stringify newValue}")
                     coords = new google.maps.LatLng(newValue.latitude, newValue.longitude)
                     if isTrue(attrs.pan)
                         _m.panTo coords
@@ -212,6 +214,9 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
             #_m.draw();
             scope.$watch "bounds", (newValue, oldValue) ->
                 return  if newValue is oldValue
+                if !newValue.northeast.latitude? or !newValue.northeast.longitude? or !newValue.southwest.latitude? or !newValue.southwest.longitude?
+                    $log.error "Invalid map bounds for new value: #{JSON.stringify newValue}"
+                    return
                 ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude)
                 sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude)
                 bounds = new google.maps.LatLngBounds(sw, ne)

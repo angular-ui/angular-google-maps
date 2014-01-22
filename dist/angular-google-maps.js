@@ -908,6 +908,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return;
         }
         if ((scope.coords != null)) {
+          if ((this.scope.coords.latitude == null) || (this.scope.coords.longitude == null)) {
+            this.$log.error("MarkerChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(this.model)));
+            return;
+          }
           this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
           this.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
           this.gMarkerManager.remove(this.gMarker);
@@ -1080,6 +1084,10 @@ Nicholas McCready - https://twitter.com/nmccready
             if (newValue == null) {
               return _this.hideWindow();
             } else {
+              if ((newValue.latitude == null) || (newValue.longitude == null)) {
+                _this.$log.error("WindowChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(_this.model)));
+                return;
+              }
               return _this.gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
             }
           }
@@ -2568,6 +2576,9 @@ Nick Baugh - https://github.com/niftylettuce
             }
             settingCenterFromScope = true;
             if (!dragging) {
+              if ((newValue.latitude == null) || (newValue.longitude == null)) {
+                $log.error("Invalid center for newVa;ue: " + (JSON.stringify(newValue)));
+              }
               coords = new google.maps.LatLng(newValue.latitude, newValue.longitude);
               if (isTrue(attrs.pan)) {
                 _m.panTo(coords);
@@ -2586,6 +2597,10 @@ Nick Baugh - https://github.com/niftylettuce
           return scope.$watch("bounds", function(newValue, oldValue) {
             var bounds, ne, sw;
             if (newValue === oldValue) {
+              return;
+            }
+            if ((newValue.northeast.latitude == null) || (newValue.northeast.longitude == null) || (newValue.southwest.latitude == null) || (newValue.southwest.longitude == null)) {
+              $log.error("Invalid map bounds for new value: " + (JSON.stringify(newValue)));
               return;
             }
             ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude);

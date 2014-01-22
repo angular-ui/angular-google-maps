@@ -23,10 +23,10 @@
         createWindowOptions: (gMarker, scope, content, defaults) ->
             if content? and defaults?
                 angular.extend {}, defaults,
-                    content: if defaults.content? then defaults.content else content,
-                    position: if defaults.position? then defaults.position
-                    else if angular.isObject(gMarker)
-                    then gMarker.getPosition()
-                    else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+                    content: if defaults.content?
+                    then defaults.content else content,
+                    position: if defaults.position?
+                    then defaults.position else if angular.isObject(gMarker)
+                    then gMarker.getPosition() else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
 
         defaultDelay: 50

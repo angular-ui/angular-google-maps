@@ -73,12 +73,15 @@
 			if(scope.$id != @myScope.$id or @gMarker == undefined)
 				return
 			if (scope.coords?)
-				@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-				@gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
-				@gMarkerManager.remove(@gMarker)
-				@gMarkerManager.add(@gMarker)
-			else
-				@gMarkerManager.remove(@gMarker)
+                if !@scope.coords.latitude? or !@scope.coords.longitude?
+                    @$log.error "MarkerChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
+                    return
+                @gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
+                @gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
+                @gMarkerManager.remove(@gMarker)
+                @gMarkerManager.add(@gMarker)
+            else
+                @gMarkerManager.remove(@gMarker)
 
 		setIcon:(scope) =>
 			if(scope.$id != @myScope.$id or @gMarker == undefined)

@@ -56,6 +56,9 @@
                     unless newValue?
                         @hideWindow()
                     else
+                        if !newValue.latitude? or !newValue.longitude?
+                            @$log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
+                            return
                         @gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
             , true)
 
