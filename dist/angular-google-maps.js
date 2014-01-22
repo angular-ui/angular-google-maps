@@ -1041,6 +1041,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return;
         }
         if ((scope.coords != null)) {
+          if ((this.scope.coords.latitude == null) || (this.scope.coords.longitude == null)) {
+            this.$log.error("MarkerChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(this.model)));
+            return;
+          }
           this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
           this.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
           this.gMarkerManager.remove(this.gMarker);
@@ -1212,6 +1216,10 @@ Nicholas McCready - https://twitter.com/nmccready
             if (newValue == null) {
               return _this.hideWindow();
             } else {
+              if ((newValue.latitude == null) || (newValue.longitude == null)) {
+                _this.$log.error("WindowChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(_this.model)));
+                return;
+              }
               return _this.gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
             }
           }
@@ -1786,7 +1794,7 @@ Nicholas McCready - https://twitter.com/nmccready
       MarkersParentModel.prototype.fit = function() {
         var bounds, everSet,
           _this = this;
-        if (this.mapCtrl && (this.markers != null) && this.markers.length) {
+        if (this.mapCtrl && (this.markers != null) && _.keys(this.markers).length) {
           bounds = new google.maps.LatLngBounds();
           everSet = false;
           _.each(this.markers, function(childModelMarker) {
@@ -2676,7 +2684,7 @@ Nick Baugh - https://github.com/niftylettuce
           dragging = false;
           google.maps.event.addListener(_m, "dragstart", function() {
             dragging = true;
-            return $timeout(function() {
+            return _.defer(function() {
               return scope.$apply(function(s) {
                 if (s.dragging != null) {
                   return s.dragging = dragging;
@@ -2686,7 +2694,7 @@ Nick Baugh - https://github.com/niftylettuce
           });
           google.maps.event.addListener(_m, "dragend", function() {
             dragging = false;
-            return $timeout(function() {
+            return _.defer(function() {
               return scope.$apply(function(s) {
                 if (s.dragging != null) {
                   return s.dragging = dragging;
@@ -2697,7 +2705,7 @@ Nick Baugh - https://github.com/niftylettuce
           google.maps.event.addListener(_m, "drag", function() {
             var c;
             c = _m.center;
-            return $timeout(function() {
+            return _.defer(function() {
               return scope.$apply(function(s) {
                 s.center.latitude = c.lat();
                 return s.center.longitude = c.lng();
@@ -2706,7 +2714,7 @@ Nick Baugh - https://github.com/niftylettuce
           });
           google.maps.event.addListener(_m, "zoom_changed", function() {
             if (scope.zoom !== _m.zoom) {
-              return $timeout(function() {
+              return _.defer(function() {
                 return scope.$apply(function(s) {
                   return s.zoom = _m.zoom;
                 });
@@ -2720,7 +2728,7 @@ Nick Baugh - https://github.com/niftylettuce
             if (settingCenterFromScope) {
               return;
             }
-            return $timeout(function() {
+            return _.defer(function() {
               return scope.$apply(function(s) {
                 if (!_m.dragging) {
                   if (s.center.latitude !== c.lat()) {
@@ -2738,7 +2746,7 @@ Nick Baugh - https://github.com/niftylettuce
             b = _m.getBounds();
             ne = b.getNorthEast();
             sw = b.getSouthWest();
-            return $timeout(function() {
+            return _.defer(function() {
               return scope.$apply(function(s) {
                 if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
                   s.bounds.northeast = {
@@ -2787,6 +2795,9 @@ Nick Baugh - https://github.com/niftylettuce
             }
             settingCenterFromScope = true;
             if (!dragging) {
+              if ((newValue.latitude == null) || (newValue.longitude == null)) {
+                $log.error("Invalid center for newVa;ue: " + (JSON.stringify(newValue)));
+              }
               coords = new google.maps.LatLng(newValue.latitude, newValue.longitude);
               if (isTrue(attrs.pan)) {
                 _m.panTo(coords);
@@ -2805,6 +2816,10 @@ Nick Baugh - https://github.com/niftylettuce
           return scope.$watch("bounds", function(newValue, oldValue) {
             var bounds, ne, sw;
             if (newValue === oldValue) {
+              return;
+            }
+            if ((newValue.northeast.latitude == null) || (newValue.northeast.longitude == null) || (newValue.southwest.latitude == null) || (newValue.southwest.longitude == null)) {
+              $log.error("Invalid map bounds for new value: " + (JSON.stringify(newValue)));
               return;
             }
             ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude);

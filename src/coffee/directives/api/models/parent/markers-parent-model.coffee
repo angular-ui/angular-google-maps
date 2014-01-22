@@ -113,7 +113,7 @@
             @gMarkerManager.clear() if @gMarkerManager?
 
         fit: ()=>
-            if (@mapCtrl and @markers? and @markers.length)
+            if (@mapCtrl and @markers? and _.keys(@markers).length)
                 bounds = new google.maps.LatLngBounds();
                 everSet = false
                 _.each @markers, (childModelMarker) =>
