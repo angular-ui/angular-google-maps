@@ -72,6 +72,7 @@ angular.module("google-maps").directive "polyline", ["$log", "$timeout", "array-
         path: "=path"
         stroke: "=stroke"
         clickable: "="
+        click: "="
         draggable: "="
         editable: "="
         geodesic: "="
@@ -134,6 +135,14 @@ angular.module("google-maps").directive "polyline", ["$log", "$timeout", "array-
             if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.color)
                 scope.$watch "stroke.color", (newValue, oldValue) ->
                     polyline.setOptions buildOpts(polyline.getPath())
+
+            google.maps.event.addListener(polyline, 'click', =>
+                console.log 'clicked'
+                console.log scope
+                if scope.click?
+                    console.log 'executing click as well'
+                    scope.click()
+            )
 
             arraySyncer = arraySync(polyline.getPath(), scope, "path")
 
