@@ -2465,7 +2465,7 @@ Nick Baugh - https://github.com/niftylettuce
           dragging = false;
           google.maps.event.addListener(_m, "dragstart", function() {
             dragging = true;
-            return $timeout(function() {
+            return _.defer(function() {
               return scope.$apply(function(s) {
                 if (s.dragging != null) {
                   return s.dragging = dragging;
@@ -2475,7 +2475,7 @@ Nick Baugh - https://github.com/niftylettuce
           });
           google.maps.event.addListener(_m, "dragend", function() {
             dragging = false;
-            return $timeout(function() {
+            return _.defer(function() {
               return scope.$apply(function(s) {
                 if (s.dragging != null) {
                   return s.dragging = dragging;
@@ -2486,7 +2486,7 @@ Nick Baugh - https://github.com/niftylettuce
           google.maps.event.addListener(_m, "drag", function() {
             var c;
             c = _m.center;
-            return $timeout(function() {
+            return _.defer(function() {
               return scope.$apply(function(s) {
                 s.center.latitude = c.lat();
                 return s.center.longitude = c.lng();
@@ -2495,7 +2495,7 @@ Nick Baugh - https://github.com/niftylettuce
           });
           google.maps.event.addListener(_m, "zoom_changed", function() {
             if (scope.zoom !== _m.zoom) {
-              return $timeout(function() {
+              return _.defer(function() {
                 return scope.$apply(function(s) {
                   return s.zoom = _m.zoom;
                 });
@@ -2509,7 +2509,7 @@ Nick Baugh - https://github.com/niftylettuce
             if (settingCenterFromScope) {
               return;
             }
-            return $timeout(function() {
+            return _.defer(function() {
               return scope.$apply(function(s) {
                 if (!_m.dragging) {
                   if (s.center.latitude !== c.lat()) {
@@ -2527,7 +2527,7 @@ Nick Baugh - https://github.com/niftylettuce
             b = _m.getBounds();
             ne = b.getNorthEast();
             sw = b.getSouthWest();
-            return $timeout(function() {
+            return _.defer(function() {
               return scope.$apply(function(s) {
                 if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
                   s.bounds.northeast = {
