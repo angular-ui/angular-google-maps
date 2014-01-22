@@ -137,10 +137,7 @@ angular.module("google-maps").directive "polyline", ["$log", "$timeout", "array-
                     polyline.setOptions buildOpts(polyline.getPath())
 
             google.maps.event.addListener(polyline, 'click', =>
-                console.log 'clicked'
-                console.log scope
                 if scope.click?
-                    console.log 'executing click as well'
                     scope.click()
             )
 
