@@ -3,7 +3,7 @@
 angular.module('angularGoogleMapsApp')
   .controller('HeadlinesCtrl', function ($scope, $http, $log, $interval, headlinesFetchInterval) {
   
-  	var showAtMost = 5, loadMoreCount = 10;
+  	var showAtMost = 4, loadMoreCount = 4;
   
 	function fetchHeadlines() {
 	
