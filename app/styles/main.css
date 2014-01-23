@@ -55,6 +55,15 @@ table {
 }
 
 footer h3 {
+	border-bottom: 1px #eee solid;
+	padding-bottom: 10px;
+}
+
+footer h3 small.pull-right {
+	line-height: 36px;
+	letter-spacing: 0px;
+	font-size: 14px;
+	font-weight: normal;
 }
 
 a.brand, h2, h3 {
