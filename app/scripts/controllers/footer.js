@@ -16,6 +16,7 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', function ($scope
 
 		  		angular.extend($scope, {
 		  			github: {
+		  				branch: $github.getBranch(),
 		  				commits: {
 		  					latest: commits.length ? commits[0] : {},
 		  					all: commits
@@ -26,6 +27,8 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', function ($scope
 		  				events: events
 		  			}
 		  		});
+		  		
+		  		$log.info($scope.github);
 			
 		  	}, function (err) {
 		  		$log.error(err);

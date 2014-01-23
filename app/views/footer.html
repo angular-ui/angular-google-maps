@@ -6,33 +6,27 @@
 					<div class="col-md-3">
 						<h3>Latest commit</h3>
 
-						<a href="#!/">{{ github.commits.latest.author.login }}</a> on
-						{{ github.commits.latest.commit.committer.date | date:"MMM d, y hh:mm" }}<br>
-
+						<p>{{ github.commits.latest.commit.committer.date | date:"MMM d, y hh:mm" }}<br>
+						by <a href="#!/">{{ github.commits.latest.author.login }}</a> on branch 
+						<a ng-href="https://github.com/nlaplante/angular-google-maps/tree/{{ github.branch }}" rel="external">{{ github.branch }}</a></p>
+						
 						<blockquote class="muted"><i>{{ github.commits.latest.commit.message }}</i></blockquote>
 						<a class="btn btn-sm btn-default" href="{{ github.commits.latest.html_url }}">More details</a>					
 					</div>
 
 					<div class="col-md-5">
-						<h3>Issues <span class="badge">{{ github.issuesCount }}</span> <small><a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">show all</a></small></h3>
+						<h3>Issues <small class="pull-right"><a href="https://github.com/nlaplante/angular-google-maps/issues?state=open">show all</a></small></h3>
 
 						<ul class="list-unstyled separated">
 							<li ng-repeat="issue in github.issues | limitTo:8 ">
 								<span class="label label-default">{{ issue.number }}</span>&nbsp;
-						
-								<!--
-								<span ng-if="issue.labels.length" ng-repeat="label in issue.labels" class="label issue-label" ng-style="{'background-color': '#' + label.color}">
-									{{ label.name }}
-								</span>
-								-->
-						
 								<a ng-href="{{ issue.html_url }}" rel="external">{{ issue.title }}</a>
 							</li>
 						</ul>									
 					</div>
 					
 					<div class="col-md-4">
-						<h3>Activity <small><a href="https://github.com/nlaplante/angular-google-maps/pulse">show all</a></small></h3>
+						<h3>Activity <small class="pull-right"><a href="https://github.com/nlaplante/angular-google-maps/pulse">show all</a></small></h3>
 					
 						<ul class="list-unstyled separated">
 							<li ng-repeat="e in github.events | limitTo: 5">
