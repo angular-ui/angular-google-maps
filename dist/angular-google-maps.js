@@ -1107,6 +1107,7 @@ Nicholas McCready - https://twitter.com/nmccready
               _this.gWin.setPosition(pos);
               _this.gWin.open(_this.mapCtrl);
             }
+            _this.initialMarkerVisibility = _this.markerCtrl.getVisible();
             return _this.markerCtrl.setVisible(_this.isIconVisibleOnClick);
           });
         }
