@@ -226,10 +226,12 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
             scope.$watch "options", (newValue,oldValue) =>
                 unless _.isEqual(newValue,oldValue)
                     opts.options = newValue
+            ,true
 
             scope.$watch "styles", (newValue,oldValue) =>
                 unless _.isEqual(newValue,oldValue)
                     opts.options = newValue
+            ,true
     }
 
 ]

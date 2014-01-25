@@ -2615,12 +2615,12 @@ Nick Baugh - https://github.com/niftylettuce
             if (!_.isEqual(newValue, oldValue)) {
               return opts.options = newValue;
             }
-          });
+          }, true);
           return scope.$watch("styles", function(newValue, oldValue) {
             if (!_.isEqual(newValue, oldValue)) {
               return opts.options = newValue;
             }
-          });
+          }, true);
         }
       };
     }
