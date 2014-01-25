@@ -24,17 +24,20 @@ angular.module('angularGoogleMapsApp').provider('analytics', function () {
 		return _trackViewChange;
 	};
 
-	this.$get = function ($window, $log, $rootScope, $document) {
+	this.$get = function ($window, $log, $rootScope, $document, $location) {
 
-		ga = $window._gaq || [];
+		ga = $window.ga || function () {};
 
-		ga.push(['_setAccount', _trackingCode]);
+//		ga.push(['_setAccount', _trackingCode]);
+
 
 		var _trackPageView = function (path) {
-				ga.push(['_trackPageview', path]);
+				$log.debug('analytics: tracking page view', path);
+				ga('send', 'pageView', path);
 			},
 			_trackEvent = function (name, value) {
-				ga.push(['_trackEvent', name, value]);
+				$log.debug('analytics: tracking event', { 'name': name, 'value': value });
+				ga('send', 'event', 'button', 'click', 'download library')
 			};
 
 		if (_trackViewChange) {
@@ -42,11 +45,11 @@ angular.module('angularGoogleMapsApp').provider('analytics', function () {
 			$log.info('analytics: telling analytics service to track view changes');
 
 			$rootScope.$on('$routeChangeSuccess', function () {
-				_trackPageView();
+				_trackPageView($location.path());
 			});
 
 			$rootScope.$on('$routeChangeError', function () {
-				_trackPageView();
+				_trackPageView($location.path());
 			});
 		}
 
