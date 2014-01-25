@@ -71,6 +71,7 @@
                     if @gWin?
                         @gWin.setPosition(pos)
                         @gWin.open(@mapCtrl)
+                    @initialMarkerVisibility = @markerCtrl.getVisible()
                     @markerCtrl.setVisible(@isIconVisibleOnClick)
                 )
 
