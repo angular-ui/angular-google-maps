@@ -93,6 +93,7 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
             opts =
                 options: {}
             opts.options = scope.options  if attrs.options
+
             opts.styles = scope.styles  if attrs.styles
             if attrs.type
                 type = attrs.type.toUpperCase()
@@ -221,6 +222,18 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
                 sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude)
                 bounds = new google.maps.LatLngBounds(sw, ne)
                 _m.fitBounds bounds
+
+            scope.$watch "options", (newValue,oldValue) =>
+                unless _.isEqual(newValue,oldValue)
+                    opts.options = newValue
+                    _m.setOptions opts  if _m?
+            ,true
+
+            scope.$watch "styles", (newValue,oldValue) =>
+                unless _.isEqual(newValue,oldValue)
+                    opts.styles = newValue
+                    _m.setOptions opts  if _m?
+            ,true
     }
 
 ]
