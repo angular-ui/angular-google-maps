@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('angularGoogleMapsApp')
-  .controller('MainCtrl', function ($scope, $github, $log) {
+  .controller('MainCtrl', function ($scope, $github, $log, analytics) {
 
 	var DOWNLOAD_URL_TEMPLATE = 'https://raw.github.com/nlaplante/angular-google-maps/%REF%/dist/angular-google-maps.min.js',
 		FALLBACK_BRANCH = 'master';
@@ -19,6 +19,10 @@ angular.module('angularGoogleMapsApp')
 			latitude: 40.47,
 			longitude: -74.50
 		}
+	};
+	
+	$scope.dlClick = function () {
+		analytics.trackEvent('click', 'download');
 	};
 	
 	$github.getTags().then(function (data) {
