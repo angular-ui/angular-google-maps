@@ -2430,7 +2430,8 @@ Nick Baugh - https://github.com/niftylettuce
         */
 
         link: function(scope, element, attrs) {
-          var dragging, el, eventName, getEventHandler, opts, settingCenterFromScope, type, _m;
+          var dragging, el, eventName, getEventHandler, opts, settingCenterFromScope, type, _m,
+            _this = this;
           if (!angular.isDefined(scope.center) || (!angular.isDefined(scope.center.latitude) || !angular.isDefined(scope.center.longitude))) {
             $log.error("angular-google-maps: could not find a valid center property");
             return;
@@ -2596,7 +2597,7 @@ Nick Baugh - https://github.com/niftylettuce
             }
             return _m.setZoom(newValue);
           });
-          return scope.$watch("bounds", function(newValue, oldValue) {
+          scope.$watch("bounds", function(newValue, oldValue) {
             var bounds, ne, sw;
             if (newValue === oldValue) {
               return;
@@ -2609,6 +2610,16 @@ Nick Baugh - https://github.com/niftylettuce
             sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude);
             bounds = new google.maps.LatLngBounds(sw, ne);
             return _m.fitBounds(bounds);
+          });
+          scope.$watch("options", function(newValue, oldValue) {
+            if (!_.isEqual(newValue, oldValue)) {
+              return opts.options = newValue;
+            }
+          });
+          return scope.$watch("styles", function(newValue, oldValue) {
+            if (!_.isEqual(newValue, oldValue)) {
+              return opts.options = newValue;
+            }
           });
         }
       };
