@@ -9,9 +9,11 @@
             @$interpolate = $interpolate
             @require = ['^googleMap', '^?markers']
             @template = '<span class="angular-google-maps-windows" ng-transclude></span>'
-            @scope.models = '=models' #if undefined it will try get a markers models
+            @scope.idKey = '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
             @scope.doRebuildAll = '=dorebuildall' #root level directive attribute not a model level
-            @$log.info(self)
+            @scope.models = '=models' #if undefined it will try get a markers models
+
+            @$log.info @
 
         link: (scope, element, attrs, ctrls) =>
             new directives.api.models.parent.WindowsParentModel(scope, element, attrs, ctrls, @$timeout,

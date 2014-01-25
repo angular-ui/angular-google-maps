@@ -7,7 +7,8 @@
         constructor: (scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, @$interpolate) ->
             super(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache)
             self = @
-            @windows = {}
+            @windows = new directives.api.utils.PropMap()
+
             @scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter',
                                'isIconVisibleOnClick', 'closeClick']
             #setting up local references to propety keys IE: @coordsKey
@@ -18,47 +19,48 @@
             @isIconVisibleOnClick = undefined
             @firstTime = true
             @$log.info(self)
+            @parentScope = undefined
 
 
             @$timeout(=>
                 @watchOurScope(scope)
-                @doRebuildAll = if scope.doRebuildAll? then scope.doRebuildAll else true
+                @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else true
                 scope.$watch 'doRebuildAll', (newValue, oldValue) =>
                     if (newValue != oldValue)
                         @doRebuildAll = newValue
+
                 @createChildScopesWindows()
             , 50)
 
         #watch this scope(Parent to all WindowModels), these updates reflect expression / Key changes
         #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
         watch: (scope, name, nameKey) =>
-            scope.$watch(name, (newValue, oldValue) =>
+            scope.$watch name, (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
-                    _.each _.values(@windows), (model) =>
+                    _async.each _.values(@windows), (model) =>
                         model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
-            , true)
+                    , () =>
 
         watchModels: (scope) =>
-            scope.$watch('models', (newValue, oldValue) =>
+            scope.$watch 'models', (newValue, oldValue) =>
                 #check to make sure that the newValue Array is really a set of new objects
                 unless _.isEqual(newValue, oldValue)
                     if @doRebuildAll or @doINeedToWipe(newValue)
                         @rebuildAll(scope, true, true)
                     else
                         @createChildScopesWindows(false)
-            , true)
 
-        doINeedToWipe:(newValue) =>
+        doINeedToWipe: (newValue) =>
             newValueIsEmpty = if newValue? then newValue.length == 0 else true
-            _.values(@windows).length > 0 and newValueIsEmpty
+            @windows.length > 0 and newValueIsEmpty
 
         rebuildAll: (scope, doCreate, doDelete) =>
-            _async.each _.values(@windows), (model) =>
+            _async.each @windows.values(), (model) =>
                 model.destroy()
             , () => #handle done callBack
                 delete @windows if doDelete
-                @windows = {}
+                @windows = new directives.api.utils.PropMap()
                 @createChildScopesWindows() if doCreate
 
         watchDestroy: (scope)=>
@@ -95,16 +97,26 @@
                 #at the very least we need a Map, the marker is optional as we can create Windows without markers
                 if @linked.scope.models?
                     #we are creating windows with no markers
+                    @watchIdKey @linked.scope
                     if isCreatingFromScratch
                         @createAllNewWindows @linked.scope, false
                     else
                         @pieceMealWindows @linked.scope, false
                 else
                     #creating windows with parent markers
+                    @parentScope = markersScope
+                    @watchIdKey @parentScope
                     if isCreatingFromScratch
                         @createAllNewWindows markersScope, true, 'markerModels', false
                     else
                         @pieceMealWindows markersScope, true, 'markerModels', false
+
+        watchIdKey:(scope)=>
+            @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
+            scope.$watch 'idKey', (newValue, oldValue) =>
+                if (newValue != oldValue and !newValue?)
+                    @idKey = newValue
+                    @rebuildAll(scope, true, true)
 
 
         createAllNewWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = false) =>
@@ -113,11 +125,9 @@
                 @watchModels scope
                 @watchDestroy scope
             @setContentKeys(scope.models) #only setting content keys once per model array
-            toRender = @transformModels scope, modelsPropToIterate, isArray
-            _async.each toRender, (model) =>
-                gMarker = if hasGMarker then model.gMarker else undefined
-                windowModel = if hasGMarker then model.model else model
-                @createWindow(windowModel, gMarker, @gMap)
+            _async.each scope.models, (model) =>
+                gMarker = if hasGMarker then scope[modelsPropToIterate][[model[@idKey]]].gMarker else undefined
+                @createWindow(model, gMarker, @gMap)
             , () => #handle done callBack
                 @firstTime = false
 
@@ -125,27 +135,21 @@
 
         pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true)=>
             @models = scope.models
-            toRender = @transformModels scope, modelsPropToIterate, isArray
-            if toRender? and toRender.length > 0 and _.values(@windows).length > 0
-                payload = @modelsToAddRemovePayload(scope, @windows, @modelKeyComparison)
-
-                _.each payload.removals, (modelToRemove)=>
-                    if @windows[modelToRemove.$id]?
-                        @windows[modelToRemove.$id].destroy()
-                        delete @windows[modelToRemove.$id]
-
-                #add all adds via creating new ChildMarkers which are appended to @markers
-                _.each payload.adds, (modelToAdd) =>
-                    if modelToAdd.gMarker?
-                        gMarker = modelToAdd.gMarker
-                    else
-                        maybeMarker = _.find _.values(scope[modelsPropToIterate]),(mm) =>
-                            pos = @evalModelHandle(mm.model,scope.coords)
-                            pos.latitude == modelToAdd.latitude and pos.longitude == modelToAdd.longitude
-                        gMarker = maybeMarker.gMarker
-                    @createWindow(modelToAdd, gMarker, @gMap)
+            if scope? and scope.models? and scope.models.length > 0 and @windows.length > 0
+                @figureOutState @idKey, scope, @windows, @modelKeyComparison, (state) =>
+                    payload = state
+                    _async.each payload.removals, (child)=>
+                        if child?
+                            child.destroy()
+                            @windows.remove(child.id)
+                    , () =>
+                        #add all adds via creating new ChildMarkers which are appended to @markers
+                        _async.each payload.adds, (modelToAdd) =>
+                            gMarker = scope[modelsPropToIterate][modelToAdd[@idKey]].gMarker
+                            @createWindow(modelToAdd, gMarker, @gMap)
+                        , ()=>
             else
-                @createAllNewWindows(scope, hasGMarker, modelsPropToIterate)
+                @rebuildAll(@scope, true, true)
 
         setContentKeys: (models)=>
             if(models.length > 0)
@@ -160,9 +164,13 @@
             , true)
             parsedContent = @interpolateContent(@linked.element.html(), model)
             opts = @createWindowOptions(gMarker, childScope, parsedContent, @DEFAULTS)
-            child =  new directives.api.models.child.WindowChildModel(model, childScope, opts,
+            child = new directives.api.models.child.WindowChildModel(model, childScope, opts,
                     @isIconVisibleOnClick, gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true)
-            @windows[child.scope.$id] = child
+            unless model[@idKey]?
+                @$log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
+                return
+            @windows.put(model[@idKey], child)
+            child
 
         setChildScope: (childScope, model) =>
             _.each @scopePropNames, (name) =>

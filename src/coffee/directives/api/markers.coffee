@@ -16,7 +16,8 @@ not 1:1 in this setting.
             self = @
             @template = '<span class="angular-google-map-markers" ng-transclude></span>'
 
-            @scope.id = '=id' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
+            @scope.idKey = '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
+            @scope.doRebuildAll = '=dorebuildall' #root level directive attribute not a model level
             @scope.models = '=models'
             @scope.doCluster = '=docluster'
             @scope.clusterOptions = '=clusteroptions'
@@ -27,7 +28,7 @@ not 1:1 in this setting.
 
 
             @$timeout = $timeout
-            @$log.info(@)
+            @$log.info @
 
         controller: ['$scope', '$element', ($scope, $element) ->
             getMarkersScope: ->

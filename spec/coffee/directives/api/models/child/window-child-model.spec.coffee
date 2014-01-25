@@ -20,6 +20,7 @@ describe("WindowChildModel", ->
 		.value('opts',@windowOpts)
         .value('element','<span>hi</span>')
 		.value('needToManualDestroy',false)
+        .value('markerIsVisibleAfterWindowClose',true)
 		.controller('childModel', directives.api.models.child.WindowChildModel)
 
 		angular.mock.module('mockModule')

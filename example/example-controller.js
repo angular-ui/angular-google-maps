@@ -32,19 +32,24 @@ function ExampleController($scope, $timeout, $log, $http) {
         scope.map.randomMarkers = markers;
     };
 
-    createRandomMarker = function (i, bounds) {
+    createRandomMarker = function (i, bounds, idKey) {
         var lat_min = bounds.southwest.latitude,
                 lat_range = bounds.northeast.latitude - lat_min,
                 lng_min = bounds.southwest.longitude,
                 lng_range = bounds.northeast.longitude - lng_min;
 
+        if(idKey == null)
+            idKey = "id";
+
         latitude = lat_min + (Math.random() * lat_range);
         longitude = lng_min + (Math.random() * lng_range);
-        return {
+        var ret =  {
             latitude: latitude,
             longitude: longitude,
             title: 'm' + i
         };
+        ret[idKey] = i;
+        return ret;
     };
 
     angular.extend($scope, {
@@ -76,18 +81,21 @@ function ExampleController($scope, $timeout, $log, $http) {
             bounds: {},
             markers: [
                 {
+                    id:1,
                     latitude: 45,
                     longitude: -74,
                     showWindow: false,
                     title: 'Marker 2'
                 },
                 {
+                    id:2,
                     latitude: 15,
                     longitude: 30,
                     showWindow: false,
                     title: 'Marker 2'
                 },
                 {
+                    id:3,
                     icon: 'plane.png',
                     latitude: 37,
                     longitude: -122,
@@ -97,18 +105,21 @@ function ExampleController($scope, $timeout, $log, $http) {
             ],
             markers2: [
                 {
+                    id:1,
                     latitude: 46,
                     longitude: -77,
                     showWindow: false,
                     title: '[46,-77]'
                 },
                 {
+                    id:2,
                     latitude: 33,
                     longitude: -77,
                     showWindow: false,
                     title: '[33,-77]'
                 },
                 {
+                    id:3,
                     icon: 'plane.png',
                     latitude: 35,
                     longitude: -125,
@@ -116,16 +127,20 @@ function ExampleController($scope, $timeout, $log, $http) {
                     title: '[35,-125]'
                 }
             ],
+            mexiIdKey: 'mid',
             mexiMarkers: [
                 {
+                    mid:1,
                     latitude: 29.302567,
                     longitude: -106.248779
                 },
                 {
+                    mid:2,
                     latitude: 30.369913,
                     longitude: -109.434814
                 },
                 {
+                    mid:3,
                     latitude: 26.739478,
                     longitude: -108.61084
                 }
@@ -158,8 +173,11 @@ function ExampleController($scope, $timeout, $log, $http) {
                         };
                     }
                     else {
-                        $scope.map.clickedMarker.latitude = e.latLng.lat();
-                        $scope.map.clickedMarker.longitude = e.latLng.lng();
+                        var marker = {
+                            latitude: e.latLng.lat(),
+                            longitude: e.latLng.lng()
+                        };
+                        $scope.map.clickedMarker = marker;
                     }
                     //scope apply required because this event handler is outside of the angular domain
                     $scope.$apply();
@@ -175,10 +193,18 @@ function ExampleController($scope, $timeout, $log, $http) {
 //                        })
 //                        $scope.map.mexiMarkers = modified;
                         var markers = [];
-                        for (var i = 0; i < 10; i++) {
-                            markers.push(createRandomMarker(i, $scope.map.bounds))
+                        var id = 0;
+                        if($scope.map.mexiMarkers !== null && $scope.map.mexiMarkers.length > 0){
+                            var maxMarker = _.max($scope.map.mexiMarkers, function(marker){
+                                return marker.mid;
+                            });
+                            id = maxMarker.mid;
                         }
-                        $scope.map.mexiMarkers = markers.concat($scope.map.mexiMarkers)
+                        for (var i = 0; i < 4; i++) {
+                            id++;
+                            markers.push(createRandomMarker(id, $scope.map.bounds,"mid"));
+                        }
+                        $scope.map.mexiMarkers = markers.concat($scope.map.mexiMarkers);
                     });
                 }
             },
@@ -274,7 +300,6 @@ function ExampleController($scope, $timeout, $log, $http) {
     _.each($scope.map.markers, function (marker) {
         marker.closeClick = function () {
             marker.showWindow = false;
-            $scope.$apply();
         };
         marker.onClicked = function () {
             onMarkerClicked(marker);
@@ -284,7 +309,6 @@ function ExampleController($scope, $timeout, $log, $http) {
     _.each($scope.map.markers2, function (marker) {
         marker.closeClick = function () {
             marker.showWindow = false;
-            $scope.$apply();
         };
         marker.onClicked = function () {
             onMarkerClicked(marker);
@@ -293,12 +317,12 @@ function ExampleController($scope, $timeout, $log, $http) {
 
     $scope.removeMarkers = function () {
         $log.info("Clearing markers. They should disappear from the map now");
-        $scope.map.markers.length = 0;
-        $scope.map.markers2.length = 0;
-        $scope.map.dynamicMarkers.length = 0;
-        $scope.map.randomMarkers.length = 0;
-        $scope.map.mexiMarkers.length = 0;
-        $scope.map.polylines.length = 0;
+        $scope.map.markers = [];
+        $scope.map.markers2 = [];
+        $scope.map.dynamicMarkers = [];
+        $scope.map.randomMarkers = [];
+        $scope.map.mexiMarkers = [];
+        $scope.map.polylines = [];
         $scope.map.clickedMarker = null;
         $scope.searchLocationMarker = null;
         $scope.map.infoWindow.show = false;
@@ -370,7 +394,6 @@ function ExampleController($scope, $timeout, $log, $http) {
         _.each(dynamicMarkers, function (marker) {
             marker.closeClick = function () {
                 marker.showWindow = false;
-                $scope.$apply();
             };
             marker.onClicked = function () {
                 onMarkerClicked(marker);
