@@ -30,7 +30,8 @@ module.exports = (grunt) ->
             compile:
                 files:
                     "tmp/output_coffee.js": ["src/coffee/extensions/underscore.coffee",
-                                             "src/coffee/module.coffee", "src/coffee/ng-gmap-module.coffee",
+                                             "src/coffee/module.coffee", "src/coffee/mapsprovider.coffee",
+                                             "src/coffee/ng-gmap-module.coffee",
                                              "src/coffee/controllers/polyline-display.js",
                                              "src/coffee/utils/LatLngArraySync.coffee",
                                              "src/coffee/utils/MapEvents.coffee",
