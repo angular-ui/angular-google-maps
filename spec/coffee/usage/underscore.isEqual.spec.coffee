@@ -1,5 +1,5 @@
 #SPEC set is to make sure Underscore is being understood and used correctly
-describe "_.isEqualTo", ->
+describe "_.isEqual", ->
     beforeEach ->
         @objArray = [
             a: 1
@@ -12,7 +12,7 @@ describe "_.isEqualTo", ->
             b: 3
         ]
     describe "Comparing Arrays of Objects", ->
-        describe "isEqualTo", ->
+        describe "isEqual", ->
             describe "same length", ->
                 it "when two arrays are identical - same reference", ->
                     expect(_.isEqual(@objArray, @objArray)).toBeTruthy

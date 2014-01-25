@@ -348,16 +348,19 @@ function ExampleController($scope, $timeout, $log, $http) {
         $scope.map.infoWindow.show = true;
         dynamicMarkers = [
             {
+                id: 1,
                 latitude: 46,
                 longitude: -79,
                 showWindow: false
             },
             {
+                id: 2,
                 latitude: 33,
                 longitude: -79,
                 showWindow: false
             },
             {
+                id: 3,
                 icon: 'plane.png',
                 latitude: 35,
                 longitude: -127,

@@ -4,7 +4,7 @@
         constructor: (scope, element, attrs, mapCtrl, $timeout) ->
             super(scope, element, attrs, mapCtrl, $timeout)
             self = @
-            @markers = {}
+            @scope.markerModels = {}
             @gMarkerManager = undefined
             @$timeout = $timeout
             @$log.info @
@@ -24,9 +24,9 @@
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             if propNameToWatch == 'models'
-                return if _.isEqualTo(newValue, oldValue)
+                return if _.isEqual(newValue, oldValue)
             if propNameToWatch == 'options' and newValue?
-                return if _.isEqualTo(newValue, oldValue)
+                return if _.isEqual(newValue, oldValue)
                 @DEFAULTS = newValue
                 return
 
@@ -65,34 +65,32 @@
             , () => #handle done callBack
                 @gMarkerManager.draw()
                 @fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit
-                scope.markerModels = @markers #for other directives like windows
             )
 
 
         reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
                 return
-            @onDestroy(scope) #clean @markers
+            @onDestroy(scope)
             @createMarkersFromScratch(scope)
 
         pieceMealMarkers: (scope)=>
-            if @scope.models? and @scope.models.length > 0 and _.keys(@markers).length > 0 #and @scope.models.length == @markers.length
+            if @scope.models? and @scope.models.length > 0 and _.keys(@scope.markerModels).length > 0 #and @scope.models.length == @scope.markerModels.length
                 #find the current state, async operation that calls back
-                payload = @figureOutState scope, @markers, @modelKeyComparison, (state) =>
+                payload = @figureOutState scope, @scope.markerModels, @modelKeyComparison, (state) =>
                     #payload contains added, removals and flattened (existing models with their gProp appended)
-                    #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @markers
+                    #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @scope.markerModels
                     _async.each payload.removals, (child)=>
                         if child?
                             child.destroy()
-                            delete @markers[child.id]
+                            delete @scope.markerModels[child.id]
                     , () =>
-                        #add all adds via creating new ChildMarkers which are appended to @markers
+                        #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
                         _async.each payload.adds, (modelToAdd) =>
                             @newChildMarker(modelToAdd, scope)
                         , () =>
                             #finally redraw
                             @gMarkerManager.draw()
-                            scope.markerModels = @markers #for other directives like windows
             else
                 @reBuildMarkers(scope)
 
@@ -100,11 +98,11 @@
             child = new directives.api.models.child.MarkerChildModel(model, scope, @mapCtrl,
                     @$timeout,
                     @DEFAULTS, @doClick, @gMarkerManager)
-            @$log.info('child', child, 'markers', @markers)
+            @$log.info('child', child, 'markers', @scope.markerModels)
             if @doRebuildAll
-                @markers[child.scope.$id]
+                @scope.markerModels[child.scope.$id]
             else
-                @markers[model[@scope.id]] = child #major change this makes model.id a requirement
+                @scope.markerModels[model[@scope.id]] = child #major change this makes model.id a requirement
             child
 
         onDestroy: (scope)=>
@@ -112,17 +110,17 @@
             #slap index to the external model so that when they pass external back
             #for destroy we have a lookup?
             #this will require another attribute for destroySingle(marker)
-            _.each _.values(@markers), (model)->
+            _.each _.values(@scope.markerModels), (model)->
                 model.destroy() if model?
-            delete @markers
-            @markers = {}
+            delete @scope.markerModels
+            @scope.markerModels = {}
             @gMarkerManager.clear() if @gMarkerManager?
 
         fit: ()=>
-            if (@mapCtrl and @markers? and _.keys(@markers).length)
+            if @mapCtrl and @scope.markerModels? and _.keys(@scope.markerModels).length > 0
                 bounds = new google.maps.LatLngBounds();
                 everSet = false
-                _.each @markers, (childModelMarker) =>
+                _.each _.values(@scope.markerModels), (childModelMarker) =>
                     if childModelMarker.gMarker?
                         everSet = true unless everSet
                         bounds.extend(childModelMarker.gMarker.getPosition())

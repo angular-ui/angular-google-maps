@@ -1237,6 +1237,7 @@ Nicholas McCready - https://twitter.com/nmccready
               _this.gWin.setPosition(pos);
               _this.gWin.open(_this.mapCtrl);
             }
+            _this.initialMarkerVisibility = _this.markerCtrl.getVisible();
             return _this.markerCtrl.setVisible(_this.isIconVisibleOnClick);
           });
         }
@@ -1663,7 +1664,7 @@ Nicholas McCready - https://twitter.com/nmccready
           _this = this;
         MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        this.markers = {};
+        this.scope.markerModels = {};
         this.gMarkerManager = void 0;
         this.$timeout = $timeout;
         this.$log.info(this);
@@ -1685,12 +1686,12 @@ Nicholas McCready - https://twitter.com/nmccready
 
       MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
         if (propNameToWatch === 'models') {
-          if (_.isEqualTo(newValue, oldValue)) {
+          if (_.isEqual(newValue, oldValue)) {
             return;
           }
         }
         if (propNameToWatch === 'options' && (newValue != null)) {
-          if (_.isEqualTo(newValue, oldValue)) {
+          if (_.isEqual(newValue, oldValue)) {
             return;
           }
           this.DEFAULTS = newValue;
@@ -1735,9 +1736,8 @@ Nicholas McCready - https://twitter.com/nmccready
         }, function() {
           _this.gMarkerManager.draw();
           if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
-            _this.fit();
+            return _this.fit();
           }
-          return scope.markerModels = _this.markers;
         });
       };
 
@@ -1752,19 +1752,18 @@ Nicholas McCready - https://twitter.com/nmccready
       MarkersParentModel.prototype.pieceMealMarkers = function(scope) {
         var payload,
           _this = this;
-        if ((this.scope.models != null) && this.scope.models.length > 0 && _.keys(this.markers).length > 0) {
-          return payload = this.figureOutState(scope, this.markers, this.modelKeyComparison, function(state) {
+        if ((this.scope.models != null) && this.scope.models.length > 0 && _.keys(this.scope.markerModels).length > 0) {
+          return payload = this.figureOutState(scope, this.scope.markerModels, this.modelKeyComparison, function(state) {
             return _async.each(payload.removals, function(child) {
               if (child != null) {
                 child.destroy();
-                return delete _this.markers[child.id];
+                return delete _this.scope.markerModels[child.id];
               }
             }, function() {
               return _async.each(payload.adds, function(modelToAdd) {
                 return _this.newChildMarker(modelToAdd, scope);
               }, function() {
-                _this.gMarkerManager.draw();
-                return scope.markerModels = _this.markers;
+                return _this.gMarkerManager.draw();
               });
             });
           });
@@ -1776,23 +1775,23 @@ Nicholas McCready - https://twitter.com/nmccready
       MarkersParentModel.prototype.newChildMarker = function(model, scope) {
         var child;
         child = new directives.api.models.child.MarkerChildModel(model, scope, this.mapCtrl, this.$timeout, this.DEFAULTS, this.doClick, this.gMarkerManager);
-        this.$log.info('child', child, 'markers', this.markers);
+        this.$log.info('child', child, 'markers', this.scope.markerModels);
         if (this.doRebuildAll) {
-          this.markers[child.scope.$id];
+          this.scope.markerModels[child.scope.$id];
         } else {
-          this.markers[model[this.scope.id]] = child;
+          this.scope.markerModels[model[this.scope.id]] = child;
         }
         return child;
       };
 
       MarkersParentModel.prototype.onDestroy = function(scope) {
-        _.each(_.values(this.markers), function(model) {
+        _.each(_.values(this.scope.markerModels), function(model) {
           if (model != null) {
             return model.destroy();
           }
         });
-        delete this.markers;
-        this.markers = {};
+        delete this.scope.markerModels;
+        this.scope.markerModels = {};
         if (this.gMarkerManager != null) {
           return this.gMarkerManager.clear();
         }
@@ -1801,10 +1800,10 @@ Nicholas McCready - https://twitter.com/nmccready
       MarkersParentModel.prototype.fit = function() {
         var bounds, everSet,
           _this = this;
-        if (this.mapCtrl && (this.markers != null) && _.keys(this.markers).length) {
+        if (this.mapCtrl && (this.scope.markerModels != null) && _.keys(this.scope.markerModels).length > 0) {
           bounds = new google.maps.LatLngBounds();
           everSet = false;
-          _.each(this.markers, function(childModelMarker) {
+          _.each(_.values(this.scope.markerModels), function(childModelMarker) {
             if (childModelMarker.gMarker != null) {
               if (!everSet) {
                 everSet = true;
@@ -1900,7 +1899,7 @@ Nicholas McCready - https://twitter.com/nmccready
       WindowsParentModel.prototype.watchModels = function(scope) {
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
-          if (_this.didModelsChange(newValue, oldValue)) {
+          if (!_.isEqual(newValue, oldValue)) {
             if (_this.doRebuildAll || _this.doINeedToWipe(newValue)) {
               return _this.rebuildAll(scope, true, true);
             } else {

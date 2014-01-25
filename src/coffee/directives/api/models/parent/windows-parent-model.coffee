@@ -42,7 +42,7 @@
         watchModels: (scope) =>
             scope.$watch('models', (newValue, oldValue) =>
                 #check to make sure that the newValue Array is really a set of new objects
-                if @didModelsChange(newValue, oldValue)
+                unless _.isEqual(newValue, oldValue)
                     if @doRebuildAll or @doINeedToWipe(newValue)
                         @rebuildAll(scope, true, true)
                     else
