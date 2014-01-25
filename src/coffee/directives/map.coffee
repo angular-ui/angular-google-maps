@@ -111,21 +111,21 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
             dragging = false
             google.maps.event.addListener _m, "dragstart", ->
                 dragging = true
-                $timeout ->
+                _.defer ->
                     scope.$apply (s) ->
                         s.dragging = dragging if s.dragging?
 
 
             google.maps.event.addListener _m, "dragend", ->
                 dragging = false
-                $timeout ->
+                _.defer ->
                     scope.$apply (s) ->
                         s.dragging = dragging if s.dragging?
 
 
             google.maps.event.addListener _m, "drag", ->
                 c = _m.center
-                $timeout ->
+                _.defer ->
                     scope.$apply (s) ->
                         s.center.latitude = c.lat()
                         s.center.longitude = c.lng()
@@ -133,7 +133,7 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
 
             google.maps.event.addListener _m, "zoom_changed", ->
                 if scope.zoom isnt _m.zoom
-                    $timeout ->
+                    _.defer ->
                         scope.$apply (s) ->
                             s.zoom = _m.zoom
 
@@ -142,7 +142,7 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
             google.maps.event.addListener _m, "center_changed", ->
                 c = _m.center
                 return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
-                $timeout ->
+                _.defer ->
                     scope.$apply (s) ->
                         unless _m.dragging
                             s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
@@ -153,7 +153,7 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
                 b = _m.getBounds()
                 ne = b.getNorthEast()
                 sw = b.getSouthWest()
-                $timeout ->
+                _.defer ->
                     scope.$apply (s) ->
                         if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
                             s.bounds.northeast =
@@ -195,6 +195,8 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
                 return  if newValue is oldValue
                 settingCenterFromScope = true
                 unless dragging
+                    if !newValue.latitude? or !newValue.longitude?
+                        $log.error("Invalid center for newVa;ue: #{JSON.stringify newValue}")
                     coords = new google.maps.LatLng(newValue.latitude, newValue.longitude)
                     if isTrue(attrs.pan)
                         _m.panTo coords
@@ -212,6 +214,9 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
             #_m.draw();
             scope.$watch "bounds", (newValue, oldValue) ->
                 return  if newValue is oldValue
+                if !newValue.northeast.latitude? or !newValue.northeast.longitude? or !newValue.southwest.latitude? or !newValue.southwest.longitude?
+                    $log.error "Invalid map bounds for new value: #{JSON.stringify newValue}"
+                    return
                 ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude)
                 sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude)
                 bounds = new google.maps.LatLngBounds(sw, ne)

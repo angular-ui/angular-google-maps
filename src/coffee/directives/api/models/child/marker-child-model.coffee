@@ -65,6 +65,9 @@
             if(scope.$id != @scope.$id or @gMarker == undefined)
                 return
             if (scope.coords?)
+                if !@scope.coords.latitude? or !@scope.coords.longitude?
+                    @$log.error "MarkerChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
+                    return
                 @gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
                 @gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
                 @gMarkerManager.remove(@gMarker)
