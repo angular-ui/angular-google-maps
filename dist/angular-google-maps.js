@@ -1520,7 +1520,6 @@ Nicholas McCready - https://twitter.com/nmccready
         var self;
         MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
         self = this;
-        this.markers = [];
         this.markersIndex = 0;
         this.gMarkerManager = void 0;
         this.scope = scope;
@@ -1547,7 +1546,8 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkersParentModel.prototype.createMarkers = function(scope) {
-        var _this = this;
+        var markers,
+          _this = this;
         if ((scope.doCluster != null) && scope.doCluster === true) {
           if (scope.clusterOptions != null) {
             if (this.gMarkerManager === void 0) {
@@ -1563,19 +1563,20 @@ Nicholas McCready - https://twitter.com/nmccready
         } else {
           this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
         }
+        markers = [];
         return this.bigGulp.handleLargeArray(scope.models, function(model) {
           var child;
           scope.doRebuild = true;
           child = new directives.api.models.child.MarkerChildModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.DEFAULTS, _this.doClick, _this.gMarkerManager);
-          _this.$log.info('child', child, 'markers', _this.markers);
-          _this.markers.push(child);
+          _this.$log.info('child', child, 'markers', markers);
+          markers.push(child);
           return _this.markersIndex++;
         }, (function() {}), function() {
           _this.gMarkerManager.draw();
+          scope.markerModels = markers;
           if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
-            _this.fit();
+            return _this.fit();
           }
-          return scope.markerModels = _this.markers;
         });
       };
 
@@ -1584,11 +1585,11 @@ Nicholas McCready - https://twitter.com/nmccready
         if (!scope.doRebuild && scope.doRebuild !== void 0) {
           return;
         }
-        _.each(this.markers, function(oldM) {
+        _.each(scope.markerModels, function(oldM) {
           return oldM.destroy();
         });
-        delete this.markers;
-        this.markers = [];
+        delete scope.markerModels;
+        scope.markerModels = [];
         this.markersIndex = 0;
         if (this.gMarkerManager != null) {
           this.gMarkerManager.clear();
@@ -1611,7 +1612,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
       MarkersParentModel.prototype.onDestroy = function(scope) {
         var model, _i, _len, _ref;
-        _ref = this.markers;
+        _ref = scope.markerModels;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           model = _ref[_i];
           model.destroy();
@@ -1624,10 +1625,10 @@ Nicholas McCready - https://twitter.com/nmccready
       MarkersParentModel.prototype.fit = function() {
         var bounds, everSet,
           _this = this;
-        if (this.mapCtrl && (this.markers != null) && this.markers.length) {
+        if (this.mapCtrl && (this.scope.markerModels != null) && this.scope.markerModels.length > 0) {
           bounds = new google.maps.LatLngBounds();
           everSet = false;
-          _.each(this.markers, function(childModelMarker) {
+          _.each(this.scope.markerModels, function(childModelMarker) {
             if (childModelMarker.gMarker != null) {
               if (!everSet) {
                 everSet = true;
