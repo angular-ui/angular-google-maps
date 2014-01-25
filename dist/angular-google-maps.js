@@ -2613,12 +2613,18 @@ Nick Baugh - https://github.com/niftylettuce
           });
           scope.$watch("options", function(newValue, oldValue) {
             if (!_.isEqual(newValue, oldValue)) {
-              return opts.options = newValue;
+              opts.options = newValue;
+              if (_m != null) {
+                return _m.setOptions(opts);
+              }
             }
           }, true);
           return scope.$watch("styles", function(newValue, oldValue) {
             if (!_.isEqual(newValue, oldValue)) {
-              return opts.options = newValue;
+              opts.styles = newValue;
+              if (_m != null) {
+                return _m.setOptions(opts);
+              }
             }
           }, true);
         }
