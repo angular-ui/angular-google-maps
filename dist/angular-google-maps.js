@@ -1768,12 +1768,14 @@ Nicholas McCready - https://twitter.com/nmccready
       WindowsParentModel.prototype.watchMarkerModels = function(scope, gMap) {
         var _this = this;
         return scope.$watch('markerModels', function(newValue, oldValue) {
-          if ((newValue != null) && newValue.length > 0) {
-            return _this.bigGulp.handleLargeArray(newValue, function(mm) {
-              return _this.createWindow(mm.model, mm.gMarker, gMap);
-            }, (function() {}), function() {
-              return _this.firstTime = false;
-            });
+          if (newValue !== oldValue) {
+            if ((newValue != null) && newValue.length > 0) {
+              return _this.bigGulp.handleLargeArray(newValue, function(mm) {
+                return _this.createWindow(mm.model, mm.gMarker, gMap);
+              }, (function() {}), function() {
+                return _this.firstTime = false;
+              });
+            }
           }
         });
       };

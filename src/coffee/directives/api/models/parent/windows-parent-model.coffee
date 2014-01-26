@@ -70,11 +70,12 @@
 
         watchMarkerModels: (scope,gMap) =>
             scope.$watch 'markerModels', (newValue, oldValue) =>
-                if newValue? and newValue.length > 0
-                    @bigGulp.handleLargeArray newValue, (mm) =>
-                        @createWindow mm.model, mm.gMarker, gMap
-                    , (()->), () => #handle done callBack
-                        @firstTime = false
+                if newValue != oldValue
+                    if newValue? and newValue.length > 0
+                        @bigGulp.handleLargeArray newValue, (mm) =>
+                            @createWindow mm.model, mm.gMarker, gMap
+                        , (()->), () => #handle done callBack
+                            @firstTime = false
 
         createChildScopesWindows: =>
             ###
