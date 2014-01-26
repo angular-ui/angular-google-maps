@@ -1589,7 +1589,6 @@ Nicholas McCready - https://twitter.com/nmccready
           return oldM.destroy();
         });
         delete scope.markerModels;
-        scope.markerModels = [];
         this.markersIndex = 0;
         if (this.gMarkerManager != null) {
           this.gMarkerManager.clear();

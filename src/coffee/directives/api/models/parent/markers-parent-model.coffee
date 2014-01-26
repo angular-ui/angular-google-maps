@@ -61,7 +61,7 @@
             _.each scope.markerModels, (oldM) =>
                 oldM.destroy()
             delete scope.markerModels
-            scope.markerModels = []
+#            scope.markerModels = []
             @markersIndex = 0
             @gMarkerManager.clear() if @gMarkerManager?
             @createMarkers(scope)
