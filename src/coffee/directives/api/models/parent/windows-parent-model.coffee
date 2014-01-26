@@ -113,10 +113,9 @@
                 else
                     #creating windows with parent markers
                     @models = markersScope.models
-                    if(@firstTime)
-                        @watchModels markersScope
-                        @watchDestroy markersScope
-                        @watchMarkerModels markersScope, gMap
+                    @watchModels markersScope
+                    @watchDestroy markersScope
+                    @watchMarkerModels markersScope, gMap
                     @setContentKeys markersScope.models #only setting content keys once per model array
 
 

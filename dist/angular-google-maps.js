@@ -1816,11 +1816,9 @@ Nicholas McCready - https://twitter.com/nmccready
             });
           } else {
             this.models = markersScope.models;
-            if (this.firstTime) {
-              this.watchModels(markersScope);
-              this.watchDestroy(markersScope);
-              this.watchMarkerModels(markersScope, gMap);
-            }
+            this.watchModels(markersScope);
+            this.watchDestroy(markersScope);
+            this.watchMarkerModels(markersScope, gMap);
             return this.setContentKeys(markersScope.models);
           }
         }
