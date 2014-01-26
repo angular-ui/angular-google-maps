@@ -7,6 +7,7 @@
             @markersIndex = 0
             @gMarkerManager = undefined
             @scope = scope
+            @scope.markerModels = []
             @bigGulp = directives.api.utils.AsyncProcessor
             @$timeout = $timeout
             @$log.info @
