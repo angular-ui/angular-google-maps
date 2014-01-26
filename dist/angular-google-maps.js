@@ -1588,7 +1588,6 @@ Nicholas McCready - https://twitter.com/nmccready
         _.each(scope.markerModels, function(oldM) {
           return oldM.destroy();
         });
-        delete scope.markerModels;
         this.markersIndex = 0;
         if (this.gMarkerManager != null) {
           this.gMarkerManager.clear();
