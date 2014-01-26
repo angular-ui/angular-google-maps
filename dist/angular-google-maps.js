@@ -1671,6 +1671,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.createWindow = __bind(this.createWindow, this);
         this.setContentKeys = __bind(this.setContentKeys, this);
         this.createChildScopesWindows = __bind(this.createChildScopesWindows, this);
+        this.watchMarkerModels = __bind(this.watchMarkerModels, this);
         this.watchOurScope = __bind(this.watchOurScope, this);
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchModels = __bind(this.watchModels, this);
@@ -1765,6 +1766,19 @@ Nicholas McCready - https://twitter.com/nmccready
         return _results;
       };
 
+      WindowsParentModel.prototype.watchMarkerModels = function(scope, gMap) {
+        var _this = this;
+        return scope.$watch('markerModels', function(newValue, oldValue) {
+          if ((newValue != null) && newValue.length > 0) {
+            return _this.bigGulp.handleLargeArray(newValue, function(mm) {
+              return _this.createWindow(mm.model, mm.gMarker, gMap);
+            }, (function() {}), function() {
+              return _this.firstTime = false;
+            });
+          }
+        });
+      };
+
       WindowsParentModel.prototype.createChildScopesWindows = function() {
         /*
         being that we cannot tell the difference in Key String vs. a normal value string (TemplateUrl)
@@ -1805,13 +1819,9 @@ Nicholas McCready - https://twitter.com/nmccready
             if (this.firstTime) {
               this.watchModels(markersScope);
               this.watchDestroy(markersScope);
+              this.watchMarkerModels(markersScope, gMap);
             }
-            this.setContentKeys(markersScope.models);
-            return this.bigGulp.handleLargeArray(markersScope.markerModels, function(mm) {
-              return _this.createWindow(mm.model, mm.gMarker, gMap);
-            }, (function() {}), function() {
-              return _this.firstTime = false;
-            });
+            return this.setContentKeys(markersScope.models);
           }
         }
       };

@@ -42,27 +42,24 @@
             scope.$watch('models', (newValue, oldValue) =>
                 #check to make sure that the newValue Array is really a set of new objects
                 if @didModelsChange(newValue, oldValue)
-                    @bigGulp.handleLargeArray(@windows, (model) =>
+                    @bigGulp.handleLargeArray @windows, (model) =>
                         model.destroy()
                     , (()->), () => #handle done callBack
                         # delete @windows
                         @windows = []
                         @windowsIndex = 0
                         @createChildScopesWindows()
-                    )
 
             , true)
 
         watchDestroy: (scope)=>
-            scope.$on("$destroy", =>
-                @bigGulp.handleLargeArray(@windows, (model) =>
+            scope.$on "$destroy", =>
+                @bigGulp.handleLargeArray @windows, (model) =>
                     model.destroy()
                 , (()->), () => #handle done callBack
                     delete @windows
                     @windows = []
                     @windowsIndex = 0
-                )
-            )
 
         watchOurScope: (scope) =>
             for name in @scopePropNames
@@ -70,6 +67,14 @@
                     nameKey = name + 'Key'
                     @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
                     @watch(scope, name, nameKey)
+
+        watchMarkerModels: (scope,gMap) =>
+            scope.$watch 'markerModels', (newValue, oldValue) =>
+                if newValue? and newValue.length > 0
+                    @bigGulp.handleLargeArray newValue, (mm) =>
+                        @createWindow mm.model, mm.gMarker, gMap
+                    , (()->), () => #handle done callBack
+                        @firstTime = false
 
         createChildScopesWindows: =>
             ###
@@ -108,14 +113,10 @@
                     #creating windows with parent markers
                     @models = markersScope.models
                     if(@firstTime)
-                        @watchModels(markersScope)
-                        @watchDestroy(markersScope)
-                    @setContentKeys(markersScope.models) #only setting content keys once per model array
-                    @bigGulp.handleLargeArray(markersScope.markerModels, (mm) =>
-                        @createWindow(mm.model, mm.gMarker, gMap)
-                    , (()->), () => #handle done callBack
-                        @firstTime = false
-                    )
+                        @watchModels markersScope
+                        @watchDestroy markersScope
+                        @watchMarkerModels markersScope, gMap
+                    @setContentKeys markersScope.models #only setting content keys once per model array
 
 
         setContentKeys: (models)=>
