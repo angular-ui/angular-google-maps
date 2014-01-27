@@ -26,8 +26,18 @@ angular.module('angularGoogleMapsApp').provider('analytics', function () {
 
 	this.$get = function ($window, $log, $rootScope, $document, $location) {
 
-		var _trackPageView = function (path) {
+		var _trackingCodeSet = false;
+		
+		var _setTrackingCode = function () {
+				if (!_trackingCodeSet && $window.ga) {
+					ga('create', _trackingCode, 'auto');
+					_trackingCodeSet = true;
+				}
+			},
+			_trackPageView = function (path) {
 				$log.debug('analytics: tracking page view', path);
+				
+				_setTrackingCode();
 				
 				if ($window.ga) {
 					$window.ga('send', 'pageView', path);
@@ -35,6 +45,8 @@ angular.module('angularGoogleMapsApp').provider('analytics', function () {
 			},
 			_trackEvent = function (name, value) {
 				$log.debug('analytics: tracking event', { 'name': name, 'value': value });
+				
+				_setTrackingCode();
 				
 				if ($window.ga) {
 					$window.ga('send', 'event', 'button', 'click', 'download library')
