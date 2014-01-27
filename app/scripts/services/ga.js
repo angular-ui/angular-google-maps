@@ -30,7 +30,7 @@ angular.module('angularGoogleMapsApp').provider('analytics', function () {
 		
 		var _setTrackingCode = function () {
 				if (!_trackingCodeSet && $window.ga) {
-					ga('create', _trackingCode, 'auto');
+					$window.ga('create', _trackingCode, 'auto');
 					_trackingCodeSet = true;
 				}
 			},
