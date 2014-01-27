@@ -1099,8 +1099,12 @@ Nicholas McCready - https://twitter.com/nmccready
         if (this.markerCtrl != null) {
           return google.maps.event.addListener(this.markerCtrl, 'click', function() {
             var pos;
-            if (_this.gWin == null) {
+            if ((_this.gWin == null) && (_this.opts == null)) {
               _this.createGWin(true);
+            } else {
+              if (_this.gWin == null) {
+                _this.createGWin();
+              }
             }
             pos = _this.markerCtrl.getPosition();
             if (_this.gWin != null) {
@@ -1523,6 +1527,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.markersIndex = 0;
         this.gMarkerManager = void 0;
         this.scope = scope;
+        this.scope.markerModels = [];
         this.bigGulp = directives.api.utils.AsyncProcessor;
         this.$timeout = $timeout;
         this.$log.info(this);
@@ -1564,6 +1569,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
         }
         markers = [];
+        scope.isMarkerModelsReady = false;
         return this.bigGulp.handleLargeArray(scope.models, function(model) {
           var child;
           scope.doRebuild = true;
@@ -1575,7 +1581,11 @@ Nicholas McCready - https://twitter.com/nmccready
           _this.gMarkerManager.draw();
           scope.markerModels = markers;
           if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
-            return _this.fit();
+            _this.fit();
+          }
+          scope.isMarkerModelsReady = true;
+          if (scope.onMarkerModelsReady != null) {
+            return scope.onMarkerModelsReady(scope);
           }
         });
       };
@@ -1669,8 +1679,9 @@ Nicholas McCready - https://twitter.com/nmccready
         this.createWindow = __bind(this.createWindow, this);
         this.setContentKeys = __bind(this.setContentKeys, this);
         this.createChildScopesWindows = __bind(this.createChildScopesWindows, this);
-        this.watchMarkerModels = __bind(this.watchMarkerModels, this);
+        this.onMarkerModelsReady = __bind(this.onMarkerModelsReady, this);
         this.watchOurScope = __bind(this.watchOurScope, this);
+        this.destroy = __bind(this.destroy, this);
         this.watchDestroy = __bind(this.watchDestroy, this);
         this.watchModels = __bind(this.watchModels, this);
         this.watch = __bind(this.watch, this);
@@ -1723,59 +1734,51 @@ Nicholas McCready - https://twitter.com/nmccready
         var _this = this;
         return scope.$watch('models', function(newValue, oldValue) {
           if (_this.didModelsChange(newValue, oldValue)) {
-            return _this.bigGulp.handleLargeArray(_this.windows, function(model) {
-              return model.destroy();
-            }, (function() {}), function() {
-              _this.windows = [];
-              _this.windowsIndex = 0;
-              return _this.createChildScopesWindows();
-            });
+            _this.destroy();
+            return _this.createChildScopesWindows();
           }
-        }, true);
+        });
       };
 
       WindowsParentModel.prototype.watchDestroy = function(scope) {
         var _this = this;
         return scope.$on("$destroy", function() {
-          return _this.bigGulp.handleLargeArray(_this.windows, function(model) {
-            return model.destroy();
-          }, (function() {}), function() {
-            delete _this.windows;
-            _this.windows = [];
-            return _this.windowsIndex = 0;
-          });
+          return _this.destroy();
         });
       };
 
-      WindowsParentModel.prototype.watchOurScope = function(scope) {
-        var name, _i, _len, _ref, _results,
-          _this = this;
-        _ref = this.scopePropNames;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          name = _ref[_i];
-          _results.push((function(name) {
-            var nameKey;
-            nameKey = name + 'Key';
-            _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
-            return _this.watch(scope, name, nameKey);
-          })(name));
-        }
-        return _results;
+      WindowsParentModel.prototype.destroy = function() {
+        var _this = this;
+        _.each(this.windows, function(model) {
+          return model.destroy();
+        });
+        delete this.windows;
+        this.windows = [];
+        return this.windowsIndex = 0;
       };
 
-      WindowsParentModel.prototype.watchMarkerModels = function(scope, gMap) {
+      WindowsParentModel.prototype.watchOurScope = function(scope) {
         var _this = this;
-        return scope.$watch('markerModels', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            if ((newValue != null) && newValue.length > 0) {
-              return _this.bigGulp.handleLargeArray(newValue, function(mm) {
-                return _this.createWindow(mm.model, mm.gMarker, gMap);
-              }, (function() {}), function() {
-                return _this.firstTime = false;
-              });
-            }
-          }
+        return _.each(this.scopePropNames, function(name) {
+          var nameKey;
+          nameKey = name + 'Key';
+          _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
+          return _this.watch(scope, name, nameKey);
+        });
+      };
+
+      WindowsParentModel.prototype.onMarkerModelsReady = function(scope) {
+        var _this = this;
+        this.destroy();
+        this.models = scope.models;
+        if (this.firstTime) {
+          this.watchDestroy(scope);
+        }
+        this.setContentKeys(scope.models);
+        return this.bigGulp.handleLargeArray(scope.markerModels, function(mm) {
+          return _this.createWindow(mm.model, mm.gMarker, _this.gMap);
+        }, (function() {}), function() {
+          return _this.firstTime = false;
         });
       };
 
@@ -1788,20 +1791,20 @@ Nicholas McCready - https://twitter.com/nmccready
         This may force redundant information into the model, but this appears to be the most flexible approach.
         */
 
-        var gMap, markersScope, modelsNotDefined,
+        var markersScope, modelsNotDefined,
           _this = this;
         this.isIconVisibleOnClick = true;
         if (angular.isDefined(this.linked.attrs.isiconvisibleonclick)) {
           this.isIconVisibleOnClick = this.linked.scope.isIconVisibleOnClick;
         }
-        gMap = this.linked.ctrls[0].getMap();
+        this.gMap = this.linked.ctrls[0].getMap();
         markersScope = this.linked.ctrls.length > 1 && (this.linked.ctrls[1] != null) ? this.linked.ctrls[1].getMarkersScope() : void 0;
         modelsNotDefined = angular.isUndefined(this.linked.scope.models);
         if (modelsNotDefined && (markersScope === void 0 || (markersScope.markerModels === void 0 && markersScope.models === void 0))) {
           this.$log.info("No models to create windows from! Need direct models or models derrived from markers!");
           return;
         }
-        if (gMap != null) {
+        if (this.gMap != null) {
           if (this.linked.scope.models != null) {
             this.models = this.linked.scope.models;
             if (this.firstTime) {
@@ -1810,16 +1813,15 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             this.setContentKeys(this.linked.scope.models);
             return this.bigGulp.handleLargeArray(this.linked.scope.models, function(model) {
-              return _this.createWindow(model, void 0, gMap);
+              return _this.createWindow(model, void 0, _this.gMap);
             }, (function() {}), function() {
               return _this.firstTime = false;
             });
           } else {
-            this.models = markersScope.models;
-            this.watchModels(markersScope);
-            this.watchDestroy(markersScope);
-            this.watchMarkerModels(markersScope, gMap);
-            return this.setContentKeys(markersScope.models);
+            markersScope.onMarkerModelsReady = this.onMarkerModelsReady;
+            if (markersScope.isMarkerModelsReady) {
+              return this.onMarkerModelsReady(markersScope);
+            }
           }
         }
       };

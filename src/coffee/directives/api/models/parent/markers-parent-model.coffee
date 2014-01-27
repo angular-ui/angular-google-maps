@@ -41,6 +41,7 @@
                 @gMarkerManager = new directives.api.managers.MarkerManager(@mapCtrl.getMap())
 
             markers = []
+            scope.isMarkerModelsReady = false
             @bigGulp.handleLargeArray(scope.models, (model) =>
                 scope.doRebuild = true
                 child = new directives.api.models.child.MarkerChildModel(@markersIndex, model, scope, @mapCtrl, @$timeout,
@@ -53,6 +54,8 @@
                 @gMarkerManager.draw()
                 scope.markerModels = markers
                 @fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit
+                scope.isMarkerModelsReady = true
+                scope.onMarkerModelsReady(scope) if scope.onMarkerModelsReady?
             )
 
 
