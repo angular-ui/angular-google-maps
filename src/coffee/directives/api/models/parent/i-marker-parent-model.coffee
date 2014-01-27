@@ -25,15 +25,13 @@
             if scope.options?
                 @DEFAULTS = scope.options
             # Wrap marker initialization inside a $timeout() call to make sure the map is created already
-            @$timeout(=>
+            @$timeout =>
                 @watch('coords', scope)
                 @watch('icon', scope)
                 @watch('options', scope)
                 @onTimeOut(scope)
-                scope.$on("$destroy", =>
+                scope.$on "$destroy", =>
                     @onDestroy(scope)
-                )
-            )
 
         onTimeOut: (scope)=>
         validateScope: (scope)=>
