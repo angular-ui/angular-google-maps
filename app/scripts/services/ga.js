@@ -26,18 +26,31 @@ angular.module('angularGoogleMapsApp').provider('analytics', function () {
 
 	this.$get = function ($window, $log, $rootScope, $document, $location) {
 
-		ga = $window.ga || function () {};
-
-//		ga.push(['_setAccount', _trackingCode]);
-
-
-		var _trackPageView = function (path) {
+		var _trackingCodeSet = false;
+		
+		var _setTrackingCode = function () {
+				if (!_trackingCodeSet && $window.ga) {
+					$window.ga('create', _trackingCode, 'auto');
+					_trackingCodeSet = true;
+				}
+			},
+			_trackPageView = function (path) {
 				$log.debug('analytics: tracking page view', path);
-				ga('send', 'pageView', path);
+				
+				_setTrackingCode();
+				
+				if ($window.ga) {
+					$window.ga('send', 'pageView', path);
+				}
 			},
 			_trackEvent = function (name, value) {
 				$log.debug('analytics: tracking event', { 'name': name, 'value': value });
-				ga('send', 'event', 'button', 'click', 'download library')
+				
+				_setTrackingCode();
+				
+				if ($window.ga) {
+					$window.ga('send', 'event', 'button', 'click', 'download library')
+				}
 			};
 
 		if (_trackViewChange) {
