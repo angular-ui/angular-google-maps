@@ -27,6 +27,9 @@
                 @opts = if @markerCtrl? then @createWindowOptions(@markerCtrl, @scope, @element.html(), {}) else {}
 
             if @opts? and @gWin == undefined
+              if InfoBox and(typeof InfoBox == 'function')
+                @gWin =new InfoBox(@opts)
+              else
                 @gWin = new google.maps.InfoWindow(@opts)
 
                 # Set visibility of marker back to what it was before opening the window

@@ -1044,15 +1044,19 @@ Nicholas McCready - https://twitter.com/nmccready
           this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, this.element.html(), {}) : {};
         }
         if ((this.opts != null) && this.gWin === void 0) {
-          this.gWin = new google.maps.InfoWindow(this.opts);
-          return google.maps.event.addListener(this.gWin, 'closeclick', function() {
-            if (_this.markerCtrl != null) {
-              _this.markerCtrl.setVisible(_this.initialMarkerVisibility);
-            }
-            if (_this.scope.closeClick != null) {
-              return _this.scope.closeClick();
-            }
-          });
+          if (InfoBox && (typeof InfoBox === 'function')) {
+            return this.gWin = new InfoBox(this.opts);
+          } else {
+            this.gWin = new google.maps.InfoWindow(this.opts);
+            return google.maps.event.addListener(this.gWin, 'closeclick', function() {
+              if (_this.markerCtrl != null) {
+                _this.markerCtrl.setVisible(_this.initialMarkerVisibility);
+              }
+              if (_this.scope.closeClick != null) {
+                return _this.scope.closeClick();
+              }
+            });
+          }
         }
       };
 
