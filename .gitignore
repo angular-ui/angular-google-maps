@@ -4,7 +4,6 @@
 node_modules
 old/
 tmp/
-.tmp/
 *~
 app/components
 /nbproject
