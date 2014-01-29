@@ -70,7 +70,8 @@ angular.module("google-maps").directive "polygon", ["$log", "$timeout", ($log, $
     replace: true
     scope:
         path: "=path"
-        stroke: "=stroke"
+        stroke: "=stroke",
+        fill: "=fill",
         clickable: "="
         draggable: "="
         editable: "="
@@ -82,10 +83,10 @@ angular.module("google-maps").directive "polygon", ["$log", "$timeout", ($log, $
 
         # Validate required properties
         if angular.isUndefined(scope.path) or scope.path is null or scope.path.length < 2 or not validatePathPoints(scope.path)
-            $log.error "polyline: no valid path attribute found"
+            $log.error "polygon: no valid path attribute found"
             return
 
-        # Wrap polyline initialization inside a $timeout() call to make sure the map is created already
+        # Wrap polygon initialization inside a $timeout() call to make sure the map is created already
         $timeout ->
             map = mapCtrl.getMap()
             pathPoints = convertPathPoints(scope.path)
@@ -95,6 +96,8 @@ angular.module("google-maps").directive "polygon", ["$log", "$timeout", ($log, $
                 strokeColor: scope.stroke and scope.stroke.color
                 strokeOpacity: scope.stroke and scope.stroke.opacity
                 strokeWeight: scope.stroke and scope.stroke.weight
+                fillColor: scope.fill and scope.fill.color
+                fillOpacity: scope.fill and scope.fill.opacity
             )
             angular.forEach
                 clickable: true
@@ -108,24 +111,24 @@ angular.module("google-maps").directive "polygon", ["$log", "$timeout", ($log, $
                 else
                     opts[key] = scope[key]
 
-            polyline = new google.maps.Polyline(opts)
+            polygon = new google.maps.Polygon(opts)
             extendMapBounds map, pathPoints  if isTrue(attrs.fit)
             if angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
-                    polyline.setEditable newValue
+                    polygon.setEditable newValue
 
             if angular.isDefined(scope.draggable)
                 scope.$watch "draggable", (newValue, oldValue) ->
-                    polyline.setDraggable newValue
+                    polygon.setDraggable newValue
 
             if angular.isDefined(scope.visible)
                 scope.$watch "visible", (newValue, oldValue) ->
-                    polyline.setVisible newValue
+                    polygon.setVisible newValue
 
             pathSetAtListener = undefined
             pathInsertAtListener = undefined
             pathRemoveAtListener = undefined
-            polyPath = polyline.getPath()
+            polyPath = polygon.getPath()
             pathSetAtListener = google.maps.event.addListener(polyPath, "set_at", (index) ->
                 value = polyPath.getAt(index)
                 return  unless value
@@ -152,7 +155,7 @@ angular.module("google-maps").directive "polygon", ["$log", "$timeout", ($log, $
                 oldArray = polyline.getPath()
                 if newArray isnt oldArray
                     if newArray
-                        polyline.setMap map
+                        polygon.setMap map
                         i = 0
                         oldLength = oldArray.getLength()
                         newLength = newArray.length
@@ -173,12 +176,12 @@ angular.module("google-maps").directive "polygon", ["$log", "$timeout", ($log, $
                     else
 
                         # Remove polyline
-                        polyline.setMap null
+                        polygon.setMap null
             ), true
 
             # Remove polyline on scope $destroy
             scope.$on "$destroy", ->
-                polyline.setMap null
+                polygon.setMap null
                 pathSetAtListener()
                 pathSetAtListener = null
                 pathInsertAtListener()
