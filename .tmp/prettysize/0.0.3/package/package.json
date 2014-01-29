@@ -1,0 +1,30 @@
+{
+    "name": "prettysize",
+    "description": "Convert bytes to other sizes for prettier logging",
+    "version": "0.0.3",
+    "main": "./index.js",
+    "devDependencies": {
+        "vows": "*",
+        "yui-lint": "~0.1.1",
+        "jshint": "~0.9.0",
+        "istanbul": "~0.1.8"
+    },
+    "keywords": [
+        "size", "bytes", "MB", "megs"
+    ],
+    "scripts": {
+        "pretest": "jshint --config ./node_modules/yui-lint/jshint.json ./index.js",
+        "test": "istanbul cover --print both vows -- --spec ./tests/*.js"
+    },
+    "bugs": { "url" : "http://github.com/davglass/prettysize/issues" },
+    "licenses":[
+        {
+            "type" : "BSD",
+            "url" : "https://github.com/davglass/prettysize/blob/master/LICENSE"
+        }
+    ],
+    "repository": {
+        "type":"git",
+        "url":"http://github.com/davglass/prettysize.git"
+    }
+}

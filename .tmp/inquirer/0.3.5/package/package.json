@@ -1,0 +1,38 @@
+{
+  "name": "inquirer",
+  "version": "0.3.5",
+  "description": "A collection of common interactive command line user interfaces.",
+  "main": "lib/inquirer.js",
+  "scripts": {
+    "test": "grunt --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SBoudrias/Inquirer.js.git"
+  },
+  "keywords": [
+    "command",
+    "prompt",
+    "stdin",
+    "cli"
+  ],
+  "author": "Simon Boudrias <admin@simonboudrias.com>",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "~1.2.1",
+    "async": "~0.2.8",
+    "cli-color": "~0.2.2",
+    "mute-stream": "0.0.3"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cli": "~0.1.8",
+    "grunt-simple-mocha": "~0.4.0",
+    "mocha": "~1.9.0",
+    "chai": "~1.6.0",
+    "grunt-contrib-jshint": "~0.5.1",
+    "sinon": "~1.7.2",
+    "proxyquire": "~0.4.1",
+    "grunt-release": "~0.3.3"
+  }
+}

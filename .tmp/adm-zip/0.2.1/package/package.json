@@ -1,0 +1,31 @@
+{
+    "name": "adm-zip",
+    "version": "0.2.1",
+    "description": "A Javascript implementation of zip for nodejs. Allows user to create or extract zip files both in memory or to/from disk",
+    "keywords": [
+        "zip",
+        "methods",
+        "archive",
+        "unzip"
+    ],
+    "homepage": "http://github.com/cthackers/adm-zip",
+    "author": "Nasca Iacob <sy@another-d-mention.ro> (https://github.com/cthackers)",
+    "bugs": {
+        "email": "sy@another-d-mention.ro",
+        "url": "https://github.com/cthackers/adm-zip/issues"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://github.com/kriskowal/zip/raw/master/LICENSE"
+        }
+    ],
+    "main": "adm-zip.js",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/git@github.com:cthackers/adm-zip.git"
+    },
+    "engines": {
+        "node": ">=0.3.0"
+    }
+}

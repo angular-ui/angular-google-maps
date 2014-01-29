@@ -1,0 +1,13 @@
+{
+  "name": "cookie-signature",
+  "version": "1.0.1",
+  "description": "Sign and unsign cookies",
+  "keywords": ["cookie", "sign", "unsign"],
+  "author": "TJ Holowaychuk <tj@learnboost.com>",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  },
+  "main": "index"
+}

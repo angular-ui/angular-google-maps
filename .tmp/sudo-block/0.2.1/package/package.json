@@ -1,0 +1,47 @@
+{
+  "name": "sudo-block",
+  "version": "0.2.1",
+  "description": "Block users from running your tool with root permissions",
+  "keywords": [
+    "sudo",
+    "root",
+    "permissions",
+    "uid",
+    "block",
+    "prevent",
+    "stop"
+  ],
+  "homepage": "https://github.com/sindresorhus/sudo-block",
+  "bugs": "https://github.com/sindresorhus/sudo-block/issues",
+  "author": {
+    "name": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "http://sindresorhus.com"
+  },
+  "main": "sudo-block.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sindresorhus/sudo-block.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "chalk": "~0.1.1"
+  },
+  "devDependencies": {
+    "mocha": "~1.12.0",
+    "sinon": "~1.7.3"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
+  "files": [
+    "sudo-block.js"
+  ]
+}

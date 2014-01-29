@@ -28,7 +28,11 @@ body {
 .false:hover {
     background-color: lightpink;
 }
-
+.infoBox{
+    background: #000;
+    border: 3px dotted orange;
+    color: #fff;
+}
 .marker-labels {
     color: red;
     background-color: white;

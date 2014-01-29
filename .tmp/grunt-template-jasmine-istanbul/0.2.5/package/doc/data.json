@@ -1,0 +1,250 @@
+{
+    "project": {
+        "name": "grunt-template-jasmine-istanbul",
+        "description": "Code coverage template mix-in for grunt-contrib-jasmine, using istanbul",
+        "version": "0.2.2"
+    },
+    "files": {
+        "src/main/js/reporter.js": {
+            "name": "src/main/js/reporter.js",
+            "modules": {
+                "grunt-template-jasmine-istanbul": 1
+            },
+            "classes": {
+                "reporter": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/main/js/template.js": {
+            "name": "src/main/js/template.js",
+            "modules": {},
+            "classes": {
+                "template": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "grunt-template-jasmine-istanbul": {
+            "name": "grunt-template-jasmine-istanbul",
+            "submodules": {},
+            "classes": {
+                "reporter": 1,
+                "template": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "src/main/js/template.js",
+            "line": 2,
+            "description": "Reports the coverage results after the test have run."
+        }
+    },
+    "classes": {
+        "reporter": {
+            "name": "reporter",
+            "shortname": "reporter",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "grunt-template-jasmine-istanbul",
+            "namespace": "",
+            "file": "src/main/js/reporter.js",
+            "line": 3,
+            "description": "Reports the coverage results after the test have run."
+        },
+        "template": {
+            "name": "template",
+            "shortname": "template",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "grunt-template-jasmine-istanbul",
+            "namespace": "",
+            "file": "src/main/js/template.js",
+            "line": 2,
+            "description": "Code coverage via istanbul."
+        }
+    },
+    "classitems": [
+        {
+            "file": "src/main/js/reporter.js",
+            "line": 11,
+            "description": "Reports the coverage variable by dispatching a message from phantom.",
+            "itemtype": "method",
+            "name": "reportRunnerResults",
+            "class": "reporter",
+            "module": "grunt-template-jasmine-istanbul"
+        },
+        {
+            "file": "src/main/js/template.js",
+            "line": 17,
+            "description": "Instruments the specified sources and moves the instrumented sources to the\ntemporary location, recreating the original directory structure.",
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "instrument",
+            "params": [
+                {
+                    "name": "sources",
+                    "description": "The paths of the original sources",
+                    "type": "Array"
+                },
+                {
+                    "name": "tmp",
+                    "description": "The path to the temporary directory",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "The paths to the instrumented sources",
+                "type": "Array"
+            },
+            "class": "template",
+            "module": "grunt-template-jasmine-istanbul"
+        },
+        {
+            "file": "src/main/js/template.js",
+            "line": 41,
+            "description": "Writes the coverage file.",
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "writeCoverage",
+            "params": [
+                {
+                    "name": "coverage",
+                    "description": "The coverage data",
+                    "type": "Object"
+                },
+                {
+                    "name": "file",
+                    "description": "The path to the coverage file",
+                    "type": "String"
+                }
+            ],
+            "class": "template",
+            "module": "grunt-template-jasmine-istanbul"
+        },
+        {
+            "file": "src/main/js/template.js",
+            "line": 54,
+            "description": "Writes the report of the specified type, using the specified options and\nreporting the coverage collected by the specified collector.",
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "writeReport",
+            "params": [
+                {
+                    "name": "type",
+                    "description": "The report type",
+                    "type": "String"
+                },
+                {
+                    "name": "options",
+                    "description": "The report options",
+                    "type": "Object"
+                },
+                {
+                    "name": "collector",
+                    "description": "The collector containing the coverage",
+                    "type": "Collector"
+                }
+            ],
+            "class": "template",
+            "module": "grunt-template-jasmine-istanbul"
+        },
+        {
+            "file": "src/main/js/template.js",
+            "line": 69,
+            "description": "Writes the istanbul reports created from the specified options.",
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "writeReports",
+            "params": [
+                {
+                    "name": "collector",
+                    "description": "The collector containing the coverage",
+                    "type": "Collector"
+                },
+                {
+                    "name": "options",
+                    "description": "The options describing the reports",
+                    "type": "Object"
+                }
+            ],
+            "class": "template",
+            "module": "grunt-template-jasmine-istanbul"
+        },
+        {
+            "file": "src/main/js/template.js",
+            "line": 96,
+            "description": "Processes the mixed-in template. Defaults to jasmine's default template and\nsets up the context using the mixed-in template's options.",
+            "access": "private",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "processMixedInTemplate",
+            "params": [
+                {
+                    "name": "grunt",
+                    "description": "The grunt object",
+                    "type": "Object"
+                },
+                {
+                    "name": "task",
+                    "description": "Provides utility methods to register listeners and\n    handle temporary files",
+                    "type": "Object"
+                },
+                {
+                    "name": "context",
+                    "description": "Contains all options",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "The template HTML source of the mixed in template",
+                "type": "String"
+            },
+            "class": "template",
+            "module": "grunt-template-jasmine-istanbul"
+        },
+        {
+            "file": "src/main/js/template.js",
+            "line": 126,
+            "description": "Instruments the sources, generates reports and cleans up after tests.",
+            "itemtype": "method",
+            "name": "process",
+            "params": [
+                {
+                    "name": "grunt",
+                    "description": "The grunt object",
+                    "type": "Object"
+                },
+                {
+                    "name": "task",
+                    "description": "Provides utility methods to register listeners and\n    handle temporary files",
+                    "type": "Object"
+                },
+                {
+                    "name": "context",
+                    "description": "Contains all options",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "The template HTML source",
+                "type": "String"
+            },
+            "class": "template",
+            "module": "grunt-template-jasmine-istanbul"
+        }
+    ],
+    "warnings": []
+}

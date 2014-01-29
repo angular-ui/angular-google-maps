@@ -1,0 +1,41 @@
+{
+  "name": "cli-color",
+  "version": "0.2.3",
+  "description": "Colors, formatting and other tools for the console",
+  "keywords": [
+    "ansi",
+    "color",
+    "console",
+    "terminal",
+    "cli",
+    "shell",
+    "log",
+    "logging",
+    "xterm"
+  ],
+  "author": "Mariusz Nowak <medikoo+cli-color@medikoo.com> (http://www.medikoo.com/)",
+  "main": "lib",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/medikoo/cli-color.git"
+  },
+  "bugs": {
+    "email": "medikoo+cli-color@medikoo.com",
+    "url": "https://github.com/medikoo/cli-color/issues"
+  },
+  "engines": {
+    "node": ">=0.1.103"
+  },
+  "dependencies": {
+    "es5-ext": "~0.9.2",
+    "memoizee": "~0.2.5"
+  },
+  "devDependencies": {
+    "clock": "~0.1.5",
+    "tad": "~0.1.19"
+  },
+  "scripts": {
+    "test": "node ./node_modules/tad/bin/tad lib"
+  },
+  "licence": "MIT"
+}

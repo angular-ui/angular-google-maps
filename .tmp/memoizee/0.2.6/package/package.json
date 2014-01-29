@@ -1,0 +1,46 @@
+{
+  "name": "memoizee",
+  "version": "0.2.6",
+  "description": "Complete memoize/cache solution. Works with any type and length of function arguments",
+  "main": "lib",
+  "scripts": {
+    "test": "node node_modules/tad/bin/tad lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/medikoo/memoize.git"
+  },
+  "keywords": [
+    "memoize",
+    "memoizer",
+    "cache",
+    "memoization",
+    "memo",
+    "memcached",
+    "hashing.",
+    "storage",
+    "caching",
+    "memory",
+    "gc",
+    "weak",
+    "garbage",
+    "collector"
+  ],
+  "bugs": {
+    "email": "medikoo+memoize@medikoo.com",
+    "url": "https://github.com/medikoo/memoize/issues"
+  },
+  "engines": {
+    "node": ">=0.4"
+  },
+  "dependencies": {
+    "es5-ext": "~0.9.2",
+    "event-emitter": "~0.2.2",
+    "next-tick": "0.1.x"
+  },
+  "devDependencies": {
+    "tad": "~0.1.19"
+  },
+  "author": "Mariusz Nowak <medikoo+memoize@medikoo.com> (http://www.medikoo.com/)",
+  "license": "MIT"
+}

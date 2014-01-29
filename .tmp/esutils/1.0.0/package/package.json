@@ -1,0 +1,43 @@
+{
+  "name": "esutils",
+  "description": "utility box for ECMAScript language tools",
+  "homepage": "https://github.com/Constellation/esutils",
+  "main": "lib/utils.js",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "maintainers": [
+    {
+      "name": "Yusuke Suzuki",
+      "email": "utatane.tea@gmail.com",
+      "web": "http://github.com/Constellation"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/Constellation/esutils.git"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "mocha": "~1.12.0",
+    "chai": "~1.7.2",
+    "jshint": "2.1.5",
+    "coffee-script": "~1.6.3"
+  },
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "http://github.com/Constellation/esutils/raw/master/LICENSE.BSD"
+    }
+  ],
+  "scripts": {
+    "test": "npm run-script lint && npm run-script unit-test",
+    "lint": "jshint lib/*.js",
+    "unit-test": "mocha --compilers coffee:coffee-script -R spec"
+  }
+}

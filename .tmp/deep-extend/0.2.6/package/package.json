@@ -1,0 +1,16 @@
+{
+    "name": "deep-extend",
+    "description": "Recursive object extending.",
+    "license": "MIT",
+    "version": "0.2.6",
+    "homepage": "https://github.com/unclechu/node-deep-extend",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/unclechu/node-deep-extend.git"
+    },
+    "author": "Viacheslav Lotsmanov <lotsmanov89@gmail.com>",
+    "main": "index",
+    "engines": {
+        "node": ">=0.4"
+    }
+}

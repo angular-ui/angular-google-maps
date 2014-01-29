@@ -1,0 +1,43 @@
+{
+  "name": "update-notifier",
+  "version": "0.1.7",
+  "description": "Update notifier for your package",
+  "keywords": [
+    "npm",
+    "update",
+    "notify",
+    "check"
+  ],
+  "homepage": "https://github.com/yeoman/update-notifier",
+  "bugs": "https://github.com/yeoman/update-notifier/issues",
+  "author": {
+    "name": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "http://sindresorhus.com"
+  },
+  "main": "lib/update-notifier.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yeoman/update-notifier.git"
+  },
+  "scripts": {
+    "test": "mocha --timeout 20000"
+  },
+  "dependencies": {
+    "request": "~2.27.0",
+    "configstore": "~0.1.0",
+    "semver": "~2.1.0",
+    "chalk": "~0.2.1"
+  },
+  "devDependencies": {
+    "mocha": "~1.13.0"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "licenses": [
+    {
+      "type": "BSD"
+    }
+  ]
+}

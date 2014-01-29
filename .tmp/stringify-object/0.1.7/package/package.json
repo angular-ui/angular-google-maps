@@ -1,0 +1,45 @@
+{
+  "name": "stringify-object",
+  "version": "0.1.7",
+  "description": "Stringify an object/array like JSON.stringify just without all the double-quotes",
+  "keywords": [
+    "object",
+    "stringify",
+    "pretty",
+    "print",
+    "dump",
+    "format"
+  ],
+  "homepage": "https://github.com/yeoman/stringify-object",
+  "bugs": "https://github.com/yeoman/stringify-object/issues",
+  "author": {
+    "name": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "http://sindresorhus.com"
+  },
+  "main": "stringify-object.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/yeoman/stringify-object.git"
+  },
+  "scripts": {
+    "test": "mocha && phantomjs node_modules/mocha-phantomjs/lib/mocha-phantomjs.coffee test/test.html"
+  },
+  "devDependencies": {
+    "mocha": "~1.9.0",
+    "chai": "~1.6.0",
+    "phantomjs": "~1.9.0",
+    "mocha-phantomjs": "2.0.1"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "licenses": [
+    {
+      "type": "BSD"
+    }
+  ],
+  "files": [
+    "stringify-object.js"
+  ]
+}
