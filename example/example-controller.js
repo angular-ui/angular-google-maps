@@ -232,6 +232,36 @@ function ExampleController($scope, $timeout, $log, $http) {
                     message: 'passed in from the opener'
                 }
             },
+            polygons: [
+	            {
+                    path: [
+                        {
+                            latitude: 50,
+                            longitude: -80
+                        },
+                        {
+                            latitude: 30,
+                            longitude: -120
+                        },
+                        {
+                            latitude: 20,
+                            longitude: -95
+                        }
+                    ],
+                    stroke: {
+                        color: '#6060FB',
+                        weight: 3
+                    },
+                    editable: true,
+                    draggable: true,
+                    geodesic: false,
+                    visible: true,
+                    fill: {
+                    	color: '#ff0000',
+                    	opacity: 0.8
+                    }
+                }
+            ],
             polylines: [
                 {
                     path: [
