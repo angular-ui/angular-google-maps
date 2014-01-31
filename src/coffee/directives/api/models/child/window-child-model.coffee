@@ -22,9 +22,11 @@
             @needToManualDestroy = needToManualDestroy
             @$log.info(@)
 
-        createGWin:(createOpts=false) =>
-            if !@gWin? and createOpts
-                @opts = if @markerCtrl? then @createWindowOptions(@markerCtrl, @scope, @element.html(), {}) else {}
+        createGWin:() =>
+            if !@gWin? and @markerCtrl?
+                defaults = if @opts? then @opts else {}
+                html = if _.isObject(@element) then @element.html() else @element
+                @opts = if @markerCtrl? then @createWindowOptions(@markerCtrl, @scope, html, defaults) else {}
 
             if @opts? and @gWin == undefined
                 if @opts.boxClass and (InfoBox && typeof InfoBox == 'function')
@@ -69,10 +71,7 @@
             # Show the window and hide the marker on click
             if @markerCtrl?
                 google.maps.event.addListener @markerCtrl, 'click', =>
-                    if !@gWin? and !@opts?
-                        @createGWin(true)
-                    else
-                        @createGWin() unless @gWin?
+                    @createGWin() unless @gWin?
                     pos = @markerCtrl.getPosition()
                     if @gWin?
                         @gWin.setPosition(pos)
