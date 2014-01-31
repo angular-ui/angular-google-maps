@@ -5,7 +5,7 @@ angular.module('angularGoogleMapsApp')
   .config(function ($routeProvider, $locationProvider, $logProvider, $githubProvider, analyticsProvider) {
   	
   	$locationProvider.html5Mode(true).hashPrefix('!');
-  	$logProvider.debugEnabled(false);  	
+  	$logProvider.debugEnabled(true);  	
 
   	$githubProvider.username('nlaplante')
   		.repository('angular-google-maps')
@@ -30,9 +30,13 @@ angular.module('angularGoogleMapsApp')
       	templateUrl: 'views/demo.html',
       	controller: 'DemoCtrl'
       })
+      .when('/faq', {
+        templateUrl: 'views/faq.html',
+        controller: 'FAQCtrl'
+      })
       .when('/not-found', {
-		templateUrl: 'views/404.html',
-		controller: 'NotFoundCtrl'
+		    templateUrl: 'views/404.html',
+		    controller: 'NotFoundCtrl'
       })
       .otherwise({
         redirectTo: function (params, path, search) {
@@ -40,18 +44,18 @@ angular.module('angularGoogleMapsApp')
         }
       });
   })
-  .run(function ($rootScope, $log, $location, analytics) {
+  .run(function ($rootScope, $log, $location) {
   
   	$rootScope.$location = $location;
 
-	$rootScope.$on('$viewContentLoaded', function (e, current, previous) {
-		// refresh add this if needed
-		addthis.toolbox('.addthis_toolbox');
-		addthis.update('.addthis_toolbox');
-	});
+    $rootScope.$on('$viewContentLoaded', function (e, current, previous) {
+		  // refresh add this if needed
+		  addthis.toolbox('.addthis_toolbox');
+		  addthis.update('.addthis_toolbox');
+    });
 	
-	$rootScope.$on('$routeChangeError', function (e, current, previous, rejection) {
-		$log.error('could not change route', rejection);
-	});
+    $rootScope.$on('$routeChangeError', function (e, current, previous, rejection) {
+		  $log.error('could not change route', rejection);
+    });
 	
   });
