@@ -40,7 +40,7 @@ angular.module('angularGoogleMapsApp')
         }
       });
   })
-  .run(function ($rootScope, $log, $location) {
+  .run(function ($rootScope, $log, $location, analytics) {
   
   	$rootScope.$location = $location;
 
@@ -53,4 +53,5 @@ angular.module('angularGoogleMapsApp')
 	$rootScope.$on('$routeChangeError', function (e, current, previous, rejection) {
 		$log.error('could not change route', rejection);
 	});
+	
   });
