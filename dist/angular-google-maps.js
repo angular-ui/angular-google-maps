@@ -1044,7 +1044,11 @@ Nicholas McCready - https://twitter.com/nmccready
           this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, this.element.html(), {}) : {};
         }
         if ((this.opts != null) && this.gWin === void 0) {
-          this.gWin = new google.maps.InfoWindow(this.opts);
+          if (this.opts.boxClass && (InfoBox && typeof InfoBox === 'function')) {
+            this.gWin = new InfoBox(this.opts);
+          } else {
+            this.gWin = new google.maps.InfoWindow(this.opts);
+          }
           return google.maps.event.addListener(this.gWin, 'closeclick', function() {
             if (_this.markerCtrl != null) {
               _this.markerCtrl.setVisible(_this.initialMarkerVisibility);

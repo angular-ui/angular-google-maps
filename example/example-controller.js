@@ -184,6 +184,16 @@ function ExampleController($scope, $timeout, $log, $http) {
                 },
                 show: false
             },
+            infoWindowWithCustomClass: {
+                coords: {
+                    latitude: 36.270850,
+                    longitude: -44.296875
+                },
+                options:{
+                    boxClass: 'custom-info-window'
+                },
+                show: true
+            },
             templatedInfoWindow: {
                 coords: {
                     latitude: 48.654686,

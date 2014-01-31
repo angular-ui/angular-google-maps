@@ -27,7 +27,10 @@
                 @opts = if @markerCtrl? then @createWindowOptions(@markerCtrl, @scope, @element.html(), {}) else {}
 
             if @opts? and @gWin == undefined
-                @gWin = new google.maps.InfoWindow(@opts)
+                if @opts.boxClass and (InfoBox && typeof InfoBox == 'function')
+                    @gWin = new InfoBox(@opts)
+                else
+                    @gWin = new google.maps.InfoWindow(@opts)
 
                 # Set visibility of marker back to what it was before opening the window
                 google.maps.event.addListener @gWin, 'closeclick', =>
