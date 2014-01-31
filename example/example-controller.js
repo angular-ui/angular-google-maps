@@ -19,12 +19,12 @@ function ExampleController($scope, $timeout, $log, $http) {
         $scope.version = data.version;
     });
 
-    onMarkerClicked = function (marker) {
+    var onMarkerClicked = function (marker) {
         marker.showWindow = true;
         //window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
     };
 
-    genRandomMarkers = function (numberOfMarkers, scope) {
+    var genRandomMarkers = function (numberOfMarkers, scope) {
         var markers = [];
         for (var i = 0; i < numberOfMarkers; i++) {
             markers.push(createRandomMarker(i, scope.map.bounds))
@@ -32,14 +32,14 @@ function ExampleController($scope, $timeout, $log, $http) {
         scope.map.randomMarkers = markers;
     };
 
-    createRandomMarker = function (i, bounds) {
+    var createRandomMarker = function (i, bounds) {
         var lat_min = bounds.southwest.latitude,
                 lat_range = bounds.northeast.latitude - lat_min,
                 lng_min = bounds.southwest.longitude,
                 lng_range = bounds.northeast.longitude - lng_min;
 
-        latitude = lat_min + (Math.random() * lat_range);
-        longitude = lng_min + (Math.random() * lng_range);
+        var latitude = lat_min + (Math.random() * lat_range);
+        var longitude = lng_min + (Math.random() * lng_range);
         return {
             latitude: latitude,
             longitude: longitude,
