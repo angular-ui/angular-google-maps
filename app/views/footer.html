@@ -7,8 +7,7 @@
 						<h3>Latest commit</h3>
 
 						<p>{{ github.commits.latest.commit.committer.date | date:"MMM d, y hh:mm" }}<br>
-						by <a href="#!/">{{ github.commits.latest.author.login }}</a> on branch 
-						<a ng-href="https://github.com/nlaplante/angular-google-maps/tree/{{ github.branch }}" rel="external">{{ github.branch }}</a></p>
+						by <a href="#!/">{{ github.commits.latest.author.login }}</a></p>
 						
 						<blockquote class="muted"><i>{{ github.commits.latest.commit.message }}</i></blockquote>
 						<a class="btn btn-sm btn-default" href="{{ github.commits.latest.html_url }}">More details</a>					

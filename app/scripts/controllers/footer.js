@@ -6,7 +6,7 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', function ($scope
 
 	if (!githubCalled) {
 		// GitHub api calls
-	  	$q.all([$github.getCommits(), $github.getContributors(), $github.getIssues(), $github.getEvents()])
+	  	$q.all([$github.getAllCommits(), $github.getContributors(), $github.getIssues(), $github.getEvents()])
 	  		.then(function (results) {
 	  		
 		  		var commits = results[0],
@@ -26,10 +26,7 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', function ($scope
 		  				contributors: contributors,
 		  				events: events
 		  			}
-		  		});
-		  		
-		  		$log.info($scope.github);
-			
+		  		});			
 		  	}, function (err) {
 		  		$log.error(err);
 		  		$scope.github = null;
