@@ -83,13 +83,9 @@
 
 
         <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
-            <windows show="'showWindow'" closeClick="'closeClick'">
-                <p>Dynamic Marker created via a delay!</p>
-
-                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-
-                <p class="muted">My marker will stay open when the window is popped up!</p>
-            </windows>
+            <window show="map.infoWindowWithCustomClass.show" coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
+                I'm a window with a custom class set via options.boxClass. I only work when googles <a href ="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
+            </window>
         </markers>
 
         <markers models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
@@ -104,10 +100,8 @@
         <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
         <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
             <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
-            <window show="m.showWindow" closeClick="m.closeClick()">
-                <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
-
-                <p class="muted">My marker will stay open when the window is popped up!</p>
+            <window show="map.infoWindowWithCustomClass.show" coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
+                I'm a window with a custom class set via options.boxClass. I only work when googles <a href ="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
             </window>
         </marker>
 
