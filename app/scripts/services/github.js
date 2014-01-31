@@ -23,7 +23,9 @@ angular.module('angularGoogleMapsApp')
    			
    			if (options) {
    				angular.forEach(options, function (value, key) {
-   					url += ('&' + key + '=' + value);
+   					if (value != null) {
+	   					url += ('&' + key + '=' + value);
+   					}
    				});
    			}
    			
@@ -75,6 +77,49 @@ angular.module('angularGoogleMapsApp')
     		return apiCall('commits', {
     			per_page: 10
     		});
+    	};
+    	
+    	this.getAllCommits = function () {
+    		
+    		var deferred = $q.defer();
+    		
+    		apiCall('branches', {
+    			sha: null
+    		}).then(function (data) {
+    			var qs = [];
+    		
+    			angular.forEach(data, function (val) {
+    				var bdef = $q.defer();
+    				
+    				qs.push(bdef.promise);
+    				
+    				apiCall('commits', {
+    					per_page: 10,
+    					sha: val.name
+    				}).then(function (branchCommits) {
+    					bdef.resolve(branchCommits);
+    				}, function (e) {
+    					bdef.reject(e);
+    				});
+    			});
+    			
+   				$q.all(qs).then(function (allCommits) {
+   					var flattened = _.flatten(allCommits);
+   					
+   					var sorted  = _.sortBy(flattened, function (commit) {
+   						return -Date.parse(commit.commit.committer.date);
+   					});
+   					
+   					deferred.resolve(_.flatten(allCommits));
+   				}, function (e) {
+   					deferred.reject(e);
+   				});   						
+    		}, function (e) {
+    			deferred.reject(e);
+    		});
+    		
+
+			return deferred.promise;
     	};
 
     	this.getIssues = function () {
