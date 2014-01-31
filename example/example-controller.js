@@ -234,6 +234,7 @@ function ExampleController($scope, $timeout, $log, $http) {
             },
             polygons: [
 	            {
+	            	id: 1,
                     path: [
                         {
                             latitude: 50,
