@@ -3392,32 +3392,44 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             if (angular.isDefined(scope.editable)) {
               scope.$watch("editable", function(newValue, oldValue) {
-                return polyline.setEditable(newValue);
+                if (newValue !== oldValue) {
+                  return polyline.setEditable(newValue);
+                }
               });
             }
             if (angular.isDefined(scope.draggable)) {
               scope.$watch("draggable", function(newValue, oldValue) {
-                return polyline.setDraggable(newValue);
+                if (newValue !== oldValue) {
+                  return polyline.setDraggable(newValue);
+                }
               });
             }
             if (angular.isDefined(scope.visible)) {
               scope.$watch("visible", function(newValue, oldValue) {
-                return polyline.setVisible(newValue);
+                if (newValue !== oldValue) {
+                  return polyline.setVisible(newValue);
+                }
               });
             }
             if (angular.isDefined(scope.geodesic)) {
               scope.$watch("geodesic", function(newValue, oldValue) {
-                return polyline.setOptions(buildOpts(polyline.getPath()));
+                if (newValue !== oldValue) {
+                  return polyline.setOptions(buildOpts(polyline.getPath()));
+                }
               });
             }
             if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
               scope.$watch("stroke.weight", function(newValue, oldValue) {
-                return polyline.setOptions(buildOpts(polyline.getPath()));
+                if (newValue !== oldValue) {
+                  return polyline.setOptions(buildOpts(polyline.getPath()));
+                }
               });
             }
             if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
               scope.$watch("stroke.color", function(newValue, oldValue) {
-                return polyline.setOptions(buildOpts(polyline.getPath()));
+                if (newValue !== oldValue) {
+                  return polyline.setOptions(buildOpts(polyline.getPath()));
+                }
               });
             }
             arraySyncer = arraySync(polyline.getPath(), scope, "path");
