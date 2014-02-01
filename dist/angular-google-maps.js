@@ -1044,9 +1044,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, html, defaults) : {};
         }
         if ((this.opts != null) && this.gWin === void 0) {
-          console.log('IAM HERaaaaaE', window.InfoBox, this.opts);
           if (this.opts.boxClass && (window.InfoBox && typeof window.InfoBox === 'function')) {
-            console.log('gwin gets info-boxed');
             this.gWin = new window.InfoBox(this.opts);
           } else {
             this.gWin = new google.maps.InfoWindow(this.opts);

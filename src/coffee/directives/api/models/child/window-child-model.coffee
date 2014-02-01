@@ -29,10 +29,7 @@
                 @opts = if @markerCtrl? then @createWindowOptions(@markerCtrl, @scope, html, defaults) else {}
 
             if @opts? and @gWin == undefined
-                console.log('IAM HERaaaaaE', window.InfoBox,  @opts)
                 if @opts.boxClass and (window.InfoBox && typeof window.InfoBox == 'function')
-                    console.log('gwin gets info-boxed')
-
                     @gWin = new window.InfoBox(@opts)
                 else
                     @gWin = new google.maps.InfoWindow(@opts)
