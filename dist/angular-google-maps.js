@@ -1035,16 +1035,20 @@ Nicholas McCready - https://twitter.com/nmccready
         this.$log.info(this);
       }
 
-      WindowChildModel.prototype.createGWin = function(createOpts) {
-        var _this = this;
-        if (createOpts == null) {
-          createOpts = false;
-        }
-        if ((this.gWin == null) && createOpts) {
-          this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, this.element.html(), {}) : {};
+      WindowChildModel.prototype.createGWin = function() {
+        var defaults, html,
+          _this = this;
+        if ((this.gWin == null) && (this.markerCtrl != null)) {
+          defaults = this.opts != null ? this.opts : {};
+          html = _.isObject(this.element) ? this.element.html() : this.element;
+          this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, html, defaults) : {};
         }
         if ((this.opts != null) && this.gWin === void 0) {
-          this.gWin = new google.maps.InfoWindow(this.opts);
+          if (this.opts.boxClass && (window.InfoBox && typeof window.InfoBox === 'function')) {
+            this.gWin = new window.InfoBox(this.opts);
+          } else {
+            this.gWin = new google.maps.InfoWindow(this.opts);
+          }
           return google.maps.event.addListener(this.gWin, 'closeclick', function() {
             if (_this.markerCtrl != null) {
               _this.markerCtrl.setVisible(_this.initialMarkerVisibility);
@@ -1099,12 +1103,8 @@ Nicholas McCready - https://twitter.com/nmccready
         if (this.markerCtrl != null) {
           return google.maps.event.addListener(this.markerCtrl, 'click', function() {
             var pos;
-            if ((_this.gWin == null) && (_this.opts == null)) {
-              _this.createGWin(true);
-            } else {
-              if (_this.gWin == null) {
-                _this.createGWin();
-              }
+            if (_this.gWin == null) {
+              _this.createGWin();
             }
             pos = _this.markerCtrl.getPosition();
             if (_this.gWin != null) {
@@ -2291,7 +2291,7 @@ not 1:1 in this setting.
           markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarkerScope().gMarker : void 0;
           defaults = scope.options != null ? scope.options : {};
           hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
-          opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : void 0;
+          opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : defaults;
           if (mapCtrl != null) {
             window = new directives.api.models.child.WindowChildModel(scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile, element);
           }
