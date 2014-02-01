@@ -1,5 +1,5 @@
-@ngGmapModule "directives.api.models.parent", ->
-    class @MarkersParentModel extends directives.api.models.parent.IMarkerParentModel
+angular.module("google-maps").factory "MarkersParentModel",["IMarkerParentModel", (IMarkerParentModel) ->
+    class MarkersParentModel extends IMarkerParentModel
         @include directives.api.utils.ModelsWatcher
         constructor: (scope, element, attrs, mapCtrl, $timeout) ->
             super(scope, element, attrs, mapCtrl, $timeout)
@@ -125,3 +125,5 @@
                 , () =>
                     @mapCtrl.getMap().fitBounds(bounds) if everSet
 
+    return MarkersParentModel
+]

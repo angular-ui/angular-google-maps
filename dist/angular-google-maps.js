@@ -663,6 +663,10 @@ Nicholas McCready - https://twitter.com/nmccready
     };
   });
 
+  angular.module("google-maps").factory("GmapUtil", function() {
+    return directives.api.utils.GmapUtil;
+  });
+
 }).call(this);
 
 (function() {
@@ -754,6 +758,10 @@ Nicholas McCready - https://twitter.com/nmccready
       return ModelKey;
 
     })(oo.BaseObject);
+  });
+
+  angular.module("google-maps").factory("ModelKey", function() {
+    return directives.api.utils.ModelKey;
   });
 
 }).call(this);
@@ -1389,90 +1397,94 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.ngGmapModule("directives.api.models.parent", function() {
-    return this.IMarkerParentModel = (function(_super) {
-      __extends(IMarkerParentModel, _super);
+  angular.module("google-maps").factory("IMarkerParentModel", [
+    "ModelKey", function(ModelKey) {
+      var IMarkerParentModel;
+      IMarkerParentModel = (function(_super) {
+        __extends(IMarkerParentModel, _super);
 
-      IMarkerParentModel.prototype.DEFAULTS = {};
+        IMarkerParentModel.prototype.DEFAULTS = {};
 
-      IMarkerParentModel.prototype.isFalse = function(value) {
-        return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
-      };
+        IMarkerParentModel.prototype.isFalse = function(value) {
+          return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
+        };
 
-      function IMarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
-        var self,
-          _this = this;
-        this.scope = scope;
-        this.element = element;
-        this.attrs = attrs;
-        this.mapCtrl = mapCtrl;
-        this.$timeout = $timeout;
-        this.linkInit = __bind(this.linkInit, this);
-        this.onDestroy = __bind(this.onDestroy, this);
-        this.onWatch = __bind(this.onWatch, this);
-        this.watch = __bind(this.watch, this);
-        this.validateScope = __bind(this.validateScope, this);
-        this.onTimeOut = __bind(this.onTimeOut, this);
-        IMarkerParentModel.__super__.constructor.call(this, this.scope);
-        self = this;
-        this.$log = directives.api.utils.Logger;
-        if (!this.validateScope(scope)) {
-          return;
-        }
-        this.doClick = angular.isDefined(attrs.click);
-        if (scope.options != null) {
-          this.DEFAULTS = scope.options;
-        }
-        this.$timeout(function() {
-          _this.watch('coords', scope);
-          _this.watch('icon', scope);
-          _this.watch('options', scope);
-          _this.onTimeOut(scope);
-          return scope.$on("$destroy", function() {
-            return _this.onDestroy(scope);
-          });
-        });
-      }
-
-      IMarkerParentModel.prototype.onTimeOut = function(scope) {};
-
-      IMarkerParentModel.prototype.validateScope = function(scope) {
-        var ret;
-        if (scope == null) {
-          return false;
-        }
-        ret = scope.coords != null;
-        if (!ret) {
-          this.$log.error(this.constructor.name + ": no valid coords attribute found");
-        }
-        return ret;
-      };
-
-      IMarkerParentModel.prototype.watch = function(propNameToWatch, scope) {
-        var _this = this;
-        return scope.$watch(propNameToWatch, function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            return _this.onWatch(propNameToWatch, scope, newValue, oldValue);
+        function IMarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
+          var self,
+            _this = this;
+          this.scope = scope;
+          this.element = element;
+          this.attrs = attrs;
+          this.mapCtrl = mapCtrl;
+          this.$timeout = $timeout;
+          this.linkInit = __bind(this.linkInit, this);
+          this.onDestroy = __bind(this.onDestroy, this);
+          this.onWatch = __bind(this.onWatch, this);
+          this.watch = __bind(this.watch, this);
+          this.validateScope = __bind(this.validateScope, this);
+          this.onTimeOut = __bind(this.onTimeOut, this);
+          IMarkerParentModel.__super__.constructor.call(this, this.scope);
+          self = this;
+          this.$log = directives.api.utils.Logger;
+          if (!this.validateScope(scope)) {
+            return;
           }
-        });
-      };
+          this.doClick = angular.isDefined(attrs.click);
+          if (scope.options != null) {
+            this.DEFAULTS = scope.options;
+          }
+          this.$timeout(function() {
+            _this.watch('coords', scope);
+            _this.watch('icon', scope);
+            _this.watch('options', scope);
+            _this.onTimeOut(scope);
+            return scope.$on("$destroy", function() {
+              return _this.onDestroy(scope);
+            });
+          });
+        }
 
-      IMarkerParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
-        throw new Exception("Not Implemented!!");
-      };
+        IMarkerParentModel.prototype.onTimeOut = function(scope) {};
 
-      IMarkerParentModel.prototype.onDestroy = function(scope) {
-        throw new Exception("Not Implemented!!");
-      };
+        IMarkerParentModel.prototype.validateScope = function(scope) {
+          var ret;
+          if (scope == null) {
+            return false;
+          }
+          ret = scope.coords != null;
+          if (!ret) {
+            this.$log.error(this.constructor.name + ": no valid coords attribute found");
+          }
+          return ret;
+        };
 
-      IMarkerParentModel.prototype.linkInit = function(element, mapCtrl, scope, animate) {
-        throw new Exception("Not Implemented!!");
-      };
+        IMarkerParentModel.prototype.watch = function(propNameToWatch, scope) {
+          var _this = this;
+          return scope.$watch(propNameToWatch, function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              return _this.onWatch(propNameToWatch, scope, newValue, oldValue);
+            }
+          });
+        };
 
+        IMarkerParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
+          throw new Exception("Not Implemented!!");
+        };
+
+        IMarkerParentModel.prototype.onDestroy = function(scope) {
+          throw new Exception("Not Implemented!!");
+        };
+
+        IMarkerParentModel.prototype.linkInit = function(element, mapCtrl, scope, animate) {
+          throw new Exception("Not Implemented!!");
+        };
+
+        return IMarkerParentModel;
+
+      })(ModelKey);
       return IMarkerParentModel;
-
-    })(directives.api.utils.ModelKey);
-  });
+    }
+  ]);
 
 }).call(this);
 
@@ -1607,104 +1619,108 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.ngGmapModule("directives.api.models.parent", function() {
-    return this.MarkerParentModel = (function(_super) {
-      __extends(MarkerParentModel, _super);
+  angular.module("google-maps").factory("MarkerParentModel", [
+    "IMarkerParentModel", "GmapUtil", function(IMarkerParentModel, GmapUtil) {
+      var MarkerParentModel;
+      MarkerParentModel = (function(_super) {
+        __extends(MarkerParentModel, _super);
 
-      MarkerParentModel.include(directives.api.utils.GmapUtil);
+        MarkerParentModel.include(GmapUtil);
 
-      function MarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
-        this.onDestroy = __bind(this.onDestroy, this);
-        this.onWatch = __bind(this.onWatch, this);
-        this.onTimeOut = __bind(this.onTimeOut, this);
-        var self;
-        MarkerParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
-        self = this;
-      }
+        function MarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
+          this.onDestroy = __bind(this.onDestroy, this);
+          this.onWatch = __bind(this.onWatch, this);
+          this.onTimeOut = __bind(this.onTimeOut, this);
+          var self;
+          MarkerParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
+          self = this;
+        }
 
-      MarkerParentModel.prototype.onTimeOut = function(scope) {
-        var opts,
-          _this = this;
-        opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap());
-        this.scope.gMarker = new google.maps.Marker(opts);
-        google.maps.event.addListener(this.scope.gMarker, 'click', function() {
-          if (_this.doClick && (scope.click != null)) {
-            return _this.$timeout(function() {
-              return _this.scope.click();
-            });
-          }
-        });
-        this.setEvents(this.scope.gMarker, scope);
-        return this.$log.info(this);
-      };
-
-      MarkerParentModel.prototype.onWatch = function(propNameToWatch, scope) {
-        switch (propNameToWatch) {
-          case 'coords':
-            if ((scope.coords != null) && (this.scope.gMarker != null)) {
-              this.scope.gMarker.setMap(this.mapCtrl.getMap());
-              this.scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-              this.scope.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
-              return this.scope.gMarker.setOptions(scope.options);
-            } else {
-              return this.scope.gMarker.setMap(null);
+        MarkerParentModel.prototype.onTimeOut = function(scope) {
+          var opts,
+            _this = this;
+          opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap());
+          this.scope.gMarker = new google.maps.Marker(opts);
+          google.maps.event.addListener(this.scope.gMarker, 'click', function() {
+            if (_this.doClick && (scope.click != null)) {
+              return _this.$timeout(function() {
+                return _this.scope.click();
+              });
             }
-            break;
-          case 'icon':
-            if ((scope.icon != null) && (scope.coords != null) && (this.scope.gMarker != null)) {
-              this.scope.gMarker.setOptions(scope.options);
-              this.scope.gMarker.setIcon(scope.icon);
-              this.scope.gMarker.setMap(null);
-              this.scope.gMarker.setMap(this.mapCtrl.getMap());
-              this.scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-              return this.scope.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
-            }
-            break;
-          case 'options':
-            if ((scope.coords != null) && (scope.icon != null) && scope.options) {
-              if (this.scope.gMarker != null) {
-                this.scope.gMarker.setMap(null);
+          });
+          this.setEvents(this.scope.gMarker, scope);
+          return this.$log.info(this);
+        };
+
+        MarkerParentModel.prototype.onWatch = function(propNameToWatch, scope) {
+          switch (propNameToWatch) {
+            case 'coords':
+              if ((scope.coords != null) && (this.scope.gMarker != null)) {
+                this.scope.gMarker.setMap(this.mapCtrl.getMap());
+                this.scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
+                this.scope.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
+                return this.scope.gMarker.setOptions(scope.options);
+              } else {
+                return this.scope.gMarker.setMap(null);
               }
-              delete this.scope.gMarker;
-              return this.scope.gMarker = new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap()));
-            }
-        }
-      };
-
-      MarkerParentModel.prototype.onDestroy = function(scope) {
-        var self;
-        if (this.scope.gMarker === void 0) {
-          self = void 0;
-          return;
-        }
-        this.scope.gMarker.setMap(null);
-        delete this.scope.gMarker;
-        return self = void 0;
-      };
-
-      MarkerParentModel.prototype.setEvents = function(marker, scope) {
-        var eventHandler, eventName, _ref, _results;
-        if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
-          _ref = scope.events;
-          _results = [];
-          for (eventName in _ref) {
-            eventHandler = _ref[eventName];
-            if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-              _results.push(google.maps.event.addListener(marker, eventName, function() {
-                return eventHandler.apply(scope, [marker, eventName, arguments]);
-              }));
-            } else {
-              _results.push(void 0);
-            }
+              break;
+            case 'icon':
+              if ((scope.icon != null) && (scope.coords != null) && (this.scope.gMarker != null)) {
+                this.scope.gMarker.setOptions(scope.options);
+                this.scope.gMarker.setIcon(scope.icon);
+                this.scope.gMarker.setMap(null);
+                this.scope.gMarker.setMap(this.mapCtrl.getMap());
+                this.scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
+                return this.scope.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
+              }
+              break;
+            case 'options':
+              if ((scope.coords != null) && (scope.icon != null) && scope.options) {
+                if (this.scope.gMarker != null) {
+                  this.scope.gMarker.setMap(null);
+                }
+                delete this.scope.gMarker;
+                return this.scope.gMarker = new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap()));
+              }
           }
-          return _results;
-        }
-      };
+        };
 
+        MarkerParentModel.prototype.onDestroy = function(scope) {
+          var self;
+          if (this.scope.gMarker === void 0) {
+            self = void 0;
+            return;
+          }
+          this.scope.gMarker.setMap(null);
+          delete this.scope.gMarker;
+          return self = void 0;
+        };
+
+        MarkerParentModel.prototype.setEvents = function(marker, scope) {
+          var eventHandler, eventName, _ref, _results;
+          if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
+            _ref = scope.events;
+            _results = [];
+            for (eventName in _ref) {
+              eventHandler = _ref[eventName];
+              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+                _results.push(google.maps.event.addListener(marker, eventName, function() {
+                  return eventHandler.apply(scope, [marker, eventName, arguments]);
+                }));
+              } else {
+                _results.push(void 0);
+              }
+            }
+            return _results;
+          }
+        };
+
+        return MarkerParentModel;
+
+      })(IMarkerParentModel);
       return MarkerParentModel;
-
-    })(directives.api.models.parent.IMarkerParentModel);
-  });
+    }
+  ]);
 
 }).call(this);
 
@@ -1713,178 +1729,182 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.ngGmapModule("directives.api.models.parent", function() {
-    return this.MarkersParentModel = (function(_super) {
-      __extends(MarkersParentModel, _super);
+  angular.module("google-maps").factory("MarkersParentModel", [
+    "IMarkerParentModel", function(IMarkerParentModel) {
+      var MarkersParentModel;
+      MarkersParentModel = (function(_super) {
+        __extends(MarkersParentModel, _super);
 
-      MarkersParentModel.include(directives.api.utils.ModelsWatcher);
+        MarkersParentModel.include(directives.api.utils.ModelsWatcher);
 
-      function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
-        this.fit = __bind(this.fit, this);
-        this.onDestroy = __bind(this.onDestroy, this);
-        this.newChildMarker = __bind(this.newChildMarker, this);
-        this.pieceMealMarkers = __bind(this.pieceMealMarkers, this);
-        this.reBuildMarkers = __bind(this.reBuildMarkers, this);
-        this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
-        this.validateScope = __bind(this.validateScope, this);
-        this.onWatch = __bind(this.onWatch, this);
-        this.onTimeOut = __bind(this.onTimeOut, this);
-        var self,
-          _this = this;
-        MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
-        self = this;
-        this.scope.markerModels = new directives.api.utils.PropMap();
-        this.gMarkerManager = void 0;
-        this.$timeout = $timeout;
-        this.$log.info(this);
-        this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : true;
-        this.idKey = scope.idKey != null ? scope.idKey : this.defaultIdKey;
-        this.scope.$watch('doRebuildAll', function(newValue, oldValue) {
-          if (newValue !== oldValue) {
-            return _this.doRebuildAll = newValue;
+        function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
+          this.fit = __bind(this.fit, this);
+          this.onDestroy = __bind(this.onDestroy, this);
+          this.newChildMarker = __bind(this.newChildMarker, this);
+          this.pieceMealMarkers = __bind(this.pieceMealMarkers, this);
+          this.reBuildMarkers = __bind(this.reBuildMarkers, this);
+          this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
+          this.validateScope = __bind(this.validateScope, this);
+          this.onWatch = __bind(this.onWatch, this);
+          this.onTimeOut = __bind(this.onTimeOut, this);
+          var self,
+            _this = this;
+          MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
+          self = this;
+          this.scope.markerModels = new directives.api.utils.PropMap();
+          this.gMarkerManager = void 0;
+          this.$timeout = $timeout;
+          this.$log.info(this);
+          this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : true;
+          this.idKey = scope.idKey != null ? scope.idKey : this.defaultIdKey;
+          this.scope.$watch('doRebuildAll', function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              return _this.doRebuildAll = newValue;
+            }
+          });
+        }
+
+        MarkersParentModel.prototype.onTimeOut = function(scope) {
+          this.watch('models', scope);
+          this.watch('doCluster', scope);
+          this.watch('clusterOptions', scope);
+          this.watch('fit', scope);
+          this.watch('idKey', scope);
+          return this.createMarkersFromScratch(scope);
+        };
+
+        MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
+          if (propNameToWatch === "idKey" && newValue !== oldValue) {
+            this.idKey = newValue;
           }
-        });
-      }
+          if (this.doRebuildAll) {
+            return this.reBuildMarkers(scope);
+          } else {
+            return this.pieceMealMarkers(scope);
+          }
+        };
 
-      MarkersParentModel.prototype.onTimeOut = function(scope) {
-        this.watch('models', scope);
-        this.watch('doCluster', scope);
-        this.watch('clusterOptions', scope);
-        this.watch('fit', scope);
-        this.watch('idKey', scope);
-        return this.createMarkersFromScratch(scope);
-      };
+        MarkersParentModel.prototype.validateScope = function(scope) {
+          var modelsNotDefined;
+          modelsNotDefined = angular.isUndefined(scope.models) || scope.models === void 0;
+          if (modelsNotDefined) {
+            this.$log.error(this.constructor.name + ": no valid models attribute found");
+          }
+          return MarkersParentModel.__super__.validateScope.call(this, scope) || modelsNotDefined;
+        };
 
-      MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
-        if (propNameToWatch === "idKey" && newValue !== oldValue) {
-          this.idKey = newValue;
-        }
-        if (this.doRebuildAll) {
-          return this.reBuildMarkers(scope);
-        } else {
-          return this.pieceMealMarkers(scope);
-        }
-      };
-
-      MarkersParentModel.prototype.validateScope = function(scope) {
-        var modelsNotDefined;
-        modelsNotDefined = angular.isUndefined(scope.models) || scope.models === void 0;
-        if (modelsNotDefined) {
-          this.$log.error(this.constructor.name + ": no valid models attribute found");
-        }
-        return MarkersParentModel.__super__.validateScope.call(this, scope) || modelsNotDefined;
-      };
-
-      MarkersParentModel.prototype.createMarkersFromScratch = function(scope) {
-        var _this = this;
-        if ((scope.doCluster != null) && scope.doCluster === true) {
-          if (scope.clusterOptions != null) {
-            if (this.gMarkerManager === void 0) {
-              this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
-            } else {
-              if (this.gMarkerManager.opt_options !== scope.clusterOptions) {
+        MarkersParentModel.prototype.createMarkersFromScratch = function(scope) {
+          var _this = this;
+          if ((scope.doCluster != null) && scope.doCluster === true) {
+            if (scope.clusterOptions != null) {
+              if (this.gMarkerManager === void 0) {
                 this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
+              } else {
+                if (this.gMarkerManager.opt_options !== scope.clusterOptions) {
+                  this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
+                }
               }
+            } else {
+              this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap());
             }
           } else {
-            this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap());
+            this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
           }
-        } else {
-          this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
-        }
-        return _async.each(scope.models, function(model) {
-          return _this.newChildMarker(model, scope);
-        }, function() {
-          _this.gMarkerManager.draw();
-          if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
-            return _this.fit();
+          return _async.each(scope.models, function(model) {
+            return _this.newChildMarker(model, scope);
+          }, function() {
+            _this.gMarkerManager.draw();
+            if (angular.isDefined(_this.attrs.fit) && (scope.fit != null) && scope.fit) {
+              return _this.fit();
+            }
+          });
+        };
+
+        MarkersParentModel.prototype.reBuildMarkers = function(scope) {
+          if (!scope.doRebuild && scope.doRebuild !== void 0) {
+            return;
           }
-        });
-      };
+          this.onDestroy(scope);
+          return this.createMarkersFromScratch(scope);
+        };
 
-      MarkersParentModel.prototype.reBuildMarkers = function(scope) {
-        if (!scope.doRebuild && scope.doRebuild !== void 0) {
-          return;
-        }
-        this.onDestroy(scope);
-        return this.createMarkersFromScratch(scope);
-      };
-
-      MarkersParentModel.prototype.pieceMealMarkers = function(scope) {
-        var _this = this;
-        if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.markerModels.length > 0) {
-          return this.figureOutState(this.idKey, scope, this.scope.markerModels, this.modelKeyComparison, function(state) {
-            var payload;
-            payload = state;
-            return _async.each(payload.removals, function(child) {
-              if (child != null) {
-                child.destroy();
-                return _this.scope.markerModels.remove(child.id);
-              }
-            }, function() {
-              return _async.each(payload.adds, function(modelToAdd) {
-                return _this.newChildMarker(modelToAdd, scope);
+        MarkersParentModel.prototype.pieceMealMarkers = function(scope) {
+          var _this = this;
+          if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.markerModels.length > 0) {
+            return this.figureOutState(this.idKey, scope, this.scope.markerModels, this.modelKeyComparison, function(state) {
+              var payload;
+              payload = state;
+              return _async.each(payload.removals, function(child) {
+                if (child != null) {
+                  child.destroy();
+                  return _this.scope.markerModels.remove(child.id);
+                }
               }, function() {
-                _this.gMarkerManager.draw();
-                return scope.markerModels = _this.scope.markerModels;
+                return _async.each(payload.adds, function(modelToAdd) {
+                  return _this.newChildMarker(modelToAdd, scope);
+                }, function() {
+                  _this.gMarkerManager.draw();
+                  return scope.markerModels = _this.scope.markerModels;
+                });
               });
             });
-          });
-        } else {
-          return this.reBuildMarkers(scope);
-        }
-      };
-
-      MarkersParentModel.prototype.newChildMarker = function(model, scope) {
-        var child;
-        child = new directives.api.models.child.MarkerChildModel(model, scope, this.mapCtrl, this.$timeout, this.DEFAULTS, this.doClick, this.gMarkerManager);
-        this.$log.info('child', child, 'markers', this.scope.markerModels);
-        if (model[this.idKey] == null) {
-          this.$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
-          return;
-        }
-        this.scope.markerModels.put(model[this.idKey], child);
-        return child;
-      };
-
-      MarkersParentModel.prototype.onDestroy = function(scope) {
-        _.each(this.scope.markerModels.values(), function(model) {
-          if (model != null) {
-            return model.destroy();
+          } else {
+            return this.reBuildMarkers(scope);
           }
-        });
-        delete this.scope.markerModels;
-        this.scope.markerModels = new directives.api.utils.PropMap();
-        if (this.gMarkerManager != null) {
-          return this.gMarkerManager.clear();
-        }
-      };
+        };
 
-      MarkersParentModel.prototype.fit = function() {
-        var bounds, everSet,
-          _this = this;
-        if (this.mapCtrl && (this.scope.markerModels != null) && this.scope.markerModels.length > 0) {
-          bounds = new google.maps.LatLngBounds();
-          everSet = false;
-          return _async.each(this.scope.markerModels.values(), function(child) {
-            if (child.gMarker != null) {
-              if (!everSet) {
-                everSet = true;
-              }
-              return bounds.extend(child.gMarker.getPosition());
-            }
-          }, function() {
-            if (everSet) {
-              return _this.mapCtrl.getMap().fitBounds(bounds);
+        MarkersParentModel.prototype.newChildMarker = function(model, scope) {
+          var child;
+          child = new directives.api.models.child.MarkerChildModel(model, scope, this.mapCtrl, this.$timeout, this.DEFAULTS, this.doClick, this.gMarkerManager);
+          this.$log.info('child', child, 'markers', this.scope.markerModels);
+          if (model[this.idKey] == null) {
+            this.$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
+            return;
+          }
+          this.scope.markerModels.put(model[this.idKey], child);
+          return child;
+        };
+
+        MarkersParentModel.prototype.onDestroy = function(scope) {
+          _.each(this.scope.markerModels.values(), function(model) {
+            if (model != null) {
+              return model.destroy();
             }
           });
-        }
-      };
+          delete this.scope.markerModels;
+          this.scope.markerModels = new directives.api.utils.PropMap();
+          if (this.gMarkerManager != null) {
+            return this.gMarkerManager.clear();
+          }
+        };
 
+        MarkersParentModel.prototype.fit = function() {
+          var bounds, everSet,
+            _this = this;
+          if (this.mapCtrl && (this.scope.markerModels != null) && this.scope.markerModels.length > 0) {
+            bounds = new google.maps.LatLngBounds();
+            everSet = false;
+            return _async.each(this.scope.markerModels.values(), function(child) {
+              if (child.gMarker != null) {
+                if (!everSet) {
+                  everSet = true;
+                }
+                return bounds.extend(child.gMarker.getPosition());
+              }
+            }, function() {
+              if (everSet) {
+                return _this.mapCtrl.getMap().fitBounds(bounds);
+              }
+            });
+          }
+        };
+
+        return MarkersParentModel;
+
+      })(IMarkerParentModel);
       return MarkersParentModel;
-
-    })(directives.api.models.parent.IMarkerParentModel);
-  });
+    }
+  ]);
 
 }).call(this);
 
@@ -2251,8 +2271,9 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  this.ngGmapModule("directives.api", function() {
-    return this.IMarker = (function(_super) {
+  angular.module("google-maps").factory("IMarker", function() {
+    var IMarker;
+    IMarker = (function(_super) {
       __extends(IMarker, _super);
 
       function IMarker($timeout) {
@@ -2288,6 +2309,7 @@ Nicholas McCready - https://twitter.com/nmccready
       return IMarker;
 
     })(oo.BaseObject);
+    return IMarker;
   });
 
 }).call(this);
@@ -2430,112 +2452,6 @@ Nicholas McCready - https://twitter.com/nmccready
       return Layer;
 
     })(oo.BaseObject);
-  });
-
-}).call(this);
-
-/*
-	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
-	Thus there will be one html element per marker within the directive.
-*/
-
-
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  this.ngGmapModule("directives.api", function() {
-    return this.Marker = (function(_super) {
-      __extends(Marker, _super);
-
-      function Marker($timeout) {
-        this.link = __bind(this.link, this);
-        var self;
-        Marker.__super__.constructor.call(this, $timeout);
-        self = this;
-        this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
-        this.$log.info(this);
-      }
-
-      Marker.prototype.controller = [
-        '$scope', '$element', function($scope, $element) {
-          return {
-            getMarkerScope: function() {
-              return $scope;
-            }
-          };
-        }
-      ];
-
-      Marker.prototype.link = function(scope, element, attrs, ctrl) {
-        return new directives.api.models.parent.MarkerParentModel(scope, element, attrs, ctrl, this.$timeout);
-      };
-
-      return Marker;
-
-    })(directives.api.IMarker);
-  });
-
-}).call(this);
-
-/*
-Markers will map icon and coords differently than directibes.api.Marker. This is because Scope and the model marker are
-not 1:1 in this setting.
-	
-	- icon - will be the iconKey to the marker value ie: to get the icon marker[iconKey]
-	- coords - will be the coordsKey to the marker value ie: to get the icon marker[coordsKey]
-
-    - watches from IMarker reflect that the look up key for a value has changed and not the actual icon or coords itself
-    - actual changes to a model are tracked inside directives.api.model.MarkerModel
-*/
-
-
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  this.ngGmapModule("directives.api", function() {
-    return this.Markers = (function(_super) {
-      __extends(Markers, _super);
-
-      function Markers($timeout) {
-        this.link = __bind(this.link, this);
-        var self;
-        Markers.__super__.constructor.call(this, $timeout);
-        self = this;
-        this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
-        this.scope.idKey = '=idkey';
-        this.scope.doRebuildAll = '=dorebuildall';
-        this.scope.models = '=models';
-        this.scope.doCluster = '=docluster';
-        this.scope.clusterOptions = '=clusteroptions';
-        this.scope.fit = '=fit';
-        this.scope.labelContent = '=labelcontent';
-        this.scope.labelAnchor = '@labelanchor';
-        this.scope.labelClass = '@labelclass';
-        this.$timeout = $timeout;
-        this.$log.info(this);
-      }
-
-      Markers.prototype.controller = [
-        '$scope', '$element', function($scope, $element) {
-          return {
-            getMarkersScope: function() {
-              return $scope;
-            }
-          };
-        }
-      ];
-
-      Markers.prototype.link = function(scope, element, attrs, ctrl) {
-        return new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, this.$timeout);
-      };
-
-      return Markers;
-
-    })(directives.api.IMarker);
   });
 
 }).call(this);
@@ -2963,9 +2879,43 @@ This directive creates a new scope.
 
 
 (function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   angular.module("google-maps").directive("marker", [
-    "$timeout", function($timeout) {
-      return new directives.api.Marker($timeout);
+    "$timeout", "IMarker", "MarkerParentModel", function($timeout, IMarker, MarkerParentModel) {
+      var Marker;
+      Marker = (function(_super) {
+        __extends(Marker, _super);
+
+        function Marker($timeout) {
+          this.link = __bind(this.link, this);
+          var self;
+          Marker.__super__.constructor.call(this, $timeout);
+          self = this;
+          this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
+          this.$log.info(this);
+        }
+
+        Marker.prototype.controller = [
+          '$scope', '$element', function($scope, $element) {
+            return {
+              getMarkerScope: function() {
+                return $scope;
+              }
+            };
+          }
+        ];
+
+        Marker.prototype.link = function(scope, element, attrs, ctrl) {
+          return new MarkerParentModel(scope, element, attrs, ctrl, this.$timeout);
+        };
+
+        return Marker;
+
+      })(IMarker);
+      return new Marker($timeout);
     }
   ]);
 
@@ -3017,9 +2967,53 @@ This directive creates a new scope.
 
 
 (function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   angular.module("google-maps").directive("markers", [
-    "$timeout", function($timeout) {
-      return new directives.api.Markers($timeout);
+    "$timeout", "IMarker", "MarkersParentModel", function($timeout, IMarker, MarkersParentModel) {
+      var Markers;
+      Markers = (function(_super) {
+        __extends(Markers, _super);
+
+        function Markers($timeout) {
+          this.link = __bind(this.link, this);
+          var self;
+          Markers.__super__.constructor.call(this, $timeout);
+          self = this;
+          this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
+          this.scope.idKey = '=idkey';
+          this.scope.doRebuildAll = '=dorebuildall';
+          this.scope.models = '=models';
+          this.scope.doCluster = '=docluster';
+          this.scope.clusterOptions = '=clusteroptions';
+          this.scope.fit = '=fit';
+          this.scope.labelContent = '=labelcontent';
+          this.scope.labelAnchor = '@labelanchor';
+          this.scope.labelClass = '@labelclass';
+          this.$timeout = $timeout;
+          this.$log.info(this);
+        }
+
+        Markers.prototype.controller = [
+          '$scope', '$element', function($scope, $element) {
+            return {
+              getMarkersScope: function() {
+                return $scope;
+              }
+            };
+          }
+        ];
+
+        Markers.prototype.link = function(scope, element, attrs, ctrl) {
+          return new MarkersParentModel(scope, element, attrs, ctrl, this.$timeout);
+        };
+
+        return Markers;
+
+      })(IMarker);
+      return new Markers($timeout);
     }
   ]);
 

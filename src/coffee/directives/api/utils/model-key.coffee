@@ -20,3 +20,6 @@
             @evalModelHandle(model1, scope.coords).longitude == @evalModelHandle(model2,
                     scope.coords).longitude
 
+
+angular.module("google-maps").factory "ModelKey", ->
+    directives.api.utils.ModelKey

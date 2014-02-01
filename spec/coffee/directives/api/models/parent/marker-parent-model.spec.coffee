@@ -16,7 +16,7 @@ describe "MarkerParentModel", ->
                     self.clicked = true
 
         #define / inject values into the item we are testing... not a controller but it allows us to inject
-        angular.module('mockModule', [])
+        angular.module('mockModule', ["google-maps"])
         .value('mapCtrl',
                 getMap: ()->
                     document.gMap)
@@ -24,8 +24,8 @@ describe "MarkerParentModel", ->
         .value('attrs', {})
         .value('model', {})
         .value('scope', @scope)
-        .controller 'subject', (scope, element, attrs, mapCtrl, $timeout) =>
-                @subject = new directives.api.models.parent.MarkerParentModel(scope, element, attrs, mapCtrl, $timeout)
+        .controller 'subject', (scope, element, attrs, mapCtrl, $timeout, MarkerParentModel) =>
+                @subject = new MarkerParentModel(scope, element, attrs, mapCtrl, $timeout)
         angular.mock.module('mockModule')
         inject ($timeout, $rootScope, $log, $controller) =>
             directives.api.utils.Logger.logger = $log

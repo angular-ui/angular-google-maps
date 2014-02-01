@@ -30,3 +30,6 @@
                     then gMarker.getPosition() else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
 
         defaultDelay: 50
+
+angular.module("google-maps").factory "GmapUtil", ->
+    return directives.api.utils.GmapUtil

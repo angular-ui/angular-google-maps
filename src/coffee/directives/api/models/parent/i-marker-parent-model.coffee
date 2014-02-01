@@ -6,8 +6,8 @@
  			- icon
 		- implementation needed on watches
 ###
-@ngGmapModule "directives.api.models.parent", ->
-    class @IMarkerParentModel extends directives.api.utils.ModelKey
+angular.module("google-maps").factory "IMarkerParentModel", ["ModelKey", (ModelKey) ->
+    class IMarkerParentModel extends ModelKey
         DEFAULTS: {}
 
         # Check if a value is literally false
@@ -57,3 +57,5 @@
 
         linkInit: (element, mapCtrl, scope, animate)=>
             throw new Exception("Not Implemented!!")
+    return IMarkerParentModel
+]
