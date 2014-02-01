@@ -25,6 +25,7 @@ describe "MarkerParentModel", ->
         .value('model', {})
         .value('scope', @scope)
         .controller 'subject', (scope, element, attrs, mapCtrl, $timeout, MarkerParentModel) =>
+                @testCtor = MarkerParentModel
                 @subject = new MarkerParentModel(scope, element, attrs, mapCtrl, $timeout)
         angular.mock.module('mockModule')
         inject ($timeout, $rootScope, $log, $controller) =>
@@ -59,8 +60,7 @@ describe "MarkerParentModel", ->
         @subject.setEvents(@, @scope)
 
     it 'constructor exist', ->
-        test = directives.api.models.parent.MarkerParentModel?
-        expect(test).toEqual(true)
+        expect(@testCtor?).toEqual(true)
 
     it 'can be created', ->
         expect(@subject?).toEqual(true)
