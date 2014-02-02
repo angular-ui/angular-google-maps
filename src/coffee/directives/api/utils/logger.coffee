@@ -1,5 +1,5 @@
-@ngGmapModule "directives.api.utils", ->
-    @Logger =
+angular.module("google-maps").service "Logger",  ->
+    Logger =
         logger: undefined
         doLog: false
         info: (msg) ->
@@ -14,4 +14,5 @@
                     logger.logger.error(msg)
                 else
                     console.error(msg)
-    logger = @Logger
+    logger = Logger
+    Logger

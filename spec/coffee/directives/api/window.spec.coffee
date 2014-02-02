@@ -30,9 +30,9 @@ describe "directives.api.Window", ->
             fnc()
 
         @gMarker = new google.maps.Marker(@commonOpts)
-        angular.module('mockModule', [])
-        .controller 'windowDirective', ($timeout, $compile, $http, $templateCache) =>
-            new directives.api.Window(@timeOutNoW,$compile, $http, $templateCache)
+        angular.module('mockModule', ["google-map"])
+        .controller 'windowDirective', ($timeout, $compile, $http, $templateCache,Window) =>
+            new Window(@timeOutNoW,$compile, $http, $templateCache)
 
         angular.mock.module('mockModule')
 

@@ -14,19 +14,20 @@ describe "MarkerChildModel", ->
 		@optionsKey = 'options'
 
 		#define / inject values into the item we are testing... not a controller but it allows us to inject
-		angular.module('mockModule',[])
+		angular.module('mockModule',["google-map"])
 		.value('gMap',document.gMap)
 		.value('defaults',{})
 		.value('model', @model)
-		.value('gMarkerManager',new directives.api.managers.MarkerManager(document.gMap,undefined,undefined))
+		.value 'gMarkerManager', (MarkerManager) ->
+                    new MarkerManager(document.gMap,undefined,undefined)
 		.value('doClick',->
 		)
 		.value('model',{})
-		.controller('childModel', directives.api.models.child.MarkerChildModel)
+		.controller('childModel', (MarkerChildModel) -> MarkerChildModel)
 
 		angular.mock.module('mockModule')
 
-		inject( ($timeout,$rootScope,$controller) =>
+		inject( ($timeout,$rootScope,$controlle,MarkerChildModelr) =>
 			scope = $rootScope.$new()
 			scope.click = ->
 			scope.icon = @iconKey

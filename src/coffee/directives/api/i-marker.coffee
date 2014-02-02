@@ -6,11 +6,11 @@
  			- icon
 		- implementation needed on watches
 ###
-angular.module("google-maps").factory "IMarker",  ->
+angular.module("google-maps").factory "IMarker", "Logger", (Logger)->
     class IMarker extends oo.BaseObject
         constructor: ($timeout) ->
             self = @
-            @$log = directives.api.utils.Logger
+            @$log = Logger
             @$timeout = $timeout
             @restrict = 'ECMA'
             @require = '^googleMap'
@@ -24,7 +24,7 @@ angular.module("google-maps").factory "IMarker",  ->
                 options: '=options',
                 events: '=events'
 
-        controller: ['$scope','$element', ($scope, $element) ->
+        controller: ['$scope', '$element', ($scope, $element) ->
             throw new Exception("Not Implemented!!")
         ]
         link: (scope, element, attrs, ctrl) =>

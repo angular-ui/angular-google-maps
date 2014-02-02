@@ -6,7 +6,7 @@
  			- icon
 		- implementation needed on watches
 ###
-angular.module("google-maps").factory "IMarkerParentModel", ["ModelKey", (ModelKey) ->
+angular.module("google-maps").factory "IMarkerParentModel", "Logger", ["ModelKey", (ModelKey, Logger) ->
     class IMarkerParentModel extends ModelKey
         DEFAULTS: {}
 
@@ -19,7 +19,7 @@ angular.module("google-maps").factory "IMarkerParentModel", ["ModelKey", (ModelK
         constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout) ->
             super(@scope)
             self = @
-            @$log = directives.api.utils.Logger
+            @$log = Logger
             # Validate required properties
             return unless @validateScope scope
             @doClick = angular.isDefined attrs.click

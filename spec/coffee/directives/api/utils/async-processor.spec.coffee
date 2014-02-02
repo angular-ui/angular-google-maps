@@ -60,9 +60,10 @@ describe "AsyncProcessor", ->
         runs( ->
             @subject.map(known,((num) ->
                 num += 1
-                "$#{num.toString()}"),((mapped)->
-                test = mapped
-                running = false),(()-> pauses++))
+                "$#{num.toString()}"),(mapped)->
+                    test = mapped
+                    running = false
+                ,(()-> pauses++))
         )
         waitsFor =>
             !running

@@ -1,9 +1,9 @@
 ###
 	- interface directive for all window(s) to derrive from
 ###
-@ngGmapModule "directives.api", ->
-    class @IWindow extends oo.BaseObject
-        @include directives.api.utils.ChildEvents
+angular.module("google-maps").factory "IWindow",[ "BaseObject","ChildEvents", "Logger", (BaseObject, ChildEvents, Logger) ->
+    class IWindow extends BaseObject
+        @include ChildEvents
         constructor: (@$timeout, @$compile, @$http, @$templateCache) ->
             self = @
             @restrict = 'ECMA'
@@ -21,7 +21,9 @@
                 closeClick: '&closeclick', #scope glue to gmap InfoWindow closeclick
                 options: '=options'
             }
-            @$log = directives.api.utils.Logger
+            @$log = Logger
 
         link: (scope, element, attrs, ctrls) =>
             throw new Exception("Not Implemented!!")
+    IWindow
+]

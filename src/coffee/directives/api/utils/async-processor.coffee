@@ -3,8 +3,8 @@
     AsyncProcessor handles things asynchronous-like :), to allow the UI to be free'd to do other things
     Code taken from http://stackoverflow.com/questions/10344498/best-way-to-iterate-over-an-array-without-blocking-the-ui
 ###
-@ngGmapModule "directives.api.utils", ->
-    @AsyncProcessor =
+angular.module("google-maps").factory "async", ->
+    async =
         each: (array, callback, doneCallBack, pausedCallBack, chunk = 100, index = 0) ->
             if array == undefined or array.length <= 0
                 doneCallBack()
@@ -36,4 +36,5 @@
                 doneCallBack(results)
             , pausedCallBack
 
-window._async = directives.api.utils.AsyncProcessor
+    window._async = async
+    async

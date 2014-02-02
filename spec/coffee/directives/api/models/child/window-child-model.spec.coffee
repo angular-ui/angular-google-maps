@@ -12,7 +12,7 @@ describe("WindowChildModel", ->
 		@windowOpts = _.extend(@commonOpts,content: 'content')
 		@gMarker = new google.maps.Marker(@commonOpts)
 		#define / inject values into the item we are testing... not a controller but it allows us to inject
-		angular.module('mockModule',[])
+		angular.module('mockModule',["google-map"])
 		.value('isIconVisibleOnClick',true)
         .value('model',@scope)
         .value('mapCtrl',document.gMap)
@@ -21,7 +21,7 @@ describe("WindowChildModel", ->
         .value('element','<span>hi</span>')
 		.value('needToManualDestroy',false)
         .value('markerIsVisibleAfterWindowClose',true)
-		.controller('childModel', directives.api.models.child.WindowChildModel)
+		.controller('childModel', (WindowChildModel) -> WindowChildModel)
 
 		angular.mock.module('mockModule')
 

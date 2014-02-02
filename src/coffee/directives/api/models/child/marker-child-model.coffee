@@ -1,6 +1,6 @@
-@ngGmapModule "directives.api.models.child", ->
-    class @MarkerChildModel extends directives.api.utils.ModelKey
-        @include directives.api.utils.GmapUtil
+angular.module("google-maps").factory "MarkerChildModel", [ "ModelKey", "GmapUtil","Logger", (ModelKey, GmapUtil,Logger) ->
+    class MarkerChildModel extends ModelKey
+        @include GmapUtil
         constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager)->
             self = @
             @iconKey = @parentScope.icon
@@ -20,7 +20,7 @@
                     @setMyScope(newValue, oldValue)
             , true)
 
-            @$log = directives.api.utils.Logger
+            @$log = Logger
             @$log.info(self)
             @watchDestroy(@scope)
 
@@ -117,10 +117,11 @@
             opts
 
         watchDestroy: (scope)=>
-            scope.$on("$destroy", =>
+            scope.$on "$destroy", =>
                 if @gMarker? #this is possible due to AsyncProcessor in that we created some Children but no gMarker yet
-                    google.maps.event.clearListeners(@gMarker,'click')
+                    google.maps.event.clearListeners(@gMarker, 'click')
                     @gMarkerManager.remove(@gMarker)
                     delete @gMarker
                 self = undefined
-            )
+    MarkerChildModel
+]

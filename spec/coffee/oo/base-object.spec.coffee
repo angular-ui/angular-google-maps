@@ -1,37 +1,44 @@
 describe "oo.BaseObject", ->
+    beforeEach ->
+        angular.module('mockModule',["google-map"])
+        angular.mock.module('mockModule')
+
+        inject ($http,$rootScope,$templateCache,$compile,$controller, BaseObject) =>
+            scope = $rootScope.$new()
+            _.extend(@scope,scope)
+            @subject = BaseObject
     it "exists ~ you loaded the script!", ->
-        expect(oo.BaseObject?).toEqual(true)
-@ngGmapModule "oo.test", ->
-    @PersonModule =
+        expect(@subject?).toEqual(true)
+    PersonModule =
         changePersonName: (person, name)->
             person.name = name
             person
         killPersonsName: (person)->
             delete person.name
             person
-    @PersonAttributes =
+    PersonAttributes =
         p_name: "no_name"
         state: "no_state"
-    class @Person extends oo.BaseObject
-        @include oo.test.PersonModule
-        @extend oo.test.PersonAttributes
+    class Person extends @subject
+        @include PersonModule
+        @extend PersonAttributes
         constructor: (name, state)->
-            @name = if name? then name else oo.test.Person.p_name
-            @state = if state? then state else oo.test.Person.state
+            @name = if name? then name else Person.p_name
+            @state = if state? then state else Person.state
 
 describe "oo.BaseObject", ->
     beforeEach ->
         @name = "nick"
         @state = "fl"
-        @defaultSubject = new oo.test.Person()
-        @subject = new oo.test.Person(@name, @state)
+        @defaultSubject = new Person()
+        @subject = new Person(@name, @state)
     describe "include specs", ->
         it "defaults attributes exist", ->
             expect(@defaultSubject.name?).toEqual(true)
             expect(@defaultSubject.name?).toEqual(true)
         it "defaults attributes are correct", ->
-            expect(@defaultSubject.name).toEqual(oo.test.PersonAttributes.p_name)
-            expect(@defaultSubject.state).toEqual(oo.test.PersonAttributes.state)
+            expect(@defaultSubject.name).toEqual(PersonAttributes.p_name)
+            expect(@defaultSubject.state).toEqual(PersonAttributes.state)
         it "subject attributes are correct ", ->
             expect(@subject.name).toEqual(@name)
             expect(@subject.state).toEqual(@state)

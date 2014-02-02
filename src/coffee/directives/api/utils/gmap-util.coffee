@@ -1,35 +1,31 @@
-@ngGmapModule "directives.api.utils", ->
-    @GmapUtil =
-        getLabelPositionPoint: (anchor) ->
-            if anchor == undefined
-                return undefined
+angular.module("google-maps").service "GmapUtil", ->
+    getLabelPositionPoint: (anchor) ->
+        if anchor == undefined
+            return undefined
 
-            anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor)
-            xPos = anchor[1]
-            yPos = anchor[2]
-            if xPos && yPos
-                new google.maps.Point(xPos, yPos)
+        anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor)
+        xPos = anchor[1]
+        yPos = anchor[2]
+        if xPos && yPos
+            new google.maps.Point(xPos, yPos)
 
-        createMarkerOptions: (coords, icon, defaults, map = undefined) ->
-            defaults = {} unless defaults?
-            opts = angular.extend {}, defaults,
-                position: if defaults.position? then defaults.position
-                else new google.maps.LatLng(coords.latitude, coords.longitude),
-                icon: if defaults.icon? then defaults.icon else icon,
-                visible: if defaults.visible? then defaults.visible else coords.latitude? and coords.longitude?
-            opts.map = map if map?
-            opts
+    createMarkerOptions: (coords, icon, defaults, map = undefined) ->
+        defaults = {} unless defaults?
+        opts = angular.extend {}, defaults,
+            position: if defaults.position? then defaults.position
+            else new google.maps.LatLng(coords.latitude, coords.longitude),
+            icon: if defaults.icon? then defaults.icon else icon,
+            visible: if defaults.visible? then defaults.visible else coords.latitude? and coords.longitude?
+        opts.map = map if map?
+        opts
 
-        createWindowOptions: (gMarker, scope, content, defaults) ->
-            if content? and defaults?
-                angular.extend {}, defaults,
-                    content: if defaults.content?
-                    then defaults.content else content,
-                    position: if defaults.position?
-                    then defaults.position else if angular.isObject(gMarker)
-                    then gMarker.getPosition() else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+    createWindowOptions: (gMarker, scope, content, defaults) ->
+        if content? and defaults?
+            angular.extend {}, defaults,
+                content: if defaults.content?
+                then defaults.content else content,
+                position: if defaults.position?
+                then defaults.position else if angular.isObject(gMarker)
+                then gMarker.getPosition() else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
 
-        defaultDelay: 50
-
-angular.module("google-maps").factory "GmapUtil", ->
-    return directives.api.utils.GmapUtil
+    defaultDelay: 50

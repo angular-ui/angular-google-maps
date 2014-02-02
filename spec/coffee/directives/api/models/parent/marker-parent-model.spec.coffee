@@ -28,8 +28,8 @@ describe "MarkerParentModel", ->
                 @testCtor = MarkerParentModel
                 @subject = new MarkerParentModel(scope, element, attrs, mapCtrl, $timeout)
         angular.mock.module('mockModule')
-        inject ($timeout, $rootScope, $log, $controller) =>
-            directives.api.utils.Logger.logger = $log
+        inject ($timeout, $rootScope, $log, $controller, Logger) =>
+            Logger.logger = $log
             scope = $rootScope.$new()
             @scope = _.extend @scope, scope
             $controller 'subject',

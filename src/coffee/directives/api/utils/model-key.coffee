@@ -1,8 +1,8 @@
-@ngGmapModule "directives.api.utils", ->
-    class @ModelKey extends oo.BaseObject
-        constructor:(@scope) ->
+angular.module("google-maps").factory "ModelKey", ["BaseObject", (BaseObject) ->
+    class ModelKey extends BaseObject
+        constructor: (@scope) ->
             super()
-            @defaultIdKey= "id"
+            @defaultIdKey = "id"
             @idKey = undefined
 
         evalModelHandle: (model, modelKey) ->
@@ -19,7 +19,5 @@
                     scope.coords).latitude and
             @evalModelHandle(model1, scope.coords).longitude == @evalModelHandle(model2,
                     scope.coords).longitude
-
-
-angular.module("google-maps").factory "ModelKey", ->
-    directives.api.utils.ModelKey
+    ModelKey
+]

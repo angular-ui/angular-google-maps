@@ -38,6 +38,28 @@ This directive creates a new scope.
 
 {attribute show optional}  true (default) shows the trafficlayer otherwise it is hidden
 ###
-angular.module("google-maps").directive "layer", ["$timeout", ($timeout) ->
-    new directives.api.Layer($timeout)
+angular.module("google-maps").directive "layer", ["$timeout", "Logger", ($timeout, Logger) ->
+    class Layer
+        constructor: (@$timeout) ->
+            @$log = Logger
+            @restrict = "ECMA"
+            @require = "^googleMap"
+            @priority = -1
+            @transclude = true
+            @template = '<span class=\"angular-google-map-layer\" ng-transclude></span>'
+            @replace = true
+            @scope =
+                show: "=show"
+                type: "=type"
+                namespace: "=namespace"
+                options: '=options'
+                onCreated: '&oncreated'
+
+        link: (scope, element, attrs, mapCtrl) =>
+            if attrs.oncreated?
+                new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, @$timeout,
+                        scope.onCreated)
+            else
+                new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, @$timeout)
+    new Layer($timeout)
 ]
