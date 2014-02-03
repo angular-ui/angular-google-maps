@@ -30,7 +30,8 @@ module.exports = (grunt) ->
             compile:
                 files:
                     "tmp/output_coffee.js": ["src/coffee/extensions/underscore.coffee",
-                                             "src/coffee/module.coffee", "src/coffee/ng-gmap-module.coffee",
+                                             "src/coffee/module.coffee",
+                                             "src/coffee/ng-gmap-module.coffee",
                                              "src/coffee/controllers/polyline-display.js",
                                              "src/coffee/utils/LatLngArraySync.coffee",
                                              "src/coffee/utils/MapEvents.coffee",
@@ -40,7 +41,8 @@ module.exports = (grunt) ->
                                              "src/coffee/directives/api/models/child/*.coffee",
                                              "src/coffee/directives/api/models/parent/*.coffee",
                                              "src/coffee/directives/api/*.coffee",
-                                             "src/coffee/directives/map.coffee", "src/coffee/directives/marker.coffee",
+                                             "src/coffee/directives/map.coffee",
+                                             "src/coffee/directives/marker.coffee",
                                              "src/coffee/directives/markers.coffee",
                                              "src/coffee/directives/label.coffee",
                                              "src/coffee/directives/polygon.coffee",
@@ -131,7 +133,7 @@ module.exports = (grunt) ->
                 src: ["dist/angular-google-maps.js"]
                 options:
                     keepRunner: true
-                    vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en", "lib/jquery.js",
+                    vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
                              "bower_components/angular/angular.js", "bower_components/angular-mocks/angular-mocks.js",
                              "bower_components/underscore/underscore.js",
                              "dist/angular-google-maps.js"]

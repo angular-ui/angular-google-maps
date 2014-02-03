@@ -1,4 +1,4 @@
-angular.module("google-maps").factory "LayerParentModel",["BaseObject", "Logger",(BaseObject,Logger) ->
+angular.module("google-maps").factory "LayerParentModel", ["BaseObject", "Logger", (BaseObject, Logger) ->
     class LayerParentModel extends BaseObject
         constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout, @onLayerCreated = undefined, @$log = Logger) ->
             unless @attrs.type?
@@ -41,6 +41,6 @@ angular.module("google-maps").factory "LayerParentModel",["BaseObject", "Logger"
                 if @layer? and @onLayerCreated?
                     fn = @onLayerCreated(@scope, @layer)
                     if fn
-                      fn(@layer)
+                        fn(@layer)
     LayerParentModel
 ]

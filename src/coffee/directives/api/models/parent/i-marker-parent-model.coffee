@@ -6,7 +6,7 @@
  			- icon
 		- implementation needed on watches
 ###
-angular.module("google-maps").factory "IMarkerParentModel", "Logger", ["ModelKey", (ModelKey, Logger) ->
+angular.module("google-maps").factory "IMarkerParentModel", ["ModelKey","Logger", (ModelKey, Logger) ->
     class IMarkerParentModel extends ModelKey
         DEFAULTS: {}
 

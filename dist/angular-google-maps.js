@@ -331,56 +331,59 @@ Nicholas McCready - https://twitter.com/nmccready
 
 
 (function() {
-  angular.module("google-maps").factory("async", function() {
-    var async;
-    async = {
-      each: function(array, callback, doneCallBack, pausedCallBack, chunk, index) {
-        var doChunk;
-        if (chunk == null) {
-          chunk = 100;
-        }
-        if (index == null) {
-          index = 0;
-        }
-        if (array === void 0 || array.length <= 0) {
-          doneCallBack();
-          return;
-        }
-        doChunk = function() {
-          var cnt, i;
-          cnt = chunk;
-          i = index;
-          while (cnt-- && i < array.length) {
-            callback(array[i]);
-            ++i;
-          }
-          if (i < array.length) {
-            index = i;
-            if (pausedCallBack != null) {
-              pausedCallBack();
-            }
-            return setTimeout(doChunk, 1);
-          } else {
-            return doneCallBack();
-          }
-        };
-        return doChunk();
-      },
-      map: function(objs, iterator, doneCallBack, pausedCallBack) {
-        var results;
-        results = [];
-        if (objs == null) {
-          return results;
-        }
-        return _async.each(objs, function(o) {
-          return results.push(iterator(o));
-        }, function() {
-          return doneCallBack(results);
-        }, pausedCallBack);
+  var async;
+
+  async = {
+    each: function(array, callback, doneCallBack, pausedCallBack, chunk, index) {
+      var doChunk;
+      if (chunk == null) {
+        chunk = 100;
       }
-    };
-    window._async = async;
-    return async;
+      if (index == null) {
+        index = 0;
+      }
+      if (array === void 0 || array.length <= 0) {
+        doneCallBack();
+        return;
+      }
+      doChunk = function() {
+        var cnt, i;
+        cnt = chunk;
+        i = index;
+        while (cnt-- && i < array.length) {
+          callback(array[i]);
+          ++i;
+        }
+        if (i < array.length) {
+          index = i;
+          if (pausedCallBack != null) {
+            pausedCallBack();
+          }
+          return setTimeout(doChunk, 1);
+        } else {
+          return doneCallBack();
+        }
+      };
+      return doChunk();
+    },
+    map: function(objs, iterator, doneCallBack, pausedCallBack) {
+      var results;
+      results = [];
+      if (objs == null) {
+        return results;
+      }
+      return _async.each(objs, function(o) {
+        return results.push(iterator(o));
+      }, function() {
+        return doneCallBack(results);
+      }, pausedCallBack);
+    }
+  };
+
+  window._async = async;
+
+  angular.module("google-maps").factory("async", function() {
+    return window._async;
   });
 
 }).call(this);
@@ -476,32 +479,38 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
-  angular.module("google-maps").service("Logger", function() {
-    var Logger, logger;
-    Logger = {
-      logger: void 0,
+  angular.module("google-maps").service("Logger", function($log) {
+    return {
+      logger: $log,
       doLog: false,
       info: function(msg) {
-        if (logger.doLog) {
-          if (logger.logger != null) {
-            return logger.logger.info(msg);
+        if (this.doLog) {
+          if (this.logger != null) {
+            return this.logger.info(msg);
           } else {
             return console.info(msg);
           }
         }
       },
       error: function(msg) {
-        if (logger.doLog) {
-          if (logger.logger != null) {
-            return logger.logger.error(msg);
+        if (this.doLog) {
+          if (this.logger != null) {
+            return this.logger.error(msg);
           } else {
             return console.error(msg);
           }
         }
+      },
+      warn: function(msg) {
+        if (this.doLog) {
+          if (this.logger != null) {
+            return this.logger.warn(msg);
+          } else {
+            return console.warn(msg);
+          }
+        }
       }
     };
-    logger = Logger;
-    return Logger;
   });
 
 }).call(this);
@@ -576,7 +585,7 @@ Nicholas McCready - https://twitter.com/nmccready
                 }
               }
             } else {
-              return directives.api.utils.Logger.error("id missing for model " + (m.toString()) + ", can not use do comparison/insertion");
+              return Logger.error("id missing for model " + (m.toString()) + ", can not use do comparison/insertion");
             }
           }, function() {
             return _async.each(childObjects.values(), function(c) {
@@ -615,40 +624,44 @@ Nicholas McCready - https://twitter.com/nmccready
 
 (function() {
   angular.module("google-maps").factory("PropMap", function() {
-    var _this = this;
-    return {
-      length: 0,
-      get: function(key) {
-        return _this[key];
-      },
-      put: function(key, value) {
-        if (_this[key] == null) {
-          _this.length++;
+    var PropMap;
+    PropMap = function() {
+      var _this = this;
+      return {
+        length: 0,
+        get: function(key) {
+          return _this[key];
+        },
+        put: function(key, value) {
+          if (_this[key] == null) {
+            _this.length++;
+          }
+          return _this[key] = value;
+        },
+        remove: function(key) {
+          delete _this[key];
+          return _this.length--;
+        },
+        values: function() {
+          var all, propsToPop;
+          propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length'];
+          all = _.values(_this);
+          _.each(propsToPop, function(prop) {
+            return all.pop();
+          });
+          return all;
+        },
+        keys: function() {
+          var all;
+          all = _.keys(_this);
+          _.each(propsToPop, function(prop) {
+            return all.pop();
+          });
+          return all;
         }
-        return _this[key] = value;
-      },
-      remove: function(key) {
-        delete _this[key];
-        return _this.length--;
-      },
-      values: function() {
-        var all, propsToPop;
-        propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length'];
-        all = _.values(_this);
-        _.each(propsToPop, function(prop) {
-          return all.pop();
-        });
-        return all;
-      },
-      keys: function() {
-        var all;
-        all = _.keys(_this);
-        _.each(propsToPop, function(prop) {
-          return all.pop();
-        });
-        return all;
-      }
+      };
     };
+    return PropMap;
   });
 
 }).call(this);
@@ -1386,8 +1399,8 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps").factory("IMarkerParentModel", "Logger", [
-    "ModelKey", function(ModelKey, Logger) {
+  angular.module("google-maps").factory("IMarkerParentModel", [
+    "ModelKey", "Logger", function(ModelKey, Logger) {
       var IMarkerParentModel;
       IMarkerParentModel = (function(_super) {
         __extends(IMarkerParentModel, _super);
@@ -2276,46 +2289,48 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps").factory("IMarker", "Logger", function(Logger) {
-    var IMarker;
-    IMarker = (function(_super) {
-      __extends(IMarker, _super);
+  angular.module("google-maps").factory("IMarker", [
+    "Logger", function(Logger) {
+      var IMarker;
+      IMarker = (function(_super) {
+        __extends(IMarker, _super);
 
-      function IMarker($timeout) {
-        this.link = __bind(this.link, this);
-        var self;
-        self = this;
-        this.$log = Logger;
-        this.$timeout = $timeout;
-        this.restrict = 'ECMA';
-        this.require = '^googleMap';
-        this.priority = -1;
-        this.transclude = true;
-        this.replace = true;
-        this.scope = {
-          coords: '=coords',
-          icon: '=icon',
-          click: '&click',
-          options: '=options',
-          events: '=events'
-        };
-      }
-
-      IMarker.prototype.controller = [
-        '$scope', '$element', function($scope, $element) {
-          throw new Exception("Not Implemented!!");
+        function IMarker($timeout) {
+          this.link = __bind(this.link, this);
+          var self;
+          self = this;
+          this.$log = Logger;
+          this.$timeout = $timeout;
+          this.restrict = 'ECMA';
+          this.require = '^googleMap';
+          this.priority = -1;
+          this.transclude = true;
+          this.replace = true;
+          this.scope = {
+            coords: '=coords',
+            icon: '=icon',
+            click: '&click',
+            options: '=options',
+            events: '=events'
+          };
         }
-      ];
 
-      IMarker.prototype.link = function(scope, element, attrs, ctrl) {
-        throw new Exception("Not implemented!!");
-      };
+        IMarker.prototype.controller = [
+          '$scope', '$element', function($scope, $element) {
+            throw new Exception("Not Implemented!!");
+          }
+        ];
 
+        IMarker.prototype.link = function(scope, element, attrs, ctrl) {
+          throw new Exception("Not implemented!!");
+        };
+
+        return IMarker;
+
+      })(oo.BaseObject);
       return IMarker;
-
-    })(oo.BaseObject);
-    return IMarker;
-  });
+    }
+  ]);
 
 }).call(this);
 
@@ -2418,7 +2433,6 @@ Nick Baugh - https://github.com/niftylettuce
       isTrue = function(val) {
         return angular.isDefined(val) && val !== null && val === true || val === "1" || val === "y" || val === "true";
       };
-      Logger.logger = $log;
       DEFAULTS = {
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
@@ -2790,7 +2804,6 @@ This directive creates a new scope.
           this.link = __bind(this.link, this);
           var self;
           Markers.__super__.constructor.call(this, $timeout);
-          self = this;
           this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
           this.scope.idKey = '=idkey';
           this.scope.doRebuildAll = '=dorebuildall';
@@ -2802,6 +2815,7 @@ This directive creates a new scope.
           this.scope.labelAnchor = '@labelanchor';
           this.scope.labelClass = '@labelclass';
           this.$timeout = $timeout;
+          self = this;
           this.$log.info(this);
         }
 
@@ -2871,18 +2885,19 @@ This directive is used to create a marker label on an existing map.
 */
 
 
+/*
+Basic Directive api for a label. Basic in the sense that this directive contains 1:1 on scope and model.
+Thus there will be one html element per marker within the directive.
+*/
+
+
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps").directive("markerLabel", [
-    "$log", "$timeout", "ILabel", function($log, $timeout, ILabel) {
-      /*
-      	Basic Directive api for a label. Basic in the sense that this directive contains 1:1 on scope and model.
-      	Thus there will be one html element per marker within the directive.
-      */
-
+    "$timeout", "ILabel", "MarkerLabelChildModel", "GmapUtil", function($timeout, ILabel, MarkerLabelChildModel, GmapUtil) {
       var Label;
       Label = (function(_super) {
         __extends(Label, _super);
@@ -2903,12 +2918,12 @@ This directive is used to create a marker label on an existing map.
             var label, markerCtrl;
             markerCtrl = ctrl.getMarkerScope().gMarker;
             if (markerCtrl != null) {
-              label = new directives.api.models.child.MarkerLabelChildModel(markerCtrl, scope);
+              label = new MarkerLabelChildModel(markerCtrl, scope);
             }
             return scope.$on("$destroy", function() {
               return label.destroy();
             });
-          }, directives.api.utils.GmapUtil.defaultDelay + 25);
+          }, GmapUtil.defaultDelay + 25);
         };
 
         return Label;
@@ -3328,8 +3343,8 @@ This directive creates a new scope.
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps").directive("window", [
-    "$timeout", "$compile", "$http", "$templateCache", "IWindow", "GmapUtil", "WindowChildModel", function($timeout, $compile, $http, $templateCache, IWindow, GmapUtil, WindowChildModel) {
+  angular.module("google-maps").factory("Window", [
+    "IWindow", "GmapUtil", "WindowChildModel", function(IWindow, GmapUtil, WindowChildModel) {
       var Window;
       Window = (function(_super) {
         __extends(Window, _super);
@@ -3387,6 +3402,10 @@ This directive creates a new scope.
         return Window;
 
       })(IWindow);
+      return Window;
+    }
+  ]).directive("window", [
+    "$timeout", "$compile", "$http", "$templateCache", "Window", function($timeout, $compile, $http, $templateCache, Window) {
       return new Window($timeout, $compile, $http, $templateCache);
     }
   ]);
@@ -3526,7 +3545,7 @@ This directive creates a new scope.
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   angular.module("google-maps").directive("layer", [
-    "$timeout", "Logger", function($timeout, Logger) {
+    "$timeout", "Logger", "LayerParentModel", function($timeout, Logger, LayerParentModel) {
       var Layer;
       Layer = (function() {
         function Layer($timeout) {
@@ -3550,9 +3569,9 @@ This directive creates a new scope.
 
         Layer.prototype.link = function(scope, element, attrs, mapCtrl) {
           if (attrs.oncreated != null) {
-            return new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout, scope.onCreated);
+            return new LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout, scope.onCreated);
           } else {
-            return new directives.api.models.parent.LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout);
+            return new LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout);
           }
         };
 

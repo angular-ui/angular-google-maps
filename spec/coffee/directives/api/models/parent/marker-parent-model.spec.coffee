@@ -24,16 +24,13 @@ describe "MarkerParentModel", ->
         .value('attrs', {})
         .value('model', {})
         .value('scope', @scope)
-        .controller 'subject', (scope, element, attrs, mapCtrl, $timeout, MarkerParentModel) =>
-                @testCtor = MarkerParentModel
-                @subject = new MarkerParentModel(scope, element, attrs, mapCtrl, $timeout)
-        angular.mock.module('mockModule')
-        inject ($timeout, $rootScope, $log, $controller, Logger) =>
-            Logger.logger = $log
+
+        module "mockModule"
+        inject ($timeout, $rootScope, element, attrs, mapCtrl, MarkerParentModel) =>
             scope = $rootScope.$new()
             @scope = _.extend @scope, scope
-            $controller 'subject',
-                scope: scope
+            @testCtor = MarkerParentModel
+            @subject = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout)
 
         #mocking google maps event listener
         @googleMapListeners = []
