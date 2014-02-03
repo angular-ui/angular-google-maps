@@ -623,44 +623,60 @@ Nicholas McCready - https://twitter.com/nmccready
 
 
 (function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   angular.module("google-maps").factory("PropMap", function() {
     var PropMap;
-    PropMap = function() {
-      var _this = this;
-      return {
-        length: 0,
-        get: function(key) {
-          return _this[key];
-        },
-        put: function(key, value) {
-          if (_this[key] == null) {
-            _this.length++;
-          }
-          return _this[key] = value;
-        },
-        remove: function(key) {
-          delete _this[key];
-          return _this.length--;
-        },
-        values: function() {
-          var all, propsToPop;
-          propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length'];
-          all = _.values(_this);
-          _.each(propsToPop, function(prop) {
-            return all.pop();
-          });
-          return all;
-        },
-        keys: function() {
-          var all;
-          all = _.keys(_this);
-          _.each(propsToPop, function(prop) {
-            return all.pop();
-          });
-          return all;
-        }
+    PropMap = (function() {
+      function PropMap() {
+        this.keys = __bind(this.keys, this);
+        this.values = __bind(this.values, this);
+        this.remove = __bind(this.remove, this);
+        this.put = __bind(this.put, this);
+        this.get = __bind(this.get, this);
+        this.length = 0;
+      }
+
+      PropMap.prototype.get = function(key) {
+        return this[key];
       };
-    };
+
+      PropMap.prototype.put = function(key, value) {
+        if (this[key] == null) {
+          this.length++;
+        }
+        return this[key] = value;
+      };
+
+      PropMap.prototype.remove = function(key) {
+        delete this[key];
+        return this.length--;
+      };
+
+      PropMap.prototype.values = function() {
+        var all, propsToPop,
+          _this = this;
+        propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length'];
+        all = _.values(this);
+        _.each(propsToPop, function(prop) {
+          return all.pop();
+        });
+        return all;
+      };
+
+      PropMap.prototype.keys = function() {
+        var all,
+          _this = this;
+        all = _.keys(this);
+        _.each(propsToPop, function(prop) {
+          return all.pop();
+        });
+        return all;
+      };
+
+      return PropMap;
+
+    })();
     return PropMap;
   });
 
@@ -2290,7 +2306,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps").factory("IMarker", [
-    "Logger", function(Logger) {
+    "Logger", "BaseObject", function(Logger, BaseObject) {
       var IMarker;
       IMarker = (function(_super) {
         __extends(IMarker, _super);
@@ -2327,7 +2343,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         return IMarker;
 
-      })(oo.BaseObject);
+      })(BaseObject);
       return IMarker;
     }
   ]);

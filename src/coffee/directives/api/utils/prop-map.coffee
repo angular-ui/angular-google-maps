@@ -2,8 +2,9 @@
     Simple Object Map with a lenght property to make it easy to track length/size
 ###
 angular.module("google-maps").factory "PropMap",  ->
-    PropMap = ()->
-        length: 0
+    class PropMap
+        constructor: () ->
+            @length = 0
         get: (key)=>
             @[key]
         #modify map through put or remove to keep track of length , otherwise the state will be incorrect

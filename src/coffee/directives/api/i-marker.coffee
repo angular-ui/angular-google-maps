@@ -6,8 +6,8 @@
  			- icon
 		- implementation needed on watches
 ###
-angular.module("google-maps").factory "IMarker",[ "Logger", (Logger)->
-    class IMarker extends oo.BaseObject
+angular.module("google-maps").factory "IMarker",[ "Logger", "BaseObject", (Logger, BaseObject)->
+    class IMarker extends BaseObject
         constructor: ($timeout) ->
             self = @
             @$log = Logger
