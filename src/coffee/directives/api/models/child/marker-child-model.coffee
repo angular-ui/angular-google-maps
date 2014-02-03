@@ -119,8 +119,8 @@ angular.module("google-maps").factory "MarkerChildModel", [ "ModelKey", "GmapUti
         watchDestroy: (scope)=>
             scope.$on "$destroy", =>
                 if @gMarker? #this is possible due to AsyncProcessor in that we created some Children but no gMarker yet
-                    google.maps.event.clearListeners(@gMarker, 'click')
-                    @gMarkerManager.remove(@gMarker)
+                    google.maps.event.clearListeners @gMarker, 'click'
+                    @gMarkerManager.remove @gMarker,true
                     delete @gMarker
                 self = undefined
     MarkerChildModel

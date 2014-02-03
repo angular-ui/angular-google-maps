@@ -22,12 +22,11 @@ angular.module("google-maps").factory "MarkerManager", [ "BaseObject","Logger", 
                 index = @gMarkers.indexOf(gMarker)
             else
                 tempIndex = 0
-                _.find(@gMarkers, (marker) ->
+                _.find @gMarkers, (marker) ->
                     tempIndex += 1
                     if marker == gMarker
                         index = tempIndex
                         return
-                )
             if index?
                 @gMarkers.splice(index, 1)
 

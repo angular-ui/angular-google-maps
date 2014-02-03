@@ -1183,7 +1183,7 @@ Nicholas McCready - https://twitter.com/nmccready
             var self;
             if (_this.gMarker != null) {
               google.maps.event.clearListeners(_this.gMarker, 'click');
-              _this.gMarkerManager.remove(_this.gMarker);
+              _this.gMarkerManager.remove(_this.gMarker, true);
               delete _this.gMarker;
             }
             return self = void 0;
