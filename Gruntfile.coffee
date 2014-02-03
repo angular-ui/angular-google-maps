@@ -29,30 +29,32 @@ module.exports = (grunt) ->
         coffee:
             compile:
                 files:
-                    "tmp/output_coffee.js": ["src/coffee/extensions/underscore.coffee",
-                                             "src/coffee/module.coffee", "src/coffee/ng-gmap-module.coffee",
-                                             "src/coffee/controllers/polyline-display.js",
-                                             "src/coffee/utils/LatLngArraySync.coffee",
-                                             "src/coffee/utils/MapEvents.coffee",
-                                             "src/coffee/oo/base-object.coffee",
-                                             "src/coffee/directives/api/managers/*.coffee",
-                                             "src/coffee/directives/api/utils/*.coffee",
-                                             "src/coffee/directives/api/models/child/*.coffee",
-                                             "src/coffee/directives/api/models/parent/*.coffee",
-                                             "src/coffee/directives/api/*.coffee",
-                                             "src/coffee/directives/map.coffee", "src/coffee/directives/marker.coffee",
-                                             "src/coffee/directives/markers.coffee",
-                                             "src/coffee/directives/label.coffee",
-                                             "src/coffee/directives/polygon.coffee",
-                                             "src/coffee/directives/polyline.coffee",
-                                             "src/coffee/directives/window.coffee",
-                                             "src/coffee/directives/windows.coffee",
-                                             "src/coffee/directives/layer.coffee"]
+                    "tmp/output_coffee.js": [
+                        "src/coffee/module.coffee",
+                        "src/coffee/extensions/underscore.coffee",
+                        "src/coffee/directives/api/utils/*.coffee",
+                        "src/coffee/directives/api/managers/*.coffee",
+
+                        "src/coffee/controllers/polyline-display.js",
+                        "src/coffee/utils/LatLngArraySync.coffee",
+                        "src/coffee/utils/MapEvents.coffee",
+
+                        "src/coffee/directives/api/models/child/*.coffee",
+                        "src/coffee/directives/api/models/parent/*.coffee",
+                        "src/coffee/directives/api/*.coffee",
+                        "src/coffee/directives/map.coffee",
+                        "src/coffee/directives/marker.coffee",
+                        "src/coffee/directives/markers.coffee",
+                        "src/coffee/directives/label.coffee",
+                        "src/coffee/directives/polygon.coffee",
+                        "src/coffee/directives/polyline.coffee",
+                        "src/coffee/directives/window.coffee",
+                        "src/coffee/directives/windows.coffee",
+                        "src/coffee/directives/layer.coffee"]
 
                 #specs
                     "tmp/spec/js/helpers/helpers.js": "spec/coffee/helpers/*.coffee"
                     "tmp/spec/js/ng-gmap-module.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"
-                    "tmp/spec/js/oo/oo.spec.js": "spec/coffee/oo/*.spec.coffee"
                     "tmp/spec/js/usage/usage.spec.js": "spec/coffee/usage/*.spec.coffee"
                     "tmp/spec/js/directives/api/apis.spec.js": "spec/coffee/directives/api/*.spec.coffee"
                     "tmp/spec/js/directives/api/models/child/children.spec.js": "spec/coffee/directives/api/models/child/*.spec.coffee"
@@ -131,24 +133,24 @@ module.exports = (grunt) ->
                 src: ["dist/angular-google-maps.js"]
                 options:
                     keepRunner: true
-                    vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en", "lib/jquery.js",
+                    vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
                              "bower_components/angular/angular.js", "bower_components/angular-mocks/angular-mocks.js",
                              "bower_components/underscore/underscore.js",
                              "dist/angular-google-maps.js"]
                     specs: ["tmp/spec/js/**/*spec.js"]
                     helpers: ["tmp/spec/js/helpers/helpers.js"]
-                    #grunt-template-jasmine-requirejs - to remove all coverage meta from angular-google-maps.js (helps debug)
-                    #grunt-template-jasmine-istanbul - to produce coverage report
-                    template: require  "grunt-template-jasmine-requirejs"
+                #grunt-template-jasmine-requirejs - to remove all coverage meta from angular-google-maps.js (helps debug)
+                #grunt-template-jasmine-istanbul - to produce coverage report
+                    template: require "grunt-template-jasmine-requirejs"
 #                    template: require  "grunt-template-jasmine-istanbul"
                     templateOptions:
-                            coverage: "spec/coverage/coverage.json"
-                            report: "spec/coverage"
-                            thresholds:
-                                lines: 25
-                                statements: 25
-                                branches: 5
-                                functions: 25
+                        coverage: "spec/coverage/coverage.json"
+                        report: "spec/coverage"
+                        thresholds:
+                            lines: 25
+                            statements: 25
+                            branches: 5
+                            functions: 25
 
     # Default task: build a release in dist/
     grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",

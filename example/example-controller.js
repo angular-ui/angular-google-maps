@@ -6,7 +6,8 @@ var rndAddToLatLon = function () {
     return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1)
 }
 
-function ExampleController($scope, $timeout, $log, $http) {
+function ExampleController($scope, $timeout, $log, $http, Logger) {
+    Logger.doLog = true
     // Enable the new Google Maps visuals until it gets enabled by default.
     // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
     google.maps.visualRefresh = true;
@@ -232,6 +233,37 @@ function ExampleController($scope, $timeout, $log, $http) {
                     message: 'passed in from the opener'
                 }
             },
+            polygons: [
+	            {
+	            	id: 1,
+                    path: [
+                        {
+                            latitude: 50,
+                            longitude: -80
+                        },
+                        {
+                            latitude: 30,
+                            longitude: -120
+                        },
+                        {
+                            latitude: 20,
+                            longitude: -95
+                        }
+                    ],
+                    stroke: {
+                        color: '#6060FB',
+                        weight: 3
+                    },
+                    editable: true,
+                    draggable: true,
+                    geodesic: false,
+                    visible: true,
+                    fill: {
+                    	color: '#ff0000',
+                    	opacity: 0.8
+                    }
+                }
+            ],
             polylines: [
                 {
                     path: [

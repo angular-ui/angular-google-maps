@@ -116,8 +116,14 @@
             </marker>
         </div>
 
+		<!-- polyline example -->
         <polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'
-                  geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
+            geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
+
+        <!-- polygon example -->
+        <polygon ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
+        	geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>
+        	
     </div>
     <button class="btn btn-danger pull-right" ng-click="removeMarkers()">Clear Map</button>
 </div>
@@ -288,6 +294,49 @@
                     </div>
                 </td>
             </tr>
+            <tr>
+            	<td>polygons</td>
+            	<td>
+            		<div class="well sidebar-nav">
+            			<ul class="nav nav-list">
+            				<li ng-repeat="p in map.polygons">
+            					<a href="#">
+                                    <i class="i" title="Click me to Show InfoWindow!">
+                                        <span class="{{p.visible}}" ng-click="p.visible = !p.visible">Polygon:</span> {<br/>
+											<span style="padding-left: 5em" class="{{p.visible}}"
+                                                  ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
+											<span style="padding-left: 5em" class="{{p.editable}}"
+                                                  ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,
+                                        <br/>
+											<span style="padding-left: 5em" class="{{p.draggable}}"
+                                                  ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,
+                                        <br/>
+											<span style="padding-left: 5em" class="{{p.geodesic}}"
+                                                  ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,
+                                        <br/>
+                                        <span style="padding-left: 5em">stroke: {</span> <br/>
+											<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
+                                                  style="padding-left: 10em">weight: {{p.stroke.weight}}</span> <br/>
+											<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
+                                                  style="padding-left: 10em">color: {{p.stroke.color}}</span> <br/>
+                                        <span style="padding-left: 5em">},</span> <br/>
+                                        <span style="padding-left: 5em">path: [ </span> <br/>
+											<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
+                                                  ng-click="p.path.splice($index,1)">
+											{
+											latitude:{{pt.latitude | number:2}},
+											longitude:{{pt.longitude | number:2}}
+										},
+										<br/>
+									</span>
+                                        <span style="padding-left: 5em">] </span> <br/>
+
+                                        }
+                                    </i>
+                                </a>
+            				</li>
+            			</ul>
+            		</div>
             </tbody>
         </table>
     </fieldset>
@@ -296,7 +345,7 @@
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization&sensor=false&language=en&v=3.14"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.6/angular.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.8/angular.js"></script>
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore.js" type="text/javascript"></script>
 <script src="../dist/angular-google-maps.js"></script>
@@ -304,9 +353,6 @@
 <script src="example-controller.js"></script>
 <script src="templates/infoController.js"></script>
 <script src="http://localhost:35729/livereload.js"></script>
-<script type="text/javascript">
-directives.api.utils.Logger.doLog = true;
-</script>
 </body>
 
 </html>

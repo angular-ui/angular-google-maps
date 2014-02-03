@@ -1,5 +1,5 @@
 describe "directives.api.Window", ->
-    beforeEach(->
+    beforeEach ->
         ### Possible Attributes
                 coords: '=coords',
 				show: '=show',
@@ -30,18 +30,12 @@ describe "directives.api.Window", ->
             fnc()
 
         @gMarker = new google.maps.Marker(@commonOpts)
-        angular.module('mockModule', [])
-        .controller 'windowDirective', ($timeout, $compile, $http, $templateCache) =>
-            new directives.api.Window(@timeOutNoW,$compile, $http, $templateCache)
 
-        angular.mock.module('mockModule')
-
-        inject(($timeout, $compile, $http, $templateCache, $controller) =>
-            @subject = $controller('windowDirective', $timeout, $compile, $http, $templateCache)
+        module "google-maps"
+        inject ($timeout, $compile, $http, $templateCache, $injector, Window) =>
+            @subject = new Window(@timeOutNoW,$compile, $http, $templateCache)
             @subject.onChildCreation = (child) =>
                 @childWindow = child
-        )
-    )
 
     it 'can be created', ->
         expect(@subject).toBeDefined()

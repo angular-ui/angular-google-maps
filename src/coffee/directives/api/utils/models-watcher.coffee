@@ -1,5 +1,6 @@
-@ngGmapModule "directives.api.utils", ->
-    @ModelsWatcher =
+angular.module("google-maps.api.utils")
+.factory "ModelsWatcher",[ "Logger", (Logger) ->
+    ModelsWatcher =
     #putting a payload together in order to not have to flatten twice, and to not have to flatten again later
         figureOutState: (idKey, scope, childObjects, comparison, callBack)->
             adds = [] #models to add or update
@@ -17,14 +18,14 @@
                             adds.push m
                             removals.push child.model
                 else
-                    directives.api.utils.Logger.error("id missing for model #{m.toString()}, can not use do comparison/insertion")
+                    Logger.error("id missing for model #{m.toString()}, can not use do comparison/insertion")
             , () =>
                 _async.each childObjects.values(), (c) ->
                     unless c?
-                        directives.api.utils.Logger.error("child undefined in ModelsWatcher.")
+                        Logger.error("child undefined in ModelsWatcher.")
                         return
                     unless c.model?
-                        directives.api.utils.Logger.error("child.model undefined in ModelsWatcher.")
+                        Logger.error("child.model undefined in ModelsWatcher.")
                         return
                     id = c.model[idKey]
                     removals.push c.model[idKey] unless mappedScopeModelIds[id]?
@@ -33,3 +34,5 @@
                     callBack
                         adds: adds
                         removals: removals
+    ModelsWatcher
+]
