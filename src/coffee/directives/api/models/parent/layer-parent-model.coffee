@@ -1,4 +1,5 @@
-angular.module("google-maps").factory "LayerParentModel", ["BaseObject", "Logger", (BaseObject, Logger) ->
+angular.module("google-maps.api.models.parent")
+.factory "LayerParentModel", ["BaseObject", "Logger", (BaseObject, Logger) ->
     class LayerParentModel extends BaseObject
         constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout, @onLayerCreated = undefined, @$log = Logger) ->
             unless @attrs.type?

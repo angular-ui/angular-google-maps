@@ -34,9 +34,10 @@ Nick Baugh - https://github.com/niftylettuce
 #jshint indent:4
 
 #globals directives,google
-angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log, $timeout, Logger) ->
+angular.module("google-maps")
+.directive "googleMap", ["$log", "$timeout", ($log, $timeout, Logger) ->
     "use strict"
-
+    $log = Logger
     # Utility functions
     #Check if a value is true
     isTrue = (val) ->

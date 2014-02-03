@@ -30,6 +30,7 @@ describe "directives.api.Window", ->
             fnc()
 
         @gMarker = new google.maps.Marker(@commonOpts)
+
         module "google-maps"
         inject ($timeout, $compile, $http, $templateCache, $injector, Window) =>
             @subject = new Window(@timeOutNoW,$compile, $http, $templateCache)

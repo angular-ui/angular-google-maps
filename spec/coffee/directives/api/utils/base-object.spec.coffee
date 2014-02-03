@@ -1,6 +1,6 @@
 describe "oo.BaseObject", ->
     beforeEach ->
-        module "google-maps"
+        module "google-maps.api.utils"
         inject (BaseObject) =>
             @subject = BaseObject
             PersonModule =

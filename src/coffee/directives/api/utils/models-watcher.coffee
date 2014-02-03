@@ -1,4 +1,5 @@
-angular.module("google-maps").factory "ModelsWatcher",[ "Logger", (Logger) ->
+angular.module("google-maps.api.utils")
+.factory "ModelsWatcher",[ "Logger", (Logger) ->
     ModelsWatcher =
     #putting a payload together in order to not have to flatten twice, and to not have to flatten again later
         figureOutState: (idKey, scope, childObjects, comparison, callBack)->

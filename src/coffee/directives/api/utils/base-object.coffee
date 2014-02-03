@@ -1,4 +1,5 @@
-angular.module("google-maps").factory "BaseObject", ->
+angular.module("google-maps.api.utils")
+.factory "BaseObject", ->
     baseObjectKeywords = ['extended', 'included']
     class BaseObject
         @extend: (obj) ->

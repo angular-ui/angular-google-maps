@@ -2,7 +2,8 @@
 	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
 	Thus there will be one html element per marker within the directive.
 ###
-angular.module("google-maps").factory "MarkerParentModel",["IMarkerParentModel", "GmapUtil", (IMarkerParentModel, GmapUtil) ->
+angular.module("google-maps.api.models.parent")
+.factory "MarkerParentModel",["IMarkerParentModel", "GmapUtil", (IMarkerParentModel, GmapUtil) ->
     class MarkerParentModel extends IMarkerParentModel
         @include GmapUtil
         constructor: (scope, element, attrs, mapCtrl, $timeout) ->

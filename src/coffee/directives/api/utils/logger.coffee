@@ -1,4 +1,5 @@
-angular.module("google-maps").service "Logger", ($log)->
+angular.module("google-maps.api.utils")
+.service "Logger", ($log)->
     logger: $log
     doLog: false
     info: (msg) ->

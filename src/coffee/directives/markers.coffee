@@ -40,32 +40,7 @@ This directive creates a new scope.
 {attribute icon optional}    string url to image used for marker icon
 {attribute animate optional} if set to false, the marker won't be animated (on by default)
 ###
-angular.module("google-maps").directive "markers", ["$timeout", "IMarker", "MarkersParentModel", ($timeout, IMarker, MarkersParentModel) ->
-    class Markers extends IMarker
-        constructor: ($timeout) ->
-            super($timeout)
-            @template = '<span class="angular-google-map-markers" ng-transclude></span>'
-            @scope.idKey = '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
-            @scope.doRebuildAll = '=dorebuildall' #root level directive attribute not a model level
-            @scope.models = '=models'
-            @scope.doCluster = '=docluster'
-            @scope.clusterOptions = '=clusteroptions'
-            @scope.fit = '=fit'
-            @scope.labelContent = '=labelcontent'
-            @scope.labelAnchor = '@labelanchor'
-            @scope.labelClass = '@labelclass'
-
-            @$timeout = $timeout
-            self = @
-            @$log.info @
-
-        controller: ['$scope', '$element', ($scope, $element) ->
-            getMarkersScope: ->
-                $scope
-        ]
-
-        link: (scope, element, attrs, ctrl) =>
-            new MarkersParentModel(scope, element, attrs, ctrl, @$timeout)
-
-    new Markers($timeout)
-]
+angular.module("google-maps")
+.directive "markers", ["$timeout", "Markers", ($timeout, Markers) ->
+        new Markers($timeout)
+    ]

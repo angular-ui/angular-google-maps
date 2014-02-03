@@ -1,4 +1,5 @@
-angular.module("google-maps").factory "ClustererMarkerManager", [ "BaseObject", "Logger", (BaseObject,Logger) ->
+angular.module("google-maps.api.managers")
+.factory "ClustererMarkerManager", [ "BaseObject", "Logger", (BaseObject,Logger) ->
     class ClustererMarkerManager extends BaseObject
         constructor: (gMap, opt_markers, opt_options) ->
             super()

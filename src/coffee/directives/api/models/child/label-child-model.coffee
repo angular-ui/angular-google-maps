@@ -1,4 +1,5 @@
-angular.module("google-maps").factory "MarkerLabelChildModel", [ "BaseObject", "GmapUtil", (BaseObject, GmapUtil) ->
+angular.module("google-maps.api.models.child")
+.factory "MarkerLabelChildModel", [ "BaseObject", "GmapUtil", (BaseObject, GmapUtil) ->
     class MarkerLabelChildModel extends BaseObject
         @include GmapUtil
         constructor: (gMarker, opt_options) ->

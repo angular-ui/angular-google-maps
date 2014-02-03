@@ -1,4 +1,5 @@
-angular.module("google-maps").factory "MarkerChildModel", [ "ModelKey", "GmapUtil","Logger", (ModelKey, GmapUtil,Logger) ->
+angular.module("google-maps.api.models.child")
+.factory "MarkerChildModel", [ "ModelKey", "GmapUtil","Logger", (ModelKey, GmapUtil,Logger) ->
     class MarkerChildModel extends ModelKey
         @include GmapUtil
         constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager)->

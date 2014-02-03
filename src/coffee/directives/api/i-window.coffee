@@ -1,7 +1,8 @@
 ###
 	- interface directive for all window(s) to derrive from
 ###
-angular.module("google-maps").factory "IWindow",[ "BaseObject","ChildEvents", "Logger", (BaseObject, ChildEvents, Logger) ->
+angular.module("google-maps.api")
+.factory "IWindow",[ "BaseObject","ChildEvents", "Logger", (BaseObject, ChildEvents, Logger) ->
     class IWindow extends BaseObject
         @include ChildEvents
         constructor: (@$timeout, @$compile, @$http, @$templateCache) ->

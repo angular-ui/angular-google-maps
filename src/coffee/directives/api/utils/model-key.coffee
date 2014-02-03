@@ -1,4 +1,5 @@
-angular.module("google-maps").factory "ModelKey", ["BaseObject", (BaseObject) ->
+angular.module("google-maps.api.utils")
+.factory "ModelKey", ["BaseObject", (BaseObject) ->
     class ModelKey extends BaseObject
         constructor: (@scope) ->
             super()

@@ -1,4 +1,5 @@
-angular.module("google-maps").factory "WindowChildModel", [ "BaseObject", "GmapUtil","Logger", (BaseObject, GmapUtil,Logger) ->
+angular.module("google-maps.api.models.child")
+.factory "WindowChildModel", [ "BaseObject", "GmapUtil","Logger", (BaseObject, GmapUtil,Logger) ->
     class WindowChildModel extends BaseObject
         @include GmapUtil
         constructor: (@model, @scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerCtrl, @$http, @$templateCache, @$compile, @element, @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true)->
