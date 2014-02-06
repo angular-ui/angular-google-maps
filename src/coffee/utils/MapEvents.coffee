@@ -15,9 +15,8 @@ angular.module("google-maps")
             remove.push addEvent(target, key, _handler)
 
         ->
-            angular.forEach remove, (fn) ->
-                fn()  if _.isFunction(fn)
-                fn.e()  if fn.e isnt null and _.isFunction(fn.e)
+            angular.forEach remove, (listener) ->
+                google.maps.event.removeListener listener
 
             remove = null
     addEvents
