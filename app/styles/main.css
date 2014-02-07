@@ -15,22 +15,16 @@
 }
 
 body {
-
+	background: #fff url(../images/light_mosaic.png) repeat 0 0;
 }
 
 body, h1, h2, h3, h4, h5, h6 {
 	font-family: 'PT Sans', 'Open Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-
-
 }
 
-h1, h2, h3 {
-	letter-spacing: -2px;
-}
-
-h1 small, footer h1,
-h2 small, footer h2,
-h3 small, footer h3 {
+h1 small,
+h2 small,
+h3 small {
 	letter-spacing: -1px;
 }
 
@@ -97,13 +91,27 @@ a.brand, h2, h3 {
 }
 
 footer {
-
-	border-top: 2px #ecf0f1 solid;
-/*	font-size: 85%;*/
-
+	background: #282828 url(../images/dark_mosaic.png) repeat 0 0;
+	color: #ddd;
+	border-top: 2px #f70 solid;
+	font-size: 85%;
 	padding-top: 20px;
 	padding-bottom: 40px;
 	margin-top: 60px;
+}
+
+footer li.thumbnail img {
+	max-height: 48px;
+
+}
+
+footer li.thumbnail {
+	margin-right: 5px;
+	margin-bottom: 0;
+}
+
+.list-inline>li:first-child {
+	padding-left: 5px;
 }
 
 footer > .container {

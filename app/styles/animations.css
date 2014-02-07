@@ -49,3 +49,12 @@
 .view-animate.ng-leave.ng-leave-active {
 	opacity: 0;
 }
+
+footer .collaborator {
+	opacity: 0.7;
+	transition: all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.2s;
+}
+
+footer .collaborator:hover {
+	opacity: 1.0;
+}
