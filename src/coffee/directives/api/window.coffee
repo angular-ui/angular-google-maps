@@ -22,7 +22,7 @@
                 defaults = if scope.options? then scope.options else {}
                 hasScopeCoords = scope? and scope.coords? and scope.coords.latitude? and scope.coords.longitude?
 
-                opts = if hasScopeCoords then  @createWindowOptions(markerCtrl, scope, element.html(), defaults) else undefined
+                opts = if hasScopeCoords then  @createWindowOptions(markerCtrl, scope, element.html(), defaults, @$compile) else undefined
 
                 if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
                     window = new directives.api.models.child.WindowChildModel(

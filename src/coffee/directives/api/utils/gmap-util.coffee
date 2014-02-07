@@ -20,11 +20,11 @@
             opts.map = map if map?
             opts
 
-        createWindowOptions: (gMarker, scope, content, defaults) ->
+        createWindowOptions: (gMarker, scope, content, defaults, $compile) ->
             if content? and defaults?
                 angular.extend {}, defaults,
                     content: if defaults.content?
-                    then defaults.content else content,
+                    then $compile(defaults.content)(scope.$new()) else $compile(content)(scope.$new()),
                     position: if defaults.position?
                     then defaults.position else if angular.isObject(gMarker)
                     then gMarker.getPosition() else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)

@@ -651,10 +651,10 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         return opts;
       },
-      createWindowOptions: function(gMarker, scope, content, defaults) {
+      createWindowOptions: function(gMarker, scope, content, defaults, $compile) {
         if ((content != null) && (defaults != null)) {
           return angular.extend({}, defaults, {
-            content: defaults.content != null ? defaults.content : content,
+            content: defaults.content != null ? $compile(defaults.content)(scope.$new()) : $compile(content)(scope.$new()),
             position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
           });
         }
@@ -1242,7 +1242,7 @@ Nicholas McCready - https://twitter.com/nmccready
           createOpts = false;
         }
         if ((this.gWin == null) && createOpts && (this.element != null) && (this.element.html != null)) {
-          this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, this.element.html(), {}) : {};
+          this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, this.element.html(), {}, this.$compile) : {};
         }
         if ((this.opts != null) && this.gWin === void 0) {
           this.gWin = new google.maps.InfoWindow(this.opts);
@@ -2579,7 +2579,7 @@ not 1:1 in this setting.
           markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarkerScope().gMarker : void 0;
           defaults = scope.options != null ? scope.options : {};
           hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
-          opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : void 0;
+          opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults, _this.$compile) : void 0;
           if (mapCtrl != null) {
             window = new directives.api.models.child.WindowChildModel({}, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile, element);
           }
@@ -3209,42 +3209,58 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             if (angular.isDefined(scope.editable)) {
               scope.$watch("editable", function(newValue, oldValue) {
-                return polygon.setEditable(newValue);
+                if (newValue !== oldValue) {
+                  return polygon.setEditable(newValue);
+                }
               });
             }
             if (angular.isDefined(scope.draggable)) {
               scope.$watch("draggable", function(newValue, oldValue) {
-                return polygon.setDraggable(newValue);
+                if (newValue !== oldValue) {
+                  return polygon.setDraggable(newValue);
+                }
               });
             }
             if (angular.isDefined(scope.visible)) {
               scope.$watch("visible", function(newValue, oldValue) {
-                return polygon.setVisible(newValue);
+                if (newValue !== oldValue) {
+                  return polygon.setVisible(newValue);
+                }
               });
             }
             if (angular.isDefined(scope.geodesic)) {
               scope.$watch("geodesic", function(newValue, oldValue) {
-                return polygon.setOptions(buildOpts(polygon.getPath()));
+                if (newValue !== oldValue) {
+                  return polygon.setOptions(buildOpts(polygon.getPath()));
+                }
               });
             }
             if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
               scope.$watch("stroke.weight", function(newValue, oldValue) {
-                return polygon.setOptions(buildOpts(polygon.getPath()));
+                if (newValue !== oldValue) {
+                  return polygon.setOptions(buildOpts(polygon.getPath()));
+                }
               });
             }
             if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
               scope.$watch("stroke.color", function(newValue, oldValue) {
-                return polygon.setOptions(buildOpts(polygon.getPath()));
+                if (newValue !== oldValue) {
+                  return polygon.setOptions(buildOpts(polygon.getPath()));
+                }
               });
             }
             if (angular.isDefined(scope.fill) && angular.isDefined(scope.fill.color)) {
               scope.$watch("fill.color", function(newValue, oldValue) {
-                return polygon.setOptions(buildOpts(polygon.getPath()));
+                if (newValue !== oldValue) {
+                  return polygon.setOptions(buildOpts(polygon.getPath()));
+                }
               });
             }
             if (angular.isDefined(scope.fill) && angular.isDefined(scope.fill.opacity)) {
               scope.$watch("fill.opacity", function(newValue, oldValue) {
-                return polygon.setOptions(buildOpts(polygon.getPath()));
+                if (newValue !== oldValue) {
+                  return polygon.setOptions(buildOpts(polygon.getPath()));
+                }
               });
             }
             arraySyncer = arraySync(polygon.getPath(), scope, "path");
