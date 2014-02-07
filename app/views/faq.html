@@ -5,6 +5,7 @@
 <ul>
 	<li><a href="#faq-map-instance">How do I access the map instance?</a></li>
 	<li><a href="#faq-map-height">Can I dynamically set the map height?</a></li>
+	<li><a href="#faq-map-events-apply">Map events are not working!</a></li>
 </ul>
 
 <h3 id="faq-map-instance">How do I access the map instance?</h3>
@@ -24,7 +25,9 @@
 		<pre>$scope.map = {
 	events: {
 		tilesloaded: function (map) {
-			$log.info('this is the map instance', map);
+			$scope.$apply(function () {
+				$log.info('this is the map instance', map);				
+			});
 		}
 	}
 }</pre>
@@ -52,3 +55,19 @@
 });</pre>
 	</div>
 </div>
+
+<h3 id="faq-map-events-apply">Maps events are not working!</h3>
+
+<p>Since Google Map's SDK events are fired outside the scope of the Angular application, a call to <code>$apply</code> is necessary to 
+trigger dirty checking (see <a href="https://github.com/nlaplante/angular-google-maps/issues/241" rel="external">this issue</a>).</p>
+
+<pre>$scope.map = {
+	events: {
+		tilesloaded: function (map) {
+			$scope.$apply(function () {
+				$scope.mapInstance = map;			
+			});
+		}
+	}
+}</pre>
+
