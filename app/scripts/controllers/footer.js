@@ -79,6 +79,9 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', function ($scope
 			}
 			
 			return '[api data error]';
+		
+		case 'CommitCommentEvent':
+			return 'commented on commit ' + pl.comment.commit_id.substring(0, 8);
 		}
 		
 		return "TODO (" + event.type + ")";
