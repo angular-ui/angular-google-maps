@@ -2,16 +2,24 @@
 
 angular.module('angularGoogleMapsApp')
   .value('headlinesFetchInterval', 300000)
-  .config(function ($routeProvider, $locationProvider, $logProvider, $githubProvider, analyticsProvider) {
+  .config(function ($routeProvider, $locationProvider, $logProvider, $githubProvider, analyticsProvider, $sceDelegateProvider) {
   	
   	$locationProvider.html5Mode(true).hashPrefix('!');
-  	$logProvider.debugEnabled(true);  	
+  	$logProvider.debugEnabled(false);  	
 
   	$githubProvider.username('nlaplante')
   		.repository('angular-google-maps')
   		.branch('master');
   		
   	analyticsProvider.trackingCode('UA-34163232-1').trackViewChange(true);
+  	
+  	$sceDelegateProvider.resourceUrlWhitelist([
+  		'self'
+  	]);
+  	
+  	$sceDelegateProvider.resourceUrlBlacklist([
+  		'https://rawgithub.com/**'
+  	]);  	
 
     $routeProvider
       .when('/', {
