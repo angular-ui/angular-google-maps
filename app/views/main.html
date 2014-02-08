@@ -10,11 +10,12 @@
 			</p>
 			
 			<a class="btn btn-success btn-sm" rel="external" ng-href="{{ downloadUrl }}" ng-click="dlClick()">
+				<i class="icon-download"></i>
 				Download (<span itemprop="softwareVersion">{{ latestTag.name }}</span>)
 			</a>
 			
 			<a class="btn btn-default btn-sm" href="https://github.com/nlaplante/angular-google-maps">
-				View on GitHub
+				<i class="icon-github"></i> View on GitHub
 			</a>
 			
 			<hr>
@@ -36,7 +37,7 @@
 	</div>
 	
 	<div class="col-md-8">
-		<google-map center="map.center" zoom="map.zoom" draggable="false" class="main">
+		<google-map center="map.center" zoom="map.zoom" draggable="true" class="main" options="map.options">
 			<marker coords="marker.coords"></marker>
 		</google-map>
 	</div>
