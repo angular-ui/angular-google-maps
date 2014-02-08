@@ -19,10 +19,11 @@
 
 <div class="tab-content">
 	<div id="faq-map-instance-tab-html" class="tab-pane active">
-		<pre>&lt;google-map events="map.events" ...&gt;&lt;/google-map&gt;</pre>
+		<div hljs><google-map events="map.events"></google-map></div>
 	</div>
 	<div id="faq-map-instance-tab-script" class="tab-pane">
-		<pre>$scope.map = {
+		<div hljs>
+$scope.map = {
 	events: {
 		tilesloaded: function (map) {
 			$scope.$apply(function () {
@@ -30,7 +31,7 @@
 			});
 		}
 	}
-}</pre>
+}</div>
 	</div>
 </div>
 
@@ -45,14 +46,15 @@
 
 <div class="tab-content">
 	<div id="faq-map-height-tab-html" class="tab-pane active">
-		<pre>&lt;google-map id="my-map" ... &gt;&lt;/google-map&gt;</pre>
+		<div hljs><google-map id="my-map"></google-map></div>
 	</div>
 	<div id="faq-map-height-tab-script" class="tab-pane">
 		<p>Let's assume we include the map in an <code>ng-view</code> block:</p>
-		<pre>$scope.$on('$viewContentLoaded', function () {
+		<div hljs>
+$scope.$on('$viewContentLoaded', function () {
 	var mapHeight = 500; // or any other calculated value
 	$("#my-map .angular-google-map-container").height(mapHeight);
-});</pre>
+});</div>
 	</div>
 </div>
 
@@ -61,7 +63,8 @@
 <p>Since Google Map's SDK events are fired outside the scope of the Angular application, a call to <code>$apply</code> is necessary to 
 trigger dirty checking (see <a href="https://github.com/nlaplante/angular-google-maps/issues/241" rel="external">this issue</a>).</p>
 
-<pre>$scope.map = {
+<div hljs>
+$scope.map = {
 	events: {
 		tilesloaded: function (map) {
 			$scope.$apply(function () {
@@ -69,5 +72,5 @@ trigger dirty checking (see <a href="https://github.com/nlaplante/angular-google
 			});
 		}
 	}
-}</pre>
+}</div>
 

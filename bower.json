@@ -15,7 +15,8 @@
     "angular-google-maps": "~1.0.5",
     "angular-github-adapter": "~0.1.1",
     "github": "~0.7.0",
-    "underscore": "~1.5.2"
+    "underscore": "~1.5.2",
+    "angular-highlightjs": "~0.2.1"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.5",

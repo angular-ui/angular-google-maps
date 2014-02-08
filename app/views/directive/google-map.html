@@ -3,19 +3,7 @@
 
 <h4>Usage</h4>
 
-<pre>&lt;google-map center='{expression}' 
-	zoom='{expression}'
-	draggable='{string}'
-	dragging='{expression}'
-	refresh='{expression}'
-	options='{expression}'
-	events='{expression}'
-	bounds='{expression}'&gt;
-
-	...
-
-&lt;/google-map&gt;</pre>
-
+<div hljs language="html" include="'googleMapTemplate'"></div>
 
 <h4>Parameters</h4>
 
@@ -69,3 +57,19 @@
 		</tr>
 	</tbody>
 </table>
+
+<script type="text/ng-template" id="googleMapTemplate">
+<google-map center='{expression}' 
+	zoom='{expression}'
+	draggable='{string}'
+	dragging='{expression}'
+	refresh='{expression}'
+	options='{expression}'
+	events='{expression}'
+	bounds='{expression}'>
+	
+	<!-- other directives here -->
+	
+</google-map>	
+</script>
+

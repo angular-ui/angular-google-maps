@@ -10,41 +10,41 @@
 				<a href="https://raw.github.com/nlaplante/angular-google-maps/master/dist/angular-google-maps.js">Download angular-google-maps.js</a> (<a href="https://raw.github.com/nlaplante/angular-google-maps/master/dist/angular-google-maps.min.js">minified version</a>) 
 				and put it with your other scripts. Alternatively, you can use bower to install it automatically:
 
-				<pre>bower install angular-google-maps</pre>
+				<div hljs language="bash">bower install angular-google-maps</div>
 				
 				If you're not using bower, you'll need to fetch <a href="http://underscorejs.org/" rel="external">underscore.js</a> and save it
 				alongside your other scripts.
 			</li>
 			<li>
 				Include the Google Maps API v3, underscore and angular-google.maps.js in your index.html or layout template:
-
-				<pre>&lt;script src='//maps.googleapis.com/maps/api/js?sensor=false'&gt;&lt;/script&gt;
-&lt;script src='/path/to/underscore[-min].js'&gt;&lt;/script&gt;				
-&lt;script src='/path/to/angular-google-maps[.min].js'&gt;&lt;/script&gt;</pre>
+				<div hljs source="'<script src=\'//maps.googleapis.com/maps/api/js?sensor=false\'></script>
+<script src=\'/path/to/underscore[-min].js\'></script>
+<script src=\'/path/to/angular-google-maps[.min].js\'></script>'"></div>
 			</li>
 			<li>
 				Make your application module depend on the <code>google-maps</code> module:
-				<pre>angular.module('myApplicationModule', ['google-maps']);</pre>
+				<div hljs>angular.module('myApplicationModule', ['google-maps']);</div>
 			</li>
 			<li>
 				Add a <code>map</code> object in your scope like this:
-				<pre>$scope.map = {
+				<div hljs language="javascript">
+$scope.map = {
 	center: {
 		latitude: 45,
 		longitude: -73
 	},
 	zoom: 8
-};</pre>
+};</div>
 				<p class="muted">Note: this is the very minimal set of properties required for the map to work.
 					See the <a href="/api">API documentation</a> for the full list of supported properties.</p>
 			</li>
 			<li>
 				Add a <code>&lt;google-map&gt;</code> element in your template like this:
-				<pre>&lt;google-map center='map.center' zoom='map.zoom'&gt;&lt;/google-map&gt;</pre>
+				<div hljs><google-map center='map.center' zoom='map.zoom'></google-map></div>
 			</li>
 			<li>
 				Specify an height via CSS for the map container:
-				<pre>.angular-google-map-container { height: 400px; }</pre>
+				<div hljs>.angular-google-map-container { height: 400px; }</div>
 			</li>
 		</ol>
 	</div>

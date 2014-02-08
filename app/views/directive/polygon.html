@@ -3,17 +3,7 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 	
 <h4>Usage</h4>
 
-<pre>&lt;polygon path='{expression}'
-	fill='{expression}'
-	stroke='{expression}'
-	clickable='{expression}'
-	draggable='{expression}'
-	editable='{string}'
-	geodesic='{expression}'
-	icons='{expression}'
-	visible='{expression}'&gt;
-	...
-&lt;/polygon&gt;</pre>
+<div hljs language="html" include="'polygonTemplate'"></div>
 
 <h4>Parameters</h4>
 
@@ -77,3 +67,17 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 		</tr>
 	</tbody>
 </table>
+
+<script type="text/ng-template" id="polygonTemplate">
+<polygon path='{expression}'
+	fill='{expression}'
+	stroke='{expression}'
+	clickable='{expression}'
+	draggable='{expression}'
+	editable='{string}'
+	geodesic='{expression}'
+	icons='{expression}'
+	visible='{expression}'>
+</polygon>
+</script>
+

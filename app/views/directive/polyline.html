@@ -3,16 +3,7 @@ See <a google-api="Polyline">Polyline API</a>.</p>
 	
 <h4>Usage</h4>
 
-<pre>&lt;polyline path='{expression}'
-	stroke='{expression}'
-	clickable='{expression}'
-	draggable='{expression}'
-	editable='{expression}'
-	geodesic='{expression}'
-	icons='{expression}'
-	visible='{expression}'&gt;
-	...
-&lt;/polyline&gt;</pre>
+<div hljs language="html" include="'polylineTemplate'"></div>
 
 <h4>Parameters</h4>
 
@@ -70,3 +61,17 @@ See <a google-api="Polyline">Polyline API</a>.</p>
 		</tr>
 	</tbody>
 </table>
+
+<script type="text/ng-template" id="polylineTemplate">
+<polyline path='{expression}'
+	stroke='{expression}'
+	clickable='{expression}'
+	draggable='{expression}'
+	editable='{expression}'
+	geodesic='{expression}'
+	icons='{expression}'
+	visible='{expression}'>
+	...
+</polyline>
+</script>
+
