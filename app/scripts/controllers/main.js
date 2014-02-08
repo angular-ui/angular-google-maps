@@ -8,10 +8,15 @@ angular.module('angularGoogleMapsApp')
 	
 	$scope.map = {
 		center: {
-			latitude: 40.47,	// NYC
-			longitude: -73.85	// NYC
+			latitude: 40.7081,	// NYC
+			longitude: -74.0041	// NYC
 		},
-		zoom: 8
+		zoom: 13,
+		options: {
+			disableDefaultUI: true,
+			mapTypeControl: false,
+			tilt: 45
+		}
 	};
 	
 	$scope.marker = {
