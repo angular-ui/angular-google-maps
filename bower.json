@@ -5,7 +5,6 @@
     "angular": "~1.2.5",
     "json3": "~3.2.4",
     "jquery": "~1.9.1",
-    "bootstrap-sass": "~2.3.1",
     "es5-shim": "~2.0.8",
     "angular-animate": "~1.2.5",
     "angular-route": "~1.2.5",
@@ -13,8 +12,6 @@
     "angular-cookies": "~1.2.5",
     "angular-sanitize": "~1.2.5",
     "angular-google-maps": "~1.0.5",
-    "angular-github-adapter": "~0.1.1",
-    "github": "~0.7.0",
     "underscore": "~1.5.2",
     "angular-highlightjs": "~0.2.1"
   },
@@ -23,6 +20,6 @@
     "angular-scenario": "~1.2.5"
   },
   "resolutions": {
-    "angular": "~1.2.5"
+    "angular": "~1.2.11"
   }
 }
