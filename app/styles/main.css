@@ -198,3 +198,8 @@ ul.separated li:not(:first-child) {
 	margin-bottom: 15px;
 	display: none;
 }
+
+.affix {
+	top: 20px;
+	width: 262px;
+}
