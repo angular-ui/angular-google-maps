@@ -167,7 +167,7 @@ angular.module("google-maps.api.models.parent")
                                 @setChildScope(childScope, newValue)
                         , true)
                         parsedContent = @interpolateContent(@linked.element.html(), model)
-                        opts = @createWindowOptions gMarker, childScope, parsedContent, @DEFAULTS
+                        opts = @createWindowOptions gMarker, childScope, parsedContent, @DEFAULTS, contentIsParsed = true
                         child = new WindowChildModel model, childScope, opts,
                                 @isIconVisibleOnClick, gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true
 

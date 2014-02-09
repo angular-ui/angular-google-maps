@@ -324,10 +324,13 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           return opts;
         },
-        createWindowOptions: function(gMarker, scope, content, defaults) {
+        createWindowOptions: function(gMarker, scope, content, defaults, contentIsParsed) {
+          if (contentIsParsed == null) {
+            contentIsParsed = false;
+          }
           if ((content != null) && (defaults != null) && ($compile != null)) {
             return angular.extend({}, defaults, {
-              content: defaults.content != null ? defaults.content : $compile(content)(scope)[0],
+              content: this.buildContent(scope, defaults, content, contentIsParsed),
               position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
             });
           } else {
@@ -338,6 +341,22 @@ Nicholas McCready - https://twitter.com/nmccready
               return Logger.info("defaults not defined");
             }
           }
+        },
+        buildContent: function(scope, defaults, content, contentIsParsed) {
+          var parsed, ret;
+          if (defaults.content != null) {
+            ret = defaults.content;
+          } else {
+            if (($compile != null) && !contentIsParsed) {
+              parsed = $compile(content)(scope);
+              if (parsed.length > 0) {
+                ret = parsed[0];
+              }
+            } else {
+              ret = content;
+            }
+          }
+          return ret;
         },
         defaultDelay: 50
       };
@@ -2189,7 +2208,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         WindowsParentModel.prototype.createWindow = function(model, gMarker, gMap) {
-          var child, childScope, opts, parsedContent,
+          var child, childScope, contentIsParsed, opts, parsedContent,
             _this = this;
           childScope = this.linked.scope.$new(false);
           this.setChildScope(childScope, model);
@@ -2199,7 +2218,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
           }, true);
           parsedContent = this.interpolateContent(this.linked.element.html(), model);
-          opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS);
+          opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS, contentIsParsed = true);
           child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile, void 0, true);
           if (model[this.idKey] == null) {
             this.$log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
