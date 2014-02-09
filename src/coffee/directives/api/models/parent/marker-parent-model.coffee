@@ -2,9 +2,10 @@
 	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
 	Thus there will be one html element per marker within the directive.
 ###
-@ngGmapModule "directives.api.models.parent", ->
-    class @MarkerParentModel extends directives.api.models.parent.IMarkerParentModel
-        @include directives.api.utils.GmapUtil
+angular.module("google-maps.api.models.parent")
+.factory "MarkerParentModel",["IMarkerParentModel", "GmapUtil", (IMarkerParentModel, GmapUtil) ->
+    class MarkerParentModel extends IMarkerParentModel
+        @include GmapUtil
         constructor: (scope, element, attrs, mapCtrl, $timeout) ->
             super(scope, element, attrs, mapCtrl, $timeout)
             self = @
@@ -13,7 +14,7 @@
             opts = @createMarkerOptions(scope.coords, scope.icon, scope.options, @mapCtrl.getMap())
             #using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
             @scope.gMarker = new google.maps.Marker(opts)
-            
+
             google.maps.event.addListener @scope.gMarker, 'click', =>
                 if @doClick and scope.click?
                     @$timeout =>
@@ -62,3 +63,6 @@
                 for eventName, eventHandler of scope.events
                     if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
                         google.maps.event.addListener(marker, eventName, -> eventHandler.apply(scope, [marker, eventName, arguments]))
+
+    return MarkerParentModel
+]

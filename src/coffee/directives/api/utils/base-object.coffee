@@ -1,7 +1,7 @@
-@ngGmapModule "oo", ->
+angular.module("google-maps.api.utils")
+.factory "BaseObject", ->
     baseObjectKeywords = ['extended', 'included']
-
-    class @BaseObject
+    class BaseObject
         @extend: (obj) ->
             for key, value of obj when key not in baseObjectKeywords
                 @[key] = value
@@ -13,3 +13,4 @@
                 @::[key] = value
             obj.included?.apply(@)
             this
+    BaseObject

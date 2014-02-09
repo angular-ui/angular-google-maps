@@ -1,4 +1,5 @@
-angular.module("google-maps").factory "add-events", ["$timeout", ($timeout) ->
+angular.module("google-maps")
+.factory "add-events", ["$timeout", ($timeout) ->
     addEvent = (target, eventName, handler) ->
         google.maps.event.addListener target, eventName, ->
             handler.apply this, arguments
@@ -14,9 +15,8 @@ angular.module("google-maps").factory "add-events", ["$timeout", ($timeout) ->
             remove.push addEvent(target, key, _handler)
 
         ->
-            angular.forEach remove, (fn) ->
-                fn()  if _.isFunction(fn)
-                fn.e()  if fn.e isnt null and _.isFunction(fn.e)
+            angular.forEach remove, (listener) ->
+                google.maps.event.removeListener listener
 
             remove = null
     addEvents

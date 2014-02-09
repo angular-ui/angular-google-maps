@@ -38,6 +38,27 @@ This directive is used to create a marker label on an existing map.
 {attribute class optional} class to DOM object
 {attribute style optional} style for the label
 ###
-angular.module("google-maps").directive "markerLabel", ["$log", "$timeout", ($log, $timeout) ->
-    new directives.api.Label($timeout)
+###
+Basic Directive api for a label. Basic in the sense that this directive contains 1:1 on scope and model.
+Thus there will be one html element per marker within the directive.
+###
+angular.module("google-maps")
+.directive "markerLabel", ["$timeout", "ILabel", "MarkerLabelChildModel", "GmapUtil", ($timeout, ILabel, MarkerLabelChildModel, GmapUtil) ->
+    class Label extends ILabel
+        constructor: ($timeout) ->
+            super($timeout)
+            self = @
+            @require = '^marker'
+            @template = '<span class="angular-google-maps-marker-label" ng-transclude></span>'
+            @$log.info(@)
+        link: (scope, element, attrs, ctrl) =>
+            @$timeout( =>
+                markerCtrl = ctrl.getMarkerScope().gMarker
+                if markerCtrl?
+                    label = new MarkerLabelChildModel(markerCtrl, scope)
+                scope.$on("$destroy", =>
+                    label.destroy()
+                )
+            ,GmapUtil.defaultDelay + 25)
+    new Label($timeout)
 ]

@@ -6,7 +6,8 @@ var rndAddToLatLon = function () {
     return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1)
 }
 
-function ExampleController($scope, $timeout, $log, $http) {
+function ExampleController($scope, $timeout, $log, $http, Logger) {
+    Logger.doLog = true
     // Enable the new Google Maps visuals until it gets enabled by default.
     // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
     google.maps.visualRefresh = true;

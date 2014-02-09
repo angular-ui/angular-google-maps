@@ -16,7 +16,7 @@ describe "MarkerParentModel", ->
                     self.clicked = true
 
         #define / inject values into the item we are testing... not a controller but it allows us to inject
-        angular.module('mockModule', [])
+        angular.module('mockModule', ["google-maps"])
         .value('mapCtrl',
                 getMap: ()->
                     document.gMap)
@@ -24,15 +24,13 @@ describe "MarkerParentModel", ->
         .value('attrs', {})
         .value('model', {})
         .value('scope', @scope)
-        .controller 'subject', (scope, element, attrs, mapCtrl, $timeout) =>
-                @subject = new directives.api.models.parent.MarkerParentModel(scope, element, attrs, mapCtrl, $timeout)
-        angular.mock.module('mockModule')
-        inject ($timeout, $rootScope, $log, $controller) =>
-            directives.api.utils.Logger.logger = $log
+
+        module "mockModule"
+        inject ($timeout, $rootScope, element, attrs, mapCtrl, MarkerParentModel) =>
             scope = $rootScope.$new()
             @scope = _.extend @scope, scope
-            $controller 'subject',
-                scope: scope
+            @testCtor = MarkerParentModel
+            @subject = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout)
 
         #mocking google maps event listener
         @googleMapListeners = []
@@ -59,8 +57,7 @@ describe "MarkerParentModel", ->
         @subject.setEvents(@, @scope)
 
     it 'constructor exist', ->
-        test = directives.api.models.parent.MarkerParentModel?
-        expect(test).toEqual(true)
+        expect(@testCtor?).toEqual(true)
 
     it 'can be created', ->
         expect(@subject?).toEqual(true)

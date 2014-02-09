@@ -1,8 +1,9 @@
 ###
     Simple Object Map with a lenght property to make it easy to track length/size
 ###
-@ngGmapModule "directives.api.utils", ->
-    class @PropMap
+angular.module("google-maps.api.utils")
+.factory "PropMap",  ->
+    class PropMap
         constructor: () ->
             @length = 0
         get: (key)=>
@@ -27,3 +28,4 @@
             _.each propsToPop, (prop)=>
                 all.pop()
             all
+    PropMap
