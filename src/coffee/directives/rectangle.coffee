@@ -28,31 +28,18 @@ https://github.com/nlaplante/angular-google-maps
 @authors
 Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
+Chentsu Lin - https://github.com/ChenTsuLin
 ###
-angular.module("google-maps")
-.directive "polygon", ["$log", "$timeout", "array-sync", ($log, $timeout, arraySync) ->
-    validatePathPoints = (path) ->
-        i = 0
+angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log, $timeout) ->
+    validateBoundPoints = (bounds) ->
+        return false  if angular.isUndefined(bounds.sw.latitude) or angular.isUndefined(bounds.sw.longitude) or angular.isUndefined(bounds.ne.latitude) or angular.isUndefined(bounds.ne.longitude)
 
-        while i < path.length
-            return false  if angular.isUndefined(path[i].latitude) or angular.isUndefined(path[i].longitude)
-            i++
         true
-    convertPathPoints = (path) ->
-        result = new google.maps.MVCArray()
-        i = 0
+    convertBoundPoints = (bounds) ->
+        result = new google.maps.LatLngBounds(new google.maps.LatLng(bounds.sw.latitude, bounds.sw.longitude), new google.maps.LatLng(bounds.ne.latitude, bounds.ne.longitude))
 
-        while i < path.length
-            result.push new google.maps.LatLng(path[i].latitude, path[i].longitude)
-            i++
         result
-    extendMapBounds = (map, points) ->
-        bounds = new google.maps.LatLngBounds()
-        i = 0
-
-        while i < points.length
-            bounds.extend points.getAt(i)
-            i++
+    fitMapBounds = (map, bounds) ->
         map.fitBounds bounds
 
     #
@@ -67,32 +54,30 @@ angular.module("google-maps")
     "use strict"
     DEFAULTS = {}
     restrict: "ECA"
-    replace: true
     require: "^googleMap"
+    replace: true
     scope:
-        path: "=path"
+        bounds: "=bounds"
         stroke: "=stroke"
         clickable: "="
         draggable: "="
         editable: "="
-        geodesic: "="
         fill: "="
-        icons: "=icons"
         visible: "="
 
     link: (scope, element, attrs, mapCtrl) ->
 
         # Validate required properties
-        if angular.isUndefined(scope.path) or scope.path is null or scope.path.length < 2 or not validatePathPoints(scope.path)
-            $log.error "polygon: no valid path attribute found"
+        if angular.isUndefined(scope.bounds) or scope.bounds is null or angular.isUndefined(scope.bounds.sw) or scope.bounds.sw is null or angular.isUndefined(scope.bounds.ne) or scope.bounds.ne is null or not validateBoundPoints(scope.bounds)
+            $log.error "rectangle: no valid bound attribute found"
             return
 
-        # Wrap polygon initialization inside a $timeout() call to make sure the map is created already
+        # Wrap rectangle initialization inside a $timeout() call to make sure the map is created already
         $timeout ->
-            buildOpts = (pathPoints) ->
+            buildOpts = (bounds) ->
                 opts = angular.extend({}, DEFAULTS,
                     map: map
-                    path: pathPoints
+                    bounds: bounds
                     strokeColor: scope.stroke and scope.stroke.color
                     strokeOpacity: scope.stroke and scope.stroke.opacity
                     strokeWeight: scope.stroke and scope.stroke.weight
@@ -103,7 +88,6 @@ angular.module("google-maps")
                     clickable: true
                     draggable: false
                     editable: false
-                    geodesic: false
                     visible: true
                 , (defaultValue, key) ->
                     if angular.isUndefined(scope[key]) or scope[key] is null
@@ -113,52 +97,43 @@ angular.module("google-maps")
 
                 opts
             map = mapCtrl.getMap()
-            polygon = new google.maps.Polygon(buildOpts(convertPathPoints(scope.path)))
-            extendMapBounds map, pathPoints  if isTrue(attrs.fit)
+            rectangle = new google.maps.Rectangle(buildOpts(convertBoundPoints(scope.bounds)))
+            fitMapBounds map, bounds  if isTrue(attrs.fit)
             if angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
-                    polygon.setEditable newValue
+                    rectangle.setEditable newValue
 
             if angular.isDefined(scope.draggable)
                 scope.$watch "draggable", (newValue, oldValue) ->
-                    polygon.setDraggable newValue
+                    rectangle.setDraggable newValue
 
             if angular.isDefined(scope.visible)
                 scope.$watch "visible", (newValue, oldValue) ->
-                    polygon.setVisible newValue
-
-            if angular.isDefined(scope.geodesic)
-                scope.$watch "geodesic", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
-
-            if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.opacity)
-                scope.$watch "stroke.opacity", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
-
-            if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.weight)
-                scope.$watch "stroke.weight", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
+                    rectangle.setVisible newValue
 
             if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.color)
                 scope.$watch "stroke.color", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
+                    rectangle.setOptions buildOpts(rectangle.getBounds())
+
+            if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.weight)
+                scope.$watch "stroke.weight", (newValue, oldValue) ->
+                    rectangle.setOptions buildOpts(rectangle.getBounds())
+
+            if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.opacity)
+                scope.$watch "stroke.opacity", (newValue, oldValue) ->
+                    rectangle.setOptions buildOpts(rectangle.getBounds())
 
             if angular.isDefined(scope.fill) and angular.isDefined(scope.fill.color)
                 scope.$watch "fill.color", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
+                    rectangle.setOptions buildOpts(rectangle.getBounds())
 
             if angular.isDefined(scope.fill) and angular.isDefined(scope.fill.opacity)
                 scope.$watch "fill.opacity", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
+                    rectangle.setOptions buildOpts(rectangle.getBounds())
 
-            arraySyncer = arraySync(polygon.getPath(), scope, "path")
-
-            # Remove polygon on scope $destroy
+            # Remove rectangle on scope $destroy
             scope.$on "$destroy", ->
-                polygon.setMap null
-                if arraySyncer
-                    arraySyncer()
-                    arraySyncer = null
+                rectangle.setMap null
 
 
 ]
