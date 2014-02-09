@@ -131,6 +131,10 @@ angular.module("google-maps")
                 scope.$watch "geodesic", (newValue, oldValue) ->
                     polygon.setOptions buildOpts(polygon.getPath())
 
+            if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.opacity)
+                scope.$watch "stroke.opacity", (newValue, oldValue) ->
+                    polygon.setOptions buildOpts(polygon.getPath())
+
             if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.weight)
                 scope.$watch "stroke.weight", (newValue, oldValue) ->
                     polygon.setOptions buildOpts(polygon.getPath())
@@ -138,14 +142,14 @@ angular.module("google-maps")
             if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.color)
                 scope.$watch "stroke.color", (newValue, oldValue) ->
                     polygon.setOptions buildOpts(polygon.getPath())
-                    
+
             if angular.isDefined(scope.fill) and angular.isDefined(scope.fill.color)
                 scope.$watch "fill.color", (newValue, oldValue) ->
                     polygon.setOptions buildOpts(polygon.getPath())
 
             if angular.isDefined(scope.fill) and angular.isDefined(scope.fill.opacity)
                 scope.$watch "fill.opacity", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())                    
+                    polygon.setOptions buildOpts(polygon.getPath())
 
             arraySyncer = arraySync(polygon.getPath(), scope, "path")
 
