@@ -193,5 +193,8 @@ ul.separated li:not(:first-child) {
 	width: 80px !important;
 }
 
-
-
+.share-button {
+	margin: auto;
+	margin-bottom: 15px;
+	display: none;
+}
