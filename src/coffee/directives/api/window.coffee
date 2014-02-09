@@ -14,10 +14,10 @@ angular.module("google-maps.api")
                     isIconVisibleOnClick = true
                     if angular.isDefined(attrs.isiconvisibleonclick)
                         isIconVisibleOnClick = scope.isIconVisibleOnClick
-                        mapCtrl = ctrls[0].getMap()
-                        markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1].getMarkerScope().gMarker else undefined
-                        defaults = if scope.options? then scope.options else {}
-                        hasScopeCoords = scope? and scope.coords? and scope.coords.latitude? and scope.coords.longitude?
+                    mapCtrl = ctrls[0].getMap()
+                    markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1].getMarkerScope().gMarker else undefined
+                    defaults = if scope.options? then scope.options else {}
+                    hasScopeCoords = scope? and scope.coords? and scope.coords.latitude? and scope.coords.longitude?
 
                     opts = if hasScopeCoords then @createWindowOptions(markerCtrl, scope, element.html(), defaults) else undefined
 

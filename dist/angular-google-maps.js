@@ -2563,11 +2563,11 @@ Nicholas McCready - https://twitter.com/nmccready
             isIconVisibleOnClick = true;
             if (angular.isDefined(attrs.isiconvisibleonclick)) {
               isIconVisibleOnClick = scope.isIconVisibleOnClick;
-              mapCtrl = ctrls[0].getMap();
-              markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarkerScope().gMarker : void 0;
-              defaults = scope.options != null ? scope.options : {};
-              hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
             }
+            mapCtrl = ctrls[0].getMap();
+            markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarkerScope().gMarker : void 0;
+            defaults = scope.options != null ? scope.options : {};
+            hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
             opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : void 0;
             if (mapCtrl != null) {
               window = new WindowChildModel({}, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile, element);
