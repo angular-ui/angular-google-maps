@@ -42,6 +42,10 @@
                 draggable="true">
         <marker coords="map.marker" options="map.marker.options"></marker>
         <marker coords="map.marker2" ></marker>
+        <windows models="map.windows" coords="'self'" show="'show'">
+            <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+            <p class="muted">My marker will stay open when the window is popped up!</p>
+        </windows>
     </google-map>
 </div>
 </div>
@@ -56,9 +60,6 @@
 <script src="debug-controller.js"></script>
 <script src="templates/infoController.js"></script>
 <script src="http://localhost:35729/livereload.js"></script>
-<script type="text/javascript">
-directives.api.utils.Logger.doLog = true;
-</script>
 </body>
 
 </html>

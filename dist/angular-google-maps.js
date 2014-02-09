@@ -1300,7 +1300,8 @@ Nicholas McCready - https://twitter.com/nmccready
           if ((this.opts != null) && this.gWin === void 0) {
             this.gWin = new google.maps.InfoWindow(this.opts);
             google.maps.event.addListener(this.gWin, 'closeclick', function() {
-              return _this.markerCtrl.setVisible(_this.markerIsVisibleAfterWindowClose);
+              var _ref;
+              return (_ref = _this.markerCtrl) != null ? _ref.setVisible(_this.markerIsVisibleAfterWindowClose) : void 0;
             });
             if (this.scope.closeClick != null) {
               return this.scope.closeClick();

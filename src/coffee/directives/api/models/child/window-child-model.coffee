@@ -22,7 +22,7 @@ angular.module("google-maps.api.models.child")
 
                 # Set visibility of marker back to what it was before opening the window
                 google.maps.event.addListener @gWin, 'closeclick', =>
-                    @markerCtrl.setVisible @markerIsVisibleAfterWindowClose
+                    @markerCtrl?.setVisible @markerIsVisibleAfterWindowClose
                 @scope.closeClick() if @scope.closeClick?
 
         watchShow: () =>

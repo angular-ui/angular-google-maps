@@ -21,7 +21,7 @@ function DebugController($scope, $timeout, $log, $http) {
 
 
     angular.extend($scope, {
-        map:{
+        map: {
             center: {
                 latitude: 45,
                 longitude: -74
@@ -29,18 +29,38 @@ function DebugController($scope, $timeout, $log, $http) {
             marker: {
                 latitude: 45,
                 longitude: -74,
-                options:{
-                    visible:false
+                options: {
+                    visible: false
                 }
             },
             marker2: {
                 latitude: 45.2,
                 longitude: -74.5
             },
-//            dragging:false, //appears to be required
-            zoom: 7,
+            windows: [
+                {
+                    id: 1,
+                    latitude: 46,
+                    longitude: -77,
+                    show:true
+                },
+                {
+                    id: 2,
+                    latitude: 33,
+                    longitude: -77,
+                    show:true
+                },
+                {
+                    id: 3,
+                    icon: 'plane.png',
+                    latitude: 35,
+                    longitude: -125,
+                    show:true
+                }
+            ],
+            zoom: 4,
             options: {
-                disableDefaultUI: true,
+//                disableDefaultUI: true,
                 panControl: false,
                 navigationControl: false,
                 scrollwheel: false,
