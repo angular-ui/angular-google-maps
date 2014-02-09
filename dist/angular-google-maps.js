@@ -326,7 +326,7 @@ Nicholas McCready - https://twitter.com/nmccready
       createWindowOptions: function(gMarker, scope, content, defaults, $compile) {
         if ((content != null) && (defaults != null)) {
           return angular.extend({}, defaults, {
-            content: defaults.content != null ? $compile(defaults.content)(scope.$new()) : $compile(content)(scope.$new()),
+            content: defaults.content != null ? defaults.content : $compile(content)(scope)[0],
             position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
           });
         }

@@ -51,8 +51,12 @@
         <!--WINDOWS without markers-->
         <!--NOTICE THEY MUST BE PRIOR TO ANY MARKERS OR THEY WILL ATTACH THEMSELVES walking up the dom tree-->
         <window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false" options="map.infoWindow.options">
-            I should not be attached to a
-            marker.
+			<div ng-controller='InfoController'>
+			    I should not be attached to a
+            	marker.
+            
+	            <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
+            </div>
         </window>
 
         <window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"

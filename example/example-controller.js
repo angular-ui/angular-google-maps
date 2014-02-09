@@ -57,6 +57,10 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         example2: {
             doRebuildAll: false
         },
+        clickWindow: function () {
+        	$log.info('CLICK CLICK');
+        	Logger.info('CLICK CLICK');
+        },
         map: {
             version: "uknown",
             heatLayerCallback: function (layer) {

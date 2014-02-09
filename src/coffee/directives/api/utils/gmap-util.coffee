@@ -24,7 +24,7 @@ angular.module("google-maps.api.utils")
         if content? and defaults?
             angular.extend {}, defaults,
                 content: if defaults.content?
-                then $compile(defaults.content)(scope.$new()) else $compile(content)(scope.$new()),
+                then defaults.content else $compile(content)(scope)[0],
                 position: if defaults.position?
                 then defaults.position else if angular.isObject(gMarker)
                 then gMarker.getPosition() else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
