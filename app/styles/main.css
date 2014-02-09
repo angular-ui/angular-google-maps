@@ -19,7 +19,7 @@ body {
 }
 
 body, h1, h2, h3, h4, h5, h6 {
-	font-family: 'PT Sans', 'Open Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	font-family: 'Noto Sans', 'PT Sans', 'Open Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
 h1 small,
@@ -29,12 +29,12 @@ h3 small {
 }
 
 h1.page-header {
-	font-size: 70px;
+	font-size: 80px;
 	text-align: center;
 	font-weight: 600;
 	padding-bottom: 60px !important;
 	padding-top: 40px;
-	letter-spacing: -3px;
+	letter-spacing: -6px;
 }
 
 table {
@@ -52,6 +52,7 @@ table {
 footer h3 {
 	border-bottom: 1px #eee solid;
 	padding-bottom: 10px;
+	letter-spacing: -1px;
 }
 
 footer h3 small.pull-right {
@@ -202,4 +203,8 @@ ul.separated li:not(:first-child) {
 .affix {
 	top: 20px;
 	width: 262px;
+}
+
+.faq-entry-title {
+	margin-top: 80px;
 }
