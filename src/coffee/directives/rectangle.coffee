@@ -62,6 +62,7 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
         clickable: "="
         draggable: "="
         editable: "="
+        fill: "="
         visible: "="
 
     link: (scope, element, attrs, mapCtrl) ->
@@ -73,27 +74,30 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
 
         # Wrap rectangle initialization inside a $timeout() call to make sure the map is created already
         $timeout ->
-            map = mapCtrl.getMap()
-            bounds = convertBoundPoints(scope.bounds)
-            opts = angular.extend({}, DEFAULTS,
-                map: map
-                bounds: bounds
-                strokeColor: scope.stroke and scope.stroke.color
-                strokeOpacity: scope.stroke and scope.stroke.opacity
-                strokeWeight: scope.stroke and scope.stroke.weight
-            )
-            angular.forEach
-                clickable: true
-                draggable: false
-                editable: false
-                visible: true
-            , (defaultValue, key) ->
-                if angular.isUndefined(scope[key]) or scope[key] is null
-                    opts[key] = defaultValue
-                else
-                    opts[key] = scope[key]
+            buildOpts = (bounds) ->
+                opts = angular.extend({}, DEFAULTS,
+                    map: map
+                    bounds: bounds
+                    strokeColor: scope.stroke and scope.stroke.color
+                    strokeOpacity: scope.stroke and scope.stroke.opacity
+                    strokeWeight: scope.stroke and scope.stroke.weight
+                    fillColor: scope.fill and scope.fill.color
+                    fillOpacity: scope.fill and scope.fill.opacity
+                )
+                angular.forEach
+                    clickable: true
+                    draggable: false
+                    editable: false
+                    visible: true
+                , (defaultValue, key) ->
+                    if angular.isUndefined(scope[key]) or scope[key] is null
+                        opts[key] = defaultValue
+                    else
+                        opts[key] = scope[key]
 
-            rectangle = new google.maps.Rectangle(opts)
+                opts
+            map = mapCtrl.getMap()
+            rectangle = new google.maps.Rectangle(buildOpts(convertBoundPoints(scope.bounds)))
             fitMapBounds map, bounds  if isTrue(attrs.fit)
             if angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
@@ -106,6 +110,26 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
             if angular.isDefined(scope.visible)
                 scope.$watch "visible", (newValue, oldValue) ->
                     rectangle.setVisible newValue
+
+            if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.color)
+                scope.$watch "stroke.color", (newValue, oldValue) ->
+                    rectangle.setOptions buildOpts(rectangle.getBounds())
+
+            if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.weight)
+                scope.$watch "stroke.weight", (newValue, oldValue) ->
+                    rectangle.setOptions buildOpts(rectangle.getBounds())
+
+            if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.opacity)
+                scope.$watch "stroke.opacity", (newValue, oldValue) ->
+                    rectangle.setOptions buildOpts(rectangle.getBounds())
+
+            if angular.isDefined(scope.fill) and angular.isDefined(scope.fill.color)
+                scope.$watch "fill.color", (newValue, oldValue) ->
+                    rectangle.setOptions buildOpts(rectangle.getBounds())
+
+            if angular.isDefined(scope.fill) and angular.isDefined(scope.fill.opacity)
+                scope.$watch "fill.opacity", (newValue, oldValue) ->
+                    rectangle.setOptions buildOpts(rectangle.getBounds())
 
             # Remove rectangle on scope $destroy
             scope.$on "$destroy", ->
