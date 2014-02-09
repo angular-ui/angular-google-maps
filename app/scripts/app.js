@@ -33,6 +33,7 @@ angular.module('angularGoogleMapsApp')
       .when('/api', {
       	templateUrl: 'views/api.html',
       	controller: 'ApiCtrl',
+      	reloadOnSearch: false
       })
       .when('/demo', {
       	templateUrl: 'views/demo.html',

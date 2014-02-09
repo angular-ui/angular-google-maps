@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope) {
+angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope, $location) {
 
     $scope.directives = [
         'google-map',
@@ -20,4 +20,12 @@ angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope) {
     };
     
     $scope.query = null;
+    	
+    $scope.$watch(function () {
+    	return $location.hash();
+    }, function (newValue, oldValue) {
+    	if (newValue !== oldValue) {
+    		$('#content' + newValue).collapse('show');
+    	}
+    });
   });
