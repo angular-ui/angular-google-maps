@@ -1,0 +1,72 @@
+<p>The <code>rectangle</code> directive is used to draw a rectangular overlay connected to various points on the map.
+See <a google-api="Rectangle">Rectangle API</a>.</p>
+	
+<h4>Usage</h4>
+
+<div hljs language="html" include="'rectangleTemplate'"></div>
+
+<h4>Parameters</h4>
+
+<p class="muted">Required properties are in <span class="text-error">red</span>.</p>
+
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>Param</th>
+			<th>Type</th>
+			<th>Details</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>bounds</td>
+			<td><span class="label label-danger">expression</span></td>
+			<td>A <a google-api="LatLngBounds">google.maps.LatLngBounds</a> object defining the rectangle boundaries</td>
+		</tr>
+		<tr>
+			<td>fill</td>
+			<td><span class="label label-danger">expression</span></td>
+			<td>Object to configure the rectangle fill type. Valid properties are <code>color</code> (CSS hex notation) 
+			and <code>opacity</code> (between 0.0 and 1.0)</td>
+		</tr>			
+		<tr>
+			<td>stroke</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>Object to configure the line stroke. Valid properties are <code>color</code> (CSS hex notation),
+			<code>weight</code> (int) and <code>opacity</code> (between 0.0 and 1.0)</td>
+		</tr>
+		<tr>
+			<td>clickable</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to tell the polyline to respond to click events</td>
+		</tr>
+		<tr>
+			<td>draggable</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to make the polyline draggable across the map</td>
+		</tr>
+		<tr>
+			<td>editable</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to make the polyline editable by dragging control points</td>
+		</tr>
+		<tr>
+			<td>visible</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property which shows or hides the polyline</td>
+		</tr>
+	</tbody>
+</table>
+
+<script type="text/ng-template" id="rectangleTemplate">
+<rectangle bounds='{expression}'
+	fill='{expression}'
+	stroke='{expression}'
+	clickable='{expression}'
+	draggable='{expression}'
+	editable='{expression}'
+	visible='{expression}'>
+	...
+</rectangle>
+</script>
+

@@ -10,6 +10,7 @@ angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope) {
         'markers',
         'polygon',
         'polyline',
+        'rectangle',
         'window',
         'windows'
     ];    
