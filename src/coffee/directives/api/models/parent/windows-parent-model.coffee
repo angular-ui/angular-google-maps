@@ -167,10 +167,10 @@ angular.module("google-maps.api.models.parent")
                                 @setChildScope(childScope, newValue)
                         , true)
                         parsedContent = @interpolateContent(@linked.element.html(), model)
-                        opts = @createWindowOptions(gMarker, childScope, parsedContent, @DEFAULTS)
-                        child = new WindowChildModel(model, childScope, opts,
-                                @isIconVisibleOnClick, gMap, gMarker, @$http, @$templateCache, @$compile, undefined,
-                                true)
+                        opts = @createWindowOptions gMarker, childScope, parsedContent, @DEFAULTS
+                        child = new WindowChildModel model, childScope, opts,
+                                @isIconVisibleOnClick, gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true
+
                         unless model[@idKey]?
                             @$log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                             return

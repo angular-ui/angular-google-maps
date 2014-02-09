@@ -1,5 +1,5 @@
 angular.module("google-maps.api.utils")
-.service "GmapUtil", ->
+.service "GmapUtil",["Logger", "$compile", (Logger, $compile) ->
     getLabelPositionPoint: (anchor) ->
         if anchor == undefined
             return undefined
@@ -20,13 +20,17 @@ angular.module("google-maps.api.utils")
         opts.map = map if map?
         opts
 
-    createWindowOptions: (gMarker, scope, content, defaults, $compile) ->
-        if content? and defaults?
+    createWindowOptions: (gMarker, scope, content, defaults) ->
+        if content? and defaults? and $compile?
             angular.extend {}, defaults,
                 content: if defaults.content?
                 then defaults.content else $compile(content)(scope)[0],
                 position: if defaults.position?
                 then defaults.position else if angular.isObject(gMarker)
                 then gMarker.getPosition() else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+        else
+            Logger.info "content not defined" unless content
+            Logger.info "defaults not defined" unless defaults
 
     defaultDelay: 50
+]

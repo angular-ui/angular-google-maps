@@ -15,7 +15,7 @@ angular.module("google-maps.api.models.child")
 
         createGWin: (createOpts = false) =>
             if !@gWin? and createOpts and @element? and @element.html?
-                @opts = if @markerCtrl? then  @createWindowOptions(@markerCtrl, @scope, @element.html(), {}, @$compile) else {}
+                @opts = if @markerCtrl? then  @createWindowOptions(@markerCtrl, @scope, @element.html(), {}) else {}
 
             if @opts? and @gWin == undefined
                 @gWin = new google.maps.InfoWindow(@opts)

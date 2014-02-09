@@ -291,49 +291,58 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
-  angular.module("google-maps.api.utils").service("GmapUtil", function() {
-    return {
-      getLabelPositionPoint: function(anchor) {
-        var xPos, yPos;
-        if (anchor === void 0) {
-          return void 0;
-        }
-        anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor);
-        xPos = anchor[1];
-        yPos = anchor[2];
-        if (xPos && yPos) {
-          return new google.maps.Point(xPos, yPos);
-        }
-      },
-      createMarkerOptions: function(coords, icon, defaults, map) {
-        var opts;
-        if (map == null) {
-          map = void 0;
-        }
-        if (defaults == null) {
-          defaults = {};
-        }
-        opts = angular.extend({}, defaults, {
-          position: defaults.position != null ? defaults.position : new google.maps.LatLng(coords.latitude, coords.longitude),
-          icon: defaults.icon != null ? defaults.icon : icon,
-          visible: defaults.visible != null ? defaults.visible : (coords.latitude != null) && (coords.longitude != null)
-        });
-        if (map != null) {
-          opts.map = map;
-        }
-        return opts;
-      },
-      createWindowOptions: function(gMarker, scope, content, defaults, $compile) {
-        if ((content != null) && (defaults != null)) {
-          return angular.extend({}, defaults, {
-            content: defaults.content != null ? defaults.content : $compile(content)(scope)[0],
-            position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+  angular.module("google-maps.api.utils").service("GmapUtil", [
+    "Logger", "$compile", function(Logger, $compile) {
+      return {
+        getLabelPositionPoint: function(anchor) {
+          var xPos, yPos;
+          if (anchor === void 0) {
+            return void 0;
+          }
+          anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor);
+          xPos = anchor[1];
+          yPos = anchor[2];
+          if (xPos && yPos) {
+            return new google.maps.Point(xPos, yPos);
+          }
+        },
+        createMarkerOptions: function(coords, icon, defaults, map) {
+          var opts;
+          if (map == null) {
+            map = void 0;
+          }
+          if (defaults == null) {
+            defaults = {};
+          }
+          opts = angular.extend({}, defaults, {
+            position: defaults.position != null ? defaults.position : new google.maps.LatLng(coords.latitude, coords.longitude),
+            icon: defaults.icon != null ? defaults.icon : icon,
+            visible: defaults.visible != null ? defaults.visible : (coords.latitude != null) && (coords.longitude != null)
           });
-        }
-      },
-      defaultDelay: 50
-    };
-  });
+          if (map != null) {
+            opts.map = map;
+          }
+          return opts;
+        },
+        createWindowOptions: function(gMarker, scope, content, defaults) {
+          if ((content != null) && (defaults != null) && ($compile != null)) {
+            return angular.extend({}, defaults, {
+              content: defaults.content != null ? defaults.content : $compile(content)(scope)[0],
+              position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+            });
+          } else {
+            if (!content) {
+              Logger.info("content not defined");
+            }
+            if (!defaults) {
+              return Logger.info("defaults not defined");
+            }
+          }
+        },
+        defaultDelay: 50
+      };
+    }
+  ]);
 
 }).call(this);
 
@@ -1267,7 +1276,7 @@ Nicholas McCready - https://twitter.com/nmccready
             createOpts = false;
           }
           if ((this.gWin == null) && createOpts && (this.element != null) && (this.element.html != null)) {
-            this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, this.element.html(), {}, this.$compile) : {};
+            this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, this.element.html(), {}) : {};
           }
           if ((this.opts != null) && this.gWin === void 0) {
             this.gWin = new google.maps.InfoWindow(this.opts);
@@ -2539,7 +2548,7 @@ Nicholas McCready - https://twitter.com/nmccready
               defaults = scope.options != null ? scope.options : {};
               hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
             }
-            opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults, _this.$compile) : void 0;
+            opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : void 0;
             if (mapCtrl != null) {
               window = new WindowChildModel({}, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile, element);
             }
