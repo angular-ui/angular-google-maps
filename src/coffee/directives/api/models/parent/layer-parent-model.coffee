@@ -11,7 +11,7 @@
             @$timeout =>
                 @gMap = mapCtrl.getMap()
                 @doShow = @scope.show  if angular.isDefined(@attrs.show)
-                @layer.setMap @gMap  if @doShow isnt null and @doShow and @Map isnt null
+                @layer.setMap @gMap  if @doShow isnt null and @doShow and @gMap isnt null
                 @scope.$watch("show", (newValue, oldValue) =>
                     if newValue isnt oldValue
                         @doShow = newValue
@@ -30,7 +30,7 @@
                     @layer.setMap null
 
         createGoogleLayer: ()=>
-            if @attrs.options?
+            unless @attrs.options?
                 @layer = if @attrs.namespace == undefined then new google.maps[@attrs.type]()
                 else new google.maps[@attrs.namespace][@attrs.type]()
             else
