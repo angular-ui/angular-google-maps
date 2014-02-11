@@ -1,5 +1,9 @@
 {
 	"items": [{
+			"title": "Layer directive hotfix",
+			"date": "Feb. 10 2014",
+			"content": "<p>There was a bug in the layer directive which prevented passing options to the underlying layer. This has been fixed in version 1.0.10.</p><p>Thanks <a href='https://github.com/netmonster01' rel='external'>netmonster01</a> for reporting this!</p>"
+		}, {
 			"title": "New directive: rectangle",
 			"date": "Feb. 8 2014",
 			"content": "<p>Thanks to <a href='https://github.com/ChenTsuLin' rel='external'>ChenTsuLin</a>, we now have a rectangle directive. See <a href='/api#rectangle'>the docs</a>!</p>"
