@@ -139,8 +139,8 @@ module.exports = (grunt) ->
                     helpers: ["tmp/spec/js/helpers/helpers.js"]
                     #grunt-template-jasmine-requirejs - to remove all coverage meta from angular-google-maps.js (helps debug)
                     #grunt-template-jasmine-istanbul - to produce coverage report
-                    template: require  "grunt-template-jasmine-requirejs"
-#                    template: require  "grunt-template-jasmine-istanbul"
+#                    template: require  "grunt-template-jasmine-requirejs"
+                    template: require  "grunt-template-jasmine-istanbul"
                     templateOptions:
                             coverage: "spec/coverage/coverage.json"
                             report: "spec/coverage"
