@@ -1339,7 +1339,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if (angular.isDefined(_this.attrs.show)) {
             _this.doShow = _this.scope.show;
           }
-          if (_this.doShow !== null && _this.doShow && _this.Map !== null) {
+          if (_this.doShow !== null && _this.doShow && _this.gMap !== null) {
             _this.layer.setMap(_this.gMap);
           }
           _this.scope.$watch("show", function(newValue, oldValue) {
@@ -1367,7 +1367,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
       LayerParentModel.prototype.createGoogleLayer = function() {
         var _this = this;
-        if (this.attrs.options != null) {
+        if (this.attrs.options == null) {
           this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type]() : new google.maps[this.attrs.namespace][this.attrs.type]();
         } else {
           this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type](this.scope.options) : new google.maps[this.attrs.namespace][this.attrs.type](this.scope.options);
