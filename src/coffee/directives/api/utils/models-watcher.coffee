@@ -1,4 +1,4 @@
-angular.module("google-maps.api.utils")
+angular.module("google-maps.directives.api.utils")
 .factory "ModelsWatcher",[ "Logger", (Logger) ->
     ModelsWatcher =
     #putting a payload together in order to not have to flatten twice, and to not have to flatten again later

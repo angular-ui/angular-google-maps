@@ -1,4 +1,4 @@
-angular.module("google-maps.api.models.child")
+angular.module("google-maps.directives.api.models.child")
 .factory "WindowChildModel", [ "BaseObject", "GmapUtil","Logger", (BaseObject, GmapUtil,Logger) ->
     class WindowChildModel extends BaseObject
         @include GmapUtil

@@ -32,17 +32,17 @@ Nicholas McCready - https://twitter.com/nmccready
 
 
 (function() {
-  angular.module("google-maps.api.utils", []);
+  angular.module("google-maps.directives.api.utils", []);
 
-  angular.module("google-maps.api.managers", []);
+  angular.module("google-maps.directives.api.managers", []);
 
-  angular.module("google-maps.api.models.child", ["google-maps.api.utils"]);
+  angular.module("google-maps.directives.api.models.child", ["google-maps.directives.api.utils"]);
 
-  angular.module("google-maps.api.models.parent", ["google-maps.api.managers", "google-maps.api.models.child"]);
+  angular.module("google-maps.directives.api.models.parent", ["google-maps.directives.api.managers", "google-maps.directives.api.models.child"]);
 
-  angular.module("google-maps.api", ["google-maps.api.models.parent"]);
+  angular.module("google-maps.directives.api", ["google-maps.directives.api.models.parent"]);
 
-  angular.module("google-maps", ["google-maps.api"]).factory("debounce", [
+  angular.module("google-maps", ["google-maps.directives.api"]).factory("debounce", [
     "$timeout", function($timeout) {
       return function(fn) {
         var nthCall;
@@ -222,7 +222,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
   window._async = async;
 
-  angular.module("google-maps.api.utils").factory("async", function() {
+  angular.module("google-maps.directives.api.utils").factory("async", function() {
     return window._async;
   });
 
@@ -231,7 +231,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-  angular.module("google-maps.api.utils").factory("BaseObject", function() {
+  angular.module("google-maps.directives.api.utils").factory("BaseObject", function() {
     var BaseObject, baseObjectKeywords;
     baseObjectKeywords = ['extended', 'included'];
     BaseObject = (function() {
@@ -282,7 +282,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
 
 (function() {
-  angular.module("google-maps.api.utils").factory("ChildEvents", function() {
+  angular.module("google-maps.directives.api.utils").factory("ChildEvents", function() {
     return {
       onChildCreation: function(child) {}
     };
@@ -291,7 +291,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
-  angular.module("google-maps.api.utils").service("GmapUtil", [
+  angular.module("google-maps.directives.api.utils").service("GmapUtil", [
     "Logger", "$compile", function(Logger, $compile) {
       return {
         getLabelPositionPoint: function(anchor) {
@@ -369,7 +369,7 @@ Nicholas McCready - https://twitter.com/nmccready
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.utils").factory("Linked", [
+  angular.module("google-maps.directives.api.utils").factory("Linked", [
     "BaseObject", function(BaseObject) {
       var Linked;
       Linked = (function(_super) {
@@ -392,7 +392,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
-  angular.module("google-maps.api.utils").service("Logger", function($log) {
+  angular.module("google-maps.directives.api.utils").service("Logger", function($log) {
     return {
       logger: $log,
       doLog: false,
@@ -433,7 +433,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.utils").factory("ModelKey", [
+  angular.module("google-maps.directives.api.utils").factory("ModelKey", [
     "BaseObject", function(BaseObject) {
       var ModelKey;
       ModelKey = (function(_super) {
@@ -474,7 +474,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
-  angular.module("google-maps.api.utils").factory("ModelsWatcher", [
+  angular.module("google-maps.directives.api.utils").factory("ModelsWatcher", [
     "Logger", function(Logger) {
       var ModelsWatcher;
       ModelsWatcher = {
@@ -538,7 +538,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  angular.module("google-maps.api.utils").factory("PropMap", function() {
+  angular.module("google-maps.directives.api.utils").factory("PropMap", function() {
     var PropMap;
     PropMap = (function() {
       function PropMap() {
@@ -600,7 +600,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.managers").factory("ClustererMarkerManager", [
+  angular.module("google-maps.directives.api.managers").factory("ClustererMarkerManager", [
     "BaseObject", "Logger", function(BaseObject, Logger) {
       var ClustererMarkerManager;
       ClustererMarkerManager = (function(_super) {
@@ -669,7 +669,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.managers").factory("MarkerManager", [
+  angular.module("google-maps.directives.api.managers").factory("MarkerManager", [
     "BaseObject", "Logger", function(BaseObject, Logger) {
       var MarkerManager;
       MarkerManager = (function(_super) {
@@ -922,7 +922,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.models.child").factory("MarkerLabelChildModel", [
+  angular.module("google-maps.directives.api.models.child").factory("MarkerLabelChildModel", [
     "BaseObject", "GmapUtil", function(BaseObject, GmapUtil) {
       var MarkerLabelChildModel;
       MarkerLabelChildModel = (function(_super) {
@@ -1038,7 +1038,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.models.child").factory("MarkerChildModel", [
+  angular.module("google-maps.directives.api.models.child").factory("MarkerChildModel", [
     "ModelKey", "GmapUtil", "Logger", function(ModelKey, GmapUtil, Logger) {
       var MarkerChildModel;
       MarkerChildModel = (function(_super) {
@@ -1249,7 +1249,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.models.child").factory("WindowChildModel", [
+  angular.module("google-maps.directives.api.models.child").factory("WindowChildModel", [
     "BaseObject", "GmapUtil", "Logger", function(BaseObject, GmapUtil, Logger) {
       var WindowChildModel;
       WindowChildModel = (function(_super) {
@@ -1445,7 +1445,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.models.parent").factory("IMarkerParentModel", [
+  angular.module("google-maps.directives.api.models.parent").factory("IMarkerParentModel", [
     "ModelKey", "Logger", function(ModelKey, Logger) {
       var IMarkerParentModel;
       IMarkerParentModel = (function(_super) {
@@ -1545,7 +1545,7 @@ Nicholas McCready - https://twitter.com/nmccready
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.models.parent").factory("IWindowParentModel", [
+  angular.module("google-maps.directives.api.models.parent").factory("IWindowParentModel", [
     "ModelKey", "GmapUtil", "Logger", function(ModelKey, GmapUtil, Logger) {
       var IWindowParentModel;
       IWindowParentModel = (function(_super) {
@@ -1583,7 +1583,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.models.parent").factory("LayerParentModel", [
+  angular.module("google-maps.directives.api.models.parent").factory("LayerParentModel", [
     "BaseObject", "Logger", function(BaseObject, Logger) {
       var LayerParentModel;
       LayerParentModel = (function(_super) {
@@ -1675,7 +1675,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.models.parent").factory("MarkerParentModel", [
+  angular.module("google-maps.directives.api.models.parent").factory("MarkerParentModel", [
     "IMarkerParentModel", "GmapUtil", function(IMarkerParentModel, GmapUtil) {
       var MarkerParentModel;
       MarkerParentModel = (function(_super) {
@@ -1785,7 +1785,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.models.parent").factory("MarkersParentModel", [
+  angular.module("google-maps.directives.api.models.parent").factory("MarkersParentModel", [
     "IMarkerParentModel", "ModelsWatcher", "PropMap", "MarkerChildModel", "ClustererMarkerManager", "MarkerManager", function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, ClustererMarkerManager, MarkerManager) {
       var MarkersParentModel;
       MarkersParentModel = (function(_super) {
@@ -1974,7 +1974,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api.models.parent").factory("WindowsParentModel", [
+  angular.module("google-maps.directives.api.models.parent").factory("WindowsParentModel", [
     "IWindowParentModel", "ModelsWatcher", "PropMap", "WindowChildModel", "Linked", function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked) {
       var WindowsParentModel;
       WindowsParentModel = (function(_super) {
@@ -2281,7 +2281,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api").factory("ILabel", [
+  angular.module("google-maps.directives.api").factory("ILabel", [
     "BaseObject", "Logger", function(BaseObject, Logger) {
       var ILabel;
       ILabel = (function(_super) {
@@ -2335,7 +2335,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api").factory("IMarker", [
+  angular.module("google-maps.directives.api").factory("IMarker", [
     "Logger", "BaseObject", function(Logger, BaseObject) {
       var IMarker;
       IMarker = (function(_super) {
@@ -2390,7 +2390,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api").factory("IWindow", [
+  angular.module("google-maps.directives.api").factory("IWindow", [
     "BaseObject", "ChildEvents", "Logger", function(BaseObject, ChildEvents, Logger) {
       var IWindow;
       IWindow = (function(_super) {
@@ -2442,7 +2442,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps").factory("Marker", [
+  angular.module("google-maps.directives.api").factory("Marker", [
     "IMarker", "MarkerParentModel", function(IMarker, MarkerParentModel) {
       var Marker;
       Marker = (function(_super) {
@@ -2485,7 +2485,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps").factory("Markers", [
+  angular.module("google-maps.directives.api").factory("Markers", [
     "IMarker", "MarkersParentModel", function(IMarker, MarkersParentModel) {
       var Markers;
       Markers = (function(_super) {
@@ -2538,7 +2538,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api").factory("Window", [
+  angular.module("google-maps.directives.api").factory("Window", [
     "IWindow", "GmapUtil", "WindowChildModel", function(IWindow, GmapUtil, WindowChildModel) {
       var Window;
       Window = (function(_super) {
@@ -2608,7 +2608,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.api").factory("Windows", [
+  angular.module("google-maps.directives.api").factory("Windows", [
     "IWindow", "WindowsParentModel", function(IWindow, WindowsParentModel) {
       /*
       Windows directive where many windows map to the models property

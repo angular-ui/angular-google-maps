@@ -1,4 +1,4 @@
-angular.module("google-maps")
+angular.module("google-maps.directives.api")
 .factory "Markers", ["IMarker", "MarkersParentModel", (IMarker, MarkersParentModel) ->
         class Markers extends IMarker
             constructor: ($timeout) ->

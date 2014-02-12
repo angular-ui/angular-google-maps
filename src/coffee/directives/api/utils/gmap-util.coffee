@@ -1,4 +1,4 @@
-angular.module("google-maps.api.utils")
+angular.module("google-maps.directives.api.utils")
 .service "GmapUtil",["Logger", "$compile", (Logger, $compile) ->
     getLabelPositionPoint: (anchor) ->
         if anchor == undefined

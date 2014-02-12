@@ -1,7 +1,7 @@
 ###
 	Windows directive where many windows map to the models property
 ###
-angular.module("google-maps.api.models.parent")
+angular.module("google-maps.directives.api.models.parent")
 .factory "WindowsParentModel",
         ["IWindowParentModel", "ModelsWatcher", "PropMap", "WindowChildModel", "Linked",
             (IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked) ->
