@@ -43,13 +43,13 @@
         <marker coords="map.marker" options="map.marker.options"></marker>
         <marker coords="map.marker2" ></marker>
         <windows models="map.windows" coords="'self'" show="'show'">
-            <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-            <p class="muted">My marker will stay open when the window is popped up!</p>
-            <div ng-controller='InfoController'>
-                I should not be attached to a
-                marker.
-
-                <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
+            <div>
+                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                <p class="muted">My marker will stay open when the window is popped up!</p>
+                <div ng-controller='InfoController'>
+                    I should not be attached to a marker.
+                    <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
+                </div>
             </div>
         </windows>
     </google-map>

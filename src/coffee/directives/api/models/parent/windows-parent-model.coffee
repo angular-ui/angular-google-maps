@@ -167,9 +167,8 @@ angular.module("google-maps.directives.api.models.parent")
                                 @setChildScope(childScope, newValue)
                         , true)
                         parsedContent = @interpolateContent(@linked.element.html(), model)
-                        opts = @createWindowOptions gMarker, childScope, parsedContent, @DEFAULTS, contentIsParsed = true
-                        child = new WindowChildModel model, childScope, opts,
-                                @isIconVisibleOnClick, gMap, gMarker, @$http, @$templateCache, @$compile, undefined, true
+                        opts = @createWindowOptions gMarker, childScope, parsedContent, @DEFAULTS, contentIsParsed = false
+                        child = new WindowChildModel model, childScope, opts, @isIconVisibleOnClick, gMap, gMarker, undefined, true, true
 
                         unless model[@idKey]?
                             @$log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")

@@ -1250,23 +1250,20 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child").factory("WindowChildModel", [
-    "BaseObject", "GmapUtil", "Logger", function(BaseObject, GmapUtil, Logger) {
+    "BaseObject", "GmapUtil", "Logger", "$compile", "$http", "$templateCache", function(BaseObject, GmapUtil, Logger, $compile, $http, $templateCache) {
       var WindowChildModel;
       WindowChildModel = (function(_super) {
         __extends(WindowChildModel, _super);
 
         WindowChildModel.include(GmapUtil);
 
-        function WindowChildModel(model, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile, element, needToManualDestroy, markerIsVisibleAfterWindowClose) {
+        function WindowChildModel(model, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, element, needToManualDestroy, markerIsVisibleAfterWindowClose) {
           this.model = model;
           this.scope = scope;
           this.opts = opts;
           this.isIconVisibleOnClick = isIconVisibleOnClick;
           this.mapCtrl = mapCtrl;
           this.markerCtrl = markerCtrl;
-          this.$http = $http;
-          this.$templateCache = $templateCache;
-          this.$compile = $compile;
           this.element = element;
           this.needToManualDestroy = needToManualDestroy != null ? needToManualDestroy : false;
           this.markerIsVisibleAfterWindowClose = markerIsVisibleAfterWindowClose != null ? markerIsVisibleAfterWindowClose : true;
@@ -1295,7 +1292,7 @@ Nicholas McCready - https://twitter.com/nmccready
             createOpts = false;
           }
           if ((this.gWin == null) && createOpts && (this.element != null) && (this.element.html != null)) {
-            this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, this.element.html(), {}) : {};
+            this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, this.element.html(), {}, this.appendContent) : {};
           }
           if ((this.opts != null) && this.gWin === void 0) {
             this.gWin = new google.maps.InfoWindow(this.opts);
@@ -1370,15 +1367,15 @@ Nicholas McCready - https://twitter.com/nmccready
           var _this = this;
           if (this.scope.templateUrl) {
             if (this.gWin) {
-              return this.$http.get(this.scope.templateUrl, {
-                cache: this.$templateCache
+              return $http.get(this.scope.templateUrl, {
+                cache: $templateCache
               }).then(function(content) {
                 var compiled, templateScope;
                 templateScope = _this.scope.$new();
                 if (angular.isDefined(_this.scope.templateParameter)) {
                   templateScope.parameter = _this.scope.templateParameter;
                 }
-                compiled = _this.$compile(content.data)(templateScope);
+                compiled = $compile(content.data)(templateScope);
                 _this.gWin.setContent(compiled.get(0));
                 return _this.gWin.open(_this.mapCtrl);
               });
@@ -2219,8 +2216,8 @@ Nicholas McCready - https://twitter.com/nmccready
             }
           }, true);
           parsedContent = this.interpolateContent(this.linked.element.html(), model);
-          opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS, contentIsParsed = true);
-          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile, void 0, true);
+          opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS, contentIsParsed = false);
+          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, void 0, true, true);
           if (model[this.idKey] == null) {
             this.$log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
             return;
@@ -2570,7 +2567,7 @@ Nicholas McCready - https://twitter.com/nmccready
             hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
             opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : void 0;
             if (mapCtrl != null) {
-              window = new WindowChildModel({}, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, _this.$http, _this.$templateCache, _this.$compile, element);
+              window = new WindowChildModel({}, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, element);
             }
             scope.$on("$destroy", function() {
               return window.destroy();

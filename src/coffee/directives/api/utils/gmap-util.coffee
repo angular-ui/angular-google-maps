@@ -38,7 +38,8 @@ angular.module("google-maps.directives.api.utils")
         else
             if $compile? and !contentIsParsed
                 parsed =$compile(content)(scope)
-                ret = parsed[0] if parsed.length > 0
+                if parsed.length > 0
+                    ret = parsed[0] #must be one element with children or angular bindings get lost
             else
                 ret = content
         ret
