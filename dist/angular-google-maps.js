@@ -578,14 +578,14 @@ Nicholas McCready - https://twitter.com/nmccready
       ClustererMarkerManager = (function(_super) {
         __extends(ClustererMarkerManager, _super);
 
-        function ClustererMarkerManager(gMap, opt_markers, opt_options) {
+        function ClustererMarkerManager(gMap, opt_markers, opt_options, opt_events) {
           this.clear = __bind(this.clear, this);
           this.draw = __bind(this.draw, this);
           this.removeMany = __bind(this.removeMany, this);
           this.remove = __bind(this.remove, this);
           this.addMany = __bind(this.addMany, this);
           this.add = __bind(this.add, this);
-          var self;
+          var eventHandler, eventName, self;
           ClustererMarkerManager.__super__.constructor.call(this);
           self = this;
           this.opt_options = opt_options;
@@ -595,6 +595,14 @@ Nicholas McCready - https://twitter.com/nmccready
             this.clusterer = new MarkerClusterer(gMap, opt_markers, opt_options);
           } else {
             this.clusterer = new MarkerClusterer(gMap);
+          }
+          if (angular.isDefined(opt_events) && (opt_events != null) && angular.isObject(opt_events)) {
+            for (eventName in opt_events) {
+              eventHandler = opt_events[eventName];
+              if (opt_events.hasOwnProperty(eventName) && angular.isFunction(opt_events[eventName])) {
+                google.maps.event.addListener(this.clusterer, eventName, opt_events[eventName]);
+              }
+            }
           }
           this.clusterer.setIgnoreHidden(true);
           this.$log = Logger;
@@ -877,13 +885,8 @@ Nicholas McCready - https://twitter.com/nmccready
           return remove.push(addEvent(target, key, _handler));
         });
         return function() {
-          angular.forEach(remove, function(fn) {
-            if (_.isFunction(fn)) {
-              fn();
-            }
-            if (fn.e !== null && _.isFunction(fn.e)) {
-              return fn.e();
-            }
+          angular.forEach(remove, function(listener) {
+            return google.maps.event.removeListener(listener);
           });
           return remove = null;
         };
@@ -1800,6 +1803,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.watch('models', scope);
           this.watch('doCluster', scope);
           this.watch('clusterOptions', scope);
+          this.watch('clusterEvents', scope);
           this.watch('fit', scope);
           this.watch('idKey', scope);
           return this.createMarkersFromScratch(scope);
@@ -1830,10 +1834,10 @@ Nicholas McCready - https://twitter.com/nmccready
           if ((scope.doCluster != null) && scope.doCluster === true) {
             if (scope.clusterOptions != null) {
               if (this.gMarkerManager === void 0) {
-                this.gMarkerManager = new ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
+                this.gMarkerManager = new ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, scope.clusterEvents);
               } else {
                 if (this.gMarkerManager.opt_options !== scope.clusterOptions) {
-                  this.gMarkerManager = new ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
+                  this.gMarkerManager = new ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, scope.clusterEvents);
                 }
               }
             } else {
@@ -2477,6 +2481,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.scope.models = '=models';
           this.scope.doCluster = '=docluster';
           this.scope.clusterOptions = '=clusteroptions';
+          this.scope.clusterEvents = '=clusterevents';
           this.scope.fit = '=fit';
           this.scope.labelContent = '=labelcontent';
           this.scope.labelAnchor = '@labelanchor';
@@ -3235,6 +3240,11 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             if (angular.isDefined(scope.geodesic)) {
               scope.$watch("geodesic", function(newValue, oldValue) {
+                return polygon.setOptions(buildOpts(polygon.getPath()));
+              });
+            }
+            if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.opacity)) {
+              scope.$watch("stroke.opacity", function(newValue, oldValue) {
                 return polygon.setOptions(buildOpts(polygon.getPath()));
               });
             }

@@ -23,6 +23,7 @@ angular.module("google-maps.api.models.parent")
                 @watch('models', scope)
                 @watch('doCluster', scope)
                 @watch('clusterOptions', scope)
+                @watch('clusterEvents', scope)
                 @watch('fit', scope)
                 @watch('idKey', scope)
                 @createMarkersFromScratch(scope)
@@ -49,11 +50,13 @@ angular.module("google-maps.api.models.parent")
                         if @gMarkerManager == undefined
                             @gMarkerManager = new ClustererMarkerManager(@mapCtrl.getMap(),
                                     undefined,
-                                    scope.clusterOptions)
+                                    scope.clusterOptions,
+                                    scope.clusterEvents)
                         else
                             @gMarkerManager = new ClustererMarkerManager(@mapCtrl.getMap(),
                                     undefined,
-                                    scope.clusterOptions) if @gMarkerManager.opt_options != scope.clusterOptions
+                                    scope.clusterOptions,
+                                    scope.clusterEvents) if @gMarkerManager.opt_options != scope.clusterOptions
                     else
                         @gMarkerManager = new ClustererMarkerManager(@mapCtrl.getMap())
                 else
