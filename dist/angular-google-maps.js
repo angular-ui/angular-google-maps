@@ -496,7 +496,6 @@ Nicholas McCready - https://twitter.com/nmccready
           for (eventName in opt_events) {
             eventHandler = opt_events[eventName];
             if (opt_events.hasOwnProperty(eventName) && angular.isFunction(opt_events[eventName])) {
-              console.debug('google.maps.event.addListener @clusterer, eventName, opt_events[eventName]', this.clusterer, eventName, opt_events[eventName]);
               google.maps.event.addListener(this.clusterer, eventName, opt_events[eventName]);
             }
           }
