@@ -9,6 +9,7 @@ angular.module("google-maps")
                 @scope.models = '=models'
                 @scope.doCluster = '=docluster'
                 @scope.clusterOptions = '=clusteroptions'
+                @scope.clusterEvents = '=clusterevents'
                 @scope.fit = '=fit'
                 @scope.labelContent = '=labelcontent'
                 @scope.labelAnchor = '@labelanchor'
