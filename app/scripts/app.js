@@ -2,7 +2,7 @@
 
 angular.module('angularGoogleMapsApp')
   .value('headlinesFetchInterval', 300000)
-  .config(function ($routeProvider, $locationProvider, $logProvider, $githubProvider, analyticsProvider, $sceDelegateProvider) {
+  .config(function ($routeProvider, $locationProvider, $logProvider, $githubProvider, analyticsProvider, $sceDelegateProvider, hljsServiceProvider) {
   	
   	$locationProvider.html5Mode(true).hashPrefix('!');
   	$logProvider.debugEnabled(false);  	
@@ -20,6 +20,10 @@ angular.module('angularGoogleMapsApp')
   	$sceDelegateProvider.resourceUrlBlacklist([
   		'https://rawgithub.com/**'
   	]);  	
+  	
+  	hljsServiceProvider.setOptions({
+  		tabReplace: '    '
+  	});
 
     $routeProvider
       .when('/', {
