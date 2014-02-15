@@ -31,10 +31,10 @@
                 if scope.clusterOptions?
                     if @gMarkerManager == undefined
                         @gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap(), undefined,
-                                scope.clusterOptions)
+                                scope.clusterOptions, scope.clusterClick)
                     else
                         @gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap(), undefined,
-                                scope.clusterOptions) if @gMarkerManager.opt_options != scope.clusterOptions
+                                scope.clusterOptions, scope.clusterClick) if @gMarkerManager.opt_options != scope.clusterOptions
                 else
                     @gMarkerManager = new directives.api.managers.ClustererMarkerManager(@mapCtrl.getMap())
             else

@@ -19,6 +19,7 @@ not 1:1 in this setting.
             @scope.models = '=models'
             @scope.doCluster = '=docluster'
             @scope.clusterOptions = '=clusteroptions'
+            @scope.clusterClick = '=clusterClick'
             @scope.fit = '=fit'
             @scope.labelContent = '=labelcontent'
             @scope.labelAnchor = '@labelanchor'

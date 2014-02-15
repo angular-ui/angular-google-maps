@@ -285,7 +285,7 @@ Nicholas McCready - https://twitter.com/nmccready
     return this.ClustererMarkerManager = (function(_super) {
       __extends(ClustererMarkerManager, _super);
 
-      function ClustererMarkerManager(gMap, opt_markers, opt_options) {
+      function ClustererMarkerManager(gMap, opt_markers, opt_options, opt_cluster_click) {
         this.clear = __bind(this.clear, this);
         this.draw = __bind(this.draw, this);
         this.removeMany = __bind(this.removeMany, this);
@@ -302,6 +302,9 @@ Nicholas McCready - https://twitter.com/nmccready
           this.clusterer = new MarkerClusterer(gMap, opt_markers, opt_options);
         } else {
           this.clusterer = new MarkerClusterer(gMap);
+        }
+        if (opt_cluster_click != null) {
+          google.maps.event.addListener(this.clusterer, 'click', opt_cluster_click);
         }
         this.clusterer.setIgnoreHidden(true);
         this.$log = directives.api.utils.Logger;
@@ -1556,10 +1559,10 @@ Nicholas McCready - https://twitter.com/nmccready
         if ((scope.doCluster != null) && scope.doCluster === true) {
           if (scope.clusterOptions != null) {
             if (this.gMarkerManager === void 0) {
-              this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
+              this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, scope.clusterClick);
             } else {
               if (this.gMarkerManager.opt_options !== scope.clusterOptions) {
-                this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions);
+                this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, scope.clusterClick);
               }
             }
           } else {
@@ -2223,6 +2226,7 @@ not 1:1 in this setting.
         this.scope.models = '=models';
         this.scope.doCluster = '=docluster';
         this.scope.clusterOptions = '=clusteroptions';
+        this.scope.clusterClick = '=clusterClick';
         this.scope.fit = '=fit';
         this.scope.labelContent = '=labelcontent';
         this.scope.labelAnchor = '@labelanchor';

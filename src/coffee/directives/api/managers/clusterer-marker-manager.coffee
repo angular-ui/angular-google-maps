@@ -1,6 +1,6 @@
 @ngGmapModule "directives.api.managers", ->
 	class @ClustererMarkerManager extends oo.BaseObject
-		constructor: (gMap,opt_markers,opt_options) ->
+		constructor: (gMap,opt_markers,opt_options,opt_cluster_click) ->
 			super()
 			self = @
 			@opt_options = opt_options
@@ -10,6 +10,8 @@
 				@clusterer = new MarkerClusterer(gMap,opt_markers,opt_options)
 			else
 				@clusterer = new MarkerClusterer(gMap)
+			if opt_cluster_click?
+				google.maps.event.addListener @clusterer, 'click', opt_cluster_click
 			@clusterer.setIgnoreHidden(true)
 			@$log = directives.api.utils.Logger
 			@noDrawOnSingleAddRemoves = true
