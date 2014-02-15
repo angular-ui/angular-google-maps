@@ -30,18 +30,18 @@ Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
 ###
 (->
-    app = angular.module("google-maps", [])
-    app.factory "debounce", ["$timeout", ($timeout) ->
-        (fn) -> # debounce fn
-            nthCall = 0
-            -> # intercepting fn
-                that = this
-                argz = arguments
-                nthCall++
-                later = ((version) ->
-                    ->
-                        fn.apply that, argz  if version is nthCall
-                )(nthCall)
-                $timeout later, 0, true
-    ]
+	app = angular.module("google-maps", [])
+	app.factory "debounce", ["$timeout", ($timeout) ->
+		(fn) -> # debounce fn
+			nthCall = 0
+			-> # intercepting fn
+				that = this
+				argz = arguments
+				nthCall++
+				later = ((version) ->
+					->
+						fn.apply that, argz  if version is nthCall
+				)(nthCall)
+				$timeout later, 0, true
+	]
 )()

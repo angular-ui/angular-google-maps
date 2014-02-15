@@ -276,207 +276,6 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  this.ngGmapModule("directives.api.managers", function() {
-    return this.ClustererMarkerManager = (function(_super) {
-      __extends(ClustererMarkerManager, _super);
-
-      function ClustererMarkerManager(gMap, opt_markers, opt_options, opt_cluster_click) {
-        this.clear = __bind(this.clear, this);
-        this.draw = __bind(this.draw, this);
-        this.removeMany = __bind(this.removeMany, this);
-        this.remove = __bind(this.remove, this);
-        this.addMany = __bind(this.addMany, this);
-        this.add = __bind(this.add, this);
-        var self;
-        ClustererMarkerManager.__super__.constructor.call(this);
-        self = this;
-        this.opt_options = opt_options;
-        if ((opt_options != null) && opt_markers === void 0) {
-          this.clusterer = new MarkerClusterer(gMap, void 0, opt_options);
-        } else if ((opt_options != null) && (opt_markers != null)) {
-          this.clusterer = new MarkerClusterer(gMap, opt_markers, opt_options);
-        } else {
-          this.clusterer = new MarkerClusterer(gMap);
-        }
-        if (opt_cluster_click != null) {
-          google.maps.event.addListener(this.clusterer, 'click', opt_cluster_click);
-        }
-        this.clusterer.setIgnoreHidden(true);
-        this.$log = directives.api.utils.Logger;
-        this.noDrawOnSingleAddRemoves = true;
-        this.$log.info(this);
-      }
-
-      ClustererMarkerManager.prototype.add = function(gMarker) {
-        return this.clusterer.addMarker(gMarker, this.noDrawOnSingleAddRemoves);
-      };
-
-      ClustererMarkerManager.prototype.addMany = function(gMarkers) {
-        return this.clusterer.addMarkers(gMarkers);
-      };
-
-      ClustererMarkerManager.prototype.remove = function(gMarker) {
-        return this.clusterer.removeMarker(gMarker, this.noDrawOnSingleAddRemoves);
-      };
-
-      ClustererMarkerManager.prototype.removeMany = function(gMarkers) {
-        return this.clusterer.addMarkers(gMarkers);
-      };
-
-      ClustererMarkerManager.prototype.draw = function() {
-        return this.clusterer.repaint();
-      };
-
-      ClustererMarkerManager.prototype.clear = function() {
-        this.clusterer.clearMarkers();
-        return this.clusterer.repaint();
-      };
-
-      return ClustererMarkerManager;
-
-    })(oo.BaseObject);
-  });
-
-}).call(this);
-
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  this.ngGmapModule("directives.api.managers", function() {
-    return this.MarkerManager = (function(_super) {
-      __extends(MarkerManager, _super);
-
-      function MarkerManager(gMap, opt_markers, opt_options) {
-        this.handleOptDraw = __bind(this.handleOptDraw, this);
-        this.clear = __bind(this.clear, this);
-        this.draw = __bind(this.draw, this);
-        this.removeMany = __bind(this.removeMany, this);
-        this.remove = __bind(this.remove, this);
-        this.addMany = __bind(this.addMany, this);
-        this.add = __bind(this.add, this);
-        var self;
-        MarkerManager.__super__.constructor.call(this);
-        self = this;
-        this.gMap = gMap;
-        this.gMarkers = [];
-        this.$log = directives.api.utils.Logger;
-        this.$log.info(this);
-      }
-
-      MarkerManager.prototype.add = function(gMarker, optDraw) {
-        this.handleOptDraw(gMarker, optDraw, true);
-        return this.gMarkers.push(gMarker);
-      };
-
-      MarkerManager.prototype.addMany = function(gMarkers) {
-        var gMarker, _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = gMarkers.length; _i < _len; _i++) {
-          gMarker = gMarkers[_i];
-          _results.push(this.add(gMarker));
-        }
-        return _results;
-      };
-
-      MarkerManager.prototype.remove = function(gMarker, optDraw) {
-        var index, tempIndex;
-        this.handleOptDraw(gMarker, optDraw, false);
-        if (!optDraw) {
-          return;
-        }
-        index = void 0;
-        if (this.gMarkers.indexOf != null) {
-          index = this.gMarkers.indexOf(gMarker);
-        } else {
-          tempIndex = 0;
-          _.find(this.gMarkers, function(marker) {
-            tempIndex += 1;
-            if (marker === gMarker) {
-              index = tempIndex;
-            }
-          });
-        }
-        if (index != null) {
-          return this.gMarkers.splice(index, 1);
-        }
-      };
-
-      MarkerManager.prototype.removeMany = function(gMarkers) {
-        var marker, _i, _len, _ref, _results;
-        _ref = this.gMarkers;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          marker = _ref[_i];
-          _results.push(this.remove(marker));
-        }
-        return _results;
-      };
-
-      MarkerManager.prototype.draw = function() {
-        var deletes, gMarker, _fn, _i, _j, _len, _len1, _ref, _results,
-          _this = this;
-        deletes = [];
-        _ref = this.gMarkers;
-        _fn = function(gMarker) {
-          if (!gMarker.isDrawn) {
-            if (gMarker.doAdd) {
-              return gMarker.setMap(_this.gMap);
-            } else {
-              return deletes.push(gMarker);
-            }
-          }
-        };
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          gMarker = _ref[_i];
-          _fn(gMarker);
-        }
-        _results = [];
-        for (_j = 0, _len1 = deletes.length; _j < _len1; _j++) {
-          gMarker = deletes[_j];
-          _results.push(this.remove(gMarker, true));
-        }
-        return _results;
-      };
-
-      MarkerManager.prototype.clear = function() {
-        var gMarker, _i, _len, _ref;
-        _ref = this.gMarkers;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          gMarker = _ref[_i];
-          gMarker.setMap(null);
-        }
-        delete this.gMarkers;
-        return this.gMarkers = [];
-      };
-
-      MarkerManager.prototype.handleOptDraw = function(gMarker, optDraw, doAdd) {
-        if (optDraw === true) {
-          if (doAdd) {
-            gMarker.setMap(this.gMap);
-          } else {
-            gMarker.setMap(null);
-          }
-          return gMarker.isDrawn = true;
-        } else {
-          gMarker.isDrawn = false;
-          return gMarker.doAdd = doAdd;
-        }
-      };
-
-      return MarkerManager;
-
-    })(oo.BaseObject);
-  });
-
-}).call(this);
-
 /*
     Author: Nicholas McCready & jfriend00
     AsyncProcessor handles things asynchronous-like :), to allow the UI to be free'd to do other things
@@ -660,6 +459,215 @@ Nicholas McCready - https://twitter.com/nmccready
         return didModelsChange;
       }
     };
+  });
+
+}).call(this);
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.ngGmapModule("directives.api.managers", function() {
+    return this.ClustererMarkerManager = (function(_super) {
+      __extends(ClustererMarkerManager, _super);
+
+      ClustererMarkerManager.include(directives.api.utils.GmapUtil);
+
+      function ClustererMarkerManager(gMap, opt_markers, opt_options, opt_events) {
+        this.clear = __bind(this.clear, this);
+        this.draw = __bind(this.draw, this);
+        this.removeMany = __bind(this.removeMany, this);
+        this.remove = __bind(this.remove, this);
+        this.addMany = __bind(this.addMany, this);
+        this.add = __bind(this.add, this);
+        var eventHandler, eventName, self;
+        ClustererMarkerManager.__super__.constructor.call(this);
+        self = this;
+        this.opt_options = opt_options;
+        if ((opt_options != null) && opt_markers === void 0) {
+          this.clusterer = new MarkerClusterer(gMap, void 0, opt_options);
+        } else if ((opt_options != null) && (opt_markers != null)) {
+          this.clusterer = new MarkerClusterer(gMap, opt_markers, opt_options);
+        } else {
+          this.clusterer = new MarkerClusterer(gMap);
+        }
+        if (angular.isDefined(opt_events) && (opt_events != null) && angular.isObject(opt_events)) {
+          for (eventName in opt_events) {
+            eventHandler = opt_events[eventName];
+            if (opt_events.hasOwnProperty(eventName) && angular.isFunction(opt_events[eventName])) {
+              console.debug('google.maps.event.addListener @clusterer, eventName, opt_events[eventName]', this.clusterer, eventName, opt_events[eventName]);
+              google.maps.event.addListener(this.clusterer, eventName, opt_events[eventName]);
+            }
+          }
+        }
+        this.clusterer.setIgnoreHidden(true);
+        this.$log = directives.api.utils.Logger;
+        this.noDrawOnSingleAddRemoves = true;
+        this.$log.info(this);
+      }
+
+      ClustererMarkerManager.prototype.add = function(gMarker) {
+        return this.clusterer.addMarker(gMarker, this.noDrawOnSingleAddRemoves);
+      };
+
+      ClustererMarkerManager.prototype.addMany = function(gMarkers) {
+        return this.clusterer.addMarkers(gMarkers);
+      };
+
+      ClustererMarkerManager.prototype.remove = function(gMarker) {
+        return this.clusterer.removeMarker(gMarker, this.noDrawOnSingleAddRemoves);
+      };
+
+      ClustererMarkerManager.prototype.removeMany = function(gMarkers) {
+        return this.clusterer.addMarkers(gMarkers);
+      };
+
+      ClustererMarkerManager.prototype.draw = function() {
+        return this.clusterer.repaint();
+      };
+
+      ClustererMarkerManager.prototype.clear = function() {
+        this.clusterer.clearMarkers();
+        return this.clusterer.repaint();
+      };
+
+      return ClustererMarkerManager;
+
+    })(oo.BaseObject);
+  });
+
+}).call(this);
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  this.ngGmapModule("directives.api.managers", function() {
+    return this.MarkerManager = (function(_super) {
+      __extends(MarkerManager, _super);
+
+      function MarkerManager(gMap, opt_markers, opt_options) {
+        this.handleOptDraw = __bind(this.handleOptDraw, this);
+        this.clear = __bind(this.clear, this);
+        this.draw = __bind(this.draw, this);
+        this.removeMany = __bind(this.removeMany, this);
+        this.remove = __bind(this.remove, this);
+        this.addMany = __bind(this.addMany, this);
+        this.add = __bind(this.add, this);
+        var self;
+        MarkerManager.__super__.constructor.call(this);
+        self = this;
+        this.gMap = gMap;
+        this.gMarkers = [];
+        this.$log = directives.api.utils.Logger;
+        this.$log.info(this);
+      }
+
+      MarkerManager.prototype.add = function(gMarker, optDraw) {
+        this.handleOptDraw(gMarker, optDraw, true);
+        return this.gMarkers.push(gMarker);
+      };
+
+      MarkerManager.prototype.addMany = function(gMarkers) {
+        var gMarker, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = gMarkers.length; _i < _len; _i++) {
+          gMarker = gMarkers[_i];
+          _results.push(this.add(gMarker));
+        }
+        return _results;
+      };
+
+      MarkerManager.prototype.remove = function(gMarker, optDraw) {
+        var index, tempIndex;
+        this.handleOptDraw(gMarker, optDraw, false);
+        if (!optDraw) {
+          return;
+        }
+        index = void 0;
+        if (this.gMarkers.indexOf != null) {
+          index = this.gMarkers.indexOf(gMarker);
+        } else {
+          tempIndex = 0;
+          _.find(this.gMarkers, function(marker) {
+            tempIndex += 1;
+            if (marker === gMarker) {
+              index = tempIndex;
+            }
+          });
+        }
+        if (index != null) {
+          return this.gMarkers.splice(index, 1);
+        }
+      };
+
+      MarkerManager.prototype.removeMany = function(gMarkers) {
+        var marker, _i, _len, _ref, _results;
+        _ref = this.gMarkers;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          marker = _ref[_i];
+          _results.push(this.remove(marker));
+        }
+        return _results;
+      };
+
+      MarkerManager.prototype.draw = function() {
+        var deletes, gMarker, _fn, _i, _j, _len, _len1, _ref, _results,
+          _this = this;
+        deletes = [];
+        _ref = this.gMarkers;
+        _fn = function(gMarker) {
+          if (!gMarker.isDrawn) {
+            if (gMarker.doAdd) {
+              return gMarker.setMap(_this.gMap);
+            } else {
+              return deletes.push(gMarker);
+            }
+          }
+        };
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          gMarker = _ref[_i];
+          _fn(gMarker);
+        }
+        _results = [];
+        for (_j = 0, _len1 = deletes.length; _j < _len1; _j++) {
+          gMarker = deletes[_j];
+          _results.push(this.remove(gMarker, true));
+        }
+        return _results;
+      };
+
+      MarkerManager.prototype.clear = function() {
+        var gMarker, _i, _len, _ref;
+        _ref = this.gMarkers;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          gMarker = _ref[_i];
+          gMarker.setMap(null);
+        }
+        delete this.gMarkers;
+        return this.gMarkers = [];
+      };
+
+      MarkerManager.prototype.handleOptDraw = function(gMarker, optDraw, doAdd) {
+        if (optDraw === true) {
+          if (doAdd) {
+            gMarker.setMap(this.gMap);
+          } else {
+            gMarker.setMap(null);
+          }
+          return gMarker.isDrawn = true;
+        } else {
+          gMarker.isDrawn = false;
+          return gMarker.doAdd = doAdd;
+        }
+      };
+
+      return MarkerManager;
+
+    })(oo.BaseObject);
   });
 
 }).call(this);
@@ -1540,6 +1548,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.watch('models', scope);
         this.watch('doCluster', scope);
         this.watch('clusterOptions', scope);
+        this.watch('clusterEvents', scope);
         this.watch('fit', scope);
         return this.createMarkers(scope);
       };
@@ -1557,17 +1566,7 @@ Nicholas McCready - https://twitter.com/nmccready
         var markers,
           _this = this;
         if ((scope.doCluster != null) && scope.doCluster === true) {
-          if (scope.clusterOptions != null) {
-            if (this.gMarkerManager === void 0) {
-              this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, scope.clusterClick);
-            } else {
-              if (this.gMarkerManager.opt_options !== scope.clusterOptions) {
-                this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, scope.clusterClick);
-              }
-            }
-          } else {
-            this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap());
-          }
+          this.gMarkerManager = new directives.api.managers.ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, scope.clusterEvents);
         } else {
           this.gMarkerManager = new directives.api.managers.MarkerManager(this.mapCtrl.getMap());
         }
@@ -2203,8 +2202,8 @@ not 1:1 in this setting.
 	- icon - will be the iconKey to the marker value ie: to get the icon marker[iconKey]
 	- coords - will be the coordsKey to the marker value ie: to get the icon marker[coordsKey]
 
-    - watches from IMarker reflect that the look up key for a value has changed and not the actual icon or coords itself
-    - actual changes to a model are tracked inside directives.api.model.MarkerModel
+	- watches from IMarker reflect that the look up key for a value has changed and not the actual icon or coords itself
+	- actual changes to a model are tracked inside directives.api.model.MarkerModel
 */
 
 
@@ -2226,7 +2225,7 @@ not 1:1 in this setting.
         this.scope.models = '=models';
         this.scope.doCluster = '=docluster';
         this.scope.clusterOptions = '=clusteroptions';
-        this.scope.clusterClick = '=clusterClick';
+        this.scope.clusterEvents = '=clusterEvents';
         this.scope.fit = '=fit';
         this.scope.labelContent = '=labelcontent';
         this.scope.labelAnchor = '@labelanchor';
