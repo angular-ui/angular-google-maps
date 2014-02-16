@@ -1,13 +1,13 @@
 {
   "name": "angular-google-maps",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "main": "./dist/angular-google-maps.js",
   "dependencies": {
-    "angular": "1.2.8",
-    "underscore": "~1.5.2"
+    "angular": "1.2.x",
+    "underscore": "~1.5.x"
   },
   "devDependencies": {
-    "angular-mocks": "1.2.8",
-    "jquery": "2.0.3"
+    "angular-mocks": "1.2.x",
+    "jquery": "2.1.x"
   }
 }

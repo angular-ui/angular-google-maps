@@ -64,7 +64,7 @@ module.exports = (grunt) ->
                 separator: ";"
 
             dist:
-                src: ["tmp/output_coffee.js", "lib/markerclusterer.js", "lib/markerwithlabel.js"]
+                src: ["tmp/output_coffee.js", "lib/*.js"]
                 dest: "tmp/output.js"
 
         copy:
