@@ -85,7 +85,7 @@
                         if angular.isDefined(@scope.templateParameter)
                             templateScope.parameter = @scope.templateParameter
                         compiled = @$compile(content.data)(templateScope)
-                        @gWin.setContent(compiled.get(0))
+                        @gWin.setContent(compiled[0])
                         @gWin.open(@mapCtrl)
                     )
             else
