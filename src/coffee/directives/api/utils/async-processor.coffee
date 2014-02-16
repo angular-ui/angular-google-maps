@@ -37,6 +37,6 @@ async =
 
 window._async = async
 
-angular.module("google-maps.api.utils")
+angular.module("google-maps.directives.api.utils")
 .factory "async", ->
     window._async

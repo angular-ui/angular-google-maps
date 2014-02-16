@@ -1,4 +1,4 @@
-angular.module("google-maps.api.models.child")
+angular.module("google-maps.directives.api.models.child")
 .factory "MarkerChildModel", [ "ModelKey", "GmapUtil","Logger", (ModelKey, GmapUtil,Logger) ->
     class MarkerChildModel extends ModelKey
         @include GmapUtil

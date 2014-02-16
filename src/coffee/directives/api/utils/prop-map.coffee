@@ -1,7 +1,7 @@
 ###
     Simple Object Map with a lenght property to make it easy to track length/size
 ###
-angular.module("google-maps.api.utils")
+angular.module("google-maps.directives.api.utils")
 .factory "PropMap",  ->
     class PropMap
         constructor: () ->

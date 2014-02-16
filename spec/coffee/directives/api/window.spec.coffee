@@ -19,8 +19,10 @@ describe "directives.api.Window", ->
                 $on:()->
             element:
                 html: ->
-                    "test html"
-            attrs: {}
+                    "<p>test html</p>"
+            attrs: {
+                isiconvisibleonclick:true
+            }
             ctrls: [
                 {getMap:()->{}}
             ]
@@ -32,7 +34,9 @@ describe "directives.api.Window", ->
         @gMarker = new google.maps.Marker(@commonOpts)
 
         module "google-maps"
-        inject ($timeout, $compile, $http, $templateCache, $injector, Window) =>
+        inject ($timeout, $compile, $http, $templateCache, $injector, $rootScope,Window) =>
+            @mocks.scope.$new = () =>
+                $rootScope.$new()
             @subject = new Window(@timeOutNoW,$compile, $http, $templateCache)
             @subject.onChildCreation = (child) =>
                 @childWindow = child

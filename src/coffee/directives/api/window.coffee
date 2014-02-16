@@ -1,4 +1,4 @@
-angular.module("google-maps.api")
+angular.module("google-maps.directives.api")
 .factory "Window", [ "IWindow", "GmapUtil", "WindowChildModel", (IWindow, GmapUtil, WindowChildModel) ->
         class Window extends IWindow
             @include GmapUtil
@@ -19,14 +19,12 @@ angular.module("google-maps.api")
                     defaults = if scope.options? then scope.options else {}
                     hasScopeCoords = scope? and scope.coords? and scope.coords.latitude? and scope.coords.longitude?
 
-                    opts =
-                        if hasScopeCoords then @createWindowOptions(markerCtrl, scope, element.html(), defaults)
-                        else undefined
+                    opts = if hasScopeCoords then @createWindowOptions(markerCtrl, scope, element.html(), defaults) else undefined
 
                     if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
                         window = new WindowChildModel(
                                 {}, scope, opts, isIconVisibleOnClick, mapCtrl,
-                                markerCtrl, @$http, @$templateCache, @$compile, element
+                                markerCtrl, element
                         )
                     scope.$on "$destroy", =>
                         window.destroy()
@@ -41,6 +39,5 @@ angular.module("google-maps.api")
 
                     @onChildCreation(window) if @onChildCreation? and window?
                 , GmapUtil.defaultDelay + 25)
-        #return child for specs
         return Window
-    ]
+]

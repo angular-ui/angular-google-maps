@@ -117,35 +117,35 @@ angular.module("google-maps")
             extendMapBounds map, pathPoints  if isTrue(attrs.fit)
             if angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
-                    polygon.setEditable newValue
+                    polygon.setEditable newValue if newValue != oldValue
 
             if angular.isDefined(scope.draggable)
                 scope.$watch "draggable", (newValue, oldValue) ->
-                    polygon.setDraggable newValue
+                    polygon.setDraggable newValue if newValue != oldValue
 
             if angular.isDefined(scope.visible)
                 scope.$watch "visible", (newValue, oldValue) ->
-                    polygon.setVisible newValue
+                    polygon.setVisible newValue if newValue != oldValue
 
             if angular.isDefined(scope.geodesic)
                 scope.$watch "geodesic", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
+                    polygon.setOptions buildOpts(polygon.getPath()) if newValue != oldValue
 
             if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.weight)
                 scope.$watch "stroke.weight", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
+                    polygon.setOptions buildOpts(polygon.getPath()) if newValue != oldValue
 
             if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.color)
                 scope.$watch "stroke.color", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
+                    polygon.setOptions buildOpts(polygon.getPath()) if newValue != oldValue
                     
             if angular.isDefined(scope.fill) and angular.isDefined(scope.fill.color)
                 scope.$watch "fill.color", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
+                    polygon.setOptions buildOpts(polygon.getPath()) if newValue != oldValue
 
             if angular.isDefined(scope.fill) and angular.isDefined(scope.fill.opacity)
                 scope.$watch "fill.opacity", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())                    
+                    polygon.setOptions buildOpts(polygon.getPath()) if newValue != oldValue
 
             arraySyncer = arraySync(polygon.getPath(), scope, "path")
 

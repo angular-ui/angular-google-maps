@@ -51,8 +51,12 @@
         <!--WINDOWS without markers-->
         <!--NOTICE THEY MUST BE PRIOR TO ANY MARKERS OR THEY WILL ATTACH THEMSELVES walking up the dom tree-->
         <window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false" options="map.infoWindow.options">
-            I should not be attached to a
-            marker.
+			<div ng-controller='InfoController'>
+			    I should not be attached to a
+            	marker.
+                <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
+	            <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
+            </div>
         </window>
 
         <window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
@@ -345,7 +349,7 @@
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization&sensor=false&language=en&v=3.14"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.8/angular.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js"></script>
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore.js" type="text/javascript"></script>
 <script src="../dist/angular-google-maps.js"></script>
