@@ -1,5 +1,5 @@
-angular.module("google-maps.api.utils")
-.service "GmapUtil", ->
+angular.module("google-maps.directives.api.utils")
+.service "GmapUtil",["Logger", "$compile", (Logger, $compile) ->
     getLabelPositionPoint: (anchor) ->
         if anchor == undefined
             return undefined
@@ -20,13 +20,29 @@ angular.module("google-maps.api.utils")
         opts.map = map if map?
         opts
 
-    createWindowOptions: (gMarker, scope, content, defaults) ->
-        if content? and defaults?
+    createWindowOptions: (gMarker, scope, content, defaults, contentIsParsed = false) ->
+        if content? and defaults? and $compile?
             angular.extend {}, defaults,
-                content: if defaults.content?
-                then defaults.content else content,
+                content: @buildContent(scope,defaults,content,contentIsParsed),
                 position: if defaults.position?
                 then defaults.position else if angular.isObject(gMarker)
                 then gMarker.getPosition() else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+        else
+            Logger.info "content not defined" unless content
+            Logger.info "defaults not defined" unless defaults
+
+
+    buildContent:(scope,defaults,content,contentIsParsed) ->
+        if defaults.content?
+            ret = defaults.content
+        else
+            if $compile? and !contentIsParsed
+                parsed =$compile(content)(scope)
+                if parsed.length > 0
+                    ret = parsed[0] #must be one element with children or angular bindings get lost
+            else
+                ret = content
+        ret
 
     defaultDelay: 50
+]

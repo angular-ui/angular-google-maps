@@ -1,4 +1,4 @@
-angular.module("google-maps.api.managers")
+angular.module("google-maps.directives.api.managers")
 .factory "MarkerManager", [ "BaseObject","Logger", (BaseObject,Logger) ->
     class MarkerManager extends BaseObject
         constructor: (gMap, opt_markers, opt_options) ->

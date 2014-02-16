@@ -1,4 +1,4 @@
-angular.module("google-maps.api")
+angular.module("google-maps.directives.api")
 .factory "Windows", ["IWindow", "WindowsParentModel", (IWindow, WindowsParentModel) ->
         ###
         Windows directive where many windows map to the models property

@@ -4,7 +4,7 @@
 
     This is to lead a common design in notifying child stuff.
 ###
-angular.module("google-maps.api.utils")
+angular.module("google-maps.directives.api.utils")
 .factory "ChildEvents", ->
     onChildCreation: (child) ->
         #doing nothing but can be hooked / overriden later

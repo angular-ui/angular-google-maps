@@ -30,25 +30,25 @@ Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
 ###
 #define application wide modules
-angular.module("google-maps.api.utils",[])
-angular.module("google-maps.api.managers",[])
-angular.module("google-maps.api.models.child",["google-maps.api.utils"])
-angular.module("google-maps.api.models.parent",[
-    "google-maps.api.managers",
-    "google-maps.api.models.child"
+angular.module("google-maps.directives.api.utils", [])
+angular.module("google-maps.directives.api.managers", [])
+angular.module("google-maps.directives.api.models.child", [
+    "google-maps.directives.api.utils"])
+angular.module("google-maps.directives.api.models.parent", [
+    "google-maps.directives.api.managers",
+    "google-maps.directives.api.models.child"
 ])
-angular.module("google-maps.api",[ "google-maps.api.models.parent"])
-angular.module("google-maps",[ "google-maps.api"])
-.factory "debounce", ["$timeout", ($timeout) ->
-    (fn) -> # debounce fn
-        nthCall = 0
-        -> # intercepting fn
-            that = this
-            argz = arguments
-            nthCall++
-            later = ((version) ->
-                ->
-                    fn.apply that, argz  if version is nthCall
-            )(nthCall)
-            $timeout later, 0, true
-]
+angular.module("google-maps.directives.api", [ "google-maps.directives.api.models.parent"])
+angular.module("google-maps", [ "google-maps.directives.api"])
+.factory("debounce", ["$timeout", ($timeout) ->
+        (fn) -> # debounce fn
+            nthCall = 0
+            -> # intercepting fn
+                that = this
+                argz = arguments
+                nthCall++
+                later = ((version) ->
+                    ->
+                        fn.apply that, argz  if version is nthCall)(nthCall)
+                $timeout later, 0, true
+])
