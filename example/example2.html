@@ -54,19 +54,21 @@
 
         <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true' dorebuildall="example2.doRebuildAll"  >
             <windows show="'showWindow'" closeClick="'closeClick'" dorebuildall="example2.doRebuildAll">
-                <p>Dynamic Marker created via a delay!</p>
-
-                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-
-                <p class="muted">My marker will stay open when the window is popped up!</p>
+                <div>
+                    <p>Dynamic Marker created via a delay!</p>
+                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                    <p class="muted">My marker will stay open when the window is popped up!</p>
+                </div>
             </windows>
         </markers>
 
         <markers models="map.mexiMarkers" idKey="map.mexiIdKey" coords="'self'" icon="'icon'" click="'onClicked'" dorebuildall="example2.doRebuildAll" >
             <windows show="'showWindow'" closeClick="'closeClick'" dorebuildall="example2.doRebuildAll" >
-                <p>Mexi!</p>
-                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-                <p class="muted">My marker will stay open when the window is popped up!</p>
+                <div>
+                    <p>Mexi!</p>
+                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                    <p class="muted">My marker will stay open when the window is popped up!</p>
+                </div>
             </windows>
         </markers>
     </div>
@@ -255,9 +257,6 @@
 <script src="example-controller.js"></script>
 <script src="templates/infoController.js"></script>
 <script src="http://localhost:35729/livereload.js"></script>
-<script type="text/javascript">
-directives.api.utils.Logger.doLog = true;
-</script>
 </body>
 
 </html>
