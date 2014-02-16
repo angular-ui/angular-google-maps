@@ -1376,7 +1376,7 @@ Nicholas McCready - https://twitter.com/nmccready
                   templateScope.parameter = _this.scope.templateParameter;
                 }
                 compiled = $compile(content.data)(templateScope);
-                _this.gWin.setContent(compiled.get(0));
+                _this.gWin.setContent(compiled[0]);
                 return _this.gWin.open(_this.mapCtrl);
               });
             }
@@ -1608,7 +1608,7 @@ Nicholas McCready - https://twitter.com/nmccready
             if (angular.isDefined(_this.attrs.show)) {
               _this.doShow = _this.scope.show;
             }
-            if (_this.doShow !== null && _this.doShow && _this.Map !== null) {
+            if (_this.doShow && (_this.gMap != null)) {
               _this.layer.setMap(_this.gMap);
             }
             _this.scope.$watch("show", function(newValue, oldValue) {
@@ -1636,7 +1636,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         LayerParentModel.prototype.createGoogleLayer = function() {
           var _this = this;
-          if (this.attrs.options != null) {
+          if (this.attrs.options == null) {
             this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type]() : new google.maps[this.attrs.namespace][this.attrs.type]();
           } else {
             this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type](this.scope.options) : new google.maps[this.attrs.namespace][this.attrs.type](this.scope.options);
@@ -2721,7 +2721,8 @@ Nick Baugh - https://github.com/niftylettuce
         */
 
         link: function(scope, element, attrs) {
-          var dragging, el, eventName, getEventHandler, opts, settingCenterFromScope, type, _m;
+          var dragging, el, eventName, getEventHandler, opts, settingCenterFromScope, type, _m,
+            _this = this;
           if (!angular.isDefined(scope.center) || (!angular.isDefined(scope.center.latitude) || !angular.isDefined(scope.center.longitude))) {
             $log.error("angular-google-maps: could not find a valid center property");
             return;
@@ -2887,7 +2888,7 @@ Nick Baugh - https://github.com/niftylettuce
             }
             return _m.setZoom(newValue);
           });
-          return scope.$watch("bounds", function(newValue, oldValue) {
+          scope.$watch("bounds", function(newValue, oldValue) {
             var bounds, ne, sw;
             if (newValue === oldValue) {
               return;
@@ -2901,6 +2902,22 @@ Nick Baugh - https://github.com/niftylettuce
             bounds = new google.maps.LatLngBounds(sw, ne);
             return _m.fitBounds(bounds);
           });
+          scope.$watch("options", function(newValue, oldValue) {
+            if (!_.isEqual(newValue, oldValue)) {
+              opts.options = newValue;
+              if (_m != null) {
+                return _m.setOptions(opts);
+              }
+            }
+          }, true);
+          return scope.$watch("styles", function(newValue, oldValue) {
+            if (!_.isEqual(newValue, oldValue)) {
+              opts.styles = newValue;
+              if (_m != null) {
+                return _m.setOptions(opts);
+              }
+            }
+          }, true);
         }
       };
     }

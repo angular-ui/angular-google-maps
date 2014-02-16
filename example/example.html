@@ -29,7 +29,7 @@
 <!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 <div class="page-title affix">
-    <h2>angular-google-maps example {{version}}</h2>
+    <h2>angular-google-maps example <span ng-cloak>{{version}}</span></h2>
 </div>
 <div class="container-fluid">
 <div class="row-fluid">
@@ -50,7 +50,7 @@
 
         <!--WINDOWS without markers-->
         <!--NOTICE THEY MUST BE PRIOR TO ANY MARKERS OR THEY WILL ATTACH THEMSELVES walking up the dom tree-->
-        <window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false" options="map.infoWindow.options">
+        <window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false" options="map.infoWindow.options"  ng-cloak>
 			<div ng-controller='InfoController'>
 			    I should not be attached to a
             	marker.
@@ -62,7 +62,7 @@
         <window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
                 options="map.templatedInfoWindow.options"
                 templateUrl="map.templatedInfoWindow.templateUrl"
-                templateParameter="map.templatedInfoWindow.templateParameter">
+                templateParameter="map.templatedInfoWindow.templateParameter" ng-cloak>
         </window>
 
         <marker coords="searchLocationMarker.coords" options="searchLocationMarker.options" events="searchLocationMarker.events" />
@@ -73,7 +73,7 @@
 
         <markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'"
                     labelContent="'title'" labelAnchor="22 0" labelClass="marker-labels">
-            <windows show="'showWindow'" closeClick="'closeClick'">
+            <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 
@@ -84,7 +84,7 @@
 
 
         <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
-            <windows show="'showWindow'" closeClick="'closeClick'">
+            <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p>Dynamic Marker created via a delay!</p>
 
@@ -96,7 +96,7 @@
         </markers>
 
         <markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
-            <windows show="'showWindow'" closeClick="'closeClick'">
+            <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p>Mexi!</p>
                     <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
@@ -109,7 +109,7 @@
         <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
         <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
             <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
-            <window show="m.showWindow" closeClick="m.closeClick()">
+            <window show="m.showWindow" closeClick="m.closeClick()" ng-cloak>
                 <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 
                 <p class="muted">My marker will stay open when the window is popped up!</p>
@@ -120,7 +120,7 @@
         <div ng-init="opts = {animation:1}">
             <marker coords="map.clickedMarker" options="opts">
                 <!--<marker-label content="map.clickedMarker.title" anchor="24 40" class="marker-labels"/>-->
-                <window isIconVisibleOnClick="true">This is my clicked marker!
+                <window isIconVisibleOnClick="true" ng-cloak>This is my clicked marker!
                     <p class="muted">My marker will reappear when you close me.</p>
                 </window>
             </marker>
@@ -133,7 +133,7 @@
         <!-- polygon example -->
         <polygon ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
         	geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>
-        	
+
     </div>
     <button class="btn btn-danger pull-right" ng-click="removeMarkers()">Clear Map</button>
 </div>
@@ -171,7 +171,7 @@
                 <td>
                     <div class="well sidebar-nav">
                         <ul class="nav nav-list">
-                            <li ng-repeat="m in map.markers" ng-click="m.showWindow = true">
+                            <li ng-repeat="m in map.markers" ng-click="m.showWindow = true" ng-cloak>
                                 <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!">
                                         Marker: {{m}}
@@ -187,7 +187,7 @@
                 <td>
                     <div class="well sidebar-nav">
                         <ul class="nav nav-list">
-                            <li ng-repeat="m in map.markers2" ng-click="m.showWindow = true">
+                            <li ng-repeat="m in map.markers2" ng-click="m.showWindow = true" ng-cloak>
                                 <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!">
                                         Marker: {{m}}
@@ -203,7 +203,7 @@
                 <td>
                     <div class="well sidebar-nav">
                         <ul class="nav nav-list">
-                            <li ng-repeat="m in map.dynamicMarkers" ng-click="m.showWindow = true">
+                            <li ng-repeat="m in map.dynamicMarkers" ng-click="m.showWindow = true" ng-cloak>
                                 <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!">
                                         Marker: {{m}}
@@ -217,7 +217,7 @@
             <tr>
                 <td>center</td>
                 <td>
-					<pre>
+					<pre ng-cloak>
 						<span ng-show="map.center.latitude >= 0">&nbsp;
 						</span>
 						{{ map.center.latitude | number:4 }} lat
@@ -234,7 +234,7 @@
             <tr>
                 <td>bounds</td>
                 <td>
-                    <pre>
+                    <pre ng-cloak>
                     	north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }} 
                     	<br>
                     	south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
@@ -243,12 +243,12 @@
             </tr>
             <tr>
                 <td>dragging</td>
-                <td>{{ map.dragging }}</td>
+                <td ng-cloak>{{ map.dragging }}</td>
             </tr>
             <tr>
                 <td>clicked position</td>
                 <td>
-						<pre ng-show="map.clickedMarker.latitude != null && map.clickedMarker.longitude != null">
+						<pre ng-show="map.clickedMarker.latitude != null && map.clickedMarker.longitude != null" ng-cloak>
 							<span ng-show="map.clickedMarker.latitude >= 0">&nbsp;
 							</span>
 							{{ map.clickedMarker.latitude | number:4 }} lat
@@ -264,7 +264,7 @@
                 <td>
                     <div class="well sidebar-nav">
                         <ul class="nav nav-list">
-                            <li ng-repeat="p in map.polylines">
+                            <li ng-repeat="p in map.polylines" ng-cloak>
                                 <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!">
                                         <span class="{{p.visible}}" ng-click="p.visible = !p.visible">Polyline:</span> {<br/>
