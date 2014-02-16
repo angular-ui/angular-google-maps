@@ -1130,7 +1130,7 @@ Nicholas McCready - https://twitter.com/nmccready
                 templateScope.parameter = _this.scope.templateParameter;
               }
               compiled = _this.$compile(content.data)(templateScope);
-              _this.gWin.setContent(compiled.get(0));
+              _this.gWin.setContent(compiled[0]);
               return _this.gWin.open(_this.mapCtrl);
             });
           }
