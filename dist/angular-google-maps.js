@@ -3267,6 +3267,11 @@ Nicholas McCready - https://twitter.com/nmccready
                 }
               });
             }
+            if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.opacity)) {
+              scope.$watch("stroke.opacity", function(newValue, oldValue) {
+                return polygon.setOptions(buildOpts(polygon.getPath()));
+              });
+            }
             if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
               scope.$watch("stroke.weight", function(newValue, oldValue) {
                 if (newValue !== oldValue) {
@@ -3276,6 +3281,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
               scope.$watch("stroke.color", function(newValue, oldValue) {
+                polygon.setOptions(buildOpts(polygon.getPath()));
                 if (newValue !== oldValue) {
                   return polygon.setOptions(buildOpts(polygon.getPath()));
                 }
@@ -3290,6 +3296,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             if (angular.isDefined(scope.fill) && angular.isDefined(scope.fill.opacity)) {
               scope.$watch("fill.opacity", function(newValue, oldValue) {
+                polygon.setOptions(buildOpts(polygon.getPath()));
                 if (newValue !== oldValue) {
                   return polygon.setOptions(buildOpts(polygon.getPath()));
                 }

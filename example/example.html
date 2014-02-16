@@ -74,28 +74,34 @@
         <markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'"
                     labelContent="'title'" labelAnchor="22 0" labelClass="marker-labels">
             <windows show="'showWindow'" closeClick="'closeClick'">
-                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                <div>
+                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 
-                <p class="muted">My marker will stay open when the window is popped up!</p>
+                    <p class="muted">My marker will stay open when the window is popped up!</p>
+                </div>
             </windows>
         </markers>
 
 
         <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
             <windows show="'showWindow'" closeClick="'closeClick'">
-                <p>Dynamic Marker created via a delay!</p>
+                <div>
+                    <p>Dynamic Marker created via a delay!</p>
 
-                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 
-                <p class="muted">My marker will stay open when the window is popped up!</p>
+                    <p class="muted">My marker will stay open when the window is popped up!</p>
+                </div>
             </windows>
         </markers>
 
         <markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
             <windows show="'showWindow'" closeClick="'closeClick'">
-                <p>Mexi!</p>
-                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-                <p class="muted">My marker will stay open when the window is popped up!</p>
+                <div>
+                    <p>Mexi!</p>
+                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                    <p class="muted">My marker will stay open when the window is popped up!</p>
+                </div>
             </windows>
         </markers>
 
