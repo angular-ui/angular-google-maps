@@ -45,3 +45,34 @@ body {
 .angular-google-map {
   display: block;
   }*/
+
+.custom-info-window{
+    background: rgba(0,0,0,0.5);
+    color: white;
+    padding: 20px;
+    /*border: 1px solid white;*/
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.5);
+    border-radius: 5px;
+    width: 200px;
+    margin-top: 15px;
+    margin-left: -130px;
+}
+.custom-info-window a{
+    color: white;
+    text-decoration: underline;
+}
+.custom-info-window:after
+{
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 0 15px 15px;
+    border-color: rgba(0,0,0,0.5) transparent;
+    display: block;
+    width: 0;
+    z-index: 1;
+    top: -15px;
+    left: 118px;
+}
+
+

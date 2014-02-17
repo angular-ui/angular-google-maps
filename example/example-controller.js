@@ -20,12 +20,12 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         $scope.version = data.version;
     });
 
-    onMarkerClicked = function (marker) {
+    var onMarkerClicked = function (marker) {
         marker.showWindow = true;
         //window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
     };
 
-    genRandomMarkers = function (numberOfMarkers, scope) {
+    var genRandomMarkers = function (numberOfMarkers, scope) {
         var markers = [];
         for (var i = 0; i < numberOfMarkers; i++) {
             markers.push(createRandomMarker(i, scope.map.bounds))
@@ -33,7 +33,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         scope.map.randomMarkers = markers;
     };
 
-    createRandomMarker = function (i, bounds, idKey) {
+    var createRandomMarker = function (i, bounds, idKey) {
         var lat_min = bounds.southwest.latitude,
                 lat_range = bounds.northeast.latitude - lat_min,
                 lng_min = bounds.southwest.longitude,
@@ -42,8 +42,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         if(idKey == null)
             idKey = "id";
 
-        latitude = lat_min + (Math.random() * lat_range);
-        longitude = lng_min + (Math.random() * lng_range);
+        var latitude = lat_min + (Math.random() * lat_range);
+        var longitude = lng_min + (Math.random() * lng_range);
         var ret =  {
             latitude: latitude,
             longitude: longitude,
@@ -223,6 +223,16 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                 },
                 show: false
             },
+            infoWindowWithCustomClass: {
+                coords: {
+                    latitude: 36.270850,
+                    longitude: -44.296875
+                },
+                options:{
+                    boxClass: 'custom-info-window'
+                },
+                show: true
+            },
             templatedInfoWindow: {
                 coords: {
                     latitude: 48.654686,
@@ -336,6 +346,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
     _.each($scope.map.markers, function (marker) {
         marker.closeClick = function () {
             marker.showWindow = false;
+            $scope.$apply();
         };
         marker.onClicked = function () {
             onMarkerClicked(marker);
@@ -345,6 +356,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
     _.each($scope.map.markers2, function (marker) {
         marker.closeClick = function () {
             marker.showWindow = false;
+            $scope.$apply();
         };
         marker.onClicked = function () {
             onMarkerClicked(marker);
@@ -430,6 +442,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         _.each(dynamicMarkers, function (marker) {
             marker.closeClick = function () {
                 marker.showWindow = false;
+                $scope.$apply();
             };
             marker.onClicked = function () {
                 onMarkerClicked(marker);

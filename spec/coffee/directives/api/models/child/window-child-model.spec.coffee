@@ -1,7 +1,15 @@
 describe "WindowChildModel", ->
     beforeEach ->
-        #dependencies
-        #(scope,opts,isIconVisibleOnClick,mapCtrl, markerCtrl,$http,$templateCache,$compile)
+        if window.InfoBox
+            @infoBoxRealTemp = window.InfoBox
+        else
+            window.InfoBox = (opt_opts) ->
+                opt_opts = opt_opts || {}
+                @boxClass_ = opt_opts.boxClass || "infoBox"
+                @content_ = opt_opts.content || "";
+                @div_ = document.createElement("div")
+                @div_.className = @boxClass_
+                
         @scope =
             coords:
                 latitude: 90.0
@@ -26,11 +34,20 @@ describe "WindowChildModel", ->
 
         angular.mock.module('mockModule')
 
-        inject ($http, $rootScope, $templateCache, $compile, $controller) =>
+    it 'can be created', ->
+        inject(($http, $rootScope, $templateCache, $compile, $controller) =>
             scope = $rootScope.$new()
             _.extend(@scope, scope)
             @subject = $controller('childModel', scope: scope)
+        )
+        expect(@subject != undefined).toEqual(true)
+        expect(@subject.index).toEqual(@index)
 
-    it 'can be created', ->
+    it 'can be created with the infoBoxplugin', ->
+        inject(($http, $rootScope, $templateCache, $compile, $controller) =>
+            scope = $rootScope.$new()
+            _.extend(@scope, scope)
+            @subject = $controller('childModel', scope: scope)
+        )
         expect(@subject != undefined).toEqual(true)
         expect(@subject.index).toEqual(@index)

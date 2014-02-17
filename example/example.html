@@ -41,7 +41,8 @@
          dragging="map.dragging"
          bounds="map.bounds"
          events="map.events"
-         options="map.options">
+         options="map.options"
+         pan="true" >
 
         <layer type="TrafficLayer" show="map.showTraffic"></layer>
         <layer type="BicyclingLayer" show="map.showBicycling"></layer>
@@ -57,6 +58,11 @@
                 <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
 	            <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
             </div>
+        </window>
+
+
+        <window show="map.infoWindowWithCustomClass.show" coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
+            I'm a window with a custom class set via options.boxClass. I only work when googles <a href ="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
         </window>
 
         <window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
@@ -109,10 +115,9 @@
         <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
         <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
             <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
-            <window show="m.showWindow" closeClick="m.closeClick()" ng-cloak>
-                <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
-
-                <p class="muted">My marker will stay open when the window is popped up!</p>
+            <window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
+                    <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
+                    <p class="muted">My marker will stay open when the window is popped up!</p>
             </window>
         </marker>
 
@@ -120,7 +125,7 @@
         <div ng-init="opts = {animation:1}">
             <marker coords="map.clickedMarker" options="opts">
                 <!--<marker-label content="map.clickedMarker.title" anchor="24 40" class="marker-labels"/>-->
-                <window isIconVisibleOnClick="true" ng-cloak>This is my clicked marker!
+                <window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
                     <p class="muted">My marker will reappear when you close me.</p>
                 </window>
             </marker>

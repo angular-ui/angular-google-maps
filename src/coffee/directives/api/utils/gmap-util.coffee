@@ -28,9 +28,11 @@ angular.module("google-maps.directives.api.utils")
                 then defaults.position else if angular.isObject(gMarker)
                 then gMarker.getPosition() else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
         else
-            Logger.info "content not defined" unless content
-            Logger.info "defaults not defined" unless defaults
-
+            unless defaults
+                Logger.error "infoWindow defaults not defined"
+                Logger.error "infoWindow content not defined" unless content
+            else
+                return defaults
 
     buildContent:(scope,defaults,content,contentIsParsed) ->
         if defaults.content?

@@ -63,16 +63,14 @@ module.exports = (grunt) ->
 
         concat:
             options:
+                banner: "/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
                 separator: ";"
 
             dist:
-                src: ["tmp/output_coffee.js", "lib/markerclusterer.js", "lib/markerwithlabel.js"]
+                src: ["tmp/output_coffee.js", "lib/*.js"]
                 dest: "tmp/output.js"
 
         copy:
-            options:
-                banner: "/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
-
             dist:
                 files: [
                     src: "tmp/output.js"
