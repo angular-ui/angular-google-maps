@@ -185,7 +185,6 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
                 scope.control.refresh = (maybeCoords) =>
                     return unless _m?
                     google.maps.event.trigger _m, "resize" #actually refresh
-                    #do we have new coords to goto along with the refresh?
                     if maybeCoords?.latitude? and maybeCoords?.latitude?
                         coords = getCoords(maybeCoords)
                         if isTrue(attrs.pan)
@@ -205,7 +204,7 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
                 settingCenterFromScope = true
                 unless dragging
                     if !newValue.latitude? or !newValue.longitude?
-                        $log.error("Invalid center for newVa;ue: #{JSON.stringify newValue}")
+                        $log.error("Invalid center for newValue: #{JSON.stringify newValue}")
                     if isTrue(attrs.pan) and scope.zoom is _m.zoom
                         _m.panTo coords
                     else

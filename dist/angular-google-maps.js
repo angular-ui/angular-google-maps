@@ -2608,7 +2608,7 @@ Nick Baugh - https://github.com/niftylettuce
             settingCenterFromScope = true;
             if (!dragging) {
               if ((newValue.latitude == null) || (newValue.longitude == null)) {
-                $log.error("Invalid center for newVa;ue: " + (JSON.stringify(newValue)));
+                $log.error("Invalid center for newValue: " + (JSON.stringify(newValue)));
               }
               if (isTrue(attrs.pan) && scope.zoom === _m.zoom) {
                 _m.panTo(coords);

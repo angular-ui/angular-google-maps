@@ -22,6 +22,7 @@ function DebugController($scope, $timeout, $log, $http) {
 
     angular.extend($scope, {
         map:{
+            control:{},
             center: {
                 latitude: 45,
                 longitude: -74
@@ -45,8 +46,34 @@ function DebugController($scope, $timeout, $log, $http) {
                 navigationControl: false,
                 scrollwheel: false,
                 scaleControl: false
+            },
+            refresh: function(){
+                $scope.map.control.refresh(origCenter);
+            }
+        },
+        map2:{
+            control:{},
+            center: {
+                latitude: 70,
+                longitude: -76
+            },
+            marker: {
+                latitude: 70,
+                longitude: -76,
+                options:{
+                    visible:true
+                }
+            },
+            marker2: {
+                latitude: 50.2,
+                longitude: -80.5
+            },
+            zoom: 7,
+            refresh: function(){
+                $scope.map2.control.refresh({latitude:32.779680,longitude:-79.935493});
             }
         }
     });
 
+    var origCenter = {latitude:$scope.map.center.latitude,longitude:$scope.map.center.longitude};
 }
