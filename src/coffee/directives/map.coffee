@@ -47,6 +47,9 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
     DEFAULTS =
         mapTypeId: google.maps.MapTypeId.ROADMAP
 
+    getCoords = (value) ->
+        new google.maps.LatLng(value.latitude, value.longitude)
+
     return {
         self: @
         restrict: "ECMA"
@@ -116,7 +119,6 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
                     scope.$apply (s) ->
                         s.dragging = dragging if s.dragging?
 
-
             google.maps.event.addListener _m, "dragend", ->
                 dragging = false
                 _.defer ->
@@ -165,7 +167,6 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
                                 latitude: sw.lat()
                                 longitude: sw.lng()
 
-
             if angular.isDefined(scope.events) and scope.events isnt null and angular.isObject(scope.events)
                 getEventHandler = (eventName) ->
                     ->
@@ -181,38 +182,32 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
             # Check if we need to refresh the map
             unless angular.isUndefined(scope.refresh())
                 scope.$watch "refresh()", (newValue, oldValue) ->
-                    if newValue and not oldValue
-
-                        #  _m.draw();
-                        coords = new google.maps.LatLng(newValue.latitude, newValue.longitude)
+                    if newValue? and not oldValue
+                        coords = getCoords(newValue)
                         if isTrue(attrs.pan)
                             _m.panTo coords
                         else
                             _m.setCenter coords
 
-
             # Update map when center coordinates change
             scope.$watch "center", ((newValue, oldValue) ->
-                return  if newValue is oldValue
+                coords = getCoords newValue
+                return  if newValue is oldValue or (coords.lat() is _m.center.lat() and coords.lng() is _m.center.lng())
                 settingCenterFromScope = true
                 unless dragging
                     if !newValue.latitude? or !newValue.longitude?
                         $log.error("Invalid center for newVa;ue: #{JSON.stringify newValue}")
-                    coords = new google.maps.LatLng(newValue.latitude, newValue.longitude)
-                    if isTrue(attrs.pan)
+                    if isTrue(attrs.pan) and scope.zoom is _m.zoom
                         _m.panTo coords
                     else
                         _m.setCenter coords
 
-                #_m.draw();
                 settingCenterFromScope = false
             ), true
             scope.$watch "zoom", (newValue, oldValue) ->
-                return  if newValue is oldValue
-                _m.setZoom newValue
+                return  if newValue is oldValue or newValue is _m.zoom
+                _.defer _m.setZoom newValue
 
-
-            #_m.draw();
             scope.$watch "bounds", (newValue, oldValue) ->
                 return  if newValue is oldValue
                 if !newValue.northeast.latitude? or !newValue.northeast.longitude? or !newValue.southwest.latitude? or !newValue.southwest.longitude?

@@ -2399,13 +2399,16 @@ Nick Baugh - https://github.com/niftylettuce
   angular.module("google-maps").directive("googleMap", [
     "$log", "$timeout", function($log, $timeout) {
       "use strict";
-      var DEFAULTS, isTrue;
+      var DEFAULTS, getCoords, isTrue;
       isTrue = function(val) {
         return angular.isDefined(val) && val !== null && val === true || val === "1" || val === "y" || val === "true";
       };
       directives.api.utils.Logger.logger = $log;
       DEFAULTS = {
         mapTypeId: google.maps.MapTypeId.ROADMAP
+      };
+      getCoords = function(value) {
+        return new google.maps.LatLng(value.latitude, value.longitude);
       };
       return {
         self: this,
@@ -2572,8 +2575,8 @@ Nick Baugh - https://github.com/niftylettuce
           if (!angular.isUndefined(scope.refresh())) {
             scope.$watch("refresh()", function(newValue, oldValue) {
               var coords;
-              if (newValue && !oldValue) {
-                coords = new google.maps.LatLng(newValue.latitude, newValue.longitude);
+              if ((newValue != null) && !oldValue) {
+                coords = getCoords(newValue);
                 if (isTrue(attrs.pan)) {
                   return _m.panTo(coords);
                 } else {
@@ -2584,7 +2587,8 @@ Nick Baugh - https://github.com/niftylettuce
           }
           scope.$watch("center", (function(newValue, oldValue) {
             var coords;
-            if (newValue === oldValue) {
+            coords = getCoords(newValue);
+            if (newValue === oldValue || (coords.lat() === _m.center.lat() && coords.lng() === _m.center.lng())) {
               return;
             }
             settingCenterFromScope = true;
@@ -2592,8 +2596,7 @@ Nick Baugh - https://github.com/niftylettuce
               if ((newValue.latitude == null) || (newValue.longitude == null)) {
                 $log.error("Invalid center for newVa;ue: " + (JSON.stringify(newValue)));
               }
-              coords = new google.maps.LatLng(newValue.latitude, newValue.longitude);
-              if (isTrue(attrs.pan)) {
+              if (isTrue(attrs.pan) && scope.zoom === _m.zoom) {
                 _m.panTo(coords);
               } else {
                 _m.setCenter(coords);
@@ -2602,10 +2605,10 @@ Nick Baugh - https://github.com/niftylettuce
             return settingCenterFromScope = false;
           }), true);
           scope.$watch("zoom", function(newValue, oldValue) {
-            if (newValue === oldValue) {
+            if (newValue === oldValue || newValue === _m.zoom) {
               return;
             }
-            return _m.setZoom(newValue);
+            return _.defer(_m.setZoom(newValue));
           });
           scope.$watch("bounds", function(newValue, oldValue) {
             var bounds, ne, sw;
