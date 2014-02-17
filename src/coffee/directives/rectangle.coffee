@@ -124,7 +124,7 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
                 if !newValue.sw.latitude? or !newValue.sw.longitude? or !newValue.ne.latitude? or !newValue.ne.longitude?
                     $log.error("Invalid bounds for newValue: #{JSON.stringify newValue}")
                 bounds = new google.maps.LatLngBounds(new google.maps.LatLng(newValue.sw.latitude, newValue.sw.longitude), new google.maps.LatLng(newValue.ne.latitude, newValue.ne.longitude))
-                map.setBounds bounds_changed
+                map.setBounds bounds
                 #map.draw();
                 settingBoundsFromScope = false
             ), true
