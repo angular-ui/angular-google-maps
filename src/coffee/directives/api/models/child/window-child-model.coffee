@@ -1,7 +1,7 @@
 @ngGmapModule "directives.api.models.child", ->
     class @WindowChildModel extends oo.BaseObject
         @include directives.api.utils.GmapUtil
-        constructor: (scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile,@element, needToManualDestroy = false)->
+        constructor: (scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile, @element, needToManualDestroy = false)->
             @scope = scope
             @opts = opts
             @mapCtrl = mapCtrl
@@ -25,7 +25,7 @@
         createGWin:() =>
             if !@gWin? and @markerCtrl?
                 defaults = if @opts? then @opts else {}
-                html = if _.isObject(@element) then @element.html() else @element
+                html = if @element? and _.isFunction(@element.html) then @element.html() else @element
                 @opts = if @markerCtrl? then @createWindowOptions(@markerCtrl, @scope, html, defaults) else {}
 
             if @opts? and @gWin == undefined

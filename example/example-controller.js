@@ -355,7 +355,7 @@ function ExampleController($scope, $timeout, $log, $http) {
             }
         }
     }
-    $scope.onMarkerClicked = onMarkerClicked
+    $scope.onMarkerClicked = onMarkerClicked;
 
     $timeout(function () {
         $scope.map.infoWindow.show = true;

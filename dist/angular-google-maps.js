@@ -581,6 +581,12 @@ Nicholas McCready - https://twitter.com/nmccready
             content: defaults.content != null ? defaults.content : content,
             position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
           });
+        } else {
+          if (!defaults) {
+
+          } else {
+            return defaults;
+          }
         }
       },
       defaultDelay: 50
@@ -1044,7 +1050,7 @@ Nicholas McCready - https://twitter.com/nmccready
           _this = this;
         if ((this.gWin == null) && (this.markerCtrl != null)) {
           defaults = this.opts != null ? this.opts : {};
-          html = _.isObject(this.element) ? this.element.html() : this.element;
+          html = (this.element != null) && _.isFunction(this.element.html) ? this.element.html() : this.element;
           this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, html, defaults) : {};
         }
         if ((this.opts != null) && this.gWin === void 0) {
@@ -1860,7 +1866,7 @@ Nicholas McCready - https://twitter.com/nmccready
         }, true);
         parsedContent = this.interpolateContent(this.linked.element.html(), model);
         opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS);
-        return this.windows.push(new directives.api.models.child.WindowChildModel(childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile, true));
+        return this.windows.push(new directives.api.models.child.WindowChildModel(childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, this.$http, this.$templateCache, this.$compile, void 0, true));
       };
 
       WindowsParentModel.prototype.setChildScope = function(childScope, model) {

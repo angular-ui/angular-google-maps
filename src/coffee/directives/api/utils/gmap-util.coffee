@@ -28,5 +28,11 @@
                     position: if defaults.position?
                     then defaults.position else if angular.isObject(gMarker)
                     then gMarker.getPosition() else new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+            else
+                unless defaults
+#                    Logger.error "infoWindow defaults not defined"
+#                    Logger.error "infoWindow content not defined" unless content
+                else
+                    return defaults
 
         defaultDelay: 50

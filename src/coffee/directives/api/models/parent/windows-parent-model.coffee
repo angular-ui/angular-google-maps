@@ -138,7 +138,7 @@
             parsedContent = @interpolateContent(@linked.element.html(), model)
             opts = @createWindowOptions(gMarker, childScope, parsedContent, @DEFAULTS)
             @windows.push new directives.api.models.child.WindowChildModel(childScope, opts, @isIconVisibleOnClick,
-                    gMap, gMarker, @$http, @$templateCache, @$compile, true)
+                    gMap, gMarker, @$http, @$templateCache, @$compile, undefined ,true)
 
         setChildScope: (childScope, model) =>
             for name in @scopePropNames
