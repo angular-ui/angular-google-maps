@@ -109,42 +109,43 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
                             s.dragging = dragging if s.dragging?
 
                 google.maps.event.addListener rectangle, "mouseup", ->
+                    google.maps.event.clearListeners(rectangle, 'mousemove');
+                    google.maps.event.clearListeners(rectangle, 'mouseup');
                     dragging = false
                     _.defer ->
                         scope.$apply (s) ->
                             s.dragging = dragging if s.dragging?
-                        google.maps.event.clearListeners(rectangle, 'mousemove');
-                        google.maps.event.clearListeners(rectangle, 'mouseup');
-                        return
 
             settingBoundsFromScope = false
             google.maps.event.addListener rectangle , "bounds_changed", ->
                 b = rectangle.getBounds()
                 ne = b.getNorthEast()
                 sw = b.getSouthWest()
+                return  if settingBoundsFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
                 _.defer ->
                     scope.$apply (s) ->
-                        if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
-                            s.bounds.ne =
-                                latitude: ne.lat()
-                                longitude: ne.lng()
+                        unless rectangle.dragging
+                            if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
+                                s.bounds.ne =
+                                    latitude: ne.lat()
+                                    longitude: ne.lng()
 
-                            s.bounds.sw =
-                                latitude: sw.lat()
-                                longitude: sw.lng()
+                                s.bounds.sw =
+                                    latitude: sw.lat()
+                                    longitude: sw.lng()
                         return
 
             # Update map when center coordinates change
             scope.$watch "bounds", ((newValue, oldValue) ->
                 return  if _.isEqual(newValue, oldValue)
                 settingBoundsFromScope = true
+                unless dragging
+                    if !newValue.sw.latitude? or !newValue.sw.longitude? or !newValue.ne.latitude? or !newValue.ne.longitude?
+                        $log.error("Invalid bounds for newValue: #{JSON.stringify newValue}")
+                    bounds = new google.maps.LatLngBounds(new google.maps.LatLng(newValue.sw.latitude, newValue.sw.longitude), new google.maps.LatLng(newValue.ne.latitude, newValue.ne.longitude))
+                    rectangle.setBounds bounds
 
-                if !newValue.sw.latitude? or !newValue.sw.longitude? or !newValue.ne.latitude? or !newValue.ne.longitude?
-                    $log.error("Invalid bounds for newValue: #{JSON.stringify newValue}")
-                bounds = new google.maps.LatLngBounds(new google.maps.LatLng(newValue.sw.latitude, newValue.sw.longitude), new google.maps.LatLng(newValue.ne.latitude, newValue.ne.longitude))
-                rectangle.setBounds bounds
-
-                settingBoundsFromScope = false
+                    settingBoundsFromScope = false
             ), true
 
 
