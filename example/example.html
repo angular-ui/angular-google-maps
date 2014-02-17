@@ -42,7 +42,9 @@
          bounds="map.bounds"
          events="map.events"
          options="map.options"
-         pan="true" >
+         pan="true"
+         control="map.control"
+        >
 
         <layer type="TrafficLayer" show="map.showTraffic"></layer>
         <layer type="BicyclingLayer" show="map.showBicycling"></layer>
@@ -125,6 +127,8 @@
                   geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
     </div>
     <button class="btn btn-danger pull-right" ng-click="removeMarkers()">Clear Map</button>
+    <button class="btn btn-success pull-right" ng-click="refreshMap()">Refresh Map</button>
+    <button class="btn btn-success pull-right" ng-click="getMapInstance()">Get Map Instance</button>
 </div>
 <div class="span5">
     <fieldset>

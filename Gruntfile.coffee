@@ -61,6 +61,7 @@ module.exports = (grunt) ->
 
         concat:
             options:
+                banner: "/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
                 separator: ";"
 
             dist:
@@ -68,9 +69,6 @@ module.exports = (grunt) ->
                 dest: "tmp/output.js"
 
         copy:
-            options:
-                banner: "/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
-
             dist:
                 files: [
                     src: "tmp/output.js"
