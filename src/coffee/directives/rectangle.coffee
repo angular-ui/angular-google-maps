@@ -100,6 +100,23 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
             rectangle = new google.maps.Rectangle(buildOpts(convertBoundPoints(scope.bounds)))
             fitMapBounds map, bounds  if isTrue(attrs.fit)
 
+            dragging = false
+            google.maps.event.addListener rectangle, "mousedown", ->
+                google.maps.event.addListener rectangle, "mousemove", ->
+                    dragging = true
+                    _.defer ->
+                        scope.$apply (s) ->
+                            s.dragging = dragging if s.dragging?
+
+                google.maps.event.addListener rectangle, "mouseup", ->
+                    dragging = false
+                    _.defer ->
+                        scope.$apply (s) ->
+                            s.dragging = dragging if s.dragging?
+                        google.maps.event.clearListeners(rectangle, 'mousemove');
+                        google.maps.event.clearListeners(rectangle, 'mouseup');
+                        return
+
             settingBoundsFromScope = false
             google.maps.event.addListener rectangle , "bounds_changed", ->
                 b = rectangle.getBounds()
@@ -115,6 +132,7 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
                             s.bounds.sw =
                                 latitude: sw.lat()
                                 longitude: sw.lng()
+                        return
 
             # Update map when center coordinates change
             scope.$watch "bounds", ((newValue, oldValue) ->
@@ -124,8 +142,8 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
                 if !newValue.sw.latitude? or !newValue.sw.longitude? or !newValue.ne.latitude? or !newValue.ne.longitude?
                     $log.error("Invalid bounds for newValue: #{JSON.stringify newValue}")
                 bounds = new google.maps.LatLngBounds(new google.maps.LatLng(newValue.sw.latitude, newValue.sw.longitude), new google.maps.LatLng(newValue.ne.latitude, newValue.ne.longitude))
-                map.setBounds bounds
-                #map.draw();
+                rectangle.setBounds bounds
+
                 settingBoundsFromScope = false
             ), true
 
