@@ -115,6 +115,7 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
                     _.defer ->
                         scope.$apply (s) ->
                             s.dragging = dragging if s.dragging?
+                return
 
             settingBoundsFromScope = false
             google.maps.event.addListener rectangle , "bounds_changed", ->
@@ -145,7 +146,7 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
                     bounds = new google.maps.LatLngBounds(new google.maps.LatLng(newValue.sw.latitude, newValue.sw.longitude), new google.maps.LatLng(newValue.ne.latitude, newValue.ne.longitude))
                     rectangle.setBounds bounds
 
-                    settingBoundsFromScope = false
+                settingBoundsFromScope = false
             ), true
 
 
