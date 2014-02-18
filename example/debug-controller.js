@@ -57,6 +57,7 @@ function DebugController($scope, $timeout, $log, $http) {
                 latitude: 52.2,
                 longitude: -80
             },
+            showMap:true,
             marker: {
                 latitude: 70,
                 longitude: -76,
@@ -71,6 +72,10 @@ function DebugController($scope, $timeout, $log, $http) {
             zoom: 4,
             refresh: function () {
                 $scope.map2.control.refresh({latitude: 32.779680, longitude: -79.935493});
+                $scope.map2.showMap = false;
+                _.defer(function(){
+                    $scope.map2.showMap = true;
+                });
             },
             markers3: [
                 {

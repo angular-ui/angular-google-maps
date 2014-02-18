@@ -53,7 +53,10 @@
             </marker>
         </google-map>
 
-        <google-map class="col-md-6"
+        <!-- ng-if to remove and replace from dom completley see issue #76 thanks facultymatt-->
+        <google-map
+                    ng-if="map2.showMap"
+                    class="col-md-6"
                     center="map2.center"
                     zoom="map2.zoom"
                     dragging="map2.dragging"
