@@ -195,7 +195,7 @@ angular.module("google-maps")
                 settingCenterFromScope = true
                 unless dragging
                     if !newValue.latitude? or !newValue.longitude?
-                        $log.error("Invalid center for newVa;ue: #{JSON.stringify newValue}")
+                        $log.error("Invalid center for newValue: #{JSON.stringify newValue}")
                     coords = new google.maps.LatLng(newValue.latitude, newValue.longitude)
                     if isTrue(attrs.pan)
                         _m.panTo coords
