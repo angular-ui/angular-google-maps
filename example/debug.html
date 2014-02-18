@@ -45,7 +45,8 @@
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control"
-                           <marker coords="map.marker" options="map.marker.options"></marker>
+                >
+            <marker coords="map.marker" options="map.marker.options"></marker>
             <marker coords="map.marker2">
                 <window isIconVisibleOnClick="true">
                     <p ng-cloak>Marker , MAP 1 Clicked on me2!</p>
@@ -55,18 +56,18 @@
 
         <!-- ng-if to remove and replace from dom completley see issue #76 thanks facultymatt-->
         <google-map
-                    ng-if="map2.showMap"
-                    class="col-md-6"
-                    center="map2.center"
-                    zoom="map2.zoom"
-                    dragging="map2.dragging"
-                    draggable="true"
-                    control="map2.control"
+                ng-if="map2.showMap"
+                class="col-md-6"
+                center="map2.center"
+                zoom="map2.zoom"
+                dragging="map2.dragging"
+                draggable="true"
+                control="map2.control"
                 >
             <!--<marker coords="map2.marker" options="map2.marker.options">-->
-                <!--<window isIconVisibleOnClick="true">-->
-                    <!--<p ng-cloak>Clicked on me!</p>-->
-                <!--</window>-->
+            <!--<window isIconVisibleOnClick="true">-->
+            <!--<p ng-cloak>Clicked on me!</p>-->
+            <!--</window>-->
             <!--</marker>-->
             <marker coords="map2.marker2">
                 <window isIconVisibleOnClick="true">
@@ -74,17 +75,17 @@
                 </window>
             </marker>
             <!--<markers models="map2.markers3" icon="'icon'" coords="'coords'" click="'click'">-->
-                <!--<windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
-                    <!--<p ng-non-bindable >-->
-                        <!--Latitude: {{coords.latitude}}<br/>-->
-                        <!--Longitude: {{coords.longitude}}<br/>-->
-                        <!--Last signal: <strong>{{lastSignal}}</strong>-->
-                    <!--</p>-->
-                <!--</windows>-->
-           <!--</markers>-->
+            <!--<windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
+            <!--<p ng-non-bindable >-->
+            <!--Latitude: {{coords.latitude}}<br/>-->
+            <!--Longitude: {{coords.longitude}}<br/>-->
+            <!--Last signal: <strong>{{lastSignal}}</strong>-->
+            <!--</p>-->
+            <!--</windows>-->
+            <!--</markers>-->
             <marker ng-repeat="m in map2.markers3" icon="m.icon" coords="m.coords" click="map2.onMarkerClick(m)">
                 <window show="m.show" ng-cloak>
-                    <p >
+                    < >
                         Latitude: {{m.coords.latitude}}<br/>
                         Longitude: {{m.coords.longitude}}<br/>
                         Last signal: <strong>{{m.lastSignal}}</strong>
