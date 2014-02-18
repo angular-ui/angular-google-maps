@@ -11,6 +11,7 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks "grunt-mkdir"
     grunt.loadNpmTasks "grunt-contrib-coffee"
     grunt.loadNpmTasks "grunt-contrib-jasmine"
+    grunt.loadNpmTasks "grunt-conventional-changelog"
 
     # Project configuration.
     grunt.initConfig
@@ -125,6 +126,9 @@ module.exports = (grunt) ->
                     hostname: "0.0.0.0"
                     port: 8069
                     base: ""
+        changelog:
+            options:
+                dest: "CHANGELOG.md"
 
         jasmine:
             taskName:
