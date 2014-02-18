@@ -61,7 +61,7 @@ angular.module("google-maps")
             center: "=center" # required
             zoom: "=zoom" # required
             dragging: "=dragging" # optional
-            refresh: "&refresh" # optional
+            control: "=" # optional
             windows: "=windows" # optional  TODO is this still needed looks like dead code
             options: "=options" # optional
             events: "=events" # optional
@@ -176,17 +176,25 @@ angular.module("google-maps")
 
             # Put the map into the scope
             scope.map = _m
-            google.maps.event.trigger _m, "resize"
+#            google.maps.event.trigger _m, "resize"
 
-            # Check if we need to refresh the map
-            unless angular.isUndefined(scope.refresh())
-                scope.$watch "refresh()", (newValue, oldValue) ->
-                    if newValue? and not oldValue
-                        coords = getCoords(newValue)
+            # check if have an external control hook to direct us manually without watches
+            #this will normally be an empty object that we extend and slap functionality onto with this directive
+            if attrs.control? and scope.control?
+                scope.control.refresh = (maybeCoords) =>
+                    return unless _m?
+                    google.maps.event.trigger _m, "resize" #actually refresh
+                    if maybeCoords?.latitude? and maybeCoords?.latitude?
+                        coords = getCoords(maybeCoords)
                         if isTrue(attrs.pan)
                             _m.panTo coords
                         else
                             _m.setCenter coords
+                ###
+                I am sure you all will love this. You want the instance here you go.. BOOM!
+                ###
+                scope.control.getGMap = ()=>
+                    _m
 
             # Update map when center coordinates change
             scope.$watch "center", ((newValue, oldValue) ->
@@ -195,7 +203,7 @@ angular.module("google-maps")
                 settingCenterFromScope = true
                 unless dragging
                     if !newValue.latitude? or !newValue.longitude?
-                        $log.error("Invalid center for newVa;ue: #{JSON.stringify newValue}")
+                        $log.error("Invalid center for newValue: #{JSON.stringify newValue}")
                     if isTrue(attrs.pan) and scope.zoom is _m.zoom
                         _m.panTo coords
                     else

@@ -2711,7 +2711,7 @@ Nick Baugh - https://github.com/niftylettuce
           center: "=center",
           zoom: "=zoom",
           dragging: "=dragging",
-          refresh: "&refresh",
+          control: "=",
           windows: "=windows",
           options: "=options",
           events: "=events",
@@ -2862,19 +2862,29 @@ Nick Baugh - https://github.com/niftylettuce
             }
           }
           scope.map = _m;
-          google.maps.event.trigger(_m, "resize");
-          if (!angular.isUndefined(scope.refresh())) {
-            scope.$watch("refresh()", function(newValue, oldValue) {
+          if ((attrs.control != null) && (scope.control != null)) {
+            scope.control.refresh = function(maybeCoords) {
               var coords;
-              if ((newValue != null) && !oldValue) {
-                coords = getCoords(newValue);
+              if (_m == null) {
+                return;
+              }
+              google.maps.event.trigger(_m, "resize");
+              if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.latitude : void 0) != null)) {
+                coords = getCoords(maybeCoords);
                 if (isTrue(attrs.pan)) {
                   return _m.panTo(coords);
                 } else {
                   return _m.setCenter(coords);
                 }
               }
-            });
+            };
+            /*
+            I am sure you all will love this. You want the instance here you go.. BOOM!
+            */
+
+            scope.control.getGMap = function() {
+              return _m;
+            };
           }
           scope.$watch("center", (function(newValue, oldValue) {
             var coords;
@@ -2885,7 +2895,7 @@ Nick Baugh - https://github.com/niftylettuce
             settingCenterFromScope = true;
             if (!dragging) {
               if ((newValue.latitude == null) || (newValue.longitude == null)) {
-                $log.error("Invalid center for newVa;ue: " + (JSON.stringify(newValue)));
+                $log.error("Invalid center for newValue: " + (JSON.stringify(newValue)));
               }
               if (isTrue(attrs.pan) && scope.zoom === _m.zoom) {
                 _m.panTo(coords);
