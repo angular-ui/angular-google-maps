@@ -13,7 +13,7 @@
     "angular-sanitize": "~1.2.5",
     "angular-google-maps": "~1.0.5",
     "underscore": "~1.5.2",
-    "angular-highlightjs": "~0.2.1",
+    "angular-highlightjs": "~0.2.5",
     "share-button": "~0.0.3"
   },
   "devDependencies": {
