@@ -1,4 +1,4 @@
-angular.module("google-maps.api.utils")
+angular.module("google-maps.directives.api.utils")
 .factory "Linked", [ "BaseObject", (BaseObject) ->
     class Linked extends BaseObject
         constructor: (scope, element, attrs, ctrls)->

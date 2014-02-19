@@ -1,4 +1,4 @@
-angular.module("google-maps.api.models.parent")
+angular.module("google-maps.directives.api.models.parent")
 .factory "LayerParentModel", ["BaseObject", "Logger", (BaseObject, Logger) ->
     class LayerParentModel extends BaseObject
         constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout, @onLayerCreated = undefined, @$log = Logger) ->
@@ -12,7 +12,7 @@ angular.module("google-maps.api.models.parent")
             @$timeout =>
                 @gMap = mapCtrl.getMap()
                 @doShow = @scope.show  if angular.isDefined(@attrs.show)
-                @layer.setMap @gMap  if @doShow isnt null and @doShow and @Map isnt null
+                @layer.setMap @gMap  if @doShow and @gMap?
                 @scope.$watch("show", (newValue, oldValue) =>
                     if newValue isnt oldValue
                         @doShow = newValue
@@ -31,7 +31,7 @@ angular.module("google-maps.api.models.parent")
                     @layer.setMap null
 
         createGoogleLayer: ()=>
-            if @attrs.options?
+            unless @attrs.options?
                 @layer = if @attrs.namespace == undefined then new google.maps[@attrs.type]()
                 else new google.maps[@attrs.namespace][@attrs.type]()
             else
