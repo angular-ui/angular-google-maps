@@ -47,6 +47,7 @@ module.exports = (grunt) ->
                         "src/coffee/directives/markers.coffee",
                         "src/coffee/directives/label.coffee",
                         "src/coffee/directives/polygon.coffee",
+                        "src/coffee/directives/circle.coffee",
                         "src/coffee/directives/polyline.coffee",
                         "src/coffee/directives/window.coffee",
                         "src/coffee/directives/windows.coffee",
