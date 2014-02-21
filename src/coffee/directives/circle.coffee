@@ -130,12 +130,14 @@ angular.module("google-maps").directive "circle", ["$log", "$timeout", ($log, $t
 
             google.maps.event.addListener circle, 'radius_changed', ->
                 scope.radius = circle.getRadius()
-                scope.$apply()
+                $timeout ->
+                    scope.$apply()
 
             google.maps.event.addListener circle, 'center_changed', ->
                 scope.center.latitude = circle.getCenter().lat()
                 scope.center.longitude = circle.getCenter().lng()
-                scope.$apply()
+                $timeout ->
+                    scope.$apply()
 
             # Remove circle on scope $destroy
             scope.$on "$destroy", ->
