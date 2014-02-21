@@ -6,8 +6,9 @@
  			- icon
 		- implementation needed on watches
 ###
-@ngGmapModule "directives.api.models.parent", ->
-    class @IMarkerParentModel extends oo.BaseObject
+angular.module("google-maps.directives.api.models.parent")
+.factory "IMarkerParentModel", ["ModelKey","Logger", (ModelKey, Logger) ->
+    class IMarkerParentModel extends ModelKey
         DEFAULTS: {}
 
         # Check if a value is literally false
@@ -17,8 +18,9 @@
             ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) != -1
 
         constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout) ->
+            super(@scope)
             self = @
-            @$log = directives.api.utils.Logger
+            @$log = Logger
             # Validate required properties
             return unless @validateScope scope
             @doClick = angular.isDefined attrs.click
@@ -42,10 +44,9 @@
             ret
 
         watch: (propNameToWatch, scope) =>
-            scope.$watch(propNameToWatch, (newValue, oldValue) =>
+            scope.$watch propNameToWatch, (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @onWatch(propNameToWatch, scope, newValue, oldValue)
-            , true)
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             throw new Exception("Not Implemented!!")
@@ -55,3 +56,5 @@
 
         linkInit: (element, mapCtrl, scope, animate)=>
             throw new Exception("Not Implemented!!")
+    return IMarkerParentModel
+]

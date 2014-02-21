@@ -1,10 +1,5 @@
 describe "WindowChildModel", ->
-    afterEach ->
-        console.info("InfoBox set back")
-        window.InfoBox = @infoBoxRealTemp
     beforeEach ->
-        #dependencies
-        #constructor: (scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile,@element, needToManualDestroy = false)->
         if window.InfoBox
             @infoBoxRealTemp = window.InfoBox
         else
@@ -14,7 +9,7 @@ describe "WindowChildModel", ->
                 @content_ = opt_opts.content || "";
                 @div_ = document.createElement("div")
                 @div_.className = @boxClass_
-
+                
         @scope =
             coords:
                 latitude: 90.0
@@ -23,20 +18,19 @@ describe "WindowChildModel", ->
         @commonOpts =
             position: new google.maps.LatLng(@scope.coords.latitude, @scope.coords.longitude)
         @windowOpts = _.extend(@commonOpts, content: 'content')
-        @windowOpts.boxClass = 'test'
         @gMarker = new google.maps.Marker(@commonOpts)
         #define / inject values into the item we are testing... not a controller but it allows us to inject
-        create = (scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, $http, $templateCache, $compile, element, needToManualDestroy)->
-            new directives.api.models.child.WindowChildModel scope, opts, isIconVisibleOnClick,
-                mapCtrl, markerCtrl, $http, $templateCache, $compile, element, needToManualDestroy
-        angular.module('mockModule', [])
+        angular.module('mockModule', ["google-maps"])
         .value('isIconVisibleOnClick', true)
+        .value('model', @scope)
         .value('mapCtrl', document.gMap)
         .value('markerCtrl', @gMarker)
         .value('opts', @windowOpts)
         .value('element', '<span>hi</span>')
         .value('needToManualDestroy', false)
-        .controller('childModel', create)
+        .value('markerIsVisibleAfterWindowClose', true)
+        .controller 'childModel', (WindowChildModel) ->
+                WindowChildModel
 
         angular.mock.module('mockModule')
 

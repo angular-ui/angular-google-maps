@@ -29,9 +29,18 @@ https://github.com/nlaplante/angular-google-maps
 Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
 ###
-(->
-    app = angular.module("google-maps", [])
-    app.factory "debounce", ["$timeout", ($timeout) ->
+#define application wide modules
+angular.module("google-maps.directives.api.utils", [])
+angular.module("google-maps.directives.api.managers", [])
+angular.module("google-maps.directives.api.models.child", [
+    "google-maps.directives.api.utils"])
+angular.module("google-maps.directives.api.models.parent", [
+    "google-maps.directives.api.managers",
+    "google-maps.directives.api.models.child"
+])
+angular.module("google-maps.directives.api", [ "google-maps.directives.api.models.parent"])
+angular.module("google-maps", [ "google-maps.directives.api"])
+.factory("debounce", ["$timeout", ($timeout) ->
         (fn) -> # debounce fn
             nthCall = 0
             -> # intercepting fn
@@ -40,8 +49,6 @@ Nicholas McCready - https://twitter.com/nmccready
                 nthCall++
                 later = ((version) ->
                     ->
-                        fn.apply that, argz  if version is nthCall
-                )(nthCall)
+                        fn.apply that, argz  if version is nthCall)(nthCall)
                 $timeout later, 0, true
-    ]
-)()
+])

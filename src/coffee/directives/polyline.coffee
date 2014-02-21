@@ -29,7 +29,8 @@ https://github.com/nlaplante/angular-google-maps
 Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
 ###
-angular.module("google-maps").directive "polyline", ["$log", "$timeout", "array-sync", ($log, $timeout, arraySync) ->
+angular.module("google-maps")
+.directive "polyline", ["$log", "$timeout", "array-sync", ($log, $timeout, arraySync) ->
     validatePathPoints = (path) ->
         i = 0
 
@@ -113,27 +114,27 @@ angular.module("google-maps").directive "polyline", ["$log", "$timeout", "array-
             extendMapBounds map, pathPoints  if isTrue(attrs.fit)
             if angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
-                    polyline.setEditable newValue
+                    polyline.setEditable newValue if newValue != oldValue
 
             if angular.isDefined(scope.draggable)
                 scope.$watch "draggable", (newValue, oldValue) ->
-                    polyline.setDraggable newValue
+                    polyline.setDraggable newValue if newValue != oldValue
 
             if angular.isDefined(scope.visible)
                 scope.$watch "visible", (newValue, oldValue) ->
-                    polyline.setVisible newValue
+                    polyline.setVisible newValue if newValue != oldValue
 
             if angular.isDefined(scope.geodesic)
                 scope.$watch "geodesic", (newValue, oldValue) ->
-                    polyline.setOptions buildOpts(polyline.getPath())
+                    polyline.setOptions buildOpts(polyline.getPath()) if newValue != oldValue
 
             if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.weight)
                 scope.$watch "stroke.weight", (newValue, oldValue) ->
-                    polyline.setOptions buildOpts(polyline.getPath())
+                    polyline.setOptions buildOpts(polyline.getPath()) if newValue != oldValue
 
             if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.color)
                 scope.$watch "stroke.color", (newValue, oldValue) ->
-                    polyline.setOptions buildOpts(polyline.getPath())
+                    polyline.setOptions buildOpts(polyline.getPath()) if newValue != oldValue
 
             arraySyncer = arraySync(polyline.getPath(), scope, "path")
 

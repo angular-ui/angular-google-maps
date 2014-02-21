@@ -18,9 +18,23 @@ describe "LayerParentModelSpec", ->
             getMap: ->
         @timeout = (fnc,time) =>
             fnc()
-        # (@scope, @element, @attrs, @mapCtrl, @$timeout, @onLayerCreated = undefined, @$log = directives.api.utils.Logger)
-        @constructor = directives.api.models.parent.LayerParentModel
-        @subject = new @constructor(@scope,{},@attrs,@mapCtrl,@timeout)
+
+        angular.module('mockModule', ["google-maps"])
+        .value('mapCtrl',
+        getMap: ()->
+                document.gMap)
+        .value('element', {})
+        .value('attrs', {})
+        .value('model', {})
+        .value('scope', @scope)
+
+        module "mockModule"
+        inject ($rootScope, LayerParentModel) =>
+            scope = $rootScope.$new()
+            @constructor = LayerParentModel
+            @scope = _.extend @scope, scope
+            @subject = new @constructor(@scope,{},@attrs,@mapCtrl,@timeout)
+
     afterEach ->
         google.map = @tempMaps
 

@@ -34,15 +34,14 @@ Nick Baugh - https://github.com/niftylettuce
 #jshint indent:4
 
 #globals directives,google
-angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log, $timeout) ->
+angular.module("google-maps")
+.directive "googleMap", ["$log", "$timeout", ($log, $timeout, Logger) ->
     "use strict"
-
+    $log = Logger
     # Utility functions
     #Check if a value is true
     isTrue = (val) ->
         angular.isDefined(val) and val isnt null and val is true or val is "1" or val is "y" or val is "true"
-
-    directives.api.utils.Logger.logger = $log
 
     DEFAULTS =
         mapTypeId: google.maps.MapTypeId.ROADMAP

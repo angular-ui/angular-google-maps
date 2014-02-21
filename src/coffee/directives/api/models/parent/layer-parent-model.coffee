@@ -1,6 +1,7 @@
-@ngGmapModule "directives.api.models.parent", ->
-    class @LayerParentModel extends oo.BaseObject
-        constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout, @onLayerCreated = undefined, @$log = directives.api.utils.Logger) ->
+angular.module("google-maps.directives.api.models.parent")
+.factory "LayerParentModel", ["BaseObject", "Logger", (BaseObject, Logger) ->
+    class LayerParentModel extends BaseObject
+        constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout, @onLayerCreated = undefined, @$log = Logger) ->
             unless @attrs.type?
                 @$log.info("type attribute for the layer directive is mandatory. Layer creation aborted!!")
                 return
@@ -11,7 +12,7 @@
             @$timeout =>
                 @gMap = mapCtrl.getMap()
                 @doShow = @scope.show  if angular.isDefined(@attrs.show)
-                @layer.setMap @gMap  if @doShow isnt null and @doShow and @gMap isnt null
+                @layer.setMap @gMap  if @doShow and @gMap?
                 @scope.$watch("show", (newValue, oldValue) =>
                     if newValue isnt oldValue
                         @doShow = newValue
@@ -41,4 +42,6 @@
                 if @layer? and @onLayerCreated?
                     fn = @onLayerCreated(@scope, @layer)
                     if fn
-                      fn(@layer)	
+                        fn(@layer)
+    LayerParentModel
+]
