@@ -62,6 +62,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         	Logger.info('CLICK CLICK');
         },
         map: {
+            control:{},
             version: "uknown",
             heatLayerCallback: function (layer) {
                 //set the heat layers backend data
@@ -377,6 +378,16 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         $scope.map.templatedInfoWindow.show = false;
         // $scope.map.infoWindow.coords = null;
     };
+    $scope.refreshMap = function() {
+        //optional param if you want to refresh you can pass null undefined or false or empty arg
+        $scope.map.control.refresh({latitude:32.779680,longitude:-79.935493});
+        $scope.map.control.getGMap().setZoom(11);
+        return;
+    };
+    $scope.getMapInstance = function() {
+       alert("You have Map Instance of" + $scope.map.control.getGMap().toString());
+        return;
+    }
     $scope.map.clusterOptionsText = JSON.stringify($scope.map.clusterOptions);
     $scope.$watch('map.clusterOptionsText', function (newValue, oldValue) {
         if (newValue !== oldValue)
@@ -414,7 +425,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             }
         }
     }
-    $scope.onMarkerClicked = onMarkerClicked
+    $scope.onMarkerClicked = onMarkerClicked;
 
     $timeout(function () {
         $scope.map.infoWindow.show = true;
@@ -442,7 +453,6 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         _.each(dynamicMarkers, function (marker) {
             marker.closeClick = function () {
                 marker.showWindow = false;
-                $scope.$apply();
             };
             marker.onClicked = function () {
                 onMarkerClicked(marker);

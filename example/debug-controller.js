@@ -22,6 +22,7 @@ function DebugController($scope, $timeout, $log, $http) {
 
     angular.extend($scope, {
         map: {
+            control: {},
             center: {
                 latitude: 45,
                 longitude: -74
@@ -37,36 +38,78 @@ function DebugController($scope, $timeout, $log, $http) {
                 latitude: 45.2,
                 longitude: -74.5
             },
-            windows: [
-                {
-                    id: 1,
-                    latitude: 46,
-                    longitude: -77,
-                    show:true
-                },
-                {
-                    id: 2,
-                    latitude: 33,
-                    longitude: -77,
-                    show:true
-                },
-                {
-                    id: 3,
-                    icon: 'plane.png',
-                    latitude: 35,
-                    longitude: -125,
-                    show:true
-                }
-            ],
-            zoom: 4,
+//            dragging:false, //appears to be required
+            zoom: 7,
             options: {
-//                disableDefaultUI: true,
+                disableDefaultUI: true,
                 panControl: false,
                 navigationControl: false,
                 scrollwheel: false,
                 scaleControl: false
+            },
+            refresh: function () {
+                $scope.map.control.refresh(origCenter);
+            }
+        },
+        map2: {
+            control: {},
+            center: {
+                latitude: 52.2,
+                longitude: -80
+            },
+            showMap:true,
+            marker: {
+                latitude: 70,
+                longitude: -76,
+                options: {
+                    visible: true
+                }
+            },
+            marker2: {
+                latitude: 50.2,
+                longitude: -80.5
+            },
+            zoom: 4,
+            refresh: function () {
+                $scope.map2.control.refresh({latitude: 32.779680, longitude: -79.935493});
+                $scope.map2.showMap = false;
+                _.defer(function(){
+                    $scope.map2.showMap = true;
+                });
+            },
+            markers3: [
+                {
+                    id: 1,
+                    time: "12:00PM",
+                    coords: {
+                        latitude: 52.2,
+                        longitude: -80.5
+                    },
+                    icon: "plane.png",
+                    lastSignal: "Never",
+                    click:function(){
+                        this.show = true;
+                        this.lastSignal = Math.round(Date.now()).toString();
+                        $scope.apply();
+                    },
+                    closeClick:function(){
+                        this.showWindow = false;
+                    },
+                    show:false
+                }
+            ],
+            onMarkerClick: function (m) {
+                m.lastSignal = Math.round(Date.now()).toString();
+                m.show = true;
+                $scope.map2.markers3.length = 0;
+                // _defer to allow the directive to clean up all old markers and windows
+                // since we know it is only the one marker just wipe and replace
+                // otherwise find it in the array or have a hashmap to array index to get it quick
+               _.defer(function(){$scope.map2.markers3 = [m];$scope.$apply();});
+
             }
         }
     });
 
+    var origCenter = {latitude: $scope.map.center.latitude, longitude: $scope.map.center.longitude};
 }
