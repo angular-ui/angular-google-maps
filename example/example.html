@@ -147,6 +147,10 @@
         <polygon ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
         	geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>
 
+        <!-- circle example -->
+        <circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
+            visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></circle>
+
 </div>
 <div class="span5">
     <fieldset>
@@ -306,6 +310,60 @@
 										<br/>
 									</span>
                                         <span style="padding-left: 5em">] </span> <br/>
+
+                                        }
+                                    </i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+             <tr>
+                <td>circles</td>
+                <td>
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li ng-repeat="c in map.circles" ng-cloak>
+                                <a href="#">
+                                    <i class="i" title="Click me to Show InfoWindow!">
+                                        <span class="{{c.visible}}" ng-click="c.visible = !c.visible">Circle:</span> {<br/>
+                                            <span style="padding-left: 5em" class="{{c.visible}}"
+                                                  ng-click="c.visible = !c.visible">visible: {{c.visible}}</span>, <br/>
+                                            <span style="padding-left: 5em" class="{{c.editable}}"
+                                                  ng-click="c.editable = !c.editable">editable: {{c.editable}}</span>,
+                                        <br/>
+                                            <span style="padding-left: 5em" class="{{c.draggable}}"
+                                                  ng-click="c.draggable = !c.draggable">draggable: {{c.draggable}}</span>,
+                                        <br/>
+                                            <span style="padding-left: 5em" class="{{c.geodesic}}"
+                                                  ng-click="c.geodesic = !c.geodesic">geodesic: {{c.geodesic}}</span>,
+                                        <br/>
+                                        <span style="padding-left: 5em">stroke: {</span> <br/>
+                                            <span ng-click="c.stroke.weight = (c.stroke.weight % 5) +1"
+                                                  style="padding-left: 10em">weight: {{c.stroke.weight}}</span> <br/>
+                                            <span ng-click="c.stroke.color = toggleColor(c.stroke.color)"
+                                                  style="padding-left: 10em">color: {{c.stroke.color}}</span> <br/>
+                                            <span ng-click="c.stroke.opacity = c.stroke.opacity*0.5"
+                                                  style="padding-left: 10em">opacity: {{c.stroke.opacity}}</span> <br/>
+                                        <span style="padding-left: 5em">},</span> <br/>
+                                        <span style="padding-left: 5em">fill: {</span> <br/>
+                                            <span ng-click="c.fill.color = toggleColor(c.fill.color)"
+                                                  style="padding-left: 10em">color: {{c.fill.color}}</span> <br/>
+                                            <span ng-click="c.fill.opacity = c.fill.opacity*0.5"
+                                                  style="padding-left: 10em">opacity: {{c.fill.opacity}}</span> <br/>
+                                        <span style="padding-left: 5em">},</span> <br/>
+                                        <span style="padding-left: 5em">center: {</span> <br/>
+                                            <span ng-click="c.center.latitude = (c.center.latitude % 5) +1"
+                                                  style="padding-left: 10em">latitude: {{c.center.latitude}}</span> <br/>
+                                            <span ng-click="c.center.longitude = (c.center.longitude % 5) +1"
+                                                  style="padding-left: 10em">longitude: {{c.center.longitude}}</span> <br/>
+                                        <span style="padding-left: 5em">},</span> <br/>
+                                        <span style="padding-left: 5em" class="{{c.radius}}"
+                                                  ng-click="c.radius = c.radius*10">radius: {{c.radius}}</span>
+                                        <br/>
+                                        <br/>
+                                    </span>
 
                                         }
                                     </i>
