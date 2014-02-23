@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-02-17
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-02-23
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -1672,7 +1672,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 /*
-	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
+	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model.
 	Thus there will be one html element per marker within the directive.
 */
 
@@ -1767,9 +1767,11 @@ Nicholas McCready - https://twitter.com/nmccready
             for (eventName in _ref) {
               eventHandler = _ref[eventName];
               if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-                _results.push(google.maps.event.addListener(marker, eventName, function() {
-                  return eventHandler.apply(scope, [marker, eventName, arguments]);
-                }));
+                _results.push((function(eventName, eventHandler) {
+                  return google.maps.event.addListener(marker, eventName, function() {
+                    return eventHandler.apply(scope, [marker, eventName, arguments]);
+                  });
+                })(eventName, eventHandler));
               } else {
                 _results.push(void 0);
               }
