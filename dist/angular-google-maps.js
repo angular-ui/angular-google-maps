@@ -2628,7 +2628,9 @@ Nick Baugh - https://github.com/niftylettuce
             if (newValue === oldValue || newValue === _m.zoom) {
               return;
             }
-            return _.defer(_m.setZoom(newValue));
+            return _.defer(function(){
+              _m.setZoom(newValue)
+            });
           });
           scope.$watch("bounds", function(newValue, oldValue) {
             var bounds, ne, sw;
