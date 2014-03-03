@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.0.13 2014-02-17
+/*! angular-google-maps 1.0.14 2014-03-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -2628,8 +2628,8 @@ Nick Baugh - https://github.com/niftylettuce
             if (newValue === oldValue || newValue === _m.zoom) {
               return;
             }
-            return _.defer(function(){
-              _m.setZoom(newValue)
+            return _.defer(function() {
+              return _m.setZoom(newValue);
             });
           });
           scope.$watch("bounds", function(newValue, oldValue) {
