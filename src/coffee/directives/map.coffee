@@ -214,7 +214,8 @@ angular.module("google-maps").directive "googleMap", ["$log", "$timeout", ($log,
             ), true
             scope.$watch "zoom", (newValue, oldValue) ->
                 return  if newValue is oldValue or newValue is _m.zoom
-                _.defer _m.setZoom newValue
+                _.defer ->
+                  _m.setZoom newValue
 
             scope.$watch "bounds", (newValue, oldValue) ->
                 return  if newValue is oldValue
