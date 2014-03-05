@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.0.14 2014-03-03
+/*! angular-google-maps 1.0.14 2014-03-05
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -1487,21 +1487,14 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkerParentModel.prototype.setEvents = function(marker, scope) {
-        var eventHandler, eventName, _ref, _results;
         if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
-          _ref = scope.events;
-          _results = [];
-          for (eventName in _ref) {
-            eventHandler = _ref[eventName];
+          return _.compact(_.each(scope.events, function(eventHandler, eventName) {
             if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-              _results.push(google.maps.event.addListener(marker, eventName, function() {
+              return google.maps.event.addListener(marker, eventName, function() {
                 return eventHandler.apply(scope, [marker, eventName, arguments]);
-              }));
-            } else {
-              _results.push(void 0);
+              });
             }
-          }
-          return _results;
+          }));
         }
       };
 

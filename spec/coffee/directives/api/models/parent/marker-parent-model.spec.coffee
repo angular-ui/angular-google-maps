@@ -1,5 +1,8 @@
 describe "MarkerParentModel", ->
+    afterEach ->
+         window.google.maps = @gMapsTemp
     beforeEach ->
+        @gMapsTemp = window.google.maps
         #comparison variables
         @index = 0
         @clicked = false
@@ -14,25 +17,7 @@ describe "MarkerParentModel", ->
             events:
                 click: (marker, eventName, args) ->
                     self.clicked = true
-
-        #define / inject values into the item we are testing... not a controller but it allows us to inject
-        angular.module('mockModule', [])
-        .value('mapCtrl',
-                getMap: ()->
-                    document.gMap)
-        .value('element', {})
-        .value('attrs', {})
-        .value('model', {})
-        .value('scope', @scope)
-        .controller 'subject', (scope, element, attrs, mapCtrl, $timeout) =>
-                @subject = new directives.api.models.parent.MarkerParentModel(scope, element, attrs, mapCtrl, $timeout)
-        angular.mock.module('mockModule')
-        inject ($timeout, $rootScope, $log, $controller) =>
-            directives.api.utils.Logger.logger = $log
-            scope = $rootScope.$new()
-            @scope = _.extend @scope, scope
-            $controller 'subject',
-                scope: scope
+                    self.gMarkerSetEvent = marker
 
         #mocking google maps event listener
         @googleMapListeners = []
@@ -54,7 +39,26 @@ describe "MarkerParentModel", ->
             found = _.find @googleMapListeners, (obj)->
                 obj.obj == thing
 
-            found.events[eventName]() if found?
+            found.events[eventName](found.obj) if found?
+
+        #define / inject values into the item we are testing... not a controller but it allows us to inject
+        angular.module('mockModule', [])
+        .value('mapCtrl',
+                getMap: ()->
+                    document.gMap)
+        .value('element', {})
+        .value('attrs', {})
+        .value('model', {})
+        .value('scope', @scope)
+        .controller 'subject', (scope, element, attrs, mapCtrl) =>
+                @subject = new directives.api.models.parent.MarkerParentModel(scope, element, attrs = {click:true}, mapCtrl, ((fn)->fn()))
+        angular.mock.module('mockModule')
+        inject ($timeout, $rootScope, $log, $controller) =>
+            directives.api.utils.Logger.logger = $log
+            scope = $rootScope.$new()
+            @scope = _.extend @scope, scope
+            $controller 'subject',
+                scope: @scope
 
         @subject.setEvents(@, @scope)
 
@@ -87,3 +91,9 @@ describe "MarkerParentModel", ->
             expect(@clicked).toBeFalsy()
             @fireListener(@, "click")
             expect(@clicked).toBeTruthy()
+
+        it "googleMapListeners is fired through MarkerParentModel's scope.events with an optional marker", ->
+            expect(@gMarkerSetEvent).toBeUndefined()
+            @fireListener(@subject.scope.gMarker, "click")
+            expect(@gMarkerSetEvent).toBeDefined()
+            expect(@gMarkerSetEvent.position).toBeDefined()
