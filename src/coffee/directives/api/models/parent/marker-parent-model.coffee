@@ -1,5 +1,5 @@
 ###
-	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
+	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model.
 	Thus there will be one html element per marker within the directive.
 ###
 angular.module("google-maps.directives.api.models.parent")
@@ -60,7 +60,7 @@ angular.module("google-maps.directives.api.models.parent")
 
         setEvents: (marker, scope) ->
             if angular.isDefined(scope.events) and scope.events? and angular.isObject(scope.events)
-                for eventName, eventHandler of scope.events
+                _.compact _.map scope.events, (eventHandler,eventName) ->
                     if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
                         google.maps.event.addListener(marker, eventName, -> eventHandler.apply(scope, [marker, eventName, arguments]))
 

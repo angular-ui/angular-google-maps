@@ -1680,7 +1680,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 /*
-	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model. 
+	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model.
 	Thus there will be one html element per marker within the directive.
 */
 
@@ -1768,21 +1768,14 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerParentModel.prototype.setEvents = function(marker, scope) {
-          var eventHandler, eventName, _ref, _results;
           if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
-            _ref = scope.events;
-            _results = [];
-            for (eventName in _ref) {
-              eventHandler = _ref[eventName];
+            return _.compact(_.map(scope.events, function(eventHandler, eventName) {
               if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-                _results.push(google.maps.event.addListener(marker, eventName, function() {
+                return google.maps.event.addListener(marker, eventName, function() {
                   return eventHandler.apply(scope, [marker, eventName, arguments]);
-                }));
-              } else {
-                _results.push(void 0);
+                });
               }
-            }
-            return _results;
+            }));
           }
         };
 
