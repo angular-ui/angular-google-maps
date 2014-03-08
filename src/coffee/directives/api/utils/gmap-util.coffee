@@ -51,6 +51,9 @@ angular.module("google-maps.directives.api.utils")
     isTrue:(val) ->
         angular.isDefined(val) and val isnt null and val is true or val is "1" or val is "y" or val is "true"
 
+    isFalse: (value) ->
+        ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) != -1
+
     getCoords: (value) ->
         new google.maps.LatLng(value.latitude, value.longitude)
 

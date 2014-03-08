@@ -10,13 +10,6 @@ angular.module("google-maps.directives.api.models.parent")
 .factory "IMarkerParentModel", ["ModelKey","Logger", (ModelKey, Logger) ->
     class IMarkerParentModel extends ModelKey
         DEFAULTS: {}
-
-        # Check if a value is literally false
-        # @param value the value to test
-        # @returns {boolean} true if value is literally false, false otherwise
-        isFalse: (value) ->
-            ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) != -1
-
         constructor: (@scope, @element, @attrs, @mapCtrl, @$timeout) ->
             super(@scope)
             self = @
