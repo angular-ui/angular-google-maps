@@ -858,8 +858,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps").factory("array-sync", [
     "add-events", function(mapEvents) {
-      var LatLngArraySync;
-      return LatLngArraySync = function(mapArray, scope, pathEval) {
+      return function(mapArray, scope, pathEval) {
         var mapArrayListener, scopeArray, watchListener;
         scopeArray = scope.$eval(pathEval);
         mapArrayListener = mapEvents(mapArray, {
@@ -1293,6 +1292,120 @@ Nicholas McCready - https://twitter.com/nmccready
 
       })(ModelKey);
       return MarkerChildModel;
+    }
+  ]);
+
+}).call(this);
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  angular.module("google-maps.directives.api").factory("PolylineChildModel", [
+    "BaseObject", "Logger", "$timeout", "array-sync", "GmapUtil", function(BaseObject, Logger, $timeout, arraySync, GmapUtil) {
+      var $log, PolylineChildModel;
+      $log = Logger;
+      return PolylineChildModel = (function(_super) {
+        __extends(PolylineChildModel, _super);
+
+        PolylineChildModel.include(GmapUtil);
+
+        function PolylineChildModel(scope, element, attrs, map, defaults) {
+          var arraySyncer, self,
+            _this = this;
+          this.scope = scope;
+          this.element = element;
+          this.attrs = attrs;
+          this.map = map;
+          this.defaults = defaults;
+          this.buildOpts = __bind(this.buildOpts, this);
+          self = this;
+          this.polyline = new google.maps.Polyline(this.buildOpts(this.convertPathPoints(this.scope.path)));
+          if (this.isTrue(attrs.fit)) {
+            extendMapBounds(map, pathPoints);
+          }
+          if (angular.isDefined(scope.editable)) {
+            scope.$watch("editable", function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return this.polyline.setEditable(newValue);
+              }
+            });
+          }
+          if (angular.isDefined(scope.draggable)) {
+            scope.$watch("draggable", function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return this.polyline.setDraggable(newValue);
+              }
+            });
+          }
+          if (angular.isDefined(scope.visible)) {
+            scope.$watch("visible", function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return this.polyline.setVisible(newValue);
+              }
+            });
+          }
+          if (angular.isDefined(scope.geodesic)) {
+            scope.$watch("geodesic", function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+              }
+            });
+          }
+          if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
+            scope.$watch("stroke.weight", function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+              }
+            });
+          }
+          if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
+            scope.$watch("stroke.color", function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+              }
+            });
+          }
+          arraySyncer = arraySync(this.polyline.getPath(), scope, "path");
+          scope.$on("$destroy", function() {
+            _this.polyline.setMap(null);
+            if (arraySyncer) {
+              arraySyncer();
+              return arraySyncer = null;
+            }
+          });
+        }
+
+        PolylineChildModel.prototype.buildOpts = function(pathPoints) {
+          var opts,
+            _this = this;
+          opts = angular.extend({}, this.defaults, {
+            map: this.map,
+            path: pathPoints,
+            strokeColor: this.scope.stroke && this.scope.stroke.color,
+            strokeOpacity: this.scope.stroke && this.scope.stroke.opacity,
+            strokeWeight: this.scope.stroke && this.scope.stroke.weight
+          });
+          angular.forEach({
+            clickable: true,
+            draggable: false,
+            editable: false,
+            geodesic: false,
+            visible: true
+          }, function(defaultValue, key) {
+            if (angular.isUndefined(_this.scope[key]) || _this.scope[key] === null) {
+              return opts[key] = defaultValue;
+            } else {
+              return opts[key] = _this.scope[key];
+            }
+          });
+          return opts;
+        };
+
+        return PolylineChildModel;
+
+      })(BaseObject);
     }
   ]);
 
@@ -2428,9 +2541,8 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("IPolyline", [
-    "GmapUtil", "BaseObject", function(GmapUtil, BaseObject) {
-      var DEFAULTS, IPolyline;
-      DEFAULTS = {};
+    "GmapUtil", "BaseObject", "Logger", function(GmapUtil, BaseObject, Logger) {
+      var IPolyline;
       return IPolyline = (function(_super) {
         __extends(IPolyline, _super);
 
@@ -2458,30 +2570,9 @@ Nicholas McCready - https://twitter.com/nmccready
           visible: "="
         };
 
-        IPolyline.prototype.buildOpts = function(scope, map, pathPoints) {
-          var opts;
-          opts = angular.extend({}, DEFAULTS, {
-            map: map,
-            path: pathPoints,
-            strokeColor: scope.stroke && scope.stroke.color,
-            strokeOpacity: scope.stroke && scope.stroke.opacity,
-            strokeWeight: scope.stroke && scope.stroke.weight
-          });
-          angular.forEach({
-            clickable: true,
-            draggable: false,
-            editable: false,
-            geodesic: false,
-            visible: true
-          }, function(defaultValue, key) {
-            if (angular.isUndefined(scope[key]) || scope[key] === null) {
-              return opts[key] = defaultValue;
-            } else {
-              return opts[key] = scope[key];
-            }
-          });
-          return opts;
-        };
+        IPolyline.prototype.DEFAULTS = {};
+
+        IPolyline.prototype.$log = Logger;
 
         return IPolyline;
 
@@ -2929,85 +3020,29 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Polyline", [
-    "IPolyline", "Logger", "$timeout", "array-sync", function(IPolyline, Logger, $timeout, arraySync) {
-      var $log, Poilyline, _ref;
-      $log = Logger;
-      return Poilyline = (function(_super) {
-        __extends(Poilyline, _super);
+    "IPolyline", "$timeout", "array-sync", "PolylineChildModel", function(IPolyline, $timeout, arraySync, PolylineChildModel) {
+      var Polyline, _ref;
+      return Polyline = (function(_super) {
+        __extends(Polyline, _super);
 
-        function Poilyline() {
+        function Polyline() {
           this.link = __bind(this.link, this);
-          _ref = Poilyline.__super__.constructor.apply(this, arguments);
+          _ref = Polyline.__super__.constructor.apply(this, arguments);
           return _ref;
         }
 
-        Poilyline.prototype.link = function(scope, element, attrs, mapCtrl) {
+        Polyline.prototype.link = function(scope, element, attrs, mapCtrl) {
           var _this = this;
           if (angular.isUndefined(scope.path) || scope.path === null || scope.path.length < 2 || !this.validatePathPoints(scope.path)) {
-            $log.error("polyline: no valid path attribute found");
+            this.$log.error("polyline: no valid path attribute found");
             return;
           }
           return $timeout(function() {
-            var arraySyncer, map, polyline;
-            map = mapCtrl.getMap();
-            polyline = new google.maps.Polyline(_this.buildOpts(scope, map, _this.convertPathPoints(scope.path)));
-            if (_this.isTrue(attrs.fit)) {
-              extendMapBounds(map, pathPoints);
-            }
-            if (angular.isDefined(scope.editable)) {
-              scope.$watch("editable", function(newValue, oldValue) {
-                if (newValue !== oldValue) {
-                  return polyline.setEditable(newValue);
-                }
-              });
-            }
-            if (angular.isDefined(scope.draggable)) {
-              scope.$watch("draggable", function(newValue, oldValue) {
-                if (newValue !== oldValue) {
-                  return polyline.setDraggable(newValue);
-                }
-              });
-            }
-            if (angular.isDefined(scope.visible)) {
-              scope.$watch("visible", function(newValue, oldValue) {
-                if (newValue !== oldValue) {
-                  return polyline.setVisible(newValue);
-                }
-              });
-            }
-            if (angular.isDefined(scope.geodesic)) {
-              scope.$watch("geodesic", function(newValue, oldValue) {
-                if (newValue !== oldValue) {
-                  return polyline.setOptions(this.buildOpts(scope, map, polyline.getPath()));
-                }
-              });
-            }
-            if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
-              scope.$watch("stroke.weight", function(newValue, oldValue) {
-                if (newValue !== oldValue) {
-                  return polyline.setOptions(this.buildOpts(scope, map, polyline.getPath()));
-                }
-              });
-            }
-            if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
-              scope.$watch("stroke.color", function(newValue, oldValue) {
-                if (newValue !== oldValue) {
-                  return polyline.setOptions(this.buildOpts(scope, map, polyline.getPath()));
-                }
-              });
-            }
-            arraySyncer = arraySync(polyline.getPath(), scope, "path");
-            return scope.$on("$destroy", function() {
-              polyline.setMap(null);
-              if (arraySyncer) {
-                arraySyncer();
-                return arraySyncer = null;
-              }
-            });
+            return new PolylineChildModel(scope, element, attrs, mapCtrl.getMap(), _this.DEFAULTS);
           });
         };
 
-        return Poilyline;
+        return Polyline;
 
       })(IPolyline);
     }

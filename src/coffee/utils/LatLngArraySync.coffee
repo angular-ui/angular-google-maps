@@ -1,6 +1,6 @@
 angular.module("google-maps")
 .factory "array-sync", ["add-events", (mapEvents) ->
-    LatLngArraySync = (mapArray, scope, pathEval) ->
+    (mapArray, scope, pathEval) ->
         scopeArray = scope.$eval(pathEval)
         mapArrayListener = mapEvents(mapArray,
             set_at: (index) ->
