@@ -368,6 +368,9 @@ Nicholas McCready - https://twitter.com/nmccready
         isTrue: function(val) {
           return angular.isDefined(val) && val !== null && val === true || val === "1" || val === "y" || val === "true";
         },
+        isFalse: function(value) {
+          return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
+        },
         getCoords: function(value) {
           return new google.maps.LatLng(value.latitude, value.longitude);
         },
@@ -1505,10 +1508,6 @@ Nicholas McCready - https://twitter.com/nmccready
 
         IMarkerParentModel.prototype.DEFAULTS = {};
 
-        IMarkerParentModel.prototype.isFalse = function(value) {
-          return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
-        };
-
         function IMarkerParentModel(scope, element, attrs, mapCtrl, $timeout) {
           var self,
             _this = this;
@@ -2424,6 +2423,74 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  angular.module("google-maps.directives.api").factory("IPolyline", [
+    "GmapUtil", "BaseObject", function(GmapUtil, BaseObject) {
+      var DEFAULTS, IPolyline;
+      DEFAULTS = {};
+      return IPolyline = (function(_super) {
+        __extends(IPolyline, _super);
+
+        IPolyline.include(GmapUtil);
+
+        function IPolyline() {
+          var self;
+          self = this;
+        }
+
+        IPolyline.prototype.restrict = "ECA";
+
+        IPolyline.prototype.replace = true;
+
+        IPolyline.prototype.require = "^googleMap";
+
+        IPolyline.prototype.scope = {
+          path: "=path",
+          stroke: "=stroke",
+          clickable: "=",
+          draggable: "=",
+          editable: "=",
+          geodesic: "=",
+          icons: "=icons",
+          visible: "="
+        };
+
+        IPolyline.prototype.buildOpts = function(scope, map, pathPoints) {
+          var opts;
+          opts = angular.extend({}, DEFAULTS, {
+            map: map,
+            path: pathPoints,
+            strokeColor: scope.stroke && scope.stroke.color,
+            strokeOpacity: scope.stroke && scope.stroke.opacity,
+            strokeWeight: scope.stroke && scope.stroke.weight
+          });
+          angular.forEach({
+            clickable: true,
+            draggable: false,
+            editable: false,
+            geodesic: false,
+            visible: true
+          }, function(defaultValue, key) {
+            if (angular.isUndefined(scope[key]) || scope[key] === null) {
+              return opts[key] = defaultValue;
+            } else {
+              return opts[key] = scope[key];
+            }
+          });
+          return opts;
+        };
+
+        return IPolyline;
+
+      })(BaseObject);
+    }
+  ]);
+
+}).call(this);
+
 /*
 	- interface directive for all window(s) to derrive from
 */
@@ -2862,37 +2929,17 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Polyline", [
-    "Logger", "$timeout", "array-sync", "GmapUtil", "BaseObject", function(Logger, $timeout, arraySync, GmapUtil, BaseObject) {
-      var $log, DEFAULTS, Poilyline;
+    "IPolyline", "Logger", "$timeout", "array-sync", function(IPolyline, Logger, $timeout, arraySync) {
+      var $log, Poilyline, _ref;
       $log = Logger;
-      DEFAULTS = {};
       return Poilyline = (function(_super) {
         __extends(Poilyline, _super);
 
-        Poilyline.include(GmapUtil);
-
         function Poilyline() {
           this.link = __bind(this.link, this);
-          var self;
-          self = this;
+          _ref = Poilyline.__super__.constructor.apply(this, arguments);
+          return _ref;
         }
-
-        Poilyline.prototype.restrict = "ECA";
-
-        Poilyline.prototype.replace = true;
-
-        Poilyline.prototype.require = "^googleMap";
-
-        Poilyline.prototype.scope = {
-          path: "=path",
-          stroke: "=stroke",
-          clickable: "=",
-          draggable: "=",
-          editable: "=",
-          geodesic: "=",
-          icons: "=icons",
-          visible: "="
-        };
 
         Poilyline.prototype.link = function(scope, element, attrs, mapCtrl) {
           var _this = this;
@@ -2901,33 +2948,9 @@ Nicholas McCready - https://twitter.com/nmccready
             return;
           }
           return $timeout(function() {
-            var arraySyncer, buildOpts, map, polyline;
-            buildOpts = function(pathPoints) {
-              var opts;
-              opts = angular.extend({}, DEFAULTS, {
-                map: map,
-                path: pathPoints,
-                strokeColor: scope.stroke && scope.stroke.color,
-                strokeOpacity: scope.stroke && scope.stroke.opacity,
-                strokeWeight: scope.stroke && scope.stroke.weight
-              });
-              angular.forEach({
-                clickable: true,
-                draggable: false,
-                editable: false,
-                geodesic: false,
-                visible: true
-              }, function(defaultValue, key) {
-                if (angular.isUndefined(scope[key]) || scope[key] === null) {
-                  return opts[key] = defaultValue;
-                } else {
-                  return opts[key] = scope[key];
-                }
-              });
-              return opts;
-            };
+            var arraySyncer, map, polyline;
             map = mapCtrl.getMap();
-            polyline = new google.maps.Polyline(buildOpts(_this.convertPathPoints(scope.path)));
+            polyline = new google.maps.Polyline(_this.buildOpts(scope, map, _this.convertPathPoints(scope.path)));
             if (_this.isTrue(attrs.fit)) {
               extendMapBounds(map, pathPoints);
             }
@@ -2955,21 +2978,21 @@ Nicholas McCready - https://twitter.com/nmccready
             if (angular.isDefined(scope.geodesic)) {
               scope.$watch("geodesic", function(newValue, oldValue) {
                 if (newValue !== oldValue) {
-                  return polyline.setOptions(buildOpts(polyline.getPath()));
+                  return polyline.setOptions(this.buildOpts(scope, map, polyline.getPath()));
                 }
               });
             }
             if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
               scope.$watch("stroke.weight", function(newValue, oldValue) {
                 if (newValue !== oldValue) {
-                  return polyline.setOptions(buildOpts(polyline.getPath()));
+                  return polyline.setOptions(this.buildOpts(scope, map, polyline.getPath()));
                 }
               });
             }
             if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
               scope.$watch("stroke.color", function(newValue, oldValue) {
                 if (newValue !== oldValue) {
-                  return polyline.setOptions(buildOpts(polyline.getPath()));
+                  return polyline.setOptions(this.buildOpts(scope, map, polyline.getPath()));
                 }
               });
             }
@@ -2986,7 +3009,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         return Poilyline;
 
-      })(BaseObject);
+      })(IPolyline);
     }
   ]);
 
