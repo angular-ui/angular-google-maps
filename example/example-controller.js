@@ -305,6 +305,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             ],
             polylines: [
                 {
+                    id:1,
                     path: [
                         {
                             latitude: 45,
@@ -333,6 +334,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                     visible: true
                 },
                 {
+                    id:2,
                     path: [
                         {
                             latitude: 47,

@@ -482,11 +482,12 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api.utils").factory("ModelKey", [
     "BaseObject", function(BaseObject) {
       var ModelKey;
-      ModelKey = (function(_super) {
+      return ModelKey = (function(_super) {
         __extends(ModelKey, _super);
 
         function ModelKey(scope) {
           this.scope = scope;
+          this.setIdKey = __bind(this.setIdKey, this);
           this.modelKeyComparison = __bind(this.modelKeyComparison, this);
           ModelKey.__super__.constructor.call(this);
           this.defaultIdKey = "id";
@@ -510,10 +511,13 @@ Nicholas McCready - https://twitter.com/nmccready
           return this.evalModelHandle(model1, scope.coords).latitude === this.evalModelHandle(model2, scope.coords).latitude && this.evalModelHandle(model1, scope.coords).longitude === this.evalModelHandle(model2, scope.coords).longitude;
         };
 
+        ModelKey.prototype.setIdKey = function(scope) {
+          return this.idKey = scope.idKey != null ? scope.idKey : this.defaultIdKey;
+        };
+
         return ModelKey;
 
       })(BaseObject);
-      return ModelKey;
     }
   ]);
 
@@ -1311,18 +1315,18 @@ Nicholas McCready - https://twitter.com/nmccready
 
         PolylineChildModel.include(GmapUtil);
 
-        function PolylineChildModel(scope, element, attrs, map, defaults) {
+        function PolylineChildModel(scope, attrs, map, defaults, model) {
           var arraySyncer, self,
             _this = this;
           this.scope = scope;
-          this.element = element;
           this.attrs = attrs;
           this.map = map;
           this.defaults = defaults;
+          this.model = model;
           this.buildOpts = __bind(this.buildOpts, this);
           self = this;
           this.polyline = new google.maps.Polyline(this.buildOpts(this.convertPathPoints(this.scope.path)));
-          if (this.isTrue(attrs.fit)) {
+          if (this.isTrue(this.attrs.fit)) {
             extendMapBounds(map, pathPoints);
           }
           if (angular.isDefined(scope.editable)) {
@@ -1969,7 +1973,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.$timeout = $timeout;
           this.$log.info(this);
           this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : true;
-          this.idKey = scope.idKey != null ? scope.idKey : this.defaultIdKey;
+          this.setIdKey(scope);
           this.scope.$watch('doRebuildAll', function(newValue, oldValue) {
             if (newValue !== oldValue) {
               return _this.doRebuildAll = newValue;
@@ -2132,6 +2136,238 @@ Nicholas McCready - https://twitter.com/nmccready
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+  angular.module("google-maps.directives.api.models.parent").factory("PolylinesParentModel", [
+    "$timeout", "Logger", "ModelKey", "ModelsWatcher", "PropMap", "PolylineChildModel", function($timeout, Logger, ModelKey, ModelsWatcher, PropMap, PolylineChildModel) {
+      var PolylinesParentModel;
+      return PolylinesParentModel = (function(_super) {
+        __extends(PolylinesParentModel, _super);
+
+        PolylinesParentModel.include(ModelsWatcher);
+
+        function PolylinesParentModel(scope, element, attrs, gMap, defaults) {
+          var self,
+            _this = this;
+          this.scope = scope;
+          this.element = element;
+          this.attrs = attrs;
+          this.gMap = gMap;
+          this.defaults = defaults;
+          this.setChildScope = __bind(this.setChildScope, this);
+          this.createChild = __bind(this.createChild, this);
+          this.pieceMeal = __bind(this.pieceMeal, this);
+          this.createAllNew = __bind(this.createAllNew, this);
+          this.watchIdKey = __bind(this.watchIdKey, this);
+          this.createChildScopes = __bind(this.createChildScopes, this);
+          this.watchOurScope = __bind(this.watchOurScope, this);
+          this.watchDestroy = __bind(this.watchDestroy, this);
+          this.rebuildAll = __bind(this.rebuildAll, this);
+          this.doINeedToWipe = __bind(this.doINeedToWipe, this);
+          this.watchModels = __bind(this.watchModels, this);
+          this.watch = __bind(this.watch, this);
+          PolylinesParentModel.__super__.constructor.call(this, scope);
+          self = this;
+          this.$log = Logger;
+          this.plurals = new PropMap();
+          this.scopePropNames = ['path', 'stroke', 'clickable', 'draggable', 'editable', 'geodesic', 'icons', 'visible'];
+          _.each(this.scopePropNames, function(name) {
+            return this[name + 'Key'] = void 0;
+          });
+          this.models = void 0;
+          this.firstTime = true;
+          this.$log.info(this);
+          $timeout(function() {
+            _this.watchOurScope(scope);
+            return _this.createChildScopes();
+          });
+        }
+
+        PolylinesParentModel.prototype.watch = function(scope, name, nameKey) {
+          var _this = this;
+          return scope.$watch(name, function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
+              return _async.each(_.values(_this.plurals), function(model) {
+                return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
+              }, function() {});
+            }
+          });
+        };
+
+        PolylinesParentModel.prototype.watchModels = function(scope) {
+          var _this = this;
+          return scope.$watch('models', function(newValue, oldValue) {
+            if (!_.isEqual(newValue, oldValue)) {
+              if (_this.doINeedToWipe(newValue)) {
+                return _this.rebuildAll(scope, true, true);
+              } else {
+                return _this.createChildScopes(false);
+              }
+            }
+          });
+        };
+
+        PolylinesParentModel.prototype.doINeedToWipe = function(newValue) {
+          var newValueIsEmpty;
+          newValueIsEmpty = newValue != null ? newValue.length === 0 : true;
+          return this.plurals.length > 0 && newValueIsEmpty;
+        };
+
+        PolylinesParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
+          var _this = this;
+          return _async.each(this.plurals.values(), function(model) {
+            return model.destroy();
+          }, function() {
+            if (doDelete) {
+              delete _this.plurals;
+            }
+            _this.plurals = new PropMap();
+            if (doCreate) {
+              return _this.createChildScopes();
+            }
+          });
+        };
+
+        PolylinesParentModel.prototype.watchDestroy = function(scope) {
+          var _this = this;
+          return scope.$on("$destroy", function() {
+            return _this.rebuildAll(scope, false, true);
+          });
+        };
+
+        PolylinesParentModel.prototype.watchOurScope = function(scope) {
+          var _this = this;
+          return _.each(this.scopePropNames, function(name) {
+            var nameKey;
+            nameKey = name + 'Key';
+            _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
+            return _this.watch(scope, name, nameKey);
+          });
+        };
+
+        PolylinesParentModel.prototype.createChildScopes = function(isCreatingFromScratch) {
+          if (isCreatingFromScratch == null) {
+            isCreatingFromScratch = true;
+          }
+          if (angular.isUndefined(this.scope.models)) {
+            this.$log.error("No models to create polylines from! I Need direct models!");
+            return;
+          }
+          if (this.gMap != null) {
+            if (this.scope.models != null) {
+              this.watchIdKey(this.scope);
+              if (isCreatingFromScratch) {
+                return this.createAllNew(this.scope, false);
+              } else {
+                return this.pieceMeal(this.scope, false);
+              }
+            }
+          }
+        };
+
+        PolylinesParentModel.prototype.watchIdKey = function(scope) {
+          var _this = this;
+          this.setIdKey(scope);
+          return scope.$watch('idKey', function(newValue, oldValue) {
+            if (newValue !== oldValue && (newValue == null)) {
+              _this.idKey = newValue;
+              return _this.rebuildAll(scope, true, true);
+            }
+          });
+        };
+
+        PolylinesParentModel.prototype.createAllNew = function(scope, isArray) {
+          var _this = this;
+          if (isArray == null) {
+            isArray = false;
+          }
+          this.models = scope.models;
+          if (this.firstTime) {
+            this.watchModels(scope);
+            this.watchDestroy(scope);
+          }
+          return _async.each(scope.models, function(model) {
+            return _this.createChild(model, _this.gMap);
+          }, function() {
+            return _this.firstTime = false;
+          });
+        };
+
+        PolylinesParentModel.prototype.pieceMeal = function(scope, isArray) {
+          var _this = this;
+          if (isArray == null) {
+            isArray = true;
+          }
+          this.models = scope.models;
+          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+            return this.figureOutState(this.idKey, scope, this.plurals, this.modelKeyComparison, function(state) {
+              var payload;
+              payload = state;
+              return _async.each(payload.removals, function(child) {
+                if (child != null) {
+                  child.destroy();
+                  return _this.plurals.remove(child.id);
+                }
+              }, function() {
+                return _async.each(payload.adds, function(modelToAdd) {
+                  return _this.createChild(modelToAdd, _this.gMap);
+                }, function() {});
+              });
+            });
+          } else {
+            return this.rebuildAll(this.scope, true, true);
+          }
+        };
+
+        PolylinesParentModel.prototype.createChild = function(model, gMap) {
+          var child, childScope,
+            _this = this;
+          childScope = this.scope.$new(false);
+          this.setChildScope(childScope, model);
+          childScope.$watch('model', function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              return _this.setChildScope(childScope, newValue);
+            }
+          }, true);
+          child = new PolylineChildModel(childScope, this.attrs, gMap, this.defaults, model);
+          if (model[this.idKey] == null) {
+            this.$log.error("Polyline model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
+            return;
+          }
+          this.plurals.put(model[this.idKey], child);
+          return child;
+        };
+
+        PolylinesParentModel.prototype.setChildScope = function(childScope, model) {
+          var _this = this;
+          _.each(this.scopePropNames, function(name) {
+            var nameKey, newValue;
+            nameKey = name + 'Key';
+            newValue = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
+            if (newValue !== childScope[name]) {
+              return childScope[name] = newValue;
+            }
+          });
+          return childScope.model = model;
+        };
+
+        return PolylinesParentModel;
+
+      })(ModelKey);
+    }
+  ]);
+
+}).call(this);
+
+/*
+	Windows directive where many windows map to the models property
+*/
+
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   angular.module("google-maps.directives.api.models.parent").factory("WindowsParentModel", [
     "IWindowParentModel", "ModelsWatcher", "PropMap", "WindowChildModel", "Linked", function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked) {
       var WindowsParentModel;
@@ -2141,7 +2377,7 @@ Nicholas McCready - https://twitter.com/nmccready
         WindowsParentModel.include(ModelsWatcher);
 
         function WindowsParentModel(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate) {
-          var name, self, _i, _len, _ref,
+          var self,
             _this = this;
           this.$interpolate = $interpolate;
           this.interpolateContent = __bind(this.interpolateContent, this);
@@ -2162,11 +2398,9 @@ Nicholas McCready - https://twitter.com/nmccready
           self = this;
           this.windows = new PropMap();
           this.scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
-          _ref = this.scopePropNames;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            name = _ref[_i];
-            this[name + 'Key'] = void 0;
-          }
+          _.each(this.scopePropNames, function(name) {
+            return this[name + 'Key'] = void 0;
+          });
           this.linked = new Linked(scope, element, attrs, ctrls);
           this.models = void 0;
           this.contentKeys = void 0;
@@ -2297,7 +2531,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         WindowsParentModel.prototype.watchIdKey = function(scope) {
           var _this = this;
-          this.idKey = scope.idKey != null ? scope.idKey : this.defaultIdKey;
+          this.setIdKey(scope);
           return scope.$watch('idKey', function(newValue, oldValue) {
             if (newValue !== oldValue && (newValue == null)) {
               _this.idKey = newValue;
@@ -2560,13 +2794,13 @@ Nicholas McCready - https://twitter.com/nmccready
         IPolyline.prototype.require = "^googleMap";
 
         IPolyline.prototype.scope = {
-          path: "=path",
-          stroke: "=stroke",
+          path: "=",
+          stroke: "=",
           clickable: "=",
           draggable: "=",
           editable: "=",
           geodesic: "=",
-          icons: "=icons",
+          icons: "=",
           visible: "="
         };
 
@@ -3038,11 +3272,53 @@ Nicholas McCready - https://twitter.com/nmccready
             return;
           }
           return $timeout(function() {
-            return new PolylineChildModel(scope, element, attrs, mapCtrl.getMap(), _this.DEFAULTS);
+            return new PolylineChildModel(scope, attrs, mapCtrl.getMap(), _this.DEFAULTS);
           });
         };
 
         return Polyline;
+
+      })(IPolyline);
+    }
+  ]);
+
+}).call(this);
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  angular.module("google-maps.directives.api").factory("Polylines", [
+    "IPolyline", "$timeout", "array-sync", "PolylinesParentModel", function(IPolyline, $timeout, arraySync, PolylinesParentModel) {
+      var Polylines;
+      return Polylines = (function(_super) {
+        __extends(Polylines, _super);
+
+        function Polylines() {
+          this.link = __bind(this.link, this);
+          Polylines.__super__.constructor.call(this);
+          this.scope.idKey = '=idkey';
+          this.scope.models = '=models';
+          this.$log.info(this);
+        }
+
+        Polylines.prototype.link = function(scope, element, attrs, mapCtrl) {
+          var _this = this;
+          if (angular.isUndefined(scope.path) || scope.path === null) {
+            this.$log.error("polylines: no valid path attribute found");
+            return;
+          }
+          if (!scope.models) {
+            this.$log.error("polylines: no models found to create from");
+            return;
+          }
+          return $timeout(function() {
+            return new PolylinesParentModel(scope, element, attrs, mapCtrl.getMap(), _this.DEFAULTS);
+          });
+        };
+
+        return Polylines;
 
       })(IPolyline);
     }
@@ -3822,6 +4098,48 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps").directive("polyline", [
     "Polyline", function(Polyline) {
       return new Polyline();
+    }
+  ]);
+
+}).call(this);
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicolas Laplante - https://plus.google.com/108189012221374960701
+Nicholas McCready - https://twitter.com/nmccready
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("polylines", [
+    "Polylines", function(Polylines) {
+      return new Polylines();
     }
   ]);
 

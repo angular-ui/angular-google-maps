@@ -3,11 +3,11 @@ angular.module("google-maps.directives.api")
     $log = Logger
     class PolylineChildModel extends BaseObject
         @include GmapUtil
-        constructor: (@scope, @element, @attrs, @map, @defaults) ->
+        constructor: (@scope, @attrs, @map, @defaults, @model) ->
             self = @
 
             @polyline = new google.maps.Polyline @buildOpts @convertPathPoints @scope.path
-            extendMapBounds map, pathPoints  if @isTrue attrs.fit
+            extendMapBounds map, pathPoints  if @isTrue @attrs.fit
             if angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
                     @polyline.setEditable newValue if newValue != oldValue

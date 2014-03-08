@@ -8,13 +8,13 @@ angular.module("google-maps.directives.api")
         replace: true
         require: "^googleMap"
         scope:
-            path: "=path"
-            stroke: "=stroke"
+            path: "="
+            stroke: "="
             clickable: "="
             draggable: "="
             editable: "="
             geodesic: "="
-            icons: "=icons"
+            icons: "="
             visible: "="
 
         DEFAULTS: {}

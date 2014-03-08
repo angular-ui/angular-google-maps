@@ -11,5 +11,5 @@ angular.module("google-maps.directives.api")
 
                 # Wrap polyline initialization inside a $timeout() call to make sure the map is created already
                 $timeout =>
-                    new PolylineChildModel scope, element, attrs, mapCtrl.getMap(), @DEFAULTS
+                    new PolylineChildModel scope, attrs, mapCtrl.getMap(), @DEFAULTS
     ]
