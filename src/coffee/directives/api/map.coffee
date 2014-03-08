@@ -196,5 +196,4 @@ angular.module("google-maps.directives.api")
                         opts.styles = newValue
                         _m.setOptions opts  if _m?
                 ,true
-        Map
     ]

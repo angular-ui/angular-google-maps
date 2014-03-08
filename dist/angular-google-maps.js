@@ -2330,7 +2330,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api").factory("ILabel", [
     "BaseObject", "Logger", function(BaseObject, Logger) {
       var ILabel;
-      ILabel = (function(_super) {
+      return ILabel = (function(_super) {
         __extends(ILabel, _super);
 
         function ILabel($timeout) {
@@ -2360,7 +2360,6 @@ Nicholas McCready - https://twitter.com/nmccready
         return ILabel;
 
       })(BaseObject);
-      return ILabel;
     }
   ]);
 
@@ -2384,7 +2383,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api").factory("IMarker", [
     "Logger", "BaseObject", function(Logger, BaseObject) {
       var IMarker;
-      IMarker = (function(_super) {
+      return IMarker = (function(_super) {
         __extends(IMarker, _super);
 
         function IMarker($timeout) {
@@ -2420,7 +2419,6 @@ Nicholas McCready - https://twitter.com/nmccready
         return IMarker;
 
       })(BaseObject);
-      return IMarker;
     }
   ]);
 
@@ -2439,7 +2437,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api").factory("IWindow", [
     "BaseObject", "ChildEvents", "Logger", function(BaseObject, ChildEvents, Logger) {
       var IWindow;
-      IWindow = (function(_super) {
+      return IWindow = (function(_super) {
         __extends(IWindow, _super);
 
         IWindow.include(ChildEvents);
@@ -2477,7 +2475,6 @@ Nicholas McCready - https://twitter.com/nmccready
         return IWindow;
 
       })(BaseObject);
-      return IWindow;
     }
   ]);
 
@@ -2496,7 +2493,7 @@ Nicholas McCready - https://twitter.com/nmccready
       DEFAULTS = {
         mapTypeId: google.maps.MapTypeId.ROADMAP
       };
-      Map = (function(_super) {
+      return Map = (function(_super) {
         __extends(Map, _super);
 
         Map.include(GmapUtil);
@@ -2759,7 +2756,6 @@ Nicholas McCready - https://twitter.com/nmccready
         return Map;
 
       })(BaseObject);
-      return Map;
     }
   ]);
 
@@ -2773,7 +2769,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api").factory("Marker", [
     "IMarker", "MarkerParentModel", function(IMarker, MarkerParentModel) {
       var Marker;
-      Marker = (function(_super) {
+      return Marker = (function(_super) {
         __extends(Marker, _super);
 
         function Marker($timeout) {
@@ -2802,7 +2798,6 @@ Nicholas McCready - https://twitter.com/nmccready
         return Marker;
 
       })(IMarker);
-      return Marker;
     }
   ]);
 
@@ -2816,7 +2811,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api").factory("Markers", [
     "IMarker", "MarkersParentModel", function(IMarker, MarkersParentModel) {
       var Markers;
-      Markers = (function(_super) {
+      return Markers = (function(_super) {
         __extends(Markers, _super);
 
         function Markers($timeout) {
@@ -2856,7 +2851,6 @@ Nicholas McCready - https://twitter.com/nmccready
         return Markers;
 
       })(IMarker);
-      return Markers;
     }
   ]);
 
@@ -3006,7 +3000,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api").factory("Window", [
     "IWindow", "GmapUtil", "WindowChildModel", function(IWindow, GmapUtil, WindowChildModel) {
       var Window;
-      Window = (function(_super) {
+      return Window = (function(_super) {
         __extends(Window, _super);
 
         Window.include(GmapUtil);
@@ -3062,7 +3056,6 @@ Nicholas McCready - https://twitter.com/nmccready
         return Window;
 
       })(IWindow);
-      return Window;
     }
   ]);
 
@@ -3080,7 +3073,7 @@ Nicholas McCready - https://twitter.com/nmccready
       */
 
       var Windows;
-      Windows = (function(_super) {
+      return Windows = (function(_super) {
         __extends(Windows, _super);
 
         function Windows($timeout, $compile, $http, $templateCache, $interpolate) {
@@ -3104,7 +3097,6 @@ Nicholas McCready - https://twitter.com/nmccready
         return Windows;
 
       })(IWindow);
-      return Windows;
     }
   ]);
 

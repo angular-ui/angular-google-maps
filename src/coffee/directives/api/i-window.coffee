@@ -26,5 +26,4 @@ angular.module("google-maps.directives.api")
 
         link: (scope, element, attrs, ctrls) =>
             throw new Exception("Not Implemented!!")
-    IWindow
 ]

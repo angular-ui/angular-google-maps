@@ -26,5 +26,4 @@ angular.module("google-maps.directives.api")
 
             link: (scope, element, attrs, ctrl) =>
                 new MarkersParentModel(scope, element, attrs, ctrl, @$timeout)
-        Markers
 ]
