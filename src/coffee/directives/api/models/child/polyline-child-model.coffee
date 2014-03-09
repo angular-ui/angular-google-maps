@@ -41,6 +41,8 @@ angular.module("google-maps.directives.api")
                     arraySyncer()
                     arraySyncer = null
 
+            $log.info @
+
         buildOpts:(pathPoints) =>
             opts = angular.extend({}, @defaults,
                 map: @map

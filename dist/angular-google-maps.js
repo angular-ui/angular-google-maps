@@ -1377,6 +1377,7 @@ Nicholas McCready - https://twitter.com/nmccready
               return arraySyncer = null;
             }
           });
+          $log.info(this);
         }
 
         PolylineChildModel.prototype.buildOpts = function(pathPoints) {
