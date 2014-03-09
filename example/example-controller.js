@@ -329,8 +329,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                         weight: 3
                     },
                     editable: true,
-                    draggable: false,
-                    geodesic: false,
+                    draggable: true,
+                    geodesic: true,
                     visible: true
                 },
                 {
@@ -476,6 +476,38 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                 showWindow: false
             }
         ];
+
+        $scope.map.polylines.push({
+            id:3,
+            path: [
+                {
+                    latitude: 65,
+                    longitude: -74
+                },
+                {
+                    latitude: 50,
+                    longitude: -89
+                },
+                {
+                    latitude: 57,
+                    longitude: -122
+                },
+                {
+                    latitude: 20,
+                    longitude: -95
+                }
+            ],
+            stroke: {
+                color: '#FF0066',
+                weight: 3
+            },
+            editable: true,
+            draggable: true,
+            geodesic: true,
+            visible: true
+        });
+
+        $scope.map.polylines = $scope.map.polylines.slice(1);
         _.each(dynamicMarkers, function (marker) {
             marker.closeClick = function () {
                 marker.showWindow = false;

@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-08
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-09
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -526,8 +526,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps.directives.api.utils").factory("ModelsWatcher", [
     "Logger", function(Logger) {
-      var ModelsWatcher;
-      ModelsWatcher = {
+      return {
         figureOutState: function(idKey, scope, childObjects, comparison, callBack) {
           var adds, mappedScopeModelIds, removals,
             _this = this;
@@ -574,7 +573,6 @@ Nicholas McCready - https://twitter.com/nmccready
           });
         }
       };
-      return ModelsWatcher;
     }
   ]);
 
@@ -1407,6 +1405,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return opts;
         };
 
+        PolylineChildModel.prototype.destroy = function() {
+          return this.scope.$destroy();
+        };
+
         return PolylineChildModel;
 
       })(BaseObject);
@@ -2152,6 +2154,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.attrs = attrs;
           this.gMap = gMap;
           this.defaults = defaults;
+          this.modelKeyComparison = __bind(this.modelKeyComparison, this);
           this.setChildScope = __bind(this.setChildScope, this);
           this.createChild = __bind(this.createChild, this);
           this.pieceMeal = __bind(this.pieceMeal, this);
@@ -2203,7 +2206,7 @@ Nicholas McCready - https://twitter.com/nmccready
                 return _this.createChildScopes(false);
               }
             }
-          });
+          }, true);
         };
 
         PolylinesParentModel.prototype.doINeedToWipe = function(newValue) {
@@ -2302,10 +2305,12 @@ Nicholas McCready - https://twitter.com/nmccready
             return this.figureOutState(this.idKey, scope, this.plurals, this.modelKeyComparison, function(state) {
               var payload;
               payload = state;
-              return _async.each(payload.removals, function(child) {
+              return _async.each(payload.removals, function(id) {
+                var child;
+                child = _this.plurals[id];
                 if (child != null) {
                   child.destroy();
-                  return _this.plurals.remove(child.id);
+                  return _this.plurals.remove(id);
                 }
               }, function() {
                 return _async.each(payload.adds, function(modelToAdd) {
@@ -2348,6 +2353,10 @@ Nicholas McCready - https://twitter.com/nmccready
             }
           });
           return childScope.model = model;
+        };
+
+        PolylinesParentModel.prototype.modelKeyComparison = function(model1, model2) {
+          return _.isEqual(this.evalModelHandle(model1, this.scope.path), this.evalModelHandle(model2, this.scope.path));
         };
 
         return PolylinesParentModel;

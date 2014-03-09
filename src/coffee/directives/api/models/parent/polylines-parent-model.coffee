@@ -51,6 +51,7 @@ angular.module("google-maps.directives.api.models.parent")
                                     @rebuildAll(scope, true, true)
                                 else
                                     @createChildScopes(false)
+                        ,true
 
                     doINeedToWipe: (newValue) =>
                         newValueIsEmpty = if newValue? then newValue.length == 0 else true
@@ -110,10 +111,11 @@ angular.module("google-maps.directives.api.models.parent")
                         if scope? and scope.models? and scope.models.length > 0 and @plurals.length > 0
                             @figureOutState @idKey, scope, @plurals, @modelKeyComparison, (state) =>
                                 payload = state
-                                _async.each payload.removals, (child)=>
+                                _async.each payload.removals, (id)=>
+                                    child = @plurals[id]
                                     if child?
                                         child.destroy()
-                                        @plurals.remove(child.id)
+                                        @plurals.remove(id)
                                 , () =>
                                     #add all adds via creating new ChildMarkers which are appended to @markers
                                     _async.each payload.adds, (modelToAdd) =>
@@ -146,4 +148,6 @@ angular.module("google-maps.directives.api.models.parent")
                                 childScope[name] = newValue
                         childScope.model = model
 
+                    modelKeyComparison: (model1, model2) =>
+                        _.isEqual @evalModelHandle(model1, @scope.path), @evalModelHandle(model2,@scope.path)
         ]

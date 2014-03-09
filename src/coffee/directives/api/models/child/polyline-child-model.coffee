@@ -61,4 +61,7 @@ angular.module("google-maps.directives.api")
                 else
                     opts[key] = @scope[key]
             opts
+
+        destroy:() ->
+            @scope.$destroy()
 ]
