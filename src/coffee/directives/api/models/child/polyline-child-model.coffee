@@ -32,14 +32,16 @@ angular.module("google-maps.directives.api")
                 scope.$watch "stroke.color", (newValue, oldValue) ->
                     @polyline.setOptions @buildOpts(@polyline.getPath()) if newValue != oldValue
 
-            arraySyncer = arraySync @polyline.getPath(), scope, "path"
+#            arraySyncer = arraySync @polyline.getPath(), scope, "path"
 
             # Remove @polyline on scope $destroy
             scope.$on "$destroy", =>
                 @polyline.setMap null
-                if arraySyncer
-                    arraySyncer()
-                    arraySyncer = null
+                @polyline = null
+                @scope = null
+#                if arraySyncer
+#                    arraySyncer()
+#                    arraySyncer = null
 
             $log.info @
 

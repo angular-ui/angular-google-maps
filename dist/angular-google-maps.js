@@ -1314,7 +1314,7 @@ Nicholas McCready - https://twitter.com/nmccready
         PolylineChildModel.include(GmapUtil);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
-          var arraySyncer, self,
+          var self,
             _this = this;
           this.scope = scope;
           this.attrs = attrs;
@@ -1369,13 +1369,10 @@ Nicholas McCready - https://twitter.com/nmccready
               }
             });
           }
-          arraySyncer = arraySync(this.polyline.getPath(), scope, "path");
           scope.$on("$destroy", function() {
             _this.polyline.setMap(null);
-            if (arraySyncer) {
-              arraySyncer();
-              return arraySyncer = null;
-            }
+            _this.polyline = null;
+            return _this.scope = null;
           });
           $log.info(this);
         }

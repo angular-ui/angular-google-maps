@@ -48,8 +48,9 @@
         <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>
         <layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></layer>
 
+        <!--Editable polylines are very slow.. nothing you can do as this is a google problem-->
         <polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"
-                  geodesic="'geodesic'" editable="'editable'" draggable="'draggable'" fit="false">
+                  geodesic="'geodesic'" draggable="'draggable'" fit="false">
         </polylines>
 
         <!--<markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"-->

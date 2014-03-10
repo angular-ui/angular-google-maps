@@ -1,5 +1,5 @@
 function Example2Controller($scope, $timeout, $log, $http, Logger) {
-    new ExampleController($scope, $timeout, $log, $http, Logger);
+    new ExampleController($scope, function(fn){fn()}, $log, $http, Logger);
     var lastPolyline =  {
         id:1,
         path: [
@@ -29,7 +29,7 @@ function Example2Controller($scope, $timeout, $log, $http, Logger) {
         geodesic: true,
         visible: true
     };
-     _async.map(_.range(125), function(i){
+    $scope.map.polylines = _.map(_.range(500), function(i){
         var newPath = _.map(lastPolyline.path,function(p){
             return {
                 latitude  :p.latitude,
@@ -41,7 +41,5 @@ function Example2Controller($scope, $timeout, $log, $http, Logger) {
         newPoly.path = newPath;
         lastPolyline = newPoly;
         return newPoly;
-    },function(mapped){
-         $scope.map.polylines = mapped;
      });
 }
