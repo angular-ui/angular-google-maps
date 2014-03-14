@@ -110,7 +110,7 @@ angular.module("google-maps").directive "polygon", ["$log", "$timeout", ($log, $
 
             polyline = new google.maps.Polyline(opts)
             extendMapBounds map, pathPoints  if isTrue(attrs.fit)
-            if angular.isDefined(scope.editable)
+            if !isTrue(attrs.static) && angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
                     polyline.setEditable newValue
 
@@ -126,28 +126,29 @@ angular.module("google-maps").directive "polygon", ["$log", "$timeout", ($log, $
             pathInsertAtListener = undefined
             pathRemoveAtListener = undefined
             polyPath = polyline.getPath()
-            pathSetAtListener = google.maps.event.addListener(polyPath, "set_at", (index) ->
-                value = polyPath.getAt(index)
-                return  unless value
-                return  if not value.lng or not value.lat
-                scope.path[index].latitude = value.lat()
-                scope.path[index].longitude = value.lng()
-                scope.$apply()
-            )
-            pathInsertAtListener = google.maps.event.addListener(polyPath, "insert_at", (index) ->
-                value = polyPath.getAt(index)
-                return  unless value
-                return  if not value.lng or not value.lat
-                scope.path.splice index, 0,
-                    latitude: value.lat()
-                    longitude: value.lng()
-
-                scope.$apply()
-            )
-            pathRemoveAtListener = google.maps.event.addListener(polyPath, "remove_at", (index) ->
-                scope.path.splice index, 1
-                scope.$apply()
-            )
+            if !isTrue(attrs.static)
+                pathSetAtListener = google.maps.event.addListener(polyPath, "set_at", (index) ->
+                    value = polyPath.getAt(index)
+                    return  unless value
+                    return  if not value.lng or not value.lat
+                    scope.path[index].latitude = value.lat()
+                    scope.path[index].longitude = value.lng()
+                    scope.$apply()
+                )
+                pathInsertAtListener = google.maps.event.addListener(polyPath, "insert_at", (index) ->
+                    value = polyPath.getAt(index)
+                    return  unless value
+                    return  if not value.lng or not value.lat
+                    scope.path.splice index, 0,
+                        latitude: value.lat()
+                        longitude: value.lng()
+    
+                    scope.$apply()
+                )
+                pathRemoveAtListener = google.maps.event.addListener(polyPath, "remove_at", (index) ->
+                    scope.path.splice index, 1
+                    scope.$apply()
+                )
             scope.$watch "path", ((newArray) ->
                 oldArray = polyline.getPath()
                 if newArray isnt oldArray
@@ -174,17 +175,23 @@ angular.module("google-maps").directive "polygon", ["$log", "$timeout", ($log, $
 
                         # Remove polyline
                         polyline.setMap null
-            ), true
+            ), !isTrue(attrs.static)
 
             # Remove polyline on scope $destroy
             scope.$on "$destroy", ->
                 polyline.setMap null
-                pathSetAtListener()
-                pathSetAtListener = null
-                pathInsertAtListener()
-                pathInsertAtListener = null
-                pathRemoveAtListener()
-                pathRemoveAtListener = null
+                
+                if pathSetAtListener
+                    pathSetAtListener()
+                    pathSetAtListener = null
+                    
+                if pathInsertAtListener
+                    pathInsertAtListener()
+                    pathInsertAtListener = null
+                    
+                if pathRemoveAtListener
+                    pathRemoveAtListener()
+                    pathRemoveAtListener = null
 
 
 ]
