@@ -144,8 +144,11 @@
             geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
 
         <!-- polygon example -->
-        <polygon ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
+        <polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
         	geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>
+
+        <polygon ng-repeat="p in map.polygons2 track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
+                 geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>
 
         <!-- circle example -->
         <circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"

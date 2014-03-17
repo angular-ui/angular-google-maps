@@ -303,6 +303,37 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                     }
                 }
             ],
+            polygons2: [
+                {
+                    id: 1,
+                    path: [
+                        {
+                            latitude: 60,
+                            longitude: -80
+                        },
+                        {
+                            latitude: 40,
+                            longitude: -120
+                        },
+                        {
+                            latitude: 45,
+                            longitude: -95
+                        }
+                    ],
+                    stroke: {
+                        color: '#33CDDC',
+                        weight: 3
+                    },
+                    editable: true,
+                    draggable: true,
+                    geodesic: false,
+                    visible: true,
+                    fill: {
+                        color: '#33CCCC',
+                        opacity: 0.8
+                    }
+                }
+            ],
             polylines: [
                 {
                     id:1,

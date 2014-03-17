@@ -104,13 +104,13 @@ module.exports = (grunt) ->
 
         open:
             example:
-                path: "http://localhost:3000/example/example.html"
+                path: "http://localhost:3100/example/example.html"
 
             example2:
-                path: "http://localhost:3000/example/example2.html"
+                path: "http://localhost:3100/example/example2.html"
 
             version:
-                path: "http://localhost:3000/package.json"
+                path: "http://localhost:3100/package.json"
 
             jasmine:
                 path: "http://localhost:8069/_SpecRunner.html"
@@ -119,7 +119,7 @@ module.exports = (grunt) ->
             server:
                 options:
                     hostname: "0.0.0.0"
-                    port: 3000
+                    port: 3100
                     base: ""
 
             jasmineServer:
@@ -162,7 +162,7 @@ module.exports = (grunt) ->
                                    "uglify", "jasmine"]
 
     # Run the example page by creating a local copy of angular-google-maps.js
-    # and running a webserver on port 3000 with livereload. Web page is opened
+    # and running a webserver on port 3100 with livereload. Web page is opened
     # automatically in the default browser.
     grunt.registerTask "example", ["clean:example", "connect:server", "open:example", "watch"]
     grunt.registerTask "example2", ["clean:example", "connect:server", "open:example2", "watch"]
