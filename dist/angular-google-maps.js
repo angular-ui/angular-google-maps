@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-09
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-14
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -862,38 +862,40 @@ Nicholas McCready - https://twitter.com/nmccready
     "add-events", function(mapEvents) {
       return function(mapArray, scope, pathEval) {
         var mapArrayListener, scopeArray, watchListener;
-        scopeArray = scope.$eval(pathEval);
-        mapArrayListener = mapEvents(mapArray, {
-          set_at: function(index) {
-            var value;
-            value = mapArray.getAt(index);
-            if (!value) {
-              return;
+        if (!scope["static"]) {
+          scopeArray = scope.$eval(pathEval);
+          mapArrayListener = mapEvents(mapArray, {
+            set_at: function(index) {
+              var value;
+              value = mapArray.getAt(index);
+              if (!value) {
+                return;
+              }
+              if (!value.lng || !value.lat) {
+                return;
+              }
+              scopeArray[index].latitude = value.lat();
+              return scopeArray[index].longitude = value.lng();
+            },
+            insert_at: function(index) {
+              var value;
+              value = mapArray.getAt(index);
+              if (!value) {
+                return;
+              }
+              if (!value.lng || !value.lat) {
+                return;
+              }
+              return scopeArray.splice(index, 0, {
+                latitude: value.lat(),
+                longitude: value.lng()
+              });
+            },
+            remove_at: function(index) {
+              return scopeArray.splice(index, 1);
             }
-            if (!value.lng || !value.lat) {
-              return;
-            }
-            scopeArray[index].latitude = value.lat();
-            return scopeArray[index].longitude = value.lng();
-          },
-          insert_at: function(index) {
-            var value;
-            value = mapArray.getAt(index);
-            if (!value) {
-              return;
-            }
-            if (!value.lng || !value.lat) {
-              return;
-            }
-            return scopeArray.splice(index, 0, {
-              latitude: value.lat(),
-              longitude: value.lng()
-            });
-          },
-          remove_at: function(index) {
-            return scopeArray.splice(index, 1);
-          }
-        });
+          });
+        }
         watchListener = scope.$watch(pathEval, function(newArray) {
           var i, l, newLength, newValue, oldArray, oldLength, oldValue, _results;
           oldArray = mapArray;
@@ -923,7 +925,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             return _results;
           }
-        }, true);
+        }, !scope["static"]);
         return function() {
           if (mapArrayListener) {
             mapArrayListener();
@@ -3777,7 +3779,8 @@ Nicholas McCready - https://twitter.com/nmccready
           geodesic: "=",
           fill: "=",
           icons: "=icons",
-          visible: "="
+          visible: "=",
+          "static": "="
         },
         link: function(scope, element, attrs, mapCtrl) {
           if (angular.isUndefined(scope.path) || scope.path === null || scope.path.length < 2 || !validatePathPoints(scope.path)) {
@@ -3802,7 +3805,8 @@ Nicholas McCready - https://twitter.com/nmccready
                 draggable: false,
                 editable: false,
                 geodesic: false,
-                visible: true
+                visible: true,
+                "static": false
               }, function(defaultValue, key) {
                 if (angular.isUndefined(scope[key]) || scope[key] === null) {
                   return opts[key] = defaultValue;
@@ -3810,6 +3814,9 @@ Nicholas McCready - https://twitter.com/nmccready
                   return opts[key] = scope[key];
                 }
               });
+              if (opts["static"]) {
+                opts.editable = false;
+              }
               return opts;
             };
             map = mapCtrl.getMap();
@@ -3817,7 +3824,7 @@ Nicholas McCready - https://twitter.com/nmccready
             if (isTrue(attrs.fit)) {
               extendMapBounds(map, pathPoints);
             }
-            if (angular.isDefined(scope.editable)) {
+            if (!scope["static"] && angular.isDefined(scope.editable)) {
               scope.$watch("editable", function(newValue, oldValue) {
                 if (newValue !== oldValue) {
                   return polygon.setEditable(newValue);

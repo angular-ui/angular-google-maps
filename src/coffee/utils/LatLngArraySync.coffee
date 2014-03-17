@@ -1,27 +1,28 @@
 angular.module("google-maps")
 .factory "array-sync", ["add-events", (mapEvents) ->
     (mapArray, scope, pathEval) ->
-        scopeArray = scope.$eval(pathEval)
-        mapArrayListener = mapEvents(mapArray,
-            set_at: (index) ->
-                value = mapArray.getAt(index)
-                return  unless value
-                return  if not value.lng or not value.lat
-                scopeArray[index].latitude = value.lat()
-                scopeArray[index].longitude = value.lng()
-
-            insert_at: (index) ->
-                value = mapArray.getAt(index)
-                return  unless value
-                return  if not value.lng or not value.lat
-                scopeArray.splice index, 0,
-                    latitude: value.lat()
-                    longitude: value.lng()
-
-
-            remove_at: (index) ->
-                scopeArray.splice index, 1
-        )
+        if !scope.static
+            scopeArray = scope.$eval(pathEval)
+            mapArrayListener = mapEvents(mapArray,
+                set_at: (index) ->
+                    value = mapArray.getAt(index)
+                    return  unless value
+                    return  if not value.lng or not value.lat
+                    scopeArray[index].latitude = value.lat()
+                    scopeArray[index].longitude = value.lng()
+    
+                insert_at: (index) ->
+                    value = mapArray.getAt(index)
+                    return  unless value
+                    return  if not value.lng or not value.lat
+                    scopeArray.splice index, 0,
+                        latitude: value.lat()
+                        longitude: value.lng()
+    
+    
+                remove_at: (index) ->
+                    scopeArray.splice index, 1
+            )
         watchListener = scope.$watch(pathEval, (newArray) ->
             oldArray = mapArray
             if newArray
@@ -42,7 +43,7 @@ angular.module("google-maps")
                 while i < oldLength
                     oldArray.pop()
                     i++
-        , true)
+        , !scope.static)
         ->
             if mapArrayListener
                 mapArrayListener()
