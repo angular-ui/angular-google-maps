@@ -31,7 +31,7 @@ module.exports = (grunt) ->
                 files:
                     "tmp/output_coffee.js": [
                         "src/coffee/module.coffee",
-                        "src/coffee/extensions/underscore.coffee",
+                        "src/coffee/extensions/lodash.coffee",
                         "src/coffee/directives/api/utils/*.coffee",
                         "src/coffee/directives/api/managers/*.coffee",
 
@@ -136,14 +136,13 @@ module.exports = (grunt) ->
 
         jasmine:
             taskName:
-                src: ["dist/angular-google-maps.js"]
+                src: ["bower_components/lodash-amd/main.js", "dist/angular-google-maps.js"]
                 options:
                     keepRunner: true
                     vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
                              "bower_components/jquery/jquery.js",
-                             "bower_components/angular/angular.js", "bower_components/angular-mocks/angular-mocks.js",
-                             "bower_components/underscore/underscore.js",
-                             "dist/angular-google-maps.js"]
+                             "bower_components/angular/angular.js",
+                             "bower_components/angular-mocks/angular-mocks.js"]
                     specs: ["tmp/spec/js/**/*spec.js"]
                     helpers: ["tmp/spec/js/helpers/helpers.js"]
                 #grunt-template-jasmine-requirejs - to remove all coverage meta from angular-google-maps.js (helps debug)
@@ -151,6 +150,13 @@ module.exports = (grunt) ->
                     template: require "grunt-template-jasmine-requirejs"
 #                    template: require  "grunt-template-jasmine-istanbul"
                     templateOptions:
+                            requireConfig:
+                                paths:
+                                    "lodash": "bower_components/lodash/dist/lodash.underscore"
+                                deps: ["lodash"]
+                                callback: (_) ->
+                                
+
                         coverage: "spec/coverage/coverage.json"
                         report: "spec/coverage"
                         thresholds:
