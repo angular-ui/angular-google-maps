@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-17
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-19
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -297,6 +297,16 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps.directives.api.utils").service("GmapUtil", [
     "Logger", "$compile", function(Logger, $compile) {
+      var getCoords;
+      getCoords = function(value) {
+        if (Array.isArray(value) && value.length === 2) {
+          return new google.maps.LatLng(value[1], value[0]);
+        } else if (angular.isDefined(value.type) && value.type === "Point") {
+          return new google.maps.LatLng(value.coordinates[1], value.coordinates[0]);
+        } else {
+          return new google.maps.LatLng(value.latitude, value.longitude);
+        }
+      };
       return {
         getLabelPositionPoint: function(anchor) {
           var xPos, yPos;
@@ -319,7 +329,7 @@ Nicholas McCready - https://twitter.com/nmccready
             defaults = {};
           }
           opts = angular.extend({}, defaults, {
-            position: defaults.position != null ? defaults.position : new google.maps.LatLng(coords.latitude, coords.longitude),
+            position: defaults.position != null ? defaults.position : getCoords(coords),
             icon: defaults.icon != null ? defaults.icon : icon,
             visible: defaults.visible != null ? defaults.visible : (coords.latitude != null) && (coords.longitude != null)
           });
@@ -335,7 +345,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if ((content != null) && (defaults != null) && ($compile != null)) {
             return angular.extend({}, defaults, {
               content: this.buildContent(scope, defaults, content, contentIsParsed),
-              position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+              position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : getCoords(scope.coords)
             });
           } else {
             if (!defaults) {
@@ -371,27 +381,66 @@ Nicholas McCready - https://twitter.com/nmccready
         isFalse: function(value) {
           return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
         },
-        getCoords: function(value) {
-          return new google.maps.LatLng(value.latitude, value.longitude);
-        },
-        validatePathPoints: function(path) {
-          var i;
+        getCoords: getCoords,
+        validatePath: function(path) {
+          var array, i;
           i = 0;
-          while (i < path.length) {
-            if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
+          if (angular.isUndefined(path.type)) {
+            if (path.length < 2) {
               return false;
             }
-            i++;
+            while (i < path.length) {
+              if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
+                return false;
+              }
+              i++;
+            }
+            return true;
+          } else {
+            if (angular.isUndefined(path.coordinates)) {
+              return false;
+            }
+            array;
+            if (path.type === "Polygon") {
+              if (path.coordinates[0].length < 4) {
+                return false;
+              }
+              array = path.coordinates[0];
+            } else if (path.type === "LineString") {
+              if (path.coordinates.length < 2) {
+                return false;
+              }
+              array = path.coordinates;
+            }
+            while (i < array.length) {
+              if (array[i].length !== 2) {
+                return false;
+              }
+              i++;
+            }
+            return true;
           }
-          return true;
         },
         convertPathPoints: function(path) {
-          var i, result;
+          var array, i, result;
           result = new google.maps.MVCArray();
           i = 0;
-          while (i < path.length) {
-            result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
-            i++;
+          if (angular.isUndefined(path.type)) {
+            while (i < path.length) {
+              result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
+              i++;
+            }
+          } else {
+            array;
+            if (path.type === "Polygon") {
+              array = path.coordinates[0];
+            } else if (path.type === "LineString") {
+              array = path.coordinates;
+            }
+            while (i < array.length) {
+              result.push(new google.maps.LatLng(array[i][1], array[i][0]));
+              i++;
+            }
           }
           return result;
         },
@@ -861,10 +910,10 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps").factory("array-sync", [
     "add-events", function(mapEvents) {
       return function(mapArray, scope, pathEval) {
-        var mapArrayListener, scopeArray, watchListener;
+        var geojsonArray, geojsonHandlers, geojsonWatcher, legacyHandlers, legacyWatcher, mapArrayListener, scopePath, watchListener;
+        scopePath = scope.$eval(pathEval);
         if (!scope["static"]) {
-          scopeArray = scope.$eval(pathEval);
-          mapArrayListener = mapEvents(mapArray, {
+          legacyHandlers = {
             set_at: function(index) {
               var value;
               value = mapArray.getAt(index);
@@ -874,8 +923,8 @@ Nicholas McCready - https://twitter.com/nmccready
               if (!value.lng || !value.lat) {
                 return;
               }
-              scopeArray[index].latitude = value.lat();
-              return scopeArray[index].longitude = value.lng();
+              scopePath[index].latitude = value.lat();
+              return scopePath[index].longitude = value.lng();
             },
             insert_at: function(index) {
               var value;
@@ -886,35 +935,70 @@ Nicholas McCready - https://twitter.com/nmccready
               if (!value.lng || !value.lat) {
                 return;
               }
-              return scopeArray.splice(index, 0, {
+              return scopePath.splice(index, 0, {
                 latitude: value.lat(),
                 longitude: value.lng()
               });
             },
             remove_at: function(index) {
-              return scopeArray.splice(index, 1);
+              return scopePath.splice(index, 1);
             }
-          });
+          };
+          geojsonArray;
+          if (scopePath.type === "Polygon") {
+            geojsonArray = scopePath.coordinates[0];
+          } else if (scopePath.type === "LineString") {
+            geojsonArray = scopePath.coordinates;
+          }
+          geojsonHandlers = {
+            set_at: function(index) {
+              var value;
+              value = mapArray.getAt(index);
+              if (!value) {
+                return;
+              }
+              if (!value.lng || !value.lat) {
+                return;
+              }
+              geojsonArray[index][1] = value.lat();
+              return geojsonArray[index][0] = value.lng();
+            },
+            insert_at: function(index) {
+              var value;
+              value = mapArray.getAt(index);
+              if (!value) {
+                return;
+              }
+              if (!value.lng || !value.lat) {
+                return;
+              }
+              return geojsonArray.splice(index, 0, [value.lng(), value.lat()]);
+            },
+            remove_at: function(index) {
+              return geojsonArray.splice(index, 1);
+            }
+          };
+          mapArrayListener = mapEvents(mapArray, angular.isUndefined(scopePath.type) ? legacyHandlers : geojsonHandlers);
         }
-        watchListener = scope.$watch(pathEval, function(newArray) {
+        legacyWatcher = function(newPath) {
           var i, l, newLength, newValue, oldArray, oldLength, oldValue, _results;
           oldArray = mapArray;
-          if (newArray) {
+          if (newPath) {
             i = 0;
             oldLength = oldArray.getLength();
-            newLength = newArray.length;
+            newLength = newPath.length;
             l = Math.min(oldLength, newLength);
             newValue = void 0;
             while (i < l) {
               oldValue = oldArray.getAt(i);
-              newValue = newArray[i];
+              newValue = newPath[i];
               if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
                 oldArray.setAt(i, new google.maps.LatLng(newValue.latitude, newValue.longitude));
               }
               i++;
             }
             while (i < newLength) {
-              newValue = newArray[i];
+              newValue = newPath[i];
               oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
               i++;
             }
@@ -925,7 +1009,44 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             return _results;
           }
-        }, !scope["static"]);
+        };
+        geojsonWatcher = function(newPath) {
+          var array, i, l, newLength, newValue, oldArray, oldLength, oldValue, _results;
+          oldArray = mapArray;
+          if (newPath) {
+            array;
+            if (scopePath.type === "Polygon") {
+              array = newPath.coordinates[0];
+            } else if (scopePath.type === "LineString") {
+              array = newPath.coordinates;
+            }
+            i = 0;
+            oldLength = oldArray.getLength();
+            newLength = array.length;
+            l = Math.min(oldLength, newLength);
+            newValue = void 0;
+            while (i < l) {
+              oldValue = oldArray.getAt(i);
+              newValue = array[i];
+              if ((oldValue.lat() !== newValue[1]) || (oldValue.lng() !== newValue[0])) {
+                oldArray.setAt(i, new google.maps.LatLng(newValue[1], newValue[0]));
+              }
+              i++;
+            }
+            while (i < newLength) {
+              newValue = array[i];
+              oldArray.push(new google.maps.LatLng(newValue[1], newValue[0]));
+              i++;
+            }
+            _results = [];
+            while (i < oldLength) {
+              oldArray.pop();
+              _results.push(i++);
+            }
+            return _results;
+          }
+        };
+        watchListener = scope.$watch(pathEval, (angular.isUndefined(scopePath.type) ? legacyWatcher : geojsonWatcher), !scope["static"]);
         return function() {
           if (mapArrayListener) {
             mapArrayListener();
@@ -1316,7 +1437,7 @@ Nicholas McCready - https://twitter.com/nmccready
         PolylineChildModel.include(GmapUtil);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
-          var self,
+          var arraySyncer, self,
             _this = this;
           this.scope = scope;
           this.attrs = attrs;
@@ -1329,7 +1450,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if (this.isTrue(this.attrs.fit)) {
             extendMapBounds(map, pathPoints);
           }
-          if (angular.isDefined(scope.editable)) {
+          if (!scope["static"] && angular.isDefined(scope.editable)) {
             scope.$watch("editable", function(newValue, oldValue) {
               if (newValue !== oldValue) {
                 return this.polyline.setEditable(newValue);
@@ -1371,10 +1492,15 @@ Nicholas McCready - https://twitter.com/nmccready
               }
             });
           }
+          arraySyncer = arraySync(this.polyline.getPath(), scope, "path");
           scope.$on("$destroy", function() {
             _this.polyline.setMap(null);
             _this.polyline = null;
-            return _this.scope = null;
+            _this.scope = null;
+            if (arraySyncer) {
+              arraySyncer();
+              return arraySyncer = null;
+            }
           });
           $log.info(this);
         }
@@ -1394,7 +1520,8 @@ Nicholas McCready - https://twitter.com/nmccready
             draggable: false,
             editable: false,
             geodesic: false,
-            visible: true
+            visible: true,
+            "static": false
           }, function(defaultValue, key) {
             if (angular.isUndefined(_this.scope[key]) || _this.scope[key] === null) {
               return opts[key] = defaultValue;
@@ -1402,6 +1529,9 @@ Nicholas McCready - https://twitter.com/nmccready
               return opts[key] = _this.scope[key];
             }
           });
+          if (opts["static"]) {
+            opts.editable = false;
+          }
           return opts;
         };
 
@@ -2810,7 +2940,8 @@ Nicholas McCready - https://twitter.com/nmccready
           editable: "=",
           geodesic: "=",
           icons: "=",
-          visible: "="
+          visible: "=",
+          "static": "="
         };
 
         IPolyline.prototype.DEFAULTS = {};
@@ -3276,7 +3407,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         Polyline.prototype.link = function(scope, element, attrs, mapCtrl) {
           var _this = this;
-          if (angular.isUndefined(scope.path) || scope.path === null || scope.path.length < 2 || !this.validatePathPoints(scope.path)) {
+          if (angular.isUndefined(scope.path) || scope.path === null || !this.validatePath(scope.path)) {
             this.$log.error("polyline: no valid path attribute found");
             return;
           }
@@ -3719,31 +3850,63 @@ https://github.com/nlaplante/angular-google-maps
 @authors
 Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
+Rick Huizinga - https://plus.google.com/+RickHuizinga
 */
 
 
 (function() {
   angular.module("google-maps").directive("polygon", [
     "$log", "$timeout", "array-sync", function($log, $timeout, arraySync) {
-      var DEFAULTS, convertPathPoints, extendMapBounds, isTrue, validatePathPoints;
-      validatePathPoints = function(path) {
-        var i;
+      var DEFAULTS, convertPathPoints, extendMapBounds, isTrue, validatePath;
+      validatePath = function(path) {
+        var i, ring;
         i = 0;
-        while (i < path.length) {
-          if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
+        if (angular.isUndefined(path.type)) {
+          if (path.length < 2) {
             return false;
           }
-          i++;
+          while (i < path.length) {
+            if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
+              return false;
+            }
+            i++;
+          }
+          return true;
+        } else {
+          if ((path.type !== "Polygon") || angular.isUndefined(path.coordinates)) {
+            return false;
+          }
+          ring = path.coordinates[0];
+          if (ring.length < 4) {
+            return false;
+          }
+          while (i < ring.length) {
+            if (ring[i].length !== 2) {
+              return false;
+            }
+            i++;
+          }
+          if (ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1]) {
+            return false;
+          }
+          return true;
         }
-        return true;
       };
       convertPathPoints = function(path) {
         var i, result;
         result = new google.maps.MVCArray();
         i = 0;
-        while (i < path.length) {
-          result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
-          i++;
+        if (angular.isUndefined(path.type)) {
+          while (i < path.length) {
+            result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
+            i++;
+          }
+        } else {
+          ring = path.coordinates[0];
+          while (i < ring.length) {
+            result.push(new google.maps.LatLng(ring[i][1], ring[i][0]));
+            i++;
+          }
         }
         return result;
       };
@@ -3783,7 +3946,7 @@ Nicholas McCready - https://twitter.com/nmccready
           "static": "="
         },
         link: function(scope, element, attrs, mapCtrl) {
-          if (angular.isUndefined(scope.path) || scope.path === null || scope.path.length < 2 || !validatePathPoints(scope.path)) {
+          if (angular.isUndefined(scope.path) || scope.path === null || !validatePath(scope.path)) {
             $log.error("polygon: no valid path attribute found");
             return;
           }

@@ -8,7 +8,7 @@ angular.module("google-maps.directives.api")
 
             @polyline = new google.maps.Polyline @buildOpts @convertPathPoints @scope.path
             extendMapBounds map, pathPoints  if @isTrue @attrs.fit
-            if angular.isDefined(scope.editable)
+            if !scope.static and angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
                     @polyline.setEditable newValue if newValue != oldValue
 
@@ -32,16 +32,16 @@ angular.module("google-maps.directives.api")
                 scope.$watch "stroke.color", (newValue, oldValue) ->
                     @polyline.setOptions @buildOpts(@polyline.getPath()) if newValue != oldValue
 
-#            arraySyncer = arraySync @polyline.getPath(), scope, "path"
+            arraySyncer = arraySync @polyline.getPath(), scope, "path"
 
             # Remove @polyline on scope $destroy
             scope.$on "$destroy", =>
                 @polyline.setMap null
                 @polyline = null
                 @scope = null
-#                if arraySyncer
-#                    arraySyncer()
-#                    arraySyncer = null
+                if arraySyncer
+                    arraySyncer()
+                    arraySyncer = null
 
             $log.info @
 
@@ -59,11 +59,13 @@ angular.module("google-maps.directives.api")
                 editable: false
                 geodesic: false
                 visible: true
+                static: false
             , (defaultValue, key) =>
                 if angular.isUndefined(@scope[key]) or @scope[key] is null
                     opts[key] = defaultValue
                 else
                     opts[key] = @scope[key]
+            opts.editable = false if opts.static
             opts
 
         destroy:() ->

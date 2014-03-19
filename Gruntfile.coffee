@@ -108,6 +108,12 @@ module.exports = (grunt) ->
 
             example2:
                 path: "http://localhost:3100/example/example2.html"
+                
+            geojson:
+                path: "http://localhost:3100/example/geojson.html"
+                
+            hugedata:
+                path: "http://localhost:3100/example/hugedata.html"
 
             version:
                 path: "http://localhost:3100/package.json"
@@ -166,3 +172,5 @@ module.exports = (grunt) ->
     # automatically in the default browser.
     grunt.registerTask "example", ["clean:example", "connect:server", "open:example", "watch"]
     grunt.registerTask "example2", ["clean:example", "connect:server", "open:example2", "watch"]
+    grunt.registerTask "geojson", ["clean:example", "connect:server", "open:geojson", "watch"]
+    grunt.registerTask "hugedata", ["clean:example", "connect:server", "open:hugedata", "watch"]

@@ -1,49 +1,103 @@
 angular.module("google-maps")
 .factory "array-sync", ["add-events", (mapEvents) ->
     (mapArray, scope, pathEval) ->
+        scopePath = scope.$eval(pathEval)
         if !scope.static
-            scopeArray = scope.$eval(pathEval)
-            mapArrayListener = mapEvents(mapArray,
+            legacyHandlers =
                 set_at: (index) ->
                     value = mapArray.getAt(index)
                     return  unless value
                     return  if not value.lng or not value.lat
-                    scopeArray[index].latitude = value.lat()
-                    scopeArray[index].longitude = value.lng()
+                    scopePath[index].latitude = value.lat()
+                    scopePath[index].longitude = value.lng()
     
                 insert_at: (index) ->
                     value = mapArray.getAt(index)
                     return  unless value
                     return  if not value.lng or not value.lat
-                    scopeArray.splice index, 0,
+                    scopePath.splice index, 0, 
                         latitude: value.lat()
                         longitude: value.lng()
     
+                remove_at: (index) ->
+                    scopePath.splice index, 1
+            
+            #Note: we only support display of the outer Polygon ring, not internal holes
+            geojsonArray
+            if scopePath.type == "Polygon"
+                geojsonArray = scopePath.coordinates[0]
+            else if scopePath.type == "LineString"
+                geojsonArray = scopePath.coordinates
+            
+            geojsonHandlers =
+                set_at: (index) ->
+                    value = mapArray.getAt(index)
+                    return  unless value
+                    return  if not value.lng or not value.lat
+                    geojsonArray[index][1] = value.lat()
+                    geojsonArray[index][0] = value.lng()
+    
+                insert_at: (index) ->
+                    value = mapArray.getAt(index)
+                    return  unless value
+                    return  if not value.lng or not value.lat
+                    geojsonArray.splice index, 0, [ value.lng(), value.lat() ]
     
                 remove_at: (index) ->
-                    scopeArray.splice index, 1
-            )
-        watchListener = scope.$watch(pathEval, (newArray) ->
+                    geojsonArray.splice index, 1
+                    
+            mapArrayListener = mapEvents(mapArray, if angular.isUndefined(scopePath.type) then legacyHandlers else geojsonHandlers)
+        
+        legacyWatcher = (newPath) ->
             oldArray = mapArray
-            if newArray
+            if newPath
                 i = 0
                 oldLength = oldArray.getLength()
-                newLength = newArray.length
+                newLength = newPath.length
                 l = Math.min(oldLength, newLength)
                 newValue = undefined
                 while i < l
                     oldValue = oldArray.getAt(i)
-                    newValue = newArray[i]
+                    newValue = newPath[i]
                     oldArray.setAt i, new google.maps.LatLng(newValue.latitude, newValue.longitude)  if (oldValue.lat() isnt newValue.latitude) or (oldValue.lng() isnt newValue.longitude)
                     i++
                 while i < newLength
-                    newValue = newArray[i]
+                    newValue = newPath[i]
                     oldArray.push new google.maps.LatLng(newValue.latitude, newValue.longitude)
                     i++
                 while i < oldLength
                     oldArray.pop()
                     i++
-        , !scope.static)
+        
+        geojsonWatcher = (newPath) ->
+            oldArray = mapArray
+            if newPath
+                array
+                if scopePath.type == "Polygon"
+                  array = newPath.coordinates[0]
+                else if scopePath.type == "LineString"
+                  array = newPath.coordinates
+
+                i = 0
+                oldLength = oldArray.getLength()
+                newLength = array.length
+                l = Math.min(oldLength, newLength)
+                newValue = undefined
+                while i < l
+                    oldValue = oldArray.getAt(i)
+                    newValue = array[i]
+                    oldArray.setAt i, new google.maps.LatLng(newValue[1], newValue[0])  if (oldValue.lat() isnt newValue[1]) or (oldValue.lng() isnt newValue[0])
+                    i++
+                while i < newLength
+                    newValue = array[i]
+                    oldArray.push new google.maps.LatLng(newValue[1], newValue[0])
+                    i++
+                while i < oldLength
+                    oldArray.pop()
+                    i++
+
+        watchListener = scope.$watch(pathEval, (if angular.isUndefined(scopePath.type) then legacyWatcher else geojsonWatcher), !scope.static)
+        
         ->
             if mapArrayListener
                 mapArrayListener()

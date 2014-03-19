@@ -16,6 +16,7 @@ angular.module("google-maps.directives.api")
             geodesic: "="
             icons: "="
             visible: "="
+            static: "="
 
         DEFAULTS: {}
         $log: Logger

@@ -28,23 +28,47 @@ https://github.com/nlaplante/angular-google-maps
 @authors
 Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
+Rick Huizinga - https://plus.google.com/+RickHuizinga
 ###
 angular.module("google-maps")
 .directive "polygon", ["$log", "$timeout", "array-sync", ($log, $timeout, arraySync) ->
-    validatePathPoints = (path) ->
+    validatePath = (path) ->
         i = 0
-
-        while i < path.length
-            return false  if angular.isUndefined(path[i].latitude) or angular.isUndefined(path[i].longitude)
-            i++
-        true
+        if angular.isUndefined(path.type)
+            return false if path.length < 2
+            while i < path.length
+                return false if angular.isUndefined(path[i].latitude) or angular.isUndefined(path[i].longitude)
+                i++
+                
+            true
+        else
+            return false if (path.type isnt "Polygon") or angular.isUndefined(path.coordinates)
+            
+            #Note: At this time, we only support drawing the outer polygon and ignore the inner 'holes'
+            ring = path.coordinates[0]
+            return false if (ring.length < 4)
+            while i < ring.length
+                return false if ring[i].length != 2
+                i++
+            
+            return false if ring[0][0] isnt ring[ring.length - 1][0] or ring[0][1] isnt ring[ring.length - 1][1]
+            
+            true
     convertPathPoints = (path) ->
         result = new google.maps.MVCArray()
+        
         i = 0
-
-        while i < path.length
-            result.push new google.maps.LatLng(path[i].latitude, path[i].longitude)
-            i++
+        if angular.isUndefined(path.type)
+            while i < path.length
+                result.push new google.maps.LatLng(path[i].latitude, path[i].longitude)
+                i++
+        else
+            #Note: At this time, we only support drawing the outer polygon and ignore the inner 'holes'
+            ring = path.coordinates[0]
+            while i < ring.length
+                result.push new google.maps.LatLng(ring[i][1], ring[i][0])
+                i++
+        
         result
     extendMapBounds = (map, points) ->
         bounds = new google.maps.LatLngBounds()
@@ -84,7 +108,7 @@ angular.module("google-maps")
     link: (scope, element, attrs, mapCtrl) ->
 
         # Validate required properties
-        if angular.isUndefined(scope.path) or scope.path is null or scope.path.length < 2 or not validatePathPoints(scope.path)
+        if angular.isUndefined(scope.path) or scope.path is null or not validatePath(scope.path)
             $log.error "polygon: no valid path attribute found"
             return
 
@@ -118,7 +142,7 @@ angular.module("google-maps")
             map = mapCtrl.getMap()
             polygon = new google.maps.Polygon(buildOpts(convertPathPoints(scope.path)))
             extendMapBounds map, pathPoints  if isTrue(attrs.fit)
-            if !scope.static && angular.isDefined(scope.editable)
+            if !scope.static and angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
                     polygon.setEditable newValue if newValue != oldValue
 
