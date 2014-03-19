@@ -164,6 +164,36 @@ module.exports = (grunt) ->
                             statements: 25
                             branches: 5
                             functions: 25
+            coverage:
+                src: ["bower_components/lodash-amd/main.js", "dist/angular-google-maps.js"]
+                options:
+                    keepRunner: true
+                    vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
+                             "bower_components/jquery/jquery.js",
+                             "bower_components/angular/angular.js",
+                             "bower_components/angular-mocks/angular-mocks.js"]
+                    specs: ["tmp/spec/js/**/*spec.js"]
+                    helpers: ["tmp/spec/js/helpers/helpers.js"]
+                    #grunt-template-jasmine-requirejs - to remove all coverage meta from angular-google-maps.js (helps debug)
+                    #grunt-template-jasmine-istanbul - to produce coverage report
+        #                    template: require  "grunt-template-jasmine-requirejs"
+                    template: require  "grunt-template-jasmine-istanbul"
+                    templateOptions:
+                        template: require "grunt-template-jasmine-requirejs"
+                        templateOptions:
+                            requireConfig:
+                                #baseUrl: ".grunt/grunt-contrib-jasmine/"
+                                paths:
+                                  "lodash": "bower_components/lodash/dist/lodash.underscore"
+                                deps: ["lodash"]
+                                callback: (_) ->
+                        coverage: "spec/coverage/coverage.json"
+                        report: "spec/coverage"
+                        thresholds:
+                            lines: 25
+                            statements: 25
+                            branches: 5
+                            functions: 25
 
     # Default task: build a release in dist/
     grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
