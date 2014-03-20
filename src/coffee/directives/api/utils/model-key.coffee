@@ -20,5 +20,7 @@ angular.module("google-maps.directives.api.utils")
                     scope.coords).latitude and
             @evalModelHandle(model1, scope.coords).longitude == @evalModelHandle(model2,
                     scope.coords).longitude
-    ModelKey
+
+        setIdKey:(scope) =>
+            @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
 ]

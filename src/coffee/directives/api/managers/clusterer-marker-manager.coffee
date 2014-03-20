@@ -1,7 +1,7 @@
 angular.module("google-maps.directives.api.managers")
 .factory "ClustererMarkerManager", [ "BaseObject", "Logger", (BaseObject,Logger) ->
     class ClustererMarkerManager extends BaseObject
-        constructor: (gMap, opt_markers, opt_options) ->
+        constructor: (gMap, opt_markers, opt_options, opt_events) ->
             super()
             self = @
             @opt_options = opt_options
@@ -11,6 +11,12 @@ angular.module("google-maps.directives.api.managers")
                 @clusterer = new MarkerClusterer(gMap, opt_markers, opt_options)
             else
                 @clusterer = new MarkerClusterer(gMap)
+
+            if angular.isDefined(opt_events) and opt_events? and angular.isObject(opt_events)
+                for eventName, eventHandler of opt_events
+                    if opt_events.hasOwnProperty(eventName) and angular.isFunction(opt_events[eventName])
+                        google.maps.event.addListener @clusterer, eventName, opt_events[eventName]
+
             @clusterer.setIgnoreHidden(true)
             @$log = Logger
             @noDrawOnSingleAddRemoves = true

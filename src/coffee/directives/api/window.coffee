@@ -39,5 +39,4 @@ angular.module("google-maps.directives.api")
 
                     @onChildCreation(window) if @onChildCreation? and window?
                 , GmapUtil.defaultDelay + 25)
-        return Window
 ]

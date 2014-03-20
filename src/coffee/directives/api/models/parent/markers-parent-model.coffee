@@ -13,7 +13,7 @@ angular.module("google-maps.directives.api.models.parent")
                 @$log.info @
                 #assume do rebuild all is false and were lookging for a modelKey prop of id
                 @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else true
-                @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
+                @setIdKey scope
                 @scope.$watch 'doRebuildAll', (newValue, oldValue) =>
                     if (newValue != oldValue)
                         @doRebuildAll = newValue
@@ -23,6 +23,7 @@ angular.module("google-maps.directives.api.models.parent")
                 @watch('models', scope)
                 @watch('doCluster', scope)
                 @watch('clusterOptions', scope)
+                @watch('clusterEvents', scope)
                 @watch('fit', scope)
                 @watch('idKey', scope)
                 @createMarkersFromScratch(scope)
@@ -49,11 +50,13 @@ angular.module("google-maps.directives.api.models.parent")
                         if @gMarkerManager == undefined
                             @gMarkerManager = new ClustererMarkerManager(@mapCtrl.getMap(),
                                     undefined,
-                                    scope.clusterOptions)
+                                    scope.clusterOptions,
+                                    scope.clusterEvents)
                         else
                             @gMarkerManager = new ClustererMarkerManager(@mapCtrl.getMap(),
                                     undefined,
-                                    scope.clusterOptions) if @gMarkerManager.opt_options != scope.clusterOptions
+                                    scope.clusterOptions,
+                                    scope.clusterEvents) if @gMarkerManager.opt_options != scope.clusterOptions
                     else
                         @gMarkerManager = new ClustererMarkerManager(@mapCtrl.getMap())
                 else

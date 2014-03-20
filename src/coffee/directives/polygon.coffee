@@ -79,6 +79,7 @@ angular.module("google-maps")
         fill: "="
         icons: "=icons"
         visible: "="
+        static: "="
 
     link: (scope, element, attrs, mapCtrl) ->
 
@@ -105,17 +106,19 @@ angular.module("google-maps")
                     editable: false
                     geodesic: false
                     visible: true
+                    static: false
                 , (defaultValue, key) ->
                     if angular.isUndefined(scope[key]) or scope[key] is null
                         opts[key] = defaultValue
                     else
                         opts[key] = scope[key]
 
+                opts.editable = false if opts.static
                 opts
             map = mapCtrl.getMap()
             polygon = new google.maps.Polygon(buildOpts(convertPathPoints(scope.path)))
             extendMapBounds map, pathPoints  if isTrue(attrs.fit)
-            if angular.isDefined(scope.editable)
+            if !scope.static && angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
                     polygon.setEditable newValue if newValue != oldValue
 

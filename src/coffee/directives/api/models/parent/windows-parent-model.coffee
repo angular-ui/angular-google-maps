@@ -15,7 +15,8 @@ angular.module("google-maps.directives.api.models.parent")
                         @scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter',
                                            'isIconVisibleOnClick', 'closeClick']
                         #setting up local references to propety keys IE: @coordsKey
-                        @[name + 'Key'] = undefined for name in @scopePropNames
+                        _.each @scopePropNames, (name) ->
+                            @[name + 'Key'] = undefined
                         @linked = new Linked(scope, element, attrs, ctrls)
                         @models = undefined
                         @contentKeys = undefined #model keys to parse html angular content
@@ -115,7 +116,7 @@ angular.module("google-maps.directives.api.models.parent")
                                     @pieceMealWindows markersScope, true, 'markerModels', false
 
                     watchIdKey: (scope)=>
-                        @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
+                        @setIdKey scope
                         scope.$watch 'idKey', (newValue, oldValue) =>
                             if (newValue != oldValue and !newValue?)
                                 @idKey = newValue

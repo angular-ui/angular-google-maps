@@ -19,6 +19,4 @@ angular.module("google-maps.directives.api")
             link: (scope, element, attrs, ctrls) =>
                 new WindowsParentModel(scope, element, attrs, ctrls, @$timeout,
                         @$compile, @$http, @$templateCache, @$interpolate)
-
-        Windows
     ]

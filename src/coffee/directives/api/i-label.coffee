@@ -27,5 +27,4 @@ angular.module("google-maps.directives.api")
             @$timeout = $timeout
         link: (scope, element, attrs, ctrl) =>
             throw new Exception("Not Implemented!!")
-    ILabel
 ]

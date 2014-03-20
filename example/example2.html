@@ -25,7 +25,7 @@
     <link href="example.css" rel="stylesheet" type="text/css">
 </head>
 
-<body ng-controller="ExampleController">
+<body ng-controller="Example2Controller">
 <!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 <div class="page-title affix">
@@ -48,29 +48,34 @@
         <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>
         <layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></layer>
 
-        <markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
-                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions" >
-        </markers>
+        <!--Editable polylines are very slow.. nothing you can do as this is a google problem-->
+        <polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"
+                  geodesic="'geodesic'" draggable="'draggable'" fit="false">
+        </polylines>
 
-        <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true' dorebuildall="example2.doRebuildAll"  >
-            <windows show="'showWindow'" closeClick="'closeClick'" dorebuildall="example2.doRebuildAll">
-                <div>
-                    <p>Dynamic Marker created via a delay!</p>
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-                    <p class="muted">My marker will stay open when the window is popped up!</p>
-                </div>
-            </windows>
-        </markers>
+        <!--<markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"-->
+                    <!--doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions" >-->
+        <!--</markers>-->
 
-        <markers models="map.mexiMarkers" idKey="map.mexiIdKey" coords="'self'" icon="'icon'" click="'onClicked'" dorebuildall="example2.doRebuildAll" >
-            <windows show="'showWindow'" closeClick="'closeClick'" dorebuildall="example2.doRebuildAll" >
-                <div>
-                    <p>Mexi!</p>
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-                    <p class="muted">My marker will stay open when the window is popped up!</p>
-                </div>
-            </windows>
-        </markers>
+        <!--<markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true' dorebuildall="example2.doRebuildAll"  >-->
+            <!--<windows show="'showWindow'" closeClick="'closeClick'" dorebuildall="example2.doRebuildAll">-->
+                <!--<div>-->
+                    <!--<p>Dynamic Marker created via a delay!</p>-->
+                    <!--<p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
+                    <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
+                <!--</div>-->
+            <!--</windows>-->
+        <!--</markers>-->
+
+        <!--<markers models="map.mexiMarkers" idKey="map.mexiIdKey" coords="'self'" icon="'icon'" click="'onClicked'" dorebuildall="example2.doRebuildAll" >-->
+            <!--<windows show="'showWindow'" closeClick="'closeClick'" dorebuildall="example2.doRebuildAll" >-->
+                <!--<div>-->
+                    <!--<p>Mexi!</p>-->
+                    <!--<p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
+                    <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
+                <!--</div>-->
+            <!--</windows>-->
+        <!--</markers>-->
     </div>
     <button class="btn btn-danger pull-right" ng-click="removeMarkers()">Clear Map</button>
 </div>
@@ -255,6 +260,7 @@
 <script src="../dist/angular-google-maps.js"></script>
 <script src="mock-heat-layer.js"></script>
 <script src="example-controller.js"></script>
+<script src="example2-controller.js"></script>
 <script src="templates/infoController.js"></script>
 <script src="http://localhost:35729/livereload.js"></script>
 </body>

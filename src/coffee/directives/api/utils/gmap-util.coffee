@@ -47,4 +47,38 @@ angular.module("google-maps.directives.api.utils")
         ret
 
     defaultDelay: 50
+
+    isTrue:(val) ->
+        angular.isDefined(val) and val isnt null and val is true or val is "1" or val is "y" or val is "true"
+
+    isFalse: (value) ->
+        ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) != -1
+
+    getCoords: (value) ->
+        new google.maps.LatLng(value.latitude, value.longitude)
+
+    validatePathPoints: (path) ->
+        i = 0
+        while i < path.length
+            return false  if angular.isUndefined(path[i].latitude) or angular.isUndefined(path[i].longitude)
+            i++
+        true
+
+    convertPathPoints: (path) ->
+        result = new google.maps.MVCArray()
+        i = 0
+
+        while i < path.length
+            result.push new google.maps.LatLng(path[i].latitude, path[i].longitude)
+            i++
+        result
+
+    extendMapBounds:(map, points) ->
+        bounds = new google.maps.LatLngBounds()
+        i = 0
+
+        while i < points.length
+            bounds.extend points.getAt(i)
+            i++
+        map.fitBounds bounds
 ]

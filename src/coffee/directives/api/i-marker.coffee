@@ -30,6 +30,4 @@ angular.module("google-maps.directives.api")
         ]
         link: (scope, element, attrs, ctrl) =>
             throw new Exception("Not implemented!!")
-
-    return IMarker
 ]

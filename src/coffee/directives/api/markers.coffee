@@ -9,6 +9,7 @@ angular.module("google-maps.directives.api")
                 @scope.models = '=models'
                 @scope.doCluster = '=docluster'
                 @scope.clusterOptions = '=clusteroptions'
+                @scope.clusterEvents = '=clusterevents'
                 @scope.fit = '=fit'
                 @scope.labelContent = '=labelcontent'
                 @scope.labelAnchor = '@labelanchor'
@@ -25,5 +26,4 @@ angular.module("google-maps.directives.api")
 
             link: (scope, element, attrs, ctrl) =>
                 new MarkersParentModel(scope, element, attrs, ctrl, @$timeout)
-        Markers
 ]
