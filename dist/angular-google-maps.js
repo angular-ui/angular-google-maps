@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-19
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-20
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -3856,74 +3856,12 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
 
 (function() {
   angular.module("google-maps").directive("polygon", [
-    "$log", "$timeout", "array-sync", function($log, $timeout, arraySync) {
-      var DEFAULTS, convertPathPoints, extendMapBounds, isTrue, validatePath;
-      validatePath = function(path) {
-        var i, ring;
-        i = 0;
-        if (angular.isUndefined(path.type)) {
-          if (path.length < 2) {
-            return false;
-          }
-          while (i < path.length) {
-            if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
-              return false;
-            }
-            i++;
-          }
-          return true;
-        } else {
-          if ((path.type !== "Polygon") || angular.isUndefined(path.coordinates)) {
-            return false;
-          }
-          ring = path.coordinates[0];
-          if (ring.length < 4) {
-            return false;
-          }
-          while (i < ring.length) {
-            if (ring[i].length !== 2) {
-              return false;
-            }
-            i++;
-          }
-          if (ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1]) {
-            return false;
-          }
-          return true;
-        }
-      };
-      convertPathPoints = function(path) {
-        var i, result;
-        result = new google.maps.MVCArray();
-        i = 0;
-        if (angular.isUndefined(path.type)) {
-          while (i < path.length) {
-            result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
-            i++;
-          }
-        } else {
-          ring = path.coordinates[0];
-          while (i < ring.length) {
-            result.push(new google.maps.LatLng(ring[i][1], ring[i][0]));
-            i++;
-          }
-        }
-        return result;
-      };
-      extendMapBounds = function(map, points) {
-        var bounds, i;
-        bounds = new google.maps.LatLngBounds();
-        i = 0;
-        while (i < points.length) {
-          bounds.extend(points.getAt(i));
-          i++;
-        }
-        return map.fitBounds(bounds);
-      };
+    "$log", "$timeout", "array-sync", "GmapUtil", function($log, $timeout, arraySync, GmapUtil) {
       /*
       Check if a value is true
       */
 
+      var DEFAULTS, isTrue;
       isTrue = function(val) {
         return angular.isDefined(val) && val !== null && val === true || val === "1" || val === "y" || val === "true";
       };
@@ -3943,15 +3881,17 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
           fill: "=",
           icons: "=icons",
           visible: "=",
-          "static": "="
+          "static": "=",
+          events: "=",
+          zIndex: "=zindex"
         },
         link: function(scope, element, attrs, mapCtrl) {
-          if (angular.isUndefined(scope.path) || scope.path === null || !validatePath(scope.path)) {
+          if (angular.isUndefined(scope.path) || scope.path === null || !GmapUtil.validatePath(scope.path)) {
             $log.error("polygon: no valid path attribute found");
             return;
           }
           return $timeout(function() {
-            var arraySyncer, buildOpts, map, polygon;
+            var arraySyncer, buildOpts, eventName, getEventHandler, map, polygon;
             buildOpts = function(pathPoints) {
               var opts;
               opts = angular.extend({}, DEFAULTS, {
@@ -3969,7 +3909,8 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
                 editable: false,
                 geodesic: false,
                 visible: true,
-                "static": false
+                "static": false,
+                zIndex: 0
               }, function(defaultValue, key) {
                 if (angular.isUndefined(scope[key]) || scope[key] === null) {
                   return opts[key] = defaultValue;
@@ -3983,9 +3924,9 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
               return opts;
             };
             map = mapCtrl.getMap();
-            polygon = new google.maps.Polygon(buildOpts(convertPathPoints(scope.path)));
+            polygon = new google.maps.Polygon(buildOpts(GmapUtil.convertPathPoints(scope.path)));
             if (isTrue(attrs.fit)) {
-              extendMapBounds(map, pathPoints);
+              GmapUtil.extendMapBounds(map, pathPoints);
             }
             if (!scope["static"] && angular.isDefined(scope.editable)) {
               scope.$watch("editable", function(newValue, oldValue) {
@@ -4029,7 +3970,6 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
             }
             if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
               scope.$watch("stroke.color", function(newValue, oldValue) {
-                polygon.setOptions(buildOpts(polygon.getPath()));
                 if (newValue !== oldValue) {
                   return polygon.setOptions(buildOpts(polygon.getPath()));
                 }
@@ -4044,11 +3984,29 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
             }
             if (angular.isDefined(scope.fill) && angular.isDefined(scope.fill.opacity)) {
               scope.$watch("fill.opacity", function(newValue, oldValue) {
-                polygon.setOptions(buildOpts(polygon.getPath()));
                 if (newValue !== oldValue) {
                   return polygon.setOptions(buildOpts(polygon.getPath()));
                 }
               });
+            }
+            if (angular.isDefined(scope.zIndex)) {
+              scope.$watch("zIndex", function(newValue, oldValue) {
+                if (newValue !== oldValue) {
+                  return polygon.setOptions(buildOpts(polygon.getPath()));
+                }
+              });
+            }
+            if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
+              getEventHandler = function(eventName) {
+                return function() {
+                  return scope.events[eventName].apply(scope, [polygon, eventName, arguments]);
+                };
+              };
+              for (eventName in scope.events) {
+                if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+                  polygon.addListener(eventName, getEventHandler(eventName));
+                }
+              }
             }
             arraySyncer = arraySync(polygon.getPath(), scope, "path");
             return scope.$on("$destroy", function() {
