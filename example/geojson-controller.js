@@ -73,8 +73,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             showWeather: false,
             showHeat: false,
             center: {
-                latitude: 45,
-                longitude: -73
+              type: "Point",
+              coordinates: [ -73, 45 ]
             },
             options: {
                 streetViewControl: false,
@@ -216,8 +216,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             },
             infoWindow: {
                 coords: {
-                    latitude: 36.270850,
-                    longitude: -44.296875
+                  type: "Point",
+                  coordinates: [ -44.296875, 36.270850 ]
                 },
                 options:{
                     disableAutoPan:true
@@ -226,8 +226,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             },
             infoWindowWithCustomClass: {
                 coords: {
-                    latitude: 36.270850,
-                    longitude: -44.296875
+                  type: "Point",
+                  coordinates: [ -44.296875, 36.270850 ]
                 },
                 options:{
                     boxClass: 'custom-info-window'
@@ -236,8 +236,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             },
             templatedInfoWindow: {
                 coords: {
-                    latitude: 48.654686,
-                    longitude: -75.937500
+                  type: "Point",
+                  coordinates: [ -75.937500, 48.654686 ]
                 },
                 options:{
                     disableAutoPan:true

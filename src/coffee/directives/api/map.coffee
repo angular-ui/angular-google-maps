@@ -41,7 +41,7 @@ angular.module("google-maps.directives.api")
             link: (scope, element, attrs) =>
                 # Center property must be specified and provide lat &
                 # lng properties
-                if not angular.isDefined(scope.center) or (not angular.isDefined(scope.center.latitude) or not angular.isDefined(scope.center.longitude))
+                if not @validateCoords(scope.center)
                     $log.error "angular-google-maps: could not find a valid center property"
                     return
                 unless angular.isDefined(scope.zoom)
@@ -65,7 +65,7 @@ angular.module("google-maps.directives.api")
 
                 # Create the map
                 _m = new google.maps.Map(el.find("div")[1], angular.extend({}, DEFAULTS, opts,
-                    center: new google.maps.LatLng(scope.center.latitude, scope.center.longitude)
+                    center: @getCoords(scope.center)
                     draggable: @isTrue(attrs.draggable)
                     zoom: scope.zoom
                     bounds: scope.bounds
@@ -88,8 +88,12 @@ angular.module("google-maps.directives.api")
                     c = _m.center
                     _.defer ->
                         scope.$apply (s) ->
-                            s.center.latitude = c.lat()
-                            s.center.longitude = c.lng()
+                            if angular.isDefined(s.center.type)
+                                s.center.coordinates[1] = c.lat()
+                                s.center.coordinates[0] = c.lng()
+                            else
+                                s.center.latitude = c.lat()
+                                s.center.longitude = c.lng()
 
 
                 google.maps.event.addListener _m, "zoom_changed", ->
@@ -106,8 +110,12 @@ angular.module("google-maps.directives.api")
                     _.defer ->
                         scope.$apply (s) ->
                             unless _m.dragging
-                                s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
-                                s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
+                                if angular.isDefined(s.center.type)
+                                    s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
+                                    s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
+                                else
+                                    s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
+                                    s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
 
 
                 google.maps.event.addListener _m, "idle", ->
@@ -161,7 +169,7 @@ angular.module("google-maps.directives.api")
                     return  if newValue is oldValue or (coords.lat() is _m.center.lat() and coords.lng() is _m.center.lng())
                     settingCenterFromScope = true
                     unless dragging
-                        if !newValue.latitude? or !newValue.longitude?
+                        if !@validateCoords(newValue)
                             $log.error("Invalid center for newValue: #{JSON.stringify newValue}")
                         if @isTrue(attrs.pan) and scope.zoom is _m.zoom
                             _m.panTo coords

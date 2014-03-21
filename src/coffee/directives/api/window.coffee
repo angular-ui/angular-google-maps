@@ -17,7 +17,7 @@ angular.module("google-maps.directives.api")
                     mapCtrl = ctrls[0].getMap()
                     markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1].getMarkerScope().gMarker else undefined
                     defaults = if scope.options? then scope.options else {}
-                    hasScopeCoords = scope? and scope.coords? and scope.coords.latitude? and scope.coords.longitude?
+                    hasScopeCoords = scope? and @validateCoords(scope.coords)
 
                     opts = if hasScopeCoords then @createWindowOptions(markerCtrl, scope, element.html(), defaults) else defaults
 
@@ -32,10 +32,11 @@ angular.module("google-maps.directives.api")
                     if ctrls[1]?
                         markerScope = ctrls[1].getMarkerScope()
                         markerScope.$watch 'coords', (newValue, oldValue) =>
-                            return window.hideWindow() unless newValue?
-                        markerScope.$watch 'coords.latitude', (newValue, oldValue) =>
-                            if newValue != oldValue
-                                window.getLatestPosition()
+                            return window.hideWindow() unless @validateCoords(newValue)
+                            
+                            if !angular.equals(newValue, oldValue)
+                              window.getLatestPosition()
+                        , true
 
                     @onChildCreation(window) if @onChildCreation? and window?
                 , GmapUtil.defaultDelay + 25)

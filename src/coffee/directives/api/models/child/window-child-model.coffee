@@ -53,10 +53,10 @@ angular.module("google-maps.directives.api.models.child")
                             unless newValue?
                                 @hideWindow()
                             else
-                                if !newValue.latitude? or !newValue.longitude?
+                                if !@validateCoords(newValue)
                                     @$log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
                                     return
-                                @gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude))
+                                @gWin.setPosition(@getCoords(newValue))
                     , true)
 
                 handleClick: ()=>

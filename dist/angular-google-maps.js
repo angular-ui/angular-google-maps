@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-20
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-21
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -382,6 +382,25 @@ Nicholas McCready - https://twitter.com/nmccready
           return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
         },
         getCoords: getCoords,
+        validateCoords: function(coords) {
+          if (angular.isUndefined(coords)) {
+            return false;
+          }
+          if (Array.isArray(coords)) {
+            if (coords.length === 2) {
+              return true;
+            }
+          } else if (angular.isDefined(coords.type)) {
+            if (coords.type === "Point" && Array.isArray(coords.coordinates) && coords.coordinates.length === 2) {
+              return true;
+            }
+          } else {
+            if (angular.isDefined(coords.latitude) && angular.isDefined(coords.longitude)) {
+              return true;
+            }
+          }
+          return false;
+        },
         validatePath: function(path) {
           var array, i;
           i = 0;
@@ -1641,11 +1660,11 @@ Nicholas McCready - https://twitter.com/nmccready
               if (newValue == null) {
                 return _this.hideWindow();
               } else {
-                if ((newValue.latitude == null) || (newValue.longitude == null)) {
+                if (!_this.validateCoords(newValue)) {
                   _this.$log.error("WindowChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(_this.model)));
                   return;
                 }
-                return _this.gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+                return _this.gWin.setPosition(_this.getCoords(newValue));
               }
             }
           }, true);
@@ -3076,7 +3095,7 @@ Nicholas McCready - https://twitter.com/nmccready
         Map.prototype.link = function(scope, element, attrs) {
           var dragging, el, eventName, getEventHandler, opts, settingCenterFromScope, type, _m,
             _this = this;
-          if (!angular.isDefined(scope.center) || (!angular.isDefined(scope.center.latitude) || !angular.isDefined(scope.center.longitude))) {
+          if (!this.validateCoords(scope.center)) {
             $log.error("angular-google-maps: could not find a valid center property");
             return;
           }
@@ -3104,7 +3123,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
           }
           _m = new google.maps.Map(el.find("div")[1], angular.extend({}, DEFAULTS, opts, {
-            center: new google.maps.LatLng(scope.center.latitude, scope.center.longitude),
+            center: this.getCoords(scope.center),
             draggable: this.isTrue(attrs.draggable),
             zoom: scope.zoom,
             bounds: scope.bounds
@@ -3135,8 +3154,13 @@ Nicholas McCready - https://twitter.com/nmccready
             c = _m.center;
             return _.defer(function() {
               return scope.$apply(function(s) {
-                s.center.latitude = c.lat();
-                return s.center.longitude = c.lng();
+                if (angular.isDefined(s.center.type)) {
+                  s.center.coordinates[1] = c.lat();
+                  return s.center.coordinates[0] = c.lng();
+                } else {
+                  s.center.latitude = c.lat();
+                  return s.center.longitude = c.lng();
+                }
               });
             });
           });
@@ -3159,11 +3183,20 @@ Nicholas McCready - https://twitter.com/nmccready
             return _.defer(function() {
               return scope.$apply(function(s) {
                 if (!_m.dragging) {
-                  if (s.center.latitude !== c.lat()) {
-                    s.center.latitude = c.lat();
-                  }
-                  if (s.center.longitude !== c.lng()) {
-                    return s.center.longitude = c.lng();
+                  if (angular.isDefined(s.center.type)) {
+                    if (s.center.coordinates[1] !== c.lat()) {
+                      s.center.coordinates[1] = c.lat();
+                    }
+                    if (s.center.coordinates[0] !== c.lng()) {
+                      return s.center.coordinates[0] = c.lng();
+                    }
+                  } else {
+                    if (s.center.latitude !== c.lat()) {
+                      s.center.latitude = c.lat();
+                    }
+                    if (s.center.longitude !== c.lng()) {
+                      return s.center.longitude = c.lng();
+                    }
                   }
                 }
               });
@@ -3234,7 +3267,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             settingCenterFromScope = true;
             if (!dragging) {
-              if ((newValue.latitude == null) || (newValue.longitude == null)) {
+              if (!_this.validateCoords(newValue)) {
                 $log.error("Invalid center for newValue: " + (JSON.stringify(newValue)));
               }
               if (_this.isTrue(attrs.pan) && scope.zoom === _m.zoom) {
@@ -3500,7 +3533,7 @@ Nicholas McCready - https://twitter.com/nmccready
             mapCtrl = ctrls[0].getMap();
             markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarkerScope().gMarker : void 0;
             defaults = scope.options != null ? scope.options : {};
-            hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
+            hasScopeCoords = (scope != null) && _this.validateCoords(scope.coords);
             opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : defaults;
             if (mapCtrl != null) {
               window = new WindowChildModel({}, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, element);
@@ -3511,15 +3544,13 @@ Nicholas McCready - https://twitter.com/nmccready
             if (ctrls[1] != null) {
               markerScope = ctrls[1].getMarkerScope();
               markerScope.$watch('coords', function(newValue, oldValue) {
-                if (newValue == null) {
+                if (!_this.validateCoords(newValue)) {
                   return window.hideWindow();
                 }
-              });
-              markerScope.$watch('coords.latitude', function(newValue, oldValue) {
-                if (newValue !== oldValue) {
+                if (!angular.equals(newValue, oldValue)) {
                   return window.getLatestPosition();
                 }
-              });
+              }, true);
             }
             if ((_this.onChildCreation != null) && (window != null)) {
               return _this.onChildCreation(window);

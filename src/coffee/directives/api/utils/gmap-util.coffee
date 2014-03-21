@@ -65,6 +65,18 @@ angular.module("google-maps.directives.api.utils")
 
     getCoords: getCoords
 
+    validateCoords: (coords) ->
+        return false if angular.isUndefined(coords)
+        
+        if Array.isArray(coords)
+            return true if coords.length is 2
+        else if angular.isDefined(coords.type)
+            return true if coords.type is "Point" and Array.isArray(coords.coordinates) and coords.coordinates.length is 2
+        else
+            return true if angular.isDefined(coords.latitude) and angular.isDefined(coords.longitude)
+            
+        false
+        
     validatePath: (path) ->
         i = 0
         if angular.isUndefined(path.type)
@@ -85,6 +97,8 @@ angular.module("google-maps.directives.api.utils")
             else if path.type is "LineString"
                 return false if path.coordinates.length < 2
                 array = path.coordinates
+            else
+                return false
               
             while i < array.length
                 return false if array[i].length != 2

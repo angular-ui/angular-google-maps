@@ -235,10 +235,10 @@
 					<pre ng-cloak>
 						<span ng-show="map.center.coordinates[1] >= 0">&nbsp;
 						</span>
-						{{ map.center.latitude | number:4 }} lat
+						{{ map.center.coordinates[1] | number:4 }} lat
 						<br>
 						<span ng-show="map.center.coordinates[0] >= 0">&nbsp;
-						</span>{{ map.center.longitude | number:4 }} lng
+						</span>{{ map.center.coordinates[0] | number:4 }} lng
 					</pre>
                 </td>
             </tr>
