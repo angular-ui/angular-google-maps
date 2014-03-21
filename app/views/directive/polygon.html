@@ -70,6 +70,11 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 			<td>boolean property which shows or hides the polygon</td>
 		</tr>
 		<tr>
+			<td>zindex</td>
+			<td><span class="label label-info">expression</span></td>
+			<td><span class="badge badge-info">New in v1.1</span> The zIndex compared to other polygons</td>
+		</tr>
+		<tr>
 			<td>static</td>
 			<td><span class="label label-info">expression</span></td>
 			<td>
@@ -81,6 +86,20 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 			    <li>For static paths, the path attribute will watched by reference so the path may be changed in its entirety and the map will update.</li>
 			    <li>Changes to the static declaration are ignored after the directive is instantiated.</li>
 			  </ul>
+		  </td>
+		</tr>
+		<tr>
+			<td>events</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>
+			  <p><span class="badge badge-info">New in v1.1</span> Custom events to apply to the polygon. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">polygon events</a>.</p>
+			  <span>The handler function takes three parameters:</span>
+			  <ol>
+  			  <li>polygon: the GoogleMaps Polygon object</li>
+  			  <li>eventName: the name of the event</li>
+  			  <li>arguments: the arguments provided by Google Maps for this event type. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">the Polygon docs</a></li>
+			    
+			  </ol>
 		  </td>
 		</tr>
 	</tbody>
@@ -96,7 +115,9 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 	geodesic='{expression}'
 	icons='{expression}'
 	visible='{expression}'
-	static='{expression}'>
+	zindex='{expression}'
+	static='{expression}'
+	events='{expression}'>
 </polygon>
 </script>
 
