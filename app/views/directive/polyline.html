@@ -21,7 +21,10 @@ See <a google-api="Polyline">Polyline API</a>.</p>
 		<tr>
 			<td>path</td>
 			<td><span class="label label-danger">expression</span></td>
-			<td>An array of objects containing <code>latitude</code> and <code>longitude</code> properties which define the points connected by the polyline</td>
+			<td>
+			  <p>The coordinates of the points defining the polyline.</p>
+			  <p>May be in the form of an array of objects containing <code>latitude</code> and <code>longitude</code> properties, or <span class="badge badge-info">New in v1.1</span> a <a href="http://geojson.org/geojson-spec.html#linestring">GeoJSON LineString</a> object.</p>
+		  </td>
 		</tr>
 		<tr>
 			<td>stroke</td>
@@ -59,6 +62,20 @@ See <a google-api="Polyline">Polyline API</a>.</p>
 			<td><span class="label label-info">expression</span></td>
 			<td>boolean property which shows or hides the polyline</td>
 		</tr>
+		<tr>
+			<td>static</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>
+			  <p><span class="badge badge-info">New in v1.1</span> Boolean property which indicates that the polyline coordinates are static. (I.e. will not change).</p>
+			  <p>Declaring a static path will improve the performance of the directive as it does not need to monitor every coordinate in the path for changes during the Angular $digest cycle.</p>
+			  <span>Notes:</span>
+			  <ul>
+			    <li>Declaring a static path implies that it is not editable. As a result, the <code>editable</code> parameter will be ignored.</li>
+			    <li>For static paths, the path attribute will watched by reference so the path may be changed in its entirety and the map will update.</li>
+			    <li>Changes to the static declaration are ignored after the directive is instantiated.</li>
+			  </ul></p>
+		  </td>
+		</tr>
 	</tbody>
 </table>
 
@@ -70,7 +87,8 @@ See <a google-api="Polyline">Polyline API</a>.</p>
 	editable='{expression}'
 	geodesic='{expression}'
 	icons='{expression}'
-	visible='{expression}'>
+	visible='{expression}'
+	static='{expression}'>
 	...
 </polyline>
 </script>
