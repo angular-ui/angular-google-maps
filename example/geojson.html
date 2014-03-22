@@ -78,18 +78,18 @@
                 templateParameter="map.templatedInfoWindow.templateParameter" ng-cloak>
         </window>
 
-        <marker coords="searchLocationMarker.coords" options="searchLocationMarker.options" events="searchLocationMarker.events" >
+        <marker coords="searchLocationMarker.geometry" options="searchLocationMarker.options" events="searchLocationMarker.events" >
         </marker>
 
-        <markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
+        <markers models="map.randomMarkers" coords="'geometry'" icon="'icon'" click="'onClicked'"
                     doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
         </markers>
 
-        <markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'"
+        <markers models="map.markers2" coords="'geometry'" icon="'icon'" click="'onClicked'"
                     labelContent="'title'" labelAnchor="22 0" labelClass="marker-labels">
             <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                    <p ng-non-bindable>This is an info window at {{ geometry.coordinates[1] | number:4 }}, {{ geometry.coordinates[0] | number:4 }}!</p>
 
                     <p class="muted">My marker will stay open when the window is popped up!</p>
                 </div>
@@ -97,23 +97,23 @@
         </markers>
 
 
-        <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
+        <markers models="map.dynamicMarkers" coords="'geometry'" icon="'icon'" click="'onClicked'" fit='true'>
             <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p>Dynamic Marker created via a delay!</p>
 
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                    <p ng-non-bindable>This is an info window at {{ geometry.coordinates[1] | number:4 }}, {{ geometry.coordinates[0] | number:4 }}!</p>
 
                     <p class="muted">My marker will stay open when the window is popped up!</p>
                 </div>
             </windows>
         </markers>
 
-        <markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
+        <markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'geometry'" icon="'icon'" click="'onClicked'" >
             <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p>Mexi!</p>
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                    <p ng-non-bindable>This is an info window at {{ geometry.coordinates[1] | number:4 }}, {{ geometry.coordinates[0] | number:4 }}!</p>
                     <p class="muted">My marker will stay open when the window is popped up!</p>
                 </div>
             </windows>
@@ -121,10 +121,10 @@
 
         <!-- predefined markers -->
         <!-- rendering via ng-repeat, HIGH OVERHEAD via DOM Manipulation -->
-        <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
+        <marker ng-repeat="m in map.markers" coords="m.geometry" icon="m.icon" click="onMarkerClicked(m)">
             <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
-            <window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
-                    <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
+            <window ng-cloak  coords="map.infoWindowWithCustomClass.geometry" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
+                    <p>This is an info window at {{ m.geometry.coordinates[1] | number:4 }}, {{ m.geometry.coordinates[0] | number:4 }}!</p>
                     <p class="muted">My marker will stay open when the window is popped up!</p>
             </window>
         </marker>
@@ -263,15 +263,15 @@
             <tr>
                 <td>clicked position</td>
                 <td>
-						<pre ng-show="map.clickedMarker.coordinates[1] != null && map.clickedMarker.coordinates[0] != null" ng-cloak>
-							<span ng-show="map.clickedMarker.coorindates[1] >= 0">&nbsp;
+						<pre ng-show="map.clickedMarker.geometry.coordinates[1] != null && map.clickedMarker.geometry.coordinates[0] != null" ng-cloak>
+							<span ng-show="map.clickedMarker.geometry.coordinates[1] >= 0">&nbsp;
 							</span>
-							{{ map.clickedMarker.coordinates[1] | number:4 }} lat
+							{{ map.clickedMarker.geometry.coordinates[1] | number:4 }} lat
 							<br>
-							<span ng-show="map.clickedMarker.coordinates[1] >= 0">&nbsp;</span>
-							{{ map.clickedMarker.coordinates[1] | number:4 }} lng
+							<span ng-show="map.clickedMarker.geometry.coordinates[1] >= 0">&nbsp;</span>
+							{{ map.clickedMarker.geometry.coordinates[1] | number:4 }} lng
 						</pre>
-                    <span ng-show="map.clickedMarker.coordinates == null">Click the map to see</span>
+                    <span ng-show="map.clickedMarker.geometry.coordinates == null">Click the map to see</span>
                 </td>
             </tr>
             <tr>
@@ -357,10 +357,13 @@
                                                   style="padding-left: 10em">opacity: {{c.fill.opacity}}</span> <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
                                         <span style="padding-left: 5em">center: {</span> <br/>
-                                            <span ng-click="c.center.latitude = (c.center.latitude % 5) +1"
-                                                  style="padding-left: 10em">latitude: {{c.center.latitude}}</span> <br/>
-                                            <span ng-click="c.center.longitude = (c.center.longitude % 5) +1"
-                                                  style="padding-left: 10em">longitude: {{c.center.longitude}}</span> <br/>
+                                            <span style="padding-left: 10em">type: {{c.center.type}}</span> <br/>
+                                            <span style="padding-left: 10em">coordinates: [</span> <br/>
+                                            <span ng-click="c.center.coordinates[0] = (c.center.coordinates[0] % 5) +1"
+                                                  style="padding-left: 15em">{{c.center.coordinates[0]}},</span> <br/>
+                                            <span ng-click="c.center.coordinates[1] = (c.center.coordinates[1] % 5) +1"
+                                                  style="padding-left: 15em">{{c.center.coordinates[1]}}</span> <br/>
+                                            <span style="padding-left: 10em">]</span> <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
                                         <span style="padding-left: 5em" class="{{c.radius}}"
                                                   ng-click="c.radius = c.radius*10">radius: {{c.radius}}</span>

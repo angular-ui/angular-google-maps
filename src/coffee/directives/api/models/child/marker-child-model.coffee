@@ -66,11 +66,11 @@ angular.module("google-maps.directives.api.models.child")
             if(scope.$id != @scope.$id or @gMarker == undefined)
                 return
             if (scope.coords?)
-                if !@scope.coords.latitude? or !@scope.coords.longitude?
+                if !@validateCoords(@scope.coords)
                     @$log.error "MarkerChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
                     return
-                @gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-                @gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
+                @gMarker.setPosition(@getCoords(scope.coords))
+                @gMarker.setVisible(@validateCoords(scope.coords))
                 @gMarkerManager.remove(@gMarker)
                 @gMarkerManager.add(@gMarker)
             else
@@ -82,8 +82,8 @@ angular.module("google-maps.directives.api.models.child")
             @gMarkerManager.remove(@gMarker)
             @gMarker.setIcon(scope.icon)
             @gMarkerManager.add(@gMarker)
-            @gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-            @gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
+            @gMarker.setPosition(@getCoords(scope.coords))
+            @gMarker.setVisible(@validateCoords(scope.coords))
 
         setOptions: (scope) =>
             if(scope.$id != @scope.$id)

@@ -26,24 +26,24 @@ angular.module("google-maps.directives.api.models.parent")
         onWatch: (propNameToWatch, scope) =>
             switch propNameToWatch
                 when 'coords'
-                    if (scope.coords? and @scope.gMarker?)
+                    if (@validateCoords(scope.coords) and @scope.gMarker?)
                         @scope.gMarker.setMap(@mapCtrl.getMap())
-                        @scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-                        @scope.gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
+                        @scope.gMarker.setPosition(@getCoords(scope.coords))
+                        @scope.gMarker.setVisible(@validateCoords(scope.coords))
                         @scope.gMarker.setOptions(scope.options)
                     else
                         # Remove marker
                         @scope.gMarker.setMap(null)
                 when 'icon'
-                    if (scope.icon? and scope.coords? and @scope.gMarker?)
+                    if (scope.icon? and @validateCoords(scope.coords) and @scope.gMarker?)
                         @scope.gMarker.setOptions(scope.options)
                         @scope.gMarker.setIcon(scope.icon)
                         @scope.gMarker.setMap(null)
                         @scope.gMarker.setMap(@mapCtrl.getMap())
-                        @scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-                        @scope.gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
+                        @scope.gMarker.setPosition(@getCoords(scope.coords))
+                        @scope.gMarker.setVisible(@validateCoords(scope.coords))
                 when 'options'
-                    if scope.coords? and scope.icon? and scope.options
+                    if @validateCoords(scope.coords) and scope.icon? and scope.options
                         @scope.gMarker.setMap(null) if @scope.gMarker?
                         delete @scope.gMarker
                         @scope.gMarker = new google.maps.Marker(@createMarkerOptions(scope.coords, scope.icon, scope.options,

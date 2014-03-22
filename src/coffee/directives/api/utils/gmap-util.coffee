@@ -8,6 +8,18 @@ angular.module("google-maps.directives.api.utils")
         else
             new google.maps.LatLng(value.latitude, value.longitude)
 
+    validateCoords = (coords) ->
+        return false if angular.isUndefined(coords)
+        
+        if Array.isArray(coords)
+            return true if coords.length is 2
+        else if angular.isDefined(coords.type)
+            return true if coords.type is "Point" and Array.isArray(coords.coordinates) and coords.coordinates.length is 2
+        else
+            return true if angular.isDefined(coords.latitude) and angular.isDefined(coords.longitude)
+            
+        false
+
     getLabelPositionPoint: (anchor) ->
         if anchor == undefined
             return undefined
@@ -25,7 +37,7 @@ angular.module("google-maps.directives.api.utils")
             position: if defaults.position? then defaults.position
             else getCoords(coords),
             icon: if defaults.icon? then defaults.icon else icon,
-            visible: if defaults.visible? then defaults.visible else coords.latitude? and coords.longitude?
+            visible: if defaults.visible? then defaults.visible else validateCoords(coords)
         opts.map = map if map?
         opts
 
@@ -65,18 +77,8 @@ angular.module("google-maps.directives.api.utils")
 
     getCoords: getCoords
 
-    validateCoords: (coords) ->
-        return false if angular.isUndefined(coords)
-        
-        if Array.isArray(coords)
-            return true if coords.length is 2
-        else if angular.isDefined(coords.type)
-            return true if coords.type is "Point" and Array.isArray(coords.coordinates) and coords.coordinates.length is 2
-        else
-            return true if angular.isDefined(coords.latitude) and angular.isDefined(coords.longitude)
-            
-        false
-        
+    validateCoords: validateCoords
+    
     validatePath: (path) ->
         i = 0
         if angular.isUndefined(path.type)

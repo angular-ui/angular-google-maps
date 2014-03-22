@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-21
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-22
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -297,7 +297,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps.directives.api.utils").service("GmapUtil", [
     "Logger", "$compile", function(Logger, $compile) {
-      var getCoords;
+      var getCoords, validateCoords;
       getCoords = function(value) {
         if (Array.isArray(value) && value.length === 2) {
           return new google.maps.LatLng(value[1], value[0]);
@@ -306,6 +306,25 @@ Nicholas McCready - https://twitter.com/nmccready
         } else {
           return new google.maps.LatLng(value.latitude, value.longitude);
         }
+      };
+      validateCoords = function(coords) {
+        if (angular.isUndefined(coords)) {
+          return false;
+        }
+        if (Array.isArray(coords)) {
+          if (coords.length === 2) {
+            return true;
+          }
+        } else if (angular.isDefined(coords.type)) {
+          if (coords.type === "Point" && Array.isArray(coords.coordinates) && coords.coordinates.length === 2) {
+            return true;
+          }
+        } else {
+          if (angular.isDefined(coords.latitude) && angular.isDefined(coords.longitude)) {
+            return true;
+          }
+        }
+        return false;
       };
       return {
         getLabelPositionPoint: function(anchor) {
@@ -331,7 +350,7 @@ Nicholas McCready - https://twitter.com/nmccready
           opts = angular.extend({}, defaults, {
             position: defaults.position != null ? defaults.position : getCoords(coords),
             icon: defaults.icon != null ? defaults.icon : icon,
-            visible: defaults.visible != null ? defaults.visible : (coords.latitude != null) && (coords.longitude != null)
+            visible: defaults.visible != null ? defaults.visible : validateCoords(coords)
           });
           if (map != null) {
             opts.map = map;
@@ -382,25 +401,7 @@ Nicholas McCready - https://twitter.com/nmccready
           return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
         },
         getCoords: getCoords,
-        validateCoords: function(coords) {
-          if (angular.isUndefined(coords)) {
-            return false;
-          }
-          if (Array.isArray(coords)) {
-            if (coords.length === 2) {
-              return true;
-            }
-          } else if (angular.isDefined(coords.type)) {
-            if (coords.type === "Point" && Array.isArray(coords.coordinates) && coords.coordinates.length === 2) {
-              return true;
-            }
-          } else {
-            if (angular.isDefined(coords.latitude) && angular.isDefined(coords.longitude)) {
-              return true;
-            }
-          }
-          return false;
-        },
+        validateCoords: validateCoords,
         validatePath: function(path) {
           var array, i;
           i = 0;
@@ -430,6 +431,8 @@ Nicholas McCready - https://twitter.com/nmccready
                 return false;
               }
               array = path.coordinates;
+            } else {
+              return false;
             }
             while (i < array.length) {
               if (array[i].length !== 2) {
@@ -1356,12 +1359,12 @@ Nicholas McCready - https://twitter.com/nmccready
             return;
           }
           if ((scope.coords != null)) {
-            if ((this.scope.coords.latitude == null) || (this.scope.coords.longitude == null)) {
+            if (!this.validateCoords(this.scope.coords)) {
               this.$log.error("MarkerChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(this.model)));
               return;
             }
-            this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-            this.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
+            this.gMarker.setPosition(this.getCoords(scope.coords));
+            this.gMarker.setVisible(this.validateCoords(scope.coords));
             this.gMarkerManager.remove(this.gMarker);
             return this.gMarkerManager.add(this.gMarker);
           } else {
@@ -1376,8 +1379,8 @@ Nicholas McCready - https://twitter.com/nmccready
           this.gMarkerManager.remove(this.gMarker);
           this.gMarker.setIcon(scope.icon);
           this.gMarkerManager.add(this.gMarker);
-          this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-          return this.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
+          this.gMarker.setPosition(this.getCoords(scope.coords));
+          return this.gMarker.setVisible(this.validateCoords(scope.coords));
         };
 
         MarkerChildModel.prototype.setOptions = function(scope) {
@@ -2030,27 +2033,27 @@ Nicholas McCready - https://twitter.com/nmccready
         MarkerParentModel.prototype.onWatch = function(propNameToWatch, scope) {
           switch (propNameToWatch) {
             case 'coords':
-              if ((scope.coords != null) && (this.scope.gMarker != null)) {
+              if (this.validateCoords(scope.coords) && (this.scope.gMarker != null)) {
                 this.scope.gMarker.setMap(this.mapCtrl.getMap());
-                this.scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-                this.scope.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
+                this.scope.gMarker.setPosition(this.getCoords(scope.coords));
+                this.scope.gMarker.setVisible(this.validateCoords(scope.coords));
                 return this.scope.gMarker.setOptions(scope.options);
               } else {
                 return this.scope.gMarker.setMap(null);
               }
               break;
             case 'icon':
-              if ((scope.icon != null) && (scope.coords != null) && (this.scope.gMarker != null)) {
+              if ((scope.icon != null) && this.validateCoords(scope.coords) && (this.scope.gMarker != null)) {
                 this.scope.gMarker.setOptions(scope.options);
                 this.scope.gMarker.setIcon(scope.icon);
                 this.scope.gMarker.setMap(null);
                 this.scope.gMarker.setMap(this.mapCtrl.getMap());
-                this.scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-                return this.scope.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
+                this.scope.gMarker.setPosition(this.getCoords(scope.coords));
+                return this.scope.gMarker.setVisible(this.validateCoords(scope.coords));
               }
               break;
             case 'options':
-              if ((scope.coords != null) && (scope.icon != null) && scope.options) {
+              if (this.validateCoords(scope.coords) && (scope.icon != null) && scope.options) {
                 if (this.scope.gMarker != null) {
                   this.scope.gMarker.setMap(null);
                 }
@@ -4081,30 +4084,15 @@ THE SOFTWARE.
 
 @authors
 Julian Popescu - https://github.com/jpopesculian
+Rick Huizinga - https://plus.google.com/+RickHuizinga
 */
 
 
 (function() {
   angular.module("google-maps").directive("circle", [
-    "$log", "$timeout", function($log, $timeout) {
-      var DEFAULTS, convertCenter, isTrue, validateCenter;
-      validateCenter = function(center) {
-        if (angular.isUndefined(center.latitude) || angular.isUndefined(center.longitude)) {
-          return false;
-        }
-        return true;
-      };
-      convertCenter = function(center) {
-        return new google.maps.LatLng(center.latitude, center.longitude);
-      };
-      /*
-      Check if a value is true
-      */
-
-      isTrue = function(val) {
-        return angular.isDefined(val) && val !== null && val === true || val === "1" || val === "y" || val === "true";
-      };
+    "$log", "$timeout", "GmapUtil", function($log, $timeout, GmapUtil) {
       "use strict";
+      var DEFAULTS;
       DEFAULTS = {};
       return {
         restrict: "ECA",
@@ -4127,13 +4115,13 @@ Julian Popescu - https://github.com/jpopesculian
             var buildOpts, circle, map;
             buildOpts = function() {
               var opts;
-              if (angular.isUndefined(scope.center) || scope.center === null || !validateCenter(scope.center)) {
+              if (!GmapUtil.validateCoords(scope.center)) {
                 $log.error("circle: no valid center attribute found");
                 return;
               }
               opts = angular.extend({}, DEFAULTS, {
                 map: map,
-                center: convertCenter(scope.center),
+                center: GmapUtil.getCoords(scope.center),
                 radius: scope.radius,
                 strokeColor: scope.stroke && scope.stroke.color,
                 strokeOpacity: scope.stroke && scope.stroke.opacity,
@@ -4210,8 +4198,13 @@ Julian Popescu - https://github.com/jpopesculian
               });
             });
             google.maps.event.addListener(circle, 'center_changed', function() {
-              scope.center.latitude = circle.getCenter().lat();
-              scope.center.longitude = circle.getCenter().lng();
+              if (angular.isDefined(scope.center.type)) {
+                scope.center.coordinates[1] = circle.getCenter().lat();
+                scope.center.coordinates[0] = circle.getCenter().lng();
+              } else {
+                scope.center.latitude = circle.getCenter().lat();
+                scope.center.longitude = circle.getCenter().lng();
+              }
               return $timeout(function() {
                 return scope.$apply();
               });
