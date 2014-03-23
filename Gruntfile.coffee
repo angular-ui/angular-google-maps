@@ -99,7 +99,7 @@ module.exports = (grunt) ->
                     livereload: true
 
                 files: ["src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee"]
-                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine",
+                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine:taskName",
                         "clean:example", "coffee"]
 
         open:
@@ -201,7 +201,7 @@ module.exports = (grunt) ->
 
     # Default task: build a release in dist/
     grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
-                                   "uglify", "jasmine"]
+                                   "uglify", "jasmine:taskName"]
 
     # Run the example page by creating a local copy of angular-google-maps.js
     # and running a webserver on port 3100 with livereload. Web page is opened
