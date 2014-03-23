@@ -10,6 +10,7 @@
 			@labelContentKey = @parentScope.labelContent
 			@optionsKey = @parentScope.options
 			@labelOptionsKey = @parentScope.labelOptions
+			@eventsKey = @parentScope.events
 			@myScope = @parentScope.$new(false)
 
 			@myScope.model = @model
@@ -30,6 +31,7 @@
 			@maybeSetScopeValue('coords',model,oldModel,@coordsKey,@evalModelHandle,isInit,@setCoords)
 			@maybeSetScopeValue('labelContent',model,oldModel,@labelContentKey,@evalModelHandle,isInit)
 			@maybeSetScopeValue('click',model,oldModel,@clickKey,@evalModelHandle,isInit)
+			@maybeSetScopeValue('events', model, oldModel, @eventsKey, @evalModelHandle, isInit, @setEvents)
 			@createMarker(model,oldModel,isInit)		
 
 		createMarker:(model, oldModel = undefined,isInit = false)=>
@@ -68,20 +70,32 @@
 
 		destroy:() =>
 			@myScope.$destroy()
+			return
+
+		setEvents:(scope) =>
+			if (scope.$id != @myScope.$id or @gMarker == undefined)
+				return
+			marker = @gMarker
+			#Check for google event types
+			if angular.isDefined(scope.events) and scope.events? and angular.isObject(scope.events)
+				_.compact _.map scope.events, (eventHandler, eventName) ->
+					if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
+						google.maps.event.addListener(marker, eventName, ->
+							eventHandler.apply(scope, [marker, eventName, arguments]))
 
 		setCoords:(scope) =>
 			if(scope.$id != @myScope.$id or @gMarker == undefined)
 				return
 			if (scope.coords?)
-                if !@scope.coords.latitude? or !@scope.coords.longitude?
-                    @$log.error "MarkerChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
-                    return
-                @gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-                @gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
-                @gMarkerManager.remove(@gMarker)
-                @gMarkerManager.add(@gMarker)
-            else
-                @gMarkerManager.remove(@gMarker)
+								if !@scope.coords.latitude? or !@scope.coords.longitude?
+										@$log.error "MarkerChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
+										return
+								@gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
+								@gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
+								@gMarkerManager.remove(@gMarker)
+								@gMarkerManager.add(@gMarker)
+						else
+								@gMarkerManager.remove(@gMarker)
 
 		setIcon:(scope) =>
 			if(scope.$id != @myScope.$id or @gMarker == undefined)
@@ -114,6 +128,7 @@
 				if @doClick and @myScope.click?
 					@myScope.click()
 			)
+			@setEvents(scope)
 
 		isLabelDefined:(scope) =>
 			scope.labelContent?

@@ -17,6 +17,7 @@
             @watch('doCluster', scope)
             @watch('clusterOptions', scope)
             @watch('fit', scope)
+            @watch('events', scope)
             @createMarkers(scope)
 
         validateScope: (scope)=>
