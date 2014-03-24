@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-22
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -509,39 +509,41 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
-  angular.module("google-maps.directives.api.utils").service("Logger", function($log) {
-    return {
-      logger: $log,
-      doLog: false,
-      info: function(msg) {
-        if (this.doLog) {
-          if (this.logger != null) {
-            return this.logger.info(msg);
-          } else {
-            return console.info(msg);
+  angular.module("google-maps.directives.api.utils").service("Logger", [
+    "$log", function($log) {
+      return {
+        logger: $log,
+        doLog: false,
+        info: function(msg) {
+          if (this.doLog) {
+            if (this.logger != null) {
+              return this.logger.info(msg);
+            } else {
+              return console.info(msg);
+            }
+          }
+        },
+        error: function(msg) {
+          if (this.doLog) {
+            if (this.logger != null) {
+              return this.logger.error(msg);
+            } else {
+              return console.error(msg);
+            }
+          }
+        },
+        warn: function(msg) {
+          if (this.doLog) {
+            if (this.logger != null) {
+              return this.logger.warn(msg);
+            } else {
+              return console.warn(msg);
+            }
           }
         }
-      },
-      error: function(msg) {
-        if (this.doLog) {
-          if (this.logger != null) {
-            return this.logger.error(msg);
-          } else {
-            return console.error(msg);
-          }
-        }
-      },
-      warn: function(msg) {
-        if (this.doLog) {
-          if (this.logger != null) {
-            return this.logger.warn(msg);
-          } else {
-            return console.warn(msg);
-          }
-        }
-      }
-    };
-  });
+      };
+    }
+  ]);
 
 }).call(this);
 
