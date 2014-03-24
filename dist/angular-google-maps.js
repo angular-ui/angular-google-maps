@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.0.15 2014-03-05
+/*! angular-google-maps 1.0.15 2014-03-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -810,6 +810,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.setOptions = __bind(this.setOptions, this);
         this.setIcon = __bind(this.setIcon, this);
         this.setCoords = __bind(this.setCoords, this);
+        this.setEvents = __bind(this.setEvents, this);
         this.destroy = __bind(this.destroy, this);
         this.maybeSetScopeValue = __bind(this.maybeSetScopeValue, this);
         this.createMarker = __bind(this.createMarker, this);
@@ -821,6 +822,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.labelContentKey = this.parentScope.labelContent;
         this.optionsKey = this.parentScope.options;
         this.labelOptionsKey = this.parentScope.labelOptions;
+        this.eventsKey = this.parentScope.events;
         this.myScope = this.parentScope.$new(false);
         this.myScope.model = this.model;
         this.setMyScope(this.model, void 0, true);
@@ -846,6 +848,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
         this.maybeSetScopeValue('labelContent', model, oldModel, this.labelContentKey, this.evalModelHandle, isInit);
         this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
+        this.maybeSetScopeValue('events', model, oldModel, this.eventsKey, this.evalModelHandle, isInit, this.setEvents);
         return this.createMarker(model, oldModel, isInit);
       };
 
@@ -910,7 +913,24 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       MarkerChildModel.prototype.destroy = function() {
-        return this.myScope.$destroy();
+        this.myScope.$destroy();
+      };
+
+      MarkerChildModel.prototype.setEvents = function(scope) {
+        var marker;
+        if (scope.$id !== this.myScope.$id || this.gMarker === void 0) {
+          return;
+        }
+        marker = this.gMarker;
+        if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
+          return _.compact(_.map(scope.events, function(eventHandler, eventName) {
+            if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+              return google.maps.event.addListener(marker, eventName, function() {
+                return eventHandler.apply(scope, [marker, eventName, arguments]);
+              });
+            }
+          }));
+        }
       };
 
       MarkerChildModel.prototype.setCoords = function(scope) {
@@ -963,11 +983,12 @@ Nicholas McCready - https://twitter.com/nmccready
           this.gMarker = new google.maps.Marker(this.opts);
         }
         this.gMarkerManager.add(this.gMarker);
-        return google.maps.event.addListener(this.gMarker, 'click', function() {
+        google.maps.event.addListener(this.gMarker, 'click', function() {
           if (_this.doClick && (_this.myScope.click != null)) {
             return _this.myScope.click();
           }
         });
+        return this.setEvents(scope);
       };
 
       MarkerChildModel.prototype.isLabelDefined = function(scope) {
@@ -1541,6 +1562,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.watch('doCluster', scope);
         this.watch('clusterOptions', scope);
         this.watch('fit', scope);
+        this.watch('events', scope);
         return this.createMarkers(scope);
       };
 
@@ -2230,6 +2252,7 @@ not 1:1 in this setting.
         this.scope.labelContent = '=labelcontent';
         this.scope.labelAnchor = '@labelanchor';
         this.scope.labelClass = '@labelclass';
+        this.scope.events = '=events';
         this.$timeout = $timeout;
         this.$log.info(this);
       }
