@@ -1,4 +1,4 @@
-describe "AsyncProcessor", ->
+describe "_async", ->
     beforeEach ->
         @subject = _async
 
