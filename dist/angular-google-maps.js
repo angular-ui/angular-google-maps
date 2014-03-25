@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-24
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-25
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -169,8 +169,13 @@ Nicholas McCready - https://twitter.com/nmccready
 
 /*
     Author: Nicholas McCready & jfriend00
-    AsyncProcessor handles things asynchronous-like :), to allow the UI to be free'd to do other things
+    _async handles things asynchronous-like :), to allow the UI to be free'd to do other things
     Code taken from http://stackoverflow.com/questions/10344498/best-way-to-iterate-over-an-array-without-blocking-the-ui
+
+    The design of any funcitonality of _async is to be like lodash/underscore and replicate it but call things
+    asynchronously underneath. Each should be sufficient for most things to be derrived from.
+
+    TODO: Handle Object iteration like underscore and lodash as well.. not that important right now
 */
 
 
@@ -186,7 +191,7 @@ Nicholas McCready - https://twitter.com/nmccready
       if (index == null) {
         index = 0;
       }
-      if (array === void 0 || array.length <= 0) {
+      if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
         doneCallBack();
         return;
       }
@@ -210,7 +215,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
       return doChunk();
     },
-    map: function(objs, iterator, doneCallBack, pausedCallBack) {
+    map: function(objs, iterator, doneCallBack, pausedCallBack, chunk) {
       var results;
       results = [];
       if (objs == null) {
@@ -220,7 +225,7 @@ Nicholas McCready - https://twitter.com/nmccready
         return results.push(iterator(o));
       }, function() {
         return doneCallBack(results);
-      }, pausedCallBack);
+      }, pausedCallBack, chunk);
     }
   };
 
