@@ -101,6 +101,12 @@ module.exports = (grunt) ->
                 files: ["src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee"]
                 tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine:taskName",
                         "clean:example", "coffee"]
+            spec:
+                options:
+                    livereload: true
+
+                files: ["src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee", "spec/**/*.spec.coffee"]
+                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "jasmine:taskName", "clean:example", "coffee"]
 
         open:
             example:
@@ -197,7 +203,7 @@ module.exports = (grunt) ->
 
     # Default task: build a release in dist/
     grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
-                                "connect:jasmineServer", "uglify", "open:jasmine", "watch", "jasmine"]
+                                "connect:jasmineServer", "uglify", "open:jasmine", "watch:spec", "jasmine"]
 
     # Default task: build a release in dist/
     grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
@@ -206,7 +212,7 @@ module.exports = (grunt) ->
     # Run the example page by creating a local copy of angular-google-maps.js
     # and running a webserver on port 3100 with livereload. Web page is opened
     # automatically in the default browser.
-    grunt.registerTask "example", ["clean:example", "connect:server", "open:example", "watch"]
-    grunt.registerTask "example2", ["clean:example", "connect:server", "open:example2", "watch"]
-    grunt.registerTask "geojson", ["clean:example", "connect:server", "open:geojson", "watch"]
-    grunt.registerTask "hugedata", ["clean:example", "connect:server", "open:hugedata", "watch"]
+    grunt.registerTask "example", ["clean:example", "connect:server", "open:example", "watch:all"]
+    grunt.registerTask "example2", ["clean:example", "connect:server", "open:example2", "watch:all"]
+    grunt.registerTask "geojson", ["clean:example", "connect:server", "open:geojson", "watch:all"]
+    grunt.registerTask "hugedata", ["clean:example", "connect:server", "open:hugedata", "watch:all"]
