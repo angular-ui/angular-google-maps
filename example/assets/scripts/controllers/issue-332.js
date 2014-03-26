@@ -75,7 +75,6 @@
                             }
                         ],
                         dynamicMarkers: [],
-                        zoom: 7,
                         refresh: function () {
                             $scope.map.control.refresh(origCenter);
                         }
@@ -120,14 +119,18 @@
                     //optional param if you want to refresh you can pass null undefined or false or empty arg
                     $scope.map.control.refresh({latitude: 32.779680, longitude: -79.935493});
                     $scope.map.control.getGMap().setZoom(11);
-                    return;
                 };
                 $scope.getMapInstance = function () {
                     alert("You have Map Instance of" + $scope.map.control.getGMap().toString());
-                    return;
-                }
+                };
+
+                var markerToClose = null;
 
                 $scope.onMarkerClicked = function (marker) {
+                    if(markerToClose){
+                        markerToClose.showWindow = false;
+                    }
+                    markerToClose = marker; // for next go around
                     marker.showWindow = true;
                     //window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
                 };
