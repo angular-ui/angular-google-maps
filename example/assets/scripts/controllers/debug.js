@@ -85,7 +85,7 @@ function DebugController($scope, $timeout, $log, $http) {
                         latitude: 52.2,
                         longitude: -80.5
                     },
-                    icon: "plane.png",
+                    icon: "assets/images/plane.png",
                     lastSignal: "Never",
                     click:function(){
                         this.show = true;

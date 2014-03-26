@@ -86,7 +86,7 @@ function ExampleController($scope, $timeout, $log, $http) {
                     title: 'Marker 2'
                 },
                 {
-                    icon: 'plane.png',
+                    icon: '/assets/images/plane.png',
                     latitude: 37,
                     longitude: -122,
                     showWindow: false,
@@ -107,7 +107,7 @@ function ExampleController($scope, $timeout, $log, $http) {
                     title: '[33,-77]'
                 },
                 {
-                    icon: 'plane.png',
+                    icon: '/assets/images/plane.png',
                     latitude: 35,
                     longitude: -125,
                     showWindow: false,
@@ -371,7 +371,7 @@ function ExampleController($scope, $timeout, $log, $http) {
                 showWindow: false
             },
             {
-                icon: 'plane.png',
+                icon: '/assets/images/plane.png',
                 latitude: 35,
                 longitude: -127,
                 showWindow: false
