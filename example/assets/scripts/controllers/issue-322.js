@@ -57,20 +57,17 @@
                             {
                                 latitude: 46,
                                 longitude: -77,
-                                showWindow: false,
                                 title: '[46,-77]'
                             },
                             {
                                 latitude: 33,
                                 longitude: -77,
-                                showWindow: false,
                                 title: '[33,-77]'
                             },
                             {
                                 icon: 'assets/images/plane.png',
                                 latitude: 35,
                                 longitude: -125,
-                                showWindow: false,
                                 title: '[35,-125]'
                             }
                         ],
@@ -87,7 +84,7 @@
                         $scope.$apply();
                     };
                     marker.onClicked = function () {
-                        $scopeonMarkerClicked(marker);
+                        $scope.onMarkerClicked(marker);
                     };
                 });
 
@@ -132,6 +129,7 @@
                     }
                     markerToClose = marker; // for next go around
                     marker.showWindow = true;
+                    $scope.$apply();
                     //window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
                 };
 
@@ -139,19 +137,16 @@
                     var dynamicMarkers = [
                         {
                             latitude: 46,
-                            longitude: -79,
-                            showWindow: false
+                            longitude: -79
                         },
                         {
                             latitude: 33,
-                            longitude: -79,
-                            showWindow: false
+                            longitude: -79
                         },
                         {
                             icon: 'assets/images/plane.png',
                             latitude: 35,
-                            longitude: -127,
-                            showWindow: false
+                            longitude: -127
                         }
                     ];
                     _.each(dynamicMarkers, function (marker) {
