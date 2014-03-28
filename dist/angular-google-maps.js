@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.0.17 2014-03-30
+/*! angular-google-maps 1.0.17 2014-04-02
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -863,7 +863,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
       MarkerChildModel.include(directives.api.utils.GmapUtil);
 
-      function MarkerChildModel(index, model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager) {
+      function MarkerChildModel(index, model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager, $injector) {
         var self,
           _this = this;
         this.index = index;
@@ -891,6 +891,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.optionsKey = this.parentScope.options;
         this.labelOptionsKey = this.parentScope.labelOptions;
         this.myScope = this.parentScope.$new(false);
+        this.$injector = $injector;
         this.myScope.model = this.model;
         this.setMyScope(this.model, void 0, true);
         this.createMarker(this.model);
@@ -905,6 +906,7 @@ Nicholas McCready - https://twitter.com/nmccready
       }
 
       MarkerChildModel.prototype.setMyScope = function(model, oldModel, isInit) {
+        var _this = this;
         if (oldModel == null) {
           oldModel = void 0;
         }
@@ -914,7 +916,15 @@ Nicholas McCready - https://twitter.com/nmccready
         this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon);
         this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
         this.maybeSetScopeValue('labelContent', model, oldModel, this.labelContentKey, this.evalModelHandle, isInit);
-        this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
+        if (_.isFunction(this.clickKey) && this.$injector) {
+          this.myScope.click = function() {
+            return _this.$injector.invoke(_this.clickKey, void 0, {
+              "$markerModel": model
+            });
+          };
+        } else {
+          this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
+        }
         return this.createMarker(model, oldModel, isInit);
       };
 
@@ -1589,7 +1599,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
       MarkersParentModel.include(directives.api.utils.ModelsWatcher);
 
-      function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
+      function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout, $injector) {
         this.fit = __bind(this.fit, this);
         this.onDestroy = __bind(this.onDestroy, this);
         this.onWatch = __bind(this.onWatch, this);
@@ -1598,7 +1608,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.validateScope = __bind(this.validateScope, this);
         this.onTimeOut = __bind(this.onTimeOut, this);
         var self;
-        MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
+        MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout, $injector);
         self = this;
         this.markersIndex = 0;
         this.gMarkerManager = void 0;
@@ -1606,6 +1616,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.scope.markerModels = [];
         this.bigGulp = directives.api.utils.AsyncProcessor;
         this.$timeout = $timeout;
+        this.$injector = $injector;
         this.$log.info(this);
       }
 
@@ -1649,7 +1660,7 @@ Nicholas McCready - https://twitter.com/nmccready
         return this.bigGulp.handleLargeArray(scope.models, function(model) {
           var child;
           scope.doRebuild = true;
-          child = new directives.api.models.child.MarkerChildModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.DEFAULTS, _this.doClick, _this.gMarkerManager);
+          child = new directives.api.models.child.MarkerChildModel(_this.markersIndex, model, scope, _this.mapCtrl, _this.$timeout, _this.DEFAULTS, _this.doClick, _this.gMarkerManager, _this.$injector);
           _this.$log.info('child', child, 'markers', markers);
           markers.push(child);
           return _this.markersIndex++;
@@ -2283,7 +2294,7 @@ not 1:1 in this setting.
     return this.Markers = (function(_super) {
       __extends(Markers, _super);
 
-      function Markers($timeout) {
+      function Markers($timeout, $injector) {
         this.link = __bind(this.link, this);
         var self;
         Markers.__super__.constructor.call(this, $timeout);
@@ -2297,6 +2308,7 @@ not 1:1 in this setting.
         this.scope.labelAnchor = '@labelanchor';
         this.scope.labelClass = '@labelclass';
         this.$timeout = $timeout;
+        this.$injector = $injector;
         this.$log.info(this);
       }
 
@@ -2311,7 +2323,7 @@ not 1:1 in this setting.
       ];
 
       Markers.prototype.link = function(scope, element, attrs, ctrl) {
-        return new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, this.$timeout);
+        return new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, this.$timeout, this.$injector);
       };
 
       return Markers;
@@ -2829,8 +2841,8 @@ This directive creates a new scope.
 
 (function() {
   angular.module("google-maps").directive("markers", [
-    "$timeout", function($timeout) {
-      return new directives.api.Markers($timeout);
+    "$timeout", "$injector", function($timeout, $injector) {
+      return new directives.api.Markers($timeout, $injector);
     }
   ]);
 

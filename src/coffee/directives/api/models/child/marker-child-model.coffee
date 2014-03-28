@@ -1,7 +1,7 @@
 @ngGmapModule "directives.api.models.child", ->
 	class @MarkerChildModel extends oo.BaseObject
 		@include directives.api.utils.GmapUtil
-		constructor:(@index, @model, @parentScope, @gMap, $timeout, @defaults, @doClick, @gMarkerManager)->
+		constructor:(@index, @model, @parentScope, @gMap, $timeout, @defaults, @doClick, @gMarkerManager, $injector)->
 			self = @
 			
 			@iconKey = @parentScope.icon
@@ -11,7 +11,7 @@
 			@optionsKey = @parentScope.options
 			@labelOptionsKey = @parentScope.labelOptions
 			@myScope = @parentScope.$new(false)
-
+			@$injector = $injector
 			@myScope.model = @model
 			@setMyScope(@model, undefined, true)
 			@createMarker(@model)
@@ -29,7 +29,11 @@
 			@maybeSetScopeValue('icon',model,oldModel,@iconKey,@evalModelHandle,isInit,@setIcon)
 			@maybeSetScopeValue('coords',model,oldModel,@coordsKey,@evalModelHandle,isInit,@setCoords)
 			@maybeSetScopeValue('labelContent',model,oldModel,@labelContentKey,@evalModelHandle,isInit)
-			@maybeSetScopeValue('click',model,oldModel,@clickKey,@evalModelHandle,isInit)
+			if _.isFunction(@clickKey) and @$injector
+				@myScope.click = () =>
+				    @$injector.invoke(@clickKey, undefined, {"$markerModel": model})
+			else
+				@maybeSetScopeValue('click',model,oldModel,@clickKey,@evalModelHandle,isInit)
 			@createMarker(model,oldModel,isInit)		
 
 		createMarker:(model, oldModel = undefined,isInit = false)=>

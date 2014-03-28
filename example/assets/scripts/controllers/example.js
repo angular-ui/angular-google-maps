@@ -125,6 +125,11 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
             ],
             dynamicMarkers: [],
             randomMarkers: [],
+	    clickMarkers: [
+		{"latitude": 50.948968, "longitude": 6.944781}
+		,{"latitude": 50.94129, "longitude": 6.95817}
+		,{"latitude": 50.9175, "longitude": 6.943611}
+	    ],
             doClusterRandomMarkers: true,
             doUgly: true, //great name :)
             clusterOptions: {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2,
@@ -351,6 +356,11 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
         }
     }
     $scope.onMarkerClicked = onMarkerClicked;
+
+    $scope.clackMarker = function($markerModel) {
+      $log.log("from clackMarker");
+	    $log.log($markerModel);
+    };
 
     $timeout(function () {
         $scope.map.polylines[0].path.push({

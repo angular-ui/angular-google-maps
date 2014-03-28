@@ -11,7 +11,7 @@ not 1:1 in this setting.
 ###
 @ngGmapModule "directives.api", ->
     class @Markers extends directives.api.IMarker
-        constructor: ($timeout) ->
+        constructor: ($timeout, $injector) ->
             super($timeout)
             self = @
             @template = '<span class="angular-google-map-markers" ng-transclude></span>'
@@ -25,6 +25,7 @@ not 1:1 in this setting.
             @scope.labelClass = '@labelclass'
 
             @$timeout = $timeout
+            @$injector = $injector
             @$log.info(@)
 
         controller: ['$scope', '$element', ($scope, $element) ->
@@ -33,4 +34,4 @@ not 1:1 in this setting.
         ]
 
         link: (scope, element, attrs, ctrl) =>
-            new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, @$timeout)
+            new directives.api.models.parent.MarkersParentModel(scope, element, attrs, ctrl, @$timeout, @$injector)
