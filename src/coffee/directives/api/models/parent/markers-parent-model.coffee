@@ -1,8 +1,8 @@
 @ngGmapModule "directives.api.models.parent", ->
     class @MarkersParentModel extends directives.api.models.parent.IMarkerParentModel
         @include directives.api.utils.ModelsWatcher
-        constructor: (scope, element, attrs, mapCtrl, $timeout) ->
-            super(scope, element, attrs, mapCtrl, $timeout)
+        constructor: (scope, element, attrs, mapCtrl, $timeout, $injector) ->
+            super(scope, element, attrs, mapCtrl, $timeout, $injector)
             self = @
             @markersIndex = 0
             @gMarkerManager = undefined
@@ -10,6 +10,7 @@
             @scope.markerModels = []
             @bigGulp = directives.api.utils.AsyncProcessor
             @$timeout = $timeout
+            @$injector = $injector
             @$log.info @
 
         onTimeOut: (scope)=>
@@ -45,7 +46,7 @@
             @bigGulp.handleLargeArray(scope.models, (model) =>
                 scope.doRebuild = true
                 child = new directives.api.models.child.MarkerChildModel(@markersIndex, model, scope, @mapCtrl, @$timeout,
-                        @DEFAULTS, @doClick, @gMarkerManager)
+                        @DEFAULTS, @doClick, @gMarkerManager, @$injector)
                 @$log.info('child', child, 'markers', markers)
                 markers.push(child)
                 @markersIndex++
