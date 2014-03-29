@@ -1,5 +1,11 @@
 {
-	"items": [{
+	"items": [
+	  {
+	     "title": "GeoJSON support",
+	     "date": "Mar. 22 2014",
+	     "content": "<p>The google-maps, circle, marker, markers, polygon, polyline, window & windows directive now support <a href='http://geojson.org/geojson-spec.html'>GeoJSON</a> coordindates, in addition to the standard latitude/longitude object parameters.  See <a href='/api'>the docs</a>!</p>"
+	  },
+	  {
 			"title": "Layer directive hotfix",
 			"date": "Feb. 10 2014",
 			"content": "<p>There was a bug in the layer directive which prevented passing options to the underlying layer. This has been fixed in version 1.0.10.</p><p>Thanks <a href='https://github.com/netmonster01' rel='external'>netmonster01</a> for reporting this!</p>"
