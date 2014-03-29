@@ -91,7 +91,8 @@
                 <p class="muted">My marker will stay open when the window is popped up!</p>
             </windows>
         </markers>
-
+	<markers models="map.clickMarkers" coords="'self'" click="clackMarker">
+	</markers>
 
         <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
             <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
