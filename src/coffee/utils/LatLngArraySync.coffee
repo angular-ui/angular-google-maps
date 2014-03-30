@@ -4,7 +4,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
     scopePath = scope.$eval(pathEval)
     if !scope.static
       legacyHandlers =
-        #listeners / handles to changes of the points from the map direction to update back to our scope (two way)
+      #listeners / handles to changes of the points from the map direction to update back to our scope (two way)
         set_at: (index) ->
           return if isSetFromScope #important to avoid cyclic forever change loop watch to map event change and back
           value = mapArray.getAt(index)
@@ -116,13 +116,14 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           i++
       isSetFromScope = false
 
-    watchListener = scope.$watchCollection pathEval, if angular.isUndefined(scopePath.type) then legacyWatcher else geojsonWatcher
+    watchListener =
+      if scope.static then scope.$watch else scope.$watchCollection
 
     ->
-      if mapArrayListener
+      if mapArrayListener #where the heck is this? Dead code?
         mapArrayListener()
         mapArrayListener = null
       if watchListener
-        watchListener()
+        watchListener.apply(scope, [pathEval, if angular.isUndefined(scopePath.type) then legacyWatcher else geojsonWatcher])
         watchListener = null
 ]

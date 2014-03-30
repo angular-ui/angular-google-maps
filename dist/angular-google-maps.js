@@ -1153,14 +1153,14 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           return isSetFromScope = false;
         };
-        watchListener = scope.$watchCollection(pathEval, angular.isUndefined(scopePath.type) ? legacyWatcher : geojsonWatcher);
+        watchListener = scope["static"] ? scope.$watch : scope.$watchCollection;
         return function() {
           if (mapArrayListener) {
             mapArrayListener();
             mapArrayListener = null;
           }
           if (watchListener) {
-            watchListener();
+            watchListener.apply(scope, [pathEval, angular.isUndefined(scopePath.type) ? legacyWatcher : geojsonWatcher]);
             return watchListener = null;
           }
         };
