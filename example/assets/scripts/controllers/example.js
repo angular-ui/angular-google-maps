@@ -102,7 +102,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                 },
                 {
                     id:3,
-                    icon: 'plane.png',
+                    icon: 'assets/images/plane.png',
                     latitude: 37,
                     longitude: -122,
                     showWindow: false,
@@ -126,7 +126,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                 },
                 {
                     id:3,
-                    icon: 'plane.png',
+                    icon: 'assets/images/plane.png',
                     latitude: 35,
                     longitude: -125,
                     showWindow: false,
@@ -156,7 +156,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             doClusterRandomMarkers: true,
             doUgly: true, //great name :)
             clusterOptions: {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2,
-                imageExtension: 'png', imagePath: 'http://localhost:3000/example/cluster', imageSizes: [72]},
+                imageExtension: 'png', imagePath: 'assets/images/cluster', imageSizes: [72]},
             clickedMarker: {
                 title: 'You clicked here',
                 latitude: null,
@@ -243,7 +243,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                     disableAutoPan:true
                 },
                 show: true,
-                templateUrl: 'templates/info.html',
+                templateUrl: 'assets/templates/info.html',
                 templateParameter: {
                     message: 'passed in from the opener'
                 }
@@ -501,7 +501,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             },
             {
                 id: 3,
-                icon: 'plane.png',
+                icon: 'assets/images/plane.png',
                 latitude: 35,
                 longitude: -127,
                 showWindow: false

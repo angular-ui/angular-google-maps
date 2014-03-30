@@ -71,6 +71,65 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 
+(function() {
+  angular.element(document).ready(function() {
+    if (!(google || (typeof google !== "undefined" && google !== null ? google.maps : void 0) || (google.maps.InfoWindow != null))) {
+      return;
+    }
+    google.maps.InfoWindow.prototype._open = google.maps.InfoWindow.prototype.open;
+    google.maps.InfoWindow.prototype._close = google.maps.InfoWindow.prototype.close;
+    google.maps.InfoWindow.prototype._isOpen = false;
+    google.maps.InfoWindow.prototype.open = function(map, anchor) {
+      this._isOpen = true;
+      this._open(map, anchor);
+    };
+    google.maps.InfoWindow.prototype.close = function() {
+      this._isOpen = false;
+      this._close();
+    };
+    google.maps.InfoWindow.prototype.isOpen = function(val) {
+      if (val == null) {
+        val = void 0;
+      }
+      if (val == null) {
+        return this._isOpen;
+      } else {
+        return this._isOpen = val;
+      }
+    };
+    /*
+    Do the same for InfoBox
+    TODO: Clean this up so the logic is defined once, wait until develop becomes master as this will be easier
+    */
+
+    if (!window.InfoBox) {
+      return;
+    }
+    window.InfoBox.prototype._open = window.InfoBox.prototype.open;
+    window.InfoBox.prototype._close = window.InfoBox.prototype.close;
+    window.InfoBox.prototype._isOpen = false;
+    window.InfoBox.prototype.open = function(map, anchor) {
+      this._isOpen = true;
+      this._open(map, anchor);
+    };
+    window.InfoBox.prototype.close = function() {
+      this._isOpen = false;
+      this._close();
+    };
+    return window.InfoBox.prototype.isOpen = function(val) {
+      if (val == null) {
+        val = void 0;
+      }
+      if (val == null) {
+        return this._isOpen;
+      } else {
+        return this._isOpen = val;
+      }
+    };
+  });
+
+}).call(this);
+
 /*
     Author Nick McCready
     Intersection of Objects if the arrays have something in common each intersecting object will be returned
@@ -316,16 +375,16 @@ Nicholas McCready - https://twitter.com/nmccready
         if (angular.isUndefined(coords)) {
           return false;
         }
-        if (Array.isArray(coords)) {
+        if (_.isArray(coords)) {
           if (coords.length === 2) {
             return true;
           }
-        } else if (angular.isDefined(coords.type)) {
-          if (coords.type === "Point" && Array.isArray(coords.coordinates) && coords.coordinates.length === 2) {
+        } else if ((coords != null) && (coords != null ? coords.type : void 0)) {
+          if (coords.type === "Point" && _.isArray(coords.coordinates) && coords.coordinates.length === 2) {
             return true;
           }
         } else {
-          if (angular.isDefined(coords.latitude) && angular.isDefined(coords.longitude)) {
+          if (coords && angular.isDefined((coords != null ? coords.latitude : void 0) && angular.isDefined(coords != null ? coords.longitude : void 0))) {
             return true;
           }
         }
@@ -1626,6 +1685,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.watchCoords = __bind(this.watchCoords, this);
           this.watchShow = __bind(this.watchShow, this);
           this.createGWin = __bind(this.createGWin, this);
+          this.googleMapsHandles = [];
           this.$log = Logger;
           this.createGWin();
           if (this.markerCtrl != null) {
@@ -1651,13 +1711,16 @@ Nicholas McCready - https://twitter.com/nmccready
             } else {
               this.gWin = new google.maps.InfoWindow(this.opts);
             }
-            google.maps.event.addListener(this.gWin, 'closeclick', function() {
+            return this.googleMapsHandles.push(google.maps.event.addListener(this.gWin, 'closeclick', function() {
               var _ref;
-              return (_ref = _this.markerCtrl) != null ? _ref.setVisible(_this.markerIsVisibleAfterWindowClose) : void 0;
-            });
-            if (this.scope.closeClick != null) {
-              return this.scope.closeClick();
-            }
+              if ((_ref = _this.markerCtrl) != null) {
+                _ref.setVisible(_this.markerIsVisibleAfterWindowClose);
+              }
+              _this.gWin.isOpen(false);
+              if (_this.scope.closeClick != null) {
+                return _this.scope.closeClick();
+              }
+            }));
           }
         };
 
@@ -1702,7 +1765,7 @@ Nicholas McCready - https://twitter.com/nmccready
         WindowChildModel.prototype.handleClick = function() {
           var _this = this;
           if (this.markerCtrl != null) {
-            return google.maps.event.addListener(this.markerCtrl, 'click', function() {
+            return this.googleMapsHandles.push(google.maps.event.addListener(this.markerCtrl, 'click', function() {
               var pos;
               if (_this.gWin == null) {
                 _this.createGWin();
@@ -1710,19 +1773,27 @@ Nicholas McCready - https://twitter.com/nmccready
               pos = _this.markerCtrl.getPosition();
               if (_this.gWin != null) {
                 _this.gWin.setPosition(pos);
-                _this.gWin.open(_this.mapCtrl);
+                _this.showWindow();
               }
               _this.initialMarkerVisibility = _this.markerCtrl.getVisible();
               return _this.markerCtrl.setVisible(_this.isIconVisibleOnClick);
-            });
+            }));
           }
         };
 
         WindowChildModel.prototype.showWindow = function() {
-          var _this = this;
+          var show,
+            _this = this;
+          show = function() {
+            if (_this.gWin) {
+              if ((_this.scope.show || (_this.scope.show == null)) && !_this.gWin.isOpen()) {
+                return _this.gWin.open(_this.mapCtrl);
+              }
+            }
+          };
           if (this.scope.templateUrl) {
             if (this.gWin) {
-              return $http.get(this.scope.templateUrl, {
+              $http.get(this.scope.templateUrl, {
                 cache: $templateCache
               }).then(function(content) {
                 var compiled, templateScope;
@@ -1731,14 +1802,12 @@ Nicholas McCready - https://twitter.com/nmccready
                   templateScope.parameter = _this.scope.templateParameter;
                 }
                 compiled = $compile(content.data)(templateScope);
-                _this.gWin.setContent(compiled[0]);
-                return _this.gWin.open(_this.mapCtrl);
+                return _this.gWin.setContent(compiled[0]);
               });
             }
+            return show();
           } else {
-            if (this.gWin != null) {
-              return this.gWin.open(this.mapCtrl);
-            }
+            return show();
           }
         };
 
@@ -1749,7 +1818,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         WindowChildModel.prototype.hideWindow = function() {
-          if (this.gWin != null) {
+          if ((this.gWin != null) && this.gWin.isOpen()) {
             return this.gWin.close();
           }
         };
@@ -1759,13 +1828,11 @@ Nicholas McCready - https://twitter.com/nmccready
           if (manualOverride == null) {
             manualOverride = false;
           }
-          this.hideWindow(this.gWin);
-          if (this.markerCtrl) {
-            google.maps.event.clearListeners(this.markerCtrl, 'click');
-          }
-          if (this.gWin) {
-            google.maps.event.clearListeners(this.gWin, 'closeclick');
-          }
+          this.hideWindow();
+          _.each(this.googleMapsHandles, function(h) {
+            return google.maps.event.removeListener(h);
+          });
+          this.googleMapsHandles.length = 0;
           if ((this.scope != null) && (this.needToManualDestroy || manualOverride)) {
             this.scope.$destroy();
           }
@@ -1980,7 +2047,7 @@ Nicholas McCready - https://twitter.com/nmccready
               }
             }, true);
             return _this.scope.$on("$destroy", function() {
-              return this.layer.setMap(null);
+              return _this.layer.setMap(null);
             });
           });
         }
