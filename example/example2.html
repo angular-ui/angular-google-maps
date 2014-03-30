@@ -49,9 +49,12 @@
         <layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></layer>
 
         <!--Editable polylines are very slow.. nothing you can do as this is a google problem-->
-        <polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"
-                  geodesic="'geodesic'" draggable="'draggable'" fit="false">
-        </polylines>
+        <!--<polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"-->
+                  <!--geodesic="'geodesic'" draggable="'draggable'" fit="false">-->
+        <!--</polylines>-->
+
+        <polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'
+                  geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
 
         <!--<markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"-->
                     <!--doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions" >-->

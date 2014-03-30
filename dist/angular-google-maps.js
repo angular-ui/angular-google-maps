@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-29
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-30
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -939,12 +939,16 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps").factory("array-sync", [
     "add-events", function(mapEvents) {
       return function(mapArray, scope, pathEval) {
-        var geojsonArray, geojsonHandlers, geojsonWatcher, legacyHandlers, legacyWatcher, mapArrayListener, scopePath, watchListener;
+        var geojsonArray, geojsonHandlers, geojsonWatcher, isSetFromScope, legacyHandlers, legacyWatcher, mapArrayListener, scopePath, watchListener;
+        isSetFromScope = false;
         scopePath = scope.$eval(pathEval);
         if (!scope["static"]) {
           legacyHandlers = {
             set_at: function(index) {
               var value;
+              if (isSetFromScope) {
+                return;
+              }
               value = mapArray.getAt(index);
               if (!value) {
                 return;
@@ -957,6 +961,9 @@ Nicholas McCready - https://twitter.com/nmccready
             },
             insert_at: function(index) {
               var value;
+              if (isSetFromScope) {
+                return;
+              }
               value = mapArray.getAt(index);
               if (!value) {
                 return;
@@ -970,6 +977,9 @@ Nicholas McCready - https://twitter.com/nmccready
               });
             },
             remove_at: function(index) {
+              if (isSetFromScope) {
+                return;
+              }
               return scopePath.splice(index, 1);
             }
           };
@@ -982,6 +992,9 @@ Nicholas McCready - https://twitter.com/nmccready
           geojsonHandlers = {
             set_at: function(index) {
               var value;
+              if (isSetFromScope) {
+                return;
+              }
               value = mapArray.getAt(index);
               if (!value) {
                 return;
@@ -994,6 +1007,9 @@ Nicholas McCready - https://twitter.com/nmccready
             },
             insert_at: function(index) {
               var value;
+              if (isSetFromScope) {
+                return;
+              }
               value = mapArray.getAt(index);
               if (!value) {
                 return;
@@ -1004,13 +1020,17 @@ Nicholas McCready - https://twitter.com/nmccready
               return geojsonArray.splice(index, 0, [value.lng(), value.lat()]);
             },
             remove_at: function(index) {
+              if (isSetFromScope) {
+                return;
+              }
               return geojsonArray.splice(index, 1);
             }
           };
           mapArrayListener = mapEvents(mapArray, angular.isUndefined(scopePath.type) ? legacyHandlers : geojsonHandlers);
         }
         legacyWatcher = function(newPath) {
-          var i, l, newLength, newValue, oldArray, oldLength, oldValue, _results;
+          var i, l, newLength, newValue, oldArray, oldLength, oldValue;
+          isSetFromScope = true;
           oldArray = mapArray;
           if (newPath) {
             i = 0;
@@ -1031,16 +1051,16 @@ Nicholas McCready - https://twitter.com/nmccready
               oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
               i++;
             }
-            _results = [];
             while (i < oldLength) {
               oldArray.pop();
-              _results.push(i++);
+              i++;
             }
-            return _results;
           }
+          return isSetFromScope = false;
         };
         geojsonWatcher = function(newPath) {
-          var array, i, l, newLength, newValue, oldArray, oldLength, oldValue, _results;
+          var array, i, l, newLength, newValue, oldArray, oldLength, oldValue;
+          isSetFromScope = true;
           oldArray = mapArray;
           if (newPath) {
             array;
@@ -1067,15 +1087,14 @@ Nicholas McCready - https://twitter.com/nmccready
               oldArray.push(new google.maps.LatLng(newValue[1], newValue[0]));
               i++;
             }
-            _results = [];
             while (i < oldLength) {
               oldArray.pop();
-              _results.push(i++);
+              i++;
             }
-            return _results;
           }
+          return isSetFromScope = false;
         };
-        watchListener = scope.$watch(pathEval, (angular.isUndefined(scopePath.type) ? legacyWatcher : geojsonWatcher), !scope["static"]);
+        watchListener = scope.$watchCollection(pathEval, angular.isUndefined(scopePath.type) ? legacyWatcher : geojsonWatcher);
         return function() {
           if (mapArrayListener) {
             mapArrayListener();
