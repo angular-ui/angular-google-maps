@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.0.16 2014-03-26
+/*! angular-google-maps 1.0.16 2014-03-30
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -179,11 +179,15 @@ Nicholas McCready - https://twitter.com/nmccready
     "add-events", function(mapEvents) {
       var LatLngArraySync;
       return LatLngArraySync = function(mapArray, scope, pathEval) {
-        var mapArrayListener, scopeArray, watchListener;
+        var isSetFromScope, mapArrayListener, scopeArray, watchListener;
+        isSetFromScope = false;
         scopeArray = scope.$eval(pathEval);
         mapArrayListener = mapEvents(mapArray, {
           set_at: function(index) {
             var value;
+            if (isSetFromScope) {
+              return;
+            }
             value = mapArray.getAt(index);
             if (!value) {
               return;
@@ -196,6 +200,9 @@ Nicholas McCready - https://twitter.com/nmccready
           },
           insert_at: function(index) {
             var value;
+            if (isSetFromScope) {
+              return;
+            }
             value = mapArray.getAt(index);
             if (!value) {
               return;
@@ -209,11 +216,15 @@ Nicholas McCready - https://twitter.com/nmccready
             });
           },
           remove_at: function(index) {
+            if (isSetFromScope) {
+              return;
+            }
             return scopeArray.splice(index, 1);
           }
         });
-        watchListener = scope.$watch(pathEval, function(newArray) {
-          var i, l, newLength, newValue, oldArray, oldLength, oldValue, _results;
+        watchListener = scope.$watchCollection(pathEval, function(newArray) {
+          var i, l, newLength, newValue, oldArray, oldLength, oldValue;
+          isSetFromScope = true;
           oldArray = mapArray;
           if (newArray) {
             i = 0;
@@ -234,14 +245,13 @@ Nicholas McCready - https://twitter.com/nmccready
               oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
               i++;
             }
-            _results = [];
             while (i < oldLength) {
               oldArray.pop();
-              _results.push(i++);
+              i++;
             }
-            return _results;
           }
-        }, true);
+          return isSetFromScope = false;
+        });
         return function() {
           if (mapArrayListener) {
             mapArrayListener();
@@ -1433,7 +1443,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
           }, true);
           return _this.scope.$on("$destroy", function() {
-            return this.layer.setMap(null);
+            return _this.layer.setMap(null);
           });
         });
       }

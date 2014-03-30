@@ -353,8 +353,16 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
     $scope.onMarkerClicked = onMarkerClicked;
 
     $timeout(function () {
+        $scope.map.polylines[0].path.push({
+              latitude: 61,
+              longitude: -105
+          });
+          $scope.map.polylines[0].path.push({
+              latitude: 70,
+              longitude: -105
+        });
         $scope.map.infoWindow.show = true;
-        dynamicMarkers = [
+        var dynamicMarkers = [
             {
                 latitude: 46,
                 longitude: -79,
