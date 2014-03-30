@@ -29,9 +29,9 @@
 			@maybeSetScopeValue('icon',model,oldModel,@iconKey,@evalModelHandle,isInit,@setIcon)
 			@maybeSetScopeValue('coords',model,oldModel,@coordsKey,@evalModelHandle,isInit,@setCoords)
 			@maybeSetScopeValue('labelContent',model,oldModel,@labelContentKey,@evalModelHandle,isInit)
-			if typeof @clickKey is 'function' and @$injector
+			if _.isFunction(@clickKey) and @$injector
 				@myScope.click = () =>
-				    @$injector.invoke(@clickKey, undefined, {"$markerModel": model});
+				    @$injector.invoke(@clickKey, undefined, {"$markerModel": model})
 			else
 				@maybeSetScopeValue('click',model,oldModel,@clickKey,@evalModelHandle,isInit)
 			@createMarker(model,oldModel,isInit)		
