@@ -11,12 +11,12 @@ angular.module("google-maps.directives.api.utils")
     validateCoords = (coords) ->
         return false if angular.isUndefined(coords)
         
-        if Array.isArray(coords)
+        if _.isArray(coords)
             return true if coords.length is 2
-        else if angular.isDefined(coords.type)
-            return true if coords.type is "Point" and Array.isArray(coords.coordinates) and coords.coordinates.length is 2
+        else if coords? and coords?.type
+            return true if coords.type is "Point" and _.isArray(coords.coordinates) and coords.coordinates.length is 2
         else
-            return true if angular.isDefined(coords.latitude) and angular.isDefined(coords.longitude)
+            return true if coords and angular.isDefined coords?.latitude and angular.isDefined coords?.longitude
             
         false
 

@@ -27,7 +27,7 @@ angular.module("google-maps.directives.api.models.parent")
                         @layer = null
                         @createGoogleLayer()
                 , true)
-                @scope.$on "$destroy", ->
+                @scope.$on "$destroy", =>
                     @layer.setMap null
 
         createGoogleLayer: ()=>

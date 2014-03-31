@@ -31,7 +31,7 @@ module.exports = (grunt) ->
                 files:
                     "tmp/output_coffee.js": [
                         "src/coffee/module.coffee",
-                        "src/coffee/extensions/lodash.coffee",
+                        "src/coffee/extensions/*.coffee",
                         "src/coffee/directives/api/utils/*.coffee",
                         "src/coffee/directives/api/managers/*.coffee",
 
