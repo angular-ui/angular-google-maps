@@ -52,7 +52,7 @@ using the <code>marker</code> directive together with <code>ng-repeat</code>.</p
 		<tr>
 			<td>click</td>
 			<td><span class="label label-info">expression</span></td>
-			<td>event handler executed when clicking a marker</td>
+			<td>event handler executed when clicking a marker. If it resolves to a string and the resultstring is available as a function on the clicked model, this function will be called. If it resolves to a function on the scope it will call this function. optionally injecting the clicked model as $markerModel.</td>
 		</tr>
 		<tr>
 			<td>options</td>
