@@ -4,10 +4,10 @@
             if anchor == undefined
                 return undefined
 
-            anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor)
-            xPos = anchor[1]
-            yPos = anchor[2]
-            if xPos && yPos
+            anchor = /^([-\d\.]+)\s([-\d\.]+)$/.exec(anchor)
+            xPos = parseFloat(anchor[1])
+            yPos = parseFloat(anchor[2])
+            if xPos? && yPos?
                 new google.maps.Point(xPos, yPos)
 
         createMarkerOptions: (coords, icon, defaults, map = undefined) ->
