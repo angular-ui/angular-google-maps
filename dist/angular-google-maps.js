@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.0.18 2014-04-02
+/*! angular-google-maps 1.0.18 2014-04-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -619,10 +619,10 @@ Nicholas McCready - https://twitter.com/nmccready
         if (anchor === void 0) {
           return void 0;
         }
-        anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor);
-        xPos = anchor[1];
-        yPos = anchor[2];
-        if (xPos && yPos) {
+        anchor = /^([-\d\.]+)\s([-\d\.]+)$/.exec(anchor);
+        xPos = parseFloat(anchor[1]);
+        yPos = parseFloat(anchor[2]);
+        if ((xPos != null) && (yPos != null)) {
           return new google.maps.Point(xPos, yPos);
         }
       },
