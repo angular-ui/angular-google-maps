@@ -16,6 +16,7 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
 
     var onMarkerClicked = function (marker) {
         marker.showWindow = true;
+        $scope.$apply();
         //window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
     };
 
@@ -69,19 +70,21 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
             bounds: {},
             markers: [
                 {
+                    icon: 'assets/images/blue_marker.png',
                     latitude: 45,
                     longitude: -74,
                     showWindow: false,
                     title: 'Marker 2'
                 },
                 {
+                    icon: 'assets/images/blue_marker.png',
                     latitude: 15,
                     longitude: 30,
                     showWindow: false,
                     title: 'Marker 2'
                 },
                 {
-                    icon: 'assets/images/plane.png',
+                    icon: 'assets/images/blue_marker.png',
                     latitude: 37,
                     longitude: -122,
                     showWindow: false,

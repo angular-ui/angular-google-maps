@@ -91,18 +91,19 @@
                 <p class="muted">My marker will stay open when the window is popped up!</p>
             </windows>
         </markers>
-	<markers models="map.clickMarkers" coords="'self'" click="clackMarker">
-	</markers>
 
-        <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
-            <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
-                <p>Dynamic Marker created via a delay!</p>
+        <markers models="map.clickMarkers" coords="'self'" click="clackMarker">
+	    </markers>
 
-                <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+        <!--<markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>-->
+            <!--<windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
+                <!--<p>Dynamic Marker created via a delay!</p>-->
 
-                <p class="muted">My marker will stay open when the window is popped up!</p>
-            </windows>
-        </markers>
+                <!--<p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
+
+                <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
+            <!--</windows>-->
+        <!--</markers>-->
 
         <markers models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
             <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
