@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-30
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-04-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -396,10 +396,10 @@ Nicholas McCready - https://twitter.com/nmccready
           if (anchor === void 0) {
             return void 0;
           }
-          anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor);
-          xPos = anchor[1];
-          yPos = anchor[2];
-          if (xPos && yPos) {
+          anchor = /^([-\d\.]+)\s([-\d\.]+)$/.exec(anchor);
+          xPos = parseFloat(anchor[1]);
+          yPos = parseFloat(anchor[2]);
+          if ((xPos != null) && (yPos != null)) {
             return new google.maps.Point(xPos, yPos);
           }
         },
@@ -1324,7 +1324,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child").factory("MarkerChildModel", [
-    "ModelKey", "GmapUtil", "Logger", function(ModelKey, GmapUtil, Logger) {
+    "ModelKey", "GmapUtil", "Logger", "$injector", function(ModelKey, GmapUtil, Logger, $injector) {
       var MarkerChildModel;
       MarkerChildModel = (function(_super) {
         __extends(MarkerChildModel, _super);
@@ -1373,6 +1373,7 @@ Nicholas McCready - https://twitter.com/nmccready
         }
 
         MarkerChildModel.prototype.setMyScope = function(model, oldModel, isInit) {
+          var _this = this;
           if (oldModel == null) {
             oldModel = void 0;
           }
@@ -1382,8 +1383,16 @@ Nicholas McCready - https://twitter.com/nmccready
           this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon);
           this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
           this.maybeSetScopeValue('labelContent', model, oldModel, this.labelContentKey, this.evalModelHandle, isInit);
-          this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
-          return this.createMarker(model, oldModel, isInit);
+          if (_.isFunction(this.clickKey) && $injector) {
+            return this.scope.click = function() {
+              return $injector.invoke(_this.clickKey, void 0, {
+                "$markerModel": model
+              });
+            };
+          } else {
+            this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
+            return this.createMarker(model, oldModel, isInit);
+          }
         };
 
         MarkerChildModel.prototype.createMarker = function(model, oldModel, isInit) {
