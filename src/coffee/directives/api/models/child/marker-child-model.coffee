@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api.models.child")
-.factory "MarkerChildModel", [ "ModelKey", "GmapUtil","Logger", (ModelKey, GmapUtil,Logger) ->
+.factory "MarkerChildModel", [ "ModelKey", "GmapUtil","Logger", "$injector", (ModelKey, GmapUtil,Logger, $injector) ->
     class MarkerChildModel extends ModelKey
         @include GmapUtil
         constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager)->
@@ -29,8 +29,12 @@ angular.module("google-maps.directives.api.models.child")
             @maybeSetScopeValue('icon', model, oldModel, @iconKey, @evalModelHandle, isInit, @setIcon)
             @maybeSetScopeValue('coords', model, oldModel, @coordsKey, @evalModelHandle, isInit, @setCoords)
             @maybeSetScopeValue('labelContent', model, oldModel, @labelContentKey, @evalModelHandle, isInit)
-            @maybeSetScopeValue('click', model, oldModel, @clickKey, @evalModelHandle, isInit)
-            @createMarker(model, oldModel, isInit)
+            if _.isFunction(@clickKey) and $injector
+              @scope.click = () =>
+                  $injector.invoke(@clickKey, undefined, {"$markerModel": model})
+            else
+                  @maybeSetScopeValue('click', model, oldModel, @clickKey, @evalModelHandle, isInit)
+                  @createMarker(model, oldModel, isInit)
 
         createMarker: (model, oldModel = undefined, isInit = false)=>
             @maybeSetScopeValue 'options', model, oldModel, @optionsKey, (lModel, lModelKey) =>
@@ -66,11 +70,11 @@ angular.module("google-maps.directives.api.models.child")
             if(scope.$id != @scope.$id or @gMarker == undefined)
                 return
             if (scope.coords?)
-                if !@scope.coords.latitude? or !@scope.coords.longitude?
+                if !@validateCoords(@scope.coords)
                     @$log.error "MarkerChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
                     return
-                @gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-                @gMarker.setVisible(scope.coords.latitude? and scope.coords.longitude?)
+                @gMarker.setPosition(@getCoords(scope.coords))
+                @gMarker.setVisible(@validateCoords(scope.coords))
                 @gMarkerManager.remove(@gMarker)
                 @gMarkerManager.add(@gMarker)
             else
@@ -82,8 +86,8 @@ angular.module("google-maps.directives.api.models.child")
             @gMarkerManager.remove(@gMarker)
             @gMarker.setIcon(scope.icon)
             @gMarkerManager.add(@gMarker)
-            @gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude))
-            @gMarker.setVisible(scope.coords.latitude and scope.coords.longitude?)
+            @gMarker.setPosition(@getCoords(scope.coords))
+            @gMarker.setVisible(@validateCoords(scope.coords))
 
         setOptions: (scope) =>
             if(scope.$id != @scope.$id)

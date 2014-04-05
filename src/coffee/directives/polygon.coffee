@@ -28,33 +28,10 @@ https://github.com/nlaplante/angular-google-maps
 @authors
 Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
+Rick Huizinga - https://plus.google.com/+RickHuizinga
 ###
 angular.module("google-maps")
-.directive "polygon", ["$log", "$timeout", "array-sync", ($log, $timeout, arraySync) ->
-    validatePathPoints = (path) ->
-        i = 0
-
-        while i < path.length
-            return false  if angular.isUndefined(path[i].latitude) or angular.isUndefined(path[i].longitude)
-            i++
-        true
-    convertPathPoints = (path) ->
-        result = new google.maps.MVCArray()
-        i = 0
-
-        while i < path.length
-            result.push new google.maps.LatLng(path[i].latitude, path[i].longitude)
-            i++
-        result
-    extendMapBounds = (map, points) ->
-        bounds = new google.maps.LatLngBounds()
-        i = 0
-
-        while i < points.length
-            bounds.extend points.getAt(i)
-            i++
-        map.fitBounds bounds
-
+.directive "polygon", ["$log", "$timeout", "array-sync", "GmapUtil", ($log, $timeout, arraySync, GmapUtil) ->
     #
     #         * Utility functions
     #
@@ -80,11 +57,13 @@ angular.module("google-maps")
         icons: "=icons"
         visible: "="
         static: "="
+        events: "="
+        zIndex: "=zindex"
 
     link: (scope, element, attrs, mapCtrl) ->
 
         # Validate required properties
-        if angular.isUndefined(scope.path) or scope.path is null or scope.path.length < 2 or not validatePathPoints(scope.path)
+        if angular.isUndefined(scope.path) or scope.path is null or not GmapUtil.validatePath(scope.path)
             $log.error "polygon: no valid path attribute found"
             return
 
@@ -107,6 +86,7 @@ angular.module("google-maps")
                     geodesic: false
                     visible: true
                     static: false
+                    zIndex: 0
                 , (defaultValue, key) ->
                     if angular.isUndefined(scope[key]) or scope[key] is null
                         opts[key] = defaultValue
@@ -116,9 +96,9 @@ angular.module("google-maps")
                 opts.editable = false if opts.static
                 opts
             map = mapCtrl.getMap()
-            polygon = new google.maps.Polygon(buildOpts(convertPathPoints(scope.path)))
-            extendMapBounds map, pathPoints  if isTrue(attrs.fit)
-            if !scope.static && angular.isDefined(scope.editable)
+            polygon = new google.maps.Polygon(buildOpts(GmapUtil.convertPathPoints(scope.path)))
+            GmapUtil.extendMapBounds map, pathPoints  if isTrue(attrs.fit)
+            if !scope.static and angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
                     polygon.setEditable newValue if newValue != oldValue
 
@@ -144,8 +124,6 @@ angular.module("google-maps")
 
             if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.color)
                 scope.$watch "stroke.color", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
-
                     polygon.setOptions buildOpts(polygon.getPath()) if newValue != oldValue
                     
             if angular.isDefined(scope.fill) and angular.isDefined(scope.fill.color)
@@ -154,9 +132,20 @@ angular.module("google-maps")
 
             if angular.isDefined(scope.fill) and angular.isDefined(scope.fill.opacity)
                 scope.$watch "fill.opacity", (newValue, oldValue) ->
-                    polygon.setOptions buildOpts(polygon.getPath())
                     polygon.setOptions buildOpts(polygon.getPath()) if newValue != oldValue
 
+            if angular.isDefined(scope.zIndex)
+                scope.$watch "zIndex", (newValue, oldValue) ->
+                    polygon.setOptions buildOpts(polygon.getPath()) if newValue != oldValue
+            
+            if angular.isDefined(scope.events) and scope.events isnt null and angular.isObject(scope.events)
+                getEventHandler = (eventName) ->
+                    ->
+                        scope.events[eventName].apply scope, [polygon, eventName, arguments]
+
+                for eventName of scope.events
+                    polygon.addListener eventName, getEventHandler(eventName)  if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
+                    
             arraySyncer = arraySync(polygon.getPath(), scope, "path")
 
             # Remove polygon on scope $destroy
@@ -165,6 +154,4 @@ angular.module("google-maps")
                 if arraySyncer
                     arraySyncer()
                     arraySyncer = null
-
-
 ]

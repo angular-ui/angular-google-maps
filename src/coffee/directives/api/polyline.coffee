@@ -5,7 +5,7 @@ angular.module("google-maps.directives.api")
             link: (scope, element, attrs, mapCtrl) =>
                 # Validate required properties
                 if angular.isUndefined(scope.path) or scope.path is null or
-                scope.path.length < 2 or not @validatePathPoints(scope.path)
+                not @validatePath(scope.path)
                     @$log.error "polyline: no valid path attribute found"
                     return
 

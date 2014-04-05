@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-17
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-04-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -68,6 +68,65 @@ Nicholas McCready - https://twitter.com/nmccready
       };
     }
   ]);
+
+}).call(this);
+
+(function() {
+  angular.element(document).ready(function() {
+    if (!(google || (typeof google !== "undefined" && google !== null ? google.maps : void 0) || (google.maps.InfoWindow != null))) {
+      return;
+    }
+    google.maps.InfoWindow.prototype._open = google.maps.InfoWindow.prototype.open;
+    google.maps.InfoWindow.prototype._close = google.maps.InfoWindow.prototype.close;
+    google.maps.InfoWindow.prototype._isOpen = false;
+    google.maps.InfoWindow.prototype.open = function(map, anchor) {
+      this._isOpen = true;
+      this._open(map, anchor);
+    };
+    google.maps.InfoWindow.prototype.close = function() {
+      this._isOpen = false;
+      this._close();
+    };
+    google.maps.InfoWindow.prototype.isOpen = function(val) {
+      if (val == null) {
+        val = void 0;
+      }
+      if (val == null) {
+        return this._isOpen;
+      } else {
+        return this._isOpen = val;
+      }
+    };
+    /*
+    Do the same for InfoBox
+    TODO: Clean this up so the logic is defined once, wait until develop becomes master as this will be easier
+    */
+
+    if (!window.InfoBox) {
+      return;
+    }
+    window.InfoBox.prototype._open = window.InfoBox.prototype.open;
+    window.InfoBox.prototype._close = window.InfoBox.prototype.close;
+    window.InfoBox.prototype._isOpen = false;
+    window.InfoBox.prototype.open = function(map, anchor) {
+      this._isOpen = true;
+      this._open(map, anchor);
+    };
+    window.InfoBox.prototype.close = function() {
+      this._isOpen = false;
+      this._close();
+    };
+    return window.InfoBox.prototype.isOpen = function(val) {
+      if (val == null) {
+        val = void 0;
+      }
+      if (val == null) {
+        return this._isOpen;
+      } else {
+        return this._isOpen = val;
+      }
+    };
+  });
 
 }).call(this);
 
@@ -169,8 +228,13 @@ Nicholas McCready - https://twitter.com/nmccready
 
 /*
     Author: Nicholas McCready & jfriend00
-    AsyncProcessor handles things asynchronous-like :), to allow the UI to be free'd to do other things
+    _async handles things asynchronous-like :), to allow the UI to be free'd to do other things
     Code taken from http://stackoverflow.com/questions/10344498/best-way-to-iterate-over-an-array-without-blocking-the-ui
+
+    The design of any funcitonality of _async is to be like lodash/underscore and replicate it but call things
+    asynchronously underneath. Each should be sufficient for most things to be derrived from.
+
+    TODO: Handle Object iteration like underscore and lodash as well.. not that important right now
 */
 
 
@@ -186,7 +250,7 @@ Nicholas McCready - https://twitter.com/nmccready
       if (index == null) {
         index = 0;
       }
-      if (array === void 0 || array.length <= 0) {
+      if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
         doneCallBack();
         return;
       }
@@ -210,7 +274,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
       return doChunk();
     },
-    map: function(objs, iterator, doneCallBack, pausedCallBack) {
+    map: function(objs, iterator, doneCallBack, pausedCallBack, chunk) {
       var results;
       results = [];
       if (objs == null) {
@@ -220,7 +284,7 @@ Nicholas McCready - https://twitter.com/nmccready
         return results.push(iterator(o));
       }, function() {
         return doneCallBack(results);
-      }, pausedCallBack);
+      }, pausedCallBack, chunk);
     }
   };
 
@@ -297,16 +361,45 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps.directives.api.utils").service("GmapUtil", [
     "Logger", "$compile", function(Logger, $compile) {
+      var getCoords, validateCoords;
+      getCoords = function(value) {
+        if (Array.isArray(value) && value.length === 2) {
+          return new google.maps.LatLng(value[1], value[0]);
+        } else if (angular.isDefined(value.type) && value.type === "Point") {
+          return new google.maps.LatLng(value.coordinates[1], value.coordinates[0]);
+        } else {
+          return new google.maps.LatLng(value.latitude, value.longitude);
+        }
+      };
+      validateCoords = function(coords) {
+        if (angular.isUndefined(coords)) {
+          return false;
+        }
+        if (_.isArray(coords)) {
+          if (coords.length === 2) {
+            return true;
+          }
+        } else if ((coords != null) && (coords != null ? coords.type : void 0)) {
+          if (coords.type === "Point" && _.isArray(coords.coordinates) && coords.coordinates.length === 2) {
+            return true;
+          }
+        } else {
+          if (coords && angular.isDefined((coords != null ? coords.latitude : void 0) && angular.isDefined(coords != null ? coords.longitude : void 0))) {
+            return true;
+          }
+        }
+        return false;
+      };
       return {
         getLabelPositionPoint: function(anchor) {
           var xPos, yPos;
           if (anchor === void 0) {
             return void 0;
           }
-          anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor);
-          xPos = anchor[1];
-          yPos = anchor[2];
-          if (xPos && yPos) {
+          anchor = /^([-\d\.]+)\s([-\d\.]+)$/.exec(anchor);
+          xPos = parseFloat(anchor[1]);
+          yPos = parseFloat(anchor[2]);
+          if ((xPos != null) && (yPos != null)) {
             return new google.maps.Point(xPos, yPos);
           }
         },
@@ -319,9 +412,9 @@ Nicholas McCready - https://twitter.com/nmccready
             defaults = {};
           }
           opts = angular.extend({}, defaults, {
-            position: defaults.position != null ? defaults.position : new google.maps.LatLng(coords.latitude, coords.longitude),
+            position: defaults.position != null ? defaults.position : getCoords(coords),
             icon: defaults.icon != null ? defaults.icon : icon,
-            visible: defaults.visible != null ? defaults.visible : (coords.latitude != null) && (coords.longitude != null)
+            visible: defaults.visible != null ? defaults.visible : validateCoords(coords)
           });
           if (map != null) {
             opts.map = map;
@@ -335,7 +428,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if ((content != null) && (defaults != null) && ($compile != null)) {
             return angular.extend({}, defaults, {
               content: this.buildContent(scope, defaults, content, contentIsParsed),
-              position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
+              position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : getCoords(scope.coords)
             });
           } else {
             if (!defaults) {
@@ -371,27 +464,69 @@ Nicholas McCready - https://twitter.com/nmccready
         isFalse: function(value) {
           return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
         },
-        getCoords: function(value) {
-          return new google.maps.LatLng(value.latitude, value.longitude);
-        },
-        validatePathPoints: function(path) {
-          var i;
+        getCoords: getCoords,
+        validateCoords: validateCoords,
+        validatePath: function(path) {
+          var array, i;
           i = 0;
-          while (i < path.length) {
-            if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
+          if (angular.isUndefined(path.type)) {
+            if (path.length < 2) {
               return false;
             }
-            i++;
+            while (i < path.length) {
+              if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
+                return false;
+              }
+              i++;
+            }
+            return true;
+          } else {
+            if (angular.isUndefined(path.coordinates)) {
+              return false;
+            }
+            array;
+            if (path.type === "Polygon") {
+              if (path.coordinates[0].length < 4) {
+                return false;
+              }
+              array = path.coordinates[0];
+            } else if (path.type === "LineString") {
+              if (path.coordinates.length < 2) {
+                return false;
+              }
+              array = path.coordinates;
+            } else {
+              return false;
+            }
+            while (i < array.length) {
+              if (array[i].length !== 2) {
+                return false;
+              }
+              i++;
+            }
+            return true;
           }
-          return true;
         },
         convertPathPoints: function(path) {
-          var i, result;
+          var array, i, result;
           result = new google.maps.MVCArray();
           i = 0;
-          while (i < path.length) {
-            result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
-            i++;
+          if (angular.isUndefined(path.type)) {
+            while (i < path.length) {
+              result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
+              i++;
+            }
+          } else {
+            array;
+            if (path.type === "Polygon") {
+              array = path.coordinates[0];
+            } else if (path.type === "LineString") {
+              array = path.coordinates;
+            }
+            while (i < array.length) {
+              result.push(new google.maps.LatLng(array[i][1], array[i][0]));
+              i++;
+            }
           }
           return result;
         },
@@ -438,39 +573,41 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
-  angular.module("google-maps.directives.api.utils").service("Logger", function($log) {
-    return {
-      logger: $log,
-      doLog: false,
-      info: function(msg) {
-        if (this.doLog) {
-          if (this.logger != null) {
-            return this.logger.info(msg);
-          } else {
-            return console.info(msg);
+  angular.module("google-maps.directives.api.utils").service("Logger", [
+    "$log", function($log) {
+      return {
+        logger: $log,
+        doLog: false,
+        info: function(msg) {
+          if (this.doLog) {
+            if (this.logger != null) {
+              return this.logger.info(msg);
+            } else {
+              return console.info(msg);
+            }
+          }
+        },
+        error: function(msg) {
+          if (this.doLog) {
+            if (this.logger != null) {
+              return this.logger.error(msg);
+            } else {
+              return console.error(msg);
+            }
+          }
+        },
+        warn: function(msg) {
+          if (this.doLog) {
+            if (this.logger != null) {
+              return this.logger.warn(msg);
+            } else {
+              return console.warn(msg);
+            }
           }
         }
-      },
-      error: function(msg) {
-        if (this.doLog) {
-          if (this.logger != null) {
-            return this.logger.error(msg);
-          } else {
-            return console.error(msg);
-          }
-        }
-      },
-      warn: function(msg) {
-        if (this.doLog) {
-          if (this.logger != null) {
-            return this.logger.warn(msg);
-          } else {
-            return console.warn(msg);
-          }
-        }
-      }
-    };
-  });
+      };
+    }
+  ]);
 
 }).call(this);
 
@@ -861,12 +998,16 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps").factory("array-sync", [
     "add-events", function(mapEvents) {
       return function(mapArray, scope, pathEval) {
-        var mapArrayListener, scopeArray, watchListener;
+        var geojsonArray, geojsonHandlers, geojsonWatcher, isSetFromScope, legacyHandlers, legacyWatcher, mapArrayListener, scopePath, watchListener;
+        isSetFromScope = false;
+        scopePath = scope.$eval(pathEval);
         if (!scope["static"]) {
-          scopeArray = scope.$eval(pathEval);
-          mapArrayListener = mapEvents(mapArray, {
+          legacyHandlers = {
             set_at: function(index) {
               var value;
+              if (isSetFromScope) {
+                return;
+              }
               value = mapArray.getAt(index);
               if (!value) {
                 return;
@@ -874,11 +1015,14 @@ Nicholas McCready - https://twitter.com/nmccready
               if (!value.lng || !value.lat) {
                 return;
               }
-              scopeArray[index].latitude = value.lat();
-              return scopeArray[index].longitude = value.lng();
+              scopePath[index].latitude = value.lat();
+              return scopePath[index].longitude = value.lng();
             },
             insert_at: function(index) {
               var value;
+              if (isSetFromScope) {
+                return;
+              }
               value = mapArray.getAt(index);
               if (!value) {
                 return;
@@ -886,53 +1030,137 @@ Nicholas McCready - https://twitter.com/nmccready
               if (!value.lng || !value.lat) {
                 return;
               }
-              return scopeArray.splice(index, 0, {
+              return scopePath.splice(index, 0, {
                 latitude: value.lat(),
                 longitude: value.lng()
               });
             },
             remove_at: function(index) {
-              return scopeArray.splice(index, 1);
+              if (isSetFromScope) {
+                return;
+              }
+              return scopePath.splice(index, 1);
             }
-          });
+          };
+          geojsonArray;
+          if (scopePath.type === "Polygon") {
+            geojsonArray = scopePath.coordinates[0];
+          } else if (scopePath.type === "LineString") {
+            geojsonArray = scopePath.coordinates;
+          }
+          geojsonHandlers = {
+            set_at: function(index) {
+              var value;
+              if (isSetFromScope) {
+                return;
+              }
+              value = mapArray.getAt(index);
+              if (!value) {
+                return;
+              }
+              if (!value.lng || !value.lat) {
+                return;
+              }
+              geojsonArray[index][1] = value.lat();
+              return geojsonArray[index][0] = value.lng();
+            },
+            insert_at: function(index) {
+              var value;
+              if (isSetFromScope) {
+                return;
+              }
+              value = mapArray.getAt(index);
+              if (!value) {
+                return;
+              }
+              if (!value.lng || !value.lat) {
+                return;
+              }
+              return geojsonArray.splice(index, 0, [value.lng(), value.lat()]);
+            },
+            remove_at: function(index) {
+              if (isSetFromScope) {
+                return;
+              }
+              return geojsonArray.splice(index, 1);
+            }
+          };
+          mapArrayListener = mapEvents(mapArray, angular.isUndefined(scopePath.type) ? legacyHandlers : geojsonHandlers);
         }
-        watchListener = scope.$watch(pathEval, function(newArray) {
-          var i, l, newLength, newValue, oldArray, oldLength, oldValue, _results;
+        legacyWatcher = function(newPath) {
+          var i, l, newLength, newValue, oldArray, oldLength, oldValue;
+          isSetFromScope = true;
           oldArray = mapArray;
-          if (newArray) {
+          if (newPath) {
             i = 0;
             oldLength = oldArray.getLength();
-            newLength = newArray.length;
+            newLength = newPath.length;
             l = Math.min(oldLength, newLength);
             newValue = void 0;
             while (i < l) {
               oldValue = oldArray.getAt(i);
-              newValue = newArray[i];
+              newValue = newPath[i];
               if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
                 oldArray.setAt(i, new google.maps.LatLng(newValue.latitude, newValue.longitude));
               }
               i++;
             }
             while (i < newLength) {
-              newValue = newArray[i];
+              newValue = newPath[i];
               oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
               i++;
             }
-            _results = [];
             while (i < oldLength) {
               oldArray.pop();
-              _results.push(i++);
+              i++;
             }
-            return _results;
           }
-        }, !scope["static"]);
+          return isSetFromScope = false;
+        };
+        geojsonWatcher = function(newPath) {
+          var array, i, l, newLength, newValue, oldArray, oldLength, oldValue;
+          isSetFromScope = true;
+          oldArray = mapArray;
+          if (newPath) {
+            array;
+            if (scopePath.type === "Polygon") {
+              array = newPath.coordinates[0];
+            } else if (scopePath.type === "LineString") {
+              array = newPath.coordinates;
+            }
+            i = 0;
+            oldLength = oldArray.getLength();
+            newLength = array.length;
+            l = Math.min(oldLength, newLength);
+            newValue = void 0;
+            while (i < l) {
+              oldValue = oldArray.getAt(i);
+              newValue = array[i];
+              if ((oldValue.lat() !== newValue[1]) || (oldValue.lng() !== newValue[0])) {
+                oldArray.setAt(i, new google.maps.LatLng(newValue[1], newValue[0]));
+              }
+              i++;
+            }
+            while (i < newLength) {
+              newValue = array[i];
+              oldArray.push(new google.maps.LatLng(newValue[1], newValue[0]));
+              i++;
+            }
+            while (i < oldLength) {
+              oldArray.pop();
+              i++;
+            }
+          }
+          return isSetFromScope = false;
+        };
+        watchListener = scope["static"] ? scope.$watch : scope.$watchCollection;
         return function() {
           if (mapArrayListener) {
             mapArrayListener();
             mapArrayListener = null;
           }
           if (watchListener) {
-            watchListener();
+            watchListener.apply(scope, [pathEval, angular.isUndefined(scopePath.type) ? legacyWatcher : geojsonWatcher]);
             return watchListener = null;
           }
         };
@@ -1096,7 +1324,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child").factory("MarkerChildModel", [
-    "ModelKey", "GmapUtil", "Logger", function(ModelKey, GmapUtil, Logger) {
+    "ModelKey", "GmapUtil", "Logger", "$injector", function(ModelKey, GmapUtil, Logger, $injector) {
       var MarkerChildModel;
       MarkerChildModel = (function(_super) {
         __extends(MarkerChildModel, _super);
@@ -1145,6 +1373,7 @@ Nicholas McCready - https://twitter.com/nmccready
         }
 
         MarkerChildModel.prototype.setMyScope = function(model, oldModel, isInit) {
+          var _this = this;
           if (oldModel == null) {
             oldModel = void 0;
           }
@@ -1154,8 +1383,16 @@ Nicholas McCready - https://twitter.com/nmccready
           this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon);
           this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
           this.maybeSetScopeValue('labelContent', model, oldModel, this.labelContentKey, this.evalModelHandle, isInit);
-          this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
-          return this.createMarker(model, oldModel, isInit);
+          if (_.isFunction(this.clickKey) && $injector) {
+            return this.scope.click = function() {
+              return $injector.invoke(_this.clickKey, void 0, {
+                "$markerModel": model
+              });
+            };
+          } else {
+            this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
+            return this.createMarker(model, oldModel, isInit);
+          }
         };
 
         MarkerChildModel.prototype.createMarker = function(model, oldModel, isInit) {
@@ -1216,12 +1453,12 @@ Nicholas McCready - https://twitter.com/nmccready
             return;
           }
           if ((scope.coords != null)) {
-            if ((this.scope.coords.latitude == null) || (this.scope.coords.longitude == null)) {
+            if (!this.validateCoords(this.scope.coords)) {
               this.$log.error("MarkerChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(this.model)));
               return;
             }
-            this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-            this.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
+            this.gMarker.setPosition(this.getCoords(scope.coords));
+            this.gMarker.setVisible(this.validateCoords(scope.coords));
             this.gMarkerManager.remove(this.gMarker);
             return this.gMarkerManager.add(this.gMarker);
           } else {
@@ -1236,8 +1473,8 @@ Nicholas McCready - https://twitter.com/nmccready
           this.gMarkerManager.remove(this.gMarker);
           this.gMarker.setIcon(scope.icon);
           this.gMarkerManager.add(this.gMarker);
-          this.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-          return this.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
+          this.gMarker.setPosition(this.getCoords(scope.coords));
+          return this.gMarker.setVisible(this.validateCoords(scope.coords));
         };
 
         MarkerChildModel.prototype.setOptions = function(scope) {
@@ -1316,7 +1553,7 @@ Nicholas McCready - https://twitter.com/nmccready
         PolylineChildModel.include(GmapUtil);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
-          var self,
+          var arraySyncer, self,
             _this = this;
           this.scope = scope;
           this.attrs = attrs;
@@ -1329,7 +1566,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if (this.isTrue(this.attrs.fit)) {
             extendMapBounds(map, pathPoints);
           }
-          if (angular.isDefined(scope.editable)) {
+          if (!scope["static"] && angular.isDefined(scope.editable)) {
             scope.$watch("editable", function(newValue, oldValue) {
               if (newValue !== oldValue) {
                 return this.polyline.setEditable(newValue);
@@ -1371,10 +1608,15 @@ Nicholas McCready - https://twitter.com/nmccready
               }
             });
           }
+          arraySyncer = arraySync(this.polyline.getPath(), scope, "path");
           scope.$on("$destroy", function() {
             _this.polyline.setMap(null);
             _this.polyline = null;
-            return _this.scope = null;
+            _this.scope = null;
+            if (arraySyncer) {
+              arraySyncer();
+              return arraySyncer = null;
+            }
           });
           $log.info(this);
         }
@@ -1394,7 +1636,8 @@ Nicholas McCready - https://twitter.com/nmccready
             draggable: false,
             editable: false,
             geodesic: false,
-            visible: true
+            visible: true,
+            "static": false
           }, function(defaultValue, key) {
             if (angular.isUndefined(_this.scope[key]) || _this.scope[key] === null) {
               return opts[key] = defaultValue;
@@ -1402,6 +1645,9 @@ Nicholas McCready - https://twitter.com/nmccready
               return opts[key] = _this.scope[key];
             }
           });
+          if (opts["static"]) {
+            opts.editable = false;
+          }
           return opts;
         };
 
@@ -1448,6 +1694,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.watchCoords = __bind(this.watchCoords, this);
           this.watchShow = __bind(this.watchShow, this);
           this.createGWin = __bind(this.createGWin, this);
+          this.googleMapsHandles = [];
           this.$log = Logger;
           this.createGWin();
           if (this.markerCtrl != null) {
@@ -1473,13 +1720,16 @@ Nicholas McCready - https://twitter.com/nmccready
             } else {
               this.gWin = new google.maps.InfoWindow(this.opts);
             }
-            google.maps.event.addListener(this.gWin, 'closeclick', function() {
+            return this.googleMapsHandles.push(google.maps.event.addListener(this.gWin, 'closeclick', function() {
               var _ref;
-              return (_ref = _this.markerCtrl) != null ? _ref.setVisible(_this.markerIsVisibleAfterWindowClose) : void 0;
-            });
-            if (this.scope.closeClick != null) {
-              return this.scope.closeClick();
-            }
+              if ((_ref = _this.markerCtrl) != null) {
+                _ref.setVisible(_this.markerIsVisibleAfterWindowClose);
+              }
+              _this.gWin.isOpen(false);
+              if (_this.scope.closeClick != null) {
+                return _this.scope.closeClick();
+              }
+            }));
           }
         };
 
@@ -1511,11 +1761,11 @@ Nicholas McCready - https://twitter.com/nmccready
               if (newValue == null) {
                 return _this.hideWindow();
               } else {
-                if ((newValue.latitude == null) || (newValue.longitude == null)) {
+                if (!_this.validateCoords(newValue)) {
                   _this.$log.error("WindowChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(_this.model)));
                   return;
                 }
-                return _this.gWin.setPosition(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+                return _this.gWin.setPosition(_this.getCoords(newValue));
               }
             }
           }, true);
@@ -1524,7 +1774,7 @@ Nicholas McCready - https://twitter.com/nmccready
         WindowChildModel.prototype.handleClick = function() {
           var _this = this;
           if (this.markerCtrl != null) {
-            return google.maps.event.addListener(this.markerCtrl, 'click', function() {
+            return this.googleMapsHandles.push(google.maps.event.addListener(this.markerCtrl, 'click', function() {
               var pos;
               if (_this.gWin == null) {
                 _this.createGWin();
@@ -1532,19 +1782,27 @@ Nicholas McCready - https://twitter.com/nmccready
               pos = _this.markerCtrl.getPosition();
               if (_this.gWin != null) {
                 _this.gWin.setPosition(pos);
-                _this.gWin.open(_this.mapCtrl);
+                _this.showWindow();
               }
               _this.initialMarkerVisibility = _this.markerCtrl.getVisible();
               return _this.markerCtrl.setVisible(_this.isIconVisibleOnClick);
-            });
+            }));
           }
         };
 
         WindowChildModel.prototype.showWindow = function() {
-          var _this = this;
+          var show,
+            _this = this;
+          show = function() {
+            if (_this.gWin) {
+              if ((_this.scope.show || (_this.scope.show == null)) && !_this.gWin.isOpen()) {
+                return _this.gWin.open(_this.mapCtrl);
+              }
+            }
+          };
           if (this.scope.templateUrl) {
             if (this.gWin) {
-              return $http.get(this.scope.templateUrl, {
+              $http.get(this.scope.templateUrl, {
                 cache: $templateCache
               }).then(function(content) {
                 var compiled, templateScope;
@@ -1553,14 +1811,12 @@ Nicholas McCready - https://twitter.com/nmccready
                   templateScope.parameter = _this.scope.templateParameter;
                 }
                 compiled = $compile(content.data)(templateScope);
-                _this.gWin.setContent(compiled[0]);
-                return _this.gWin.open(_this.mapCtrl);
+                return _this.gWin.setContent(compiled[0]);
               });
             }
+            return show();
           } else {
-            if (this.gWin != null) {
-              return this.gWin.open(this.mapCtrl);
-            }
+            return show();
           }
         };
 
@@ -1571,7 +1827,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         WindowChildModel.prototype.hideWindow = function() {
-          if (this.gWin != null) {
+          if ((this.gWin != null) && this.gWin.isOpen()) {
             return this.gWin.close();
           }
         };
@@ -1581,13 +1837,11 @@ Nicholas McCready - https://twitter.com/nmccready
           if (manualOverride == null) {
             manualOverride = false;
           }
-          this.hideWindow(this.gWin);
-          if (this.markerCtrl) {
-            google.maps.event.clearListeners(this.markerCtrl, 'click');
-          }
-          if (this.gWin) {
-            google.maps.event.clearListeners(this.gWin, 'closeclick');
-          }
+          this.hideWindow();
+          _.each(this.googleMapsHandles, function(h) {
+            return google.maps.event.removeListener(h);
+          });
+          this.googleMapsHandles.length = 0;
           if ((this.scope != null) && (this.needToManualDestroy || manualOverride)) {
             this.scope.$destroy();
           }
@@ -1802,7 +2056,7 @@ Nicholas McCready - https://twitter.com/nmccready
               }
             }, true);
             return _this.scope.$on("$destroy", function() {
-              return this.layer.setMap(null);
+              return _this.layer.setMap(null);
             });
           });
         }
@@ -1881,27 +2135,27 @@ Nicholas McCready - https://twitter.com/nmccready
         MarkerParentModel.prototype.onWatch = function(propNameToWatch, scope) {
           switch (propNameToWatch) {
             case 'coords':
-              if ((scope.coords != null) && (this.scope.gMarker != null)) {
+              if (this.validateCoords(scope.coords) && (this.scope.gMarker != null)) {
                 this.scope.gMarker.setMap(this.mapCtrl.getMap());
-                this.scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-                this.scope.gMarker.setVisible((scope.coords.latitude != null) && (scope.coords.longitude != null));
+                this.scope.gMarker.setPosition(this.getCoords(scope.coords));
+                this.scope.gMarker.setVisible(this.validateCoords(scope.coords));
                 return this.scope.gMarker.setOptions(scope.options);
               } else {
                 return this.scope.gMarker.setMap(null);
               }
               break;
             case 'icon':
-              if ((scope.icon != null) && (scope.coords != null) && (this.scope.gMarker != null)) {
+              if ((scope.icon != null) && this.validateCoords(scope.coords) && (this.scope.gMarker != null)) {
                 this.scope.gMarker.setOptions(scope.options);
                 this.scope.gMarker.setIcon(scope.icon);
                 this.scope.gMarker.setMap(null);
                 this.scope.gMarker.setMap(this.mapCtrl.getMap());
-                this.scope.gMarker.setPosition(new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude));
-                return this.scope.gMarker.setVisible(scope.coords.latitude && (scope.coords.longitude != null));
+                this.scope.gMarker.setPosition(this.getCoords(scope.coords));
+                return this.scope.gMarker.setVisible(this.validateCoords(scope.coords));
               }
               break;
             case 'options':
-              if ((scope.coords != null) && (scope.icon != null) && scope.options) {
+              if (this.validateCoords(scope.coords) && (scope.icon != null) && scope.options) {
                 if (this.scope.gMarker != null) {
                   this.scope.gMarker.setMap(null);
                 }
@@ -2810,7 +3064,8 @@ Nicholas McCready - https://twitter.com/nmccready
           editable: "=",
           geodesic: "=",
           icons: "=",
-          visible: "="
+          visible: "=",
+          "static": "="
         };
 
         IPolyline.prototype.DEFAULTS = {};
@@ -2945,7 +3200,7 @@ Nicholas McCready - https://twitter.com/nmccready
         Map.prototype.link = function(scope, element, attrs) {
           var dragging, el, eventName, getEventHandler, opts, settingCenterFromScope, type, _m,
             _this = this;
-          if (!angular.isDefined(scope.center) || (!angular.isDefined(scope.center.latitude) || !angular.isDefined(scope.center.longitude))) {
+          if (!this.validateCoords(scope.center)) {
             $log.error("angular-google-maps: could not find a valid center property");
             return;
           }
@@ -2973,7 +3228,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
           }
           _m = new google.maps.Map(el.find("div")[1], angular.extend({}, DEFAULTS, opts, {
-            center: new google.maps.LatLng(scope.center.latitude, scope.center.longitude),
+            center: this.getCoords(scope.center),
             draggable: this.isTrue(attrs.draggable),
             zoom: scope.zoom,
             bounds: scope.bounds
@@ -3004,8 +3259,13 @@ Nicholas McCready - https://twitter.com/nmccready
             c = _m.center;
             return _.defer(function() {
               return scope.$apply(function(s) {
-                s.center.latitude = c.lat();
-                return s.center.longitude = c.lng();
+                if (angular.isDefined(s.center.type)) {
+                  s.center.coordinates[1] = c.lat();
+                  return s.center.coordinates[0] = c.lng();
+                } else {
+                  s.center.latitude = c.lat();
+                  return s.center.longitude = c.lng();
+                }
               });
             });
           });
@@ -3028,11 +3288,20 @@ Nicholas McCready - https://twitter.com/nmccready
             return _.defer(function() {
               return scope.$apply(function(s) {
                 if (!_m.dragging) {
-                  if (s.center.latitude !== c.lat()) {
-                    s.center.latitude = c.lat();
-                  }
-                  if (s.center.longitude !== c.lng()) {
-                    return s.center.longitude = c.lng();
+                  if (angular.isDefined(s.center.type)) {
+                    if (s.center.coordinates[1] !== c.lat()) {
+                      s.center.coordinates[1] = c.lat();
+                    }
+                    if (s.center.coordinates[0] !== c.lng()) {
+                      return s.center.coordinates[0] = c.lng();
+                    }
+                  } else {
+                    if (s.center.latitude !== c.lat()) {
+                      s.center.latitude = c.lat();
+                    }
+                    if (s.center.longitude !== c.lng()) {
+                      return s.center.longitude = c.lng();
+                    }
                   }
                 }
               });
@@ -3103,7 +3372,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             settingCenterFromScope = true;
             if (!dragging) {
-              if ((newValue.latitude == null) || (newValue.longitude == null)) {
+              if (!_this.validateCoords(newValue)) {
                 $log.error("Invalid center for newValue: " + (JSON.stringify(newValue)));
               }
               if (_this.isTrue(attrs.pan) && scope.zoom === _m.zoom) {
@@ -3276,7 +3545,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         Polyline.prototype.link = function(scope, element, attrs, mapCtrl) {
           var _this = this;
-          if (angular.isUndefined(scope.path) || scope.path === null || scope.path.length < 2 || !this.validatePathPoints(scope.path)) {
+          if (angular.isUndefined(scope.path) || scope.path === null || !this.validatePath(scope.path)) {
             this.$log.error("polyline: no valid path attribute found");
             return;
           }
@@ -3369,7 +3638,7 @@ Nicholas McCready - https://twitter.com/nmccready
             mapCtrl = ctrls[0].getMap();
             markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1].getMarkerScope().gMarker : void 0;
             defaults = scope.options != null ? scope.options : {};
-            hasScopeCoords = (scope != null) && (scope.coords != null) && (scope.coords.latitude != null) && (scope.coords.longitude != null);
+            hasScopeCoords = (scope != null) && _this.validateCoords(scope.coords);
             opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : defaults;
             if (mapCtrl != null) {
               window = new WindowChildModel({}, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, element);
@@ -3380,15 +3649,13 @@ Nicholas McCready - https://twitter.com/nmccready
             if (ctrls[1] != null) {
               markerScope = ctrls[1].getMarkerScope();
               markerScope.$watch('coords', function(newValue, oldValue) {
-                if (newValue == null) {
+                if (!_this.validateCoords(newValue)) {
                   return window.hideWindow();
                 }
-              });
-              markerScope.$watch('coords.latitude', function(newValue, oldValue) {
-                if (newValue !== oldValue) {
+                if (!angular.equals(newValue, oldValue)) {
                   return window.getLatestPosition();
                 }
-              });
+              }, true);
             }
             if ((_this.onChildCreation != null) && (window != null)) {
               return _this.onChildCreation(window);
@@ -3719,48 +3986,18 @@ https://github.com/nlaplante/angular-google-maps
 @authors
 Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
+Rick Huizinga - https://plus.google.com/+RickHuizinga
 */
 
 
 (function() {
   angular.module("google-maps").directive("polygon", [
-    "$log", "$timeout", "array-sync", function($log, $timeout, arraySync) {
-      var DEFAULTS, convertPathPoints, extendMapBounds, isTrue, validatePathPoints;
-      validatePathPoints = function(path) {
-        var i;
-        i = 0;
-        while (i < path.length) {
-          if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
-            return false;
-          }
-          i++;
-        }
-        return true;
-      };
-      convertPathPoints = function(path) {
-        var i, result;
-        result = new google.maps.MVCArray();
-        i = 0;
-        while (i < path.length) {
-          result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
-          i++;
-        }
-        return result;
-      };
-      extendMapBounds = function(map, points) {
-        var bounds, i;
-        bounds = new google.maps.LatLngBounds();
-        i = 0;
-        while (i < points.length) {
-          bounds.extend(points.getAt(i));
-          i++;
-        }
-        return map.fitBounds(bounds);
-      };
+    "$log", "$timeout", "array-sync", "GmapUtil", function($log, $timeout, arraySync, GmapUtil) {
       /*
       Check if a value is true
       */
 
+      var DEFAULTS, isTrue;
       isTrue = function(val) {
         return angular.isDefined(val) && val !== null && val === true || val === "1" || val === "y" || val === "true";
       };
@@ -3780,15 +4017,17 @@ Nicholas McCready - https://twitter.com/nmccready
           fill: "=",
           icons: "=icons",
           visible: "=",
-          "static": "="
+          "static": "=",
+          events: "=",
+          zIndex: "=zindex"
         },
         link: function(scope, element, attrs, mapCtrl) {
-          if (angular.isUndefined(scope.path) || scope.path === null || scope.path.length < 2 || !validatePathPoints(scope.path)) {
+          if (angular.isUndefined(scope.path) || scope.path === null || !GmapUtil.validatePath(scope.path)) {
             $log.error("polygon: no valid path attribute found");
             return;
           }
           return $timeout(function() {
-            var arraySyncer, buildOpts, map, polygon;
+            var arraySyncer, buildOpts, eventName, getEventHandler, map, polygon;
             buildOpts = function(pathPoints) {
               var opts;
               opts = angular.extend({}, DEFAULTS, {
@@ -3806,7 +4045,8 @@ Nicholas McCready - https://twitter.com/nmccready
                 editable: false,
                 geodesic: false,
                 visible: true,
-                "static": false
+                "static": false,
+                zIndex: 0
               }, function(defaultValue, key) {
                 if (angular.isUndefined(scope[key]) || scope[key] === null) {
                   return opts[key] = defaultValue;
@@ -3820,9 +4060,9 @@ Nicholas McCready - https://twitter.com/nmccready
               return opts;
             };
             map = mapCtrl.getMap();
-            polygon = new google.maps.Polygon(buildOpts(convertPathPoints(scope.path)));
+            polygon = new google.maps.Polygon(buildOpts(GmapUtil.convertPathPoints(scope.path)));
             if (isTrue(attrs.fit)) {
-              extendMapBounds(map, pathPoints);
+              GmapUtil.extendMapBounds(map, pathPoints);
             }
             if (!scope["static"] && angular.isDefined(scope.editable)) {
               scope.$watch("editable", function(newValue, oldValue) {
@@ -3866,7 +4106,6 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
               scope.$watch("stroke.color", function(newValue, oldValue) {
-                polygon.setOptions(buildOpts(polygon.getPath()));
                 if (newValue !== oldValue) {
                   return polygon.setOptions(buildOpts(polygon.getPath()));
                 }
@@ -3881,11 +4120,29 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             if (angular.isDefined(scope.fill) && angular.isDefined(scope.fill.opacity)) {
               scope.$watch("fill.opacity", function(newValue, oldValue) {
-                polygon.setOptions(buildOpts(polygon.getPath()));
                 if (newValue !== oldValue) {
                   return polygon.setOptions(buildOpts(polygon.getPath()));
                 }
               });
+            }
+            if (angular.isDefined(scope.zIndex)) {
+              scope.$watch("zIndex", function(newValue, oldValue) {
+                if (newValue !== oldValue) {
+                  return polygon.setOptions(buildOpts(polygon.getPath()));
+                }
+              });
+            }
+            if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
+              getEventHandler = function(eventName) {
+                return function() {
+                  return scope.events[eventName].apply(scope, [polygon, eventName, arguments]);
+                };
+              };
+              for (eventName in scope.events) {
+                if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+                  polygon.addListener(eventName, getEventHandler(eventName));
+                }
+              }
             }
             arraySyncer = arraySync(polygon.getPath(), scope, "path");
             return scope.$on("$destroy", function() {
@@ -3929,30 +4186,15 @@ THE SOFTWARE.
 
 @authors
 Julian Popescu - https://github.com/jpopesculian
+Rick Huizinga - https://plus.google.com/+RickHuizinga
 */
 
 
 (function() {
   angular.module("google-maps").directive("circle", [
-    "$log", "$timeout", function($log, $timeout) {
-      var DEFAULTS, convertCenter, isTrue, validateCenter;
-      validateCenter = function(center) {
-        if (angular.isUndefined(center.latitude) || angular.isUndefined(center.longitude)) {
-          return false;
-        }
-        return true;
-      };
-      convertCenter = function(center) {
-        return new google.maps.LatLng(center.latitude, center.longitude);
-      };
-      /*
-      Check if a value is true
-      */
-
-      isTrue = function(val) {
-        return angular.isDefined(val) && val !== null && val === true || val === "1" || val === "y" || val === "true";
-      };
+    "$log", "$timeout", "GmapUtil", function($log, $timeout, GmapUtil) {
       "use strict";
+      var DEFAULTS;
       DEFAULTS = {};
       return {
         restrict: "ECA",
@@ -3975,13 +4217,13 @@ Julian Popescu - https://github.com/jpopesculian
             var buildOpts, circle, map;
             buildOpts = function() {
               var opts;
-              if (angular.isUndefined(scope.center) || scope.center === null || !validateCenter(scope.center)) {
+              if (!GmapUtil.validateCoords(scope.center)) {
                 $log.error("circle: no valid center attribute found");
                 return;
               }
               opts = angular.extend({}, DEFAULTS, {
                 map: map,
-                center: convertCenter(scope.center),
+                center: GmapUtil.getCoords(scope.center),
                 radius: scope.radius,
                 strokeColor: scope.stroke && scope.stroke.color,
                 strokeOpacity: scope.stroke && scope.stroke.opacity,
@@ -4058,8 +4300,13 @@ Julian Popescu - https://github.com/jpopesculian
               });
             });
             google.maps.event.addListener(circle, 'center_changed', function() {
-              scope.center.latitude = circle.getCenter().lat();
-              scope.center.longitude = circle.getCenter().lng();
+              if (angular.isDefined(scope.center.type)) {
+                scope.center.coordinates[1] = circle.getCenter().lat();
+                scope.center.coordinates[0] = circle.getCenter().lng();
+              } else {
+                scope.center.latitude = circle.getCenter().lat();
+                scope.center.longitude = circle.getCenter().lng();
+              }
               return $timeout(function() {
                 return scope.$apply();
               });

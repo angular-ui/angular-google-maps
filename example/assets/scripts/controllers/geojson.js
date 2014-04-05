@@ -28,8 +28,9 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
     var genRandomMarkers = function (numberOfMarkers, scope) {
         var markers = [];
         for (var i = 0; i < numberOfMarkers; i++) {
-            markers.push(createRandomMarker(i, scope.map.bounds))
+            markers.push(createRandomMarker(i, scope.map.bounds));
         }
+        
         scope.map.randomMarkers = markers;
     };
 
@@ -45,8 +46,10 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         var latitude = lat_min + (Math.random() * lat_range);
         var longitude = lng_min + (Math.random() * lng_range);
         var ret =  {
-            latitude: latitude,
-            longitude: longitude,
+            geometry: {
+              type: "Point",
+              coordinates: [ longitude, latitude ]
+            },
             title: 'm' + i
         };
         ret[idKey] = i;
@@ -73,8 +76,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             showWeather: false,
             showHeat: false,
             center: {
-                latitude: 45,
-                longitude: -73
+              type: "Point",
+              coordinates: [ -73, 45 ]
             },
             options: {
                 streetViewControl: false,
@@ -88,23 +91,29 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             markers: [
                 {
                     id:1,
-                    latitude: 45,
-                    longitude: -74,
+                    geometry: {
+                      type: "Point",
+                      coordinates: [ -74, 45 ]
+                    },
                     showWindow: false,
                     title: 'Marker 2'
                 },
                 {
                     id:2,
-                    latitude: 15,
-                    longitude: 30,
+                    geometry: {
+                      type: "Point",
+                      coordinates: [ 30, 15 ]
+                    },
                     showWindow: false,
                     title: 'Marker 2'
                 },
                 {
                     id:3,
-                    icon: 'plane.png',
-                    latitude: 37,
-                    longitude: -122,
+                    icon: 'assets/images/plane.png',
+                    geometry: {
+                      type: "Point",
+                      coordinates: [ -122, 37 ]
+                    },
                     showWindow: false,
                     title: 'Plane'
                 }
@@ -112,23 +121,29 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             markers2: [
                 {
                     id:1,
-                    latitude: 46,
-                    longitude: -77,
+                    geometry: {
+                      type: "Point",
+                      coordinates: [ -77, 46 ]
+                    },
                     showWindow: false,
                     title: '[46,-77]'
                 },
                 {
                     id:2,
-                    latitude: 33,
-                    longitude: -77,
+                    geometry: {
+                      type: "Point",
+                      coordinates: [ -77, 33 ]
+                    },
                     showWindow: false,
                     title: '[33,-77]'
                 },
                 {
                     id:3,
-                    icon: 'plane.png',
-                    latitude: 35,
-                    longitude: -125,
+                    icon: 'assets/images/plane.png',
+                    geometry: {
+                      type: "Point",
+                      coordinates: [ -125, 35 ]
+                    },
                     showWindow: false,
                     title: '[35,-125]'
                 }
@@ -137,18 +152,24 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             mexiMarkers: [
                 {
                     mid:1,
-                    latitude: 29.302567,
-                    longitude: -106.248779
+                    geometry: {
+                      type: "Point",
+                      coordinates: [ -106.248779, 29.302567 ]
+                    }
                 },
                 {
                     mid:2,
-                    latitude: 30.369913,
-                    longitude: -109.434814
+                    geometry: {
+                      type: "Point",
+                      coordinates: [ -109.434814, 30.369913 ]
+                    }
                 },
                 {
                     mid:3,
-                    latitude: 26.739478,
-                    longitude: -108.61084
+                    geometry: {
+                      type: "Point",
+                      coordinates: [ -108.61084, 26.739478 ]
+                    }
                 }
             ],
             dynamicMarkers: [],
@@ -156,11 +177,13 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             doClusterRandomMarkers: true,
             doUgly: true, //great name :)
             clusterOptions: {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2,
-                imageExtension: 'png', imagePath: 'http://localhost:3000/example/cluster', imageSizes: [72]},
+                imageExtension: 'png', imagePath: 'assets/images/cluster', imageSizes: [72]},
             clickedMarker: {
                 title: 'You clicked here',
-                latitude: null,
-                longitude: null
+                geometry: { 
+                  type: "Point",
+                  coordinates: [ null, null ]
+                }
             },
             events: {
                 tilesloaded: function (map, eventName, originalEventArgs) {
@@ -174,14 +197,18 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                     if (!$scope.map.clickedMarker) {
                         $scope.map.clickedMarker = {
                             title: 'You clicked here',
-                            latitude: e.latLng.lat(),
-                            longitude: e.latLng.lng()
+                            geometry: {
+                              type: "Point",
+                              coordinates: [ e.latLng.lng(), e.latLng.lat() ]
+                            }
                         };
                     }
                     else {
                         var marker = {
-                            latitude: e.latLng.lat(),
-                            longitude: e.latLng.lng()
+                            geometry: {
+                              type: "Point",
+                              coordinates: [ e.latLng.lng(), e.latLng.lat() ]
+                            }
                         };
                         $scope.map.clickedMarker = marker;
                     }
@@ -191,13 +218,6 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                 dragend: function () {
                     self = this;
                     $timeout(function () {
-//                        modified = _.map($scope.map.mexiMarkers, function (marker) {
-//                            return {
-//                                latitude: marker.latitude + rndAddToLatLon(),
-//                                longitude: marker.longitude + rndAddToLatLon()
-//                            }
-//                        })
-//                        $scope.map.mexiMarkers = modified;
                         var markers = [];
                         var id = 0;
                         if($scope.map.mexiMarkers !== null && $scope.map.mexiMarkers.length > 0){
@@ -216,8 +236,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             },
             infoWindow: {
                 coords: {
-                    latitude: 36.270850,
-                    longitude: -44.296875
+                  type: "Point",
+                  coordinates: [ -44.296875, 36.270850 ]
                 },
                 options:{
                     disableAutoPan:true
@@ -226,8 +246,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             },
             infoWindowWithCustomClass: {
                 coords: {
-                    latitude: 36.270850,
-                    longitude: -44.296875
+                  type: "Point",
+                  coordinates: [ -44.296875, 36.270850 ]
                 },
                 options:{
                     boxClass: 'custom-info-window'
@@ -236,14 +256,14 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             },
             templatedInfoWindow: {
                 coords: {
-                    latitude: 48.654686,
-                    longitude: -75.937500
+                  type: "Point",
+                  coordinates: [ -75.937500, 48.654686 ]
                 },
                 options:{
                     disableAutoPan:true
                 },
                 show: true,
-                templateUrl: 'templates/info.html',
+                templateUrl: 'assets/templates/info.html',
                 templateParameter: {
                     message: 'passed in from the opener'
                 }
@@ -252,8 +272,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                 {
                     id: 1,
                     center: {
-                        latitude: 44,
-                        longitude: -108
+                        type: "Point",
+                        coordinates: [ -108, 44 ]
                     },
                     radius: 500000,
                     stroke: {
@@ -275,20 +295,15 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
             polygons: [
                 {
                     id: 1,
-                    path: [
-                        {
-                            latitude: 50,
-                            longitude: -80
-                        },
-                        {
-                            latitude: 30,
-                            longitude: -120
-                        },
-                        {
-                            latitude: 20,
-                            longitude: -95
-                        }
-                    ],
+                    path: {
+                      type: "Polygon",
+                      coordinates: [[
+                        [ -80, 50 ],
+                        [ -120, 30 ],
+                        [ -95, 20 ],
+                        [ -80, 50 ]
+                      ]]
+                    },
                     stroke: {
                         color: '#6060FB',
                         weight: 3
@@ -303,58 +318,18 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
                     }
                 }
             ],
-            polygons2: [
-                {
-                    id: 1,
-                    path: [
-                        {
-                            latitude: 60,
-                            longitude: -80
-                        },
-                        {
-                            latitude: 40,
-                            longitude: -120
-                        },
-                        {
-                            latitude: 45,
-                            longitude: -95
-                        }
-                    ],
-                    stroke: {
-                        color: '#33CDDC',
-                        weight: 3
-                    },
-                    editable: true,
-                    draggable: true,
-                    geodesic: false,
-                    visible: true,
-                    fill: {
-                        color: '#33CCCC',
-                        opacity: 0.8
-                    }
-                }
-            ],
             polylines: [
                 {
                     id:1,
-                    path: [
-                        {
-                            latitude: 45,
-                            longitude: -74
-                        },
-                        {
-                            latitude: 30,
-                            longitude: -89
-                        },
-                        {
-                            latitude: 37,
-                            longitude: -122
-                        },
-                        {
-                            latitude: 60,
-                            longitude: -95
-                        }
-                    ],
+                    path: {
+                      type: "LineString",
+                      coordinates: [
+                        [ -74, 45 ],
+                        [ -89, 30 ],
+                        [ -122, 37 ],
+                        [ -95, 60 ]
+                      ]
+                    },
                     stroke: {
                         color: '#6060FB',
                         weight: 3
@@ -469,9 +444,9 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
     };
 
     $scope.searchLocationMarker = {
-        coords: {
-            latitude: 40.1451,
-            longitude: -99.6680
+        geometry: {
+          type: "Point",
+          coordinates: [ -99.6680, 40.1451 ]
         },
         options: { draggable: true },
         events: {
@@ -489,45 +464,42 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         dynamicMarkers = [
             {
                 id: 1,
-                latitude: 46,
-                longitude: -79,
+                geometry: {
+                  type: "Point",
+                  coordinates: [ -79, 46 ]
+                },
                 showWindow: false
             },
             {
                 id: 2,
-                latitude: 33,
-                longitude: -79,
+                geometry: {
+                  type: "Point",
+                  coordinates: [ -79, 33 ]
+                },
                 showWindow: false
             },
             {
                 id: 3,
-                icon: 'plane.png',
-                latitude: 35,
-                longitude: -127,
+                icon: 'assets/images/plane.png',
+                geometry: {
+                  type: "Point",
+                  coordinates: [ -127, 35 ]
+                },
                 showWindow: false
             }
         ];
 
         $scope.map.polylines.push({
             id:3,
-            path: [
-                {
-                    latitude: 65,
-                    longitude: -74
-                },
-                {
-                    latitude: 50,
-                    longitude: -89
-                },
-                {
-                    latitude: 57,
-                    longitude: -122
-                },
-                {
-                    latitude: 20,
-                    longitude: -95
-                }
-            ],
+            path: {
+              type: "LineString",
+              coordinates: [
+                [ -74, 65 ],
+                [ -89, 50 ],
+                [ -122, 57 ],
+                [ -95, 20 ]
+              ]
+            },
             stroke: {
                 color: '#FF0066',
                 weight: 3

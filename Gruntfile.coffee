@@ -32,7 +32,7 @@ module.exports = (grunt) ->
                 files:
                     "tmp/output_coffee.js": [
                         "src/coffee/module.coffee",
-                        "src/coffee/extensions/underscore.coffee",
+                        "src/coffee/extensions/*.coffee",
                         "src/coffee/directives/api/utils/*.coffee",
                         "src/coffee/directives/api/managers/*.coffee",
 
@@ -100,7 +100,7 @@ module.exports = (grunt) ->
                     livereload: true
 
                 files: ["src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee"]
-                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine",
+                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine:taskName",
                         "clean:example", "coffee"]
 
         open:
@@ -109,6 +109,12 @@ module.exports = (grunt) ->
 
             example2:
                 path: "http://localhost:3100/example/example2.html"
+                
+            geojson:
+                path: "http://localhost:3100/example/geojson.html"
+                
+            hugedata:
+                path: "http://localhost:3100/example/hugedata.html"
 
             version:
                 path: "http://localhost:3100/package.json"
@@ -134,14 +140,13 @@ module.exports = (grunt) ->
 
         jasmine:
             taskName:
-                src: ["dist/angular-google-maps.js"]
+                src: ["bower_components/lodash-amd/main.js", "dist/angular-google-maps.js"]
                 options:
                     keepRunner: true
                     vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
                              "bower_components/jquery/jquery.js",
-                             "bower_components/angular/angular.js", "bower_components/angular-mocks/angular-mocks.js",
-                             "bower_components/underscore/underscore.js",
-                             "dist/angular-google-maps.js"]
+                             "bower_components/angular/angular.js",
+                             "bower_components/angular-mocks/angular-mocks.js"]
                     specs: ["tmp/spec/js/**/*spec.js"]
                     helpers: ["tmp/spec/js/helpers/helpers.js"]
                 #grunt-template-jasmine-requirejs - to remove all coverage meta from angular-google-maps.js (helps debug)
@@ -149,6 +154,43 @@ module.exports = (grunt) ->
                     template: require "grunt-template-jasmine-requirejs"
 #                    template: require  "grunt-template-jasmine-istanbul"
                     templateOptions:
+                            requireConfig:
+                                paths:
+                                    "lodash": "bower_components/lodash/dist/lodash.underscore"
+                                deps: ["lodash"]
+                                callback: (_) ->
+                                
+
+                        coverage: "spec/coverage/coverage.json"
+                        report: "spec/coverage"
+                        thresholds:
+                            lines: 25
+                            staRtements: 25
+                            branches: 5
+                            functions: 25
+            coverage:
+                src: ["bower_components/lodash-amd/main.js", "dist/angular-google-maps.js"]
+                options:
+                    keepRunner: true
+                    vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
+                             "bower_components/jquery/jquery.js",
+                             "bower_components/angular/angular.js",
+                             "bower_components/angular-mocks/angular-mocks.js"]
+                    specs: ["tmp/spec/js/**/*spec.js"]
+                    helpers: ["tmp/spec/js/helpers/helpers.js"]
+                    #grunt-template-jasmine-requirejs - to remove all coverage meta from angular-google-maps.js (helps debug)
+                    #grunt-template-jasmine-istanbul - to produce coverage report
+        #                    template: require  "grunt-template-jasmine-requirejs"
+                    template: require  "grunt-template-jasmine-istanbul"
+                    templateOptions:
+                        template: require "grunt-template-jasmine-requirejs"
+                        templateOptions:
+                            requireConfig:
+                                #baseUrl: ".grunt/grunt-contrib-jasmine/"
+                                paths:
+                                  "lodash": "bower_components/lodash/dist/lodash.underscore"
+                                deps: ["lodash"]
+                                callback: (_) ->
                         coverage: "spec/coverage/coverage.json"
                         report: "spec/coverage"
                         thresholds:
@@ -163,10 +205,12 @@ module.exports = (grunt) ->
 
     # Default task: build a release in dist/
     grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
-                                   "uglify", "jasmine"]
+                                   "uglify", "jasmine:taskName"]
 
     # Run the example page by creating a local copy of angular-google-maps.js
     # and running a webserver on port 3100 with livereload. Web page is opened
     # automatically in the default browser.
     grunt.registerTask "example", ["clean:example", "connect:server", "open:example", "watch"]
     grunt.registerTask "example2", ["clean:example", "connect:server", "open:example2", "watch"]
+    grunt.registerTask "geojson", ["clean:example", "connect:server", "open:geojson", "watch"]
+    grunt.registerTask "hugedata", ["clean:example", "connect:server", "open:hugedata", "watch"]

@@ -24,21 +24,10 @@ THE SOFTWARE.
 
 @authors
 Julian Popescu - https://github.com/jpopesculian
+Rick Huizinga - https://plus.google.com/+RickHuizinga
 ###
-angular.module("google-maps").directive "circle", ["$log", "$timeout", ($log, $timeout) ->
-    validateCenter = (center) ->
-        return false  if angular.isUndefined(center.latitude) or angular.isUndefined(center.longitude)
-        true
-
-    convertCenter = (center) ->
-        new google.maps.LatLng(center.latitude, center.longitude)
-
-    ###
-    Check if a value is true
-    ###
-    isTrue = (val) ->
-        angular.isDefined(val) and val isnt null and val is true or val is "1" or val is "y" or val is "true"
-
+angular.module("google-maps")
+.directive "circle", ["$log", "$timeout", "GmapUtil", ($log, $timeout, GmapUtil) ->
     "use strict"
     DEFAULTS = {}
     restrict: "ECA"
@@ -62,12 +51,12 @@ angular.module("google-maps").directive "circle", ["$log", "$timeout", ($log, $t
         $timeout ->
             buildOpts = ->
                 # Validate required properties
-                if angular.isUndefined(scope.center) or scope.center is null or not validateCenter(scope.center)
+                if !GmapUtil.validateCoords(scope.center)
                     $log.error "circle: no valid center attribute found"
                     return
                 opts = angular.extend({}, DEFAULTS,
                     map: map
-                    center: convertCenter(scope.center)
+                    center: GmapUtil.getCoords(scope.center)
                     radius: scope.radius
                     strokeColor: scope.stroke and scope.stroke.color
                     strokeOpacity: scope.stroke and scope.stroke.opacity
@@ -134,8 +123,13 @@ angular.module("google-maps").directive "circle", ["$log", "$timeout", ($log, $t
                     scope.$apply()
 
             google.maps.event.addListener circle, 'center_changed', ->
-                scope.center.latitude = circle.getCenter().lat()
-                scope.center.longitude = circle.getCenter().lng()
+                if angular.isDefined(scope.center.type)
+                    scope.center.coordinates[1] = circle.getCenter().lat()
+                    scope.center.coordinates[0] = circle.getCenter().lng()
+                else
+                    scope.center.latitude = circle.getCenter().lat()
+                    scope.center.longitude = circle.getCenter().lng()
+                    
                 $timeout ->
                     scope.$apply()
 
