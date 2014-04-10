@@ -2,8 +2,8 @@
 
 > AngularJS directives for Google Maps
 
-![Dependencies](https://david-dm.org/nlaplante/angular-google-maps.png)&nbsp;
-![Dependencies](https://david-dm.org/nlaplante/angular-google-maps/dev-status.png)&nbsp;
+[![Dependencies](https://david-dm.org/nlaplante/angular-google-maps.png)](https://david-dm.org/nlaplante/angular-google-maps)&nbsp;
+[![Dependencies](https://david-dm.org/nlaplante/angular-google-maps/dev-status.png)](https://david-dm.org/nlaplante/angular-google-maps)&nbsp;
 [![Build Status](https://travis-ci.org/nlaplante/angular-google-maps.png?branch=r1-dev)](https://travis-ci.org/nlaplante/angular-google-maps)
 
 ## Getting started
