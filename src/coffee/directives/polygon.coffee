@@ -179,11 +179,11 @@ angular.module("google-maps").directive "polygon", ["$log", "$timeout", ($log, $
             # Remove polyline on scope $destroy
             scope.$on "$destroy", ->
                 polyline.setMap null
-                pathSetAtListener()
+                google.maps.event.removeListener(pathSetAtListener)
                 pathSetAtListener = null
-                pathInsertAtListener()
+                google.maps.event.removeListener(pathInsertAtListener)
                 pathInsertAtListener = null
-                pathRemoveAtListener()
+                google.maps.event.removeListener(pathRemoveAtListener)
                 pathRemoveAtListener = null
 
 
