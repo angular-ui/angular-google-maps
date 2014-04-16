@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-04-03
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-04-16
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -998,7 +998,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps").factory("array-sync", [
     "add-events", function(mapEvents) {
       return function(mapArray, scope, pathEval) {
-        var geojsonArray, geojsonHandlers, geojsonWatcher, isSetFromScope, legacyHandlers, legacyWatcher, mapArrayListener, scopePath, watchListener;
+        var geojsonArray, geojsonHandlers, geojsonWatcher, isSetFromScope, legacyHandlers, legacyWatcher, mapArrayListener, scopePath, watchListener, watcher;
         isSetFromScope = false;
         scopePath = scope.$eval(pathEval);
         if (!scope["static"]) {
@@ -1153,14 +1153,20 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           return isSetFromScope = false;
         };
-        watchListener = scope["static"] ? scope.$watch : scope.$watchCollection;
+        watchListener;
+        watcher = angular.isUndefined(scopePath.type) ? legacyWatcher : geojsonWatcher;
+        if (scope["static"]) {
+          watchListener = scope.$watch(pathEval, watcher, !scope["static"]);
+        } else {
+          watchListener = scope.$watchCollection(pathEval, watcher);
+        }
         return function() {
           if (mapArrayListener) {
             mapArrayListener();
             mapArrayListener = null;
           }
           if (watchListener) {
-            watchListener.apply(scope, [pathEval, angular.isUndefined(scopePath.type) ? legacyWatcher : geojsonWatcher]);
+            watchListener();
             return watchListener = null;
           }
         };

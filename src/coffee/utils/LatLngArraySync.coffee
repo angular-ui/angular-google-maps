@@ -28,14 +28,14 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           return if isSetFromScope #important to avoid cyclic forever change loop watch to map event change and back
           scopePath.splice index, 1
 
-      #Note: we only support display of the outer Polygon ring, not internal holes
       geojsonArray
       if scopePath.type == "Polygon"
+        #Note: we only support display of the outer Polygon ring, not internal holes
         geojsonArray = scopePath.coordinates[0]
       else if scopePath.type == "LineString"
         geojsonArray = scopePath.coordinates
 
-      #TODO: Refactor this is too much copy and paste code that can be in a utility / module
+      #TODO: Implement encoding/decoding path arrays as user-providable service
       geojsonHandlers =
         set_at: (index) ->
           return if isSetFromScope #important to avoid cyclic forever change loop watch to map event change and back
@@ -116,14 +116,18 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           i++
       isSetFromScope = false
 
-    watchListener =
-      if scope.static then scope.$watch else scope.$watchCollection
+    watchListener
+    watcher = if angular.isUndefined(scopePath.type) then legacyWatcher else geojsonWatcher
+    if scope.static
+      watchListener = scope.$watch pathEval, watcher, !scope.static
+    else
+      watchListener = scope.$watchCollection pathEval, watcher
 
     ->
-      if mapArrayListener #where the heck is this? Dead code?
+      if mapArrayListener
         mapArrayListener()
         mapArrayListener = null
       if watchListener
-        watchListener.apply(scope, [pathEval, if angular.isUndefined(scopePath.type) then legacyWatcher else geojsonWatcher])
+        watchListener() # call the watch deregistration function
         watchListener = null
 ]
