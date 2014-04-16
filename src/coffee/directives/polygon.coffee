@@ -143,6 +143,7 @@ angular.module("google-maps")
                     ->
                         scope.events[eventName].apply scope, [polygon, eventName, arguments]
 
+                #TODO: Need to keep track of listeners and call removeListener on each
                 for eventName of scope.events
                     polygon.addListener eventName, getEventHandler(eventName)  if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
                     
