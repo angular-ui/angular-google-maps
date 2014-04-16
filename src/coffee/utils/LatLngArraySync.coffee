@@ -117,11 +117,11 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
       isSetFromScope = false
 
     watchListener
-    watcher = if angular.isUndefined(scopePath.type) then legacyWatcher else geojsonWatcher
-    if scope.static
-      watchListener = scope.$watch pathEval, watcher, !scope.static
-    else
-      watchListener = scope.$watchCollection pathEval, watcher
+    if !scope.static
+      if angular.isUndefined(scopePath.type)
+        watchListener = scope.$watchCollection pathEval, legacyWatcher
+      else
+        watchListener = scope.$watch pathEval, geojsonWatcher
 
     ->
       if mapArrayListener

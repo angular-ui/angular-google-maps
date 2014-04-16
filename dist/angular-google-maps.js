@@ -998,7 +998,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps").factory("array-sync", [
     "add-events", function(mapEvents) {
       return function(mapArray, scope, pathEval) {
-        var geojsonArray, geojsonHandlers, geojsonWatcher, isSetFromScope, legacyHandlers, legacyWatcher, mapArrayListener, scopePath, watchListener, watcher;
+        var geojsonArray, geojsonHandlers, geojsonWatcher, isSetFromScope, legacyHandlers, legacyWatcher, mapArrayListener, scopePath, watchListener;
         isSetFromScope = false;
         scopePath = scope.$eval(pathEval);
         if (!scope["static"]) {
@@ -1154,11 +1154,12 @@ Nicholas McCready - https://twitter.com/nmccready
           return isSetFromScope = false;
         };
         watchListener;
-        watcher = angular.isUndefined(scopePath.type) ? legacyWatcher : geojsonWatcher;
-        if (scope["static"]) {
-          watchListener = scope.$watch(pathEval, watcher, !scope["static"]);
-        } else {
-          watchListener = scope.$watchCollection(pathEval, watcher);
+        if (!scope["static"]) {
+          if (angular.isUndefined(scopePath.type)) {
+            watchListener = scope.$watchCollection(pathEval, legacyWatcher);
+          } else {
+            watchListener = scope.$watch(pathEval, geojsonWatcher);
+          }
         }
         return function() {
           if (mapArrayListener) {
