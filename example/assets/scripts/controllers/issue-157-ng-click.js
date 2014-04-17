@@ -81,25 +81,25 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
     }
   });
 
-  _.each($scope.map.markers, function (marker) {
-    marker.closeClick = function () {
-      marker.showWindow = false;
-      $scope.$apply();
-    };
-    marker.onClicked = function () {
-      $scope.onMarkerClicked(marker);
-    };
-  });
-
-  _.each($scope.map.markers2, function (marker) {
-    marker.closeClick = function () {
-      marker.showWindow = false;
-      $scope.$apply();
-    };
-    marker.onClicked = function () {
-      $scope.onMarkerClicked(marker);
-    };
-  });
+//  _.each($scope.map.markers, function (marker) {
+//    marker.closeClick = function () {
+//      marker.showWindow = false;
+//      $scope.$apply();
+//    };
+//    marker.onClicked = function () {
+//      $scope.onMarkerClicked(marker);
+//    };
+//  });
+//
+//  _.each($scope.map.markers2, function (marker) {
+//    marker.closeClick = function () {
+//      marker.showWindow = false;
+//      $scope.$apply();
+//    };
+//    marker.onClicked = function () {
+//      $scope.onMarkerClicked(marker);
+//    };
+//  });
 
   $scope.removeMarkers = function () {
     $log.info("Clearing markers. They should disappear from the map now");
@@ -127,13 +127,17 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
   var markerToClose = null;
 
   $scope.onMarkerClicked = function (marker) {
-    if (markerToClose) {
-      markerToClose.showWindow = false;
-    }
+//    if (markerToClose) {
+//      markerToClose.showWindow = false;
+//    }
     markerToClose = marker; // for next go around
     marker.showWindow = true;
     $scope.$apply();
     //window.alert("Marker: lat: " + marker.latitude + ", lon: " + marker.longitude + " clicked!!")
+  };
+
+  $scope.onInsideWindowClick = function(){
+    alert("Window hit!");
   };
 
   $timeout(function () {

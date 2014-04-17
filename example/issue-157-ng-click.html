@@ -42,13 +42,14 @@
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <marker ng-repeat="m in map.markers2"  coords='m' icon='m.icon' click='onClicked'>
-                <!-- show="'showWindow'" -->
-                <windows  closeClick="'closeClick'" ng-cloak>
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-
-                    <p class="muted">My marker will stay open when the window is popped up!</p>
-                </windows>
+            <marker ng-repeat="m in map.markers2"  coords='m' icon='m.icon' ng-click='onMarkerClicked(m)'>
+                <window show="m.showWindow"  closeClick="'closeClick'" ng-cloak>
+                    <div ng-controller="InfoController">
+                        <a href="javascript:void(0)" ng-click="clickedButtonInWindow()">hit me</a>
+                        <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
+                        <p class="muted">My marker will stay open when the window is popped up!</p>
+                    </div>
+                </window>
             </marker>
 
 
