@@ -23,7 +23,7 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 			<td><span class="label label-danger">expression</span></td>
 			<td>
 			  <p>The coordinates of the points defining the outer shell of the polygon.</p>
-			  <p>May be in the form of an array of objects containing <code>latitude</code> and <code>longitude</code> properties, or <span class="badge badge-info">New in v1.1</span> a <a href="http://geojson.org/geojson-spec.html#polygon">GeoJSON Polygon</a> object.</p>
+			  <p>May be in the form of an array of objects containing <code>latitude</code> and <code>longitude</code> properties, or <span class="badge badge-info">New in v1.1</span> an array of <a href="https://developers.google.com/maps/documentation/javascript/reference#LatLng">Google Maps LatLng</a> objects. Alternatively <span class="badge badge-info">New in v1.1</span>, a <a href="http://geojson.org/geojson-spec.html#polygon">GeoJSON Polygon</a> object.</p>
 			  <p>For the case of the GeoJSON Polygon object, only the outer ring (ring index 0) is used to display the polygon.  Inner holes (ring indices 1...n) of the Polygon are not displayed.</p>
 		  </td>
 		</tr>
