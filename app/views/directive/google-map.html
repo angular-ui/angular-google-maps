@@ -47,7 +47,15 @@
 		<tr>
 			<td>events</td>
 			<td><span class="label label-default">expression</span></td>
-			<td>Custom events to apply to the map. This is an associative array, where keys are event names and values are handler functions.</td>
+			<td>
+			  <p>Custom events to apply to the map. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Map">Map Events documentation</a></p>
+  		  <span>The handler function takes three parameters:</span>
+  		  <ol>
+  			  <li>maps: the GoogleMap object</li>
+  			  <li>eventName: the name of the event</li>
+  			  <li>arguments: the arguments provided by Google Maps for this event type. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Map">the Google Map Event docs</a></li>
+  		  </ol>
+  		</td>
 		</tr>
 		<tr>
 			<td>bounds</td>
