@@ -6,7 +6,8 @@ angular.module("google-maps.directives.api")
         constructor: (@scope, @attrs, @map, @defaults, @model) ->
             self = @
 
-            @polyline = new google.maps.Polyline @buildOpts @convertPathPoints @scope.path
+            pathPoints = @convertPathPoints @scope.path
+            @polyline = new google.maps.Polyline @buildOpts pathPoints
             extendMapBounds map, pathPoints  if @isTrue @attrs.fit
             if !scope.static and angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->

@@ -9,21 +9,24 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           return if isSetFromScope #important to avoid cyclic forever change loop watch to map event change and back
           value = mapArray.getAt(index)
           return  unless value
-          return  if not value.lng or not value.lat
-          scopePath[index].latitude = value.lat()
-          scopePath[index].longitude = value.lng()
-
+          if not value.lng or not value.lat # LatLng object
+            scopePath[index] = value
+          else
+            scopePath[index].latitude = value.lat()
+            scopePath[index].longitude = value.lng()
+        
         insert_at: (index) ->
           return if isSetFromScope #important to avoid cyclic forever change loop watch to map event change and back
           value = mapArray.getAt(index)
           return  unless value
-          return  if not value.lng or not value.lat
-
           #check to make sure we are not inserting something that is already there
-          scopePath.splice index, 0,
-            latitude: value.lat()
-            longitude: value.lng()
-
+          if not value.lng or not value.lat # LatLng object
+            scopePath.splice index, 0, value
+          else
+            scopePath.splice index, 0,
+              latitude: value.lat()
+              longitude: value.lng()
+        
         remove_at: (index) ->
           return if isSetFromScope #important to avoid cyclic forever change loop watch to map event change and back
           scopePath.splice index, 1
@@ -35,7 +38,6 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
       else if scopePath.type == "LineString"
         geojsonArray = scopePath.coordinates
 
-      #TODO: Implement encoding/decoding path arrays as user-providable service
       geojsonHandlers =
         set_at: (index) ->
           return if isSetFromScope #important to avoid cyclic forever change loop watch to map event change and back
@@ -57,7 +59,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           geojsonArray.splice index, 1
 
       mapArrayListener = mapEvents mapArray,
-          if angular.isUndefined scopePath.type then legacyHandlers else geojsonHandlers
+        if angular.isUndefined scopePath.type then legacyHandlers else geojsonHandlers
 
     legacyWatcher = (newPath) ->
       isSetFromScope = true
@@ -72,13 +74,22 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
         while i < l
           oldValue = oldArray.getAt(i)
           newValue = newPath[i]
-          oldArray.setAt i, new google.maps.LatLng(newValue.latitude,
-              newValue.longitude)  if (oldValue.lat() isnt newValue.latitude) or (oldValue.lng() isnt newValue.longitude)
+          if typeof newValue.equals == "function" #LatLng object
+            if not newValue.equals(oldValue)
+              oldArray.setAt i, newValue
+          else # latitude/longitude object
+            if (oldValue.lat() isnt newValue.latitude) or (oldValue.lng() isnt newValue.longitude)
+              oldArray.setAt i, new google.maps.LatLng(newValue.latitude, newValue.longitude)
+          
           i++
         #add new points
         while i < newLength
           newValue = newPath[i]
-          oldArray.push new google.maps.LatLng(newValue.latitude, newValue.longitude)
+          if typeof newValue.lat == "function" and typeof newValue.lng == "function"
+            oldArray.push newValue
+          else
+            oldArray.push new google.maps.LatLng(newValue.latitude, newValue.longitude)
+          
           i++
         #remove old no longer there
         while i < oldLength

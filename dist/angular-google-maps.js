@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-04-17
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-04-23
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -470,11 +470,11 @@ Nicholas McCready - https://twitter.com/nmccready
           var array, i;
           i = 0;
           if (angular.isUndefined(path.type)) {
-            if (path.length < 2) {
-              return false;
+            if (!Array.isArray(path) || path.length < 2) {
+              false;
             }
             while (i < path.length) {
-              if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
+              if (!((angular.isDefined(path[i].latitude) && angular.isDefined(path[i].longitude)) || (typeof path[i].lat === "function" && typeof path[i].lng === "function"))) {
                 return false;
               }
               i++;
@@ -508,12 +508,18 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         },
         convertPathPoints: function(path) {
-          var array, i, result;
-          result = new google.maps.MVCArray();
+          var array, i, latlng, result;
           i = 0;
+          result = new google.maps.MVCArray();
           if (angular.isUndefined(path.type)) {
             while (i < path.length) {
-              result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
+              latlng;
+              if (angular.isDefined(path[i].latitude) && angular.isDefined(path[i].longitude)) {
+                latlng = new google.maps.LatLng(path[i].latitude, path[i].longitude);
+              } else if (typeof path[i].lat === "function" && typeof path[i].lng === "function") {
+                latlng = path[i];
+              }
+              result.push(latlng);
               i++;
             }
           } else {
@@ -1013,10 +1019,11 @@ Nicholas McCready - https://twitter.com/nmccready
                 return;
               }
               if (!value.lng || !value.lat) {
-                return;
+                return scopePath[index] = value;
+              } else {
+                scopePath[index].latitude = value.lat();
+                return scopePath[index].longitude = value.lng();
               }
-              scopePath[index].latitude = value.lat();
-              return scopePath[index].longitude = value.lng();
             },
             insert_at: function(index) {
               var value;
@@ -1028,12 +1035,13 @@ Nicholas McCready - https://twitter.com/nmccready
                 return;
               }
               if (!value.lng || !value.lat) {
-                return;
+                return scopePath.splice(index, 0, value);
+              } else {
+                return scopePath.splice(index, 0, {
+                  latitude: value.lat(),
+                  longitude: value.lng()
+                });
               }
-              return scopePath.splice(index, 0, {
-                latitude: value.lat(),
-                longitude: value.lng()
-              });
             },
             remove_at: function(index) {
               if (isSetFromScope) {
@@ -1100,14 +1108,22 @@ Nicholas McCready - https://twitter.com/nmccready
             while (i < l) {
               oldValue = oldArray.getAt(i);
               newValue = newPath[i];
-              if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
+              if (typeof newValue.equals === "function") {
+                if (!newValue.equals(oldValue)) {
+                  oldArray.setAt(i, newValue);
+                }
+              } else if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
                 oldArray.setAt(i, new google.maps.LatLng(newValue.latitude, newValue.longitude));
               }
               i++;
             }
             while (i < newLength) {
               newValue = newPath[i];
-              oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              if (typeof newValue.lat === "function" && typeof newValue.lng === "function") {
+                oldArray.push(newValue);
+              } else {
+                oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              }
               i++;
             }
             while (i < oldLength) {
@@ -1560,7 +1576,7 @@ Nicholas McCready - https://twitter.com/nmccready
         PolylineChildModel.include(GmapUtil);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
-          var arraySyncer, self,
+          var arraySyncer, pathPoints, self,
             _this = this;
           this.scope = scope;
           this.attrs = attrs;
@@ -1569,7 +1585,8 @@ Nicholas McCready - https://twitter.com/nmccready
           this.model = model;
           this.buildOpts = __bind(this.buildOpts, this);
           self = this;
-          this.polyline = new google.maps.Polyline(this.buildOpts(this.convertPathPoints(this.scope.path)));
+          pathPoints = this.convertPathPoints(this.scope.path);
+          this.polyline = new google.maps.Polyline(this.buildOpts(pathPoints));
           if (this.isTrue(this.attrs.fit)) {
             extendMapBounds(map, pathPoints);
           }

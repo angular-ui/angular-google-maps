@@ -402,6 +402,18 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           draggable: true,
           geodesic: true,
           visible: true
+        },
+        {
+          id: 3,
+          path: google.maps.geometry.encoding.decodePath("uowfHnzb}Uyll@i|i@syAcx}Cpj[_wXpd}AhhCxu[ria@_{AznyCnt^|re@nt~B?m|Awn`G?vk`RzyD}nr@uhjHuqGrf^ren@"),
+          stroke: {
+            color: '#4EAE47',
+            weight: 3
+          },
+          editable: false,
+          draggable: false,
+          geodesic: false,
+          visible: true
         }
       ]
     },
