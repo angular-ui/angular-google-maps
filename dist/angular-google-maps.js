@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-04-23
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-04-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -1112,8 +1112,10 @@ Nicholas McCready - https://twitter.com/nmccready
                 if (!newValue.equals(oldValue)) {
                   oldArray.setAt(i, newValue);
                 }
-              } else if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
-                oldArray.setAt(i, new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              } else {
+                if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
+                  oldArray.setAt(i, new google.maps.LatLng(newValue.latitude, newValue.longitude));
+                }
               }
               i++;
             }

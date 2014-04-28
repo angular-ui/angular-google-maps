@@ -89,7 +89,12 @@
                     labelContent="'title'" labelAnchor="22 0" labelClass="marker-labels">
             <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                    I should not be attached to a
+                    marker.
+                    <div ng-controller='InfoController'>
+                        <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
+                    </div>
+                    <p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 
                     <p class="muted">My marker will stay open when the window is popped up!</p>
                 </div>
