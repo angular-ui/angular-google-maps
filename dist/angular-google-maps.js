@@ -471,7 +471,7 @@ Nicholas McCready - https://twitter.com/nmccready
           i = 0;
           if (angular.isUndefined(path.type)) {
             if (!Array.isArray(path) || path.length < 2) {
-              false;
+              return false;
             }
             while (i < path.length) {
               if (!((angular.isDefined(path[i].latitude) && angular.isDefined(path[i].longitude)) || (typeof path[i].lat === "function" && typeof path[i].lng === "function"))) {
@@ -484,7 +484,6 @@ Nicholas McCready - https://twitter.com/nmccready
             if (angular.isUndefined(path.coordinates)) {
               return false;
             }
-            array;
             if (path.type === "Polygon") {
               if (path.coordinates[0].length < 4) {
                 return false;

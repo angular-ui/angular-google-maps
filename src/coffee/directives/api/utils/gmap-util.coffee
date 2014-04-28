@@ -83,7 +83,7 @@ angular.module("google-maps.directives.api.utils")
       i = 0
       if angular.isUndefined(path.type)
         if not Array.isArray(path) or path.length < 2
-          false
+          return false
         
         #Arrays of latitude/longitude objects or Google Maps LatLng objects are allowed
         while i < path.length
@@ -96,7 +96,6 @@ angular.module("google-maps.directives.api.utils")
       else
         return false if angular.isUndefined(path.coordinates)
         
-        array
         if path.type is "Polygon"
           return false if path.coordinates[0].length < 4
           #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
@@ -120,6 +119,7 @@ angular.module("google-maps.directives.api.utils")
       if angular.isUndefined(path.type)
         # TODO: optimize to detect if array contains LatLng and directly pass array to MVCArray constructor
         # CONTRIBUTIONS WELCOMED
+        # TODO: remove while loop it is the same as maping, either array.map or _.map
         while i < path.length
           latlng
           if angular.isDefined(path[i].latitude) and angular.isDefined(path[i].longitude) # latitude/longitude object
