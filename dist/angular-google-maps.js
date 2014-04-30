@@ -791,19 +791,21 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.managers").factory("ClustererMarkerManager", [
-    "BaseObject", "Logger", function(BaseObject, Logger) {
+    "BaseObject", "Logger", function(BaseObject, $log) {
       var ClustererMarkerManager;
       ClustererMarkerManager = (function(_super) {
         __extends(ClustererMarkerManager, _super);
 
         function ClustererMarkerManager(gMap, opt_markers, opt_options, opt_events) {
+          var self;
+          this.opt_events = opt_events;
+          this.destroy = __bind(this.destroy, this);
           this.clear = __bind(this.clear, this);
           this.draw = __bind(this.draw, this);
           this.removeMany = __bind(this.removeMany, this);
           this.remove = __bind(this.remove, this);
           this.addMany = __bind(this.addMany, this);
           this.add = __bind(this.add, this);
-          var eventHandler, eventName, self;
           ClustererMarkerManager.__super__.constructor.call(this);
           self = this;
           this.opt_options = opt_options;
@@ -814,18 +816,10 @@ Nicholas McCready - https://twitter.com/nmccready
           } else {
             this.clusterer = new MarkerClusterer(gMap);
           }
-          if (angular.isDefined(opt_events) && (opt_events != null) && angular.isObject(opt_events)) {
-            for (eventName in opt_events) {
-              eventHandler = opt_events[eventName];
-              if (opt_events.hasOwnProperty(eventName) && angular.isFunction(opt_events[eventName])) {
-                google.maps.event.addListener(this.clusterer, eventName, opt_events[eventName]);
-              }
-            }
-          }
+          this.attachEvents(this.opt_events, "opt_events");
           this.clusterer.setIgnoreHidden(true);
-          this.$log = Logger;
           this.noDrawOnSingleAddRemoves = true;
-          this.$log.info(this);
+          $log.info(this);
         }
 
         ClustererMarkerManager.prototype.add = function(gMarker) {
@@ -851,6 +845,46 @@ Nicholas McCready - https://twitter.com/nmccready
         ClustererMarkerManager.prototype.clear = function() {
           this.clusterer.clearMarkers();
           return this.clusterer.repaint();
+        };
+
+        ClustererMarkerManager.prototype.attachEvents = function(options, optionsName) {
+          var eventHandler, eventName, _results;
+          if (angular.isDefined(options) && (options != null) && angular.isObject(options)) {
+            _results = [];
+            for (eventName in options) {
+              eventHandler = options[eventName];
+              if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
+                $log.info("" + optionsName + ": Attaching event: " + eventName + " to clusterer");
+                _results.push(google.maps.event.addListener(this.clusterer, eventName, options[eventName]));
+              } else {
+                _results.push(void 0);
+              }
+            }
+            return _results;
+          }
+        };
+
+        ClustererMarkerManager.prototype.clearEvents = function(options) {
+          var eventHandler, eventName, _results;
+          if (angular.isDefined(options) && (options != null) && angular.isObject(options)) {
+            _results = [];
+            for (eventName in options) {
+              eventHandler = options[eventName];
+              if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
+                $log.info("" + optionsName + ": Clearing event: " + eventName + " to clusterer");
+                _results.push(google.maps.event.clearListeners(this.clusterer, eventName));
+              } else {
+                _results.push(void 0);
+              }
+            }
+            return _results;
+          }
+        };
+
+        ClustererMarkerManager.prototype.destroy = function() {
+          this.clearEvents(this.opt_events);
+          this.clearEvents(this.opt_internal_events);
+          return this.clear();
         };
 
         return ClustererMarkerManager;
@@ -1355,7 +1389,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         MarkerChildModel.include(GmapUtil);
 
-        function MarkerChildModel(model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager) {
+        function MarkerChildModel(model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager, idKey) {
           var self,
             _this = this;
           this.model = model;
@@ -1365,6 +1399,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.defaults = defaults;
           this.doClick = doClick;
           this.gMarkerManager = gMarkerManager;
+          this.idKey = idKey;
           this.watchDestroy = __bind(this.watchDestroy, this);
           this.setLabelOptions = __bind(this.setLabelOptions, this);
           this.isLabelDefined = __bind(this.isLabelDefined, this);
@@ -1376,6 +1411,9 @@ Nicholas McCready - https://twitter.com/nmccready
           this.createMarker = __bind(this.createMarker, this);
           this.setMyScope = __bind(this.setMyScope, this);
           self = this;
+          if (this.model[this.idKey]) {
+            this.id = this.model[this.idKey];
+          }
           this.iconKey = this.parentScope.icon;
           this.coordsKey = this.parentScope.coords;
           this.clickKey = this.parentScope.click();
@@ -1520,6 +1558,9 @@ Nicholas McCready - https://twitter.com/nmccready
             this.gMarker = new MarkerWithLabel(this.setLabelOptions(this.opts, scope));
           } else {
             this.gMarker = new google.maps.Marker(this.opts);
+          }
+          if (this.id) {
+            this.gMarker.key = this.id;
           }
           this.gMarkerManager.add(this.gMarker);
           return google.maps.event.addListener(this.gMarker, 'click', function() {
@@ -2250,7 +2291,6 @@ Nicholas McCready - https://twitter.com/nmccready
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, mapCtrl, $timeout);
           self = this;
           this.scope.markerModels = new PropMap();
-          this.gMarkerManager = void 0;
           this.$timeout = $timeout;
           this.$log.info(this);
           this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : true;
@@ -2269,6 +2309,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.watch('clusterEvents', scope);
           this.watch('fit', scope);
           this.watch('idKey', scope);
+          this.gMarkerManager = void 0;
           return this.createMarkersFromScratch(scope);
         };
 
@@ -2294,13 +2335,35 @@ Nicholas McCready - https://twitter.com/nmccready
 
         MarkersParentModel.prototype.createMarkersFromScratch = function(scope) {
           var _this = this;
-          if ((scope.doCluster != null) && scope.doCluster === true) {
-            if (scope.clusterOptions != null) {
+          if (scope.doCluster) {
+            if (scope.clusterEvents) {
+              this.clusterInternalOptions = _.once(function() {
+                var self, _ref, _ref1, _ref2;
+                self = _this;
+                _this.origClusterEvents = {
+                  click: (_ref = scope.clusterEvents) != null ? _ref.click : void 0,
+                  mouseout: (_ref1 = scope.clusterEvents) != null ? _ref1.mouseout : void 0,
+                  mouseover: (_ref2 = scope.clusterEvents) != null ? _ref2.mouseover : void 0
+                };
+                return _.extend(scope.clusterEvents, {
+                  click: function(cluster) {
+                    return self.maybeExecMappedEvent(cluster, "click");
+                  },
+                  mouseout: function(cluster) {
+                    return self.maybeExecMappedEvent(cluster, "mouseout");
+                  },
+                  mouseover: function(cluster) {
+                    return self.maybeExecMappedEvent(cluster, "mouseover");
+                  }
+                });
+              })();
+            }
+            if (scope.clusterOptions || scope.clusterEvents) {
               if (this.gMarkerManager === void 0) {
-                this.gMarkerManager = new ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, scope.clusterEvents);
+                this.gMarkerManager = new ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, this.clusterInternalOptions);
               } else {
                 if (this.gMarkerManager.opt_options !== scope.clusterOptions) {
-                  this.gMarkerManager = new ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, scope.clusterEvents);
+                  this.gMarkerManager = new ClustererMarkerManager(this.mapCtrl.getMap(), void 0, scope.clusterOptions, this.clusterInternalOptions);
                 }
               }
             } else {
@@ -2354,12 +2417,12 @@ Nicholas McCready - https://twitter.com/nmccready
 
         MarkersParentModel.prototype.newChildMarker = function(model, scope) {
           var child;
-          child = new MarkerChildModel(model, scope, this.mapCtrl, this.$timeout, this.DEFAULTS, this.doClick, this.gMarkerManager);
-          this.$log.info('child', child, 'markers', this.scope.markerModels);
           if (model[this.idKey] == null) {
             this.$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
             return;
           }
+          this.$log.info('child', child, 'markers', this.scope.markerModels);
+          child = new MarkerChildModel(model, scope, this.mapCtrl, this.$timeout, this.DEFAULTS, this.doClick, this.gMarkerManager, this.idKey);
           this.scope.markerModels.put(model[this.idKey], child);
           return child;
         };
@@ -2396,6 +2459,29 @@ Nicholas McCready - https://twitter.com/nmccready
               }
             });
           }
+        };
+
+        MarkersParentModel.prototype.maybeExecMappedEvent = function(cluster, fnName) {
+          var pair, _ref;
+          if (_.isFunction((_ref = this.scope.clusterEvents) != null ? _ref[fnName] : void 0)) {
+            pair = this.mapClusterToMarkerModels(cluster);
+            if (this.origClusterEvents[fnName]) {
+              return this.origClusterEvents[fnName](pair.cluster, pair.mapped);
+            }
+          }
+        };
+
+        MarkersParentModel.prototype.mapClusterToMarkerModels = function(cluster) {
+          var gMarkers, mapped,
+            _this = this;
+          gMarkers = cluster.getMarkers();
+          mapped = gMarkers.map(function(g) {
+            return _this.scope.markerModels[g.key].model;
+          });
+          return {
+            cluster: cluster,
+            mapped: mapped
+          };
         };
 
         return MarkersParentModel;
