@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api.models.child")
-.factory "MarkerChildModel", [ "ModelKey", "GmapUtil","Logger", (ModelKey, GmapUtil,Logger) ->
+.factory "MarkerChildModel", [ "ModelKey", "GmapUtil","Logger", "$injector", (ModelKey, GmapUtil,Logger, $injector) ->
     class MarkerChildModel extends ModelKey
         @include GmapUtil
         constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager)->
@@ -29,8 +29,12 @@ angular.module("google-maps.directives.api.models.child")
             @maybeSetScopeValue('icon', model, oldModel, @iconKey, @evalModelHandle, isInit, @setIcon)
             @maybeSetScopeValue('coords', model, oldModel, @coordsKey, @evalModelHandle, isInit, @setCoords)
             @maybeSetScopeValue('labelContent', model, oldModel, @labelContentKey, @evalModelHandle, isInit)
-            @maybeSetScopeValue('click', model, oldModel, @clickKey, @evalModelHandle, isInit)
-            @createMarker(model, oldModel, isInit)
+            if _.isFunction(@clickKey) and $injector
+              @scope.click = () =>
+                  $injector.invoke(@clickKey, undefined, {"$markerModel": model})
+            else
+                  @maybeSetScopeValue('click', model, oldModel, @clickKey, @evalModelHandle, isInit)
+                  @createMarker(model, oldModel, isInit)
 
         createMarker: (model, oldModel = undefined, isInit = false)=>
             @maybeSetScopeValue 'options', model, oldModel, @optionsKey, (lModel, lModelKey) =>

@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-03-30
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-04-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -396,10 +396,10 @@ Nicholas McCready - https://twitter.com/nmccready
           if (anchor === void 0) {
             return void 0;
           }
-          anchor = /^([\d\.]+)\s([\d\.]+)$/.exec(anchor);
-          xPos = anchor[1];
-          yPos = anchor[2];
-          if (xPos && yPos) {
+          anchor = /^([-\d\.]+)\s([-\d\.]+)$/.exec(anchor);
+          xPos = parseFloat(anchor[1]);
+          yPos = parseFloat(anchor[2]);
+          if ((xPos != null) && (yPos != null)) {
             return new google.maps.Point(xPos, yPos);
           }
         },
@@ -470,11 +470,11 @@ Nicholas McCready - https://twitter.com/nmccready
           var array, i;
           i = 0;
           if (angular.isUndefined(path.type)) {
-            if (path.length < 2) {
+            if (!Array.isArray(path) || path.length < 2) {
               return false;
             }
             while (i < path.length) {
-              if (angular.isUndefined(path[i].latitude) || angular.isUndefined(path[i].longitude)) {
+              if (!((angular.isDefined(path[i].latitude) && angular.isDefined(path[i].longitude)) || (typeof path[i].lat === "function" && typeof path[i].lng === "function"))) {
                 return false;
               }
               i++;
@@ -484,7 +484,6 @@ Nicholas McCready - https://twitter.com/nmccready
             if (angular.isUndefined(path.coordinates)) {
               return false;
             }
-            array;
             if (path.type === "Polygon") {
               if (path.coordinates[0].length < 4) {
                 return false;
@@ -508,12 +507,18 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         },
         convertPathPoints: function(path) {
-          var array, i, result;
-          result = new google.maps.MVCArray();
+          var array, i, latlng, result;
           i = 0;
+          result = new google.maps.MVCArray();
           if (angular.isUndefined(path.type)) {
             while (i < path.length) {
-              result.push(new google.maps.LatLng(path[i].latitude, path[i].longitude));
+              latlng;
+              if (angular.isDefined(path[i].latitude) && angular.isDefined(path[i].longitude)) {
+                latlng = new google.maps.LatLng(path[i].latitude, path[i].longitude);
+              } else if (typeof path[i].lat === "function" && typeof path[i].lng === "function") {
+                latlng = path[i];
+              }
+              result.push(latlng);
               i++;
             }
           } else {
@@ -1013,10 +1018,11 @@ Nicholas McCready - https://twitter.com/nmccready
                 return;
               }
               if (!value.lng || !value.lat) {
-                return;
+                return scopePath[index] = value;
+              } else {
+                scopePath[index].latitude = value.lat();
+                return scopePath[index].longitude = value.lng();
               }
-              scopePath[index].latitude = value.lat();
-              return scopePath[index].longitude = value.lng();
             },
             insert_at: function(index) {
               var value;
@@ -1028,12 +1034,13 @@ Nicholas McCready - https://twitter.com/nmccready
                 return;
               }
               if (!value.lng || !value.lat) {
-                return;
+                return scopePath.splice(index, 0, value);
+              } else {
+                return scopePath.splice(index, 0, {
+                  latitude: value.lat(),
+                  longitude: value.lng()
+                });
               }
-              return scopePath.splice(index, 0, {
-                latitude: value.lat(),
-                longitude: value.lng()
-              });
             },
             remove_at: function(index) {
               if (isSetFromScope) {
@@ -1100,14 +1107,24 @@ Nicholas McCready - https://twitter.com/nmccready
             while (i < l) {
               oldValue = oldArray.getAt(i);
               newValue = newPath[i];
-              if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
-                oldArray.setAt(i, new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              if (typeof newValue.equals === "function") {
+                if (!newValue.equals(oldValue)) {
+                  oldArray.setAt(i, newValue);
+                }
+              } else {
+                if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
+                  oldArray.setAt(i, new google.maps.LatLng(newValue.latitude, newValue.longitude));
+                }
               }
               i++;
             }
             while (i < newLength) {
               newValue = newPath[i];
-              oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              if (typeof newValue.lat === "function" && typeof newValue.lng === "function") {
+                oldArray.push(newValue);
+              } else {
+                oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
+              }
               i++;
             }
             while (i < oldLength) {
@@ -1153,14 +1170,21 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           return isSetFromScope = false;
         };
-        watchListener = scope["static"] ? scope.$watch : scope.$watchCollection;
+        watchListener;
+        if (!scope["static"]) {
+          if (angular.isUndefined(scopePath.type)) {
+            watchListener = scope.$watchCollection(pathEval, legacyWatcher);
+          } else {
+            watchListener = scope.$watch(pathEval, geojsonWatcher);
+          }
+        }
         return function() {
           if (mapArrayListener) {
             mapArrayListener();
             mapArrayListener = null;
           }
           if (watchListener) {
-            watchListener.apply(scope, [pathEval, angular.isUndefined(scopePath.type) ? legacyWatcher : geojsonWatcher]);
+            watchListener();
             return watchListener = null;
           }
         };
@@ -1324,7 +1348,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child").factory("MarkerChildModel", [
-    "ModelKey", "GmapUtil", "Logger", function(ModelKey, GmapUtil, Logger) {
+    "ModelKey", "GmapUtil", "Logger", "$injector", function(ModelKey, GmapUtil, Logger, $injector) {
       var MarkerChildModel;
       MarkerChildModel = (function(_super) {
         __extends(MarkerChildModel, _super);
@@ -1373,6 +1397,7 @@ Nicholas McCready - https://twitter.com/nmccready
         }
 
         MarkerChildModel.prototype.setMyScope = function(model, oldModel, isInit) {
+          var _this = this;
           if (oldModel == null) {
             oldModel = void 0;
           }
@@ -1382,8 +1407,16 @@ Nicholas McCready - https://twitter.com/nmccready
           this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon);
           this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
           this.maybeSetScopeValue('labelContent', model, oldModel, this.labelContentKey, this.evalModelHandle, isInit);
-          this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
-          return this.createMarker(model, oldModel, isInit);
+          if (_.isFunction(this.clickKey) && $injector) {
+            return this.scope.click = function() {
+              return $injector.invoke(_this.clickKey, void 0, {
+                "$markerModel": model
+              });
+            };
+          } else {
+            this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
+            return this.createMarker(model, oldModel, isInit);
+          }
         };
 
         MarkerChildModel.prototype.createMarker = function(model, oldModel, isInit) {
@@ -1544,7 +1577,7 @@ Nicholas McCready - https://twitter.com/nmccready
         PolylineChildModel.include(GmapUtil);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
-          var arraySyncer, self,
+          var arraySyncer, pathPoints, self,
             _this = this;
           this.scope = scope;
           this.attrs = attrs;
@@ -1553,7 +1586,8 @@ Nicholas McCready - https://twitter.com/nmccready
           this.model = model;
           this.buildOpts = __bind(this.buildOpts, this);
           self = this;
-          this.polyline = new google.maps.Polyline(this.buildOpts(this.convertPathPoints(this.scope.path)));
+          pathPoints = this.convertPathPoints(this.scope.path);
+          this.polyline = new google.maps.Polyline(this.buildOpts(pathPoints));
           if (this.isTrue(this.attrs.fit)) {
             extendMapBounds(map, pathPoints);
           }
