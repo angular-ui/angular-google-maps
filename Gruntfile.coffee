@@ -70,7 +70,11 @@ module.exports = (grunt) ->
                 separator: ";"
 
             dist:
-                src: ["tmp/output_coffee.js", "lib/*.js"]
+                src: ["tmp/output_coffee.js",
+                      "src/js/**/*.js", #this all will only work if the dependency orders do not matter
+                      "src/js/**/**/*.js",
+                      "src/js/**/**/**/*.js",
+                      "lib/*.js"]
                 dest: "tmp/output.js"
 
         copy:
@@ -91,7 +95,9 @@ module.exports = (grunt) ->
                 dest: "dist/<%= pkg.name %>.min.js"
 
         jshint:
-            all: ["Gruntfile.js", "temp/spec/js/*.js", "temp/spec/js/**/*.js", "temp/spec/js/**/**/*.js"]
+            all: ["Gruntfile.js", "temp/spec/js/*.js", "temp/spec/js/**/*.js", "temp/spec/js/**/**/*.js",
+                  "src/js/**/*.js", "src/js/**/**/*.js","src/js/**/**/**/*.js"
+            ]
 
         test: {}
         watch:
@@ -99,7 +105,10 @@ module.exports = (grunt) ->
                 options:
                     livereload: true
 
-                files: ["src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee"]
+                files: [
+                    "src/coffee/*.coffee", "src/coffee/**/*.coffee", "src/coffee/**/**/*.coffee",
+                    "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js"
+                ]
                 tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine:taskName",
                         "clean:example", "coffee"]
 
@@ -176,7 +185,7 @@ module.exports = (grunt) ->
                              "bower_components/jquery/jquery.js",
                              "bower_components/angular/angular.js",
                              "bower_components/angular-mocks/angular-mocks.js"]
-                    specs: ["tmp/spec/js/**/*spec.js"]
+                    specs: ["tmp/spec/js/**/*spec.js", "spec/js/**/*.js","spec/js/**/**/*.js","spec/js/**/**/**/*.js",]
                     helpers: ["tmp/spec/js/helpers/helpers.js"]
                     #grunt-template-jasmine-requirejs - to remove all coverage meta from angular-google-maps.js (helps debug)
                     #grunt-template-jasmine-istanbul - to produce coverage report
