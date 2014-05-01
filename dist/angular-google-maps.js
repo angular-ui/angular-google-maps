@@ -1674,6 +1674,13 @@ Nicholas McCready - https://twitter.com/nmccready
               }
             });
           }
+          if (angular.isDefined(scope.icons)) {
+            scope.$watch("icons", function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+              }
+            });
+          }
           arraySyncer = arraySync(this.polyline.getPath(), scope, "path");
           scope.$on("$destroy", function() {
             _this.polyline.setMap(null);
@@ -1693,6 +1700,7 @@ Nicholas McCready - https://twitter.com/nmccready
           opts = angular.extend({}, this.defaults, {
             map: this.map,
             path: pathPoints,
+            icons: this.scope.icons,
             strokeColor: this.scope.stroke && this.scope.stroke.color,
             strokeOpacity: this.scope.stroke && this.scope.stroke.opacity,
             strokeWeight: this.scope.stroke && this.scope.stroke.weight
