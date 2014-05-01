@@ -148,7 +148,7 @@
 
 		<!-- polyline example -->
         <polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'
-            geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>
+            geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'></polyline>
 
         <!-- polygon example -->
         <polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"

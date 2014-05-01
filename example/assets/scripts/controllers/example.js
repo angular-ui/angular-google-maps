@@ -372,7 +372,14 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           editable: true,
           draggable: true,
           geodesic: true,
-          visible: true
+          visible: true,
+          icons: [{
+          	icon: { 
+          		path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW          		
+          	},
+          	offset: '25px',
+          	repeat: '50px'
+          }]
         },
         {
           id: 2,
@@ -401,7 +408,14 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           editable: true,
           draggable: true,
           geodesic: true,
-          visible: true
+          visible: true,
+          icons: [{
+          	icon: { 
+          		path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW          		
+          	},
+          	offset: '25px',
+          	repeat: '50px'
+          }]
         },
         {
           id: 3,
@@ -413,7 +427,14 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           editable: false,
           draggable: false,
           geodesic: false,
-          visible: true
+          visible: true,
+          icons: [{
+          	icon: { 
+          		path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW          		
+          	},
+          	offset: '25px',
+          	repeat: '50px'
+          }]
         }
       ]
     },
