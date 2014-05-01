@@ -89,7 +89,12 @@
                     labelContent="'title'" labelAnchor="22 0" labelClass="marker-labels">
             <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                    I should not be attached to a
+                    marker.
+                    <div ng-controller='InfoController'>
+                        <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
+                    </div>
+                    <p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 
                     <p class="muted">My marker will stay open when the window is popped up!</p>
                 </div>
@@ -428,7 +433,7 @@
 </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization&sensor=false&language=en&v=3.14"></script>
+<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.14"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>

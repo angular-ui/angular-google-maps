@@ -80,55 +80,68 @@ angular.module("google-maps.directives.api.utils")
     validateCoords: validateCoords
     
     validatePath: (path) ->
-        i = 0
-        if angular.isUndefined(path.type)
-            return false if path.length < 2
-            while i < path.length
-                return false if angular.isUndefined(path[i].latitude) or angular.isUndefined(path[i].longitude)
-                i++
-                
-            true
-        else
-            return false if angular.isUndefined(path.coordinates)
+      i = 0
+      if angular.isUndefined(path.type)
+        if not Array.isArray(path) or path.length < 2
+          return false
+        
+        #Arrays of latitude/longitude objects or Google Maps LatLng objects are allowed
+        while i < path.length
+          if not ((angular.isDefined(path[i].latitude) and angular.isDefined(path[i].longitude)) or (typeof path[i].lat == "function" and typeof path[i].lng == "function"))
+            return false
             
-            array
-            if path.type is "Polygon"
-                return false if path.coordinates[0].length < 4
-                #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
-                array = path.coordinates[0]
-            else if path.type is "LineString"
-                return false if path.coordinates.length < 2
-                array = path.coordinates
-            else
-                return false
-              
-            while i < array.length
-                return false if array[i].length != 2
-                i++
-                
-            true
+          i++
+            
+        true
+      else
+        return false if angular.isUndefined(path.coordinates)
+        
+        if path.type is "Polygon"
+          return false if path.coordinates[0].length < 4
+          #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
+          array = path.coordinates[0]
+        else if path.type is "LineString"
+          return false if path.coordinates.length < 2
+          array = path.coordinates
+        else
+          return false
+          
+        while i < array.length
+          return false if array[i].length != 2
+          i++
+            
+        true
 
     convertPathPoints: (path) ->
-        result = new google.maps.MVCArray()
-        
-        i = 0
-        if angular.isUndefined(path.type)
-            while i < path.length
-                result.push new google.maps.LatLng(path[i].latitude, path[i].longitude)
-                i++
-        else
-            array
-            if path.type is "Polygon"
-                #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
-                array = path.coordinates[0]
-            else if path.type is "LineString"
-                array = path.coordinates
-                
-            while i < array.length
-                result.push new google.maps.LatLng(array[i][1], array[i][0])
-                i++
-        
-        result
+      i = 0
+      result = new google.maps.MVCArray()
+      
+      if angular.isUndefined(path.type)
+        # TODO: optimize to detect if array contains LatLng and directly pass array to MVCArray constructor
+        # CONTRIBUTIONS WELCOMED
+        # TODO: remove while loop it is the same as maping, either array.map or _.map
+        while i < path.length
+          latlng
+          if angular.isDefined(path[i].latitude) and angular.isDefined(path[i].longitude) # latitude/longitude object
+            latlng = new google.maps.LatLng(path[i].latitude, path[i].longitude)
+          else if typeof path[i].lat == "function" and typeof path[i].lng == "function" # LatLng object
+            latlng = path[i]
+            
+          result.push latlng
+          i++
+      else
+        array
+        if path.type is "Polygon"
+          #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
+          array = path.coordinates[0]
+        else if path.type is "LineString"
+          array = path.coordinates
+          
+        while i < array.length
+          result.push new google.maps.LatLng(array[i][1], array[i][0])
+          i++
+      
+      result
 
     extendMapBounds:(map, points) ->
         bounds = new google.maps.LatLngBounds()

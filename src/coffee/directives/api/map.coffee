@@ -138,6 +138,7 @@ angular.module("google-maps.directives.api")
                         ->
                             scope.events[eventName].apply scope, [_m, eventName, arguments]
 
+                    #TODO: Need to keep track of listeners and call removeListener on each
                     for eventName of scope.events
                         google.maps.event.addListener _m, eventName, getEventHandler(eventName)  if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
 

@@ -4,22 +4,29 @@ describe "utils.gmap-util", ->
     inject (GmapUtil) =>
       @subject = GmapUtil
 
-  it "should validate the path correctly", ->
-    latlong = {longitude: 45, latitude: -27}
-    expect(@subject.validatePath([latlong, latlong])).toEqual(true)
-    expect(@subject.validatePath([latlong])).toEqual(false)
-    expect(@subject.validatePath([])).toEqual(false)
-    expect(@subject.validatePath([
-      {},
-      {}
-    ])).toEqual(false)
-    expect(@subject.validatePath({type: "Polygon"})).toEqual(false)
-    expect(@subject.validatePath({type: "Polygon", coordinates: [[1, 2] for [1..4]]})).toEqual(true)
-    expect(@subject.validatePath({type: "Polygon", coordinates: [[1, 2] for [1..1]]})).toEqual(false)
-    expect(@subject.validatePath({type: "LineString", coordinates: [1, 2] for [1..2]})).toEqual(true)
-    expect(@subject.validatePath({type: "LineString", coordinates: [1, 2] for [1..1]})).toEqual(false)
-    expect(@subject.validatePath({type: "foo", coordinates: []})).toEqual(false)
-    expect(@subject.validatePath({type: "LineString", coordinates: [] for [1..2]})).toEqual(false)
+  describe "should validate the path correctly", ->
+    it "latlong", ->
+      latlong = {longitude: 45, latitude: -27}
+      expect(@subject.validatePath([latlong, latlong])).toEqual(true)
+      expect(@subject.validatePath([latlong])).toEqual(false)
+    it "empty array", ->
+      expect(@subject.validatePath([])).toEqual(false)
+    it "array of invalid objects", ->
+      expect(@subject.validatePath([
+        {},
+        {}
+      ])).toEqual(false)
+    it "Polygon", ->
+      expect(@subject.validatePath({type: "Polygon"})).toEqual(false)
+      expect(@subject.validatePath({type: "Polygon", coordinates: [[1, 2] for [1..4]]})).toEqual(true)
+      expect(@subject.validatePath({type: "Polygon", coordinates: [[1, 2] for [1..1]]})).toEqual(false)
+    it "Polygon", ->
+      expect(@subject.validatePath({type: "LineString", coordinates: [1, 2] for [1..2]})).toEqual(true)
+      expect(@subject.validatePath({type: "LineString", coordinates: [1, 2] for [1..1]})).toEqual(false)
+      expect(@subject.validatePath({type: "LineString", coordinates: [] for [1..2]})).toEqual(false)
+    it "foo", ->
+      expect(@subject.validatePath({type: "foo", coordinates: []})).toEqual(false)
+
 
   it "should validate coordinates correctly", ->
     expect(@subject.validateCoords()).toEqual(false)
