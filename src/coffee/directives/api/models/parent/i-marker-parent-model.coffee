@@ -46,12 +46,6 @@ angular.module("google-maps.directives.api.models.parent")
                     @onWatch(propNameToWatch, scope, newValue, oldValue)
 
             scope.$watch propNameToWatch, watchFunc, true
-            ###
-            if (Array.isArray(scope[propNameToWatch]))
-              scope.$watchCollection propNameToWatch, watchFunc
-            else
-              scope.$watch propNameToWatch, watchFunc, true
-###
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             throw new String("OnWatch Not Implemented!!")

@@ -218,7 +218,7 @@ module.exports = (grunt) ->
 
     # Default task: build a release in dist/
     grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
-                                   "uglify", "jasmine:spec"]
+                                   "uglify", "jasmine"]
 
     # Run the example page by creating a local copy of angular-google-maps.js
     # and running a webserver on port 3100 with livereload. Web page is opened
