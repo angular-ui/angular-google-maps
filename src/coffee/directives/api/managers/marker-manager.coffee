@@ -8,9 +8,11 @@ angular.module("google-maps.directives.api.managers")
             @gMarkers = []
             @$log = Logger
             @$log.info(@)
+
         add: (gMarker, optDraw)=>
             @handleOptDraw(gMarker, optDraw, true)
             @gMarkers.push(gMarker)
+
         addMany: (gMarkers)=>
             @add(gMarker) for gMarker in gMarkers
 

@@ -3,6 +3,7 @@
 ###
 angular.module("google-maps.directives.api.utils")
 .factory "PropMap",  ->
+    propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length']
     class PropMap
         constructor: () ->
             @length = 0
@@ -18,14 +19,15 @@ angular.module("google-maps.directives.api.utils")
             @length--
 
         values: ()=>
-            propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length']
-            all = _.values @
-            _.each propsToPop, (prop)=>
-                all.pop()
+            all = []
+            keys = _.keys @
+            _.each keys, (value) =>
+               all.push(@[value]) if _.indexOf(propsToPop, value) == -1
             all
         keys: ()=>
-            all = _.keys @
-            _.each propsToPop, (prop)=>
-                all.pop()
+            keys = _.keys @
+            all = []
+            _.each keys, (prop)=>
+                all.push(prop) if _.indexOf(propsToPop, prop) == -1
             all
     PropMap

@@ -109,8 +109,14 @@ module.exports = (grunt) ->
                     "src/coffee/*.coffee", "src/coffee/**/*.coffee", "src/coffee/**/**/*.coffee",
                     "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js"
                 ]
-                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine:taskName",
+                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine:spec",
                         "clean:example", "coffee"]
+            spec:
+                options:
+                    livereload: true
+
+                files: ["src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee", "spec/**/*.spec.coffee", "spec/coffee/helpers/**"]
+                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "jasmine:spec", "clean:example", "coffee"]
 
         open:
             example:
@@ -148,12 +154,11 @@ module.exports = (grunt) ->
                 dest: "CHANGELOG.md"
 
         jasmine:
-            taskName:
+            spec:
                 src: ["bower_components/lodash-amd/main.js", "dist/angular-google-maps.js"]
                 options:
                     keepRunner: true
-                    vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
-                             "bower_components/jquery/jquery.js",
+                    vendor: ["bower_components/jquery/jquery.js",
                              "bower_components/angular/angular.js",
                              "bower_components/angular-mocks/angular-mocks.js"]
                     specs: ["tmp/spec/js/**/*spec.js"]
@@ -174,15 +179,14 @@ module.exports = (grunt) ->
                         report: "spec/coverage"
                         thresholds:
                             lines: 25
-                            staRtements: 25
+                            statements: 25
                             branches: 5
                             functions: 25
             coverage:
                 src: ["bower_components/lodash-amd/main.js", "dist/angular-google-maps.js"]
                 options:
                     keepRunner: true
-                    vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
-                             "bower_components/jquery/jquery.js",
+                    vendor: ["bower_components/jquery/jquery.js",
                              "bower_components/angular/angular.js",
                              "bower_components/angular-mocks/angular-mocks.js"]
                     specs: ["tmp/spec/js/**/*spec.js", "spec/js/**/*.js","spec/js/**/**/*.js","spec/js/**/**/**/*.js",]
@@ -210,16 +214,16 @@ module.exports = (grunt) ->
 
     # Default task: build a release in dist/
     grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
-                                "connect:jasmineServer", "uglify", "open:jasmine", "watch", "jasmine"]
+                                "connect:jasmineServer", "uglify", "open:jasmine", "watch:spec", "jasmine"]
 
     # Default task: build a release in dist/
     grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
-                                   "uglify", "jasmine:taskName"]
+                                   "uglify", "jasmine"]
 
     # Run the example page by creating a local copy of angular-google-maps.js
     # and running a webserver on port 3100 with livereload. Web page is opened
     # automatically in the default browser.
-    grunt.registerTask "example", ["clean:example", "connect:server", "open:example", "watch"]
-    grunt.registerTask "example2", ["clean:example", "connect:server", "open:example2", "watch"]
-    grunt.registerTask "geojson", ["clean:example", "connect:server", "open:geojson", "watch"]
-    grunt.registerTask "hugedata", ["clean:example", "connect:server", "open:hugedata", "watch"]
+    grunt.registerTask "example", ["clean:example", "connect:server", "open:example", "watch:all"]
+    grunt.registerTask "example2", ["clean:example", "connect:server", "open:example2", "watch:all"]
+    grunt.registerTask "geojson", ["clean:example", "connect:server", "open:geojson", "watch:all"]
+    grunt.registerTask "hugedata", ["clean:example", "connect:server", "open:hugedata", "watch:all"]

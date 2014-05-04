@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.0.13 2014-05-01
+/*! angular-google-maps 1.0.13 2014-05-04
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -650,6 +650,9 @@ Nicholas McCready - https://twitter.com/nmccready
         ModelKey.prototype.modelKeyComparison = function(model1, model2) {
           var scope;
           scope = this.scope.coords != null ? this.scope : this.parentScope;
+          if (scope == null) {
+            throw "No scope or parentScope set!";
+          }
           return this.evalModelHandle(model1, scope.coords).latitude === this.evalModelHandle(model2, scope.coords).latitude && this.evalModelHandle(model1, scope.coords).longitude === this.evalModelHandle(model2, scope.coords).longitude;
         };
 
@@ -729,7 +732,8 @@ Nicholas McCready - https://twitter.com/nmccready
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   angular.module("google-maps.directives.api.utils").factory("PropMap", function() {
-    var PropMap;
+    var PropMap, propsToPop;
+    propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length'];
     PropMap = (function() {
       function PropMap() {
         this.keys = __bind(this.keys, this);
@@ -757,22 +761,27 @@ Nicholas McCready - https://twitter.com/nmccready
       };
 
       PropMap.prototype.values = function() {
-        var all, propsToPop,
+        var all, keys,
           _this = this;
-        propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length'];
-        all = _.values(this);
-        _.each(propsToPop, function(prop) {
-          return all.pop();
+        all = [];
+        keys = _.keys(this);
+        _.each(keys, function(value) {
+          if (_.indexOf(propsToPop, value) === -1) {
+            return all.push(_this[value]);
+          }
         });
         return all;
       };
 
       PropMap.prototype.keys = function() {
-        var all,
+        var all, keys,
           _this = this;
-        all = _.keys(this);
-        _.each(propsToPop, function(prop) {
-          return all.pop();
+        keys = _.keys(this);
+        all = [];
+        _.each(keys, function(prop) {
+          if (_.indexOf(propsToPop, prop) === -1) {
+            return all.push(prop);
+          }
         });
         return all;
       };
@@ -1973,17 +1982,17 @@ Nicholas McCready - https://twitter.com/nmccready
           self = this;
           this.$log = Logger;
           if (!this.validateScope(scope)) {
-            return;
+            throw new String("Unable to construct IMarkerParentModel due to invalid scope");
           }
           this.doClick = angular.isDefined(attrs.click);
           if (scope.options != null) {
             this.DEFAULTS = scope.options;
           }
           this.$timeout(function() {
-            _this.watch('coords', scope);
-            _this.watch('icon', scope);
-            _this.watch('options', scope);
             _this.onTimeOut(scope);
+            _this.watch('coords', _this.scope);
+            _this.watch('icon', _this.scope);
+            _this.watch('options', _this.scope);
             return scope.$on("$destroy", function() {
               return _this.onDestroy(scope);
             });
@@ -1995,34 +2004,38 @@ Nicholas McCready - https://twitter.com/nmccready
         IMarkerParentModel.prototype.validateScope = function(scope) {
           var ret;
           if (scope == null) {
+            this.$log.error(this.constructor.name + ": invalid scope used");
             return false;
           }
           ret = scope.coords != null;
           if (!ret) {
             this.$log.error(this.constructor.name + ": no valid coords attribute found");
+            return false;
           }
           return ret;
         };
 
         IMarkerParentModel.prototype.watch = function(propNameToWatch, scope) {
-          var _this = this;
-          return scope.$watch(propNameToWatch, function(newValue, oldValue) {
+          var watchFunc,
+            _this = this;
+          watchFunc = function(newValue, oldValue) {
             if (newValue !== oldValue) {
               return _this.onWatch(propNameToWatch, scope, newValue, oldValue);
             }
-          });
+          };
+          return scope.$watch(propNameToWatch, watchFunc, true);
         };
 
         IMarkerParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
-          throw new Exception("Not Implemented!!");
+          throw new String("OnWatch Not Implemented!!");
         };
 
         IMarkerParentModel.prototype.onDestroy = function(scope) {
-          throw new Exception("Not Implemented!!");
+          throw new String("OnDestroy Not Implemented!!");
         };
 
         IMarkerParentModel.prototype.linkInit = function(element, mapCtrl, scope, animate) {
-          throw new Exception("Not Implemented!!");
+          throw new String("LinkInit Not Implemented!!");
         };
 
         return IMarkerParentModel;

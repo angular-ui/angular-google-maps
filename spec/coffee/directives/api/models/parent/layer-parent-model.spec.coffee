@@ -1,5 +1,20 @@
 describe "LayerParentModelSpec", ->
     beforeEach ->
+        module("google-maps.mocks")
+        angular.module('mockModule', ["google-maps"])
+        .value('mapCtrl',
+          getMap: ()->
+            document.gMap)
+        .value('element', {})
+        .value('attrs', {})
+        .value('model', {})
+        .value('scope', @scope)
+
+        module "mockModule"
+        inject (GoogleApiMock) ->
+          mock = new GoogleApiMock()
+          mock.mockAPI()
+
         @scope =
             options :
                 blah:true
@@ -19,16 +34,6 @@ describe "LayerParentModelSpec", ->
         @timeout = (fnc,time) =>
             fnc()
 
-        angular.module('mockModule', ["google-maps"])
-        .value('mapCtrl',
-        getMap: ()->
-                document.gMap)
-        .value('element', {})
-        .value('attrs', {})
-        .value('model', {})
-        .value('scope', @scope)
-
-        module "mockModule"
         inject ($rootScope, LayerParentModel) =>
             scope = $rootScope.$new()
             @constructor = LayerParentModel
