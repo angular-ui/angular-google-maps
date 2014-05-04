@@ -47,6 +47,27 @@ angular.module('angularGoogleMapsApp')
         templateUrl: 'views/faq.html',
         controller: 'FAQCtrl'
       })
+      .when('/changelog', {
+      		templateUrl: 'views/changelog.html',
+      		controller: 'ChangeLogCtrl',
+      		reloadOnSearch: false,
+      		resolve: {
+      			changelog: function ($http, $q, $log) {
+      				var deferred = $q.defer();
+      				
+      				$http({
+      					method: 'GET',
+      					url: '/changelog.json'
+      				}).then(function (res) {
+      					deferred.resolve(res.data);
+      				}, function (error) {
+      					$log.error('could not get /changelog.json', error);
+      				});
+      				
+      				return deferred.promise;
+      			}
+      		}
+      })      
       .when('/not-found', {
 		    templateUrl: 'views/404.html',
 		    controller: 'NotFoundCtrl'
