@@ -1,5 +1,16 @@
 describe "MarkerChildModel", ->
     beforeEach ->
+        #define / inject values into the item we are testing... not a controller but it allows us to inject
+        angular.module('mockModule', ["google-maps"])
+        module('mockModule')
+        module("google-maps.mocks")
+        inject (GoogleApiMock) =>
+          @gmap = new GoogleApiMock()
+          @gmap.mockAPI()
+          @gmap.mockAnimation()
+          @gmap.mockLatLng()
+          @gmap.mockMarker()
+          @gmap.mockEvent()
         #comparison variables
         @index = 0
         @model =
@@ -12,10 +23,6 @@ describe "MarkerChildModel", ->
         @iconKey = 'icon'
         @coordsKey = 'coords'
         @optionsKey = 'options'
-
-        #define / inject values into the item we are testing... not a controller but it allows us to inject
-        angular.module('mockModule', ["google-maps"])
-        module('mockModule')
 
         inject ($timeout, $rootScope, $controller, MarkerChildModel, MarkerManager) =>
             scope = $rootScope.$new()

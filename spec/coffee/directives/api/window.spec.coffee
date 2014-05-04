@@ -1,5 +1,14 @@
 describe "directives.api.Window", ->
     beforeEach ->
+        module "google-maps"
+        module "google-maps.mocks"
+        inject (GoogleApiMock) =>
+          @gmap = new GoogleApiMock()
+          @gmap.mockAPI()
+          @gmap.mockLatLng()
+          @gmap.mockMarker()
+          @gmap.mockInfoWindow()
+          @gmap.mockEvent()
         ### Possible Attributes
                 coords: '=coords',
 				show: '=show',
@@ -32,8 +41,6 @@ describe "directives.api.Window", ->
             fnc()
 
         @gMarker = new google.maps.Marker(@commonOpts)
-
-        module "google-maps"
         inject ($timeout, $compile, $http, $templateCache, $injector, $rootScope,Window) =>
             @mocks.scope.$new = () =>
                 $rootScope.$new()

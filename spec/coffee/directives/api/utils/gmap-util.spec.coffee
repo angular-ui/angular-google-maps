@@ -1,8 +1,15 @@
 describe "utils.gmap-util", ->
   beforeEach ->
     module "google-maps.directives.api.utils"
-    inject (GmapUtil) =>
+    module "google-maps.mocks"
+    inject (GmapUtil, GoogleApiMock) =>
       @subject = GmapUtil
+      @gmap = new GoogleApiMock()
+      @gmap.mockAPI()
+      @gmap.mockMVCArray()
+      @gmap.mockPoint()
+      @gmap.mockLatLng()
+      @gmap.mockLatLngBounds()
 
   describe "should validate the path correctly", ->
     it "latlong", ->

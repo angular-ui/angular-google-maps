@@ -15,39 +15,51 @@ angular.module("google-maps.directives.api.models.parent")
             self = @
             @$log = Logger
             # Validate required properties
-            return unless @validateScope scope
+            throw new String("Unable to construct IMarkerParentModel due to invalid scope") unless @validateScope scope
             @doClick = angular.isDefined attrs.click
             if scope.options?
                 @DEFAULTS = scope.options
             # Wrap marker initialization inside a $timeout() call to make sure the map is created already
             @$timeout =>
-                @watch('coords', scope)
-                @watch('icon', scope)
-                @watch('options', scope)
                 @onTimeOut(scope)
+                @watch('coords', @scope)
+                @watch('icon', @scope)
+                @watch('options', @scope)
                 scope.$on "$destroy", =>
                     @onDestroy(scope)
 
         onTimeOut: (scope)=>
         validateScope: (scope)=>
-            return false unless scope?
+            unless scope?
+              @$log.error(@constructor.name + ": invalid scope used")
+              return false
             ret = scope.coords?
             unless ret
                 @$log.error(@constructor.name + ": no valid coords attribute found")
+                return false
             ret
 
         watch: (propNameToWatch, scope) =>
-            scope.$watch propNameToWatch, (newValue, oldValue) =>
+
+            watchFunc = (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @onWatch(propNameToWatch, scope, newValue, oldValue)
 
+            scope.$watch propNameToWatch, watchFunc, true
+            ###
+            if (Array.isArray(scope[propNameToWatch]))
+              scope.$watchCollection propNameToWatch, watchFunc
+            else
+              scope.$watch propNameToWatch, watchFunc, true
+###
+
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
-            throw new Exception("Not Implemented!!")
+            throw new String("OnWatch Not Implemented!!")
 
         onDestroy: (scope) =>
-            throw new Exception("Not Implemented!!")
+            throw new String("OnDestroy Not Implemented!!")
 
         linkInit: (element, mapCtrl, scope, animate)=>
-            throw new Exception("Not Implemented!!")
+            throw new String("LinkInit Not Implemented!!")
     return IMarkerParentModel
 ]

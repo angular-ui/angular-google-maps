@@ -45,6 +45,7 @@ angular.module("google-maps.directives.api.models.parent")
                                 _async.each _.values(@windows), (model) =>
                                     model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
                                 , () =>
+                        , true
 
                     watchModels: (scope) =>
                         scope.$watch 'models', (newValue, oldValue) =>
@@ -54,6 +55,7 @@ angular.module("google-maps.directives.api.models.parent")
                                     @rebuildAll(scope, true, true)
                                 else
                                     @createChildScopesWindows(false)
+                        , true
 
                     doINeedToWipe: (newValue) =>
                         newValueIsEmpty = if newValue? then newValue.length == 0 else true
