@@ -32,6 +32,10 @@ angular.module("google-maps.directives.api")
             if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.color)
                 scope.$watch "stroke.color", (newValue, oldValue) ->
                     @polyline.setOptions @buildOpts(@polyline.getPath()) if newValue != oldValue
+                    
+            if angular.isDefined(scope.icons)
+                scope.$watch "icons", (newValue, oldValue) ->
+                    @polyline.setOptions @buildOpts(@polyline.getPath()) if newValue != oldValue
 
             arraySyncer = arraySync @polyline.getPath(), scope, "path"
 
@@ -50,6 +54,7 @@ angular.module("google-maps.directives.api")
             opts = angular.extend({}, @defaults,
                 map: @map
                 path: pathPoints
+                icons: @scope.icons
                 strokeColor: @scope.stroke and @scope.stroke.color
                 strokeOpacity: @scope.stroke and @scope.stroke.opacity
                 strokeWeight: @scope.stroke and @scope.stroke.weight

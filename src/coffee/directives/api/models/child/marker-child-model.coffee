@@ -2,8 +2,9 @@ angular.module("google-maps.directives.api.models.child")
 .factory "MarkerChildModel", [ "ModelKey", "GmapUtil","Logger", "$injector", (ModelKey, GmapUtil,Logger, $injector) ->
     class MarkerChildModel extends ModelKey
         @include GmapUtil
-        constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager)->
+        constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager, @idKey)->
             self = @
+            @id = @model[@idKey] if @model[@idKey]
             @iconKey = @parentScope.icon
             @coordsKey = @parentScope.coords
             @clickKey = @parentScope.click()
@@ -16,10 +17,10 @@ angular.module("google-maps.directives.api.models.child")
             @setMyScope(@model, undefined, true)
             @createMarker(@model)
 
-            @scope.$watch('model', (newValue, oldValue) =>
+            @scope.$watch 'model', (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @setMyScope(newValue, oldValue)
-            , true)
+            , true
 
             @$log = Logger
             @$log.info(self)
@@ -106,6 +107,8 @@ angular.module("google-maps.directives.api.models.child")
             else
                 @gMarker = new google.maps.Marker(@opts)
 
+            @gMarker.key = @id if @id
+
             @gMarkerManager.add(@gMarker)
             google.maps.event.addListener(@gMarker, 'click', =>
                 if @doClick and @scope.click?
@@ -123,7 +126,7 @@ angular.module("google-maps.directives.api.models.child")
 
         watchDestroy: (scope)=>
             scope.$on "$destroy", =>
-                if @gMarker? #this is possible due to AsyncProcessor in that we created some Children but no gMarker yet
+                if @gMarker? #this is possible due to _async in that we created some Children but no gMarker yet
                     google.maps.event.clearListeners @gMarker, 'click'
                     @gMarkerManager.remove @gMarker,true
                     delete @gMarker

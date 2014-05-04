@@ -57,7 +57,7 @@ describe "MarkerParentModel", ->
             $timeout = ((fn)->fn())
             @scope = _.extend @scope, scope
             @testCtor = MarkerParentModel
-            @subject = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout)
+            @subject = new @testCtor(@scope, element, attrs, mapCtrl, $timeout)
 
         @subject.setEvents(@, @scope)
 

@@ -8,7 +8,6 @@ angular.module("google-maps.directives.api.models.parent")
                 self = @
                 @scope.markerModels = new PropMap()
 
-                @gMarkerManager = undefined
                 @$timeout = $timeout
                 @$log.info @
                 #assume do rebuild all is false and were lookging for a modelKey prop of id
@@ -26,6 +25,7 @@ angular.module("google-maps.directives.api.models.parent")
                 @watch('clusterEvents', scope)
                 @watch('fit', scope)
                 @watch('idKey', scope)
+                @gMarkerManager = undefined
                 @createMarkersFromScratch(scope)
 
             onWatch: (propNameToWatch, scope, newValue, oldValue) =>
@@ -45,18 +45,34 @@ angular.module("google-maps.directives.api.models.parent")
                 super(scope) or modelsNotDefined
 
             createMarkersFromScratch: (scope) =>
-                if scope.doCluster? and scope.doCluster == true
-                    if scope.clusterOptions?
+                if scope.doCluster
+                    if scope.clusterEvents
+                      @clusterInternalOptions = do _.once =>
+                          self = @
+                          @origClusterEvents =
+                            click: scope.clusterEvents?.click
+                            mouseout: scope.clusterEvents?.mouseout
+                            mouseover: scope.clusterEvents?.mouseover
+                          _.extend scope.clusterEvents,
+                              click:(cluster) ->
+                                  self.maybeExecMappedEvent cluster, "click"
+                              mouseout:(cluster) ->
+                                  self.maybeExecMappedEvent cluster, "mouseout"
+                              mouseover:(cluster) ->
+                                  self.maybeExecMappedEvent cluster, "mouseover"
+
+                    if scope.clusterOptions or scope.clusterEvents
                         if @gMarkerManager == undefined
-                            @gMarkerManager = new ClustererMarkerManager(@mapCtrl.getMap(),
+                            @gMarkerManager = new ClustererMarkerManager @mapCtrl.getMap(),
                                     undefined,
                                     scope.clusterOptions,
-                                    scope.clusterEvents)
+                                    @clusterInternalOptions
                         else
-                            @gMarkerManager = new ClustererMarkerManager(@mapCtrl.getMap(),
-                                    undefined,
-                                    scope.clusterOptions,
-                                    scope.clusterEvents) if @gMarkerManager.opt_options != scope.clusterOptions
+                            if @gMarkerManager.opt_options != scope.clusterOptions
+                                @gMarkerManager = new ClustererMarkerManager @mapCtrl.getMap(),
+                                      undefined,
+                                      scope.clusterOptions,
+                                      @clusterInternalOptions
                     else
                         @gMarkerManager = new ClustererMarkerManager(@mapCtrl.getMap())
                 else
@@ -98,13 +114,13 @@ angular.module("google-maps.directives.api.models.parent")
                     @reBuildMarkers(scope)
 
             newChildMarker: (model, scope)=>
-                child = new MarkerChildModel(model, scope, @mapCtrl,
-                        @$timeout,
-                        @DEFAULTS, @doClick, @gMarkerManager)
-                @$log.info('child', child, 'markers', @scope.markerModels)
                 unless model[@idKey]?
                     @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                     return
+                @$log.info('child', child, 'markers', @scope.markerModels)
+                child = new MarkerChildModel(model, scope, @mapCtrl,
+                  @$timeout,
+                  @DEFAULTS, @doClick, @gMarkerManager, @idKey)
                 @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
                 child
 
@@ -129,6 +145,19 @@ angular.module("google-maps.directives.api.models.parent")
                             bounds.extend(child.gMarker.getPosition())
                     , () =>
                         @mapCtrl.getMap().fitBounds(bounds) if everSet
+
+
+            maybeExecMappedEvent:(cluster, fnName) ->
+              if _.isFunction @scope.clusterEvents?[fnName]
+                pair = @mapClusterToMarkerModels cluster
+                @origClusterEvents[fnName](pair.cluster,pair.mapped) if @origClusterEvents[fnName]
+
+            mapClusterToMarkerModels:(cluster) ->
+                gMarkers = cluster.getMarkers()
+                mapped = gMarkers.map (g) =>
+                    @scope.markerModels[g.key].model
+                cluster: cluster
+                mapped: mapped
 
         return MarkersParentModel
 ]
