@@ -324,7 +324,7 @@ module.exports = function (grunt) {
     git_log_json: {
         options: {
            shortHash: true,
-           dest: '<%= yeoman.dist %>/changelog.json'
+           dest: '<%= yeoman.app %>/changelog.json'
         }
     }
   });
