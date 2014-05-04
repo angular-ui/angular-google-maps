@@ -4,7 +4,7 @@
   "description": "Website for angular-google-maps",
   "version": "0.0.0",
   "dependencies": {
-    "grunt-git-log-json": "0.0.2"
+    "grunt-git-log-json": "0.0.3"
   },
   "repository": "https://github.com/nlaplante/angular-google-maps",
   "devDependencies": {
@@ -48,7 +48,7 @@
     "grunt-cli": "~0.1.11",
     "karma-story-reporter": "~0.2.2",
     "karma-mocha-reporter": "~0.2.0",
-    "grunt-git-log-json": "~0.0.2"
+    "grunt-git-log-json": "0.0.3"
   },
   "engines": {
     "node": ">=0.8.0"
