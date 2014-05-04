@@ -322,10 +322,10 @@ module.exports = function (grunt) {
       }
     },
     git_log_json: {
-    	options: {
-	    dest: 'app/changelog.json',
-	    shortHash: true
-	}
+        options: {
+           shortHash: true,
+           dest: '<%= yeoman.dist %>/changelog.json'
+        }
     }
   });
 
@@ -365,7 +365,8 @@ module.exports = function (grunt) {
     'cssmin',
     'uglify',
     'rev',
-    'usemin'
+    'usemin',
+    'git_log_json'
   ]);
 
   grunt.registerTask('default', [
