@@ -3,7 +3,9 @@
   "name": "angular-google-maps",
   "description": "Website for angular-google-maps",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "grunt-git-log-json": "0.0.2"
+  },
   "repository": "https://github.com/nlaplante/angular-google-maps",
   "devDependencies": {
     "grunt": "~0.4.1",
