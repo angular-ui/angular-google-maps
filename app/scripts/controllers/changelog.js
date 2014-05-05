@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('angularGoogleMapsApp')
-  .controller('ChangeLogCtrl', function ($scope, $log, changelog) {
+  .controller('ChangeLogCtrl', ['$scope', '$log', 'changelog', function ($scope, $log, changelog) {
   
   	// We need to manipulate the raw changelog json a bit to order by tag number and group commits
   	// by author.
@@ -29,4 +29,4 @@ angular.module('angularGoogleMapsApp')
   	
   	// Everything's set!
   	$scope.changelog = cl;
-  });
+  }]);

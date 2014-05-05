@@ -52,7 +52,7 @@ angular.module('angularGoogleMapsApp')
       		controller: 'ChangeLogCtrl',
       		reloadOnSearch: false,
       		resolve: {
-      			changelog: function ($http, $q, $log) {
+      			changelog: ['$http', '$q', '$log', function ($http, $q, $log) {
       				var deferred = $q.defer();
       				
       				$http({
@@ -62,10 +62,11 @@ angular.module('angularGoogleMapsApp')
       					deferred.resolve(res.data);
       				}, function (error) {
       					$log.error('could not get /changelog.json', error);
+      					deferred.reject(error);
       				});
       				
       				return deferred.promise;
-      			}
+      			}]
       		}
       })      
       .when('/not-found', {
