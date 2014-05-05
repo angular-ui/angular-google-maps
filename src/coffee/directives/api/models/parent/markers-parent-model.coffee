@@ -49,17 +49,18 @@ angular.module("google-maps.directives.api.models.parent")
                     if scope.clusterEvents
                       @clusterInternalOptions = do _.once =>
                           self = @
-                          @origClusterEvents =
-                            click: scope.clusterEvents?.click
-                            mouseout: scope.clusterEvents?.mouseout
-                            mouseover: scope.clusterEvents?.mouseover
-                          _.extend scope.clusterEvents,
-                              click:(cluster) ->
-                                  self.maybeExecMappedEvent cluster, "click"
-                              mouseout:(cluster) ->
-                                  self.maybeExecMappedEvent cluster, "mouseout"
-                              mouseover:(cluster) ->
-                                  self.maybeExecMappedEvent cluster, "mouseover"
+                          unless @origClusterEvents
+                              @origClusterEvents =
+                                  click: scope.clusterEvents?.click
+                                  mouseout: scope.clusterEvents?.mouseout
+                                  mouseover: scope.clusterEvents?.mouseover
+                              _.extend scope.clusterEvents,
+                                  click:(cluster) ->
+                                      self.maybeExecMappedEvent cluster, "click"
+                                  mouseout:(cluster) ->
+                                      self.maybeExecMappedEvent cluster, "mouseout"
+                                  mouseover:(cluster) ->
+                                    self.maybeExecMappedEvent cluster, "mouseover"
 
                     if scope.clusterOptions or scope.clusterEvents
                         if @gMarkerManager == undefined

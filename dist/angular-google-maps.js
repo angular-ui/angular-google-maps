@@ -2414,22 +2414,24 @@ Nicholas McCready - https://twitter.com/nmccready
               this.clusterInternalOptions = _.once(function() {
                 var self, _ref, _ref1, _ref2;
                 self = _this;
-                _this.origClusterEvents = {
-                  click: (_ref = scope.clusterEvents) != null ? _ref.click : void 0,
-                  mouseout: (_ref1 = scope.clusterEvents) != null ? _ref1.mouseout : void 0,
-                  mouseover: (_ref2 = scope.clusterEvents) != null ? _ref2.mouseover : void 0
-                };
-                return _.extend(scope.clusterEvents, {
-                  click: function(cluster) {
-                    return self.maybeExecMappedEvent(cluster, "click");
-                  },
-                  mouseout: function(cluster) {
-                    return self.maybeExecMappedEvent(cluster, "mouseout");
-                  },
-                  mouseover: function(cluster) {
-                    return self.maybeExecMappedEvent(cluster, "mouseover");
-                  }
-                });
+                if (!_this.origClusterEvents) {
+                  _this.origClusterEvents = {
+                    click: (_ref = scope.clusterEvents) != null ? _ref.click : void 0,
+                    mouseout: (_ref1 = scope.clusterEvents) != null ? _ref1.mouseout : void 0,
+                    mouseover: (_ref2 = scope.clusterEvents) != null ? _ref2.mouseover : void 0
+                  };
+                  return _.extend(scope.clusterEvents, {
+                    click: function(cluster) {
+                      return self.maybeExecMappedEvent(cluster, "click");
+                    },
+                    mouseout: function(cluster) {
+                      return self.maybeExecMappedEvent(cluster, "mouseout");
+                    },
+                    mouseover: function(cluster) {
+                      return self.maybeExecMappedEvent(cluster, "mouseover");
+                    }
+                  });
+                }
               })();
             }
             if (scope.clusterOptions || scope.clusterEvents) {
