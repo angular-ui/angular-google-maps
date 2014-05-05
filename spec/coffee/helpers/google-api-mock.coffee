@@ -10,8 +10,8 @@ angular.module("google-maps.mocks", [])
       unmocked = (api) => () => throw new String("Unmocked API " + api)
       window.google.maps.Marker = unmocked("Marker")
       window.google.maps.event =
-        clearListeners: unmocked("events")
-        addListener: unmocked("event")
+        clearListeners: unmocked("event.clearListeners")
+        addListener: unmocked("event.addListener")
       window.google.maps.OverlayView = unmocked("OverlayView")
       window.google.maps.InfoWindow = unmocked("InfoWindow")
       window.google.maps.LatLng = unmocked("LatLng")
@@ -42,19 +42,38 @@ angular.module("google-maps.mocks", [])
     mockMapTypeId: (MapTypeId = {ROADMAP: "roadmap"}) ->
       window.google.maps.MapTypeId = MapTypeId
 
-    mockOverlayView: (OverlayView = () -> return) ->
+    mockOverlayView: (
+      OverlayView = class OverlayView
+        setMap:() ->
+    ) ->
       window.google.maps.OverlayView = OverlayView
 
     mockEvent: (event = {}) ->
-      handlers = {}
-      if not (event.addListener?)
-        event.addListener = (map, eventname, callback) ->
-          handlers[eventname] = callback
+      listeners = []
+      #mocking google maps event listener
+      if not event.addListener
+        event.addListener = (thing, eventName, callBack) ->
+          found = _.find listeners, (obj)->
+            obj.obj == thing
+            unless found?
+              toPush = {}
+              toPush.obj = thing
+              toPush.events = {}
+              toPush.events[eventName] = callBack
+              listeners.push toPush
+            else
+              found.events[eventName] = callBack
 
-      if not (event.clearListeners?)
+      if not event.clearListeners
         event.clearListeners = () ->
-          for k,v of handlers
-            delete handlers[k]
+          listeners.length = 0
+
+      unless event.fireListener
+        event.fireListener = (thing, eventName) =>
+          found = _.find listeners, (obj)->
+            obj.obj == thing
+          found.events[eventName](found.obj) if found?
+
 
       window.google.maps.event = event
 

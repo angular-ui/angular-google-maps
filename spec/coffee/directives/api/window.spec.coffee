@@ -1,5 +1,6 @@
 describe "directives.api.Window", ->
     beforeEach ->
+        window.google
         module "google-maps"
         module "google-maps.mocks"
         inject (GoogleApiMock) =>

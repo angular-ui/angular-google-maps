@@ -1,8 +1,7 @@
 # TODO: These tests are failing because something is not mocked correctly
 # in the clusterermanager. Likely google.maps.overlayview.
-xdescribe "MarkersParentModel", ->
+describe "MarkersParentModel - Clusterer Event Extensions", ->
   afterEach ->
-    window.google.maps = @gMapsTemp
     self.markerModelsCluster = undefined
   beforeEach ->
     @clusterTest =
@@ -11,8 +10,6 @@ xdescribe "MarkersParentModel", ->
           {key: 1},
           {key: 2}
         ]
-    @gMapsTemp = window.google.maps
-    #comparison variables
     @index = 0
     @clicked = false
     self = @
@@ -21,8 +18,6 @@ xdescribe "MarkersParentModel", ->
       coords:
         latitude: 90
         longitude: 90
-      options:
-        animation: google.maps.Animation.BOUNCE
       events:
         click: (marker, eventName, args) ->
           self.clicked = true
@@ -40,30 +35,8 @@ xdescribe "MarkersParentModel", ->
       doCluster: "true"
       models: []
 
-    #mocking google maps event listener
-    @googleMapListeners = []
-    window.google.maps.event.addListener = (thing, eventName, callBack) =>
-      found = _.find @googleMapListeners, (obj)->
-        obj.obj == thing
-
-      unless found?
-        toPush = {}
-        toPush.obj = thing
-        toPush.events = {}
-        toPush.events[eventName] = callBack
-        @googleMapListeners.push toPush
-
-      else
-        found.events[eventName] = callBack
-
-    @fireListener = (thing, eventName) =>
-      found = _.find @googleMapListeners, (obj)->
-        obj.obj == thing
-
-      found.events[eventName](found.obj) if found?
-
     #define / inject values into the item we are testing... not a controller but it allows us to inject
-    angular.module('mockModule', ["google-maps"])
+    angular.module('mockModule', ["google-maps","google-maps.mocks"])
     .value('mapCtrl',
         getMap: ()->
           document.gMap)
@@ -73,13 +46,21 @@ xdescribe "MarkersParentModel", ->
     .value('scope', @scope)
 
     module "mockModule"
+    inject (GoogleApiMock) =>
+      @gmap = new GoogleApiMock(false)
+      @gmap.mockEvent()
+
     inject ($rootScope, element, attrs, mapCtrl, MarkersParentModel) =>
       scope = $rootScope.$new()
       $timeout = ((fn)->
         fn())
       @scope = _.extend @scope, scope
+      @scope.options =
+        animation: google.maps.Animation.BOUNCE
       @testCtor = MarkersParentModel
+      @fireListener = window.google.maps.event.fireListener
       @subject = new @testCtor(@scope, element, attrs, mapCtrl, $timeout)
+      @subject
 
   it 'constructor exist', ->
     expect(@testCtor).toBeDefined()

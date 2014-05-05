@@ -82,7 +82,7 @@ angular.module("google-maps.directives.api.models.parent")
                     @newChildMarker(model, scope)
                 , () => #handle done callBack
                     @gMarkerManager.draw()
-                    @fit() if angular.isDefined(@attrs.fit) and scope.fit? and scope.fit
+                    @gMarkerManager.fit() if scope.fit
 
 
             reBuildMarkers: (scope) =>
@@ -134,18 +134,6 @@ angular.module("google-maps.directives.api.models.parent")
                 delete @scope.markerModels
                 @scope.markerModels = new PropMap()
                 @gMarkerManager.clear() if @gMarkerManager?
-
-            fit: ()=>
-                if @mapCtrl and @scope.markerModels? and @scope.markerModels.length > 0
-                    bounds = new google.maps.LatLngBounds();
-                    everSet = false
-                    _async.each @scope.markerModels.values(), (child) =>
-                        if child.gMarker?
-                            everSet = true unless everSet
-                            bounds.extend(child.gMarker.getPosition())
-                    , () =>
-                        @mapCtrl.getMap().fitBounds(bounds) if everSet
-
 
             maybeExecMappedEvent:(cluster, fnName) ->
               if _.isFunction @scope.clusterEvents?[fnName]

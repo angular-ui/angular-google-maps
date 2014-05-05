@@ -21,7 +21,7 @@ describe "MarkerParentModel", ->
           @gmap.mockLatLng()
           @gmap.mockMarker()
           #@gmap.mockInfoWindow()
-          #@gmap.mockEvent()
+          @gmap.mockEvent()
         @gMapsTemp = window.google.maps
         #comparison variables
         @index = 0
@@ -60,11 +60,11 @@ describe "MarkerParentModel", ->
                 obj.obj == thing
 
             found.events[eventName](found.obj) if found?
-        inject ($rootScope, $timeout, element, attrs, mapCtrl, MarkerParentModel) =>
+        inject ($rootScope, $timeout, element, attrs, mapCtrl, MarkerParentModel, MarkerManager) =>
             scope = $rootScope.$new()
             @scope = _.extend @scope, scope
             @testCtor = MarkerParentModel
-            @subject = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout)
+            @subject = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, new MarkerManager(mapCtrl.getMap()), false)
             $timeout.flush()
 
         @subject.setEvents(@, @scope)

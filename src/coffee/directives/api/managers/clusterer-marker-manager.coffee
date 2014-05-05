@@ -1,6 +1,6 @@
 angular.module("google-maps.directives.api.managers")
-.factory "ClustererMarkerManager", [ "BaseObject", "Logger", (BaseObject, $log) ->
-    class ClustererMarkerManager extends BaseObject
+.factory "ClustererMarkerManager", ["Logger", "FitHelper", ($log, FitHelper) ->
+    class ClustererMarkerManager extends FitHelper
       constructor: (gMap, opt_markers, opt_options, @opt_events) ->
         super()
         self = @
@@ -49,6 +49,9 @@ angular.module("google-maps.directives.api.managers")
         @clearEvents @opt_events
         @clearEvents @opt_internal_events
         @clear()
+
+      fit: ()=>
+        super @clusterer.markers ,@gMap
 
     ClustererMarkerManager
   ]

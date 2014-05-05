@@ -31,31 +31,32 @@ module.exports = (grunt) ->
             compile:
                 files:
                     "tmp/output_coffee.js": [
-                        "src/coffee/module.coffee",
-                        "src/coffee/extensions/*.coffee",
-                        "src/coffee/directives/api/utils/*.coffee",
-                        "src/coffee/directives/api/managers/*.coffee",
+                        "src/coffee/module.coffee"
+                        "src/coffee/extensions/*.coffee"
+                        "src/coffee/directives/api/utils/*.coffee"
+                        "src/coffee/directives/api/managers/*.coffee"
 
-                        "src/coffee/controllers/polyline-display.js",
-                        "src/coffee/utils/LatLngArraySync.coffee",
-                        "src/coffee/utils/MapEvents.coffee",
+                        "src/coffee/controllers/polyline-display.js"
+                        "src/coffee/utils/LatLngArraySync.coffee"
+                        "src/coffee/utils/MapEvents.coffee"
 
-                        "src/coffee/directives/api/models/child/*.coffee",
-                        "src/coffee/directives/api/models/parent/*.coffee",
-                        "src/coffee/directives/api/*.coffee",
-                        "src/coffee/directives/map.coffee",
-                        "src/coffee/directives/marker.coffee",
-                        "src/coffee/directives/markers.coffee",
-                        "src/coffee/directives/label.coffee",
-                        "src/coffee/directives/polygon.coffee",
-                        "src/coffee/directives/circle.coffee",
-                        "src/coffee/directives/polyline*.coffee",
-                        "src/coffee/directives/rectangle.coffee",
-                        "src/coffee/directives/window.coffee",
-                        "src/coffee/directives/windows.coffee",
+                        "src/coffee/directives/api/models/child/*.coffee"
+                        "src/coffee/directives/api/models/parent/*.coffee"
+                        "src/coffee/directives/api/*.coffee"
+                        "src/coffee/directives/map.coffee"
+                        "src/coffee/directives/marker.coffee"
+                        "src/coffee/directives/markers.coffee"
+                        "src/coffee/directives/label.coffee"
+                        "src/coffee/directives/polygon.coffee"
+                        "src/coffee/directives/circle.coffee"
+                        "src/coffee/directives/polyline*.coffee"
+                        "src/coffee/directives/rectangle.coffee"
+                        "src/coffee/directives/window.coffee"
+                        "src/coffee/directives/windows.coffee"
                         "src/coffee/directives/layer.coffee"]
 
                 #specs
+                    "tmp/spec/js/bootstrap.js": "spec/coffee/bootstrap.coffee"
                     "tmp/spec/js/helpers/helpers.js": "spec/coffee/helpers/*.coffee"
                     "tmp/spec/js/ng-gmap-module.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"
                     "tmp/spec/js/usage/usage.spec.js": "spec/coffee/usage/*.spec.coffee"
@@ -158,10 +159,11 @@ module.exports = (grunt) ->
                 src: ["bower_components/lodash-amd/main.js", "dist/angular-google-maps.js"]
                 options:
                     keepRunner: true
-                    vendor: ["bower_components/jquery/jquery.js",
+                    vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
+                             "bower_components/jquery/jquery.js",
                              "bower_components/angular/angular.js",
                              "bower_components/angular-mocks/angular-mocks.js"]
-                    specs: ["tmp/spec/js/**/*spec.js"]
+                    specs: ["tmp/spec/js/bootstrap.js","tmp/spec/js/**/*spec.js"]
                     helpers: ["tmp/spec/js/helpers/helpers.js"]
                 #grunt-template-jasmine-requirejs - to remove all coverage meta from angular-google-maps.js (helps debug)
                 #grunt-template-jasmine-istanbul - to produce coverage report
