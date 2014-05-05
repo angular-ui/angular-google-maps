@@ -213,12 +213,15 @@ module.exports = (grunt) ->
                             functions: 25
 
     # Default task: build a release in dist/
-    grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
-                                "connect:jasmineServer", "uglify", "open:jasmine", "watch:spec", "jasmine"]
-
-    # Default task: build a release in dist/
     grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
-                                   "uglify", "jasmine"]
+                                 "uglify", "jasmine:spec"]
+
+    # run default "grunt" prior to generate _SpecRunner.html
+    grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
+                                "connect:jasmineServer", "uglify", "open:jasmine", "watch:spec"]
+
+    grunt.registerTask "coverage", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
+                                 "uglify", "jasmine:coverage"]
 
     # Run the example page by creating a local copy of angular-google-maps.js
     # and running a webserver on port 3100 with livereload. Web page is opened
