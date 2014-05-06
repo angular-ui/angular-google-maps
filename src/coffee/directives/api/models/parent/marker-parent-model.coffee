@@ -29,41 +29,43 @@ angular.module("google-maps.directives.api.models.parent")
         switch propNameToWatch
           when 'coords'
             if (@validateCoords(scope.coords) and @scope.gMarker?)
-              @scope.gMarker.setMap(@mapCtrl.getMap())
-              @scope.gMarker.setPosition(@getCoords(scope.coords))
-              @scope.gMarker.setVisible(@validateCoords(scope.coords))
-              @scope.gMarker.setOptions(scope.options)
+              @scope.gMarker.setMap @mapCtrl.getMap()
+              @scope.gMarker.setPosition @getCoords(scope.coords)
+              @scope.gMarker.setVisible @validateCoords(scope.coords)
+              @scope.gMarker.setOptions scope.options
             else
               # Remove marker
-              @scope.gMarker.setMap(null)
+              @scope.gMarker.setMap null
           when 'icon'
             if (scope.icon? and @validateCoords(scope.coords) and @scope.gMarker?)
-              @scope.gMarker.setOptions(scope.options)
-              @scope.gMarker.setIcon(scope.icon)
-              @scope.gMarker.setMap(null)
-              @scope.gMarker.setMap(@mapCtrl.getMap())
-              @scope.gMarker.setPosition(@getCoords(scope.coords))
-              @scope.gMarker.setVisible(@validateCoords(scope.coords))
+              @scope.gMarker.setOptions scope.options
+              @scope.gMarker.setIcon scope.icon
+              @scope.gMarker.setMap null
+              @scope.gMarker.setMap @mapCtrl.getMap()
+              @scope.gMarker.setPosition @getCoords(scope.coords)
+              @scope.gMarker.setVisible @validateCoords(scope.coords)
           when 'options'
             if @validateCoords(scope.coords) and scope.icon? and scope.options
               @scope.gMarker.setMap(null) if @scope.gMarker?
+              @setGMarker new google.maps.Marker @createMarkerOptions(scope.coords, scope.icon, scope.options,
+                  @mapCtrl.getMap())
 
-               @setGMarker new google.maps.Marker(@createMarkerOptions(scope.coords, scope.icon, scope.options,
-                  @mapCtrl.getMap()))
-
-      setGMarker:(gMarker) =>
-        delete @scope.gMarker
+      setGMarker: (gMarker) =>
+        if @scope.gMarker
+          delete @scope.gMarker
+          @gMarkerManager.remove @scope.gMarker, false
         @scope.gMarker = gMarker
         if @scope.gMarker
           @gMarkerManager.add @scope.gMarker, false
           @gMarkerManager.fit() if @doFit
 
       onDestroy: (scope)=>
-        if @scope.gMarker == undefined
+        unless @scope.gMarker
           self = undefined
           return
         #remove from gMaps and then free resources
-        @scope.gMarker.setMap(null)
+        @scope.gMarker.setMap null
+        @gMarkerManager.remove @scope.gMarker, false
         delete @scope.gMarker
         self = undefined
 

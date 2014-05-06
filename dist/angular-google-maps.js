@@ -2290,13 +2290,19 @@ Nicholas McCready - https://twitter.com/nmccready
               break;
             case 'options':
               if (this.validateCoords(scope.coords) && (scope.icon != null) && scope.options) {
-                return this.scope.gMarker.setMap(null)(this.scope.gMarker != null ? this.setGMarker(new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap()))) : void 0);
+                if (this.scope.gMarker != null) {
+                  this.scope.gMarker.setMap(null);
+                }
+                return this.setGMarker(new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.mapCtrl.getMap())));
               }
           }
         };
 
         MarkerParentModel.prototype.setGMarker = function(gMarker) {
-          delete this.scope.gMarker;
+          if (this.scope.gMarker) {
+            delete this.scope.gMarker;
+            this.gMarkerManager.remove(this.scope.gMarker, false);
+          }
           this.scope.gMarker = gMarker;
           if (this.scope.gMarker) {
             this.gMarkerManager.add(this.scope.gMarker, false);
@@ -2308,11 +2314,12 @@ Nicholas McCready - https://twitter.com/nmccready
 
         MarkerParentModel.prototype.onDestroy = function(scope) {
           var self;
-          if (this.scope.gMarker === void 0) {
+          if (!this.scope.gMarker) {
             self = void 0;
             return;
           }
           this.scope.gMarker.setMap(null);
+          this.gMarkerManager.remove(this.scope.gMarker, false);
           delete this.scope.gMarker;
           return self = void 0;
         };
