@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.0.13 2014-05-05
+/*! angular-google-maps 1.0.13 2014-05-06
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -652,6 +652,29 @@ Nicholas McCready - https://twitter.com/nmccready
             } else {
               return console.warn(msg);
             }
+          }
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
+  angular.module("google-maps.directives.api.utils").service("MarkerEventHelper", [
+    "Logger", function($log) {
+      return {
+        setEvents: function(marker, scope, model) {
+          if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
+            return _.compact(_.map(scope.events, function(eventHandler, eventName) {
+              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+                return google.maps.event.addListener(marker, eventName, function() {
+                  return eventHandler.apply(scope, [marker, eventName, model, arguments]);
+                });
+              } else {
+                return $log.info("MarkerEventHelper: invalid event listener " + eventName);
+              }
+            }));
           }
         }
       };
@@ -1435,12 +1458,14 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child").factory("MarkerChildModel", [
-    "ModelKey", "GmapUtil", "Logger", "$injector", function(ModelKey, GmapUtil, Logger, $injector) {
+    "ModelKey", "GmapUtil", "Logger", "$injector", "MarkerEventHelper", function(ModelKey, GmapUtil, Logger, $injector, MarkerEventHelper) {
       var MarkerChildModel;
       MarkerChildModel = (function(_super) {
         __extends(MarkerChildModel, _super);
 
         MarkerChildModel.include(GmapUtil);
+
+        MarkerChildModel.include(MarkerEventHelper);
 
         function MarkerChildModel(model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager, idKey) {
           var self,
@@ -1612,6 +1637,7 @@ Nicholas McCready - https://twitter.com/nmccready
           } else {
             this.gMarker = new google.maps.Marker(this.opts);
           }
+          this.setEvents(this.gMarker, this.parentScope, this.model);
           if (this.id) {
             this.gMarker.key = this.id;
           }
@@ -1637,9 +1663,14 @@ Nicholas McCready - https://twitter.com/nmccready
         MarkerChildModel.prototype.watchDestroy = function(scope) {
           var _this = this;
           return scope.$on("$destroy", function() {
-            var self;
+            var self, _ref;
             if (_this.gMarker != null) {
               google.maps.event.clearListeners(_this.gMarker, 'click');
+              if (((_ref = _this.parentScope) != null ? _ref.events : void 0) && _.isArray(_this.parentScope.events)) {
+                _this.parentScope.events.forEach(function(event, eventName) {
+                  return google.maps.event.clearListeners(this.gMarker, eventName);
+                });
+              }
               _this.gMarkerManager.remove(_this.gMarker, true);
               delete _this.gMarker;
             }
@@ -2231,12 +2262,14 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.parent").factory("MarkerParentModel", [
-    "IMarkerParentModel", "GmapUtil", function(IMarkerParentModel, GmapUtil) {
+    "IMarkerParentModel", "GmapUtil", "MarkerEventHelper", function(IMarkerParentModel, GmapUtil, MarkerEventHelper) {
       var MarkerParentModel;
       MarkerParentModel = (function(_super) {
         __extends(MarkerParentModel, _super);
 
         MarkerParentModel.include(GmapUtil);
+
+        MarkerParentModel.include(MarkerEventHelper);
 
         function MarkerParentModel(scope, element, attrs, mapCtrl, $timeout, gMarkerManager, doFit) {
           var self;
@@ -2262,7 +2295,7 @@ Nicholas McCready - https://twitter.com/nmccready
               });
             }
           });
-          this.setEvents(this.scope.gMarker, scope);
+          this.setEvents(this.scope.gMarker, scope, scope);
           return this.$log.info(this);
         };
 
@@ -2322,18 +2355,6 @@ Nicholas McCready - https://twitter.com/nmccready
           this.gMarkerManager.remove(this.scope.gMarker, false);
           delete this.scope.gMarker;
           return self = void 0;
-        };
-
-        MarkerParentModel.prototype.setEvents = function(marker, scope) {
-          if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
-            return _.compact(_.map(scope.events, function(eventHandler, eventName) {
-              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-                return google.maps.event.addListener(marker, eventName, function() {
-                  return eventHandler.apply(scope, [marker, eventName, arguments]);
-                });
-              }
-            }));
-          }
         };
 
         return MarkerParentModel;
