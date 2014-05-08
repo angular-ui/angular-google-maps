@@ -119,9 +119,8 @@ angular.module("google-maps.directives.api.models.parent")
                     @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                     return
                 @$log.info('child', child, 'markers', @scope.markerModels)
-                child = new MarkerChildModel(model, scope, @mapCtrl,
-                  @$timeout,
-                  @DEFAULTS, @doClick, @gMarkerManager, @idKey)
+                child = new MarkerChildModel(model, scope, @mapCtrl, @$timeout, @DEFAULTS,
+                    @doClick, @gMarkerManager, @idKey)
                 @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
                 child
 

@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.0.13 2014-05-06
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-05-14
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -465,13 +465,10 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           return opts;
         },
-        createWindowOptions: function(gMarker, scope, content, defaults, contentIsParsed) {
-          if (contentIsParsed == null) {
-            contentIsParsed = false;
-          }
+        createWindowOptions: function(gMarker, scope, content, defaults) {
           if ((content != null) && (defaults != null) && ($compile != null)) {
             return angular.extend({}, defaults, {
-              content: this.buildContent(scope, defaults, content, contentIsParsed),
+              content: this.buildContent(scope, defaults, content),
               position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : getCoords(scope.coords)
             });
           } else {
@@ -485,12 +482,12 @@ Nicholas McCready - https://twitter.com/nmccready
             }
           }
         },
-        buildContent: function(scope, defaults, content, contentIsParsed) {
+        buildContent: function(scope, defaults, content) {
           var parsed, ret;
           if (defaults.content != null) {
             ret = defaults.content;
           } else {
-            if (($compile != null) && !contentIsParsed) {
+            if ($compile != null) {
               parsed = $compile(content)(scope);
               if (parsed.length > 0) {
                 ret = parsed[0];
@@ -1845,6 +1842,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.needToManualDestroy = needToManualDestroy != null ? needToManualDestroy : false;
           this.markerIsVisibleAfterWindowClose = markerIsVisibleAfterWindowClose != null ? markerIsVisibleAfterWindowClose : true;
           this.destroy = __bind(this.destroy, this);
+          this.remove = __bind(this.remove, this);
           this.hideWindow = __bind(this.hideWindow, this);
           this.getLatestPosition = __bind(this.getLatestPosition, this);
           this.showWindow = __bind(this.showWindow, this);
@@ -1852,6 +1850,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.watchCoords = __bind(this.watchCoords, this);
           this.watchShow = __bind(this.watchShow, this);
           this.createGWin = __bind(this.createGWin, this);
+          this.watchElement = __bind(this.watchElement, this);
           this.googleMapsHandles = [];
           this.$log = Logger;
           this.createGWin();
@@ -1859,18 +1858,47 @@ Nicholas McCready - https://twitter.com/nmccready
             this.markerCtrl.setClickable(true);
           }
           this.handleClick();
+          this.watchElement();
           this.watchShow();
           this.watchCoords();
           this.$log.info(this);
         }
 
+        WindowChildModel.prototype.watchElement = function() {
+          var _this = this;
+          return this.scope.$watch(function() {
+            var _ref;
+            if (!_this.element || !_this.html) {
+              return;
+            }
+            if (_this.html !== _this.element.html()) {
+              if (_this.gWin) {
+                if ((_ref = _this.opts) != null) {
+                  _ref.content = void 0;
+                }
+                _this.remove();
+                _this.createGWin();
+                return _this.showHide();
+              }
+            }
+          });
+        };
+
         WindowChildModel.prototype.createGWin = function() {
-          var defaults, html,
+          var defaults,
             _this = this;
-          if ((this.gWin == null) && (this.markerCtrl != null)) {
-            defaults = this.opts != null ? this.opts : {};
-            html = _.isObject(this.element) ? this.element.html() : this.element;
-            this.opts = this.markerCtrl != null ? this.createWindowOptions(this.markerCtrl, this.scope, html, defaults) : {};
+          if (this.gWin == null) {
+            defaults = {};
+            if (this.opts != null) {
+              if (this.scope.coords) {
+                this.opts.position = this.getCoords(this.scope.coords);
+              }
+              defaults = this.opts;
+            }
+            if (this.element) {
+              this.html = _.isObject(this.element) ? this.element.html() : this.element;
+            }
+            this.opts = this.createWindowOptions(this.markerCtrl, this.scope, this.html, defaults);
           }
           if ((this.opts != null) && !this.gWin) {
             if (this.opts.boxClass && (window.InfoBox && typeof window.InfoBox === 'function')) {
@@ -1915,6 +1943,7 @@ Nicholas McCready - https://twitter.com/nmccready
             _this = this;
           scope = this.markerCtrl != null ? this.scope.$parent : this.scope;
           return scope.$watch('coords', function(newValue, oldValue) {
+            var pos;
             if (newValue !== oldValue) {
               if (newValue == null) {
                 return _this.hideWindow();
@@ -1923,7 +1952,11 @@ Nicholas McCready - https://twitter.com/nmccready
                   _this.$log.error("WindowChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(_this.model)));
                   return;
                 }
-                return _this.gWin.setPosition(_this.getCoords(newValue));
+                pos = _this.getCoords(newValue);
+                _this.gWin.setPosition(pos);
+                if (_this.opts) {
+                  return _this.opts.position = pos;
+                }
               }
             }
           }, true);
@@ -1940,6 +1973,9 @@ Nicholas McCready - https://twitter.com/nmccready
               pos = _this.markerCtrl.getPosition();
               if (_this.gWin != null) {
                 _this.gWin.setPosition(pos);
+                if (_this.opts) {
+                  _this.opts.position = pos;
+                }
                 _this.showWindow();
               }
               _this.initialMarkerVisibility = _this.markerCtrl.getVisible();
@@ -1978,6 +2014,14 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         };
 
+        WindowChildModel.prototype.showHide = function() {
+          if (this.scope.show) {
+            return this.showWindow();
+          } else {
+            return this.hideWindow();
+          }
+        };
+
         WindowChildModel.prototype.getLatestPosition = function() {
           if ((this.gWin != null) && (this.markerCtrl != null)) {
             return this.gWin.setPosition(this.markerCtrl.getPosition());
@@ -1990,20 +2034,24 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         };
 
-        WindowChildModel.prototype.destroy = function(manualOverride) {
-          var self;
-          if (manualOverride == null) {
-            manualOverride = false;
-          }
+        WindowChildModel.prototype.remove = function() {
           this.hideWindow();
           _.each(this.googleMapsHandles, function(h) {
             return google.maps.event.removeListener(h);
           });
           this.googleMapsHandles.length = 0;
+          return delete this.gWin;
+        };
+
+        WindowChildModel.prototype.destroy = function(manualOverride) {
+          var self;
+          if (manualOverride == null) {
+            manualOverride = false;
+          }
+          this.remove();
           if ((this.scope != null) && (this.needToManualDestroy || manualOverride)) {
             this.scope.$destroy();
           }
-          delete this.gWin;
           return self = void 0;
         };
 
@@ -3058,7 +3106,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         WindowsParentModel.prototype.createWindow = function(model, gMarker, gMap) {
-          var child, childScope, contentIsParsed, opts, parsedContent,
+          var child, childScope, fakeElement, opts,
             _this = this;
           childScope = this.linked.scope.$new(false);
           this.setChildScope(childScope, model);
@@ -3067,9 +3115,13 @@ Nicholas McCready - https://twitter.com/nmccready
               return _this.setChildScope(childScope, newValue);
             }
           }, true);
-          parsedContent = this.interpolateContent(this.linked.element.html(), model);
-          opts = this.createWindowOptions(gMarker, childScope, parsedContent, this.DEFAULTS, contentIsParsed = false);
-          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, void 0, true, true);
+          fakeElement = {
+            html: function() {
+              return _this.interpolateContent(_this.linked.element.html(), model);
+            }
+          };
+          opts = this.createWindowOptions(gMarker, childScope, fakeElement.html(), this.DEFAULTS);
+          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, fakeElement, true, true);
           if (model[this.idKey] == null) {
             this.$log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
             return;

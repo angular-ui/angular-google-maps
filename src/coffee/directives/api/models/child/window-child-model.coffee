@@ -12,15 +12,31 @@ angular.module("google-maps.directives.api.models.child")
                     @markerCtrl.setClickable(true) if @markerCtrl?
 
                     @handleClick()
+                    @watchElement()
                     @watchShow()
                     @watchCoords()
                     @$log.info(@)
 
+                watchElement:=>
+                    @scope.$watch =>
+                        return if not @element or not @html
+                        if @html != @element.html() #has content changed?
+                            if @gWin
+                                @opts?.content = undefined
+                                @remove()
+                                @createGWin()
+                                @showHide()
+
                 createGWin:() =>
-                    if !@gWin? and @markerCtrl?
-                        defaults = if @opts? then @opts else {}
-                        html = if _.isObject(@element) then @element.html() else @element
-                        @opts = if @markerCtrl? then @createWindowOptions(@markerCtrl, @scope, html, defaults) else {}
+                    if !@gWin?
+                        defaults = {}
+                        if @opts?
+                            #being double careful for race condition on @opts.position via watch coords (if element and coords change at same time)
+                            @opts.position = @getCoords @scope.coords if @scope.coords
+                            defaults = @opts
+                        if @element
+                          @html = if _.isObject(@element) then @element.html() else @element
+                        @opts = @createWindowOptions(@markerCtrl, @scope, @html, defaults)
 
                     if @opts? and !@gWin
                         if @opts.boxClass and (window.InfoBox && typeof window.InfoBox == 'function')
@@ -58,7 +74,9 @@ angular.module("google-maps.directives.api.models.child")
                                 if !@validateCoords(newValue)
                                     @$log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
                                     return
-                                @gWin.setPosition(@getCoords(newValue))
+                                pos = @getCoords(newValue)
+                                @gWin.setPosition pos
+                                @opts.position = pos if @opts
                     , true)
 
                 handleClick: ()=>
@@ -69,6 +87,7 @@ angular.module("google-maps.directives.api.models.child")
                             pos = @markerCtrl.getPosition()
                             if @gWin?
                                 @gWin.setPosition(pos)
+                                @opts.position = pos if @opts
                                 @showWindow()
                             @initialMarkerVisibility = @markerCtrl.getVisible()
                             @markerCtrl.setVisible(@isIconVisibleOnClick)
@@ -90,20 +109,29 @@ angular.module("google-maps.directives.api.models.child")
                     else
                       show()
 
+                showHide: ->
+                    if @scope.show
+                        @showWindow()
+                    else
+                        @hideWindow()
+
                 getLatestPosition: () =>
                     @gWin.setPosition @markerCtrl.getPosition() if @gWin? and @markerCtrl?
 
                 hideWindow: () =>
                   @gWin.close() if @gWin? and @gWin.isOpen()
 
+                remove: =>
+                  @hideWindow()
+                  _.each @googleMapsHandles, (h) ->
+                    google.maps.event.removeListener h
+                  @googleMapsHandles.length = 0
+                  delete @gWin
+
                 destroy: (manualOverride = false)=>
-                    @hideWindow()
-                    _.each @googleMapsHandles, (h) ->
-                        google.maps.event.removeListener h
-                    @googleMapsHandles.length = 0
+                    @remove()
                     if @scope? and (@needToManualDestroy or manualOverride)
                         @scope.$destroy()
-                    delete @gWin
                     self = undefined
 
             WindowChildModel

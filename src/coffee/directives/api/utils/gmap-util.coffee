@@ -41,10 +41,10 @@ angular.module("google-maps.directives.api.utils")
         opts.map = map if map?
         opts
 
-    createWindowOptions: (gMarker, scope, content, defaults, contentIsParsed = false) ->
+    createWindowOptions: (gMarker, scope, content, defaults) ->
         if content? and defaults? and $compile?
             angular.extend {}, defaults,
-                content: @buildContent(scope,defaults,content,contentIsParsed),
+                content: @buildContent(scope,defaults,content),
                 position: if defaults.position?
                 then defaults.position else if angular.isObject(gMarker)
                 then gMarker.getPosition() else getCoords(scope.coords)
@@ -55,11 +55,11 @@ angular.module("google-maps.directives.api.utils")
             else
                 return defaults
 
-    buildContent:(scope,defaults,content,contentIsParsed) ->
+    buildContent:(scope,defaults,content) ->
         if defaults.content?
             ret = defaults.content
         else
-            if $compile? and !contentIsParsed
+            if $compile?
                 parsed =$compile(content)(scope)
                 if parsed.length > 0
                     ret = parsed[0] #must be one element with children or angular bindings get lost

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" id='ng-app' ng-app="angular-google-maps-example">
+<head>
+    <meta charset="UTF-8">
+    <title>angular-google-maps example page</title>
+    <!-- See https://rawgithub.com/ as it returns the correct mimetypes that are requested from github.-->
+    <!-- make IE Happy , http://docs.angularjs.org/guide/ie -->
+    <!--[if lte IE 9]>
+    <script>
+	    window.html5 = {
+            'elements': 'marker window windows markers layer polyline marker-label ng-controller ng-repeat ng-init ng-model ng-hide ng-show'
+        };
+	</script>
+
+    <script src="https://rawgithub.com/bestiejs/json3/v3.2.5a/lib/json3.min.js"></script>
+    <script src="https://rawgithub.com/kriskowal/es5-shim/v2.1.0/es5-shim.min.js"></script>
+    <script src="https://rawgithub.com/jwmcpeak/EventShim/master/eventShim.js"></script>
+    <script src="https://rawgithub.com/aFarkas/html5shiv/3.7.0/src/html5shiv.js"></script>
+    <![endif]-->
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet"
+          type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700'
+          rel='stylesheet' type='text/css'>
+    <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
+</head>
+
+<body ng-controller="controller">
+<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
+	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
+<div class="page-title ">
+    <h2 ng-cloak>angular-google-maps example {{version}}</h2>
+</div>
+<div class="container">
+    <div class="row">
+        <button class="col-md-2 btn btn-success" ng-click="map.refresh()">Refresh Map</button>
+        <button ng-click="test.name = !test.name">Change test </button>
+        test = {{ test.name }}
+    </div>
+    <div class="row">
+        <google-map class="col-md-12"
+                    center="map.center"
+                    zoom="map.zoom"
+                    dragging="map.dragging"
+                    draggable="true"
+                    control="map.control">
+            <window show="true" coords="map.center" options="windowOptions">
+                <div class="popup" style="width: 100px; height: 50px;">
+                    <p>test = {{test.name}}</p>
+                </div>
+            </window>
+            <windows models="windows" show="'show'" coords="'self'" options="windowOptions">
+                <div style="width: 100px; height: 50px;">
+                    <p>test = {{test.name}}</p>
+                </div>
+            </windows>
+        </google-map>
+    </div>
+</div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization&sensor=false&language=en&v=3.13"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
+<script src="../dist/angular-google-maps.js"></script>
+<script src="assets/scripts/mocks/heat-layer.js"></script>
+<script src="assets/scripts/controllers/issue-354-window-windows-rerender-content.js"></script>
+<script src="assets/scripts/controllers/templates/info.js"></script>
+<script src="http://localhost:35729/livereload.js"></script>
+</body>
+
+</html>

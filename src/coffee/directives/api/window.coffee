@@ -22,10 +22,8 @@ angular.module("google-maps.directives.api")
                     opts = if hasScopeCoords then @createWindowOptions(markerCtrl, scope, element.html(), defaults) else defaults
 
                     if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
-                        window = new WindowChildModel(
-                                {}, scope, opts, isIconVisibleOnClick, mapCtrl,
+                        window = new WindowChildModel {}, scope, opts, isIconVisibleOnClick, mapCtrl,
                                 markerCtrl, element
-                        )
                     scope.$on "$destroy", =>
                         window.destroy()
 
