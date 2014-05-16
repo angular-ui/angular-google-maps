@@ -123,8 +123,8 @@ module.exports = (grunt) ->
             example:
                 path: "http://localhost:3100/example/example.html"
 
-            example2:
-                path: "http://localhost:3100/example/example2.html"
+            twomaps:
+                path: "http://localhost:3100/example/two-maps.html"
                 
             geojson:
                 path: "http://localhost:3100/example/geojson.html"
@@ -229,6 +229,6 @@ module.exports = (grunt) ->
     # and running a webserver on port 3100 with livereload. Web page is opened
     # automatically in the default browser.
     grunt.registerTask "example", ["clean:example", "connect:server", "open:example", "watch:all"]
-    grunt.registerTask "example2", ["clean:example", "connect:server", "open:example2", "watch:all"]
+    grunt.registerTask "twomaps", ["clean:example", "connect:server", "open:twomaps", "watch:all"]
     grunt.registerTask "geojson", ["clean:example", "connect:server", "open:geojson", "watch:all"]
     grunt.registerTask "hugedata", ["clean:example", "connect:server", "open:hugedata", "watch:all"]
