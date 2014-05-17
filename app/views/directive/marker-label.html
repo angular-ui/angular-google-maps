@@ -1,1 +1,66 @@
-<p>The <code>marker-label</code> directive is used to create a marker label on an existing map. </p>
+<p>The <code>marker-label</code> directive is used to create a marker label on an existing map. It is entirely dependent
+    on being contained within the
+    <code>marker</code> directive. This is because each label is directly associated with each marker drawn within the marker directive. Therefore
+    a label is intended to be rendered relative to each marker rendered by the <code>marker</code> directive.
+</p>
+
+<h4>Usage</h4>
+
+<div hljs language="html" include="'markerLabelTemplate'"></div>
+
+<h4>Parameters</h4>
+
+<p class="muted">Required properties are in <span class="text-error">red</span>.</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>Param</th>
+        <th>Type</th>
+        <th>Details</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>content</td>
+        <td><span class="label label-danger">expression</span></td>
+        <td>
+            Text to be assigned as the content of a label. Where the text is a property on a marker object.
+        </td>
+    </tr>
+    <tr>
+        <td>anchor</td>
+        <td><span class="label label-danger">expression</span></td>
+        <td>String expression which is evaluated at the dom level. The string should contain the x and y point position
+            of the label relative to its current position.
+        </td>
+    </tr>
+    <tr>
+        <td>class</td>
+        <td><span class="label label-info">expression</span></td>
+        <td>String expression which is evaluated at the dom level that represents the css class for this labels dom
+            element.
+        </td>
+    </tr>
+    <tr>
+        <td>style</td>
+        <td><span class="label label-info">expression</span></td>
+        <td>String expression which is evaluated at the dom level that represents the css styling for this labels dom
+            element.
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script type="text/ng-template" id="markerLabelTemplate">
+
+<marker .... >
+    <marker-label
+            content='{expression to bind}'
+            anchor='{expression to interpret}'
+            class='{expression to interpret}'
+            style='{expression to bind}'
+            >
+    </marker-label>
+</marker>
+</script>
