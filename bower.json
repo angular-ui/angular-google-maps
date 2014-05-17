@@ -11,7 +11,7 @@
     "angular-resource": "~1.2.5",
     "angular-cookies": "~1.2.5",
     "angular-sanitize": "~1.2.5",
-    "angular-google-maps": "~1.0.5",
+    "angular-google-maps": "~1.1.0",
     "underscore": "~1.5.2",
     "angular-highlightjs": "~0.2.5",
     "share-button": "~0.0.3",
