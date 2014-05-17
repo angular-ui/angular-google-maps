@@ -21,9 +21,27 @@
 		<tr>
 			<td>center</td>
 			<td><span class="label label-danger">expression</span></td>
-			<td>Expression to evaluate as an object representing the map center. The object must have <code>latitude</code> and
-				<code>longitude</code> numeric properties.</td>
+			<td>Expression to evaluate as an object representing the map center.  May be in the form of an object containing <code>latitude</code> and <code>longitude</code> properties, or <span class="badge badge-info">New in v1.1</span> a <a href="http://geojson.org/geojson-spec.html#point">GeoJSON Point</a> object.</td>
 		</tr>
+        <tr>
+            <td>pan</td>
+            <td><span class="label label-danger">string or boolean</span></td>
+            <td>
+                This attribute is a flag indicate how the map's centering should behave. This tells the map to use map.panTo instead of map.setCenter. (Animate to center via pan or not.)
+                <br/>
+                <br/>
+                <p>Note: Evaluated on the attribute only. This means it is is not watched or followed on the scope.</p>
+                <p>The pan attribute will evaluate to true if any of the following are met:</p>
+                <ul>
+                    <li>angular.isDefined(val)</li>
+                    <li>val isnt null</li>
+                    <li>val is true </li>
+                    <li>val is "1"</li>
+                    <li>val is "y"</li>
+                    <li>val is "true"</li>
+                </ul>
+            </td>
+        </tr>
         <tr>
             <td>control</td>
             <td><span class="label label-default">Object</span></td>
@@ -65,9 +83,15 @@
 		<tr>
 			<td>events</td>
 			<td><span class="label label-default">expression</span></td>
-			<td>Custom events to apply to the map. This is an associative array, where keys are event names and values are handler functions.
-                <p>Note: This is a direct hook to google maps objects events handler. So any events you can hook to functionally can be done via scope binding to events.</p>
-            </td>
+			<td>
+			  <p>Custom events to apply to the map. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Map">Map Events documentation</a></p>
+  		  <span>The handler function takes three parameters:</span>
+  		  <ol>
+  			  <li>maps: the GoogleMap object</li>
+  			  <li>eventName: the name of the event</li>
+  			  <li>arguments: the arguments provided by Google Maps for this event type. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Map">the Google Map Event docs</a></li>
+  		  </ol>
+  		</td>
 		</tr>
 		<tr>
 			<td>bounds</td>
@@ -85,7 +109,8 @@
 	refresh='{expression}'
 	options='{expression}'
 	events='{expression}'
-	bounds='{expression}'>
+	bounds='{expression}'
+    pan='{string or boolean}'>
 	
 	<!-- other directives here -->
 	

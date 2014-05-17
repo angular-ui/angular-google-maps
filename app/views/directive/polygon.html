@@ -21,7 +21,11 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 		<tr>
 			<td>path</td>
 			<td><span class="label label-danger">expression</span></td>
-			<td>An array of objects containing <code>latitude</code> and <code>longitude</code> properties which define the points connected by the polyline</td>
+			<td>
+			  <p>The coordinates of the points defining the outer shell of the polygon.</p>
+			  <p>May be in the form of an array of objects containing <code>latitude</code> and <code>longitude</code> properties, or <span class="badge badge-info">New in v1.1</span> an array of <a href="https://developers.google.com/maps/documentation/javascript/reference#LatLng">Google Maps LatLng</a> objects. Alternatively <span class="badge badge-info">New in v1.1</span>, a <a href="http://geojson.org/geojson-spec.html#polygon">GeoJSON Polygon</a> object.</p>
+			  <p>For the case of the GeoJSON Polygon object, only the outer ring (ring index 0) is used to display the polygon.  Inner holes (ring indices 1...n) of the Polygon are not displayed.</p>
+		  </td>
 		</tr>
 		<tr>
 			<td>fill</td>
@@ -65,6 +69,60 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 			<td><span class="label label-info">expression</span></td>
 			<td>boolean property which shows or hides the polygon</td>
 		</tr>
+		<tr>
+			<td>zindex</td>
+			<td><span class="label label-info">expression</span></td>
+			<td><span class="badge badge-info">New in v1.1</span> The zIndex compared to other polygons</td>
+		</tr>
+		<tr>
+			<td>static</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>
+			  <p><span class="badge badge-info">New in v1.1</span> Boolean property which indicates that the polygon coordinates are static. (I.e. will not change).</p>
+			  <p>Declaring a static path will improve the performance of the directive as it does not need to monitor every coordinate in the path for changes during the Angular $digest cycle.</p>
+			  <span>Notes:</span>
+			  <ul>
+			    <li>Declaring a static path implies that it is not editable. As a result, the <code>editable</code> parameter will be ignored.</li>
+			    <li>For static paths, the path attribute will watched by reference so the path may be changed in its entirety and the map will update.</li>
+			    <li>Changes to the static declaration are ignored after the directive is instantiated.</li>
+			  </ul>
+		  </td>
+		</tr>
+        <tr>
+            <td>icons</td>
+            <td><span class="label label-info">expression</span></td>
+            <td><span class="badge badge-info">New in v1.1</span> An Array of icons objects that contain the following properties:
+                <ul>
+                    <li>icon.path</li>
+                    <li>offset</li>
+                    <li>repeat</li>
+                </ul>
+                example:
+<pre>
+icons = [{
+    icon: {
+    path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW
+    },
+    offset: '25px',
+    repeat: '50px'
+}]
+</pre>
+            </td>
+        </tr>
+		<tr>
+			<td>events</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>
+			  <p><span class="badge badge-info">New in v1.1</span> Custom events to apply to the polygon. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">polygon events</a>.</p>
+			  <span>The handler function takes three parameters:</span>
+			  <ol>
+  			  <li>polygon: the GoogleMaps Polygon object</li>
+  			  <li>eventName: the name of the event</li>
+  			  <li>arguments: the arguments provided by Google Maps for this event type. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">the Polygon docs</a></li>
+			    
+			  </ol>
+		  </td>
+		</tr>
 	</tbody>
 </table>
 
@@ -77,7 +135,12 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 	editable='{string}'
 	geodesic='{expression}'
 	icons='{expression}'
-	visible='{expression}'>
+	visible='{expression}'
+	zindex='{expression}'
+	static='{expression}'
+	events='{expression}'
+    icons='{expression}'
+>
 </polygon>
 </script>
 
