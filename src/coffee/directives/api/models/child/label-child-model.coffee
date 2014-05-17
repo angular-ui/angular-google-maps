@@ -28,7 +28,7 @@ angular.module("google-maps.directives.api.models.child")
             if !opt_options.optimized
                 @marker.set("optimized", false)
 
-
+            #TODO: This should be overrideable and only gets set as a default if nothing is defined
             opt_options.crossImage = opt_options.crossImage ? document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/drag_cross_67_16.png";
             opt_options.handCursor = opt_options.handCursor ? document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/closedhand_8_8.cur";
 
