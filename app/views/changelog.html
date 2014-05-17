@@ -2,7 +2,7 @@
 
 
 <div class="panel-group" id="accordion">
-	<div class="panel panel-default" ng-repeat="tag in changelog">
+	<div class="panel panel-default" ng-repeat="tag in changelog | semverReverseSort:'tag'">
 		<div class="panel-heading">
 			<h4 class="panel-title">
 				<a href='' data-toggle="collapse" data-target="#tag{{ $index }}">
