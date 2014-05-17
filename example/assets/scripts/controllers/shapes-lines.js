@@ -210,6 +210,23 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
       }
 
       $timeout(function () {
+
+        //go nuts // PLEASE KEEP THIS AS IT TESTS POLYLINES SPEED!
+//        var lastPolyline =  $scope.map.polylines[1];
+//        $scope.map.polylines = _.map(_.range(500), function (i) {
+//          var newPath = _.map(lastPolyline.path, function (p) {
+//            return {
+//              latitude: p.latitude,
+//              longitude: p.longitude + 1
+//            };
+//          });
+//          var newPoly = _.clone(lastPolyline);
+//          newPoly.id = i + 1;
+//          newPoly.path = newPath;
+//          lastPolyline = newPoly;
+//          return newPoly;
+//        });
+
         $scope.map.polylines.push({
           id: 3,
           path: [

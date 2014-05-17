@@ -132,6 +132,7 @@ angular.module("google-maps.directives.api.models.parent")
                             if(newValue != oldValue)
                                 @setChildScope(childScope, newValue)
                         , true)
+                        childScope.static = @scope.static
                         child = new PolylineChildModel childScope, @attrs, gMap, @defaults, model
 
                         unless model[@idKey]?

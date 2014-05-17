@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0-SNAPSHOT 2014-05-16
+/*! angular-google-maps 1.1.0-SNAPSHOT 2014-05-17
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -2829,6 +2829,7 @@ Nicholas McCready - https://twitter.com/nmccready
               return _this.setChildScope(childScope, newValue);
             }
           }, true);
+          childScope["static"] = this.scope["static"];
           child = new PolylineChildModel(childScope, this.attrs, gMap, this.defaults, model);
           if (model[this.idKey] == null) {
             this.$log.error("Polyline model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
