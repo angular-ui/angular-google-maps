@@ -88,6 +88,27 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 			  </ul>
 		  </td>
 		</tr>
+        <tr>
+            <td>icons</td>
+            <td><span class="label label-info">expression</span></td>
+            <td><span class="badge badge-info">New in v1.1</span> An Array of icons objects that contain the following properties:
+                <ul>
+                    <li>icon.path</li>
+                    <li>offset</li>
+                    <li>repeat</li>
+                </ul>
+                example:
+<pre>
+icons = [{
+    icon: {
+    path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW
+    },
+    offset: '25px',
+    repeat: '50px'
+}]
+</pre>
+            </td>
+        </tr>
 		<tr>
 			<td>events</td>
 			<td><span class="label label-info">expression</span></td>
@@ -117,7 +138,9 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 	visible='{expression}'
 	zindex='{expression}'
 	static='{expression}'
-	events='{expression}'>
+	events=
+    icons='{expression}'
+>
 </polygon>
 </script>
 
