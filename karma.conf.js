@@ -20,6 +20,8 @@ module.exports = function(config) {
       'app/bower_components/angular-mocks/angular-mocks.js',
       'app/bower_components/underscore/underscore-min.js',
       'app/bower_components/angular-google-maps/dist/angular-google-maps.js',
+      'app/bower_components/angular-highlightjs/angular-highlightjs.js',
+      'app/bower_components/angular-semver-sort/angular-semver-sort.js',
       'app/scripts/module.js',      
       'app/scripts/controllers/*.js',
       'app/scripts/services/*.js',
