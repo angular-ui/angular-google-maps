@@ -19,14 +19,6 @@ angular.module('angularGoogleMapsApp')
   		});
   	}
   	
-  	// Sort by tag number in reverse order
-  	cl = _.sortBy(cl, function (value, key) {
-  		var tag = value.tag,
-  			replaced = value.tag.replace(/\./g, '');  		
-  			
-  		return parseInt(replaced);
-  	}).reverse();
-  	
   	// Everything's set!
   	$scope.changelog = cl;
   }]);
