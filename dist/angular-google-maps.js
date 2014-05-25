@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0 2014-05-17
+/*! angular-google-maps 1.1.1-SNAPSHOT 2014-05-25
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -962,7 +962,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         ClustererMarkerManager.prototype.fit = function() {
-          return ClustererMarkerManager.__super__.fit.call(this, this.clusterer.markers, this.gMap);
+          return ClustererMarkerManager.__super__.fit.call(this, this.clusterer.getMarkers(), this.clusterer.getMap());
         };
 
         return ClustererMarkerManager;

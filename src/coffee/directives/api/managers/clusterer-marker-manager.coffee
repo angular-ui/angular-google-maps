@@ -51,7 +51,7 @@ angular.module("google-maps.directives.api.managers")
         @clear()
 
       fit: ()=>
-        super @clusterer.markers ,@gMap
+        super @clusterer.getMarkers() , @clusterer.getMap()
 
     ClustererMarkerManager
   ]
