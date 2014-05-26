@@ -9,36 +9,41 @@
     TODO: Handle Object iteration like underscore and lodash as well.. not that important right now
 ###
 async =
-    each: (array, callback, doneCallBack, pausedCallBack, chunk = 100, index = 0) ->
-        if array == undefined or array?.length <= 0
-            doneCallBack()
-            return
-        # set this to whatever number of items you can process at once
-        doChunk = () ->
-            cnt = chunk
-            i = index
+  each: (array, callback, doneCallBack, pausedCallBack, chunk = 20, index = 0, pause = 1) ->
+    unless pause
+      throw "pause (delay) must be set from _async!"
+      return
+    if array == undefined or array?.length <= 0
+      doneCallBack()
+      return
+    # set this to whatever number of items you can process at once
+    doChunk = () ->
+      cnt = chunk
+      i = index
 
-            while cnt-- and i < array.length
-                # process array[index] here
-                callback(array[i])
-                ++i
-            if i < array.length
-                index = i
-                pausedCallBack() if pausedCallBack?
-                setTimeout(doChunk, 1)
-            else
-                doneCallBack()
-        doChunk()
+      while cnt-- and i < (if array then array.length  else i + 1)
+        # process array[index] here
+        callback(array[i],i)
+        ++i
 
-    #copied from underscore but to use the async each above
-    map: (objs, iterator, doneCallBack, pausedCallBack, chunk) ->
-        results = []
-        return results  unless objs?
-        _async.each objs, (o) ->
-            results.push iterator o
-        , () ->
-            doneCallBack(results)
-        , pausedCallBack, chunk
+      if array
+        if i < array.length
+          index = i
+          pausedCallBack() if pausedCallBack?
+          setTimeout(doChunk, pause)
+        else
+          doneCallBack() if doneCallBack
+    doChunk()
+
+#copied from underscore but w/ async each above
+  map: (objs, iterator, doneCallBack, pausedCallBack, chunk) ->
+    results = []
+    return results  unless objs?
+    _async.each objs, (o) ->
+      results.push iterator o
+    , () ->
+      doneCallBack(results)
+    , pausedCallBack, chunk
 
 window._async = async
 

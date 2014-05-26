@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.1-SNAPSHOT 2014-05-25
+/*! angular-google-maps 1.1.1-SNAPSHOT 2014-05-26
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -242,13 +242,20 @@ Nicholas McCready - https://twitter.com/nmccready
   var async;
 
   async = {
-    each: function(array, callback, doneCallBack, pausedCallBack, chunk, index) {
+    each: function(array, callback, doneCallBack, pausedCallBack, chunk, index, pause) {
       var doChunk;
       if (chunk == null) {
-        chunk = 100;
+        chunk = 20;
       }
       if (index == null) {
         index = 0;
+      }
+      if (pause == null) {
+        pause = 1;
+      }
+      if (!pause) {
+        throw "pause (delay) must be set from _async!";
+        return;
       }
       if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
         doneCallBack();
@@ -258,18 +265,22 @@ Nicholas McCready - https://twitter.com/nmccready
         var cnt, i;
         cnt = chunk;
         i = index;
-        while (cnt-- && i < array.length) {
-          callback(array[i]);
+        while (cnt-- && i < (array ? array.length : i + 1)) {
+          callback(array[i], i);
           ++i;
         }
-        if (i < array.length) {
-          index = i;
-          if (pausedCallBack != null) {
-            pausedCallBack();
+        if (array) {
+          if (i < array.length) {
+            index = i;
+            if (pausedCallBack != null) {
+              pausedCallBack();
+            }
+            return setTimeout(doChunk, pause);
+          } else {
+            if (doneCallBack) {
+              return doneCallBack();
+            }
           }
-          return setTimeout(doChunk, 1);
-        } else {
-          return doneCallBack();
         }
       };
       return doChunk();

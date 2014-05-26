@@ -117,4 +117,4 @@ describe "_.intersectionObjects", ->
                     ]
                     interArray = _.intersectionObjects @objArray,difArray
                     expect(interArray.length).toEqual(1)
-                    expect(interArray.length).toNotEqual(@objArray.length)
+                    expect(interArray.length).not.toEqual(@objArray.length)

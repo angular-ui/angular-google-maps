@@ -34,11 +34,11 @@ describe "PropMap tests", ->
       @propMap.put('baz', 'biz')
       values = @propMap.values()
       expected = ['bar', 'biz']
-      @expect(values[i]).toEqual(item) for item, i in expected
+      expect(values[i]).toEqual(item) for item, i in expected
 
     it "should return all put keys", ->
       @propMap.put('foo', 'bar')
       @propMap.put('baz', 'biz')
       keys = @propMap.keys()
       expected = ['foo', 'baz']
-      @expect(keys[i]).toEqual(item) for item, i in expected
+      expect(keys[i]).toEqual(item) for item, i in expected
