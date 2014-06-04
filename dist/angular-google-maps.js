@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.1-SNAPSHOT 2014-05-26
+/*! angular-google-maps 1.1.1-SNAPSHOT 2014-06-04
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -1710,7 +1710,7 @@ Nicholas McCready - https://twitter.com/nmccready
         PolylineChildModel.include(GmapUtil);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
-          var arraySyncer, pathPoints, self,
+          var arraySyncer, pathPoints,
             _this = this;
           this.scope = scope;
           this.attrs = attrs;
@@ -1718,7 +1718,6 @@ Nicholas McCready - https://twitter.com/nmccready
           this.defaults = defaults;
           this.model = model;
           this.buildOpts = __bind(this.buildOpts, this);
-          self = this;
           pathPoints = this.convertPathPoints(this.scope.path);
           this.polyline = new google.maps.Polyline(this.buildOpts(pathPoints));
           if (this.isTrue(this.attrs.fit)) {
@@ -1727,49 +1726,56 @@ Nicholas McCready - https://twitter.com/nmccready
           if (!scope["static"] && angular.isDefined(scope.editable)) {
             scope.$watch("editable", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setEditable(newValue);
+                return _this.polyline.setEditable(newValue);
               }
             });
           }
           if (angular.isDefined(scope.draggable)) {
             scope.$watch("draggable", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setDraggable(newValue);
+                return _this.polyline.setDraggable(newValue);
               }
             });
           }
           if (angular.isDefined(scope.visible)) {
             scope.$watch("visible", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setVisible(newValue);
+                return _this.polyline.setVisible(newValue);
               }
             });
           }
           if (angular.isDefined(scope.geodesic)) {
             scope.$watch("geodesic", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
               }
             });
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
             scope.$watch("stroke.weight", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
               }
             });
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
             scope.$watch("stroke.color", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
+              }
+            });
+          }
+          if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.opacity)) {
+            scope.$watch("stroke.opacity", function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
               }
             });
           }
           if (angular.isDefined(scope.icons)) {
             scope.$watch("icons", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
               }
             });
           }
