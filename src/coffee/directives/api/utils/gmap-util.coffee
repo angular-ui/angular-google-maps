@@ -101,9 +101,16 @@ angular.module("google-maps.directives.api.utils")
           #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
           array = path.coordinates[0]
         else if path.type is "MultiPolygon"
-          #Note: At this time, we only support the first polygon
+          #Note: At this time, we will display the polygon with the most vertices
+          trackMaxVertices = { max: 0, index: 0 }
+          _.forEach(path.coordinates, (polygon, index) -> 
+            if polygon[0].length > this.max
+              this.max = polygon[0].length
+              this.index = index
+          , trackMaxVertices);
+
           #TODO: Properly support MultiPolygons
-          polygon = path.coordinates[0]
+          polygon = path.coordinates[trackMaxVertices.index]
           #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
           array = polygon[0]
           
@@ -143,9 +150,16 @@ angular.module("google-maps.directives.api.utils")
           #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
           array = path.coordinates[0]
         else if path.type is "MultiPolygon"
-          #Note: At this time we only support the first polygon
+          #Note: At this time we will display the polygon with the most vertices
+          trackMaxVertices = { max: 0, index: 0 }
+          _.forEach(path.coordinates, (polygon, index) -> 
+            if polygon[0].length > this.max
+              this.max = polygon[0].length
+              this.index = index
+          , trackMaxVertices);
+          
           #TODO: Properly support MultiPolygons
-          array = path.coordinates[0][0]
+          array = path.coordinates[trackMaxVertices.index][0]
         else if path.type is "LineString"
           array = path.coordinates
           

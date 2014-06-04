@@ -519,7 +519,7 @@ Nicholas McCready - https://twitter.com/nmccready
         getCoords: getCoords,
         validateCoords: validateCoords,
         validatePath: function(path) {
-          var array, i, polygon;
+          var array, i, polygon, trackMaxVertices;
           i = 0;
           if (angular.isUndefined(path.type)) {
             if (!Array.isArray(path) || path.length < 2) {
@@ -542,7 +542,17 @@ Nicholas McCready - https://twitter.com/nmccready
               }
               array = path.coordinates[0];
             } else if (path.type === "MultiPolygon") {
-              polygon = path.coordinates[0];
+              trackMaxVertices = {
+                max: 0,
+                index: 0
+              };
+              _.forEach(path.coordinates, function(polygon, index) {
+                if (polygon[0].length > this.max) {
+                  this.max = polygon[0].length;
+                  return this.index = index;
+                }
+              }, trackMaxVertices);
+              polygon = path.coordinates[trackMaxVertices.index];
               array = polygon[0];
               if (array.length < 4) {
                 return false;
@@ -565,7 +575,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         },
         convertPathPoints: function(path) {
-          var array, i, latlng, result;
+          var array, i, latlng, result, trackMaxVertices;
           i = 0;
           result = new google.maps.MVCArray();
           if (angular.isUndefined(path.type)) {
@@ -584,7 +594,17 @@ Nicholas McCready - https://twitter.com/nmccready
             if (path.type === "Polygon") {
               array = path.coordinates[0];
             } else if (path.type === "MultiPolygon") {
-              array = path.coordinates[0][0];
+              trackMaxVertices = {
+                max: 0,
+                index: 0
+              };
+              _.forEach(path.coordinates, function(polygon, index) {
+                if (polygon[0].length > this.max) {
+                  this.max = polygon[0].length;
+                  return this.index = index;
+                }
+              }, trackMaxVertices);
+              array = path.coordinates[trackMaxVertices.index][0];
             } else if (path.type === "LineString") {
               array = path.coordinates;
             }
