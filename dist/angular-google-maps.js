@@ -3632,7 +3632,7 @@ Nicholas McCready - https://twitter.com/nmccready
           scope.$watch("center", (function(newValue, oldValue) {
             var coords;
             coords = _this.getCoords(newValue);
-            if (newValue === oldValue || (coords.lat() === _m.center.lat() && coords.lng() === _m.center.lng())) {
+            if (coords.lat() === _m.center.lat() && coords.lng() === _m.center.lng()) {
               return;
             }
             settingCenterFromScope = true;
@@ -3649,7 +3649,7 @@ Nicholas McCready - https://twitter.com/nmccready
             return settingCenterFromScope = false;
           }), true);
           scope.$watch("zoom", function(newValue, oldValue) {
-            if (newValue === oldValue || newValue === _m.zoom) {
+            if (newValue === _m.zoom) {
               return;
             }
             return _.defer(function() {

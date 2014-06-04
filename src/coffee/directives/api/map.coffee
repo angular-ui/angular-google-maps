@@ -167,7 +167,7 @@ angular.module("google-maps.directives.api")
                 # Update map when center coordinates change
                 scope.$watch "center", ((newValue, oldValue) =>
                     coords = @getCoords newValue
-                    return  if newValue is oldValue or (coords.lat() is _m.center.lat() and coords.lng() is _m.center.lng())
+                    return  if coords.lat() is _m.center.lat() and coords.lng() is _m.center.lng()
                     settingCenterFromScope = true
                     unless dragging
                         if !@validateCoords(newValue)
@@ -180,7 +180,7 @@ angular.module("google-maps.directives.api")
                     settingCenterFromScope = false
                 ), true
                 scope.$watch "zoom", (newValue, oldValue) ->
-                    return  if newValue is oldValue or newValue is _m.zoom
+                    return  if newValue is _m.zoom
                     _.defer ->
                         _m.setZoom newValue
 
