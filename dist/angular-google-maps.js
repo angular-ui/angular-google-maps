@@ -519,7 +519,7 @@ Nicholas McCready - https://twitter.com/nmccready
         getCoords: getCoords,
         validateCoords: validateCoords,
         validatePath: function(path) {
-          var array, i;
+          var array, i, polygon;
           i = 0;
           if (angular.isUndefined(path.type)) {
             if (!Array.isArray(path) || path.length < 2) {
@@ -541,6 +541,12 @@ Nicholas McCready - https://twitter.com/nmccready
                 return false;
               }
               array = path.coordinates[0];
+            } else if (path.type === "MultiPolygon") {
+              polygon = path.coordinates[0];
+              array = polygon[0];
+              if (array.length < 4) {
+                return false;
+              }
             } else if (path.type === "LineString") {
               if (path.coordinates.length < 2) {
                 return false;
@@ -577,6 +583,8 @@ Nicholas McCready - https://twitter.com/nmccready
             array;
             if (path.type === "Polygon") {
               array = path.coordinates[0];
+            } else if (path.type === "MultiPolygon") {
+              array = path.coordinates[0][0];
             } else if (path.type === "LineString") {
               array = path.coordinates;
             }

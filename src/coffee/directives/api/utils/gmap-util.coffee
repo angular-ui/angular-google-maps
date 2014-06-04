@@ -100,6 +100,14 @@ angular.module("google-maps.directives.api.utils")
           return false if path.coordinates[0].length < 4
           #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
           array = path.coordinates[0]
+        else if path.type is "MultiPolygon"
+          #Note: At this time, we only support the first polygon
+          #TODO: Properly support MultiPolygons
+          polygon = path.coordinates[0]
+          #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
+          array = polygon[0]
+          
+          return false if array.length < 4
         else if path.type is "LineString"
           return false if path.coordinates.length < 2
           array = path.coordinates
@@ -134,6 +142,10 @@ angular.module("google-maps.directives.api.utils")
         if path.type is "Polygon"
           #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
           array = path.coordinates[0]
+        else if path.type is "MultiPolygon"
+          #Note: At this time we only support the first polygon
+          #TODO: Properly support MultiPolygons
+          array = path.coordinates[0][0]
         else if path.type is "LineString"
           array = path.coordinates
           
