@@ -154,14 +154,12 @@ angular.module("google-maps")
                 for eventName of scope.events
                     polygon.addListener eventName, getEventHandler(eventName)  if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
                     
-            arraySyncer = arraySync(polygon.getPath(), scope, "path")
-            
             # To properly support the undocumented fit attribute,
-            # array-sync needs to be upgraded to have an optional pathChanged callback
+            # array-sync needs to be upgraded to support an optional pathChanged callback
             # function that is called with the path points whenever they have been changed.            
-            #arraySyncer = arraySync(polygon.getPath(), scope, "path", (pathPoints) ->
-            #  GmapUtil.extendMapBounds map, pathPoints  if scope.fit
-            #)
+            arraySyncer = arraySync(polygon.getPath(), scope, "path", (pathPoints) ->
+              GmapUtil.extendMapBounds map, pathPoints  if scope.fit
+            )
 
             # Remove polygon on scope $destroy
             scope.$on "$destroy", ->
