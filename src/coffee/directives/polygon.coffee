@@ -96,8 +96,15 @@ angular.module("google-maps")
                 opts.editable = false if opts.static
                 opts
             map = mapCtrl.getMap()
-            polygon = new google.maps.Polygon(buildOpts(GmapUtil.convertPathPoints(scope.path)))
+            pathPoints = GmapUtil.convertPathPoints(scope.path)
+            polygon = new google.maps.Polygon(buildOpts(pathPoints))
             GmapUtil.extendMapBounds map, pathPoints  if isTrue(attrs.fit)
+
+            if !scope.static and angular.isDefined(scope.path)
+                scope.$watch "path", (newValue, oldValue) ->
+                    pathPoints = GmapUtil.convertPathPoints(newValue)
+                    GmapUtil.extendMapBounds map, pathPoints  if isTrue(attrs.fit)
+            
             if !scope.static and angular.isDefined(scope.editable)
                 scope.$watch "editable", (newValue, oldValue) ->
                     polygon.setEditable newValue if newValue != oldValue
