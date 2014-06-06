@@ -427,14 +427,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           editable: false,
           draggable: false,
           geodesic: false,
-          visible: true,
-          icons: [{
-          	icon: { 
-          		path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW          		
-          	},
-          	offset: '25px',
-          	repeat: '50px'
-          }]
+          visible: true
         }
       ]
     },
