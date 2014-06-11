@@ -1,5 +1,7 @@
 angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) ->
-  (mapArray, scope, pathEval) ->
+  # pathChangedFn is an optional callback that is called whenever a change to the path
+  #  is detected.  The first parameter contains the internal array of Google LatLng objects.
+  (mapArray, scope, pathEval, pathChangedFn) ->
     isSetFromScope = false
     scopePath = scope.$eval(pathEval)
     if !scope.static
@@ -132,7 +134,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
       if angular.isUndefined(scopePath.type)
         watchListener = scope.$watchCollection pathEval, legacyWatcher
       else
-        watchListener = scope.$watch pathEval, geojsonWatcher
+        watchListener = scope.$watch pathEval, geojsonWatcher, true
 
     ->
       if mapArrayListener

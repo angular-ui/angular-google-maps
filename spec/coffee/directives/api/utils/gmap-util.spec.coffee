@@ -34,15 +34,19 @@ describe "utils.gmap-util", ->
     it "foo", ->
       expect(@subject.validatePath({type: "foo", coordinates: []})).toEqual(false)
 
+  describe "should validate coordinates correctly", ->
+    it "basic", ->
+      expect(@subject.validateCoords()).toEqual(false)
+      expect(@subject.validateCoords([1, 2])).toEqual(true)
+      expect(@subject.validateCoords([])).toEqual(false)
 
-  it "should validate coordinates correctly", ->
-    expect(@subject.validateCoords()).toEqual(false)
-    expect(@subject.validateCoords([1, 2])).toEqual(true)
-    expect(@subject.validateCoords([])).toEqual(false)
-
-    expect(@subject.validateCoords({type: "Point", coordinates: [1, 2]})).toEqual(true)
-    expect(@subject.validateCoords({type: "Point", coordinates: []})).toEqual(false)
-    expect(@subject.validateCoords({type: "foo", coordinates: []})).toEqual(false)
+    it "type:Point", ->
+      expect(@subject.validateCoords({type: "Point", coordinates: [1, 2]})).toEqual(true)
+      expect(@subject.validateCoords({type: "Point", coordinates: []})).toEqual(false)
+    it "type:foo, no lat lon", ->
+      expect(@subject.validateCoords({type: "foo", coordinates: []})).toEqual(false)
+    it "type:foo, w lat lon", ->
+      expect(@subject.validateCoords( type: "foo", latitude: 45, longitude:150 )).toEqual true
 
   it "should evaluate truthiness correctly", ->
     expect(@subject.isTrue(true)).toEqual(true)

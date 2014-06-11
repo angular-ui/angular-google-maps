@@ -1,6 +1,8 @@
 _ = require('lodash')
 log = require('util').log
 
+doCover = true #clean cheap way to disable coverage so you can debug the darn code.. thank you blanket
+
 requireConfig =
     paths:
       "lodash": "bower_components/lodash/dist/lodash.underscore"
@@ -25,24 +27,30 @@ spec =
 
 log("jasmineSettings: past spec")
 
-coverage = _.clone spec
-coverage.options =  _.extend coverage.options,
-  template: require "grunt-template-jasmine-istanbul"
-  templateOptions:
-    template: require "grunt-template-jasmine-requirejs"
+coverage = undefined
+
+if doCover
+  coverage = _.clone spec
+  coverage.options =  _.extend coverage.options,
+    template: require "grunt-template-jasmine-istanbul"
     templateOptions:
-      requireConfig:
-        requireConfig
-    coverage: "spec/coverage/coverage.json"
-    report: "spec/coverage"
-    thresholds:
-      lines: 25
-      statements: 25
-      branches: 5
-      functions: 25
+      template: require "grunt-template-jasmine-requirejs"
+      templateOptions:
+        requireConfig:
+          requireConfig
+      coverage: "spec/coverage/coverage.json"
+      report: "spec/coverage"
+      thresholds:
+        lines: 25
+        statements: 25
+        branches: 5
+        functions: 25
 
 log("jasmineSettings: past coverage")
 
-module.exports =
+toExport =
   spec: spec
-  coverage: coverage
+toExport["coverage"] = coverage if coverage
+
+log("jasmineSettings: past toExport")
+module.exports = toExport

@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.0 2014-05-31
+/*! angular-google-maps 1.1.1 2014-06-11
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -438,10 +438,9 @@ Nicholas McCready - https://twitter.com/nmccready
           if (coords.type === "Point" && _.isArray(coords.coordinates) && coords.coordinates.length === 2) {
             return true;
           }
-        } else {
-          if (coords && angular.isDefined((coords != null ? coords.latitude : void 0) && angular.isDefined(coords != null ? coords.longitude : void 0))) {
-            return true;
-          }
+        }
+        if (coords && angular.isDefined((coords != null ? coords.latitude : void 0) && angular.isDefined(coords != null ? coords.longitude : void 0))) {
+          return true;
         }
         return false;
       };
@@ -519,7 +518,7 @@ Nicholas McCready - https://twitter.com/nmccready
         getCoords: getCoords,
         validateCoords: validateCoords,
         validatePath: function(path) {
-          var array, i;
+          var array, i, polygon, trackMaxVertices;
           i = 0;
           if (angular.isUndefined(path.type)) {
             if (!Array.isArray(path) || path.length < 2) {
@@ -541,6 +540,22 @@ Nicholas McCready - https://twitter.com/nmccready
                 return false;
               }
               array = path.coordinates[0];
+            } else if (path.type === "MultiPolygon") {
+              trackMaxVertices = {
+                max: 0,
+                index: 0
+              };
+              _.forEach(path.coordinates, function(polygon, index) {
+                if (polygon[0].length > this.max) {
+                  this.max = polygon[0].length;
+                  return this.index = index;
+                }
+              }, trackMaxVertices);
+              polygon = path.coordinates[trackMaxVertices.index];
+              array = polygon[0];
+              if (array.length < 4) {
+                return false;
+              }
             } else if (path.type === "LineString") {
               if (path.coordinates.length < 2) {
                 return false;
@@ -559,7 +574,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         },
         convertPathPoints: function(path) {
-          var array, i, latlng, result;
+          var array, i, latlng, result, trackMaxVertices;
           i = 0;
           result = new google.maps.MVCArray();
           if (angular.isUndefined(path.type)) {
@@ -577,6 +592,18 @@ Nicholas McCready - https://twitter.com/nmccready
             array;
             if (path.type === "Polygon") {
               array = path.coordinates[0];
+            } else if (path.type === "MultiPolygon") {
+              trackMaxVertices = {
+                max: 0,
+                index: 0
+              };
+              _.forEach(path.coordinates, function(polygon, index) {
+                if (polygon[0].length > this.max) {
+                  this.max = polygon[0].length;
+                  return this.index = index;
+                }
+              }, trackMaxVertices);
+              array = path.coordinates[trackMaxVertices.index][0];
             } else if (path.type === "LineString") {
               array = path.coordinates;
             }
@@ -1120,7 +1147,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps").factory("array-sync", [
     "add-events", function(mapEvents) {
-      return function(mapArray, scope, pathEval) {
+      return function(mapArray, scope, pathEval, pathChangedFn) {
         var geojsonArray, geojsonHandlers, geojsonWatcher, isSetFromScope, legacyHandlers, legacyWatcher, mapArrayListener, scopePath, watchListener;
         isSetFromScope = false;
         scopePath = scope.$eval(pathEval);
@@ -1293,7 +1320,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if (angular.isUndefined(scopePath.type)) {
             watchListener = scope.$watchCollection(pathEval, legacyWatcher);
           } else {
-            watchListener = scope.$watch(pathEval, geojsonWatcher);
+            watchListener = scope.$watch(pathEval, geojsonWatcher, true);
           }
         }
         return function() {
@@ -1710,7 +1737,7 @@ Nicholas McCready - https://twitter.com/nmccready
         PolylineChildModel.include(GmapUtil);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
-          var arraySyncer, pathPoints, self,
+          var arraySyncer, pathPoints,
             _this = this;
           this.scope = scope;
           this.attrs = attrs;
@@ -1718,7 +1745,6 @@ Nicholas McCready - https://twitter.com/nmccready
           this.defaults = defaults;
           this.model = model;
           this.buildOpts = __bind(this.buildOpts, this);
-          self = this;
           pathPoints = this.convertPathPoints(this.scope.path);
           this.polyline = new google.maps.Polyline(this.buildOpts(pathPoints));
           if (this.isTrue(this.attrs.fit)) {
@@ -1727,49 +1753,56 @@ Nicholas McCready - https://twitter.com/nmccready
           if (!scope["static"] && angular.isDefined(scope.editable)) {
             scope.$watch("editable", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setEditable(newValue);
+                return _this.polyline.setEditable(newValue);
               }
             });
           }
           if (angular.isDefined(scope.draggable)) {
             scope.$watch("draggable", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setDraggable(newValue);
+                return _this.polyline.setDraggable(newValue);
               }
             });
           }
           if (angular.isDefined(scope.visible)) {
             scope.$watch("visible", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setVisible(newValue);
+                return _this.polyline.setVisible(newValue);
               }
             });
           }
           if (angular.isDefined(scope.geodesic)) {
             scope.$watch("geodesic", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
               }
             });
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
             scope.$watch("stroke.weight", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
               }
             });
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
             scope.$watch("stroke.color", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
+              }
+            });
+          }
+          if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.opacity)) {
+            scope.$watch("stroke.opacity", function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
               }
             });
           }
           if (angular.isDefined(scope.icons)) {
             scope.$watch("icons", function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                return this.polyline.setOptions(this.buildOpts(this.polyline.getPath()));
+                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
               }
             });
           }
@@ -3626,7 +3659,7 @@ Nicholas McCready - https://twitter.com/nmccready
           scope.$watch("center", (function(newValue, oldValue) {
             var coords;
             coords = _this.getCoords(newValue);
-            if (newValue === oldValue || (coords.lat() === _m.center.lat() && coords.lng() === _m.center.lng())) {
+            if (coords.lat() === _m.center.lat() && coords.lng() === _m.center.lng()) {
               return;
             }
             settingCenterFromScope = true;
@@ -3643,7 +3676,7 @@ Nicholas McCready - https://twitter.com/nmccready
             return settingCenterFromScope = false;
           }), true);
           scope.$watch("zoom", function(newValue, oldValue) {
-            if (newValue === oldValue || newValue === _m.zoom) {
+            if (newValue === _m.zoom) {
               return;
             }
             return _.defer(function() {
@@ -4284,7 +4317,8 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
           visible: "=",
           "static": "=",
           events: "=",
-          zIndex: "=zindex"
+          zIndex: "=zindex",
+          fit: "="
         },
         link: function(scope, element, attrs, mapCtrl) {
           if (angular.isUndefined(scope.path) || scope.path === null || !GmapUtil.validatePath(scope.path)) {
@@ -4292,7 +4326,7 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
             return;
           }
           return $timeout(function() {
-            var arraySyncer, buildOpts, eventName, getEventHandler, map, polygon;
+            var arraySyncer, buildOpts, eventName, getEventHandler, map, pathPoints, polygon;
             buildOpts = function(pathPoints) {
               var opts;
               opts = angular.extend({}, DEFAULTS, {
@@ -4311,6 +4345,7 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
                 geodesic: false,
                 visible: true,
                 "static": false,
+                fit: false,
                 zIndex: 0
               }, function(defaultValue, key) {
                 if (angular.isUndefined(scope[key]) || scope[key] === null) {
@@ -4325,8 +4360,9 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
               return opts;
             };
             map = mapCtrl.getMap();
-            polygon = new google.maps.Polygon(buildOpts(GmapUtil.convertPathPoints(scope.path)));
-            if (isTrue(attrs.fit)) {
+            pathPoints = GmapUtil.convertPathPoints(scope.path);
+            polygon = new google.maps.Polygon(buildOpts(pathPoints));
+            if (scope.fit) {
               GmapUtil.extendMapBounds(map, pathPoints);
             }
             if (!scope["static"] && angular.isDefined(scope.editable)) {
@@ -4409,7 +4445,11 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
                 }
               }
             }
-            arraySyncer = arraySync(polygon.getPath(), scope, "path");
+            arraySyncer = arraySync(polygon.getPath(), scope, "path", function(pathPoints) {
+              if (scope.fit) {
+                return GmapUtil.extendMapBounds(map, pathPoints);
+              }
+            });
             return scope.$on("$destroy", function() {
               polygon.setMap(null);
               if (arraySyncer) {

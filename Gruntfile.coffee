@@ -15,8 +15,8 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks "grunt-contrib-jasmine"
     grunt.loadNpmTasks "grunt-conventional-changelog"
 
-    # Project configuration.
-    grunt.initConfig
+    options =
+        # Project configuration.
         pkg: grunt.file.readJSON("package.json")
         clean:
             coffee: ["tmp/output_coffee.js", "tmp"]
@@ -127,10 +127,10 @@ module.exports = (grunt) ->
 
             twomaps:
                 path: "http://localhost:3100/example/two-maps.html"
-                
+
             geojson:
                 path: "http://localhost:3100/example/geojson.html"
-                
+
             hugedata:
                 path: "http://localhost:3100/example/hugedata.html"
 
@@ -158,7 +158,10 @@ module.exports = (grunt) ->
 
         jasmine:
             spec: jasmineSettings.spec
-            coverage: jasmineSettings.coverage
+
+    options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
+    grunt.initConfig options
+
 
     # Default task: build a release in dist/
     grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
