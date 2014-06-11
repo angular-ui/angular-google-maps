@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.1-SNAPSHOT 2014-06-04
+/*! angular-google-maps 1.1.1-SNAPSHOT 2014-06-11
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -438,10 +438,9 @@ Nicholas McCready - https://twitter.com/nmccready
           if (coords.type === "Point" && _.isArray(coords.coordinates) && coords.coordinates.length === 2) {
             return true;
           }
-        } else {
-          if (coords && angular.isDefined((coords != null ? coords.latitude : void 0) && angular.isDefined(coords != null ? coords.longitude : void 0))) {
-            return true;
-          }
+        }
+        if (coords && angular.isDefined((coords != null ? coords.latitude : void 0) && angular.isDefined(coords != null ? coords.longitude : void 0))) {
+          return true;
         }
         return false;
       };
@@ -1148,7 +1147,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps").factory("array-sync", [
     "add-events", function(mapEvents) {
-      return function(mapArray, scope, pathEval) {
+      return function(mapArray, scope, pathEval, pathChangedFn) {
         var geojsonArray, geojsonHandlers, geojsonWatcher, isSetFromScope, legacyHandlers, legacyWatcher, mapArrayListener, scopePath, watchListener;
         isSetFromScope = false;
         scopePath = scope.$eval(pathEval);
@@ -1321,7 +1320,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if (angular.isUndefined(scopePath.type)) {
             watchListener = scope.$watchCollection(pathEval, legacyWatcher);
           } else {
-            watchListener = scope.$watch(pathEval, geojsonWatcher);
+            watchListener = scope.$watch(pathEval, geojsonWatcher, true);
           }
         }
         return function() {
@@ -4318,7 +4317,8 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
           visible: "=",
           "static": "=",
           events: "=",
-          zIndex: "=zindex"
+          zIndex: "=zindex",
+          fit: "="
         },
         link: function(scope, element, attrs, mapCtrl) {
           if (angular.isUndefined(scope.path) || scope.path === null || !GmapUtil.validatePath(scope.path)) {
@@ -4326,7 +4326,7 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
             return;
           }
           return $timeout(function() {
-            var arraySyncer, buildOpts, eventName, getEventHandler, map, polygon;
+            var arraySyncer, buildOpts, eventName, getEventHandler, map, pathPoints, polygon;
             buildOpts = function(pathPoints) {
               var opts;
               opts = angular.extend({}, DEFAULTS, {
@@ -4345,6 +4345,7 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
                 geodesic: false,
                 visible: true,
                 "static": false,
+                fit: false,
                 zIndex: 0
               }, function(defaultValue, key) {
                 if (angular.isUndefined(scope[key]) || scope[key] === null) {
@@ -4359,8 +4360,9 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
               return opts;
             };
             map = mapCtrl.getMap();
-            polygon = new google.maps.Polygon(buildOpts(GmapUtil.convertPathPoints(scope.path)));
-            if (isTrue(attrs.fit)) {
+            pathPoints = GmapUtil.convertPathPoints(scope.path);
+            polygon = new google.maps.Polygon(buildOpts(pathPoints));
+            if (scope.fit) {
               GmapUtil.extendMapBounds(map, pathPoints);
             }
             if (!scope["static"] && angular.isDefined(scope.editable)) {
@@ -4443,7 +4445,11 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
                 }
               }
             }
-            arraySyncer = arraySync(polygon.getPath(), scope, "path");
+            arraySyncer = arraySync(polygon.getPath(), scope, "path", function(pathPoints) {
+              if (scope.fit) {
+                return GmapUtil.extendMapBounds(map, pathPoints);
+              }
+            });
             return scope.$on("$destroy", function() {
               polygon.setMap(null);
               if (arraySyncer) {

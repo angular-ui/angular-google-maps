@@ -9,15 +9,13 @@ angular.module("google-maps.directives.api.utils")
             new google.maps.LatLng(value.latitude, value.longitude)
 
     validateCoords = (coords) ->
-        return false if angular.isUndefined(coords)
-        
+        return false if angular.isUndefined coords
+
         if _.isArray(coords)
             return true if coords.length is 2
         else if coords? and coords?.type
             return true if coords.type is "Point" and _.isArray(coords.coordinates) and coords.coordinates.length is 2
-        else
-            return true if coords and angular.isDefined coords?.latitude and angular.isDefined coords?.longitude
-            
+        return true if coords and angular.isDefined coords?.latitude and angular.isDefined coords?.longitude
         false
 
     getLabelPositionPoint: (anchor) ->
@@ -32,7 +30,7 @@ angular.module("google-maps.directives.api.utils")
 
     createMarkerOptions: (coords, icon, defaults, map = undefined) ->
         defaults = {} unless defaults?
-        
+
         opts = angular.extend {}, defaults,
             position: if defaults.position? then defaults.position
             else getCoords(coords),
@@ -78,24 +76,24 @@ angular.module("google-maps.directives.api.utils")
     getCoords: getCoords
 
     validateCoords: validateCoords
-    
+
     validatePath: (path) ->
       i = 0
       if angular.isUndefined(path.type)
         if not Array.isArray(path) or path.length < 2
           return false
-        
+
         #Arrays of latitude/longitude objects or Google Maps LatLng objects are allowed
         while i < path.length
           if not ((angular.isDefined(path[i].latitude) and angular.isDefined(path[i].longitude)) or (typeof path[i].lat == "function" and typeof path[i].lng == "function"))
             return false
-            
+
           i++
-            
+
         true
       else
         return false if angular.isUndefined(path.coordinates)
-        
+
         if path.type is "Polygon"
           return false if path.coordinates[0].length < 4
           #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
@@ -103,7 +101,7 @@ angular.module("google-maps.directives.api.utils")
         else if path.type is "MultiPolygon"
           #Note: At this time, we will display the polygon with the most vertices
           trackMaxVertices = { max: 0, index: 0 }
-          _.forEach(path.coordinates, (polygon, index) -> 
+          _.forEach(path.coordinates, (polygon, index) ->
             if polygon[0].length > this.max
               this.max = polygon[0].length
               this.index = index
@@ -113,24 +111,24 @@ angular.module("google-maps.directives.api.utils")
           polygon = path.coordinates[trackMaxVertices.index]
           #Note: At this time, we only support the outer polygon and ignore the inner 'holes'
           array = polygon[0]
-          
+
           return false if array.length < 4
         else if path.type is "LineString"
           return false if path.coordinates.length < 2
           array = path.coordinates
         else
           return false
-          
+
         while i < array.length
           return false if array[i].length != 2
           i++
-            
+
         true
 
     convertPathPoints: (path) ->
       i = 0
       result = new google.maps.MVCArray()
-      
+
       if angular.isUndefined(path.type)
         # TODO: optimize to detect if array contains LatLng and directly pass array to MVCArray constructor
         # CONTRIBUTIONS WELCOMED
@@ -141,7 +139,7 @@ angular.module("google-maps.directives.api.utils")
             latlng = new google.maps.LatLng(path[i].latitude, path[i].longitude)
           else if typeof path[i].lat == "function" and typeof path[i].lng == "function" # LatLng object
             latlng = path[i]
-            
+
           result.push latlng
           i++
       else
@@ -152,21 +150,21 @@ angular.module("google-maps.directives.api.utils")
         else if path.type is "MultiPolygon"
           #Note: At this time we will display the polygon with the most vertices
           trackMaxVertices = { max: 0, index: 0 }
-          _.forEach(path.coordinates, (polygon, index) -> 
+          _.forEach(path.coordinates, (polygon, index) ->
             if polygon[0].length > this.max
               this.max = polygon[0].length
               this.index = index
           , trackMaxVertices);
-          
+
           #TODO: Properly support MultiPolygons
           array = path.coordinates[trackMaxVertices.index][0]
         else if path.type is "LineString"
           array = path.coordinates
-          
+
         while i < array.length
           result.push new google.maps.LatLng(array[i][1], array[i][0])
           i++
-      
+
       result
 
     extendMapBounds:(map, points) ->
