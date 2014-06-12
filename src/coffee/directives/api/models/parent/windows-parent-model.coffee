@@ -15,7 +15,7 @@ angular.module("google-maps.directives.api.models.parent")
                         @scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter',
                                            'isIconVisibleOnClick', 'closeClick']
                         #setting up local references to propety keys IE: @coordsKey
-                        _.each @scopePropNames, (name) ->
+                        _.each @scopePropNames, (name) =>
                             @[name + 'Key'] = undefined
                         @linked = new Linked(scope, element, attrs, ctrls)
                         @models = undefined
