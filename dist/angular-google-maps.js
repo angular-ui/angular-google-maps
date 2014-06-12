@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.1 2014-06-11
+/*! angular-google-maps 1.1.2 2014-06-12
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -2713,7 +2713,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.plurals = new PropMap();
           this.scopePropNames = ['path', 'stroke', 'clickable', 'draggable', 'editable', 'geodesic', 'icons', 'visible'];
           _.each(this.scopePropNames, function(name) {
-            return this[name + 'Key'] = void 0;
+            return _this[name + 'Key'] = void 0;
           });
           this.models = void 0;
           this.firstTime = true;
@@ -2949,7 +2949,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.windows = new PropMap();
           this.scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
           _.each(this.scopePropNames, function(name) {
-            return this[name + 'Key'] = void 0;
+            return _this[name + 'Key'] = void 0;
           });
           this.linked = new Linked(scope, element, attrs, ctrls);
           this.models = void 0;
