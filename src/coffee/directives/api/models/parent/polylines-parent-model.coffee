@@ -24,7 +24,7 @@ angular.module("google-maps.directives.api.models.parent")
                         ]
                         #setting up local references to propety keys IE: @pathKey
                         _.each @scopePropNames, (name) ->
-                            @[name + 'Key'] = undefined
+                            self[name + 'Key'] = undefined
                         @models = undefined
                         @firstTime = true
                         @$log.info @

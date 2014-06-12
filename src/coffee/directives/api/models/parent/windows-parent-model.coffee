@@ -16,7 +16,7 @@ angular.module("google-maps.directives.api.models.parent")
                                            'isIconVisibleOnClick', 'closeClick']
                         #setting up local references to propety keys IE: @coordsKey
                         _.each @scopePropNames, (name) ->
-                            @[name + 'Key'] = undefined
+                            self[name + 'Key'] = undefined
                         @linked = new Linked(scope, element, attrs, ctrls)
                         @models = undefined
                         @contentKeys = undefined #model keys to parse html angular content
