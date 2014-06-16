@@ -17,6 +17,7 @@ angular.module("google-maps.directives.api")
             icons: "="
             visible: "="
             static: "="
+            fit: "="
 
         DEFAULTS: {}
         $log: Logger
