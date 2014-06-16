@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.2 2014-06-12
+/*! angular-google-maps 1.1.3 2014-06-16
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -1745,10 +1745,10 @@ Nicholas McCready - https://twitter.com/nmccready
           this.defaults = defaults;
           this.model = model;
           this.buildOpts = __bind(this.buildOpts, this);
-          pathPoints = this.convertPathPoints(this.scope.path);
+          pathPoints = this.convertPathPoints(scope.path);
           this.polyline = new google.maps.Polyline(this.buildOpts(pathPoints));
-          if (this.isTrue(this.attrs.fit)) {
-            extendMapBounds(map, pathPoints);
+          if (scope.fit) {
+            GmapUtil.extendMapBounds(map, pathPoints);
           }
           if (!scope["static"] && angular.isDefined(scope.editable)) {
             scope.$watch("editable", function(newValue, oldValue) {
@@ -1806,7 +1806,11 @@ Nicholas McCready - https://twitter.com/nmccready
               }
             });
           }
-          arraySyncer = arraySync(this.polyline.getPath(), scope, "path");
+          arraySyncer = arraySync(this.polyline.getPath(), scope, "path", function(pathPoints) {
+            if (scope.fit) {
+              return GmapUtil.extendMapBounds(map, pathPoints);
+            }
+          });
           scope.$on("$destroy", function() {
             _this.polyline.setMap(null);
             _this.polyline = null;
@@ -1836,7 +1840,8 @@ Nicholas McCready - https://twitter.com/nmccready
             editable: false,
             geodesic: false,
             visible: true,
-            "static": false
+            "static": false,
+            fit: false
           }, function(defaultValue, key) {
             if (angular.isUndefined(_this.scope[key]) || _this.scope[key] === null) {
               return opts[key] = defaultValue;
@@ -3357,7 +3362,8 @@ Nicholas McCready - https://twitter.com/nmccready
           geodesic: "=",
           icons: "=",
           visible: "=",
-          "static": "="
+          "static": "=",
+          fit: "="
         };
 
         IPolyline.prototype.DEFAULTS = {};
