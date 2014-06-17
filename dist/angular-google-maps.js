@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.3 2014-06-16
+/*! angular-google-maps 1.1.3 2014-06-17
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -6458,7 +6458,6 @@ Cluster.prototype.addMarker = function (marker) {
         marker.setMap(null);
     }
 
-    this.updateIcon_();
     return true;
 };
 
@@ -7477,6 +7476,11 @@ MarkerClusterer.prototype.createClusters_ = function (iFirst) {
             cMarkerClusterer.createClusters_(iLast);
         }, 0);
     } else {
+        // update icon for all clusters
+        for( i = 0; i < this.clusters_.length ; i++) {
+            this.clusters_[i].updateIcon_();
+        }
+
         delete this.timerRefStatic;
 
         /**
