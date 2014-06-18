@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api.utils")
-.service "MarkerEventHelper", ["Logger", ($log) ->
+.service "EventsHelper", ["Logger", ($log) ->
       setEvents: (marker, scope, model) ->
         if angular.isDefined(scope.events) and scope.events? and angular.isObject(scope.events)
           _.compact _.map scope.events, (eventHandler, eventName) ->
