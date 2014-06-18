@@ -44,6 +44,7 @@ angular.module("google-maps")
         geodesic: "="
         icons: "=icons"
         visible: "="
+        events: "="
 
     link: (scope, element, attrs, mapCtrl) ->
 
@@ -116,6 +117,15 @@ angular.module("google-maps")
             scope.$watch 'geodesic', (newVal, oldVal) ->
                 if newVal isnt oldVal
                     circle.setOptions buildOpts()
+                    
+            if angular.isDefined(scope.events) and scope.events isnt null and angular.isObject(scope.events)
+                getEventHandler = (eventName) ->
+                    ->
+                        scope.events[eventName].apply scope, [circle, eventName, arguments]
+
+                #TODO: Need to keep track of listeners and call removeListener on each
+                for eventName of scope.events
+                    circle.addListener eventName, getEventHandler(eventName)  if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
 
             google.maps.event.addListener circle, 'radius_changed', ->
                 scope.radius = circle.getRadius()
