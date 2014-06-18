@@ -3,13 +3,13 @@
 	Thus there will be one html element per marker within the directive.
 ###
 angular.module("google-maps.directives.api.models.parent")
-.factory "MarkerParentModel", ["IMarkerParentModel", "GmapUtil", "MarkerEventHelper",
-    (IMarkerParentModel, GmapUtil, MarkerEventHelper) ->
+.factory "MarkerParentModel", ["IMarkerParentModel", "GmapUtil", "EventsHelper",
+    (IMarkerParentModel, GmapUtil, EventsHelper) ->
       # TODO: Eventually this directive should be using marker-child-model (for this to happen something will need to be done with parentScope)
       # currently this Parent directive is acting as a child where Marker is creating MarkerParentModel which directly creates a Marker (MarkerChild does the same)
       class MarkerParentModel extends IMarkerParentModel
         @include GmapUtil
-        @include MarkerEventHelper
+        @include EventsHelper
         constructor: (scope, element, attrs, mapCtrl, $timeout, @gMarkerManager, @doFit) ->
           super(scope, element, attrs, mapCtrl, $timeout)
           self = @

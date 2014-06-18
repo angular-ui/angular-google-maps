@@ -27,7 +27,7 @@ Julian Popescu - https://github.com/jpopesculian
 Rick Huizinga - https://plus.google.com/+RickHuizinga
 ###
 angular.module("google-maps")
-.directive "circle", ["$log", "$timeout", "GmapUtil", ($log, $timeout, GmapUtil) ->
+.directive "circle", ["$log", "$timeout", "GmapUtil", "EventsHelper", ($log, $timeout, GmapUtil, EventsHelper) ->
     "use strict"
     DEFAULTS = {}
     restrict: "ECA"
@@ -118,14 +118,7 @@ angular.module("google-maps")
                 if newVal isnt oldVal
                     circle.setOptions buildOpts()
                     
-            if angular.isDefined(scope.events) and scope.events isnt null and angular.isObject(scope.events)
-                getEventHandler = (eventName) ->
-                    ->
-                        scope.events[eventName].apply scope, [circle, eventName, arguments]
-
-                #TODO: Need to keep track of listeners and call removeListener on each
-                for eventName of scope.events
-                    circle.addListener eventName, getEventHandler(eventName)  if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
+            EventsHelper.setEvents circle, scope, scope
 
             google.maps.event.addListener circle, 'radius_changed', ->
                 scope.radius = circle.getRadius()
