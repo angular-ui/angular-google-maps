@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.3 2014-06-16
+/*! angular-google-maps 1.1.3 2014-06-18
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -4521,11 +4521,12 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
           editable: "=",
           geodesic: "=",
           icons: "=icons",
-          visible: "="
+          visible: "=",
+          events: "="
         },
         link: function(scope, element, attrs, mapCtrl) {
           return $timeout(function() {
-            var buildOpts, circle, map;
+            var buildOpts, circle, eventName, getEventHandler, map;
             buildOpts = function() {
               var opts;
               if (!GmapUtil.validateCoords(scope.center)) {
@@ -4604,6 +4605,18 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
                 return circle.setOptions(buildOpts());
               }
             });
+            if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
+              getEventHandler = function(eventName) {
+                return function() {
+                  return scope.events[eventName].apply(scope, [circle, eventName, arguments]);
+                };
+              };
+              for (eventName in scope.events) {
+                if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+                  circle.addListener(eventName, getEventHandler(eventName));
+                }
+              }
+            }
             google.maps.event.addListener(circle, 'radius_changed', function() {
               scope.radius = circle.getRadius();
               return $timeout(function() {
