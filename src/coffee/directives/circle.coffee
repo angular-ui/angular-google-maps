@@ -27,7 +27,7 @@ Julian Popescu - https://github.com/jpopesculian
 Rick Huizinga - https://plus.google.com/+RickHuizinga
 ###
 angular.module("google-maps")
-.directive "circle", ["$log", "$timeout", "GmapUtil", ($log, $timeout, GmapUtil) ->
+.directive "circle", ["$log", "$timeout", "GmapUtil", "EventsHelper", ($log, $timeout, GmapUtil, EventsHelper) ->
     "use strict"
     DEFAULTS = {}
     restrict: "ECA"
@@ -44,6 +44,7 @@ angular.module("google-maps")
         geodesic: "="
         icons: "=icons"
         visible: "="
+        events: "="
 
     link: (scope, element, attrs, mapCtrl) ->
 
@@ -116,6 +117,8 @@ angular.module("google-maps")
             scope.$watch 'geodesic', (newVal, oldVal) ->
                 if newVal isnt oldVal
                     circle.setOptions buildOpts()
+                    
+            EventsHelper.setEvents circle, scope, scope
 
             google.maps.event.addListener circle, 'radius_changed', ->
                 scope.radius = circle.getRadius()

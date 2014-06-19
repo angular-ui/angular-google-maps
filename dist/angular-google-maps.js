@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.3 2014-06-16
+/*! angular-google-maps 1.1.4 2014-06-19
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -370,6 +370,29 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
+  angular.module("google-maps.directives.api.utils").service("EventsHelper", [
+    "Logger", function($log) {
+      return {
+        setEvents: function(marker, scope, model) {
+          if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
+            return _.compact(_.map(scope.events, function(eventHandler, eventName) {
+              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+                return google.maps.event.addListener(marker, eventName, function() {
+                  return eventHandler.apply(scope, [marker, eventName, model, arguments]);
+                });
+              } else {
+                return $log.info("MarkerEventHelper: invalid event listener " + eventName);
+              }
+            }));
+          }
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -687,29 +710,6 @@ Nicholas McCready - https://twitter.com/nmccready
             } else {
               return console.warn(msg);
             }
-          }
-        }
-      };
-    }
-  ]);
-
-}).call(this);
-
-(function() {
-  angular.module("google-maps.directives.api.utils").service("MarkerEventHelper", [
-    "Logger", function($log) {
-      return {
-        setEvents: function(marker, scope, model) {
-          if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
-            return _.compact(_.map(scope.events, function(eventHandler, eventName) {
-              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-                return google.maps.event.addListener(marker, eventName, function() {
-                  return eventHandler.apply(scope, [marker, eventName, model, arguments]);
-                });
-              } else {
-                return $log.info("MarkerEventHelper: invalid event listener " + eventName);
-              }
-            }));
           }
         }
       };
@@ -1493,14 +1493,14 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child").factory("MarkerChildModel", [
-    "ModelKey", "GmapUtil", "Logger", "$injector", "MarkerEventHelper", function(ModelKey, GmapUtil, Logger, $injector, MarkerEventHelper) {
+    "ModelKey", "GmapUtil", "Logger", "$injector", "EventsHelper", function(ModelKey, GmapUtil, Logger, $injector, EventsHelper) {
       var MarkerChildModel;
       MarkerChildModel = (function(_super) {
         __extends(MarkerChildModel, _super);
 
         MarkerChildModel.include(GmapUtil);
 
-        MarkerChildModel.include(MarkerEventHelper);
+        MarkerChildModel.include(EventsHelper);
 
         function MarkerChildModel(model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager, idKey) {
           var self,
@@ -2359,14 +2359,14 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.parent").factory("MarkerParentModel", [
-    "IMarkerParentModel", "GmapUtil", "MarkerEventHelper", function(IMarkerParentModel, GmapUtil, MarkerEventHelper) {
+    "IMarkerParentModel", "GmapUtil", "EventsHelper", function(IMarkerParentModel, GmapUtil, EventsHelper) {
       var MarkerParentModel;
       MarkerParentModel = (function(_super) {
         __extends(MarkerParentModel, _super);
 
         MarkerParentModel.include(GmapUtil);
 
-        MarkerParentModel.include(MarkerEventHelper);
+        MarkerParentModel.include(EventsHelper);
 
         function MarkerParentModel(scope, element, attrs, mapCtrl, $timeout, gMarkerManager, doFit) {
           var self;
@@ -4503,7 +4503,7 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
 
 (function() {
   angular.module("google-maps").directive("circle", [
-    "$log", "$timeout", "GmapUtil", function($log, $timeout, GmapUtil) {
+    "$log", "$timeout", "GmapUtil", "EventsHelper", function($log, $timeout, GmapUtil, EventsHelper) {
       "use strict";
       var DEFAULTS;
       DEFAULTS = {};
@@ -4521,7 +4521,8 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
           editable: "=",
           geodesic: "=",
           icons: "=icons",
-          visible: "="
+          visible: "=",
+          events: "="
         },
         link: function(scope, element, attrs, mapCtrl) {
           return $timeout(function() {
@@ -4604,6 +4605,7 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
                 return circle.setOptions(buildOpts());
               }
             });
+            EventsHelper.setEvents(circle, scope, scope);
             google.maps.event.addListener(circle, 'radius_changed', function() {
               scope.radius = circle.getRadius();
               return $timeout(function() {
