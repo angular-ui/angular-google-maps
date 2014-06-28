@@ -22,7 +22,8 @@ angular.module('appMaps', ['google-maps'])
             };
             ret.onClick = function() {
                 console.log("Clicked!");
-                ret.show = !ret.show;
+                ret.show = true;
+                $scope.$apply();
             };
             ret[idKey] = i;
             return ret;

@@ -1043,8 +1043,11 @@ Nicholas McCready - https://twitter.com/nmccready
           this.$log.info(this);
         }
 
-        MarkerManager.prototype.add = function(gMarker, optDraw) {
-          this.handleOptDraw(gMarker, optDraw, true);
+        MarkerManager.prototype.add = function(gMarker, optDraw, redraw) {
+          if (redraw == null) {
+            redraw = true;
+          }
+          this.handleOptDraw(gMarker, optDraw, redraw);
           return this.gMarkers.push(gMarker);
         };
 
@@ -1095,13 +1098,15 @@ Nicholas McCready - https://twitter.com/nmccready
           this.gMarkers.forEach(function(gMarker) {
             if (!gMarker.isDrawn) {
               if (gMarker.doAdd) {
-                return gMarker.setMap(_this.gMap);
+                gMarker.setMap(_this.gMap);
+                return gMarker.isDrawn = true;
               } else {
                 return deletes.push(gMarker);
               }
             }
           });
           return deletes.forEach(function(gMarker) {
+            gMarker.isDrawn = false;
             return _this.remove(gMarker, true);
           });
         };
@@ -2606,8 +2611,10 @@ Nicholas McCready - https://twitter.com/nmccready
                 return _async.each(payload.adds, function(modelToAdd) {
                   return _this.newChildMarker(modelToAdd, scope);
                 }, function() {
-                  _this.gMarkerManager.draw();
-                  return scope.markerModels = _this.scope.markerModels;
+                  if (payload.adds.length > 0 || payload.removals.length > 0) {
+                    _this.gMarkerManager.draw();
+                    return scope.markerModels = _this.scope.markerModels;
+                  }
                 });
               });
             });

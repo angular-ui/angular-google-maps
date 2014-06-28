@@ -90,15 +90,18 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
     alert("You have Map Instance of" + $scope.map.control.getGMap().toString());
   };
 
-  var oldMarker = null;
-  var clickCtr = 0;
+//  var oldMarker = null;
   $scope.onMarkerClicked = function (marker) {
-    if(oldMarker){
-      oldMarker.options = {animation:0};
-    }
+//    if(oldMarker){
+////      oldMarker.options = {animation:google.maps.Animation.DROP}; // or 2
+//      oldMarker.options = {animation:0}; //or null
+//    }
     marker.showWindow = false;
-    marker.options = {animation:1};
-    marker.clickedCtr = ++clickCtr;
+    if(marker.options)
+      marker.options = null;
+    else
+      marker.options = {animation:google.maps.Animation.BOUNCE}; //or 1
+//    oldMarker =  marker;
     $scope.$apply();
   };
 
