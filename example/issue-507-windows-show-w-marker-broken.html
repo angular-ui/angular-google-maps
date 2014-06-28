@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org/" ng-app="appMaps">
+
+<head>
+    <meta charset="utf-8" />
+    <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
+    <script src="//maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.14"></script>
+    <script data-require="angular.js@1.2.x" src="https://code.angularjs.org/1.2.16/angular.js" data-semver="1.2.16"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+    <script type='text/javascript' src='assets/scripts/controllers/issue-507-windows-show-w-marker-broken.js'></script><!--script-->
+    <!--css-->
+    <style type="text/css">
+        html, body, #map_canvas {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+        }
+
+        #map_canvas {
+            position: relative;
+        }
+
+        .angular-google-map-container {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map_canvas" ng-controller="mainCtrl">
+    <google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+        <markers models="randomMarkers" coords="'self'" icon="'icon'" click="'onClick'">
+            <windows show="'show'">
+                <div ng-non-bindable>{{title}}</div>
+            </windows>
+        </markers>
+    </google-map>
+</div>
+<!--example-->
+</body>
+
+</html>
