@@ -28,7 +28,7 @@ angular.module("google-maps.directives.api.models.parent")
 
                         @$timeout(=>
                             @watchOurScope(scope)
-                            @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else true
+                            @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
                             scope.$watch 'doRebuildAll', (newValue, oldValue) =>
                                 if (newValue != oldValue)
                                     @doRebuildAll = newValue

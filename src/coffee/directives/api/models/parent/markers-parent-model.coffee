@@ -11,7 +11,7 @@ angular.module("google-maps.directives.api.models.parent")
                 @$timeout = $timeout
                 @$log.info @
                 #assume do rebuild all is false and were lookging for a modelKey prop of id
-                @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else true
+                @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
                 @setIdKey scope
                 @scope.$watch 'doRebuildAll', (newValue, oldValue) =>
                     if (newValue != oldValue)
