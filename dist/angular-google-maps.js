@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.1-SNAPSHOT 2014-06-18
+/*! angular-google-maps 1.1.5-SNAPSHOT 2014-06-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -2492,7 +2492,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.scope.markerModels = new PropMap();
           this.$timeout = $timeout;
           this.$log.info(this);
-          this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : true;
+          this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : false;
           this.setIdKey(scope);
           this.scope.$watch('doRebuildAll', function(newValue, oldValue) {
             if (newValue !== oldValue) {
@@ -2965,7 +2965,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.parentScope = void 0;
           this.$timeout(function() {
             _this.watchOurScope(scope);
-            _this.doRebuildAll = _this.scope.doRebuildAll != null ? _this.scope.doRebuildAll : true;
+            _this.doRebuildAll = _this.scope.doRebuildAll != null ? _this.scope.doRebuildAll : false;
             scope.$watch('doRebuildAll', function(newValue, oldValue) {
               if (newValue !== oldValue) {
                 return _this.doRebuildAll = newValue;
