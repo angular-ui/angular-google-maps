@@ -108,9 +108,10 @@ angular.module("google-maps.directives.api.models.parent")
                             _async.each payload.adds, (modelToAdd) =>
                                 @newChildMarker(modelToAdd, scope)
                             , () =>
-                                #finally redraw
-                                @gMarkerManager.draw()
-                                scope.markerModels = @scope.markerModels #for other directives like windows
+                                #finally redraw if something has changed
+                                if(payload.adds.length > 0 or payload.removals.length > 0)
+                                  @gMarkerManager.draw()
+                                  scope.markerModels = @scope.markerModels #for other directives like windows
                 else
                     @reBuildMarkers(scope)
 

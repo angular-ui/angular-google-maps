@@ -59,11 +59,14 @@
         <!--WINDOWS without markers-->
         <!--NOTICE THEY MUST BE PRIOR TO ANY MARKERS OR THEY WILL ATTACH THEMSELVES walking up the dom tree-->
         <window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false" options="map.infoWindow.options"  ng-cloak>
-			<div ng-controller='InfoController'>
-			    I should not be attached to a
-            	marker.
-                <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
-	            <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
+            <div>
+                <p>This is an info window at {{ map.infoWindow.coords.latitude | number:4 }}, {{ map.infoWindow.coords.longitude | number:4 }}!</p>
+                <div ng-controller='InfoController'>
+                    I should not be attached to a
+                    marker.
+
+                    <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
+                </div>
             </div>
         </window>
 

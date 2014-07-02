@@ -10,8 +10,8 @@ angular.module("google-maps.directives.api.managers")
         @$log = Logger
         @$log.info(@)
 
-      add: (gMarker, optDraw)=>
-        @handleOptDraw(gMarker, optDraw, true)
+      add: (gMarker, optDraw, redraw=true)=>
+        @handleOptDraw(gMarker, optDraw, redraw)
         @gMarkers.push(gMarker)
 
       addMany: (gMarkers)=>
@@ -44,10 +44,12 @@ angular.module("google-maps.directives.api.managers")
           unless gMarker.isDrawn
             if gMarker.doAdd
               gMarker.setMap(@gMap)
+              gMarker.isDrawn = true
             else
               deletes.push(gMarker)
 
         deletes.forEach (gMarker) =>
+          gMarker.isDrawn = false
           @remove(gMarker, true)
 
       clear: =>
