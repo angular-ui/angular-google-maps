@@ -1,0 +1,6 @@
+<div id="map_canvas" ng-controller="mainCtrl">
+    <google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+        <polygon static="true" ng-repeat="p in polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
+                 geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>
+    </google-map>
+</div>

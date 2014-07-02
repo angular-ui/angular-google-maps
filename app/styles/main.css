@@ -255,3 +255,8 @@ ul.separated li:not(:first-child) {
 .bs-callout-info h4 {
     color: #3A87AD;
 }
+
+.plnkr-demo iframe {
+    width: 100%;
+    height: 350px;
+}

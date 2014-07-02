@@ -1,0 +1,9 @@
+<div id="map_canvas" ng-controller="mainCtrl">
+    <google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+        <markers models="randomMarkers" coords="'self'" icon="'icon'" click="'onClick'">
+            <windows show="show">
+                <div ng-non-bindable>{{title}}</div>
+            </windows>
+        </markers>
+    </google-map>
+</div>

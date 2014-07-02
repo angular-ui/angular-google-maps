@@ -15,6 +15,8 @@ var mountFolder = function (connect, dir) {
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
+  
+  grunt.loadNpmTasks("grunt-git-log-json");
 
   // configurable paths
   var yeomanConfig = {
@@ -249,7 +251,8 @@ module.exports = function (grunt) {
             '.htaccess',
             'bower_components/**/*',
             'images/{,*/}*.{gif,webp}',
-            'styles/fonts/*'
+            'styles/fonts/*',
+            'views/examples/{,*/}*.*'
           ]
         }, {
           expand: true,
@@ -318,6 +321,12 @@ module.exports = function (grunt) {
           ]
         }
       }
+    },
+    git_log_json: {
+        options: {
+           shortHash: true,
+           dest: '<%= yeoman.app %>/changelog.json'
+        }
     }
   });
 
@@ -350,13 +359,15 @@ module.exports = function (grunt) {
     'concurrent:dist',
     'autoprefixer',
     'concat',
+    'git_log_json',
     'copy:dist',
     'cdnify',
     'ngmin',
     'cssmin',
     'uglify',
     'rev',
-    'usemin'
+    'usemin',
+    'git_log_json'
   ]);
 
   grunt.registerTask('default', [
