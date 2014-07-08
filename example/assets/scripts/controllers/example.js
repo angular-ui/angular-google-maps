@@ -1,5 +1,9 @@
 (function () {
   var module = angular.module("angular-google-maps-example", ["google-maps"]);
+
+  module.run(function ($templateCache) {
+    $templateCache.put('control.tpl.html', '<button class="btn btn-sm btn-info">I\'m a custom control</button>');
+  });
 }());
 
 var rndAddToLatLon = function () {
@@ -524,6 +528,10 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
   $scope.clackMarker = function ($markerModel) {
     $log.log("from clackMarker");
     $log.log($markerModel);
+  };
+
+  $scope.controlClick = function () {
+    alert('Custom control clicked!');
   };
 
   $timeout(function () {

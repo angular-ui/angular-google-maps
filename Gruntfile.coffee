@@ -55,7 +55,8 @@ module.exports = (grunt) ->
                         "src/coffee/directives/rectangle.coffee"
                         "src/coffee/directives/window.coffee"
                         "src/coffee/directives/windows.coffee"
-                        "src/coffee/directives/layer.coffee"]
+                        "src/coffee/directives/layer.coffee"
+                        "src/coffee/directives/control.coffee"]
 
                 #specs
                     "tmp/spec/js/bootstrap.js": "spec/coffee/bootstrap.coffee"
