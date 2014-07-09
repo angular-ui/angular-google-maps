@@ -3241,12 +3241,13 @@ Nicholas McCready - https://twitter.com/nmccready
         }
 
         Control.prototype.link = function(scope, element, attrs, ctrl) {
-          var position,
+          var index, position,
             _this = this;
           if (angular.isUndefined(scope.template)) {
             this.$log.error('mapControl: could not find a valid template property');
             return;
           }
+          index = angular.isDefined(scope.index) && !isNaN(parseInt(scope.index)) ? parseInt(scope.index) : void 0;
           position = angular.isDefined(scope.position) ? scope.position.toUpperCase().replace(/-/g, '_') : 'TOP_CENTER';
           if (!google.maps.ControlPosition[position]) {
             this.$log.error('mapControl: invalid position property');
@@ -3262,6 +3263,9 @@ Nicholas McCready - https://twitter.com/nmccready
               var templateCtrl, templateScope;
               templateScope = scope.$new();
               controlDiv.append(template);
+              if (index) {
+                controlDiv[0].index = index;
+              }
               if (angular.isDefined(scope.controller)) {
                 templateCtrl = $controller(scope.controller, {
                   $scope: templateScope
@@ -3292,6 +3296,7 @@ Nicholas McCready - https://twitter.com/nmccready
 		- template
 		- position
 		- controller
+		- index
 */
 
 
@@ -3316,7 +3321,8 @@ Nicholas McCready - https://twitter.com/nmccready
           this.scope = {
             template: '@template',
             position: '@position',
-            controller: '@controller'
+            controller: '@controller',
+            index: '@index'
           };
           this.$log = Logger;
           this.$timeout = $timeout;
@@ -5301,6 +5307,7 @@ This directive creates a new scope.
 {attribute template required}  	string url of the template to be used for the control
 {attribute position optional}  	string position of the control of the form top-left or TOP_LEFT defaults to TOP_CENTER
 {attribute controller optional}	string controller to be applied to the template
+{attribute index optional}		number index for controlling the order of similarly positioned mapControl elements
 */
 
 
