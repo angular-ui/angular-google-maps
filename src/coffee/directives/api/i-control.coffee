@@ -4,7 +4,7 @@
 	- attributes
 		- template
 		- position
-		- click
+		- controller
 ###
 angular.module("google-maps.directives.api")
 .factory "IControl", [ "BaseObject", "Logger", (BaseObject, Logger) ->
@@ -17,7 +17,7 @@ angular.module("google-maps.directives.api")
 			@scope =
 				template: '@template'
 				position: '@position'
-				click: '&click'
+				controller: '@controller'
 			@$log = Logger
 			@$timeout = $timeout
 

@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api")
-.factory "Control", ["IControl", "$http", "$templateCache", (IControl, $http, $templateCache) ->
+.factory "Control", ["IControl", "$http", "$templateCache", "$compile", "$controller", (IControl, $http, $templateCache, $compile, $controller) ->
 	class Control extends IControl
 		constructor: ($timeout) ->
 			super($timeout)
@@ -19,16 +19,19 @@ angular.module("google-maps.directives.api")
 			# Wrap control initialization inside a $timeout() call to make sure the map is created already
 			@$timeout =>
 				map = ctrl.getMap()
-				controlDiv = document.createElement 'div'
+				controlDiv = angular.element '<div></div>'
 				$http.get(scope.template, { cache: $templateCache })
 					.success (template) =>
-						controlDiv.innerHTML = template
+						templateScope = scope.$new()
+						controlDiv.append template
+						# if a controller is defined on the directive then add it to the template
+						if angular.isDefined scope.controller
+							templateCtrl = $controller scope.controller, {$scope: templateScope}
+							controlDiv.children().data '$ngControllerController', templateCtrl
+						$compile(controlDiv.contents())(templateScope)
 					.error (error) =>
 						@$log.error 'mapControl: template could not be found'
 					.then =>
-						map.controls[google.maps.ControlPosition[position]].push controlDiv
-						if angular.isDefined scope.click
-							google.maps.event.addDomListener controlDiv, 'click', =>
-								scope.$apply scope.click
+						map.controls[google.maps.ControlPosition[position]].push controlDiv[0]
 
 ]

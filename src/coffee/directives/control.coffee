@@ -37,7 +37,7 @@ This directive creates a new scope.
 
 {attribute template required}  	string url of the template to be used for the control
 {attribute position optional}  	string position of the control of the form top-left or TOP_LEFT defaults to TOP_CENTER
-{attribute click optional}		function scope function to be called on control click
+{attribute controller optional}	string controller to be applied to the template
 ###
 angular.module("google-maps")
 .directive "mapControl", ["$timeout", "Control", ($timeout, Control) ->

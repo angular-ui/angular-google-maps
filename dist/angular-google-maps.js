@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.7-SNAPSHOT 2014-07-08
+/*! angular-google-maps 1.1.7-SNAPSHOT 2014-07-09
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -3229,7 +3229,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Control", [
-    "IControl", "$http", "$templateCache", function(IControl, $http, $templateCache) {
+    "IControl", "$http", "$templateCache", "$compile", "$controller", function(IControl, $http, $templateCache, $compile, $controller) {
       var Control;
       return Control = (function(_super) {
         __extends(Control, _super);
@@ -3255,20 +3255,24 @@ Nicholas McCready - https://twitter.com/nmccready
           return this.$timeout(function() {
             var controlDiv, map;
             map = ctrl.getMap();
-            controlDiv = document.createElement('div');
+            controlDiv = angular.element('<div></div>');
             return $http.get(scope.template, {
               cache: $templateCache
             }).success(function(template) {
-              return controlDiv.innerHTML = template;
+              var templateCtrl, templateScope;
+              templateScope = scope.$new();
+              controlDiv.append(template);
+              if (angular.isDefined(scope.controller)) {
+                templateCtrl = $controller(scope.controller, {
+                  $scope: templateScope
+                });
+                controlDiv.children().data('$ngControllerController', templateCtrl);
+              }
+              return $compile(controlDiv.contents())(templateScope);
             }).error(function(error) {
               return _this.$log.error('mapControl: template could not be found');
             }).then(function() {
-              map.controls[google.maps.ControlPosition[position]].push(controlDiv);
-              if (angular.isDefined(scope.click)) {
-                return google.maps.event.addDomListener(controlDiv, 'click', function() {
-                  return scope.$apply(scope.click);
-                });
-              }
+              return map.controls[google.maps.ControlPosition[position]].push(controlDiv[0]);
             });
           });
         };
@@ -3287,7 +3291,7 @@ Nicholas McCready - https://twitter.com/nmccready
 	- attributes
 		- template
 		- position
-		- click
+		- controller
 */
 
 
@@ -3312,7 +3316,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.scope = {
             template: '@template',
             position: '@position',
-            click: '&click'
+            controller: '@controller'
           };
           this.$log = Logger;
           this.$timeout = $timeout;
@@ -5296,7 +5300,7 @@ This directive creates a new scope.
 
 {attribute template required}  	string url of the template to be used for the control
 {attribute position optional}  	string position of the control of the form top-left or TOP_LEFT defaults to TOP_CENTER
-{attribute click optional}		function scope function to be called on control click
+{attribute controller optional}	string controller to be applied to the template
 */
 
 
