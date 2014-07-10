@@ -30,7 +30,7 @@ angular.module("google-maps")
 .directive "circle", ["$log", "$timeout", "GmapUtil", "EventsHelper", ($log, $timeout, GmapUtil, EventsHelper) ->
     "use strict"
     DEFAULTS = {}
-    restrict: "ECA"
+    restrict: "EA"
     replace: true
     require: "^googleMap"
     scope:

@@ -7,7 +7,7 @@ angular.module("google-maps.directives.api")
         @include ChildEvents
         constructor: (@$timeout, @$compile, @$http, @$templateCache) ->
             self = @
-            @restrict = 'ECMA'
+            @restrict = 'EMA'
             @template = undefined
             @transclude = true
             @priority = -100

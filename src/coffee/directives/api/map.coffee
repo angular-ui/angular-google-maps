@@ -10,11 +10,11 @@ angular.module("google-maps.directives.api")
             @include GmapUtil
             constructor:()->
                 self = @
-            restrict: "ECMA"
+            restrict: "EMA"
             transclude: true
             replace: false
             #priority: 100,
-            template: "<div class=\"angular-google-map\"><div class=\"angular-google-map-container\"></div><div ng-transclude style=\"display: none\"></div></div>"
+            template: '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>'
 
             scope:
                 center: "=center" # required

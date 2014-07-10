@@ -11,7 +11,7 @@ angular.module("google-maps.directives.api")
     class ILabel extends BaseObject
         constructor: ($timeout) ->
             self = @
-            @restrict = 'ECMA'
+            @restrict = 'EMA'
             @replace = true
             @template = undefined
             @require = undefined

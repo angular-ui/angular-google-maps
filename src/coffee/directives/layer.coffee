@@ -44,7 +44,7 @@ angular.module("google-maps")
         class Layer
             constructor: (@$timeout) ->
                 @$log = Logger
-                @restrict = "ECMA"
+                @restrict = "EMA"
                 @require = "^googleMap"
                 @priority = -1
                 @transclude = true

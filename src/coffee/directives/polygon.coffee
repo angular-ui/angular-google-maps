@@ -43,7 +43,7 @@ angular.module("google-maps")
         angular.isDefined(val) and val isnt null and val is true or val is "1" or val is "y" or val is "true"
     "use strict"
     DEFAULTS = {}
-    restrict: "ECA"
+    restrict: "EA"
     replace: true
     require: "^googleMap"
     scope:

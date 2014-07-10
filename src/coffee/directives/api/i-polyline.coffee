@@ -4,7 +4,7 @@ angular.module("google-maps.directives.api")
         @include GmapUtil
         constructor: ()->
             self = @
-        restrict: "ECA"
+        restrict: "EA"
         replace: true
         require: "^googleMap"
         scope:

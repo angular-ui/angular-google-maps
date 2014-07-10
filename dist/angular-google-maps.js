@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.7-SNAPSHOT 2014-07-10
+/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -790,7 +790,7 @@ Nicholas McCready - https://twitter.com/nmccready
                 child = childObjects[m[idKey]];
                 if (!comparison(m, child.model)) {
                   adds.push(m);
-                  return removals.push(child.model);
+                  return removals.push(child);
                 }
               }
             } else {
@@ -2604,7 +2604,9 @@ Nicholas McCready - https://twitter.com/nmccready
               payload = state;
               return _async.each(payload.removals, function(child) {
                 if (child != null) {
-                  child.destroy();
+                  if (child.destroy != null) {
+                    child.destroy();
+                  }
                   return _this.scope.markerModels.remove(child.id);
                 }
               }, function() {
@@ -3140,7 +3142,9 @@ Nicholas McCready - https://twitter.com/nmccready
               payload = state;
               return _async.each(payload.removals, function(child) {
                 if (child != null) {
-                  child.destroy();
+                  if (child.destroy != null) {
+                    child.destroy();
+                  }
                   return _this.windows.remove(child.id);
                 }
               }, function() {
@@ -3365,7 +3369,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.link = __bind(this.link, this);
           var self;
           self = this;
-          this.restrict = 'ECMA';
+          this.restrict = 'EMA';
           this.replace = true;
           this.template = void 0;
           this.require = void 0;
@@ -3420,7 +3424,7 @@ Nicholas McCready - https://twitter.com/nmccready
           self = this;
           this.$log = Logger;
           this.$timeout = $timeout;
-          this.restrict = 'ECMA';
+          this.restrict = 'EMA';
           this.require = '^googleMap';
           this.priority = -1;
           this.transclude = true;
@@ -3470,7 +3474,7 @@ Nicholas McCready - https://twitter.com/nmccready
           self = this;
         }
 
-        IPolyline.prototype.restrict = "ECA";
+        IPolyline.prototype.restrict = "EA";
 
         IPolyline.prototype.replace = true;
 
@@ -3527,7 +3531,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.$templateCache = $templateCache;
           this.link = __bind(this.link, this);
           self = this;
-          this.restrict = 'ECMA';
+          this.restrict = 'EMA';
           this.template = void 0;
           this.transclude = true;
           this.priority = -100;
@@ -3581,13 +3585,13 @@ Nicholas McCready - https://twitter.com/nmccready
           self = this;
         }
 
-        Map.prototype.restrict = "ECMA";
+        Map.prototype.restrict = "EMA";
 
         Map.prototype.transclude = true;
 
         Map.prototype.replace = false;
 
-        Map.prototype.template = "<div class=\"angular-google-map\"><div class=\"angular-google-map-container\"></div><div ng-transclude style=\"display: none\"></div></div>";
+        Map.prototype.template = '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>';
 
         Map.prototype.scope = {
           center: "=center",
@@ -4431,7 +4435,7 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
       "use strict";
       DEFAULTS = {};
       return {
-        restrict: "ECA",
+        restrict: "EA",
         replace: true,
         require: "^googleMap",
         scope: {
@@ -4631,7 +4635,7 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
       var DEFAULTS;
       DEFAULTS = {};
       return {
-        restrict: "ECA",
+        restrict: "EA",
         replace: true,
         require: "^googleMap",
         scope: {
@@ -5234,7 +5238,7 @@ This directive creates a new scope.
           this.$timeout = $timeout;
           this.link = __bind(this.link, this);
           this.$log = Logger;
-          this.restrict = "ECMA";
+          this.restrict = "EMA";
           this.require = "^googleMap";
           this.priority = -1;
           this.transclude = true;
