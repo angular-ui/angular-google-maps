@@ -48,12 +48,12 @@
     	<div class="container">
 			<div class="collapse navbar-collapse" id="navbar-collapse">
 				<ul class="nav navbar-nav">
-					<li ng-class="{'active': $location.path() == '/'}"><a href="/" rel="start">Home</a></li>
-					<li ng-class="{'active': $location.path() == '/use'}"><a href="/use" rel="help">Quickstart</a></li>
-					<li ng-class="{'active': $location.path() == '/api'}"><a href="/api" rel="help">API documentation</a></li>
-		            <li ng-class="{'active': $location.path() == '/faq'}"><a href="/faq" rel="help">FAQ</a></li>
-		            <li ng-class="{'active': $location.path() == '/changelog'}"><a href="/changelog" rel="help">Changelog</a></li>
-					<li ng-class="{'active': $location.path() == '/demo'}"><a href="/demo" rel="help">Demo</a></li>	    		
+					<li ui-sref-active="active"><a ui-sref="home" rel="start">Home</a></li>
+					<li ui-sref-active="active"><a ui-sref="use" rel="help">Quickstart</a></li>
+					<li ui-sref-active="active"><a ui-sref="api" href="/api" rel="help">API documentation</a></li>
+		            <li ui-sref-active="active"><a ui-sref="faq" href="/faq" rel="help">FAQ</a></li>
+		            <li ui-sref-active="active"><a ui-sref="changelog" href="/changelog" rel="help">Changelog</a></li>
+					<li ui-sref-active="active"><a ui-sref="help" rel="help">Demo</a></li>
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Developer resources <b class="caret"></b></a>
 						<ul class="dropdown-menu">
@@ -70,7 +70,7 @@
     </nav>
 
     <div class="container" itemscope="" itemtype="http://schema.org/SoftwareApplication">
-	    <div ng-view="" class="view-animate"></div>
+	    <div ui-view="" class="view-animate"></div>
 	</div>
 
 	<a href="https://github.com/nlaplante/angular-google-maps" rel="external" class="hidden-xs">
@@ -91,8 +91,8 @@
 	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 
-    <script src="scripts/321265e1.modules.js"></script>
+    <script src="scripts/c1472200.modules.js"></script>
 
-    <script src="scripts/669a8e93.scripts.js"></script>
+    <script src="scripts/ce6d5894.scripts.js"></script>
 </body>
 </html>
