@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.7 2014-07-09
+/*! angular-google-maps 1.1.8 2014-07-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -809,7 +809,7 @@ Nicholas McCready - https://twitter.com/nmccready
               }
               id = c.model[idKey];
               if (mappedScopeModelIds[id] == null) {
-                return removals.push(c.model[idKey]);
+                return removals.push(c);
               }
             }, function() {
               return callBack({
