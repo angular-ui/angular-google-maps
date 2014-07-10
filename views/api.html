@@ -10,7 +10,7 @@
 				<ul class="nav nav-list" id="docs-api-menu">
 					<li class="delimiter"></li>
 					<li class="nav-header">Directives</li>
-					<li ng-repeat="d in directives | filter:query" class="animate-repeat"><a href="/api#{{ d }}">{{ d }}</a></li>
+					<li ng-repeat="d in directives | filter:query" class="animate-repeat"><a ui-sref="api.{{d}}">{{ d }}</a></li>
 				</ul>
 			</div>
 		</div>
@@ -23,20 +23,34 @@
 		<h2>Directives</h2>
 
 		<div class="panel-group" id="directivesAccordion">
-			<div class="panel panel-default animate-repeat" ng-repeat="d in directives | filter:query" id="{{ d }}">
-				<div class="panel-heading">
-					<div class="panel-title">
-						<a href="" data-toggle="collapse" data-target="#content{{ d }}">
-							{{ d }}
-						</a>
-					</div>
-				</div>
-				<div id="content{{ d }}" class="panel-collapse collapse" ng-class="{'in': $first}">
-					<div class="panel-body">
-						<ng-include src="viewUrl(d)"></ng-include>
-					</div>
-				</div>			
-			</div>
+            <div class="panel panel-default animate-repeat">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <a href="" data-toggle="collapse" data-target="#content{{ current }}">
+                            {{ current }}
+                        </a>
+                    </div>
+                </div>
+                <div class="panel-collapse collapse" ng-class="'in'">
+                    <div class="panel-body">
+                        <ui-view></ui-view>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="panel panel-default animate-repeat" ng-repeat='d in directives | filter:query' id='{{ d }}'>
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <a href='' data-toggle="collapse"  data-target="#content{{ d }}">
+                            {{ d }}
+                        </a>
+                    </div>
+                </div>
+                <div id="content{{ d }}" class="panel-collapse collapse" ng-class="{'in': $first}">
+                    <div class="panel-body">
+                        <ng-include src="viewUrl(d)"></ng-include>
+                    </div>
+                </div>
+            </div>-->
 		</div>
 	</div>
 </div>
