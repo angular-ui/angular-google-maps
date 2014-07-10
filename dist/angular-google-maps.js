@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.7-SNAPSHOT 2014-07-02
+/*! angular-google-maps 1.1.7-SNAPSHOT 2014-07-09
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -790,7 +790,7 @@ Nicholas McCready - https://twitter.com/nmccready
                 child = childObjects[m[idKey]];
                 if (!comparison(m, child.model)) {
                   adds.push(m);
-                  return removals.push(child.model);
+                  return removals.push(child);
                 }
               }
             } else {
@@ -2604,7 +2604,9 @@ Nicholas McCready - https://twitter.com/nmccready
               payload = state;
               return _async.each(payload.removals, function(child) {
                 if (child != null) {
-                  child.destroy();
+                  if (child.destroy != null) {
+                    child.destroy();
+                  }
                   return _this.scope.markerModels.remove(child.id);
                 }
               }, function() {
@@ -3140,7 +3142,9 @@ Nicholas McCready - https://twitter.com/nmccready
               payload = state;
               return _async.each(payload.removals, function(child) {
                 if (child != null) {
-                  child.destroy();
+                  if (child.destroy != null) {
+                    child.destroy();
+                  }
                   return _this.windows.remove(child.id);
                 }
               }, function() {

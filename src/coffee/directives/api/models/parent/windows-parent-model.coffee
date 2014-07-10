@@ -145,7 +145,7 @@ angular.module("google-maps.directives.api.models.parent")
                                 payload = state
                                 _async.each payload.removals, (child)=>
                                     if child?
-                                        child.destroy()
+                                        child.destroy() if child.destroy?
                                         @windows.remove(child.id)
                                 , () =>
                                     #add all adds via creating new ChildMarkers which are appended to @markers

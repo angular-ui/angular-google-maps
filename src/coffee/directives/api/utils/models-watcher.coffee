@@ -15,7 +15,7 @@ angular.module("google-maps.directives.api.utils")
                     #we're update in this case
                     unless comparison m, child.model
                         adds.push m
-                        removals.push child.model
+                        removals.push child
             else
                 Logger.error("id missing for model #{m.toString()}, can not use do comparison/insertion")
         , () =>

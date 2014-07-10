@@ -101,7 +101,7 @@ angular.module("google-maps.directives.api.models.parent")
                         #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @scope.markerModels
                         _async.each payload.removals, (child)=>
                             if child?
-                                child.destroy()
+                                child.destroy() if child.destroy?
                                 @scope.markerModels.remove(child.id)
                         , () =>
                             #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
