@@ -9,7 +9,7 @@ angular.module('angularGoogleMapsApp')
 	
 		$http({
 			method: 'GET',
-			url: '/headlines.json'
+			url: 'headlines.json'
 		}).then(function (res) {
 			$scope.headlines = res.data.items;
 			$scope.count = res.data.items.length;

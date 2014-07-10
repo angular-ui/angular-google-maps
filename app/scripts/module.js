@@ -1,3 +1,3 @@
 'use strict';
 
-angular.module('angularGoogleMapsApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'google-maps', 'hljs', 'semverSort']);
+angular.module('angularGoogleMapsApp', ['ngAnimate', 'ngSanitize', 'google-maps', 'hljs', 'semverSort', 'ui.router']);

@@ -17,6 +17,7 @@ module.exports = function (grunt) {
   require('time-grunt')(grunt);
   
   grunt.loadNpmTasks("grunt-git-log-json");
+  grunt.loadNpmTasks('grunt-gh-pages');
 
   // configurable paths
   var yeomanConfig = {
@@ -249,6 +250,8 @@ module.exports = function (grunt) {
           src: [
             '*.{ico,png,txt,json}',
             '.htaccess',
+            'CNAME',
+            'README.md',
             'bower_components/**/*',
             'images/{,*/}*.{gif,webp}',
             'styles/fonts/*'
@@ -326,6 +329,12 @@ module.exports = function (grunt) {
            shortHash: true,
            dest: '<%= yeoman.app %>/changelog.json'
         }
+    },
+    "gh-pages": {
+        options: {
+            base: 'dist'
+        },
+        src: ['**']
     }
   });
 

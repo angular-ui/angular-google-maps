@@ -7,7 +7,6 @@
     "jquery": "~1.9.1",
     "es5-shim": "~2.0.8",
     "angular-animate": "~1.2.5",
-    "angular-route": "~1.2.5",
     "angular-resource": "~1.2.5",
     "angular-cookies": "~1.2.5",
     "angular-sanitize": "~1.2.5",
@@ -15,7 +14,8 @@
     "underscore": "~1.5.2",
     "angular-highlightjs": "~0.2.5",
     "share-button": "~0.0.3",
-    "angular-semver-sort": "~0.2.0"
+    "angular-semver-sort": "~0.2.0",
+    "angular-ui-router": "~0.2.10"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.5",

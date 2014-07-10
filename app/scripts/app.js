@@ -2,9 +2,9 @@
 
 angular.module('angularGoogleMapsApp')
   .value('headlinesFetchInterval', 300000)
-  .config(function ($routeProvider, $locationProvider, $logProvider, $githubProvider, analyticsProvider, $sceDelegateProvider, hljsServiceProvider) {
+  .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $githubProvider, analyticsProvider, $sceDelegateProvider, hljsServiceProvider) {
   	
-  	$locationProvider.html5Mode(true).hashPrefix('!');
+  	$locationProvider.html5Mode(false).hashPrefix('!');
   	$logProvider.debugEnabled(false);  	
 
   	$githubProvider.username('nlaplante')
@@ -25,29 +25,35 @@ angular.module('angularGoogleMapsApp')
   		tabReplace: '    '
   	});
 
-    $routeProvider
-      .when('/', {
+    $stateProvider
+      .state('home', {
+        url: '/',
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .when('/use', {
+      .state('use', {
+        url: '/use',
       	templateUrl: 'views/use.html',
       	controller: 'UseCtrl'
       })
-      .when('/api', {
+      .state('api', {
+        url: '/api',
       	templateUrl: 'views/api.html',
       	controller: 'ApiCtrl',
       	reloadOnSearch: false
       })
-      .when('/demo', {
+      .state('demo', {
+        url: '/demo',
       	templateUrl: 'views/demo.html',
       	controller: 'DemoCtrl'
       })
-      .when('/faq', {
+      .state('faq', {
+        url: '/faq',
         templateUrl: 'views/faq.html',
         controller: 'FAQCtrl'
       })
-      .when('/changelog', {
+      .state('changelog', {
+            url: '/changelog',
       		templateUrl: 'views/changelog.html',
       		controller: 'ChangeLogCtrl',
       		reloadOnSearch: false,
@@ -57,7 +63,7 @@ angular.module('angularGoogleMapsApp')
       				
       				$http({
       					method: 'GET',
-      					url: '/changelog.json'
+      					url: 'changelog.json'
       				}).then(function (res) {
       					deferred.resolve(res.data);
       				}, function (error) {
@@ -69,15 +75,13 @@ angular.module('angularGoogleMapsApp')
       			}]
       		}
       })      
-      .when('/not-found', {
+      .state('not-found', {
+            url: '/not-found',
 		    templateUrl: 'views/404.html',
 		    controller: 'NotFoundCtrl'
-      })
-      .otherwise({
-        redirectTo: function (params, path, search) {
-        	return '/not-found?url=' + path;
-        }
       });
+
+      $urlRouterProvider.otherwise('/');
   })
   .run(function ($rootScope, $log, $location) {
   
