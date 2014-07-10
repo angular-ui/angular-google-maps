@@ -809,7 +809,7 @@ Nicholas McCready - https://twitter.com/nmccready
               }
               id = c.model[idKey];
               if (mappedScopeModelIds[id] == null) {
-                return removals.push(c.model[idKey]);
+                return removals.push(c);
               }
             }, function() {
               return callBack({
