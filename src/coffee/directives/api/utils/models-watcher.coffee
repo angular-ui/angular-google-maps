@@ -27,7 +27,7 @@ angular.module("google-maps.directives.api.utils")
                     Logger.error("child.model undefined in ModelsWatcher.")
                     return
                 id = c.model[idKey]
-                removals.push c.model[idKey] unless mappedScopeModelIds[id]?
+                removals.push c unless mappedScopeModelIds[id]?
                     #if we done have the object we can remove it
             , () =>
                 callBack
