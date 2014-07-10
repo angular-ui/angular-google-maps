@@ -1,0 +1,73 @@
+<h1 class="page-header">Demo</h1>
+
+<div>
+    We are working on a live (self hosted) demo, but it is not quite yet ready :( . For now we are using
+    rawgithub.com to host our example. To run it yourself, execute "grunt example".
+</div>
+        <iframe src="http://rawgithub.com/nlaplante/angular-google-maps/master/example/example.html" width="1400" height="1050" frameborder="0">
+        </iframe>
+<!--<google-map class="demo" center="map.center" zoom="map.zoom" draggable="true">-->
+	<!--<marker class="animate-repeat" ng-repeat="m in map.markers" coords="m.coords"></marker>-->
+	<!--<polyline path="map.polyline.path" draggable="map.polyline.draggable" -->
+		<!--clickable="map.polyline.clickable"-->
+		<!--geodesic="map.polyline.geodesic"-->
+		<!--editable="map.polyline.editable"></polyline>-->
+<!--	<markers models="map.markers" coords="'self'" labelContent="'title'" />-->
+<!--</google-map>-->
+
+<!--<ul class="nav nav-tabs">-->
+	<!--<li ng-class="{'active': tab === 'status'}">-->
+		<!--<a href="#status" data-toggle="tab" ng-click="tab = 'status'">Status</a>-->
+	<!--</li>-->
+	<!--<li ng-class="{'active': tab === 'script'}">-->
+		<!--<a href="#script" data-toggle="tab" ng-click="tab = 'script'">JavaScript</a>-->
+	<!--</li>-->
+	<!--<li ng-class="{'active': tab === 'html'}">-->
+		<!--<a href="#html" data-toggle="tab" ng-click="tab = 'html'">HTML</a>-->
+	<!--</li>	-->
+<!--</ul>-->
+
+<!--<div class="tab-content">-->
+	<!--<div class="tab-pane" ng-class="{'active': tab === 'status'}" id="status">	-->
+		<!--<ul class="list-group">-->
+			<!--<li href="#" class="list-group-item">-->
+				<!--<h4 class="list-group-item-heading">Center</h4>-->
+				<!--{{ map.center | json }}-->
+			<!--</li>-->
+			<!--<li href="#" class="list-group-item">-->
+				<!--<h4 class="list-group-item-heading">Zoom</h4>-->
+				<!--{{ map.zoom }}-->
+			<!--</li>-->
+			<!--<li href="#" class="list-group-item">-->
+				<!--<h4 class=list-group-item-heading">Markers</h4>-->
+				<!--<ul class="list-unstyled">-->
+					<!--<li ng-repeat="marker in map.markers track by marker.id">-->
+						<!--<div class="col-md-6">-->
+							<!--<input type="text" class="form-control" ng-model="marker.latitude" />-->
+						<!--</div>-->
+						<!--<div class="col-md-6">-->
+							<!--<input type="text" class="form-control" ng-model="marker.longitude" />-->
+						<!--</div>-->
+					<!--</li>-->
+				<!--</ul>-->
+			<!--</li>-->
+		<!--</ul>-->
+	<!--</div>-->
+	<!---->
+	<!--<div class="tab-pane" ng-class="{'active': tab === 'script'}" id="script">-->
+		<!--<pre>$scope.map = {-->
+	<!--center: {-->
+		<!--latitude: 40.47,	// NYC-->
+		<!--longitude: -73.85	// NYC-->
+	<!--},-->
+	<!--zoom: 8-->
+<!--};</pre>-->
+	<!--</div>-->
+	<!---->
+	<!--<div class="tab-pane" ng-class="{'active': tab === 'html'}" id="html">-->
+		<!--<pre>&lt;google-map class="main" center="map.center" zoom="map.zoom" draggable="true"&gt;-->
+	<!--&lt;!-- Mark map center --&gt;-->
+	<!--&lt;marker coords="map.center" /&gt;-->
+<!--&lt;/google-map&gt;</pre>-->
+	<!--</div>-->
+<!--</div>-->

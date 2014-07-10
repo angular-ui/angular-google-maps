@@ -1,0 +1,137 @@
+// dep: https://www.sharebutton.co/fonts/entypo.min.css
+// dep: http://fonts.googleapis.com/css?family=Lato:900 (if `text_font: true`)
+
+{ selector }
+  size: 90px 20px
+
+  [class*='entypo-']:before
+    font-family: 'entypo', sans-serif;
+
+  label
+    font-size: 16px
+    cursor: pointer
+    margin: 0
+    padding: 5px 10px
+    border-radius: 5px
+    background: unquote(button_background)
+    color: unquote(button_color)
+    transition()
+
+    &:hover
+      opacity: .8
+
+    span
+      upcase()
+      font-size: .9em
+      font-family: Lato, sans-serif
+      font-weight: bold
+      -webkit-font-smoothing: antialiased
+      padding-left: 6px
+
+  .social
+    transform-origin: 50% 0%
+    transform: scale(0) translateY(-190px)
+    opacity: 0
+    transition: all .4s ease
+    margin-left: -15px
+
+    &.active
+      opacity: 1
+      transition: all .4s ease
+
+      // Arrow Offsets
+      &.center
+        margin-left: -45px
+
+      &.left
+        margin-left: -115px
+
+      &.right
+        margin-left: 10px
+
+      // Arrow x-positioning & colors
+      &.top
+        transform: scale(1) translateY(-90px)
+
+        &.center
+          ul
+            &:after
+              margin: 35px auto
+              border-top: 20px solid #3B5998
+
+        &.left
+          ul
+            &:after
+              margin: 35px 0px 0px 129px
+              border-top: 20px solid #E34429
+
+        &.right
+          ul
+            &:after
+              margin: 35px 0px 0px 10px
+              border-top: 20px solid #6CDFEA
+
+      &.bottom
+        transform: scale(1) translateY(45px)
+        margin-top: -14px
+
+        &.center
+          ul
+            &:after
+              margin: -10px auto
+              border-bottom: 20px solid #3B5998
+
+        &.left
+          ul
+            &:after
+              margin: -10px 0px 0px 129px
+              border-bottom: 20px solid #E34429
+
+        &.right
+          ul
+            &:after
+              margin: -10px 0px 0px 10px
+              border-bottom: 20px solid #6CDFEA
+
+    ul
+      relative: left 0 right 0
+      size: 180px 46px
+      color: #fff
+      background: #3B5998
+      margin: auto
+      padding: 0
+      list-style: none
+
+      li
+        font-size: 20px
+        cursor: pointer
+        width: 60px
+        margin: 0
+        padding: 12px 0
+        text-align: center
+        float: left
+        display: block
+        height: 22px
+        position: relative
+        z-index: 2
+        box-sizing: content-box
+        transition()
+
+        &:hover
+          color: rgba(0,0,0,.5)
+
+      &:after
+        content: ''
+        display: block
+        size: 0
+        absolute: left 0 right 0
+        border-left: 20px solid transparent
+        border-right: 20px solid transparent
+
+    li[class*='twitter']
+      background: #6CDFEA
+      padding: 12px 0
+
+    li[class*='gplus']
+      background: #E34429
+      padding: 12px 0

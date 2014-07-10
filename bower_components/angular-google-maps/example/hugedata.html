@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html ng-app="HugeData">
+  <head lang="en">
+    <meta charset="utf-8">
+    <title>angular-google-maps huge data demo</title>
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization&sensor=false&language=en&v=3.14"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+    <script src="assets/scripts/controllers/hugedata.js"></script>
+    <link rel="stylesheet" type="text/css" href="assets/stylesheets/hugedata.css">
+  </head>
+  <body ng-controller="HugeDataCtrl" attach-to-window="true">
+    <div class="container">
+      <div class="row">
+        <div class="span12">
+          <h1>angular-google-maps huge data demo</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="span12">
+          <google-map class="thumbnail buying-map" center="center" zoom="11" draggable="true" options="{ scrollwheel: false, streetViewControl: false }">
+            <polygon ng-repeat="place in places" path="place.boundary" fill="{ color: '#772953', opacity: '0.3' }" stroke="{ color: '#772953', weight: 3, opacity: '1.0' }" editable="false" static="true"></polygon>
+          </google-map>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

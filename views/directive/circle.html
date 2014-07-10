@@ -1,0 +1,79 @@
+<p>The <code>circle</code> directive is used to draw circle shape layers on the map.
+See <a href="https://developers.google.com/maps/documentation/javascript/reference#Circle" rel="external">Circle API</a>.</p>
+	
+<h4>Usage</h4>
+
+<div hljs="" language="html" include="'circleTemplate'"></div>
+
+<h4>Parameters</h4>
+
+<p class="muted">Required properties are in <span class="text-error">red</span>.</p>
+
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>Param</th>
+			<th>Type</th>
+			<th>Details</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>center</td>
+			<td><span class="label label-danger">expression</span></td>
+			<td>
+			  <p>The coordinates defining the center of the circle.</p>
+			  <p>May be in the form of an object containing <code>latitude</code> and <code>longitude</code> properties, or <span class="badge badge-info">New in v1.1</span> a <a href="http://geojson.org/geojson-spec.html#point">GeoJSON Point</a> object.</p>
+		  </td>
+		</tr>
+		<tr>
+			<td>radius</td>
+			<td><span class="label label-danger">expression</span></td>
+			<td>The radius of the circle</td>
+		</tr>		
+		<tr>
+			<td>stroke</td>
+			<td><span class="label label-danger">expression</span></td>
+			<td>Object to configure the line stroke. Valid properties are <code>color</code> (CSS hex notation),
+			<code>weight</code> (int) and <code>opacity</code> (between 0.0 and 1.0)</td>
+		</tr>
+		<tr>
+			<td>fill</td>
+			<td><span class="label label-danger">expression</span></td>
+			<td>Object to configure the circle fill type. Valid properties are <code>color</code> (CSS hex notation) 
+			and <code>opacity</code> (between 0.0 and 1.0)</td>
+		</tr>		
+		<tr>
+			<td>clickable</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to tell the circle to respond to click events</td>
+		</tr>
+		<tr>
+			<td>draggable</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to make the circle draggable across the map</td>
+		</tr>
+		<tr>
+			<td>editable</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to make the circle editable by dragging control points</td>
+		</tr>
+		<tr>
+			<td>visible</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property which shows or hides the circle</td>
+		</tr>
+	</tbody>
+</table>
+
+<script type="text/ng-template" id="circleTemplate">
+<circle center='{expression}'
+  radius='{expression}'
+	fill='{expression}'
+	stroke='{expression}'
+	clickable='{expression}'
+	draggable='{expression}'
+	editable='{string}'
+	visible='{expression}'
+</circle>
+</script>

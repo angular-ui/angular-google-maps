@@ -1,0 +1,100 @@
+<p>The <code>polyline</code> directive is used to draw an overlay connected to various points on the map.
+See <a google-api="Polyline">Polyline API</a>.</p>
+	
+<h4>Usage</h4>
+
+<div hljs="" language="html" include="'polylineTemplate'"></div>
+
+<h4>Parameters</h4>
+
+<p class="muted">Required properties are in <span class="text-error">red</span>.</p>
+
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>Param</th>
+			<th>Type</th>
+			<th>Details</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>path</td>
+			<td><span class="label label-danger">expression</span></td>
+			<td>
+			  <p>The coordinates of the points defining the polyline.</p>
+			  <p>May be in the form of an array of objects containing <code>latitude</code> and <code>longitude</code> properties, or <span class="badge badge-info">New in v1.1</span> an array of <a href="https://developers.google.com/maps/documentation/javascript/reference#LatLng">Google Maps LatLng</a> objects.  Alternatively <span class="badge badge-info">New in v1.1</span>, a <a href="http://geojson.org/geojson-spec.html#linestring">GeoJSON LineString</a> object.</p>
+		  </td>
+		</tr>
+		<tr>
+			<td>stroke</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>Object to configure the line stroke. Valid properties are <code>color</code> (CSS hex notation),
+			<code>weight</code> (int) and <code>opacity</code> (between 0.0 and 1.0)</td>
+		</tr>
+		<tr>
+			<td>clickable</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to tell the polyline to respond to click events</td>
+		</tr>
+		<tr>
+			<td>draggable</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to make the polyline draggable across the map</td>
+		</tr>
+		<tr>
+			<td>editable</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to make the polyline editable by dragging control points</td>
+		</tr>
+		<tr>
+			<td>geodesic</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to make the polyline follow the curvature of the earth</td>
+		</tr>
+		<tr>
+			<td>icons</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>TODO</td>
+		</tr>
+		<tr>
+			<td>visible</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property which shows or hides the polyline</td>
+		</tr>
+		<tr>
+			<td>fit</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>boolean property to instruct the map to fit its bounds around the polyline</td>
+		</tr>		
+		<tr>
+			<td>static</td>
+			<td><span class="label label-info">string or boolean</span></td>
+			<td>
+			  <p><span class="badge badge-info">New in v1.1</span> Boolean property which indicates that the polyline coordinates are static. (I.e. will not change).</p>
+			  <p>Declaring a static path will improve the performance of the directive as it does not need to monitor every coordinate in the path for changes during the Angular $digest cycle.</p>
+			  <span>Notes:</span>
+			  <ul>
+			    <li>Declaring a static path implies that it is not editable. As a result, the <code>editable</code> parameter will be ignored.</li>
+			    <li>For static paths, the path attribute will watched by reference so the path may be changed in its entirety and the map will update.</li>
+			    <li>Changes to the static declaration are ignored after the directive is instantiated. (NOT WATCHED)</li>
+			  </ul>
+              
+		  </td>
+		</tr>
+	</tbody>
+</table>
+
+<script type="text/ng-template" id="polylineTemplate">
+<polyline path='{expression}'
+	stroke='{expression}'
+	clickable='{expression}'
+	draggable='{expression}'
+	editable='{expression}'
+	geodesic='{expression}'
+	icons='{expression}'
+	visible='{expression}'
+    fit='{string or boolean}'
+	static='{expression}'>
+</polyline>
+</script>

@@ -1,0 +1,17 @@
+{
+  "name": "angular-semver-sort",
+  "author": "Dominik Porada",
+  "main": "angular-semver-sort.js",
+  "ignore": [
+    ".gitignore",
+    ".travis.yml",
+    "Gruntfile.js",
+    "package.json"
+  ],
+  "dependencies": {
+    "angular": "~1.2.8"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.2.8"
+  }
+}
