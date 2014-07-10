@@ -13,7 +13,7 @@ angular.module("google-maps.directives.api")
         self = @
         @$log = Logger
         @$timeout = $timeout
-        @restrict = 'ECMA'
+        @restrict = 'EMA'
         @require = '^googleMap'
         @priority = -1
         @transclude = true
