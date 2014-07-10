@@ -51,6 +51,8 @@
          control="map.control"
         >
 
+        <map-control template="control.tpl.html" position="top-right" index="1" controller="controlController"></map-control>
+
         <layer type="TrafficLayer" show="map.showTraffic"></layer>
         <layer type="BicyclingLayer" show="map.showBicycling"></layer>
         <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>

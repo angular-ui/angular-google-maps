@@ -3228,6 +3228,122 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  angular.module("google-maps.directives.api").factory("Control", [
+    "IControl", "$http", "$templateCache", "$timeout", "$compile", "$controller", function(IControl, $http, $templateCache, $timeout, $compile, $controller) {
+      var Control;
+      return Control = (function(_super) {
+        __extends(Control, _super);
+
+        function Control() {
+          var self;
+          Control.__super__.constructor.call(this);
+          self = this;
+        }
+
+        Control.prototype.link = function(scope, element, attrs, ctrl) {
+          var index, position,
+            _this = this;
+          if (angular.isUndefined(scope.template)) {
+            this.$log.error('mapControl: could not find a valid template property');
+            return;
+          }
+          index = angular.isDefined(scope.index && !isNaN(parseInt(scope.index))) ? parseInt(scope.index) : void 0;
+          position = angular.isDefined(scope.position) ? scope.position.toUpperCase().replace(/-/g, '_') : 'TOP_CENTER';
+          if (!google.maps.ControlPosition[position]) {
+            this.$log.error('mapControl: invalid position property');
+            return;
+          }
+          return $timeout(function() {
+            var control, controlDiv, map;
+            map = ctrl.getMap();
+            control = void 0;
+            controlDiv = angular.element('<div></div>');
+            return $http.get(scope.template, {
+              cache: $templateCache
+            }).success(function(template) {
+              var templateCtrl, templateScope;
+              templateScope = scope.$new();
+              controlDiv.append(template);
+              if (index) {
+                controlDiv[0].index = index;
+              }
+              if (angular.isDefined(scope.controller)) {
+                templateCtrl = $controller(scope.controller, {
+                  $scope: templateScope
+                });
+                controlDiv.children().data('$ngControllerController', templateCtrl);
+              }
+              return control = $compile(controlDiv.contents())(templateScope);
+            }).error(function(error) {
+              return _this.$log.error('mapControl: template could not be found');
+            }).then(function() {
+              return map.controls[google.maps.ControlPosition[position]].push(control[0]);
+            });
+          });
+        };
+
+        return Control;
+
+      })(IControl);
+    }
+  ]);
+
+}).call(this);
+
+/*
+ - interface for all controls to derive from
+ - to enforce a minimum set of requirements
+	- attributes
+		- template
+		- position
+		- controller
+		- index
+*/
+
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  angular.module("google-maps.directives.api").factory("IControl", [
+    "BaseObject", "Logger", function(BaseObject, Logger) {
+      var IControl;
+      return IControl = (function(_super) {
+        __extends(IControl, _super);
+
+        function IControl() {
+          this.link = __bind(this.link, this);
+          var self;
+          self = this;
+          this.restrict = 'EA';
+          this.replace = true;
+          this.require = '^googleMap';
+          this.scope = {
+            template: '@template',
+            position: '@position',
+            controller: '@controller',
+            index: '@index'
+          };
+          this.$log = Logger;
+        }
+
+        IControl.prototype.link = function(scope, element, attrs, ctrl) {
+          throw new Exception("Not implemented!!");
+        };
+
+        return IControl;
+
+      })(BaseObject);
+    }
+  ]);
+
+}).call(this);
+
 /*
 	- interface for all labels to derrive from
  	- to enforce a minimum set of requirements
@@ -5149,6 +5265,60 @@ This directive creates a new scope.
 
       })();
       return new Layer($timeout);
+    }
+  ]);
+
+}).call(this);
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Adam Kreitals, kreitals@hotmail.com
+*/
+
+
+/*
+mapControl directive
+
+This directive is used to create a custom control element on an existing map.
+This directive creates a new scope.
+
+{attribute template required}  	string url of the template to be used for the control
+{attribute position optional}  	string position of the control of the form top-left or TOP_LEFT defaults to TOP_CENTER
+{attribute controller optional}	string controller to be applied to the template
+{attribute index optional}		number index for controlling the order of similarly positioned mapControl elements
+*/
+
+
+(function() {
+  angular.module("google-maps").directive("mapControl", [
+    "Control", function(Control) {
+      return new Control();
     }
   ]);
 

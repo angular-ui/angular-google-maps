@@ -1,5 +1,18 @@
 (function () {
   var module = angular.module("angular-google-maps-example", ["google-maps"]);
+
+  module.run(function ($templateCache) {
+    $templateCache.put('control.tpl.html', '<button class="btn btn-sm btn-primary" ng-class="{\'btn-warning\': danger}" ng-click="controlClick()">{{controlText}}</button>');
+  });
+
+  module.controller('controlController', function ($scope) {
+    $scope.controlText = 'I\'m a custom control';
+    $scope.danger = false;
+    $scope.controlClick = function () {
+      $scope.danger = !$scope.danger;
+      alert('custom control clicked!')
+    };
+  });
 }());
 
 var rndAddToLatLon = function () {
