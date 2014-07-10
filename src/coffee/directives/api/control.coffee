@@ -1,8 +1,8 @@
 angular.module("google-maps.directives.api")
-.factory "Control", ["IControl", "$http", "$templateCache", "$compile", "$controller", (IControl, $http, $templateCache, $compile, $controller) ->
+.factory "Control", ["IControl", "$http", "$templateCache", "$timeout", "$compile", "$controller", (IControl, $http, $templateCache, $timeout, $compile, $controller) ->
 	class Control extends IControl
-		constructor: ($timeout) ->
-			super($timeout)
+		constructor: ->
+			super()
 			self = @
 
 		link: (scope, element, attrs, ctrl) ->
@@ -11,7 +11,7 @@ angular.module("google-maps.directives.api")
 				@$log.error 'mapControl: could not find a valid template property'
 				return
 
-			index = if angular.isDefined(scope.index) and not isNaN(parseInt scope.index) then parseInt scope.index else undefined
+			index = if angular.isDefined scope.index and not isNaN(parseInt scope.index) then parseInt scope.index else undefined
 
 			position = if angular.isDefined scope.position then scope.position.toUpperCase().replace /-/g, '_' else 'TOP_CENTER'
 			if not google.maps.ControlPosition[position]
@@ -19,8 +19,9 @@ angular.module("google-maps.directives.api")
 				return
 
 			# Wrap control initialization inside a $timeout() call to make sure the map is created already
-			@$timeout =>
+			$timeout =>
 				map = ctrl.getMap()
+				control = undefined
 				controlDiv = angular.element '<div></div>'
 				$http.get(scope.template, { cache: $templateCache })
 					.success (template) =>
@@ -35,10 +36,9 @@ angular.module("google-maps.directives.api")
 							templateCtrl = $controller scope.controller, {$scope: templateScope}
 							controlDiv.children().data '$ngControllerController', templateCtrl
 
-						$compile(controlDiv.contents())(templateScope)
+						control = $compile(controlDiv.contents())(templateScope)
 					.error (error) =>
 						@$log.error 'mapControl: template could not be found'
 					.then =>
-						map.controls[google.maps.ControlPosition[position]].push controlDiv[0]
-
+						map.controls[google.maps.ControlPosition[position]].push control[0]
 ]

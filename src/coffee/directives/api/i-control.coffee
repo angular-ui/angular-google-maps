@@ -10,7 +10,7 @@
 angular.module("google-maps.directives.api")
 .factory "IControl", [ "BaseObject", "Logger", (BaseObject, Logger) ->
 	class IControl extends BaseObject
-		constructor: ($timeout) ->
+		constructor: ->
 			self = @
 			@restrict = 'EA'
 			@replace = true
@@ -21,7 +21,6 @@ angular.module("google-maps.directives.api")
 				controller: '@controller'
 				index: '@index'
 			@$log = Logger
-			@$timeout = $timeout
 
 		link: (scope, element, attrs, ctrl) =>
 			throw new Exception("Not implemented!!")

@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.7-SNAPSHOT 2014-07-09
+/*! angular-google-maps 1.1.7-SNAPSHOT 2014-07-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -3229,14 +3229,14 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Control", [
-    "IControl", "$http", "$templateCache", "$compile", "$controller", function(IControl, $http, $templateCache, $compile, $controller) {
+    "IControl", "$http", "$templateCache", "$timeout", "$compile", "$controller", function(IControl, $http, $templateCache, $timeout, $compile, $controller) {
       var Control;
       return Control = (function(_super) {
         __extends(Control, _super);
 
-        function Control($timeout) {
+        function Control() {
           var self;
-          Control.__super__.constructor.call(this, $timeout);
+          Control.__super__.constructor.call(this);
           self = this;
         }
 
@@ -3247,15 +3247,16 @@ Nicholas McCready - https://twitter.com/nmccready
             this.$log.error('mapControl: could not find a valid template property');
             return;
           }
-          index = angular.isDefined(scope.index) && !isNaN(parseInt(scope.index)) ? parseInt(scope.index) : void 0;
+          index = angular.isDefined(scope.index && !isNaN(parseInt(scope.index))) ? parseInt(scope.index) : void 0;
           position = angular.isDefined(scope.position) ? scope.position.toUpperCase().replace(/-/g, '_') : 'TOP_CENTER';
           if (!google.maps.ControlPosition[position]) {
             this.$log.error('mapControl: invalid position property');
             return;
           }
-          return this.$timeout(function() {
-            var controlDiv, map;
+          return $timeout(function() {
+            var control, controlDiv, map;
             map = ctrl.getMap();
+            control = void 0;
             controlDiv = angular.element('<div></div>');
             return $http.get(scope.template, {
               cache: $templateCache
@@ -3272,11 +3273,11 @@ Nicholas McCready - https://twitter.com/nmccready
                 });
                 controlDiv.children().data('$ngControllerController', templateCtrl);
               }
-              return $compile(controlDiv.contents())(templateScope);
+              return control = $compile(controlDiv.contents())(templateScope);
             }).error(function(error) {
               return _this.$log.error('mapControl: template could not be found');
             }).then(function() {
-              return map.controls[google.maps.ControlPosition[position]].push(controlDiv[0]);
+              return map.controls[google.maps.ControlPosition[position]].push(control[0]);
             });
           });
         };
@@ -3311,7 +3312,7 @@ Nicholas McCready - https://twitter.com/nmccready
       return IControl = (function(_super) {
         __extends(IControl, _super);
 
-        function IControl($timeout) {
+        function IControl() {
           this.link = __bind(this.link, this);
           var self;
           self = this;
@@ -3325,7 +3326,6 @@ Nicholas McCready - https://twitter.com/nmccready
             index: '@index'
           };
           this.$log = Logger;
-          this.$timeout = $timeout;
         }
 
         IControl.prototype.link = function(scope, element, attrs, ctrl) {
@@ -5313,8 +5313,8 @@ This directive creates a new scope.
 
 (function() {
   angular.module("google-maps").directive("mapControl", [
-    "$timeout", "Control", function($timeout, Control) {
-      return new Control($timeout);
+    "Control", function(Control) {
+      return new Control();
     }
   ]);
 
