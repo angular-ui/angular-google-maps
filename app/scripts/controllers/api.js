@@ -6,6 +6,7 @@ angular.module('angularGoogleMapsApp').controller('ApiCtrl', function ($scope, $
         'google-map',
         'circle',
         'layer',
+        'map-control',
         'marker',
         'marker-label',
         'markers',
