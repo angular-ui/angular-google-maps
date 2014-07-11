@@ -11,7 +11,6 @@ angular.module("google-maps.directives.api.models.child")
                     # Open window on click
                     @markerCtrl.setClickable(true) if @markerCtrl?
 
-                    @handleClick()
                     @watchElement()
                     @watchShow()
                     @watchCoords()
@@ -43,6 +42,7 @@ angular.module("google-maps.directives.api.models.child")
                             @gWin = new window.InfoBox(@opts)
                         else
                             @gWin = new google.maps.InfoWindow(@opts)
+                        @handleClick() if @gWin
 
                         # Set visibility of marker back to what it was before opening the window
                         @googleMapsHandles.push google.maps.event.addListener @gWin, 'closeclick', =>
@@ -110,7 +110,7 @@ angular.module("google-maps.directives.api.models.child")
                       show()
 
                 showHide: ->
-                    if @scope.show
+                    if @scope.show || !@scope.show?
                         @showWindow()
                     else
                         @hideWindow()

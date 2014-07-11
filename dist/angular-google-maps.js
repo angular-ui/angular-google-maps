@@ -1911,7 +1911,6 @@ Nicholas McCready - https://twitter.com/nmccready
           if (this.markerCtrl != null) {
             this.markerCtrl.setClickable(true);
           }
-          this.handleClick();
           this.watchElement();
           this.watchShow();
           this.watchCoords();
@@ -1959,6 +1958,9 @@ Nicholas McCready - https://twitter.com/nmccready
               this.gWin = new window.InfoBox(this.opts);
             } else {
               this.gWin = new google.maps.InfoWindow(this.opts);
+            }
+            if (this.gWin) {
+              this.handleClick();
             }
             return this.googleMapsHandles.push(google.maps.event.addListener(this.gWin, 'closeclick', function() {
               var _ref;
@@ -2069,7 +2071,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         WindowChildModel.prototype.showHide = function() {
-          if (this.scope.show) {
+          if (this.scope.show || (this.scope.show == null)) {
             return this.showWindow();
           } else {
             return this.hideWindow();
