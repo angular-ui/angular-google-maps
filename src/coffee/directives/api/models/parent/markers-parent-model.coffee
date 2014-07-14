@@ -121,7 +121,8 @@ angular.module("google-maps.directives.api.models.parent")
                 unless model[@idKey]?
                     @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                     return
-                child.setMyScope model,child.model
+                #set isInit to true to force redraw after all updates are processed
+                child.setMyScope model,child.model, false
 
             newChildMarker: (model, scope)=>
                 unless model[@idKey]?
@@ -129,7 +130,7 @@ angular.module("google-maps.directives.api.models.parent")
                     return
                 @$log.info('child', child, 'markers', @scope.markerModels)
                 child = new MarkerChildModel(model, scope, @mapCtrl, @$timeout, @DEFAULTS,
-                    @doClick, @gMarkerManager, @idKey)
+                    @doClick, @gMarkerManager, @idKey, doDrawSelf = false) #this is managed so child is not drawing itself
                 @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
                 child
 

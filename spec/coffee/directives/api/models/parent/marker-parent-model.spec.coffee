@@ -28,6 +28,7 @@ describe "MarkerParentModel", ->
         @clicked = false
         self = @
         @scope =
+            id: 0
             icon: 'icon.png'
             coords:
                 latitude: 90
@@ -64,25 +65,26 @@ describe "MarkerParentModel", ->
             scope = $rootScope.$new()
             @scope = _.extend @scope, scope
             @testCtor = MarkerParentModel
-            @subject = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, new MarkerManager(mapCtrl.getMap()), false)
+            mgr = new MarkerManager(mapCtrl.getMap())
+            @subject = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, mgr, false)
             $timeout.flush()
 
         @subject.setEvents(@, @scope)
 
     it 'constructor exist', ->
-        expect(@testCtor?).toEqual(true)
+        expect(@testCtor).toBeDefined
 
     it 'can be created', ->
-        expect(@subject?).toEqual(true)
+        expect(@subject).toBeDefined()
 
     describe "validateScope", ->
-        it 'returns fals with scope undefined', ->
+        it 'returns false with scope undefined', ->
             expect(@subject.validateScope(undefined)).toEqual(false)
-        it 'returns fals with scope.coords undefined', ->
+        it 'returns false with scope.coords undefined', ->
             expect(@subject.validateScope({coords: undefined})).toEqual(false)
-        it 'returns fals with scope.coords,latitude undefined', ->
+        it 'returns false with scope.coords,latitude undefined', ->
             expect(@subject.validateScope({coords: {latitude: undefined, longitude: {}}})).toEqual(true)
-        it 'returns fals with scope.coords.longtitude undefined', ->
+        it 'returns false with scope.coords.longtitude undefined', ->
             expect(@subject.validateScope({coords: {latitude: {}, longitude: undefined }})).toEqual(true)
 
 

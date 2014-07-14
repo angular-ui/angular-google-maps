@@ -14,6 +14,7 @@ describe "MarkerChildModel", ->
         #comparison variables
         @index = 0
         @model =
+            id: 0
             icon: 'icon.png'
             coords:
                 latitude: 90
@@ -30,9 +31,10 @@ describe "MarkerChildModel", ->
             scope.icon = @iconKey
             scope.coords = @coordsKey
             scope.options = @optionsKey
+            mgr = new MarkerManager(document.gMap, undefined, undefined)
             @subject = new MarkerChildModel(@model, scope, document.gMap, $timeout, defaults = {},
-                    doClick = (()->),
-                    new MarkerManager(document.gMap, undefined, undefined))
+                doClick = (()->),mgr)
+
 
     it 'can be created', ->
         expect(@subject).toBeDefined()

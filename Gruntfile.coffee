@@ -22,6 +22,7 @@ module.exports = (grunt) ->
             coffee: ["tmp/output_coffee.js", "tmp"]
             dist: ["dist/*", "tmp"]
             example: ["example/<%= pkg.name %>.js"]
+            spec: ["_Spec*"]
 
         mkdir:
             all:

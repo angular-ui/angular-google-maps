@@ -8,7 +8,7 @@ angular.module("google-maps.directives.api.models.child")
                     @googleMapsHandles = []
                     @$log = Logger
                     @createGWin()
-                    # Open window on click
+                    # Open window on click                          @
                     @markerCtrl.setClickable(true) if @markerCtrl?
 
                     @watchElement()

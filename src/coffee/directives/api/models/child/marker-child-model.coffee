@@ -4,14 +4,15 @@ angular.module("google-maps.directives.api.models.child")
       class MarkerChildModel extends ModelKey
         @include GmapUtil
         @include EventsHelper
-        constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager, @idKey)->
-          @id = @model[@idKey] if @model[@idKey]
+        constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager, @idKey = "id", @doDrawSelf = true)->
+          @id = @model[@idKey] if @model[@idKey]?
           @iconKey = @parentScope.icon
           @coordsKey = @parentScope.coords
           @clickKey = @parentScope.click()
           @labelContentKey = @parentScope.labelContent
           @optionsKey = @parentScope.options
           @labelOptionsKey = @parentScope.labelOptions
+          @needRedraw = false
 
           super(@parentScope.$new(false))
 
@@ -21,7 +22,8 @@ angular.module("google-maps.directives.api.models.child")
 
           @scope.$watch 'model', (newValue, oldValue) =>
             if (newValue != oldValue)
-              @setMyScope(newValue, oldValue)
+              @setMyScope newValue, oldValue
+              @needRedraw = true
           , true
 
           @$log = Logger
@@ -64,7 +66,7 @@ angular.module("google-maps.directives.api.models.child")
             @scope[scopePropName] = newValue
             unless isInit
               gSetter(@scope) if gSetter?
-              @gMarkerManager.draw()
+              @gMarkerManager.draw() if @doDrawSelf
 
         destroy: () =>
           @scope.$destroy()
@@ -111,7 +113,7 @@ angular.module("google-maps.directives.api.models.child")
 
           @setEvents @gMarker, @parentScope, @model
 
-          @gMarker.key = @id if @id
+          @gMarker.key = @id if @id?
 
           @gMarkerManager.add @gMarker
           google.maps.event.addListener @gMarker, 'click', =>
