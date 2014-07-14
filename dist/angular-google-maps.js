@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-13
+/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-14
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -914,6 +914,7 @@ Nicholas McCready - https://twitter.com/nmccready
         function ClustererMarkerManager(gMap, opt_markers, opt_options, opt_events) {
           var self;
           this.opt_events = opt_events;
+          this.getGMarkers = __bind(this.getGMarkers, this);
           this.fit = __bind(this.fit, this);
           this.destroy = __bind(this.destroy, this);
           this.clear = __bind(this.clear, this);
@@ -1004,7 +1005,11 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         ClustererMarkerManager.prototype.fit = function() {
-          return ClustererMarkerManager.__super__.fit.call(this, this.clusterer.getMarkers(), this.clusterer.getMap());
+          return ClustererMarkerManager.__super__.fit.call(this, this.getGMarkers(), this.clusterer.getMap());
+        };
+
+        ClustererMarkerManager.prototype.getGMarkers = function() {
+          return this.gMarkers.values();
         };
 
         return ClustererMarkerManager;
@@ -1030,6 +1035,7 @@ Nicholas McCready - https://twitter.com/nmccready
         MarkerManager.include(FitHelper);
 
         function MarkerManager(gMap, opt_markers, opt_options) {
+          this.getGMarkers = __bind(this.getGMarkers, this);
           this.fit = __bind(this.fit, this);
           this.handleOptDraw = __bind(this.handleOptDraw, this);
           this.clear = __bind(this.clear, this);
@@ -1124,7 +1130,11 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerManager.prototype.fit = function() {
-          return MarkerManager.__super__.fit.call(this, this.gMarkers.values(), this.gMap);
+          return MarkerManager.__super__.fit.call(this, this.getGMarkers(), this.gMap);
+        };
+
+        MarkerManager.prototype.getGMarkers = function() {
+          return this.gMarkers.values();
         };
 
         return MarkerManager;

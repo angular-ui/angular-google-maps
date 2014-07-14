@@ -60,7 +60,10 @@ angular.module("google-maps.directives.api.managers")
         gMarker.doAdd = doAdd
 
     fit: ()=>
-      super @gMarkers.values(), @gMap
+      super @getGMarkers(), @gMap
+
+    getGMarkers: =>
+      @gMarkers.values()
 
   MarkerManager
 ]
