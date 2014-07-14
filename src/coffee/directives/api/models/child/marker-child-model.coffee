@@ -5,7 +5,6 @@ angular.module("google-maps.directives.api.models.child")
         @include GmapUtil
         @include EventsHelper
         constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager, @idKey)->
-          self = @
           @id = @model[@idKey] if @model[@idKey]
           @iconKey = @parentScope.icon
           @coordsKey = @parentScope.coords
@@ -26,7 +25,7 @@ angular.module("google-maps.directives.api.models.child")
           , true
 
           @$log = Logger
-          @$log.info(self)
+          @$log.info @
           @watchDestroy(@scope)
 
         setMyScope: (model, oldModel = undefined, isInit = false) =>
@@ -71,30 +70,30 @@ angular.module("google-maps.directives.api.models.child")
           @scope.$destroy()
 
         setCoords: (scope) =>
-          if(scope.$id != @scope.$id or @gMarker == undefined)
+          if scope.$id != @scope.$id or @gMarker == undefined
             return
-          if (scope.coords?)
+          if scope.coords?
             if !@validateCoords(@scope.coords)
               @$log.error "MarkerChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
               return
-            @gMarker.setPosition(@getCoords(scope.coords))
-            @gMarker.setVisible(@validateCoords(scope.coords))
-            @gMarkerManager.remove(@gMarker)
-            @gMarkerManager.add(@gMarker)
+            @gMarker.setPosition @getCoords(scope.coords)
+            @gMarker.setVisible @validateCoords(scope.coords)
+#            @gMarkerManager.remove @gMarker
+            @gMarkerManager.add @gMarker
           else
-            @gMarkerManager.remove(@gMarker)
+            @gMarkerManager.remove @gMarker
 
         setIcon: (scope) =>
-          if(scope.$id != @scope.$id or @gMarker == undefined)
+          if scope.$id != @scope.$id or @gMarker == undefined
             return
-          @gMarkerManager.remove(@gMarker)
-          @gMarker.setIcon(scope.icon)
-          @gMarkerManager.add(@gMarker)
-          @gMarker.setPosition(@getCoords(scope.coords))
-          @gMarker.setVisible(@validateCoords(scope.coords))
+          @gMarkerManager.remove @gMarker
+          @gMarker.setIcon scope.icon
+          @gMarkerManager.add @gMarker
+          @gMarker.setPosition @getCoords(scope.coords)
+          @gMarker.setVisible @validateCoords(scope.coords)
 
         setOptions: (scope) =>
-          if(scope.$id != @scope.$id)
+          if scope.$id != @scope.$id
             return
 
           if @gMarker?
@@ -106,7 +105,7 @@ angular.module("google-maps.directives.api.models.child")
 
           delete @gMarker
           if @isLabelDefined(scope)
-            @gMarker = new MarkerWithLabel(@setLabelOptions(@opts, scope))
+            @gMarker = new MarkerWithLabel @setLabelOptions(@opts, scope)
           else
             @gMarker = new google.maps.Marker(@opts)
 
@@ -114,7 +113,7 @@ angular.module("google-maps.directives.api.models.child")
 
           @gMarker.key = @id if @id
 
-          @gMarkerManager.add(@gMarker)
+          @gMarkerManager.add @gMarker
           google.maps.event.addListener @gMarker, 'click', =>
             if @doClick and @scope.click?
               @scope.click()
@@ -137,6 +136,5 @@ angular.module("google-maps.directives.api.models.child")
                   google.maps.event.clearListeners @gMarker, eventName
               @gMarkerManager.remove @gMarker, true
               delete @gMarker
-            self = undefined
       MarkerChildModel
   ]

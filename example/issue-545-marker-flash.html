@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script data-require="angular.js@1.2.x" src="https://code.angularjs.org/1.2.16/angular.js" data-semver="1.2.16"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+    <script src="assets/scripts/controllers/issue-545-marker-flash.js"></script>
+    <title>Map</title>
+</head>
+
+<body>
+<div data-ng-controller="TrackingCtrl">
+    <div data-google-map id="map"
+         data-center="map.center"
+         data-pan="map.pan"
+         data-zoom="map.zoom"
+         data-draggable="true"
+         data-refresh="map.refresh"
+         data-options="map.options"
+         data-events="map.events"
+         data-bounds="map.bounds">
+        <div data-markers data-models="map.markers" data-coords="'location'" data-icon="'icon'" data-title="'title'" data-options="'options'">
+        </div>
+    </div>
+</body>
+
+</html>

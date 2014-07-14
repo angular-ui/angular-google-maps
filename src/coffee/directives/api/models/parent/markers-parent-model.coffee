@@ -34,8 +34,7 @@ angular.module("google-maps.directives.api.models.parent")
                 if @doRebuildAll
                     @reBuildMarkers(scope)
                 else
-                    @pieceMealMarkers(scope)
-
+                    @pieceMeal(scope)
 
             validateScope: (scope)=>
                 modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
@@ -92,7 +91,7 @@ angular.module("google-maps.directives.api.models.parent")
                 @onDestroy(scope) #clean @scope.markerModels
                 @createMarkersFromScratch(scope)
 
-            pieceMealMarkers: (scope)=>
+            pieceMeal: (scope)=>
                 if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
                     #find the current state, async operation that calls back
                     @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison, (state) =>
@@ -108,12 +107,21 @@ angular.module("google-maps.directives.api.models.parent")
                             _async.each payload.adds, (modelToAdd) =>
                                 @newChildMarker(modelToAdd, scope)
                             , () =>
-                                #finally redraw if something has changed
-                                if(payload.adds.length > 0 or payload.removals.length > 0)
-                                  @gMarkerManager.draw()
-                                  scope.markerModels = @scope.markerModels #for other directives like windows
+                                _async.each payload.updates, (update) =>
+                                    @updateChild update.child, update.model
+                                , () =>
+                                    #finally redraw if something has changed
+                                    if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
+                                        @gMarkerManager.draw()
+                                        scope.markerModels = @scope.markerModels #for other directives like windows
                 else
                     @reBuildMarkers(scope)
+
+            updateChild:(child, model) =>
+                unless model[@idKey]?
+                    @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
+                    return
+                child.setMyScope model,child.model
 
             newChildMarker: (model, scope)=>
                 unless model[@idKey]?

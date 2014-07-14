@@ -5,6 +5,7 @@ angular.module("google-maps.directives.api.utils")
         adds = [] #models to add or update
         mappedScopeModelIds = {}
         removals = [] #childModels to remove
+        updates = []
         _async.each scope.models, (m) ->
             if m[idKey]?
                 mappedScopeModelIds[m[idKey]] = {}
@@ -14,8 +15,9 @@ angular.module("google-maps.directives.api.utils")
                     child = childObjects[m[idKey]]
                     #we're UPDATE in this case
                     unless comparison m, child.model
-                        adds.push m
-                        removals.push child
+                        updates.push
+                            model: m
+                            child:child
             else
                 Logger.error("id missing for model #{m.toString()}, can not use do comparison/insertion")
         , () =>
@@ -33,4 +35,5 @@ angular.module("google-maps.directives.api.utils")
                 callBack
                     adds: adds
                     removals: removals
+                    updates: updates
 ]

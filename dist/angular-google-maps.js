@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-10
+/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-13
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -775,11 +775,12 @@ Nicholas McCready - https://twitter.com/nmccready
     "Logger", function(Logger) {
       return {
         figureOutState: function(idKey, scope, childObjects, comparison, callBack) {
-          var adds, mappedScopeModelIds, removals,
+          var adds, mappedScopeModelIds, removals, updates,
             _this = this;
           adds = [];
           mappedScopeModelIds = {};
           removals = [];
+          updates = [];
           return _async.each(scope.models, function(m) {
             var child;
             if (m[idKey] != null) {
@@ -789,8 +790,10 @@ Nicholas McCready - https://twitter.com/nmccready
               } else {
                 child = childObjects[m[idKey]];
                 if (!comparison(m, child.model)) {
-                  adds.push(m);
-                  return removals.push(child);
+                  return updates.push({
+                    model: m,
+                    child: child
+                  });
                 }
               }
             } else {
@@ -814,7 +817,8 @@ Nicholas McCready - https://twitter.com/nmccready
             }, function() {
               return callBack({
                 adds: adds,
-                removals: removals
+                removals: removals,
+                updates: updates
               });
             });
           });
@@ -1018,7 +1022,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.managers").factory("MarkerManager", [
-    "Logger", "FitHelper", function(Logger, FitHelper) {
+    "Logger", "FitHelper", "PropMap", function(Logger, FitHelper, PropMap) {
       var MarkerManager;
       MarkerManager = (function(_super) {
         __extends(MarkerManager, _super);
@@ -1034,59 +1038,45 @@ Nicholas McCready - https://twitter.com/nmccready
           this.remove = __bind(this.remove, this);
           this.addMany = __bind(this.addMany, this);
           this.add = __bind(this.add, this);
-          var self;
           MarkerManager.__super__.constructor.call(this);
-          self = this;
           this.gMap = gMap;
-          this.gMarkers = [];
+          this.gMarkers = new PropMap();
           this.$log = Logger;
           this.$log.info(this);
         }
 
-        MarkerManager.prototype.add = function(gMarker, optDraw, redraw) {
-          if (redraw == null) {
-            redraw = true;
+        MarkerManager.prototype.add = function(gMarker, optDraw) {
+          var exists;
+          if (optDraw == null) {
+            optDraw = true;
           }
-          this.handleOptDraw(gMarker, optDraw, redraw);
-          return this.gMarkers.push(gMarker);
+          exists = (this.gMarkers.get(gMarker.key)) != null;
+          if (!exists) {
+            this.handleOptDraw(gMarker, optDraw, true);
+            return this.gMarkers.put(gMarker.key, gMarker);
+          }
         };
 
         MarkerManager.prototype.addMany = function(gMarkers) {
-          var gMarker, _i, _len, _results;
-          _results = [];
-          for (_i = 0, _len = gMarkers.length; _i < _len; _i++) {
-            gMarker = gMarkers[_i];
-            _results.push(this.add(gMarker));
-          }
-          return _results;
+          var _this = this;
+          return gMarkers.forEach(function(gMarker) {
+            return _this.add(gMarker);
+          });
         };
 
         MarkerManager.prototype.remove = function(gMarker, optDraw) {
-          var index, tempIndex;
+          if (optDraw == null) {
+            optDraw = true;
+          }
           this.handleOptDraw(gMarker, optDraw, false);
-          if (!optDraw) {
-            return;
-          }
-          index = void 0;
-          if (this.gMarkers.indexOf != null) {
-            index = this.gMarkers.indexOf(gMarker);
-          } else {
-            tempIndex = 0;
-            _.find(this.gMarkers, function(marker) {
-              tempIndex += 1;
-              if (marker === gMarker) {
-                index = tempIndex;
-              }
-            });
-          }
-          if (index != null) {
-            return this.gMarkers.splice(index, 1);
+          if (this.gMarkers.get(gMarker.key)) {
+            return this.gMarkers.remove(gMarker.key);
           }
         };
 
         MarkerManager.prototype.removeMany = function(gMarkers) {
           var _this = this;
-          return this.gMarkers.forEach(function(marker) {
+          return this.gMarkers.values().forEach(function(marker) {
             return _this.remove(marker);
           });
         };
@@ -1095,7 +1085,7 @@ Nicholas McCready - https://twitter.com/nmccready
           var deletes,
             _this = this;
           deletes = [];
-          this.gMarkers.forEach(function(gMarker) {
+          this.gMarkers.values().forEach(function(gMarker) {
             if (!gMarker.isDrawn) {
               if (gMarker.doAdd) {
                 gMarker.setMap(_this.gMap);
@@ -1112,14 +1102,11 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerManager.prototype.clear = function() {
-          var gMarker, _i, _len, _ref;
-          _ref = this.gMarkers;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            gMarker = _ref[_i];
-            gMarker.setMap(null);
-          }
+          this.gMarkers.values().forEach(function(gMarker) {
+            return gMarker.setMap(null);
+          });
           delete this.gMarkers;
-          return this.gMarkers = [];
+          return this.gMarkers = new PropMap();
         };
 
         MarkerManager.prototype.handleOptDraw = function(gMarker, optDraw, doAdd) {
@@ -1137,7 +1124,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerManager.prototype.fit = function() {
-          return MarkerManager.__super__.fit.call(this, this.gMarkers, this.gMap);
+          return MarkerManager.__super__.fit.call(this, this.gMarkers.values(), this.gMap);
         };
 
         return MarkerManager;
@@ -1508,8 +1495,7 @@ Nicholas McCready - https://twitter.com/nmccready
         MarkerChildModel.include(EventsHelper);
 
         function MarkerChildModel(model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager, idKey) {
-          var self,
-            _this = this;
+          var _this = this;
           this.model = model;
           this.parentScope = parentScope;
           this.gMap = gMap;
@@ -1528,7 +1514,6 @@ Nicholas McCready - https://twitter.com/nmccready
           this.maybeSetScopeValue = __bind(this.maybeSetScopeValue, this);
           this.createMarker = __bind(this.createMarker, this);
           this.setMyScope = __bind(this.setMyScope, this);
-          self = this;
           if (this.model[this.idKey]) {
             this.id = this.model[this.idKey];
           }
@@ -1548,7 +1533,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
           }, true);
           this.$log = Logger;
-          this.$log.info(self);
+          this.$log.info(this);
           this.watchDestroy(this.scope);
         }
 
@@ -1632,14 +1617,13 @@ Nicholas McCready - https://twitter.com/nmccready
           if (scope.$id !== this.scope.$id || this.gMarker === void 0) {
             return;
           }
-          if ((scope.coords != null)) {
+          if (scope.coords != null) {
             if (!this.validateCoords(this.scope.coords)) {
               this.$log.error("MarkerChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(this.model)));
               return;
             }
             this.gMarker.setPosition(this.getCoords(scope.coords));
             this.gMarker.setVisible(this.validateCoords(scope.coords));
-            this.gMarkerManager.remove(this.gMarker);
             return this.gMarkerManager.add(this.gMarker);
           } else {
             return this.gMarkerManager.remove(this.gMarker);
@@ -1703,7 +1687,7 @@ Nicholas McCready - https://twitter.com/nmccready
         MarkerChildModel.prototype.watchDestroy = function(scope) {
           var _this = this;
           return scope.$on("$destroy", function() {
-            var self, _ref;
+            var _ref;
             if (_this.gMarker != null) {
               google.maps.event.clearListeners(_this.gMarker, 'click');
               if (((_ref = _this.parentScope) != null ? _ref.events : void 0) && _.isArray(_this.parentScope.events)) {
@@ -1712,9 +1696,8 @@ Nicholas McCready - https://twitter.com/nmccready
                 });
               }
               _this.gMarkerManager.remove(_this.gMarker, true);
-              delete _this.gMarker;
+              return delete _this.gMarker;
             }
-            return self = void 0;
           });
         };
 
@@ -2486,7 +2469,8 @@ Nicholas McCready - https://twitter.com/nmccready
         function MarkersParentModel(scope, element, attrs, mapCtrl, $timeout) {
           this.onDestroy = __bind(this.onDestroy, this);
           this.newChildMarker = __bind(this.newChildMarker, this);
-          this.pieceMealMarkers = __bind(this.pieceMealMarkers, this);
+          this.updateChild = __bind(this.updateChild, this);
+          this.pieceMeal = __bind(this.pieceMeal, this);
           this.reBuildMarkers = __bind(this.reBuildMarkers, this);
           this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
           this.validateScope = __bind(this.validateScope, this);
@@ -2526,7 +2510,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if (this.doRebuildAll) {
             return this.reBuildMarkers(scope);
           } else {
-            return this.pieceMealMarkers(scope);
+            return this.pieceMeal(scope);
           }
         };
 
@@ -2598,7 +2582,7 @@ Nicholas McCready - https://twitter.com/nmccready
           return this.createMarkersFromScratch(scope);
         };
 
-        MarkersParentModel.prototype.pieceMealMarkers = function(scope) {
+        MarkersParentModel.prototype.pieceMeal = function(scope) {
           var _this = this;
           if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.markerModels.length > 0) {
             return this.figureOutState(this.idKey, scope, this.scope.markerModels, this.modelKeyComparison, function(state) {
@@ -2615,16 +2599,28 @@ Nicholas McCready - https://twitter.com/nmccready
                 return _async.each(payload.adds, function(modelToAdd) {
                   return _this.newChildMarker(modelToAdd, scope);
                 }, function() {
-                  if (payload.adds.length > 0 || payload.removals.length > 0) {
-                    _this.gMarkerManager.draw();
-                    return scope.markerModels = _this.scope.markerModels;
-                  }
+                  return _async.each(payload.updates, function(update) {
+                    return _this.updateChild(update.child, update.model);
+                  }, function() {
+                    if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
+                      _this.gMarkerManager.draw();
+                      return scope.markerModels = _this.scope.markerModels;
+                    }
+                  });
                 });
               });
             });
           } else {
             return this.reBuildMarkers(scope);
           }
+        };
+
+        MarkersParentModel.prototype.updateChild = function(child, model) {
+          if (model[this.idKey] == null) {
+            this.$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
+            return;
+          }
+          return child.setMyScope(model, child.model);
         };
 
         MarkersParentModel.prototype.newChildMarker = function(model, scope) {
