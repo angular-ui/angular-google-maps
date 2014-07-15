@@ -6,11 +6,12 @@ describe "ModelKey Tests", ->
       @subject = new ModelKey(@scope)
 
   it "should eval model handle correctly", ->
-    model = {key: 'key'}
+    model = {key: 'key', sub: { foo: 'bar' }}
     expect(@subject.evalModelHandle()).toEqual(undefined)
     expect(@subject.evalModelHandle(model, 'self')).toEqual(model)
     expect(@subject.evalModelHandle(model, 'key')).toEqual('key')
     expect(@subject.evalModelHandle(model, 'foo')).toEqual(undefined)
+    expect(@subject.evalModelHandle(model, 'sub.foo')).toEqual('bar')
 
   it "should properly compare models", ->
     model1 = {coords: {latitude: 41, longitude: -27}}

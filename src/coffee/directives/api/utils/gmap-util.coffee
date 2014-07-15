@@ -92,7 +92,7 @@ angular.module("google-maps.directives.api.utils")
     getCoords: getCoords
 
     validateCoords: validateCoords
-    
+
     equalCoords: (coord1, coord2) ->
       getLatitude(coord1) == getLatitude(coord2) and
       getLongitude(coord1) == getLongitude(coord2)
@@ -195,4 +195,12 @@ angular.module("google-maps.directives.api.utils")
             bounds.extend points.getAt(i)
             i++
         map.fitBounds bounds
+        
+    getPath: (object, key) ->
+        obj = object
+        _.forEach(key.split("."), (value) ->
+          if obj then obj = obj[value]
+        )
+        
+        obj
 ]

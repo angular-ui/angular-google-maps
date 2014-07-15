@@ -667,6 +667,16 @@ Nicholas McCready - https://twitter.com/nmccready
             i++;
           }
           return map.fitBounds(bounds);
+        },
+        getPath: function(object, key) {
+          var obj;
+          obj = object;
+          _.forEach(key.split("."), function(value) {
+            if (obj) {
+              return obj = obj[value];
+            }
+          });
+          return obj;
         }
       };
     }
@@ -760,13 +770,13 @@ Nicholas McCready - https://twitter.com/nmccready
         }
 
         ModelKey.prototype.evalModelHandle = function(model, modelKey) {
-          if (model === void 0) {
+          if (model === void 0 || modelKey === void 0) {
             return void 0;
           }
           if (modelKey === 'self') {
             return model;
           } else {
-            return model[modelKey];
+            return GmapUtil.getPath(model, modelKey);
           }
         };
 

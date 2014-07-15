@@ -7,12 +7,12 @@ angular.module("google-maps.directives.api.utils")
             @idKey = undefined
 
         evalModelHandle: (model, modelKey) ->
-            if model == undefined
+            if model == undefined or modelKey == undefined
                 return undefined
             if modelKey == 'self'
                 model
             else #modelKey may use dot-notation
-                model[modelKey]
+                GmapUtil.getPath(model, modelKey)
 
         modelKeyComparison: (model1, model2) =>
             scope = if @scope.coords? then @scope else @parentScope
