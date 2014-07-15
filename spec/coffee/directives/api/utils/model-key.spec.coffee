@@ -15,10 +15,12 @@ describe "ModelKey Tests", ->
   it "should properly compare models", ->
     model1 = {coords: {latitude: 41, longitude: -27}}
     model2 = {coords: {latitude: 40, longitude: -27}}
+    model3 = {coords: { type: "Point", coordinates: [ -27, 40 ] }}
     expect(@subject.modelKeyComparison).toThrow("No scope or parentScope set!")
     @scope.coords = 'coords'
     expect(@subject.modelKeyComparison(model1, model1)).toEqual(true)
     expect(@subject.modelKeyComparison(model1, model2)).toEqual(false)
+    expect(@subject.modelKeyComparison(model2, model3)).toEqual(true)
 
   it "should properly set id key", ->
     expect(@subject.idKey).toEqual(undefined)

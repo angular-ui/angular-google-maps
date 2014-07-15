@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-14
+/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-15
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -439,7 +439,25 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps.directives.api.utils").service("GmapUtil", [
     "Logger", "$compile", function(Logger, $compile) {
-      var getCoords, validateCoords;
+      var getCoords, getLatitude, getLongitude, validateCoords;
+      getLatitude = function(value) {
+        if (Array.isArray(value) && value.length === 2) {
+          return value[1];
+        } else if (angular.isDefined(value.type) && value.type === "Point") {
+          return value.coordinates[1];
+        } else {
+          return value.latitude;
+        }
+      };
+      getLongitude = function(value) {
+        if (Array.isArray(value) && value.length === 2) {
+          return value[0];
+        } else if (angular.isDefined(value.type) && value.type === "Point") {
+          return value.coordinates[0];
+        } else {
+          return value.longitude;
+        }
+      };
       getCoords = function(value) {
         if (Array.isArray(value) && value.length === 2) {
           return new google.maps.LatLng(value[1], value[0]);
@@ -540,6 +558,9 @@ Nicholas McCready - https://twitter.com/nmccready
         },
         getCoords: getCoords,
         validateCoords: validateCoords,
+        equalCoords: function(coord1, coord2) {
+          return getLatitude(coord1) === getLatitude(coord2) && getLongitude(coord1) === getLongitude(coord2);
+        },
         validatePath: function(path) {
           var array, i, polygon, trackMaxVertices;
           i = 0;
@@ -724,7 +745,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.utils").factory("ModelKey", [
-    "BaseObject", function(BaseObject) {
+    "BaseObject", "GmapUtil", function(BaseObject, GmapUtil) {
       var ModelKey;
       return ModelKey = (function(_super) {
         __extends(ModelKey, _super);
@@ -755,7 +776,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if (scope == null) {
             throw "No scope or parentScope set!";
           }
-          return this.evalModelHandle(model1, scope.coords).latitude === this.evalModelHandle(model2, scope.coords).latitude && this.evalModelHandle(model1, scope.coords).longitude === this.evalModelHandle(model2, scope.coords).longitude;
+          return GmapUtil.equalCoords(this.evalModelHandle(model1, scope.coords), this.evalModelHandle(model2, scope.coords));
         };
 
         ModelKey.prototype.setIdKey = function(scope) {

@@ -1,5 +1,21 @@
 angular.module("google-maps.directives.api.utils")
 .service "GmapUtil",["Logger", "$compile", (Logger, $compile) ->
+    getLatitude = (value) ->
+        if Array.isArray(value) and value.length is 2
+            value[1]
+        else if angular.isDefined(value.type) and value.type is "Point"
+            value.coordinates[1]
+        else
+            value.latitude
+
+    getLongitude = (value) ->
+        if Array.isArray(value) and value.length is 2
+            value[0]
+        else if angular.isDefined(value.type) and value.type is "Point"
+            value.coordinates[0]
+        else
+            value.longitude
+
     getCoords = (value) ->
         if Array.isArray(value) and value.length is 2
             new google.maps.LatLng(value[1], value[0])
@@ -76,6 +92,10 @@ angular.module("google-maps.directives.api.utils")
     getCoords: getCoords
 
     validateCoords: validateCoords
+    
+    equalCoords: (coord1, coord2) ->
+      getLatitude(coord1) == getLatitude(coord2) and
+      getLongitude(coord1) == getLongitude(coord2)
 
     validatePath: (path) ->
       i = 0

@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api.utils")
-.factory "ModelKey", ["BaseObject", (BaseObject) ->
+.factory "ModelKey", ["BaseObject", "GmapUtil", (BaseObject, GmapUtil) ->
     class ModelKey extends BaseObject
         constructor: (@scope) ->
             super()
@@ -11,16 +11,14 @@ angular.module("google-maps.directives.api.utils")
                 return undefined
             if modelKey == 'self'
                 model
-            else
+            else #modelKey may use dot-notation
                 model[modelKey]
 
         modelKeyComparison: (model1, model2) =>
             scope = if @scope.coords? then @scope else @parentScope
             if not scope? then throw "No scope or parentScope set!"
-            @evalModelHandle(model1, scope.coords).latitude == @evalModelHandle(model2,
-                    scope.coords).latitude and
-            @evalModelHandle(model1, scope.coords).longitude == @evalModelHandle(model2,
-                    scope.coords).longitude
+            GmapUtil.equalCoords @evalModelHandle(model1, scope.coords), 
+                    @evalModelHandle(model2, scope.coords)
 
         setIdKey:(scope) =>
             @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
