@@ -48,13 +48,16 @@
         </td>
     </tr>
     <tr>
-        <td>idkey</td>
+        <td>idkey<br><span class="badge badge-info">New in v1.1</span></td>
         <td><span class="label label-info">expression</span></td>
         <td>
-            <span class="badge badge-info">New in v1.1</span>
+            
 
             <p>The name of the property in a model which identifies its key/id. This should be an integer
-                or numeric string. (not required) If the attribute is not defined they it defaults to the <code>model.id</code> field.</p>
+                or numeric string.</p>
+            <p>Although this attribute is optional (it defaults to the <code>model.id</code> field), 
+                a model Id is required and must be present in the specified property in model or in the <code>model.id</code> 
+                field if this attribute is not specified</p>
         </td>
     </tr>
     <tr>
