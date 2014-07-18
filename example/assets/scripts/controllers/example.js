@@ -182,6 +182,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
       clusterOptions: {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2,
         imageExtension: 'png', imagePath: 'assets/images/cluster', imageSizes: [72]},
       clickedMarker: {
+        id: 0,
         title: 'You clicked here',
         latitude: null,
         longitude: null
@@ -197,6 +198,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
 
           if (!$scope.map.clickedMarker) {
             $scope.map.clickedMarker = {
+              id: 0,
               title: 'You clicked here',
               latitude: e.latLng.lat(),
               longitude: e.latLng.lng()
@@ -204,6 +206,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           }
           else {
             var marker = {
+              id: 0,
               latitude: e.latLng.lat(),
               longitude: e.latLng.lng()
             };
@@ -519,6 +522,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
   };
 
   $scope.searchLocationMarker = {
+    id: 0,
     coords: {
       latitude: 40.1451,
       longitude: -99.6680

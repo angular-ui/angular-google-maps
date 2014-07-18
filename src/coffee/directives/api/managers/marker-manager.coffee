@@ -10,6 +10,10 @@ angular.module("google-maps.directives.api.managers")
       @$log.info(@)
 
     add: (gMarker, optDraw = true)=>
+      unless gMarker.key?
+        msg = "gMarker.key undefined and it is REQUIRED!!"
+        Logger.error msg
+        throw msg
       exists = (@gMarkers.get gMarker.key)?
       if !exists
         @handleOptDraw(gMarker, optDraw, true)

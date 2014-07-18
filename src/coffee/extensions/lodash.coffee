@@ -58,3 +58,7 @@ _.extends=(arrayOfObjectsToCombine)->
     _.reduce arrayOfObjectsToCombine,(combined,toAdd)->
         _.extend(combined,toAdd)
     ,{}#starting point empty object
+
+
+_.isNullOrUndefined = (thing) ->
+  _.isNull thing or _.isUndefined thing

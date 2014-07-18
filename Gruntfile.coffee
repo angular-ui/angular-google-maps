@@ -22,6 +22,7 @@ module.exports = (grunt) ->
             coffee: ["tmp/output_coffee.js", "tmp"]
             dist: ["dist/*", "tmp"]
             example: ["example/<%= pkg.name %>.js"]
+            spec: ["_Spec*"]
 
         mkdir:
             all:
@@ -74,11 +75,12 @@ module.exports = (grunt) ->
                 separator: ";"
 
             dist:
-                src: ["tmp/output_coffee.js",
-                      "src/js/**/*.js", #this all will only work if the dependency orders do not matter
-                      "src/js/**/**/*.js",
-                      "src/js/**/**/**/*.js",
-                      "lib/*.js"]
+                src: [
+                    "lib/*.js"
+                    "tmp/output_coffee.js"
+                    "src/js/**/*.js" #this all will only work if the dependency orders do not matter
+                    "src/js/**/**/*.js"
+                    "src/js/**/**/**/*.js"]
                 dest: "tmp/output.js"
 
         copy:

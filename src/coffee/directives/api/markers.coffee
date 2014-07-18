@@ -4,7 +4,6 @@ angular.module("google-maps.directives.api")
             constructor: ($timeout) ->
                 super($timeout)
                 @template = '<span class="angular-google-map-markers" ng-transclude></span>'
-                @scope.idKey = '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
                 @scope.doRebuildAll = '=dorebuildall' #root level directive attribute not a model level, should default to false
                 @scope.models = '=models'
                 @scope.doCluster = '=docluster'
