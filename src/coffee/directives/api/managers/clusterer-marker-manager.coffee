@@ -6,11 +6,11 @@ angular.module("google-maps.directives.api.managers")
         self = @
         @opt_options = opt_options
         if opt_options? and opt_markers == undefined
-          @clusterer = new MarkerClusterer(gMap, undefined, opt_options)
+          @clusterer = new NgMapMarkerClusterer(gMap, undefined, opt_options)
         else if opt_options? and opt_markers?
-          @clusterer = new MarkerClusterer(gMap, opt_markers, opt_options)
+          @clusterer = new NgMapMarkerClusterer(gMap, opt_markers, opt_options)
         else
-          @clusterer = new MarkerClusterer(gMap)
+          @clusterer = new NgMapMarkerClusterer(gMap)
         @propMapGMarkers = new PropMap() #keep in sync with cluster.markers_
 
         @attachEvents @opt_events, "opt_events"
@@ -27,12 +27,9 @@ angular.module("google-maps.directives.api.managers")
       add: (gMarker)=>
         @checkKey gMarker
         exists = @propMapGMarkers.get(gMarker.key)?
-        if exists #u must add and remove and #flash otherwise Clusters will not update
-          @remove gMarker
 
         @clusterer.addMarker(gMarker, @noDrawOnSingleAddRemoves)
         @propMapGMarkers.put gMarker.key,gMarker
-        @draw() if exists
         @checkSync()
 
       addMany: (gMarkers)=>
@@ -81,7 +78,7 @@ angular.module("google-maps.directives.api.managers")
         super @getGMarkers(), @clusterer.getMap()
 
       getGMarkers: =>
-        @clusterer.getMarkers()
+        @clusterer.getMarkers().values()
 
       checkSync: =>
         throw "GMarkers out of Sync in MarkerClusterer" if @getGMarkers().length != @propMapGMarkers.length

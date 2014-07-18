@@ -151,7 +151,7 @@ angular.module("google-maps.directives.api.models.parent")
                 @origClusterEvents[fnName](pair.cluster,pair.mapped) if @origClusterEvents[fnName]
 
             mapClusterToMarkerModels:(cluster) ->
-                gMarkers = cluster.getMarkers()
+                gMarkers = cluster.getMarkers().values()
                 mapped = gMarkers.map (g) =>
                     @scope.markerModels[g.key].model
                 cluster: cluster
