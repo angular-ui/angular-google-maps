@@ -28,7 +28,7 @@ describe "MarkerParentModel", ->
         @clicked = false
         self = @
         @scope =
-            id: 0
+            idKey: 0
             icon: 'icon.png'
             coords:
                 latitude: 90

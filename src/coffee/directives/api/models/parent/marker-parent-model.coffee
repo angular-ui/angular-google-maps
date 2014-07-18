@@ -60,7 +60,7 @@ angular.module("google-maps.directives.api.models.parent")
             @gMarkerManager.remove @scope.gMarker, false
           @scope.gMarker = gMarker
           if @scope.gMarker
-            @scope.gMarker.key = @scope[@idKey]
+            @scope.gMarker.key = @scope.idKey
             @gMarkerManager.add @scope.gMarker, false
             @gMarkerManager.fit() if @doFit
 

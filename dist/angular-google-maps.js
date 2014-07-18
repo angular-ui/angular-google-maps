@@ -5574,7 +5574,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           this.scope.gMarker = gMarker;
           if (this.scope.gMarker) {
-            this.scope.gMarker.key = this.scope[this.idKey];
+            this.scope.gMarker.key = this.scope.idKey;
             this.gMarkerManager.add(this.scope.gMarker, false);
             if (this.doFit) {
               return this.gMarkerManager.fit();
