@@ -15,4 +15,7 @@ angular.module("google-maps.directives.api")
         doFit = true if scope.fit
         @gMarkerManager = new MarkerManager ctrl.getMap() unless @gMarkerManager
         new MarkerParentModel scope, element, attrs, ctrl, @$timeout, @gMarkerManager, doFit
+
+        if scope.control?
+          scope.control.getGMarkers = @gMarkerManager.getGMarkers
   ]

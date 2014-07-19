@@ -5,7 +5,7 @@ describe "markers directive test", ->
     module("google-maps")
     module("google-maps.directives.api.utils")
 
-    inject ($rootScope, $timeout, $compile, GoogleApiMock) =>
+    inject ($rootScope, $timeout, $compile, GoogleApiMock, Markers) =>
       @rootScope = $rootScope
       @timeout = $timeout
       @compile = $compile
@@ -15,6 +15,7 @@ describe "markers directive test", ->
       @markerCount = 0
       @marker = (opts) => @markerCount++
       @marker.prototype = @apiMock.getMarker().prototype
+      @subject = Markers
       @apiMock.mockMarker(@marker)
 
   xit "should add markers for each object in model", ->
@@ -45,3 +46,5 @@ describe "markers directive test", ->
     @timeout.flush()
     expect(@markerCount).toEqual(1)
 
+  it "exists", ->
+    expect(@subject).toBeDefined()

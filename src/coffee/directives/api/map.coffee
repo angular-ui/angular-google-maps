@@ -17,15 +17,15 @@ angular.module("google-maps.directives.api")
             template: '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>'
 
             scope:
-                center: "=center" # required
-                zoom: "=zoom" # required
-                dragging: "=dragging" # optional
+                center: "=" # required
+                zoom: "=" # required
+                dragging: "=" # optional
                 control: "=" # optional
-                windows: "=windows" # optional  TODO is this still needed looks like dead code
-                options: "=options" # optional
-                events: "=events" # optional
-                styles: "=styles" # optional
-                bounds: "=bounds"
+                windows: "=" # optional  TODO is this still needed looks like dead code
+                options: "=" # optional
+                events: "=" # optional
+                styles: "=" # optional
+                bounds: "="
 
             controller: ["$scope", ($scope) ->
                 #@return the map instance

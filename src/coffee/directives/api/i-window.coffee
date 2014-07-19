@@ -14,13 +14,14 @@ angular.module("google-maps.directives.api")
             @require = undefined
             @replace = true
             @scope = {
-                coords: '=coords',
-                show: '=show',
-                templateUrl: '=templateurl',
-                templateParameter: '=templateparameter',
-                isIconVisibleOnClick: '=isiconvisibleonclick',
+                coords: '=',
+                show: '=',
+                templateUrl: '=',
+                templateParameter: '=',
+                isIconVisibleOnClick: '=',
                 closeClick: '&closeclick', #scope glue to gmap InfoWindow closeclick
-                options: '=options'
+                options: '='
+                control: '='
             }
             @$log = Logger
 

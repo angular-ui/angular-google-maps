@@ -8,6 +8,7 @@ angular.module("google-maps.directives.api")
                 @require = ['^googleMap', '^?marker']
                 @template = '<span class="angular-google-maps-window" ng-transclude></span>'
                 @$log.info(self)
+                @childWindows = []
 
             link: (scope, element, attrs, ctrls) =>
                 @$timeout(=>
@@ -22,10 +23,13 @@ angular.module("google-maps.directives.api")
                     opts = if hasScopeCoords then @createWindowOptions(markerCtrl, scope, element.html(), defaults) else defaults
 
                     if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
-                        window = new WindowChildModel {}, scope, opts, isIconVisibleOnClick, mapCtrl,
-                                markerCtrl, element
+                        window = new WindowChildModel {}, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, element
+                        @childWindows.push window
+
                     scope.$on "$destroy", =>
-                        window.destroy()
+                        @childWindows.forEach (window) ->
+                            window.destroy()
+                        @childWindows.length = 0
 
                     if ctrls[1]?
                         markerScope = ctrls[1].getMarkerScope()
@@ -35,6 +39,13 @@ angular.module("google-maps.directives.api")
                             if !angular.equals(newValue, oldValue)
                               window.getLatestPosition()
                         , true
+
+                    if scope.control?
+                        scope.control.getGWindows = =>
+                            @childWindows.map (child)=>
+                                child.gWin
+                        scope.control.getChildWindows = =>
+                            @childWindows
 
                     @onChildCreation(window) if @onChildCreation? and window?
                 , GmapUtil.defaultDelay + 25)

@@ -19,13 +19,14 @@ angular.module("google-maps.directives.api")
         @transclude = true
         @replace = true
         @scope =
-          coords: '=coords'
-          icon: '=icon'
+          coords: '='
+          icon: '='
           click: '&click'
-          options: '=options'
-          events: '=events'
-          fit: '=fit'
-          idKey: '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
+          options: '='
+          events: '='
+          fit: '='
+          idKey: '=' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
+          control: '='
 
       controller: ['$scope', '$element', ($scope, $element) ->
         throw new Exception("Not Implemented!!")

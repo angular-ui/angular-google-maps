@@ -6609,13 +6609,14 @@ Nicholas McCready - https://twitter.com/nmccready
           this.transclude = true;
           this.replace = true;
           this.scope = {
-            coords: '=coords',
-            icon: '=icon',
+            coords: '=',
+            icon: '=',
             click: '&click',
-            options: '=options',
-            events: '=events',
-            fit: '=fit',
-            idKey: '=idkey'
+            options: '=',
+            events: '=',
+            fit: '=',
+            idKey: '=',
+            control: '='
           };
         }
 
@@ -6718,13 +6719,14 @@ Nicholas McCready - https://twitter.com/nmccready
           this.require = void 0;
           this.replace = true;
           this.scope = {
-            coords: '=coords',
-            show: '=show',
-            templateUrl: '=templateurl',
-            templateParameter: '=templateparameter',
-            isIconVisibleOnClick: '=isiconvisibleonclick',
+            coords: '=',
+            show: '=',
+            templateUrl: '=',
+            templateParameter: '=',
+            isIconVisibleOnClick: '=',
             closeClick: '&closeclick',
-            options: '=options'
+            options: '=',
+            control: '='
           };
           this.$log = Logger;
         }
@@ -6774,15 +6776,15 @@ Nicholas McCready - https://twitter.com/nmccready
         Map.prototype.template = '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>';
 
         Map.prototype.scope = {
-          center: "=center",
-          zoom: "=zoom",
-          dragging: "=dragging",
+          center: "=",
+          zoom: "=",
+          dragging: "=",
           control: "=",
-          windows: "=windows",
-          options: "=options",
-          events: "=events",
-          styles: "=styles",
-          bounds: "=bounds"
+          windows: "=",
+          options: "=",
+          events: "=",
+          styles: "=",
+          bounds: "="
         };
 
         Map.prototype.controller = [
@@ -7074,7 +7076,10 @@ Nicholas McCready - https://twitter.com/nmccready
           if (!this.gMarkerManager) {
             this.gMarkerManager = new MarkerManager(ctrl.getMap());
           }
-          return new MarkerParentModel(scope, element, attrs, ctrl, this.$timeout, this.gMarkerManager, doFit);
+          new MarkerParentModel(scope, element, attrs, ctrl, this.$timeout, this.gMarkerManager, doFit);
+          if (scope.control != null) {
+            return scope.control.getGMarkers = this.gMarkerManager.getGMarkers;
+          }
         };
 
         return Marker;
@@ -7091,7 +7096,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Markers", [
-    "IMarker", "MarkersParentModel", function(IMarker, MarkersParentModel) {
+    "IMarker", "MarkersParentModel", '$timeout', function(IMarker, MarkersParentModel, $timeout) {
       var Markers;
       return Markers = (function(_super) {
         __extends(Markers, _super);
@@ -7125,7 +7130,18 @@ Nicholas McCready - https://twitter.com/nmccready
         ];
 
         Markers.prototype.link = function(scope, element, attrs, ctrl) {
-          return new MarkersParentModel(scope, element, attrs, ctrl, this.$timeout);
+          var parentModel,
+            _this = this;
+          parentModel = new MarkersParentModel(scope, element, attrs, ctrl, this.$timeout);
+          if (scope.control != null) {
+            scope.control.getGMarkers = function() {
+              var _ref;
+              return (_ref = parentModel.gMarkerManager) != null ? _ref.getGMarkers() : void 0;
+            };
+            return scope.control.getChildMarkers = function() {
+              return parentModel.markerModels;
+            };
+          }
         };
 
         return Markers;
@@ -7235,6 +7251,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.require = ['^googleMap', '^?marker'];
           this.template = '<span class="angular-google-maps-window" ng-transclude></span>';
           this.$log.info(self);
+          this.childWindows = [];
         }
 
         Window.prototype.link = function(scope, element, attrs, ctrls) {
@@ -7252,9 +7269,13 @@ Nicholas McCready - https://twitter.com/nmccready
             opts = hasScopeCoords ? _this.createWindowOptions(markerCtrl, scope, element.html(), defaults) : defaults;
             if (mapCtrl != null) {
               window = new WindowChildModel({}, scope, opts, isIconVisibleOnClick, mapCtrl, markerCtrl, element);
+              _this.childWindows.push(window);
             }
             scope.$on("$destroy", function() {
-              return window.destroy();
+              _this.childWindows.forEach(function(window) {
+                return window.destroy();
+              });
+              return _this.childWindows.length = 0;
             });
             if (ctrls[1] != null) {
               markerScope = ctrls[1].getMarkerScope();
@@ -7266,6 +7287,16 @@ Nicholas McCready - https://twitter.com/nmccready
                   return window.getLatestPosition();
                 }
               }, true);
+            }
+            if (scope.control != null) {
+              scope.control.getGWindows = function() {
+                return _this.childWindows.map(function(child) {
+                  return child.gWin;
+                });
+              };
+              scope.control.getChildWindows = function() {
+                return _this.childWindows;
+              };
             }
             if ((_this.onChildCreation != null) && (window != null)) {
               return _this.onChildCreation(window);
@@ -7311,7 +7342,18 @@ Nicholas McCready - https://twitter.com/nmccready
         }
 
         Windows.prototype.link = function(scope, element, attrs, ctrls) {
-          return new WindowsParentModel(scope, element, attrs, ctrls, this.$timeout, this.$compile, this.$http, this.$templateCache, this.$interpolate);
+          var parentModel;
+          parentModel = new WindowsParentModel(scope, element, attrs, ctrls, this.$timeout, this.$compile, this.$http, this.$templateCache, this.$interpolate);
+          if (scope.control != null) {
+            scope.control.getGWindows = function() {
+              return parentModel.windows.map(function(child) {
+                return child.gWin;
+              });
+            };
+            return scope.control.getChildWindows = function() {
+              return parentModel.windows;
+            };
+          }
         };
 
         return Windows;
