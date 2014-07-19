@@ -21,9 +21,9 @@ angular.module("google-maps.directives.api")
           @$compile, @$http, @$templateCache, @$interpolate)
 
       if scope.control?
-        scope.control.getGWindows = ->
+        scope.control.getGWindows = =>
           parentModel.windows.map (child)->
             child.gWin
-        scope.control.getChildWindows = ->
+        scope.control.getChildWindows = =>
           parentModel.windows
 ]
