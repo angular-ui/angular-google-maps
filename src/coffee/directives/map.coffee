@@ -35,6 +35,7 @@ Nick Baugh - https://github.com/niftylettuce
 
 #globals directives,google
 angular.module("google-maps")
-.directive "googleMap", ["Map", (Map) ->
+.directive "googleMap", ["Map", "googleMaps","ngMapsGoogleMapsUtilV3", (Map, gMapsPromise, toolsV3) ->
+  gMapsPromise.then (gMapsPromise) ->
     new Map()
 ]

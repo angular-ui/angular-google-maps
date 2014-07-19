@@ -1,12 +1,12 @@
-(function () {
-  var module = angular.module("angular-google-maps-example", ["google-maps"]);
-}());
-
-var rndAddToLatLon = function () {
+angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLatLon",function () {
   return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1)
-}
-
-function ExampleController($scope, $timeout, $log, $http, Logger) {
+}).config(['googleMapsProvider', function(googleMapsProvider) {
+  googleMapsProvider.configure({
+//    key: 'your api key',
+    v:'3.15',
+    libraries: 'weather,geometry,visualization'
+  });
+}]).controller("ExampleController", function ($scope, $timeout, $log, $http, rndAddToLatLon) {
   Logger.doLog = true
   // Enable the new Google Maps visuals until it gets enabled by default.
   // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
@@ -592,4 +592,4 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
     });
     $scope.map.dynamicMarkers = dynamicMarkers;
   }, 2000);
-}
+});

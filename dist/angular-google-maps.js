@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.8 2014-07-10
+/*! angular-google-maps 1.1.8 2014-07-19
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -36,6 +36,8 @@ Nicholas McCready - https://twitter.com/nmccready
 
 
 (function() {
+  angular.module("google-maps.providers", []);
+
   angular.module("google-maps.directives.api.utils", []);
 
   angular.module("google-maps.directives.api.managers", []);
@@ -46,7 +48,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
   angular.module("google-maps.directives.api", ["google-maps.directives.api.models.parent"]);
 
-  angular.module("google-maps", ["google-maps.directives.api"]).factory("debounce", [
+  angular.module("google-maps", ["google-maps.providers", "google-maps.directives.api"]).factory("debounce", [
     "$timeout", function($timeout) {
       return function(fn) {
         var nthCall;
@@ -223,6 +225,51 @@ Nicholas McCready - https://twitter.com/nmccready
       return _.extend(combined, toAdd);
     }, {});
   };
+
+}).call(this);
+
+(function() {
+  angular.module("google-maps.providers").service('gMapsService', [
+    '$q', 'options', function($q, options) {
+      var deferred, q, randomizedFunctionName, script;
+      deferred = $q.defer();
+      if (_.isDefined(window.google) && _.isDefined(window.google.maps)) {
+        deferred.resolve(window.google.maps);
+        return deferred.promise;
+      }
+      randomizedFunctionName = options.callback = "onGoogleMapsReady" + Math.round(Math.random() * 1000);
+      window[randomizedFunctionName] = function() {
+        window[randomizedFunctionName] = null;
+        deferred.resolve(window.google.maps);
+      };
+      q = _.map(options, function(v, k) {
+        return k + "=" + v;
+      });
+      q = q.join("&");
+      script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = "https://maps.googleapis.com/maps/api/js?" + q;
+      document.body.appendChild(script);
+      return deferred.promise;
+    }
+  ]).provider('googleMaps', [
+    'gMapsService', function(gMapsService) {
+      this.options = {
+        v: "3.15",
+        libraries: "places",
+        language: "en",
+        sensor: "false"
+      };
+      this.configure = function(options) {
+        angular.extend(this.options, options);
+      };
+      return this.$get = [
+        "$q", function($q) {
+          return new gMapsService($q, this.options);
+        }
+      ];
+    }
+  ]);
 
 }).call(this);
 
@@ -441,6 +488,9 @@ Nicholas McCready - https://twitter.com/nmccready
     "Logger", "$compile", function(Logger, $compile) {
       var getCoords, validateCoords;
       getCoords = function(value) {
+        if (!value) {
+          return;
+        }
         if (Array.isArray(value) && value.length === 2) {
           return new google.maps.LatLng(value[1], value[0]);
         } else if (angular.isDefined(value.type) && value.type === "Point") {
@@ -4063,8 +4113,10 @@ Nick Baugh - https://github.com/niftylettuce
 
 (function() {
   angular.module("google-maps").directive("googleMap", [
-    "Map", function(Map) {
-      return new Map();
+    "Map", "googleMaps", "ngMapsGoogleMapsUtilV3", function(Map, gMapsPromise, toolsV3) {
+      return gMapsPromise.then(function(gMapsPromise) {
+        return new Map();
+      });
     }
   ]);
 
@@ -4117,8 +4169,10 @@ This directive creates a new scope.
 
 (function() {
   angular.module("google-maps").directive("marker", [
-    "$timeout", "Marker", function($timeout, Marker) {
-      return new Marker($timeout);
+    "$timeout", "Marker", "googleMaps", function($timeout, Marker, gMapsPromise) {
+      return gMapsPromise.then(function(gMapsPromise) {
+        return new Marker($timeout);
+      });
     }
   ]);
 
@@ -5153,7 +5207,14 @@ This directive creates a new scope.
   ]);
 
 }).call(this);
-;/**
+;angular.module('google-maps.providers')
+    .provider('ngMapsGoogleMapsUtilV3', ['googleMaps', function (googleMaps) {
+      googleMaps.then(function (googleMaps) {
+        /*! angular-google-maps 1.1.8 2014-07-19
+ *  AngularJS directives for Google Maps
+ *  git: https://github.com/nlaplante/angular-google-maps.git
+ */
+/**
  * @name InfoBox
  * @version 1.1.12 [December 11, 2012]
  * @author Gary Little (inspired by proof-of-concept code from Pamela Fox of Google)
@@ -8188,3 +8249,5 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
   // ... then deal with the label:
   this.label.setMap(theMap);
 };
+      })
+    }]);

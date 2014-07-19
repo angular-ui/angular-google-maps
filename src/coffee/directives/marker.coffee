@@ -41,6 +41,7 @@ This directive creates a new scope.
 {attribute animate optional} if set to false, the marker won't be animated (on by default)
 ###
 angular.module("google-maps")
-.directive "marker", ["$timeout", "Marker", ($timeout, Marker) ->
-    new Marker($timeout)
+.directive "marker", ["$timeout", "Marker", "googleMaps", ($timeout, Marker, gMapsPromise) ->
+    gMapsPromise.then (gMapsPromise) ->
+      new Marker($timeout)
 ]

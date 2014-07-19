@@ -14,6 +14,7 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks "grunt-contrib-coffee"
     grunt.loadNpmTasks "grunt-contrib-jasmine"
     grunt.loadNpmTasks "grunt-conventional-changelog"
+    grunt.loadNpmTasks 'grunt-replace'
 
     options =
         # Project configuration.
@@ -35,6 +36,7 @@ module.exports = (grunt) ->
                     "tmp/output_coffee.js": [
                         "src/coffee/module.coffee"
                         "src/coffee/extensions/*.coffee"
+                        "src/coffee/providers/*.coffee"
                         "src/coffee/directives/api/utils/*.coffee"
                         "src/coffee/directives/api/managers/*.coffee"
 
@@ -77,9 +79,21 @@ module.exports = (grunt) ->
                       "src/js/**/*.js", #this all will only work if the dependency orders do not matter
                       "src/js/**/**/*.js",
                       "src/js/**/**/**/*.js",
-                      "lib/*.js"]
+                      '!src/js/providers/ngMapsGoogleMapsUtilV3.js'
+                      "tmp/wrapped_libs.js"]
                 dest: "tmp/output.js"
 
+            libs:
+                src: ["lib/*.js"]
+                dest: "tmp/libs.js"
+        replace:
+            dist:
+                options:
+                    patterns: [
+                        {match: 'REPLACE_W_LIBS', replacement: '<%= grunt.file.read("tmp/libs.js") %>'}
+                    ]
+                src: 'src/js/providers/ngMapsGoogleMapsUtilV3.js'
+                dest: 'tmp/wrapped_libs.js'
         copy:
             dist:
                 files: [
@@ -99,7 +113,8 @@ module.exports = (grunt) ->
 
         jshint:
             all: ["Gruntfile.js", "temp/spec/js/*.js", "temp/spec/js/**/*.js", "temp/spec/js/**/**/*.js",
-                  "src/js/**/*.js", "src/js/**/**/*.js","src/js/**/**/**/*.js"
+                  "src/js/**/*.js", "src/js/**/**/*.js","src/js/**/**/**/*.js", "!src/js/providers/ngMapsGoogleMapsUtilV3.js",
+                  "!lib/*.js"
             ]
 
         test: {}
@@ -164,14 +179,14 @@ module.exports = (grunt) ->
 
 
     # Default task: build a release in dist/
-    grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
+    grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace","concat:dist","copy:dist",
                                  "uglify", "jasmine:spec"]
 
     # run default "grunt" prior to generate _SpecRunner.html
-    grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
+    grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace","concat:dist", "copy:dist",
                                 "connect:jasmineServer", "uglify", "open:jasmine", "watch:spec"]
 
-    grunt.registerTask "coverage", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
+    grunt.registerTask "coverage", ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace","concat:dist", "copy:dist",
                                  "uglify", "jasmine:coverage"]
 
     # Run the example page by creating a local copy of angular-google-maps.js
