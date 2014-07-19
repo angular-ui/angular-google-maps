@@ -115,8 +115,11 @@ angular.module("google-maps.directives.api.models.child")
                     else
                         @hideWindow()
 
-                getLatestPosition: () =>
-                    @gWin.setPosition @markerCtrl.getPosition() if @gWin? and @markerCtrl?
+                getLatestPosition: (overridePos) =>
+                    if @gWin? and @markerCtrl? and not overridePos
+                        @gWin.setPosition @markerCtrl.getPosition()
+                    else
+                      @gWin.setPosition overridePos if overridePos
 
                 hideWindow: () =>
                   @gWin.close() if @gWin? and @gWin.isOpen()

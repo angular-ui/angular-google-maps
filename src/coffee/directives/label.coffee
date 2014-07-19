@@ -53,12 +53,22 @@ angular.module("google-maps")
             @$log.info(@)
         link: (scope, element, attrs, ctrl) =>
             @$timeout( =>
-                markerCtrl = ctrl.getMarkerScope().gMarker
-                if markerCtrl?
-                    label = new MarkerLabelChildModel(markerCtrl, scope)
+                markerScope = ctrl.getMarkerScope()
+                if markerScope
+                    if not markerScope.isReady
+                        @init markerScope,scope
+                        return
+                    markerScope.isReady.then =>
+                        @init markerScope,scope
+            ,GmapUtil.defaultDelay + 150)
+
+        init:(markerScope,scope)=>
+            markerScope.$watch 'gMarker', (oldVal,newVal) =>
+                return unless newVal
+                if markerScope.gMarker?
+                    label = new MarkerLabelChildModel markerScope.gMarker, scope
                 scope.$on("$destroy", =>
-                    label.destroy()
+                    label?.destroy()
                 )
-            ,GmapUtil.defaultDelay + 25)
     new Label($timeout)
 ]
