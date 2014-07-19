@@ -51,12 +51,12 @@
         <td>idkey<br><span class="badge badge-info">New in v1.1</span></td>
         <td><span class="label label-info">expression</span></td>
         <td>
-            
+
 
             <p>The name of the property in a model which identifies its key/id. This should be an integer
                 or numeric string.</p>
-            <p>Although this attribute is optional (it defaults to the <code>model.id</code> field), 
-                a model Id is required and must be present in the specified property in model or in the <code>model.id</code> 
+            <p>Although this attribute is optional (it defaults to the <code>model.id</code> field),
+                a model Id is required and must be present in the specified property in model or in the <code>model.id</code>
                 field if this attribute is not specified</p>
         </td>
     </tr>
@@ -146,6 +146,33 @@ $scope.clickEventsObject =
                 rel="external">MarkerOptions</a>.
         </td>
     </tr>
+    <tr>
+        <td>control</td>
+        <td><span class="label label-default">Object</span></td>
+        <td>
+            <span class="badge badge-info">New in v1.2.0</span>
+            <p></p>
+            <code>{}</code> otherwise <code>undefined / null </code>
+            <p></p>
+            If some object is passed (via scope binding) functionality is appended to that object. This allows you to get "control" of some
+            underlying logic of the marker directive..
+            <br>
+            <p>
+                The following functions are added:
+            </p>
+            <p></p>
+            <p><code>getGMarkers() </code> - Array of all the google.markers associated with this directive</p>
+            <p>example</p>
+            <code>$scope.markerControl.getGMarkers();</code>
+            <p><code>getChildMarkers() </code> - PropMap() (see code) all child objects which encapsulate gMarkers.</p>
+            <p>example: get all ChildMarkers as an array</p>
+            <code>$scope.markerControl.getChildMarkers().values();</code>
+            <p>example: get a specific ChildMarker by id/idKey</p>
+            <code>$scope.markerControl.getChildMarkers()[id]
+                <br/>
+                or $scope.markerControl.getChildMarkers().get(id)</code>
+        </td>
+    </tr>
     </tbody>
 </table>
 
@@ -190,6 +217,7 @@ $scope.clickEventsObject =
              click="'{string or expression to a function}'"
 
              events="not supported yet..."
+             control='{expression}'
             >
     </markers>
 </script>
