@@ -202,13 +202,6 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         dragend: function () {
           self = this;
           $timeout(function () {
-//                        modified = _.map($scope.map.mexiMarkers, function (marker) {
-//                            return {
-//                                latitude: marker.latitude + rndAddToLatLon(),
-//                                longitude: marker.longitude + rndAddToLatLon()
-//                            }
-//                        })
-//                        $scope.map.mexiMarkers = modified;
             var markers = [];
             var id = 0;
             if ($scope.map.mexiMarkers !== null && $scope.map.mexiMarkers.length > 0) {

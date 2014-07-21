@@ -6,63 +6,63 @@ angular.module("google-maps.directives.api.models.child")
             super()
             self = @
 
-            @marker = gMarker
-            @marker.set("labelContent", opt_options.labelContent)
-            @marker.set("labelAnchor", @getLabelPositionPoint(opt_options.labelAnchor))
-            @marker.set("labelClass", opt_options.labelClass || 'labels')
-            @marker.set("labelStyle", opt_options.labelStyle || { opacity: 100 })
-            @marker.set("labelInBackground", opt_options.labelInBackground || false;)
+            @gMarker = gMarker
+            @gMarker.set("labelContent", opt_options.labelContent)
+            @gMarker.set("labelAnchor", @getLabelPositionPoint(opt_options.labelAnchor))
+            @gMarker.set("labelClass", opt_options.labelClass || 'labels')
+            @gMarker.set("labelStyle", opt_options.labelStyle || { opacity: 100 })
+            @gMarker.set("labelInBackground", opt_options.labelInBackground || false;)
 
             if !opt_options.labelVisible
-                @marker.set("labelVisible", true)
+                @gMarker.set("labelVisible", true)
 
             if !opt_options.raiseOnDrag
-                @marker.set("raiseOnDrag", true)
+                @gMarker.set("raiseOnDrag", true)
 
             if !opt_options.clickable
-                @marker.set("clickable", true)
+                @gMarker.set("clickable", true)
 
             if !opt_options.draggable
-                @marker.set("draggable", false)
+                @gMarker.set("draggable", false)
 
             if !opt_options.optimized
-                @marker.set("optimized", false)
+                @gMarker.set("optimized", false)
 
             #TODO: This should be overrideable and only gets set as a default if nothing is defined
             opt_options.crossImage = opt_options.crossImage ? document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/drag_cross_67_16.png";
             opt_options.handCursor = opt_options.handCursor ? document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/closedhand_8_8.cur";
 
-            @markerLabel = new MarkerLabel_(@marker, opt_options.crossImage, opt_options.handCursor)
+            @gMarkerLabel = new MarkerLabel_(@gMarker, opt_options.crossImage, opt_options.handCursor)
 
-            @marker.set("setMap", (theMap)->
+            @gMarker.set("setMap", (theMap)->
                 google.maps.Marker.prototype.setMap.apply(this, arguments);
-                self.markerLabel.setMap(theMap)
+                self.gMarkerLabel.setMap(theMap)
             )
 
-            @marker.setMap(@marker.getMap())
+            @gMarker.setMap(@gMarker.getMap())
 
         getSharedCross: (crossUrl)=>
-            @markerLabel.getSharedCross(crossUrl)
+            @gMarkerLabel.getSharedCross(crossUrl)
         setTitle: ()=>
-            @markerLabel.setTitle()
+            @gMarkerLabel.setTitle()
         setContent: ()=>
-            @markerLabel.setContent()
+            @gMarkerLabel.setContent()
         setStyles: ()=>
-            @markerLabel.setStyles()
+            @gMarkerLabel.setStyles()
         setMandatoryStyles: ()=>
-            @markerLabel.setMandatoryStyles()
+            @gMarkerLabel.setMandatoryStyles()
         setAnchor: ()=>
-            @markerLabel.setAnchor()
+            @gMarkerLabel.setAnchor()
         setVisible: ()=>
-            @markerLabel.setVisible()
+            @gMarkerLabel.setVisible()
         setZIndex: ()=>
-            @markerLabel.setZIndex()
+            @gMarkerLabel.setZIndex()
         setPosition: ()=>
-            @markerLabel.setPosition()
+            @gMarkerLabel.setPosition()
         draw: ()=>
-            @markerLabel.draw()
+            @gMarkerLabel.draw()
         destroy: ()=>
             #bug in MarkerLabel_ so we will check it here and maybe submit a patch
-            @markerLabel.onRemove() if @markerLabel.labelDiv_.parentNode? and @markerLabel.eventDiv_.parentNode?
+            @gMarkerLabel.onRemove() if @gMarkerLabel.labelDiv_.parentNode? and @gMarkerLabel.eventDiv_.parentNode?
     MarkerLabelChildModel
 ]
