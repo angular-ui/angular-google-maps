@@ -10,21 +10,14 @@ angular.module('testApp', ['google-maps']).controller('TestController', ['$scope
         //map is trueley ready then this callback is hit
       },
       click: function (mapModel, eventName, originalEventArgs) {
-        // 'this' is the directive's scope
         var e = originalEventArgs[0];
-        if (!$scope.map.clickedMarker) {
-          $scope.map.clickedMarker = {
-            title: 'You clicked here',
-            latitude: e.latLng.lat(),
-            longitude: e.latLng.lng()
-          };
-        }
-        else {
-          $scope.map.clickedMarker = {
-            latitude: e.latLng.lat(),
-            longitude: e.latLng.lng()
-          };
-        }
+        var lat = e.latLng.lat(),
+            lon = e.latLng.lng();
+        $scope.map.clickedMarker = {
+          title: 'You clicked here ' + 'lat: ' + lat + ' lon: ' + lon,
+          latitude: lat,
+          longitude: lon
+        };
         //scope apply required because this event handler is outside of the angular domain
         $scope.$apply();
       }
@@ -54,9 +47,7 @@ angular.module('testApp', ['google-maps']).controller('TestController', ['$scope
       }
     ],
     clickedMarker: {
-      title: 'You clicked here',
-      latitude: null,
-      longitude: null
+      title: ''
     },
     onMarkerClicked: function (marker) {
       marker.showWindow = true;

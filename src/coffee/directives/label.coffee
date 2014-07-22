@@ -43,32 +43,37 @@ Basic Directive api for a label. Basic in the sense that this directive contains
 Thus there will be one html element per marker within the directive.
 ###
 angular.module("google-maps")
-.directive "markerLabel", ["$timeout", "ILabel", "MarkerLabelChildModel", "GmapUtil", ($timeout, ILabel, MarkerLabelChildModel, GmapUtil) ->
+.directive "markerLabel", ["$timeout", "ILabel", "MarkerLabelChildModel", "GmapUtil", "nggmap-PropertyAction"
+  ($timeout, ILabel, MarkerLabelChildModel, GmapUtil, PropertyAction) ->
     class Label extends ILabel
-        constructor: ($timeout) ->
-            super($timeout)
-            self = @
-            @require = '^marker'
-            @template = '<span class="angular-google-maps-marker-label" ng-transclude></span>'
-            @$log.info(@)
-        link: (scope, element, attrs, ctrl) =>
-            @$timeout( =>
-                markerScope = ctrl.getMarkerScope()
-                if markerScope
-                    if not markerScope.isReady
-                        @init markerScope,scope
-                        return
-                    markerScope.isReady.then =>
-                        @init markerScope,scope
-            ,GmapUtil.defaultDelay + 150)
+      constructor: ($timeout) ->
+        super($timeout)
+        self = @
+        @require = '^marker'
+        @template = '<span class="angular-google-maps-marker-label" ng-transclude></span>'
+        @$log.info(@)
 
-        init:(markerScope,scope)=>
-            markerScope.$watch 'gMarker', (oldVal,newVal) =>
-                return unless newVal
-                if markerScope.gMarker?
-                    label = new MarkerLabelChildModel markerScope.gMarker, scope
-                scope.$on("$destroy", =>
-                    label?.destroy()
-                )
+      link: (scope, element, attrs, ctrl) =>
+        markerScope = ctrl.getScope()
+        if markerScope
+          markerScope.deferred.promise.then =>
+            @init markerScope, scope
+
+      init: (markerScope, scope)=>
+        markerScope.$watch 'gMarker', (oldVal, newVal) ->
+          return unless newVal
+          if markerScope.gMarker?
+            labelAction = new PropertyAction (newVal) ->
+              if !label and scope.labelContent?
+                label = new MarkerLabelChildModel markerScope.gMarker, scope
+              label?.setOptions scope
+            scope.$watch 'labelContent', labelAction.sic
+            scope.$watch 'labelAnchor', labelAction.sic
+            scope.$watch 'labelClass', labelAction.sic
+            scope.$watch 'labelStyle', labelAction.sic
+
+          scope.$on '$destroy', ->
+            label?.destroy()
+
     new Label($timeout)
 ]

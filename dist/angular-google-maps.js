@@ -36,7 +36,9 @@ Nicholas McCready - https://twitter.com/nmccready
 
 
 (function() {
-  angular.module("google-maps.directives.api.utils", []);
+  angular.module("google-maps.extensions", []);
+
+  angular.module("google-maps.directives.api.utils", ['google-maps.extensions']);
 
   angular.module("google-maps.directives.api.managers", []);
 
@@ -72,58 +74,62 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
-  angular.element(document).ready(function() {
-    if (!(google || (typeof google !== "undefined" && google !== null ? google.maps : void 0) || (google.maps.InfoWindow != null))) {
-      return;
-    }
-    google.maps.InfoWindow.prototype._open = google.maps.InfoWindow.prototype.open;
-    google.maps.InfoWindow.prototype._close = google.maps.InfoWindow.prototype.close;
-    google.maps.InfoWindow.prototype._isOpen = false;
-    google.maps.InfoWindow.prototype.open = function(map, anchor) {
-      this._isOpen = true;
-      this._open(map, anchor);
-    };
-    google.maps.InfoWindow.prototype.close = function() {
-      this._isOpen = false;
-      this._close();
-    };
-    google.maps.InfoWindow.prototype.isOpen = function(val) {
-      if (val == null) {
-        val = void 0;
-      }
-      if (val == null) {
-        return this._isOpen;
-      } else {
-        return this._isOpen = val;
-      }
-    };
-    /*
-    Do the same for InfoBox
-    TODO: Clean this up so the logic is defined once, wait until develop becomes master as this will be easier
-    */
+  angular.module("google-maps.extensions", []).service('ExtendGWin', function() {
+    return {
+      init: function() {
+        if (!(google || (typeof google !== "undefined" && google !== null ? google.maps : void 0) || (google.maps.InfoWindow != null))) {
+          return;
+        }
+        google.maps.InfoWindow.prototype._open = google.maps.InfoWindow.prototype.open;
+        google.maps.InfoWindow.prototype._close = google.maps.InfoWindow.prototype.close;
+        google.maps.InfoWindow.prototype._isOpen = false;
+        google.maps.InfoWindow.prototype.open = function(map, anchor) {
+          this._isOpen = true;
+          this._open(map, anchor);
+        };
+        google.maps.InfoWindow.prototype.close = function() {
+          this._isOpen = false;
+          this._close();
+        };
+        google.maps.InfoWindow.prototype.isOpen = function(val) {
+          if (val == null) {
+            val = void 0;
+          }
+          if (val == null) {
+            return this._isOpen;
+          } else {
+            return this._isOpen = val;
+          }
+        };
+        /*
+        Do the same for InfoBox
+        TODO: Clean this up so the logic is defined once, wait until develop becomes master as this will be easier
+        */
 
-    if (!window.InfoBox) {
-      return;
-    }
-    window.InfoBox.prototype._open = window.InfoBox.prototype.open;
-    window.InfoBox.prototype._close = window.InfoBox.prototype.close;
-    window.InfoBox.prototype._isOpen = false;
-    window.InfoBox.prototype.open = function(map, anchor) {
-      this._isOpen = true;
-      this._open(map, anchor);
-    };
-    window.InfoBox.prototype.close = function() {
-      this._isOpen = false;
-      this._close();
-    };
-    return window.InfoBox.prototype.isOpen = function(val) {
-      if (val == null) {
-        val = void 0;
-      }
-      if (val == null) {
-        return this._isOpen;
-      } else {
-        return this._isOpen = val;
+        if (!window.InfoBox) {
+          return;
+        }
+        window.InfoBox.prototype._open = window.InfoBox.prototype.open;
+        window.InfoBox.prototype._close = window.InfoBox.prototype.close;
+        window.InfoBox.prototype._isOpen = false;
+        window.InfoBox.prototype.open = function(map, anchor) {
+          this._isOpen = true;
+          this._open(map, anchor);
+        };
+        window.InfoBox.prototype.close = function() {
+          this._isOpen = false;
+          this._close();
+        };
+        return window.InfoBox.prototype.isOpen = function(val) {
+          if (val == null) {
+            val = void 0;
+          }
+          if (val == null) {
+            return this._isOpen;
+          } else {
+            return this._isOpen = val;
+          }
+        };
       }
     };
   });
@@ -900,6 +906,28 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
+  angular.module("google-maps.directives.api.utils").factory("nggmap-PropertyAction", [
+    "Logger", function(Logger) {
+      var PropertyAction;
+      PropertyAction = function(setterFn, getterFn) {
+        var _this = this;
+        this.setIfChange = function(oldVal, newVal) {
+          if (!_.isEqual(oldVal, newVal)) {
+            return setterFn(newVal);
+          }
+        };
+        this.sic = function(oldVal, newVal) {
+          return _this.setIfChange(oldVal, newVal);
+        };
+        return this;
+      };
+      return PropertyAction;
+    }
+  ]);
+
+}).call(this);
+
+(function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1392,7 +1420,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         MarkerLabelChildModel.include(GmapUtil);
 
-        function MarkerLabelChildModel(gMarker, opt_options) {
+        function MarkerLabelChildModel(gMarker, options) {
           this.destroy = __bind(this.destroy, this);
           this.draw = __bind(this.draw, this);
           this.setPosition = __bind(this.setPosition, this);
@@ -1404,41 +1432,51 @@ Nicholas McCready - https://twitter.com/nmccready
           this.setContent = __bind(this.setContent, this);
           this.setTitle = __bind(this.setTitle, this);
           this.getSharedCross = __bind(this.getSharedCross, this);
-          var self, _ref, _ref1;
+          this.setOptions = __bind(this.setOptions, this);
+          var self;
           MarkerLabelChildModel.__super__.constructor.call(this);
           self = this;
           this.gMarker = gMarker;
-          this.gMarker.set("labelContent", opt_options.labelContent);
-          this.gMarker.set("labelAnchor", this.getLabelPositionPoint(opt_options.labelAnchor));
-          this.gMarker.set("labelClass", opt_options.labelClass || 'labels');
-          this.gMarker.set("labelStyle", opt_options.labelStyle || {
-            opacity: 100
-          });
-          this.gMarker.set("labelInBackground", opt_options.labelInBackground || false);
-          if (!opt_options.labelVisible) {
-            this.gMarker.set("labelVisible", true);
-          }
-          if (!opt_options.raiseOnDrag) {
-            this.gMarker.set("raiseOnDrag", true);
-          }
-          if (!opt_options.clickable) {
-            this.gMarker.set("clickable", true);
-          }
-          if (!opt_options.draggable) {
-            this.gMarker.set("draggable", false);
-          }
-          if (!opt_options.optimized) {
-            this.gMarker.set("optimized", false);
-          }
-          opt_options.crossImage = (_ref = opt_options.crossImage) != null ? _ref : document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/drag_cross_67_16.png";
-          opt_options.handCursor = (_ref1 = opt_options.handCursor) != null ? _ref1 : document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/closedhand_8_8.cur";
-          this.gMarkerLabel = new MarkerLabel_(this.gMarker, opt_options.crossImage, opt_options.handCursor);
+          this.setOptions(options);
+          this.gMarkerLabel = new MarkerLabel_(this.gMarker, options.crossImage, options.handCursor);
           this.gMarker.set("setMap", function(theMap) {
             google.maps.Marker.prototype.setMap.apply(this, arguments);
             return self.gMarkerLabel.setMap(theMap);
           });
           this.gMarker.setMap(this.gMarker.getMap());
         }
+
+        MarkerLabelChildModel.prototype.setOptions = function(options) {
+          var _ref, _ref1;
+          if (options != null ? options.labelContent : void 0) {
+            this.gMarker.set("labelContent", options.labelContent);
+          }
+          if (options != null ? options.labelAnchor : void 0) {
+            this.gMarker.set("labelAnchor", this.getLabelPositionPoint(options.labelAnchor));
+          }
+          this.gMarker.set("labelClass", options.labelClass || 'labels');
+          this.gMarker.set("labelStyle", options.labelStyle || {
+            opacity: 100
+          });
+          this.gMarker.set("labelInBackground", options.labelInBackground || false);
+          if (!options.labelVisible) {
+            this.gMarker.set("labelVisible", true);
+          }
+          if (!options.raiseOnDrag) {
+            this.gMarker.set("raiseOnDrag", true);
+          }
+          if (!options.clickable) {
+            this.gMarker.set("clickable", true);
+          }
+          if (!options.draggable) {
+            this.gMarker.set("draggable", false);
+          }
+          if (!options.optimized) {
+            this.gMarker.set("optimized", false);
+          }
+          options.crossImage = (_ref = options.crossImage) != null ? _ref : document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/drag_cross_67_16.png";
+          return options.handCursor = (_ref1 = options.handCursor) != null ? _ref1 : document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/closedhand_8_8.cur";
+        };
 
         MarkerLabelChildModel.prototype.getSharedCross = function(crossUrl) {
           return this.gMarkerLabel.getSharedCross(crossUrl);
@@ -3337,7 +3375,9 @@ Nicholas McCready - https://twitter.com/nmccready
         ];
 
         IMarker.prototype.link = function(scope, element, attrs, ctrl) {
-          throw new Exception("Not implemented!!");
+          if (!ctrl) {
+            throw new Error("No Map Control! Marker Directive Must be inside the map!");
+          }
         };
 
         return IMarker;
@@ -3458,7 +3498,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Map", [
-    "$timeout", "Logger", "GmapUtil", "BaseObject", function($timeout, Logger, GmapUtil, BaseObject) {
+    "$timeout", '$q', 'Logger', "GmapUtil", "BaseObject", "ExtendGWin", function($timeout, $q, Logger, GmapUtil, BaseObject, ExtendGWin) {
       "use strict";
       var $log, DEFAULTS, Map;
       $log = Logger;
@@ -3498,9 +3538,17 @@ Nicholas McCready - https://twitter.com/nmccready
 
         Map.prototype.controller = [
           "$scope", function($scope) {
+            $scope.deferred = $q.defer();
+            $scope.ctrlType = 'Map';
+            $scope.deferred.promise.then(function() {
+              return ExtendGWin.init();
+            });
             return {
               getMap: function() {
                 return $scope.map;
+              },
+              getScope: function() {
+                return $scope;
               }
             };
           }
@@ -3550,6 +3598,13 @@ Nicholas McCready - https://twitter.com/nmccready
             bounds: scope.bounds
           }));
           dragging = false;
+          if (!_m) {
+            google.maps.event.addListener(_m, 'tilesloaded ', function(map) {
+              return scope.deferred.resolve(map);
+            });
+          } else {
+            scope.deferred.resolve(_m);
+          }
           google.maps.event.addListener(_m, "dragstart", function() {
             dragging = true;
             return _.defer(function() {
@@ -3762,17 +3817,17 @@ Nicholas McCready - https://twitter.com/nmccready
 
         function Marker($timeout) {
           this.link = __bind(this.link, this);
-          var self;
           Marker.__super__.constructor.call(this, $timeout);
-          self = this;
           this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
           this.$log.info(this);
         }
 
         Marker.prototype.controller = [
           '$scope', '$element', function($scope, $element) {
+            $scope.deferred = $q.defer();
+            $scope.ctrlType = 'Marker';
             return {
-              getMarkerScope: function() {
+              getScope: function() {
                 return $scope;
               }
             };
@@ -3780,20 +3835,20 @@ Nicholas McCready - https://twitter.com/nmccready
         ];
 
         Marker.prototype.link = function(scope, element, attrs, ctrl) {
-          var deferred, doFit,
+          var doFit, mapScope,
             _this = this;
+          Marker.__super__.link.call(this, scope, element, attrs, ctrl);
           if (scope.fit) {
             doFit = true;
           }
-          deferred = $q.defer();
-          this.$timeout(function() {
+          mapScope = ctrl.getScope();
+          return mapScope.deferred.promise.then(function(map) {
             if (!_this.gMarkerManager) {
-              _this.gMarkerManager = new MarkerManager(ctrl.getMap());
+              _this.gMarkerManager = new MarkerManager(map);
             }
             new MarkerParentModel(scope, element, attrs, ctrl, _this.$timeout, _this.gMarkerManager, doFit);
-            return deferred.resolve();
+            return scope.deferred.resolve();
           });
-          return scope.isReady = deferred.promise;
         };
 
         return Marker;
@@ -3959,24 +4014,25 @@ Nicholas McCready - https://twitter.com/nmccready
         }
 
         Window.prototype.link = function(scope, element, attrs, ctrls) {
-          var _this = this;
-          return this.$timeout(function() {
-            var isIconVisibleOnClick, mapCtrl, markerCtrl, markerScope;
+          var mapScope,
+            _this = this;
+          mapScope = ctrls[0].getScope();
+          return mapScope.deferred.promise.then(function(mapCtrl) {
+            var isIconVisibleOnClick, markerCtrl, markerScope;
             isIconVisibleOnClick = true;
             if (angular.isDefined(attrs.isiconvisibleonclick)) {
               isIconVisibleOnClick = scope.isIconVisibleOnClick;
             }
-            mapCtrl = ctrls[0].getMap();
             markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1] : void 0;
             if (!markerCtrl) {
               _this.init(scope, element, isIconVisibleOnClick, mapCtrl);
               return;
             }
-            markerScope = markerCtrl.getMarkerScope();
-            return markerScope.isReady.then(function() {
+            markerScope = markerCtrl.getScope();
+            return markerScope.deferred.promise.then(function() {
               return _this.init(scope, element, isIconVisibleOnClick, mapCtrl, markerScope);
             });
-          }, GmapUtil.defaultDelay + 25);
+          });
         };
 
         Window.prototype.init = function(scope, element, isIconVisibleOnClick, mapCtrl, markerScope) {
@@ -4266,7 +4322,7 @@ Thus there will be one html element per marker within the directive.
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps").directive("markerLabel", [
-    "$timeout", "ILabel", "MarkerLabelChildModel", "GmapUtil", function($timeout, ILabel, MarkerLabelChildModel, GmapUtil) {
+    "$timeout", "ILabel", "MarkerLabelChildModel", "GmapUtil", "nggmap-PropertyAction", function($timeout, ILabel, MarkerLabelChildModel, GmapUtil, PropertyAction) {
       var Label;
       Label = (function(_super) {
         __extends(Label, _super);
@@ -4283,34 +4339,37 @@ Thus there will be one html element per marker within the directive.
         }
 
         Label.prototype.link = function(scope, element, attrs, ctrl) {
-          var _this = this;
-          return this.$timeout(function() {
-            var markerScope;
-            markerScope = ctrl.getMarkerScope();
-            if (markerScope) {
-              if (!markerScope.isReady) {
-                _this.init(markerScope, scope);
-                return;
-              }
-              return markerScope.isReady.then(function() {
-                return _this.init(markerScope, scope);
-              });
-            }
-          }, GmapUtil.defaultDelay + 150);
+          var markerScope,
+            _this = this;
+          markerScope = ctrl.getScope();
+          if (markerScope) {
+            return markerScope.deferred.promise.then(function() {
+              return _this.init(markerScope, scope);
+            });
+          }
         };
 
         Label.prototype.init = function(markerScope, scope) {
-          var _this = this;
           return markerScope.$watch('gMarker', function(oldVal, newVal) {
-            var label;
+            var labelAction;
             if (!newVal) {
               return;
             }
             if (markerScope.gMarker != null) {
-              label = new MarkerLabelChildModel(markerScope.gMarker, scope);
+              labelAction = new PropertyAction(function(newVal) {
+                var label;
+                if (!label && (scope.labelContent != null)) {
+                  label = new MarkerLabelChildModel(markerScope.gMarker, scope);
+                }
+                return label != null ? label.setOptions(scope) : void 0;
+              });
+              scope.$watch('labelContent', labelAction.sic);
+              scope.$watch('labelAnchor', labelAction.sic);
+              scope.$watch('labelClass', labelAction.sic);
+              scope.$watch('labelStyle', labelAction.sic);
             }
-            return scope.$on("$destroy", function() {
-              return label != null ? label.destroy() : void 0;
+            return scope.$on('$destroy', function() {
+              return typeof label !== "undefined" && label !== null ? label.destroy() : void 0;
             });
           });
         };

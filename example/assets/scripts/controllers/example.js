@@ -169,9 +169,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
       clusterOptions: {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2,
         imageExtension: 'png', imagePath: 'assets/images/cluster', imageSizes: [72]},
       clickedMarker: {
-        title: 'You clicked here',
-        latitude: null,
-        longitude: null
+        title: ''
       },
       events: {
         tilesloaded: function (map, eventName, originalEventArgs) {
@@ -179,23 +177,14 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         click: function (mapModel, eventName, originalEventArgs) {
           // 'this' is the directive's scope
           $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
-
           var e = originalEventArgs[0];
-
-          if (!$scope.map.clickedMarker) {
-            $scope.map.clickedMarker = {
-              title: 'You clicked here',
-              latitude: e.latLng.lat(),
-              longitude: e.latLng.lng()
-            };
-          }
-          else {
-            var marker = {
-              latitude: e.latLng.lat(),
-              longitude: e.latLng.lng()
-            };
-            $scope.map.clickedMarker = marker;
-          }
+          var lat = e.latLng.lat(),
+              lon = e.latLng.lng();
+          $scope.map.clickedMarker = {
+            title: 'You clicked here ' + 'lat: ' + lat + ' lon: ' + lon,
+            latitude: lat,
+            longitude: lon
+          };
           //scope apply required because this event handler is outside of the angular domain
           $scope.$apply();
         },

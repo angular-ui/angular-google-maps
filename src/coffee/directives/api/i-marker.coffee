@@ -30,5 +30,5 @@ angular.module("google-maps.directives.api")
         throw new Exception("Not Implemented!!")
       ]
       link: (scope, element, attrs, ctrl) =>
-        throw new Exception("Not implemented!!")
+        throw new Error "No Map Control! Marker Directive Must be inside the map!" unless ctrl
   ]

@@ -110,7 +110,7 @@ module.exports = (grunt) ->
 
                 files: [
                     "src/coffee/*.coffee", "src/coffee/**/*.coffee", "src/coffee/**/**/*.coffee",
-                    "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js"
+                    "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js", "spec/**/*.spec.coffee", "spec/coffee/helpers/**"
                 ]
                 tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine:spec",
                         "clean:example", "coffee"]

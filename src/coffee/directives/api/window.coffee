@@ -10,20 +10,18 @@ angular.module("google-maps.directives.api")
                 @$log.info(self)
 
             link: (scope, element, attrs, ctrls) =>
-                @$timeout(=>
+                mapScope = ctrls[0].getScope()
+                mapScope.deferred.promise.then (mapCtrl) =>
                     isIconVisibleOnClick = true
-                    if angular.isDefined(attrs.isiconvisibleonclick)
+                    if angular.isDefined attrs.isiconvisibleonclick
                         isIconVisibleOnClick = scope.isIconVisibleOnClick
-                    mapCtrl = ctrls[0].getMap()
                     markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1] else undefined
                     if not markerCtrl
                       @init scope,element,isIconVisibleOnClick,mapCtrl
                       return
-                    markerScope = markerCtrl.getMarkerScope()
-                    markerScope.isReady.then =>
+                    markerScope = markerCtrl.getScope()
+                    markerScope.deferred.promise.then =>
                       @init scope,element,isIconVisibleOnClick ,mapCtrl, markerScope
-
-                , GmapUtil.defaultDelay + 25)
 
             init: (scope,element,isIconVisibleOnClick ,mapCtrl,markerScope) =>
               defaults = if scope.options? then scope.options else {}
@@ -48,5 +46,5 @@ angular.module("google-maps.directives.api")
               scope.$on "$destroy", =>
                 window?.destroy()
 
-              @onChildCreation(window) if @onChildCreation? and window?
+              @onChildCreation window if @onChildCreation? and window?
 ]
