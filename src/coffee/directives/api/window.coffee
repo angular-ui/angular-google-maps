@@ -31,7 +31,7 @@ angular.module("google-maps.directives.api")
                 markerScope.$watch 'coords', (newValue, oldValue) =>
                   if markerScope.gMarker? and !window.markerCtrl
                     window.markerCtrl = markerScope.gMarker
-                    window.handleClick()
+                    window.handleClick(true)
                   return window.hideWindow() unless @validateCoords(newValue)
 
                   if !angular.equals(newValue, oldValue)

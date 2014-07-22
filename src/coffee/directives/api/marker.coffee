@@ -18,6 +18,7 @@ angular.module("google-maps.directives.api")
 
         mapScope = ctrl.getScope()
         mapScope.deferred.promise.then (map) =>
+          scope.map = map
           @gMarkerManager = new MarkerManager map unless @gMarkerManager
           new MarkerParentModel scope, element, attrs, ctrl, @$timeout, @gMarkerManager, doFit
           scope.deferred.resolve()

@@ -93,7 +93,10 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           latitude: 45,
           longitude: -74,
           showWindow: false,
-          title: 'Marker 2'
+          title: 'Marker 2',
+          options:{
+            animation:1
+          }
         },
         {
           id: 2,

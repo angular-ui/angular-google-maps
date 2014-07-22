@@ -59,18 +59,39 @@ angular.module("google-maps")
           markerScope.deferred.promise.then =>
             @init markerScope, scope
 
-      init: (markerScope, scope)=>
-        markerScope.$watch 'gMarker', (oldVal, newVal) ->
 
+      init: (markerScope, scope)=>
+        label = null
+        createLabel =  ->
+          unless label
+            label = new MarkerLabelChildModel markerScope.gMarker, scope, markerScope.map
+
+        isFirstSet = true
+        markerScope.$watch 'gMarker', (newVal, oldVal) ->
           if markerScope.gMarker?
-            labelAction = new PropertyAction (newVal) ->
-              if !label and scope.labelContent?
-                label = new MarkerLabelChildModel markerScope.gMarker, scope
-              label?.setOptions scope
-            scope.$watch 'labelContent', labelAction.sic
-            scope.$watch 'labelAnchor', labelAction.sic
-            scope.$watch 'labelClass', labelAction.sic
-            scope.$watch 'labelStyle', labelAction.sic
+            contentAction = new PropertyAction (newVal) ->
+              createLabel()
+              if scope.labelContent
+                label?.setOption 'labelContent', scope.labelContent
+            , isFirstSet
+            anchorAction = new PropertyAction (newVal) ->
+              createLabel()
+              label?.setOption 'labelAnchor', scope.labelAnchor
+            , isFirstSet
+            classAction = new PropertyAction (newVal) ->
+              createLabel()
+              label?.setOption 'labelClass', scope.labelClass
+            , isFirstSet
+            styleAction = new PropertyAction (newVal) ->
+              createLabel()
+              label?.setOption 'labelStyle', scope.labelStyle
+            , isFirstSet
+
+            scope.$watch 'labelContent', contentAction.sic
+            scope.$watch 'labelAnchor', anchorAction.sic
+            scope.$watch 'labelClass', classAction.sic
+            scope.$watch 'labelStyle', styleAction.sic
+            isFirstSet = false
 
           scope.$on '$destroy', ->
             label?.destroy()
