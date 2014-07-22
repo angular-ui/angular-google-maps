@@ -4352,9 +4352,6 @@ Thus there will be one html element per marker within the directive.
         Label.prototype.init = function(markerScope, scope) {
           return markerScope.$watch('gMarker', function(oldVal, newVal) {
             var labelAction;
-            if (!newVal) {
-              return;
-            }
             if (markerScope.gMarker != null) {
               labelAction = new PropertyAction(function(newVal) {
                 var label;

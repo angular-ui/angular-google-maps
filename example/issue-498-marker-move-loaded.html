@@ -15,13 +15,13 @@
 <body ng-controller="TestController">
     {{sites}}
     <google-map class="col-sm-12 pad-none" center="map.center" zoom="map.zoom" style="min-height: 600px" draggable="true" events="map.events">
-        <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">
-            <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
-            <window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
-                <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
-                <p class="muted">My marker will stay open when the window is popped up!</p>
-            </window>
-        </marker>
+        <!--<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">-->
+            <!--<marker-label content="m.title" anchor="22 0" class="marker-labels"/>-->
+            <!--<window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">-->
+                <!--<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>-->
+                <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
+            <!--</window>-->
+        <!--</marker>-->
 
         <!--marker for clicked position can not put google.map.animations.BOUNCE , since it is not initiaized yet-->
         <div ng-init="opts = {animation:1}">

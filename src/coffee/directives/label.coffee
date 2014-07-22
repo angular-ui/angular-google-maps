@@ -61,7 +61,7 @@ angular.module("google-maps")
 
       init: (markerScope, scope)=>
         markerScope.$watch 'gMarker', (oldVal, newVal) ->
-          return unless newVal
+
           if markerScope.gMarker?
             labelAction = new PropertyAction (newVal) ->
               if !label and scope.labelContent?
