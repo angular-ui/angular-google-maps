@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-18
+/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -4404,9 +4404,10 @@ Nicholas McCready - https://twitter.com/nmccready
           mapArrayListener = mapEvents(mapArray, angular.isUndefined(scopePath.type) ? legacyHandlers : geojsonHandlers);
         }
         legacyWatcher = function(newPath) {
-          var i, l, newLength, newValue, oldArray, oldLength, oldValue;
+          var changed, i, l, newLength, newValue, oldArray, oldLength, oldValue;
           isSetFromScope = true;
           oldArray = mapArray;
+          changed = false;
           if (newPath) {
             i = 0;
             oldLength = oldArray.getLength();
@@ -4419,10 +4420,12 @@ Nicholas McCready - https://twitter.com/nmccready
               if (typeof newValue.equals === "function") {
                 if (!newValue.equals(oldValue)) {
                   oldArray.setAt(i, newValue);
+                  changed = true;
                 }
               } else {
                 if ((oldValue.lat() !== newValue.latitude) || (oldValue.lng() !== newValue.longitude)) {
                   oldArray.setAt(i, new google.maps.LatLng(newValue.latitude, newValue.longitude));
+                  changed = true;
                 }
               }
               i++;
@@ -4434,19 +4437,25 @@ Nicholas McCready - https://twitter.com/nmccready
               } else {
                 oldArray.push(new google.maps.LatLng(newValue.latitude, newValue.longitude));
               }
+              changed = true;
               i++;
             }
             while (i < oldLength) {
               oldArray.pop();
+              changed = true;
               i++;
             }
           }
-          return isSetFromScope = false;
+          isSetFromScope = false;
+          if (changed) {
+            return pathChangedFn(oldArray);
+          }
         };
         geojsonWatcher = function(newPath) {
-          var array, i, l, newLength, newValue, oldArray, oldLength, oldValue;
+          var array, changed, i, l, newLength, newValue, oldArray, oldLength, oldValue;
           isSetFromScope = true;
           oldArray = mapArray;
+          changed = false;
           if (newPath) {
             array;
             if (scopePath.type === "Polygon") {
@@ -4464,20 +4473,26 @@ Nicholas McCready - https://twitter.com/nmccready
               newValue = array[i];
               if ((oldValue.lat() !== newValue[1]) || (oldValue.lng() !== newValue[0])) {
                 oldArray.setAt(i, new google.maps.LatLng(newValue[1], newValue[0]));
+                changed = true;
               }
               i++;
             }
             while (i < newLength) {
               newValue = array[i];
               oldArray.push(new google.maps.LatLng(newValue[1], newValue[0]));
+              changed = true;
               i++;
             }
             while (i < oldLength) {
               oldArray.pop();
+              changed = true;
               i++;
             }
           }
-          return isSetFromScope = false;
+          isSetFromScope = false;
+          if (changed) {
+            return pathChangedFn(oldArray);
+          }
         };
         watchListener;
         if (!scope["static"]) {
@@ -7342,7 +7357,8 @@ Nicholas McCready - https://twitter.com/nmccready
         }
 
         Windows.prototype.link = function(scope, element, attrs, ctrls) {
-          var parentModel;
+          var parentModel,
+            _this = this;
           parentModel = new WindowsParentModel(scope, element, attrs, ctrls, this.$timeout, this.$compile, this.$http, this.$templateCache, this.$interpolate);
           if (scope.control != null) {
             scope.control.getGWindows = function() {
