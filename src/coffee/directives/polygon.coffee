@@ -101,8 +101,6 @@ angular.module("google-maps")
             map = mapCtrl.getMap()
             pathPoints = GmapUtil.convertPathPoints(scope.path)
             polygon = new google.maps.Polygon(buildOpts(pathPoints))
-            # The fit attribute is undocumented as it currently does not
-            # properly work when changes to the path are made.
             GmapUtil.extendMapBounds map, pathPoints  if scope.fit
             
             if !scope.static and angular.isDefined(scope.editable)
