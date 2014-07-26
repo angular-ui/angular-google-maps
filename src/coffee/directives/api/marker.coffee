@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api")
-.factory "Marker", ["IMarker", "MarkerParentModel", "MarkerManager", "$q", (IMarker, MarkerParentModel,MarkerManager, $q) ->
+.factory "Marker", ["IMarker", "MarkerParentModel", "MarkerManager", (IMarker, MarkerParentModel,MarkerManager) ->
     class Marker extends IMarker
       constructor: ($timeout) ->
         super($timeout)
@@ -7,19 +7,14 @@ angular.module("google-maps.directives.api")
         @$log.info(@)
 
       controller: ['$scope', '$element', ($scope, $element) =>
-        $scope.deferred = $q.defer()
         $scope.ctrlType = 'Marker'
-        getScope: ->
-          $scope
+        IMarker.ctrlHandle $scope,$element
       ]
       link: (scope, element, attrs, ctrl) =>
         super scope, element, attrs, ctrl
         doFit = true if scope.fit
-
-        mapScope = ctrl.getScope()
-        mapScope.deferred.promise.then (map) =>
-          scope.map = map
+        @mapPromise(scope,ctrl).then (map) =>
           @gMarkerManager = new MarkerManager map unless @gMarkerManager
-          new MarkerParentModel scope, element, attrs, ctrl, @$timeout, @gMarkerManager, doFit
+          new MarkerParentModel scope, element, attrs, map, @$timeout, @gMarkerManager, doFit
           scope.deferred.resolve()
   ]

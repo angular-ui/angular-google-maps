@@ -1,5 +1,15 @@
 angular.module("google-maps.mocks", [])
 .factory "GoogleApiMock", ->
+  class _Map
+    constructor:()->
+      @lat = 47
+      @lon = -27
+      @zoom = 0
+      @getCoords = -> return {latitude: @lat, longitude: @lon}
+      @center = new window.google.maps.LatLng @lat,@lon
+      @setCenter = (coords) =>
+        @center = coords
+      @setZoom = (@zoom) ->
   class GoogleApiMock
     constructor: ->
     mockAPI: ->
@@ -19,7 +29,13 @@ angular.module("google-maps.mocks", [])
       window.google.maps.Point = unmocked("Point")
       window.google.maps.LatLngBounds = unmocked("LatLngBounds")
 
-    mockLatLng: (LatLng = (x, y) -> return) ->
+    #http://gis.stackexchange.com/questions/11626/does-y-mean-latitude-and-x-mean-longitude-in-every-gis-software
+    mockLatLng: (LatLng = (y, x) ->
+      lat: () ->
+        y
+      lng: () ->
+        x
+    ) ->
       window.google.maps.LatLng = LatLng
 
     mockLatLngBounds: (LatLngBounds = () -> return) ->
@@ -28,13 +44,13 @@ angular.module("google-maps.mocks", [])
 
       window.google.maps.LatLngBounds = LatLngBounds
 
-    mockMap:(Map = () -> return) ->
+    mockMap:(map) ->
       @mockMapTypeId()
       @mockLatLng()
       @mockOverlayView()
       @mockEvent()
-      Map.getCoords = -> return {latitude: 47, longitude: -27} unless Map.getCoords?
-      window.google.maps.Map = Map
+      map = _Map unless map
+      window.google.maps.Map = map
 
     mockAnimation: (Animation = {BOUNCE: "bounce"}) ->
       window.google.maps.Animation = Animation

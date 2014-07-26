@@ -10,12 +10,10 @@ angular.module("google-maps.directives.api.models.parent")
       class MarkerParentModel extends IMarkerParentModel
         @include GmapUtil
         @include EventsHelper
-        constructor: (scope, element, attrs, mapCtrl, $timeout, @gMarkerManager, @doFit) ->
-          super(scope, element, attrs, mapCtrl, $timeout)
+        constructor: (scope, element, attrs, map, $timeout, @gMarkerManager, @doFit) ->
+          super(scope, element, attrs, map, $timeout)
           self = @
-
-        onTimeOut: (scope)=>
-          opts = @createMarkerOptions scope.coords, scope.icon, scope.options, @mapCtrl.getMap()
+          opts = @createMarkerOptions scope.coords, scope.icon, scope.options, @map
           #using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
           @setGMarker new google.maps.Marker(opts)
 
@@ -27,6 +25,7 @@ angular.module("google-maps.directives.api.models.parent")
           @setEvents @scope.gMarker, scope, scope
           @$log.info(@)
 
+
         onWatch: (propNameToWatch, scope) =>
           switch propNameToWatch
             when 'coords'
@@ -34,7 +33,7 @@ angular.module("google-maps.directives.api.models.parent")
                 pos = @scope.gMarker?.getPosition()
                 return if(pos.lat() == @scope.coords.latitude and @scope.coords.longitude == pos.lng())
                 old = @scope.gMarker.getAnimation()
-                @scope.gMarker.setMap @mapCtrl.getMap()
+                @scope.gMarker.setMap @map
                 @scope.gMarker.setPosition @getCoords(scope.coords)
                 @scope.gMarker.setVisible @validateCoords(scope.coords)
                 @scope.gMarker.setAnimation(old)
@@ -45,7 +44,7 @@ angular.module("google-maps.directives.api.models.parent")
               if (scope.icon? and @validateCoords(scope.coords) and @scope.gMarker?)
                 @scope.gMarker.setIcon scope.icon
                 @scope.gMarker.setMap null
-                @scope.gMarker.setMap @mapCtrl.getMap()
+                @scope.gMarker.setMap @map
                 @scope.gMarker.setPosition @getCoords(scope.coords)
                 @scope.gMarker.setVisible @validateCoords(scope.coords)
             when 'options'

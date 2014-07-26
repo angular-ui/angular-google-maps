@@ -47,7 +47,6 @@ describe "IMarkerParentModel", ->
     }
 
     @subject = new @IMarkerParentModel(@scope, @ele, @attrs, null, @$timeout)
-    @$timeout.flush()
     expect(props[i]).toEqual(prop) for prop, i in expectedProps
 
   describe "IMarkerParentModel method tests", ->
@@ -63,8 +62,3 @@ describe "IMarkerParentModel", ->
 
     it "should throw onDestroy", ->
       expect(@subject.onDestroy).toThrow()
-
-    it "should throw on linkInit", ->
-      expect(@subject.linkInit).toThrow()
-
-
