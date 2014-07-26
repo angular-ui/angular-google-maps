@@ -34,12 +34,5 @@ angular.module("google-maps.directives.api")
       mapScope.deferred.promise.then (map) ->
         scope.map = map
       mapScope.deferred.promise
-
-  IMarker.ctrlHandle = ($scope,$element) ->
-    $scope.deferred = $q.defer()
-    getScope: ->
-      $scope
-
-  IMarker
 ]
 

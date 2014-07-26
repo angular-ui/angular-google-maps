@@ -418,6 +418,25 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
+  angular.module("google-maps.directives.api.utils").service('CtrlHandle', [
+    '$q', function($q) {
+      var CtrlHandle;
+      return CtrlHandle = {
+        handle: function($scope, $element) {
+          $scope.deferred = $q.defer();
+          return {
+            getScope: function() {
+              return $scope;
+            }
+          };
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
   angular.module("google-maps.directives.api.utils").service("EventsHelper", [
     "Logger", function($log) {
       return {
@@ -2983,7 +3002,7 @@ Nicholas McCready - https://twitter.com/nmccready
         WindowsParentModel.include(ModelsWatcher);
 
         function WindowsParentModel(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, $interpolate) {
-          var self,
+          var mapScope, self,
             _this = this;
           this.$interpolate = $interpolate;
           this.interpolateContent = __bind(this.interpolateContent, this);
@@ -3000,6 +3019,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.doINeedToWipe = __bind(this.doINeedToWipe, this);
           this.watchModels = __bind(this.watchModels, this);
           this.watch = __bind(this.watch, this);
+          this.go = __bind(this.go, this);
           WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache);
           self = this;
           this.windows = new PropMap();
@@ -3014,17 +3034,33 @@ Nicholas McCready - https://twitter.com/nmccready
           this.firstTime = true;
           this.$log.info(self);
           this.parentScope = void 0;
-          this.$timeout(function() {
-            _this.watchOurScope(scope);
-            _this.doRebuildAll = _this.scope.doRebuildAll != null ? _this.scope.doRebuildAll : false;
-            scope.$watch('doRebuildAll', function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                return _this.doRebuildAll = newValue;
-              }
+          mapScope = ctrls[0].getScope();
+          mapScope.deferred.promise.then(function(map) {
+            var markerCtrl;
+            _this.gMap = map;
+            markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1] : void 0;
+            if (!markerCtrl) {
+              _this.go(scope);
+              return;
+            }
+            return markerCtrl.getScope().deferred.promise.then(function() {
+              _this.markerScope = markerCtrl.getScope();
+              return _this.go(scope);
             });
-            return _this.createChildScopesWindows();
-          }, 50);
+          });
         }
+
+        WindowsParentModel.prototype.go = function(scope) {
+          var _this = this;
+          this.watchOurScope(scope);
+          this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : false;
+          scope.$watch('doRebuildAll', function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              return _this.doRebuildAll = newValue;
+            }
+          });
+          return this.createChildScopesWindows();
+        };
 
         WindowsParentModel.prototype.watch = function(scope, name, nameKey) {
           var _this = this;
@@ -3106,10 +3142,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if (angular.isDefined(this.linked.attrs.isiconvisibleonclick)) {
             this.isIconVisibleOnClick = this.linked.scope.isIconVisibleOnClick;
           }
-          this.gMap = this.linked.ctrls[0].getMap();
-          if (this.linked.ctrls[1] != null) {
-            markersScope = this.linked.ctrls.length > 1 ? this.linked.ctrls[1].getMarkersScope() : void 0;
-          }
+          markersScope = this.markerScope;
           modelsNotDefined = angular.isUndefined(this.linked.scope.models);
           if (modelsNotDefined && (markersScope === void 0 || (markersScope.markerModels === void 0 || markersScope.models === void 0))) {
             this.$log.error("No models to create windows from! Need direct models or models derrived from markers!");
@@ -3341,7 +3374,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api").factory("IMarker", [
     "Logger", "BaseObject", "$q", function(Logger, BaseObject, $q) {
       var IMarker;
-      IMarker = (function(_super) {
+      return IMarker = (function(_super) {
         __extends(IMarker, _super);
 
         function IMarker($timeout) {
@@ -3383,15 +3416,6 @@ Nicholas McCready - https://twitter.com/nmccready
         return IMarker;
 
       })(BaseObject);
-      IMarker.ctrlHandle = function($scope, $element) {
-        $scope.deferred = $q.defer();
-        return {
-          getScope: function() {
-            return $scope;
-          }
-        };
-      };
-      return IMarker;
     }
   ]);
 
@@ -3507,7 +3531,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Map", [
-    "$timeout", '$q', 'Logger', "GmapUtil", "BaseObject", "ExtendGWin", function($timeout, $q, Logger, GmapUtil, BaseObject, ExtendGWin) {
+    "$timeout", '$q', 'Logger', "GmapUtil", "BaseObject", "ExtendGWin", "CtrlHandle", function($timeout, $q, Logger, GmapUtil, BaseObject, ExtendGWin, CtrlHandle) {
       "use strict";
       var $log, DEFAULTS, Map;
       $log = Logger;
@@ -3547,19 +3571,17 @@ Nicholas McCready - https://twitter.com/nmccready
 
         Map.prototype.controller = [
           "$scope", function($scope) {
-            $scope.deferred = $q.defer();
+            var ctrlObj;
+            ctrlObj = CtrlHandle.handle($scope);
             $scope.ctrlType = 'Map';
             $scope.deferred.promise.then(function() {
               return ExtendGWin.init();
             });
-            return {
+            return _.extend(ctrlObj, {
               getMap: function() {
                 return $scope.map;
-              },
-              getScope: function() {
-                return $scope;
               }
-            };
+            });
           }
         ];
 
@@ -3817,7 +3839,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Marker", [
-    "IMarker", "MarkerParentModel", "MarkerManager", function(IMarker, MarkerParentModel, MarkerManager) {
+    "IMarker", "MarkerParentModel", "MarkerManager", "CtrlHandle", function(IMarker, MarkerParentModel, MarkerManager, CtrlHandle) {
       var Marker;
       return Marker = (function(_super) {
         var _this = this;
@@ -3834,7 +3856,7 @@ Nicholas McCready - https://twitter.com/nmccready
         Marker.prototype.controller = [
           '$scope', '$element', function($scope, $element) {
             $scope.ctrlType = 'Marker';
-            return IMarker.ctrlHandle($scope, $element);
+            return CtrlHandle.handle($scope, $element);
           }
         ];
 
@@ -3868,7 +3890,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Markers", [
-    "IMarker", "MarkersParentModel", function(IMarker, MarkersParentModel) {
+    "IMarker", "MarkersParentModel", "CtrlHandle", function(IMarker, MarkersParentModel, CtrlHandle) {
       var Markers;
       return Markers = (function(_super) {
         __extends(Markers, _super);
@@ -3897,14 +3919,15 @@ Nicholas McCready - https://twitter.com/nmccready
         Markers.prototype.controller = [
           '$scope', '$element', function($scope, $element) {
             $scope.ctrlType = 'Markers';
-            return IMarker.ctrlHandle($scope, $element);
+            return CtrlHandle.handle($scope, $element);
           }
         ];
 
         Markers.prototype.link = function(scope, element, attrs, ctrl) {
           var _this = this;
           return this.mapPromise(scope, ctrl).then(function(map) {
-            return new MarkersParentModel(scope, element, attrs, map, _this.$timeout);
+            new MarkersParentModel(scope, element, attrs, map, _this.$timeout);
+            return scope.deferred.resolve();
           });
         };
 
@@ -4000,7 +4023,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Window", [
-    "IWindow", "GmapUtil", "WindowChildModel", function(IWindow, GmapUtil, WindowChildModel) {
+    "IWindow", "GmapUtil", "WindowChildModel", "$q", function(IWindow, GmapUtil, WindowChildModel, $q) {
       var Window;
       return Window = (function(_super) {
         __extends(Window, _super);

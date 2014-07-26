@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api")
-.factory "Window", [ "IWindow", "GmapUtil", "WindowChildModel", (IWindow, GmapUtil, WindowChildModel) ->
+.factory "Window", [ "IWindow", "GmapUtil", "WindowChildModel", "$q",(IWindow, GmapUtil, WindowChildModel,$q) ->
         class Window extends IWindow
             @include GmapUtil
             constructor: ($timeout, $compile, $http, $templateCache) ->

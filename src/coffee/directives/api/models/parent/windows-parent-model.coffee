@@ -25,17 +25,25 @@ angular.module("google-maps.directives.api.models.parent")
                         @$log.info(self)
                         @parentScope = undefined
 
+                        mapScope = ctrls[0].getScope()
+                        mapScope.deferred.promise.then (map) =>
+                          @gMap = map
+                          markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1] else undefined
+                          if not markerCtrl
+                            @go(scope)
+                            return
+                          markerCtrl.getScope().deferred.promise.then =>
+                            @markerScope = markerCtrl.getScope()
+                            @go(scope)
 
-                        @$timeout(=>
-                            @watchOurScope(scope)
-                            @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
-                            scope.$watch 'doRebuildAll', (newValue, oldValue) =>
-                                if (newValue != oldValue)
-                                    @doRebuildAll = newValue
+                    go:(scope) =>
+                      @watchOurScope(scope)
+                      @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
+                      scope.$watch 'doRebuildAll', (newValue, oldValue) =>
+                        if (newValue != oldValue)
+                          @doRebuildAll = newValue
 
-                            @createChildScopesWindows()
-                        , 50)
-
+                      @createChildScopesWindows()
                     #watch this scope(Parent to all WindowModels), these updates reflect expression / Key changes
                     #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
                     watch: (scope, name, nameKey) =>
@@ -88,11 +96,9 @@ angular.module("google-maps.directives.api.models.parent")
                         @isIconVisibleOnClick = true
                         if angular.isDefined(@linked.attrs.isiconvisibleonclick)
                             @isIconVisibleOnClick = @linked.scope.isIconVisibleOnClick
-                        @gMap = @linked.ctrls[0].getMap()
 
-                        if @linked.ctrls[1]?
-                            markersScope = if @linked.ctrls.length > 1 then @linked.ctrls[1].getMarkersScope() else undefined
-                        modelsNotDefined = angular.isUndefined(@linked.scope.models)
+                        markersScope = @markerScope
+                        modelsNotDefined = angular.isUndefined @linked.scope.models
 
                         if modelsNotDefined and (markersScope == undefined or (markersScope.markerModels == undefined or markersScope.models == undefined))
                             @$log.error("No models to create windows from! Need direct models or models derrived from markers!")

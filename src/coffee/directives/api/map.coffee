@@ -1,6 +1,6 @@
 angular.module("google-maps.directives.api")
-.factory "Map", ["$timeout", '$q','Logger', "GmapUtil", "BaseObject", "ExtendGWin",
-  ($timeout,$q, Logger, GmapUtil, BaseObject,ExtendGWin) ->
+.factory "Map", ["$timeout", '$q','Logger', "GmapUtil", "BaseObject", "ExtendGWin", "CtrlHandle",
+  ($timeout,$q, Logger, GmapUtil, BaseObject,ExtendGWin, CtrlHandle) ->
         "use strict"
         $log = Logger
 
@@ -29,15 +29,12 @@ angular.module("google-maps.directives.api")
                 bounds: "=bounds"
 
             controller: ["$scope", ($scope) ->
-                $scope.deferred = $q.defer()
+                ctrlObj = CtrlHandle.handle $scope
                 $scope.ctrlType = 'Map'
                 $scope.deferred.promise.then ->
                   ExtendGWin.init()
-                #@return the map instance
-                getMap: ->
+                _.extend ctrlObj, getMap: ->
                     $scope.map
-                getScope: ->
-                    $scope
             ]
 
             ###
