@@ -69,7 +69,7 @@ angular.module("google-maps")
             return
 
         # Wrap polygon initialization inside a $timeout() call to make sure the map is created already
-        $timeout ->
+        mapCtrl.getScope().deferred.promise.then (map) =>
             buildOpts = (pathPoints) ->
                 opts = angular.extend({}, DEFAULTS,
                     map: map
@@ -98,7 +98,6 @@ angular.module("google-maps")
                 opts.editable = false if opts.static
                 opts
             
-            map = mapCtrl.getMap()
             pathPoints = GmapUtil.convertPathPoints(scope.path)
             polygon = new google.maps.Polygon(buildOpts(pathPoints))
             # The fit attribute is undocumented as it currently does not

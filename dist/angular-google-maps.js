@@ -2335,18 +2335,17 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.parent").factory("LayerParentModel", [
-    "BaseObject", "Logger", function(BaseObject, Logger) {
+    "BaseObject", "Logger", '$timeout', function(BaseObject, Logger, $timeout) {
       var LayerParentModel;
       LayerParentModel = (function(_super) {
         __extends(LayerParentModel, _super);
 
-        function LayerParentModel(scope, element, attrs, mapCtrl, $timeout, onLayerCreated, $log) {
+        function LayerParentModel(scope, element, attrs, gMap, onLayerCreated, $log) {
           var _this = this;
           this.scope = scope;
           this.element = element;
           this.attrs = attrs;
-          this.mapCtrl = mapCtrl;
-          this.$timeout = $timeout;
+          this.gMap = gMap;
           this.onLayerCreated = onLayerCreated != null ? onLayerCreated : void 0;
           this.$log = $log != null ? $log : Logger;
           this.createGoogleLayer = __bind(this.createGoogleLayer, this);
@@ -2355,55 +2354,48 @@ Nicholas McCready - https://twitter.com/nmccready
             return;
           }
           this.createGoogleLayer();
-          this.gMap = void 0;
           this.doShow = true;
-          this.$timeout(function() {
-            _this.gMap = mapCtrl.getMap();
-            if (angular.isDefined(_this.attrs.show)) {
-              _this.doShow = _this.scope.show;
-            }
-            if (_this.doShow && (_this.gMap != null)) {
-              _this.layer.setMap(_this.gMap);
-            }
-            _this.scope.$watch("show", function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                _this.doShow = newValue;
-                if (newValue) {
-                  return _this.layer.setMap(_this.gMap);
-                } else {
-                  return _this.layer.setMap(null);
-                }
+          if (angular.isDefined(this.attrs.show)) {
+            this.doShow = this.scope.show;
+          }
+          if (this.doShow && (this.gMap != null)) {
+            this.layer.setMap(this.gMap);
+          }
+          this.scope.$watch("show", function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              _this.doShow = newValue;
+              if (newValue) {
+                return _this.layer.setMap(_this.gMap);
+              } else {
+                return _this.layer.setMap(null);
               }
-            }, true);
-            _this.scope.$watch("options", function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                _this.layer.setMap(null);
-                _this.layer = null;
-                return _this.createGoogleLayer();
-              }
-            }, true);
-            return _this.scope.$on("$destroy", function() {
-              return _this.layer.setMap(null);
-            });
+            }
+          }, true);
+          this.scope.$watch("options", function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              _this.layer.setMap(null);
+              _this.layer = null;
+              return _this.createGoogleLayer();
+            }
+          }, true);
+          this.scope.$on("$destroy", function() {
+            return _this.layer.setMap(null);
           });
         }
 
         LayerParentModel.prototype.createGoogleLayer = function() {
-          var _this = this;
+          var fn;
           if (this.attrs.options == null) {
             this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type]() : new google.maps[this.attrs.namespace][this.attrs.type]();
           } else {
             this.layer = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type](this.scope.options) : new google.maps[this.attrs.namespace][this.attrs.type](this.scope.options);
           }
-          return this.$timeout(function() {
-            var fn;
-            if ((_this.layer != null) && (_this.onLayerCreated != null)) {
-              fn = _this.onLayerCreated(_this.scope, _this.layer);
-              if (fn) {
-                return fn(_this.layer);
-              }
+          if ((this.layer != null) && (this.onLayerCreated != null)) {
+            fn = this.onLayerCreated(this.scope, this.layer);
+            if (fn) {
+              return fn(this.layer);
             }
-          });
+          }
         };
 
         return LayerParentModel;
@@ -2793,10 +2785,8 @@ Nicholas McCready - https://twitter.com/nmccready
           this.models = void 0;
           this.firstTime = true;
           this.$log.info(this);
-          $timeout(function() {
-            _this.watchOurScope(scope);
-            return _this.createChildScopes();
-          });
+          this.watchOurScope(scope);
+          this.createChildScopes();
         }
 
         PolylinesParentModel.prototype.watch = function(scope, name, nameKey) {
@@ -3962,8 +3952,8 @@ Nicholas McCready - https://twitter.com/nmccready
             this.$log.error("polyline: no valid path attribute found");
             return;
           }
-          return $timeout(function() {
-            return new PolylineChildModel(scope, attrs, mapCtrl.getMap(), _this.DEFAULTS);
+          return mapCtrl.getScope().deferred.promise.then(function(map) {
+            return new PolylineChildModel(scope, attrs, map, _this.DEFAULTS);
           });
         };
 
@@ -4004,8 +3994,8 @@ Nicholas McCready - https://twitter.com/nmccready
             this.$log.error("polylines: no models found to create from");
             return;
           }
-          return $timeout(function() {
-            return new PolylinesParentModel(scope, element, attrs, mapCtrl.getMap(), _this.DEFAULTS);
+          return mapCtrl.getScope().deferred.promise.then(function(map) {
+            return new PolylinesParentModel(scope, element, attrs, map, _this.DEFAULTS);
           });
         };
 
@@ -4495,12 +4485,13 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
           fit: "="
         },
         link: function(scope, element, attrs, mapCtrl) {
+          var _this = this;
           if (angular.isUndefined(scope.path) || scope.path === null || !GmapUtil.validatePath(scope.path)) {
             $log.error("polygon: no valid path attribute found");
             return;
           }
-          return $timeout(function() {
-            var arraySyncer, buildOpts, eventName, getEventHandler, map, pathPoints, polygon;
+          return mapCtrl.getScope().deferred.promise.then(function(map) {
+            var arraySyncer, buildOpts, eventName, getEventHandler, pathPoints, polygon;
             buildOpts = function(pathPoints) {
               var opts;
               opts = angular.extend({}, DEFAULTS, {
@@ -4533,7 +4524,6 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
               }
               return opts;
             };
-            map = mapCtrl.getMap();
             pathPoints = GmapUtil.convertPathPoints(scope.path);
             polygon = new google.maps.Polygon(buildOpts(pathPoints));
             if (scope.fit) {
@@ -4693,8 +4683,9 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
           events: "="
         },
         link: function(scope, element, attrs, mapCtrl) {
-          return $timeout(function() {
-            var buildOpts, circle, map;
+          var _this = this;
+          return mapCtrl.getScope().deferred.promise.then(function(map) {
+            var buildOpts, circle;
             buildOpts = function() {
               var opts;
               if (!GmapUtil.validateCoords(scope.center)) {
@@ -4726,7 +4717,6 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
               });
               return opts;
             };
-            map = mapCtrl.getMap();
             circle = new google.maps.Circle(buildOpts());
             scope.$watchCollection('center', function(newVals, oldVals) {
               if (newVals !== oldVals) {
@@ -4962,12 +4952,13 @@ Chentsu Lin - https://github.com/ChenTsuLin
           visible: "="
         },
         link: function(scope, element, attrs, mapCtrl) {
+          var _this = this;
           if (angular.isUndefined(scope.bounds) || scope.bounds === null || angular.isUndefined(scope.bounds.sw) || scope.bounds.sw === null || angular.isUndefined(scope.bounds.ne) || scope.bounds.ne === null || !validateBoundPoints(scope.bounds)) {
             $log.error("rectangle: no valid bound attribute found");
             return;
           }
-          return $timeout(function() {
-            var buildOpts, dragging, map, rectangle, settingBoundsFromScope;
+          return mapCtrl.getScope().deferred.promise.then(function(map) {
+            var buildOpts, dragging, rectangle, settingBoundsFromScope;
             buildOpts = function(bounds) {
               var opts;
               opts = angular.extend({}, DEFAULTS, {
@@ -4993,7 +4984,6 @@ Chentsu Lin - https://github.com/ChenTsuLin
               });
               return opts;
             };
-            map = mapCtrl.getMap();
             rectangle = new google.maps.Rectangle(buildOpts(convertBoundPoints(scope.bounds)));
             if (isTrue(attrs.fit)) {
               fitMapBounds(map, bounds);
@@ -5275,8 +5265,7 @@ This directive creates a new scope.
     "$timeout", "Logger", "LayerParentModel", function($timeout, Logger, LayerParentModel) {
       var Layer;
       Layer = (function() {
-        function Layer($timeout) {
-          this.$timeout = $timeout;
+        function Layer() {
           this.link = __bind(this.link, this);
           this.$log = Logger;
           this.restrict = "ECMA";
@@ -5295,17 +5284,20 @@ This directive creates a new scope.
         }
 
         Layer.prototype.link = function(scope, element, attrs, mapCtrl) {
-          if (attrs.oncreated != null) {
-            return new LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout, scope.onCreated);
-          } else {
-            return new LayerParentModel(scope, element, attrs, mapCtrl, this.$timeout);
-          }
+          var _this = this;
+          return mapCtrl.getScope().deferred.promise.then(function(map) {
+            if (scope.onCreated != null) {
+              return new LayerParentModel(scope, element, attrs, map, scope.onCreated);
+            } else {
+              return new LayerParentModel(scope, element, attrs, map);
+            }
+          });
         };
 
         return Layer;
 
       })();
-      return new Layer($timeout);
+      return new Layer();
     }
   ]);
 

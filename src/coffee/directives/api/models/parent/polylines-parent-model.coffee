@@ -29,9 +29,8 @@ angular.module("google-maps.directives.api.models.parent")
                         @firstTime = true
                         @$log.info @
 
-                        $timeout =>
-                            @watchOurScope(scope)
-                            @createChildScopes()
+                        @watchOurScope(scope)
+                        @createChildScopes()
 
                     #watch this scope(Parent to all Models), these updates reflect expression / Key changes
                     #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
