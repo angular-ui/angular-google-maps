@@ -33,6 +33,7 @@ describe "directives.api.Window", ->
                 }
             ]
 
+
         @timeOutNoW = (fnc,time) =>
             fnc()
 #        @gMarker = new google.maps.Marker(@commonOpts)
