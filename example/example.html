@@ -133,7 +133,7 @@
 
         <!-- predefined markers -->
         <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
-        <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id">
+        <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id" options="m.options">
             <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
             <window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
                     <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
