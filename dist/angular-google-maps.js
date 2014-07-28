@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.9 2014-07-27
+/*! angular-google-maps 1.1.10 2014-07-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -74,7 +74,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
-  angular.module("google-maps.extensions", []).service('ExtendGWin', function() {
+  angular.module("google-maps.extensions").service('ExtendGWin', function() {
     return {
       init: function() {
         if (!(google || (typeof google !== "undefined" && google !== null ? google.maps : void 0) || (google.maps.InfoWindow != null))) {

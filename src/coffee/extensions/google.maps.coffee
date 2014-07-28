@@ -1,5 +1,5 @@
 #boot strap angular and extend google maps
-angular.module("google-maps.extensions", [])
+angular.module("google-maps.extensions")
 .service('ExtendGWin', ->
     init: ->
       return unless google or google?.maps or google.maps.InfoWindow?
