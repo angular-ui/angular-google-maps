@@ -40,28 +40,28 @@ This directive creates a new scope.
 ###
 angular.module("google-maps")
 .directive "layer", ["$timeout", "Logger", "LayerParentModel",
-    ($timeout, Logger, LayerParentModel) ->
-        class Layer
-            constructor: (@$timeout) ->
-                @$log = Logger
-                @restrict = "EMA"
-                @require = "^googleMap"
-                @priority = -1
-                @transclude = true
-                @template = '<span class=\"angular-google-map-layer\" ng-transclude></span>'
-                @replace = true
-                @scope =
-                    show: "=show"
-                    type: "=type"
-                    namespace: "=namespace"
-                    options: '=options'
-                    onCreated: '&oncreated'
+  ($timeout, Logger, LayerParentModel) ->
+    class Layer
+      constructor:  ->
+        @$log = Logger
+        @restrict = "EMA"
+        @require = "^googleMap"
+        @priority = -1
+        @transclude = true
+        @template = '<span class=\"angular-google-map-layer\" ng-transclude></span>'
+        @replace = true
+        @scope =
+          show: "=show"
+          type: "=type"
+          namespace: "=namespace"
+          options: '=options'
+          onCreated: '&oncreated'
 
-            link: (scope, element, attrs, mapCtrl) =>
-                if attrs.oncreated?
-                    new LayerParentModel(scope, element, attrs, mapCtrl, @$timeout,
-                            scope.onCreated)
-                else
-                    new LayerParentModel(scope, element, attrs, mapCtrl, @$timeout)
-        new Layer($timeout)
+      link: (scope, element, attrs, mapCtrl) =>
+        mapCtrl.getScope().deferred.promise.then (map) =>
+          if scope.onCreated?
+            new LayerParentModel(scope, element, attrs, map, scope.onCreated)
+          else
+            new LayerParentModel(scope, element, attrs, map)
+    new Layer()
 ]

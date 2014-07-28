@@ -17,6 +17,7 @@ angular.module("google-maps.directives.api.utils")
             value.longitude
 
     getCoords = (value) ->
+        return unless value
         if Array.isArray(value) and value.length is 2
             new google.maps.LatLng(value[1], value[0])
         else if angular.isDefined(value.type) and value.type is "Point"

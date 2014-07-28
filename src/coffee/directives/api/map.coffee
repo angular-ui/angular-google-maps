@@ -1,5 +1,6 @@
 angular.module("google-maps.directives.api")
-.factory "Map", ["$timeout", "Logger", "GmapUtil", "BaseObject", ($timeout, Logger, GmapUtil, BaseObject) ->
+.factory "Map", ["$timeout", '$q','Logger', "GmapUtil", "BaseObject", "ExtendGWin", "CtrlHandle",
+  ($timeout,$q, Logger, GmapUtil, BaseObject,ExtendGWin, CtrlHandle) ->
         "use strict"
         $log = Logger
 
@@ -28,8 +29,11 @@ angular.module("google-maps.directives.api")
                 bounds: "="
 
             controller: ["$scope", ($scope) ->
-                #@return the map instance
-                getMap: ->
+                ctrlObj = CtrlHandle.handle $scope
+                $scope.ctrlType = 'Map'
+                $scope.deferred.promise.then ->
+                  ExtendGWin.init()
+                _.extend ctrlObj, getMap: ->
                     $scope.map
             ]
 
@@ -71,6 +75,12 @@ angular.module("google-maps.directives.api")
                     bounds: scope.bounds
                 ))
                 dragging = false
+                if not _m
+                  google.maps.event.addListener _m, 'tilesloaded ', (map) ->
+                    scope.deferred.resolve map
+                else
+                  scope.deferred.resolve _m
+
                 google.maps.event.addListener _m, "dragstart", ->
                     dragging = true
                     _.defer ->

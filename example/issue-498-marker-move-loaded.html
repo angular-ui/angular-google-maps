@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html ng-app="testApp">
+
+<head>
+    <script src="http://maps.googleapis.com/maps/api/js?libraries=visualization&sensor=false&language=en&v=3.15"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+
+    <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
+</head>
+
+<body ng-controller="TestController">
+    {{sites}}
+    <google-map class="col-sm-12 pad-none" center="map.center" zoom="map.zoom" style="min-height: 600px" draggable="true" events="map.events">
+        <!--<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)">-->
+            <!--<marker-label content="m.title" anchor="22 0" class="marker-labels"/>-->
+            <!--<window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">-->
+                <!--<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>-->
+                <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
+            <!--</window>-->
+        <!--</marker>-->
+
+        <!--marker for clicked position can not put google.map.animations.BOUNCE , since it is not initiaized yet-->
+        <div ng-init="opts = {animation:1}">
+            <marker coords="map.clickedMarker" options="opts">
+                <marker-label content="map.clickedMarker.title" anchor="100 -10" class="marker-labels"/>
+                <window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
+                    <p class="muted">My marker will reappear when you close me.</p>
+                </window>
+            </marker>
+        </div>
+    </google-map>
+</body>
+<script src="assets/scripts/controllers/issue-498-marker-move-loaded.js"></script>
+</html>

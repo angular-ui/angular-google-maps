@@ -113,9 +113,9 @@ module.exports = (grunt) ->
 
                 files: [
                     "src/coffee/*.coffee", "src/coffee/**/*.coffee", "src/coffee/**/**/*.coffee",
-                    "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js"
+                    "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js", "spec/**/*.spec.coffee", "spec/coffee/helpers/**"
                 ]
-                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine:spec",
+                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "jasmine:spec", #"uglify"
                         "clean:example", "coffee"]
             spec:
                 options:
@@ -170,9 +170,11 @@ module.exports = (grunt) ->
     grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
                                  "uglify", "jasmine:spec"]
 
+    grunt.registerTask "fast", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "jasmine:spec"]
+
     # run default "grunt" prior to generate _SpecRunner.html
     grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
-                                "connect:jasmineServer", "uglify", "open:jasmine", "watch:spec"]
+                                "connect:jasmineServer", "open:jasmine", "watch:spec"]
 
     grunt.registerTask "coverage", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
                                  "uglify", "jasmine:coverage"]

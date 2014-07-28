@@ -106,7 +106,10 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           latitude: 45,
           longitude: -74,
           showWindow: false,
-          title: 'Marker 2'
+          title: 'Marker 2',
+          options:{
+            animation:1
+          }
         },
         {
           id: 2,
@@ -183,9 +186,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
         imageExtension: 'png', imagePath: 'assets/images/cluster', imageSizes: [72]},
       clickedMarker: {
         id: 0,
-        title: 'You clicked here',
-        latitude: null,
-        longitude: null
+        title: ''
       },
       events: {
         tilesloaded: function (map, eventName, originalEventArgs) {
@@ -195,36 +196,20 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
 
           var e = originalEventArgs[0];
-
-          if (!$scope.map.clickedMarker) {
-            $scope.map.clickedMarker = {
-              id: 0,
-              title: 'You clicked here',
-              latitude: e.latLng.lat(),
-              longitude: e.latLng.lng()
-            };
-          }
-          else {
-            var marker = {
-              id: 0,
-              latitude: e.latLng.lat(),
-              longitude: e.latLng.lng()
-            };
-            $scope.map.clickedMarker = marker;
-          }
+          var lat = e.latLng.lat(),
+              lon = e.latLng.lng();
+          $scope.map.clickedMarker = {
+            id: 0,
+            title: 'You clicked here ' + 'lat: ' + lat + ' lon: ' + lon,
+            latitude: lat,
+            longitude: lon
+          };
           //scope apply required because this event handler is outside of the angular domain
           $scope.$apply();
         },
         dragend: function () {
           self = this;
           $timeout(function () {
-//                        modified = _.map($scope.map.mexiMarkers, function (marker) {
-//                            return {
-//                                latitude: marker.latitude + rndAddToLatLon(),
-//                                longitude: marker.longitude + rndAddToLatLon()
-//                            }
-//                        })
-//                        $scope.map.mexiMarkers = modified;
             var markers = [];
             var id = 0;
             if ($scope.map.mexiMarkers !== null && $scope.map.mexiMarkers.length > 0) {

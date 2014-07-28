@@ -3,8 +3,8 @@ angular.module("google-maps.directives.api.models.parent")
     (IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, ClustererMarkerManager, MarkerManager) ->
         class MarkersParentModel extends IMarkerParentModel
             @include ModelsWatcher
-            constructor: (scope, element, attrs, mapCtrl, $timeout) ->
-                super(scope, element, attrs, mapCtrl, $timeout)
+            constructor: (scope, element, attrs, map, $timeout) ->
+                super(scope, element, attrs, map, $timeout)
                 self = @
                 @scope.markerModels = new PropMap()
 
@@ -17,7 +17,6 @@ angular.module("google-maps.directives.api.models.parent")
                     if (newValue != oldValue)
                         @doRebuildAll = newValue
 
-            onTimeOut: (scope)=>
                 #watch all the below properties with end up being processed by onWatch below
                 @watch('models', scope)
                 @watch('doCluster', scope)
@@ -27,6 +26,7 @@ angular.module("google-maps.directives.api.models.parent")
                 @watch('idKey', scope)
                 @gMarkerManager = undefined
                 @createMarkersFromScratch(scope)
+
 
             onWatch: (propNameToWatch, scope, newValue, oldValue) =>
                 if propNameToWatch == "idKey" and newValue != oldValue
@@ -55,28 +55,28 @@ angular.module("google-maps.directives.api.models.parent")
                                   mouseover: scope.clusterEvents?.mouseover
                               _.extend scope.clusterEvents,
                                   click:(cluster) ->
-                                      self.maybeExecMappedEvent cluster, "click"
+                                      self.maybeExecMappedEvent cluster, 'click'
                                   mouseout:(cluster) ->
-                                      self.maybeExecMappedEvent cluster, "mouseout"
+                                      self.maybeExecMappedEvent cluster, 'mouseout'
                                   mouseover:(cluster) ->
-                                    self.maybeExecMappedEvent cluster, "mouseover"
+                                    self.maybeExecMappedEvent cluster, 'mouseover'
 
                     if scope.clusterOptions or scope.clusterEvents
                         if @gMarkerManager == undefined
-                            @gMarkerManager = new ClustererMarkerManager @mapCtrl.getMap(),
+                            @gMarkerManager = new ClustererMarkerManager @map,
                                     undefined,
                                     scope.clusterOptions,
                                     @clusterInternalOptions
                         else
                             if @gMarkerManager.opt_options != scope.clusterOptions
-                                @gMarkerManager = new ClustererMarkerManager @mapCtrl.getMap(),
+                                @gMarkerManager = new ClustererMarkerManager @map,
                                       undefined,
                                       scope.clusterOptions,
                                       @clusterInternalOptions
                     else
-                        @gMarkerManager = new ClustererMarkerManager(@mapCtrl.getMap())
+                        @gMarkerManager = new ClustererMarkerManager @map
                 else
-                    @gMarkerManager = new MarkerManager(@mapCtrl.getMap())
+                    @gMarkerManager = new MarkerManager @map
 
                 _async.each scope.models, (model) =>
                     @newChildMarker(model, scope)
@@ -129,7 +129,7 @@ angular.module("google-maps.directives.api.models.parent")
                     @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                     return
                 @$log.info('child', child, 'markers', @scope.markerModels)
-                child = new MarkerChildModel(model, scope, @mapCtrl, @$timeout, @DEFAULTS,
+                child = new MarkerChildModel(model, scope, @map, @$timeout, @DEFAULTS,
                     @doClick, @gMarkerManager, @idKey, doDrawSelf = false) #this is managed so child is not drawing itself
                 @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
                 child

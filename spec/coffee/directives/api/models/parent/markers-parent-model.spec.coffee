@@ -37,9 +37,7 @@ describe "MarkersParentModel - Clusterer Event Extensions", ->
 
     #define / inject values into the item we are testing... not a controller but it allows us to inject
     angular.module('mockModule', ["google-maps","google-maps.mocks"])
-    .value('mapCtrl',
-        getMap: ()->
-          document.gMap)
+    .value('map', document.gMap)
     .value('element', {})
     .value('attrs', click: true)
     .value('model', {})
@@ -50,7 +48,7 @@ describe "MarkersParentModel - Clusterer Event Extensions", ->
       @gmap = new GoogleApiMock(false)
       @gmap.mockEvent()
 
-    inject ($rootScope, element, attrs, mapCtrl, MarkersParentModel) =>
+    inject ($rootScope, element, attrs, map, MarkersParentModel) =>
       scope = $rootScope.$new()
       $timeout = ((fn)->
         fn())
@@ -59,7 +57,7 @@ describe "MarkersParentModel - Clusterer Event Extensions", ->
         animation: google.maps.Animation.BOUNCE
       @testCtor = MarkersParentModel
       @fireListener = window.google.maps.event.fireListener
-      @subject = new @testCtor(@scope, element, attrs, mapCtrl, $timeout)
+      @subject = new @testCtor(@scope, element, attrs, map, $timeout)
       @subject
 
   it 'constructor exist', ->

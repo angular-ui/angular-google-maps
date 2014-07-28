@@ -19,13 +19,13 @@ angular.module("google-maps.mocks", [])
       window.google.maps.Point = unmocked("Point")
       window.google.maps.LatLngBounds = unmocked("LatLngBounds")
 
-    # mockLatLng: (LatLng = (x, y) -> return) ->
-    #   window.google.maps.LatLng = LatLng
-    mockLatLng: ->
-      LatLng = (lat, lng) ->
-        @lat = -> lat
-        @lng = -> lng
-        return @
+    #http://gis.stackexchange.com/questions/11626/does-y-mean-latitude-and-x-mean-longitude-in-every-gis-software
+    mockLatLng: (LatLng = (y, x) ->
+      lat: () ->
+        y
+      lng: () ->
+        x
+    ) ->
       window.google.maps.LatLng = LatLng
 
     mockLatLngBounds: (LatLngBounds = () -> return) ->

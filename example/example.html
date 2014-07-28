@@ -58,113 +58,114 @@
         <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>
         <layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></layer>
 
-        WINDOWS without markers
-        NOTICE THEY MUST BE PRIOR TO ANY MARKERS OR THEY WILL ATTACH THEMSELVES walking up the dom tree
-        <window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false" options="map.infoWindow.options"  ng-cloak>
-            <div>
-                <p>This is an info window at {{ map.infoWindow.coords.latitude | number:4 }}, {{ map.infoWindow.coords.longitude | number:4 }}!</p>
-                <div ng-controller='InfoController'>
-                    I should not be attached to a
-                    marker.
+        <!--WINDOWS without markers-->
+        <!--NOTICE THEY MUST BE PRIOR TO ANY MARKERS OR THEY WILL ATTACH THEMSELVES walking up the dom tree-->
+        <!--<window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false" options="map.infoWindow.options"  ng-cloak>-->
+            <!--<div>-->
+                <!--<p>This is an info window at {{ map.infoWindow.coords.latitude | number:4 }}, {{ map.infoWindow.coords.longitude | number:4 }}!</p>-->
+                <!--<div ng-controller='InfoController'>-->
+                    <!--I should not be attached to a-->
+                    <!--marker.-->
 
-                    <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
-                </div>
-            </div>
-        </window>
+                    <!--<a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</window>-->
 
 
-        <window show="map.infoWindowWithCustomClass.show" coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
-            I'm a window with a custom class set via options.boxClass. I only work when googles <a href ="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
-        </window>
+        <!--<window show="map.infoWindowWithCustomClass.show" coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">-->
+            <!--I'm a window with a custom class set via options.boxClass. I only work when googles <a href ="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.-->
+        <!--</window>-->
 
-        <window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
-                options="map.templatedInfoWindow.options"
-                templateUrl="map.templatedInfoWindow.templateUrl"
-                templateParameter="map.templatedInfoWindow.templateParameter" ng-cloak>
-        </window>
+        <!--<window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"-->
+                <!--options="map.templatedInfoWindow.options"-->
+                <!--templateUrl="map.templatedInfoWindow.templateUrl"-->
+                <!--templateParameter="map.templatedInfoWindow.templateParameter" ng-cloak>-->
+        <!--</window>-->
 
-        <marker coords="searchLocationMarker.coords" options="searchLocationMarker.options" events="searchLocationMarker.events" idKey="searchLocationMarker.id">
-        </marker>
+        <!--<marker coords="searchLocationMarker.coords" options="searchLocationMarker.options" events="searchLocationMarker.events" idKey="searchLocationMarker.id">-->
+        <!--</marker>-->
 
-        <markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
-                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
-        </markers>
+        <!--<markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"-->
+                    <!--doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">-->
+        <!--</markers>-->
 
-        <markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'"
-                    labelContent="'title'" labelAnchor="22 0" labelClass="marker-labels">
-            <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
-                <div>
-                    I should not be attached to a
-                    marker.
-                    <div ng-controller='InfoController'>
-                        <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
-                    </div>
-                    <p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+        <!--<markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'"-->
+                    <!--labelContent="'title'" labelAnchor="22 0" labelClass="marker-labels">-->
+            <!--<windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
+                <!--<div>-->
+                    <!--I should not be attached to a-->
+                    <!--marker.-->
+                    <!--<div ng-controller='InfoController'>-->
+                        <!--<a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>-->
+                    <!--</div>-->
+                    <!--<p ng-non-bindable >This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
 
-                    <p class="muted">My marker will stay open when the window is popped up!</p>
-                </div>
-            </windows>
-        </markers>
+                    <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
+                <!--</div>-->
+            <!--</windows>-->
+        <!--</markers>-->
 
-        <markers models="map.clickMarkers" coords="'self'" click="clackMarker">
-	    </markers>
+        <!--<markers models="map.clickMarkers" coords="'self'" click="clackMarker">-->
+	    <!--</markers>-->
 
-        <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
-            <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
-                <div>
-                    <p>Dynamic Marker created via a delay!</p>
+        <!--<markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>-->
+            <!--<windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
+                <!--<div>-->
+                    <!--<p>Dynamic Marker created via a delay!</p>-->
 
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
+                    <!--<p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
 
-                    <p class="muted">My marker will stay open when the window is popped up!</p>
-                </div>
-            </windows>
-        </markers>
+                    <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
+                <!--</div>-->
+            <!--</windows>-->
+        <!--</markers>-->
 
-        <markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
-            <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
-                <div>
-                    <p>Mexi!</p>
-                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-                    <p class="muted">My marker will stay open when the window is popped up!</p>
-                </div>
-            </windows>
-        </markers>
+        <!--<markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >-->
+            <!--<windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
+                <!--<div>-->
+                    <!--<p>Mexi!</p>-->
+                    <!--<p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
+                    <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
+                <!--</div>-->
+            <!--</windows>-->
+        <!--</markers>-->
 
         <!-- predefined markers -->
         <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
-        <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id">
-            <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
-            <window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
-                    <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
-                    <p class="muted">My marker will stay open when the window is popped up!</p>
-            </window>
-        </marker>
+        <!--<marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id">-->
+            <!--<marker-label content="m.title" anchor="22 0" class="marker-labels"/>-->
+            <!--<window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">-->
+                    <!--<p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>-->
+                    <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
+            <!--</window>-->
+        <!--</marker>-->
 
          <!--marker for clicked position can not put google.map.animations.BOUNCE , since it is not initiaized yet-->
-        <div ng-init="opts = {animation:1}">
-            <marker coords="map.clickedMarker" options="opts" idKey="map.clickedMarker.id">
-                <!--<marker-label content="map.clickedMarker.title" anchor="24 40" class="marker-labels"/>-->
+        <!-- DISABLED ANIMATION on MarkerLABEL due to Google SDK V3 bug, see MarkerLabelChildModel.setOption-->
+        <!--<div ng-init="opts = {animation:1}">-->
+            <marker coords="map.clickedMarker"  idKey="map.clickedMarker.id">
+                <marker-label content="map.clickedMarker.title" anchor="24 80" class="marker-labels"/>
                 <window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
                     <p class="muted">My marker will reappear when you close me.</p>
                 </window>
             </marker>
-        </div>
+        <!--</div>-->
 
-		<!-- polyline example -->
-        <polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'
-            geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'></polyline>
+		<!--&lt;!&ndash; polyline example &ndash;&gt;-->
+        <!--<polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'-->
+            <!--geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'></polyline>-->
 
-        <!-- polygon example -->
-        <polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
-        	geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>
+        <!--&lt;!&ndash; polygon example &ndash;&gt;-->
+        <!--<polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"-->
+        	<!--geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>-->
 
-        <polygon ng-repeat="p in map.polygons2 track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
-                 geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>
+        <!--<polygon ng-repeat="p in map.polygons2 track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"-->
+                 <!--geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>-->
 
-        <!-- circle example -->
-        <circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
-            visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></circle>
+        <!--&lt;!&ndash; circle example &ndash;&gt;-->
+        <!--<circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"-->
+            <!--visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></circle>-->
 
 </div>
 <div class="span5">
@@ -438,7 +439,7 @@
 </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.14"></script>
+<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.16"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>

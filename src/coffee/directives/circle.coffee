@@ -49,7 +49,7 @@ angular.module("google-maps")
     link: (scope, element, attrs, mapCtrl) ->
 
         # Wrap circle initialization inside a $timeout() call to make sure the map is created already
-        $timeout ->
+        mapCtrl.getScope().deferred.promise.then (map) =>
             buildOpts = ->
                 # Validate required properties
                 if !GmapUtil.validateCoords(scope.center)
@@ -79,7 +79,6 @@ angular.module("google-maps")
 
                 opts
 
-            map = mapCtrl.getMap()
             circle = new google.maps.Circle(buildOpts())
 
             scope.$watchCollection 'center', (newVals, oldVals) ->

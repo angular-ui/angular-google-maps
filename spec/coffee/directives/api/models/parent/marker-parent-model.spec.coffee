@@ -67,7 +67,6 @@ describe "MarkerParentModel", ->
             @testCtor = MarkerParentModel
             mgr = new MarkerManager(mapCtrl.getMap())
             @subject = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, mgr, false)
-            $timeout.flush()
 
         @subject.setEvents(@, @scope)
 

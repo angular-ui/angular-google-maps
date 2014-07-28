@@ -5,7 +5,7 @@ describe "markers directive test", ->
     module("google-maps")
     module("google-maps.directives.api.utils")
 
-    inject ($rootScope, $timeout, $compile, GoogleApiMock, Markers) =>
+    inject ($rootScope, $timeout, $compile, GoogleApiMock, Markers, $q) =>
       @rootScope = $rootScope
       @timeout = $timeout
       @compile = $compile
@@ -18,7 +18,7 @@ describe "markers directive test", ->
       @subject = Markers
       @apiMock.mockMarker(@marker)
 
-  xit "should add markers for each object in model", ->
+  it "should add markers for each object in model", ->
     #TODO: We ought to be able to make this test pass, just need to figure _async I think -MDB.
     html = """
       <google-map draggable="true" center="map.center" zoom="map.zoom">
@@ -38,12 +38,14 @@ describe "markers directive test", ->
     element = @compile(html)(scope)
     scope.$apply()
     expect(@markerCount).toEqual(0)
-    @timeout () =>
+    @timeout ->
       toPush = {}
+      toPush.id = 0
       toPush.latitude = 47
       toPush.longitude = -27
       scope.items.push(toPush)
     @timeout.flush()
+    scope.$apply()
     expect(@markerCount).toEqual(1)
 
   it "exists", ->

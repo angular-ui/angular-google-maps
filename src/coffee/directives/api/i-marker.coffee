@@ -8,29 +8,31 @@
 ###
 angular.module("google-maps.directives.api")
 .factory "IMarker", [ "Logger", "BaseObject", (Logger, BaseObject)->
-    class IMarker extends BaseObject
-      constructor: ($timeout) ->
-        self = @
-        @$log = Logger
-        @$timeout = $timeout
-        @restrict = 'EMA'
-        @require = '^googleMap'
-        @priority = -1
-        @transclude = true
-        @replace = true
-        @scope =
-          coords: '='
-          icon: '='
-          click: '&click'
-          options: '='
-          events: '='
-          fit: '='
-          idKey: '=' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
-          control: '='
+  class IMarker extends BaseObject
+    constructor: ->
+      @$log = Logger
+      @restrict = 'EMA'
+      @require = '^googleMap'
+      @priority = -1
+      @transclude = true
+      @replace = true
+      @scope =
+        idKey: '=' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
+        control: '='
+        coords: '='
+        icon: '='
+        click: '&click'
+        options: '='
+        events: '='
+        fit: '='
 
-      controller: ['$scope', '$element', ($scope, $element) ->
-        throw new Exception("Not Implemented!!")
-      ]
-      link: (scope, element, attrs, ctrl) =>
-        throw new Exception("Not implemented!!")
-  ]
+    link: (scope, element, attrs, ctrl) =>
+      throw new Error "No Map Control! Marker Directive Must be inside the map!" unless ctrl
+
+    mapPromise: (scope, ctrl) ->
+      mapScope = ctrl.getScope()
+      mapScope.deferred.promise.then (map) ->
+        scope.map = map
+      mapScope.deferred.promise
+]
+

@@ -30,7 +30,8 @@ Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
 ###
 #define application wide modules
-angular.module("google-maps.directives.api.utils", [])
+angular.module("google-maps.extensions", [])
+angular.module("google-maps.directives.api.utils", ['google-maps.extensions'])
 angular.module("google-maps.directives.api.managers", [])
 angular.module("google-maps.directives.api.models.child", [
     "google-maps.directives.api.utils"])

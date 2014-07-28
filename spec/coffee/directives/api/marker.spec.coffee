@@ -30,10 +30,17 @@ describe "directives.api.Marker", ->
           {}
     @timeOutNoW = (fnc, time) =>
       fnc()
-    inject ($rootScope, Marker) =>
+    inject ($rootScope, Marker, $q) =>
+      @$rootScope = $rootScope
+      d = $q.defer()
+      d.resolve {}
+      @$rootScope.deferred = d
+      @mocks.ctrl.getScope =  =>
+        @$rootScope
       @mocks.scope.$new = () =>
-        $rootScope.$new()
-      @subject = new Marker(@timeOutNoW)
+        @$rootScope.$new()
+      @mocks.scope.deferred = d
+      @subject = new Marker()
 
   it 'can be created', ->
     expect(@subject).toBeDefined()
@@ -41,14 +48,17 @@ describe "directives.api.Marker", ->
   describe "link", ->
     it 'gMarkerManager exists', ->
       @subject.link(@mocks.scope, @mocks.element, @mocks.attrs, @mocks.ctrl)
+      @$rootScope.$apply()
       expect(@subject.gMarkerManager).toBeDefined()
 
     it 'slaps control functions when a control is available', ->
       @subject.link(@mocks.scope, @mocks.element, @mocks.attrs, @mocks.ctrl)
+      @$rootScope.$apply()
       expect(@mocks.scope.control.getGMarkers).toBeDefined()
 
     it 'slaps control functions work', ->
       @subject.link(@mocks.scope, @mocks.element, @mocks.attrs, @mocks.ctrl)
+      @$rootScope.$apply()
       fn = @mocks.scope.control.getGMarkers
       expect(fn).toBeDefined()
       expect(fn()[0].key).toEqual(@mocks.scope.idKey)
