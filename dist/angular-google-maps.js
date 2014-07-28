@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.1.10 2014-07-27
+/*! angular-google-maps 1.1.10 2014-07-28
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -76,7 +76,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps.extensions").service('ExtendGWin', function() {
     return {
-      init: function() {
+      init: _.once(function() {
         if (!(google || (typeof google !== "undefined" && google !== null ? google.maps : void 0) || (google.maps.InfoWindow != null))) {
           return;
         }
@@ -172,7 +172,7 @@ Nicholas McCready - https://twitter.com/nmccready
             return google.maps.event.removeListener(l);
           });
         };
-      }
+      })
     };
   });
 
