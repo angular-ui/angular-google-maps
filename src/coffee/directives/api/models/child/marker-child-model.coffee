@@ -1,6 +1,6 @@
 angular.module("google-maps.directives.api.models.child")
 .factory "MarkerChildModel", [ "ModelKey", "GmapUtil", "Logger", "$injector", "EventsHelper",
-    (ModelKey, GmapUtil, Logger, $injector, EventsHelper) ->
+  (ModelKey, GmapUtil, $log, $injector, EventsHelper) ->
       class MarkerChildModel extends ModelKey
         @include GmapUtil
         @include EventsHelper
@@ -9,9 +9,7 @@ angular.module("google-maps.directives.api.models.child")
           @iconKey = @parentScope.icon
           @coordsKey = @parentScope.coords
           @clickKey = @parentScope.click()
-          @labelContentKey = @parentScope.labelContent
           @optionsKey = @parentScope.options
-          @labelOptionsKey = @parentScope.labelOptions
           @needRedraw = false
 
           super(@parentScope.$new(false))
@@ -26,14 +24,12 @@ angular.module("google-maps.directives.api.models.child")
               @needRedraw = true
           , true
 
-          @$log = Logger
-          @$log.info @
+          $log.info @
           @watchDestroy(@scope)
 
         setMyScope: (model, oldModel = undefined, isInit = false) =>
           @maybeSetScopeValue('icon', model, oldModel, @iconKey, @evalModelHandle, isInit, @setIcon)
           @maybeSetScopeValue('coords', model, oldModel, @coordsKey, @evalModelHandle, isInit, @setCoords)
-          @maybeSetScopeValue('labelContent', model, oldModel, @labelContentKey, @evalModelHandle, isInit)
           if _.isFunction(@clickKey) and $injector
             @scope.click = () =>
               $injector.invoke(@clickKey, undefined, {"$markerModel": model})
@@ -42,15 +38,9 @@ angular.module("google-maps.directives.api.models.child")
             @createMarker(model, oldModel, isInit)
 
         createMarker: (model, oldModel = undefined, isInit = false)=>
-          @maybeSetScopeValue 'options', model, oldModel, @optionsKey, (lModel, lModelKey) =>
-            if lModel == undefined
-              return undefined
-            value = if lModelKey == 'self' then lModel else lModel[lModelKey]
-            if value == undefined # we still dont have a value see if this is something up the tree or default it
-              value = if lModelKey == undefined then @defaults else @scope.options
-            else
-              value
-          , isInit, @setOptions
+          @maybeSetScopeValue 'options', model, oldModel, @optionsKey, @evalModelHandle, isInit, @setOptions
+          if @parentScope.options and !@scope.options
+            $log.error('Options not found on model!')
 
 
         maybeSetScopeValue: (scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter = undefined) =>
@@ -62,25 +52,33 @@ angular.module("google-maps.directives.api.models.child")
 
           oldVal = evaluate(oldModel, modelKey)
           newValue = evaluate(model, modelKey)
-          if(newValue != oldVal and @scope[scopePropName] != newValue)
+          if newValue != oldVal
             @scope[scopePropName] = newValue
             unless isInit
               gSetter(@scope) if gSetter?
               @gMarkerManager.draw() if @doDrawSelf
 
         destroy: () =>
-          @scope.$destroy()
+          if @gMarker? #this is possible due to _async in that we created some Children but no gMarker yet
+            _(@internalEvents()).each (event,name) =>
+              google.maps.event.clearListeners @gMarker, name
+            if @parentScope?.events and _.isArray @parentScope.events
+              _(@parentScope.events).each (event, eventName) =>
+                google.maps.event.clearListeners @gMarker, eventName
+            @gMarkerManager.remove @gMarker, true
+            delete @gMarker
+            @scope.$destroy()
 
         setCoords: (scope) =>
           if scope.$id != @scope.$id or @gMarker == undefined
             return
           if scope.coords?
             if !@validateCoords(@scope.coords)
-              @$log.error "MarkerChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
+              $log.error "MarkerChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
               return
             @gMarker.setPosition @getCoords(scope.coords)
             @gMarker.setVisible @validateCoords(scope.coords)
-#            @gMarkerManager.remove @gMarker
+
             @gMarkerManager.add @gMarker
           else
             @gMarkerManager.remove @gMarker
@@ -106,37 +104,35 @@ angular.module("google-maps.directives.api.models.child")
           @opts = @createMarkerOptions(scope.coords, scope.icon, scope.options)
 
           delete @gMarker
-          if @isLabelDefined(scope)
-            @gMarker = new MarkerWithLabel @setLabelOptions(@opts, scope)
+          if scope.isLabel
+            @gMarker = new MarkerWithLabel @setLabelOptions @opts
           else
             @gMarker = new google.maps.Marker(@opts)
 
-          @setEvents @gMarker, @parentScope, @model
+          #hook external event handlers for events
+          @setEvents @gMarker, @parentScope, @model, ignore = ['dragend']
+          @setEvents @gMarker, events:@internalEvents(), @model
 
           @gMarker.key = @id if @id?
-
           @gMarkerManager.add @gMarker
-          google.maps.event.addListener @gMarker, 'click', =>
-            if @doClick and @scope.click?
-              @scope.click()
 
-        isLabelDefined: (scope) =>
-          scope.labelContent?
-
-        setLabelOptions: (opts, scope) =>
-          opts.labelAnchor = @getLabelPositionPoint(scope.labelAnchor)
-          opts.labelClass = scope.labelClass
-          opts.labelContent = scope.labelContent
+        setLabelOptions: (opts) =>
+          opts.labelAnchor = @getLabelPositionPoint opts.labelAnchor
           opts
 
-        watchDestroy: (scope)=>
-          scope.$on "$destroy", =>
-            if @gMarker? #this is possible due to _async in that we created some Children but no gMarker yet
-              google.maps.event.clearListeners @gMarker, 'click'
-              if @parentScope?.events and _.isArray @parentScope.events
-                @parentScope.events.forEach (event, eventName) ->
-                  google.maps.event.clearListeners @gMarker, eventName
-              @gMarkerManager.remove @gMarker, true
-              delete @gMarker
+        internalEvents: =>
+          dragend: (marker,eventName,model,mousearg) =>
+            newCoords = @setCoordsFromEvent @modelOrKey(@scope.model,@coordsKey), @gMarker.getPosition()
+            @scope.model = @setVal(model,@coordsKey,newCoords)
+            @parentScope.events?.dragend(marker,eventName,@scope.model,mousearg) if @parentScope.events?.dragend?
+            @scope.$apply()
+          click: =>
+            if @doClick and @scope.click?
+              @scope.click()
+              @scope.$apply()
+
+        watchDestroy: (scope )=>
+          scope.$on "$destroy", @destroy
+
       MarkerChildModel
   ]

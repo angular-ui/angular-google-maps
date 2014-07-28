@@ -90,8 +90,7 @@
                     doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
         </markers>
 
-        <markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'"
-                    labelContent="'title'" labelAnchor="22 0" labelClass="marker-labels">
+        <markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'" islabel="true" events="">
             <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     I should not be attached to a
@@ -131,8 +130,8 @@
             </windows>
         </markers>
 
-        <!-- predefined markers -->
-        <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
+        <!--<!-- predefined markers -->-->
+        <!--<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->-->
         <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id" options="m.options">
             <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
             <window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
@@ -142,7 +141,7 @@
         </marker>
 
          <!--marker for clicked position can not put google.map.animations.BOUNCE , since it is not initiaized yet-->
-        <!-- DISABLED ANIMATION on MarkerLABEL due to Google SDK V3 bug, see MarkerLabelChildModel.setOption-->
+        <!--<!-- DISABLED ANIMATION on MarkerLABEL due to Google SDK V3 bug, see MarkerLabelChildModel.setOption-->-->
         <!--<div ng-init="opts = {animation:1}">-->
             <marker coords="map.clickedMarker"  idKey="map.clickedMarker.id">
                 <marker-label content="map.clickedMarker.title" anchor="24 80" class="marker-labels"/>

@@ -11,12 +11,9 @@ angular.module("google-maps.directives.api")
         doCluster: '=docluster'
         clusterOptions: '=clusteroptions'
         clusterEvents: '=clusterevents'
-        labelContent: '=labelcontent'
-        labelAnchor: '@labelanchor'
-        labelClass: '@labelclass'
+        isLabel: '=islabel' #if is truthy consult http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/docs/reference.html for additional options documentation
 
       @$timeout = $timeout
-      self = @
       @$log.info @
 
     controller: ['$scope', '$element', ($scope, $element) ->

@@ -22,4 +22,13 @@ angular.module("google-maps.directives.api.utils")
 
         setIdKey:(scope) =>
             @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
+
+        setVal: (model,key,newValue) ->
+          thingToSet = @modelOrKey model,key
+          thingToSet = newValue
+          model
+
+        modelOrKey: (model,key) ->
+          thing = if key != 'self' then model[key] else model
+          thing
 ]

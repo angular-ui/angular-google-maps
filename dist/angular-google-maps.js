@@ -3312,6 +3312,13 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 
+(function() {
+  String.prototype.contains = function(value, fromIndex) {
+    return this.indexOf(value, fromIndex) !== -1;
+  };
+
+}).call(this);
+
 /*
     Author: Nicholas McCready & jfriend00
     _async handles things asynchronous-like :), to allow the UI to be free'd to do other things
@@ -3478,10 +3485,14 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api.utils").service("EventsHelper", [
     "Logger", function($log) {
       return {
-        setEvents: function(marker, scope, model) {
+        setEvents: function(marker, scope, model, ignores) {
           if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
             return _.compact(_.map(scope.events, function(eventHandler, eventName) {
-              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+              var doIgnore;
+              if (ignores) {
+                doIgnore = _(ignores).contains(eventName);
+              }
+              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName]) && !doIgnore) {
                 return google.maps.event.addListener(marker, eventName, function() {
                   return eventHandler.apply(scope, [marker, eventName, model, arguments]);
                 });
@@ -3544,7 +3555,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps.directives.api.utils").service("GmapUtil", [
     "Logger", "$compile", function(Logger, $compile) {
-      var getCoords, getLatitude, getLongitude, validateCoords;
+      var getCoords, getLatitude, getLongitude, setCoordsFromEvent, validateCoords;
       getLatitude = function(value) {
         if (Array.isArray(value) && value.length === 2) {
           return value[1];
@@ -3574,6 +3585,22 @@ Nicholas McCready - https://twitter.com/nmccready
         } else {
           return new google.maps.LatLng(value.latitude, value.longitude);
         }
+      };
+      setCoordsFromEvent = function(prevValue, newLatLon) {
+        if (!prevValue) {
+          return;
+        }
+        if (Array.isArray(prevValue) && prevValue.length === 2) {
+          prevValue[1] = newLatLon.lat();
+          prevValue[0] = newLatLon.lng();
+        } else if (angular.isDefined(prevValue.type) && prevValue.type === "Point") {
+          prevValue.coordinates[1] = newLatLon.lat();
+          prevValue.coordinates[0] = newLatLon.lng();
+        } else {
+          prevValue.latitude = newLatLon.lat();
+          prevValue.longitude = newLatLon.lng();
+        }
+        return prevValue;
       };
       validateCoords = function(coords) {
         if (angular.isUndefined(coords)) {
@@ -3779,13 +3806,14 @@ Nicholas McCready - https://twitter.com/nmccready
         getPath: function(object, key) {
           var obj;
           obj = object;
-          _.forEach(key.split("."), function(value) {
+          _.each(key.split("."), function(value) {
             if (obj) {
               return obj = obj[value];
             }
           });
           return obj;
-        }
+        },
+        setCoordsFromEvent: setCoordsFromEvent
       };
     }
   ]);
@@ -3822,12 +3850,11 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api.utils").service("Logger", [
     "$log", function($log) {
       return {
-        logger: $log,
         doLog: false,
         info: function(msg) {
           if (this.doLog) {
-            if (this.logger != null) {
-              return this.logger.info(msg);
+            if ($log != null) {
+              return $log.info(msg);
             } else {
               return console.info(msg);
             }
@@ -3835,8 +3862,8 @@ Nicholas McCready - https://twitter.com/nmccready
         },
         error: function(msg) {
           if (this.doLog) {
-            if (this.logger != null) {
-              return this.logger.error(msg);
+            if ($log != null) {
+              return $log.error(msg);
             } else {
               return console.error(msg);
             }
@@ -3844,8 +3871,8 @@ Nicholas McCready - https://twitter.com/nmccready
         },
         warn: function(msg) {
           if (this.doLog) {
-            if (this.logger != null) {
-              return this.logger.warn(msg);
+            if ($log != null) {
+              return $log.warn(msg);
             } else {
               return console.warn(msg);
             }
@@ -3899,6 +3926,19 @@ Nicholas McCready - https://twitter.com/nmccready
 
         ModelKey.prototype.setIdKey = function(scope) {
           return this.idKey = scope.idKey != null ? scope.idKey : this.defaultIdKey;
+        };
+
+        ModelKey.prototype.setVal = function(model, key, newValue) {
+          var thingToSet;
+          thingToSet = this.modelOrKey(model, key);
+          thingToSet = newValue;
+          return model;
+        };
+
+        ModelKey.prototype.modelOrKey = function(model, key) {
+          var thing;
+          thing = key !== 'self' ? model[key] : model;
+          return thing;
         };
 
         return ModelKey;
@@ -4733,7 +4773,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child").factory("MarkerChildModel", [
-    "ModelKey", "GmapUtil", "Logger", "$injector", "EventsHelper", function(ModelKey, GmapUtil, Logger, $injector, EventsHelper) {
+    "ModelKey", "GmapUtil", "Logger", "$injector", "EventsHelper", function(ModelKey, GmapUtil, $log, $injector, EventsHelper) {
       var MarkerChildModel;
       MarkerChildModel = (function(_super) {
         __extends(MarkerChildModel, _super);
@@ -4754,8 +4794,8 @@ Nicholas McCready - https://twitter.com/nmccready
           this.idKey = idKey != null ? idKey : "id";
           this.doDrawSelf = doDrawSelf != null ? doDrawSelf : true;
           this.watchDestroy = __bind(this.watchDestroy, this);
+          this.internalEvents = __bind(this.internalEvents, this);
           this.setLabelOptions = __bind(this.setLabelOptions, this);
-          this.isLabelDefined = __bind(this.isLabelDefined, this);
           this.setOptions = __bind(this.setOptions, this);
           this.setIcon = __bind(this.setIcon, this);
           this.setCoords = __bind(this.setCoords, this);
@@ -4769,9 +4809,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.iconKey = this.parentScope.icon;
           this.coordsKey = this.parentScope.coords;
           this.clickKey = this.parentScope.click();
-          this.labelContentKey = this.parentScope.labelContent;
           this.optionsKey = this.parentScope.options;
-          this.labelOptionsKey = this.parentScope.labelOptions;
           this.needRedraw = false;
           MarkerChildModel.__super__.constructor.call(this, this.parentScope.$new(false));
           this.scope.model = this.model;
@@ -4783,8 +4821,7 @@ Nicholas McCready - https://twitter.com/nmccready
               return _this.needRedraw = true;
             }
           }, true);
-          this.$log = Logger;
-          this.$log.info(this);
+          $log.info(this);
           this.watchDestroy(this.scope);
         }
 
@@ -4798,7 +4835,6 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon);
           this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
-          this.maybeSetScopeValue('labelContent', model, oldModel, this.labelContentKey, this.evalModelHandle, isInit);
           if (_.isFunction(this.clickKey) && $injector) {
             return this.scope.click = function() {
               return $injector.invoke(_this.clickKey, void 0, {
@@ -4812,25 +4848,16 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerChildModel.prototype.createMarker = function(model, oldModel, isInit) {
-          var _this = this;
           if (oldModel == null) {
             oldModel = void 0;
           }
           if (isInit == null) {
             isInit = false;
           }
-          return this.maybeSetScopeValue('options', model, oldModel, this.optionsKey, function(lModel, lModelKey) {
-            var value;
-            if (lModel === void 0) {
-              return void 0;
-            }
-            value = lModelKey === 'self' ? lModel : lModel[lModelKey];
-            if (value === void 0) {
-              return value = lModelKey === void 0 ? _this.defaults : _this.scope.options;
-            } else {
-              return value;
-            }
-          }, isInit, this.setOptions);
+          this.maybeSetScopeValue('options', model, oldModel, this.optionsKey, this.evalModelHandle, isInit, this.setOptions);
+          if (this.parentScope.options && !this.scope.options) {
+            return $log.error('Options not found on model!');
+          }
         };
 
         MarkerChildModel.prototype.maybeSetScopeValue = function(scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter) {
@@ -4849,7 +4876,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           oldVal = evaluate(oldModel, modelKey);
           newValue = evaluate(model, modelKey);
-          if (newValue !== oldVal && this.scope[scopePropName] !== newValue) {
+          if (newValue !== oldVal) {
             this.scope[scopePropName] = newValue;
             if (!isInit) {
               if (gSetter != null) {
@@ -4863,7 +4890,21 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerChildModel.prototype.destroy = function() {
-          return this.scope.$destroy();
+          var _ref,
+            _this = this;
+          if (this.gMarker != null) {
+            _(this.internalEvents()).each(function(event, name) {
+              return google.maps.event.clearListeners(_this.gMarker, name);
+            });
+            if (((_ref = this.parentScope) != null ? _ref.events : void 0) && _.isArray(this.parentScope.events)) {
+              _(this.parentScope.events).each(function(event, eventName) {
+                return google.maps.event.clearListeners(_this.gMarker, eventName);
+              });
+            }
+            this.gMarkerManager.remove(this.gMarker, true);
+            delete this.gMarker;
+            return this.scope.$destroy();
+          }
         };
 
         MarkerChildModel.prototype.setCoords = function(scope) {
@@ -4872,7 +4913,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           if (scope.coords != null) {
             if (!this.validateCoords(this.scope.coords)) {
-              this.$log.error("MarkerChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(this.model)));
+              $log.error("MarkerChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(this.model)));
               return;
             }
             this.gMarker.setPosition(this.getCoords(scope.coords));
@@ -4895,8 +4936,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerChildModel.prototype.setOptions = function(scope) {
-          var _ref,
-            _this = this;
+          var ignore, _ref;
           if (scope.$id !== this.scope.$id) {
             return;
           }
@@ -4909,49 +4949,51 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           this.opts = this.createMarkerOptions(scope.coords, scope.icon, scope.options);
           delete this.gMarker;
-          if (this.isLabelDefined(scope)) {
-            this.gMarker = new MarkerWithLabel(this.setLabelOptions(this.opts, scope));
+          if (scope.isLabel) {
+            this.gMarker = new MarkerWithLabel(this.setLabelOptions(this.opts));
           } else {
             this.gMarker = new google.maps.Marker(this.opts);
           }
-          this.setEvents(this.gMarker, this.parentScope, this.model);
+          this.setEvents(this.gMarker, this.parentScope, this.model, ignore = ['dragend']);
+          this.setEvents(this.gMarker, {
+            events: this.internalEvents()
+          }, this.model);
           if (this.id != null) {
             this.gMarker.key = this.id;
           }
-          this.gMarkerManager.add(this.gMarker);
-          return google.maps.event.addListener(this.gMarker, 'click', function() {
-            if (_this.doClick && (_this.scope.click != null)) {
-              return _this.scope.click();
-            }
-          });
+          return this.gMarkerManager.add(this.gMarker);
         };
 
-        MarkerChildModel.prototype.isLabelDefined = function(scope) {
-          return scope.labelContent != null;
-        };
-
-        MarkerChildModel.prototype.setLabelOptions = function(opts, scope) {
-          opts.labelAnchor = this.getLabelPositionPoint(scope.labelAnchor);
-          opts.labelClass = scope.labelClass;
-          opts.labelContent = scope.labelContent;
+        MarkerChildModel.prototype.setLabelOptions = function(opts) {
+          opts.labelAnchor = this.getLabelPositionPoint(opts.labelAnchor);
           return opts;
         };
 
-        MarkerChildModel.prototype.watchDestroy = function(scope) {
+        MarkerChildModel.prototype.internalEvents = function() {
           var _this = this;
-          return scope.$on("$destroy", function() {
-            var _ref;
-            if (_this.gMarker != null) {
-              google.maps.event.clearListeners(_this.gMarker, 'click');
-              if (((_ref = _this.parentScope) != null ? _ref.events : void 0) && _.isArray(_this.parentScope.events)) {
-                _this.parentScope.events.forEach(function(event, eventName) {
-                  return google.maps.event.clearListeners(this.gMarker, eventName);
-                });
+          return {
+            dragend: function(marker, eventName, model, mousearg) {
+              var newCoords, _ref, _ref1;
+              newCoords = _this.setCoordsFromEvent(_this.modelOrKey(_this.scope.model, _this.coordsKey), _this.gMarker.getPosition());
+              _this.scope.model = _this.setVal(model, _this.coordsKey, newCoords);
+              if (((_ref = _this.parentScope.events) != null ? _ref.dragend : void 0) != null) {
+                if ((_ref1 = _this.parentScope.events) != null) {
+                  _ref1.dragend(marker, eventName, _this.scope.model, mousearg);
+                }
               }
-              _this.gMarkerManager.remove(_this.gMarker, true);
-              return delete _this.gMarker;
+              return _this.scope.$apply();
+            },
+            click: function() {
+              if (_this.doClick && (_this.scope.click != null)) {
+                _this.scope.click();
+                return _this.scope.$apply();
+              }
             }
-          });
+          };
+        };
+
+        MarkerChildModel.prototype.watchDestroy = function(scope) {
+          return scope.$on("$destroy", this.destroy);
         };
 
         return MarkerChildModel;
@@ -5347,7 +5389,8 @@ Nicholas McCready - https://twitter.com/nmccready
             return google.maps.event.removeListener(h);
           });
           this.googleMapsHandles.length = 0;
-          return delete this.gWin;
+          delete this.gWin;
+          return delete this.opts;
         };
 
         WindowChildModel.prototype.destroy = function(manualOverride) {
@@ -6426,7 +6469,10 @@ Nicholas McCready - https://twitter.com/nmccready
           this.setChildScope(childScope, model);
           childScope.$watch('model', function(newValue, oldValue) {
             if (newValue !== oldValue) {
-              return _this.setChildScope(childScope, newValue);
+              _this.setChildScope(childScope, newValue);
+              if (_this.markerScope) {
+                return _this.windows[newValue[_this.idKey]].markerCtrl = _this.markerScope.markerModels[newValue[_this.idKey]].gMarker;
+              }
             }
           }, true);
           fakeElement = {
@@ -7191,7 +7237,6 @@ Nicholas McCready - https://twitter.com/nmccready
 
         function Markers($timeout) {
           this.link = __bind(this.link, this);
-          var self;
           Markers.__super__.constructor.call(this, $timeout);
           this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
           this.scope = _.extend(this.scope || {}, {
@@ -7201,12 +7246,9 @@ Nicholas McCready - https://twitter.com/nmccready
             doCluster: '=docluster',
             clusterOptions: '=clusteroptions',
             clusterEvents: '=clusterevents',
-            labelContent: '=labelcontent',
-            labelAnchor: '@labelanchor',
-            labelClass: '@labelclass'
+            isLabel: '=islabel'
           });
           this.$timeout = $timeout;
-          self = this;
           this.$log.info(this);
         }
 

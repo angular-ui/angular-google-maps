@@ -107,8 +107,8 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           longitude: -74,
           showWindow: false,
           title: 'Marker 2',
-          options:{
-            animation:1
+          options: {
+            animation: 1
           }
         },
         {
@@ -134,7 +134,11 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           latitude: 46,
           longitude: -77,
           showWindow: false,
-          title: '[46,-77]'
+          options: {
+            labelContent: '[46,-77]',
+            labelAnchor: "22 0",
+            labelClass: "marker-labels"
+          }
         },
         {
           id: 2,
@@ -142,7 +146,12 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           latitude: 33,
           longitude: -77,
           showWindow: false,
-          title: '[33,-77]'
+          options: {
+            labelContent: 'DRAG ME!',
+            labelAnchor: "22 0",
+            labelClass: "marker-labels",
+            draggable: true
+          }
         },
         {
           id: 3,
@@ -150,7 +159,11 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           latitude: 35,
           longitude: -125,
           showWindow: false,
-          title: '[35,-125]'
+          options: {
+            labelContent: '[35,-125]',
+            labelAnchor: "22 0",
+            labelClass: "marker-labels"
+          }
         }
       ],
       mexiIdKey: 'mid',
@@ -375,13 +388,15 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           draggable: true,
           geodesic: true,
           visible: true,
-          icons: [{
-          	icon: { 
-          		path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW          		
-          	},
-          	offset: '25px',
-          	repeat: '50px'
-          }]
+          icons: [
+            {
+              icon: {
+                path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW
+              },
+              offset: '25px',
+              repeat: '50px'
+            }
+          ]
         },
         {
           id: 2,
@@ -411,13 +426,15 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
           draggable: true,
           geodesic: true,
           visible: true,
-          icons: [{
-          	icon: { 
-          		path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW          		
-          	},
-          	offset: '25px',
-          	repeat: '50px'
-          }]
+          icons: [
+            {
+              icon: {
+                path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW
+              },
+              offset: '25px',
+              repeat: '50px'
+            }
+          ]
         },
         {
           id: 3,
@@ -438,6 +455,13 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
     }
 
   });
+  var marker2Dragend = function(marker,eventName,model,args){
+    model.options.labelContent = "Dragged lat: " + model.latitude + " lon: " + model.longitude;
+//    $scope.map.markers2[marker.key-1] = model;
+  };
+  $scope.map.markers2Events= {
+    dragend: marker2Dragend
+  };
 
   _.each($scope.map.markers, function (marker) {
     marker.closeClick = function () {
