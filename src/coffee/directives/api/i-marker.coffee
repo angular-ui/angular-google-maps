@@ -17,14 +17,14 @@ angular.module("google-maps.directives.api")
       @transclude = true
       @replace = true
       @scope =
-        idKey: '=' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
-        control: '='
-        coords: '='
-        icon: '='
+        coords: '=coords'
+        icon: '=icon'
         click: '&click'
-        options: '='
-        events: '='
-        fit: '='
+        options: '=options'
+        events: '=events'
+        fit: '=fit'
+        idKey: '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
+        control: '=control'
 
     link: (scope, element, attrs, ctrl) =>
       throw new Error "No Map Control! Marker Directive Must be inside the map!" unless ctrl

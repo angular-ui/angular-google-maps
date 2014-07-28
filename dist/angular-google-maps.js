@@ -5618,9 +5618,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.setGMarker(new google.maps.Marker(opts));
           this.listener = google.maps.event.addListener(this.scope.gMarker, 'click', function() {
             if (_this.doClick && (scope.click != null)) {
-              return _this.$timeout(function() {
-                return _this.scope.click();
-              });
+              return _this.scope.click();
             }
           });
           this.setEvents(this.scope.gMarker, scope, scope);
@@ -6682,14 +6680,14 @@ Nicholas McCready - https://twitter.com/nmccready
           this.transclude = true;
           this.replace = true;
           this.scope = {
-            idKey: '=',
-            control: '=',
-            coords: '=',
-            icon: '=',
+            coords: '=coords',
+            icon: '=icon',
             click: '&click',
-            options: '=',
-            events: '=',
-            fit: '='
+            options: '=options',
+            events: '=events',
+            fit: '=fit',
+            idKey: '=idkey',
+            control: '=control'
           };
         }
 
@@ -6795,14 +6793,14 @@ Nicholas McCready - https://twitter.com/nmccready
           this.require = void 0;
           this.replace = true;
           this.scope = {
-            coords: '=',
-            show: '=',
-            templateUrl: '=',
-            templateParameter: '=',
-            isIconVisibleOnClick: '=',
+            coords: '=coords',
+            show: '=show',
+            templateUrl: '=templateurl',
+            templateParameter: '=templateparameter',
+            isIconVisibleOnClick: '=isiconvisibleonclick',
             closeClick: '&closeclick',
-            options: '=',
-            control: '='
+            options: '=options',
+            control: '=control'
           };
           this.$log = Logger;
         }

@@ -18,8 +18,7 @@ angular.module("google-maps.directives.api.models.parent")
 
           @listener = google.maps.event.addListener @scope.gMarker, 'click', =>
             if @doClick and scope.click?
-              @$timeout =>
-                @scope.click()
+              @scope.click()
 
           @setEvents @scope.gMarker, scope, scope
           @$log.info(@)

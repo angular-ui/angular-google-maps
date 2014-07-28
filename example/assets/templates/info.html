@@ -1,9 +1,11 @@
 <div ng-controller="InfoController" >
-	<strong>I'm loaded from an external template, yay!</strong>
-	<div>
-		Parameter from opener: {{ parameter.message }}
-	</div>	
-	<div>
-		Template specific: {{ templateValue }}
-	</div>	
+    <div ng-cloak>
+        <strong>I'm loaded from an external template, yay!</strong>
+        <div>
+            Parameter from opener: {{ parameter.message }}
+        </div>
+        <div>
+            Template specific: {{ templateValue }}
+        </div>
+    </div>
 </div>
