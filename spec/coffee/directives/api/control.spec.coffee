@@ -13,7 +13,6 @@ describe "directives.api.control", ->
 		inject ($compile, $rootScope, $timeout, Control, Logger) ->
 			@compile = $compile
 			@rootScope = $rootScope
-			@timeout = $timeout
 			@control = new Control()
 			@log = Logger
 
@@ -21,7 +20,7 @@ describe "directives.api.control", ->
 			@scope = @rootScope.$new()
 			@scope.map = {}
 			@scope.map.zoom = 12
-			@scope.map.center = 
+			@scope.map.center =
 				longitude: 47
 				latitude: -27
 
@@ -51,7 +50,6 @@ describe "directives.api.control", ->
 								"""
 		element = @compile(html)(@scope)
 		@rootScope.$apply()
-		@timeout.flush()
 		expect(@log.error).not.toHaveBeenCalled()
 		#TODO: confirm it was added to the map.Controls[position] Array
 

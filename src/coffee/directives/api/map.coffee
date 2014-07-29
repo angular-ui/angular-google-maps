@@ -68,12 +68,13 @@ angular.module("google-maps.directives.api")
                         $log.error "angular-google-maps: invalid map type \"" + attrs.type + "\""
 
                 # Create the map
-                _m = new google.maps.Map(el.find("div")[1], angular.extend({}, DEFAULTS, opts,
-                    center: @getCoords(scope.center)
-                    draggable: @isTrue(attrs.draggable)
-                    zoom: scope.zoom
-                    bounds: scope.bounds
-                ))
+                mapOptions = angular.extend({}, DEFAULTS, opts,
+                  center: @getCoords(scope.center)
+                  draggable: @isTrue(attrs.draggable)
+                  zoom: scope.zoom
+                  bounds: scope.bounds
+                )
+                _m = new google.maps.Map(el.find("div")[1], mapOptions)
                 dragging = false
                 if not _m
                   google.maps.event.addListener _m, 'tilesloaded ', (map) ->
@@ -153,6 +154,9 @@ angular.module("google-maps.directives.api")
                         google.maps.event.addListener _m, eventName, getEventHandler(eventName)  if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
 
                 # Put the map into the scope
+                #extending map , maybe hacky.. don't really care right now
+                _m.getOptions = ->
+                  mapOptions
                 scope.map = _m
                 #            google.maps.event.trigger _m, "resize"
 
@@ -173,6 +177,8 @@ angular.module("google-maps.directives.api")
                     ###
                     scope.control.getGMap = ()=>
                         _m
+                    scope.control.getMapOptions = ->
+                      mapOptions
 
                 # Update map when center coordinates change
                 scope.$watch "center", ((newValue, oldValue) =>

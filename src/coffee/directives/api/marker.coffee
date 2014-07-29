@@ -8,11 +8,11 @@ angular.module("google-maps.directives.api")
 
       controller: ['$scope', '$element', ($scope, $element) =>
         $scope.ctrlType = 'Marker'
-        @handle $scope,$element
+        IMarker.handle $scope,$element
       ]
       link: (scope, element, attrs, ctrl) =>
         doFit = true if scope.fit
-        @mapPromise(scope,ctrl).then (map) =>
+        IMarker.mapPromise(scope,ctrl).then (map) =>
           @gMarkerManager = new MarkerManager map unless @gMarkerManager
           new MarkerParentModel scope, element, attrs, map, @$timeout, @gMarkerManager, doFit
           scope.deferred.resolve()

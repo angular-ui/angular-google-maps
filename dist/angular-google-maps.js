@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-28
+/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-29
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -3474,6 +3474,14 @@ Nicholas McCready - https://twitter.com/nmccready
               return $scope;
             }
           };
+        },
+        mapPromise: function(scope, ctrl) {
+          var mapScope;
+          mapScope = ctrl.getScope();
+          mapScope.deferred.promise.then(function(map) {
+            return scope.map = map;
+          });
+          return mapScope.deferred.promise;
         }
       };
     }
@@ -4677,6 +4685,78 @@ Nicholas McCready - https://twitter.com/nmccready
         };
       };
       return addEvents;
+    }
+  ]);
+
+}).call(this);
+
+/*
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicholas McCready - https://twitter.com/nmccready
+Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawing-freehand  , &
+  http://jsfiddle.net/YsQdh/88/
+*/
+
+
+(function() {
+  angular.module("google-maps.directives.api.models.child").factory("DrawFreeHandChildModel", [
+    'Logger', function($log) {
+      var drawFreeHand, freeHandMgr;
+      drawFreeHand = function(map, polys, enable) {
+        var move, poly;
+        poly = new google.maps.Polyline({
+          map: map,
+          clickable: false
+        });
+        move = google.maps.event.addListener(map, 'mousemove', function(e) {
+          return poly.getPath().push(e.latLng);
+        });
+        google.maps.event.addListenerOnce(map, 'mouseup', function(e) {
+          var path;
+          google.maps.event.removeListener(move);
+          path = poly.getPath();
+          poly.setMap(null);
+          polys.push(new google.maps.Polygon({
+            map: map,
+            path: path
+          }));
+          poly = null;
+          google.maps.event.clearListeners(map.getDiv(), 'mousedown');
+          return enable();
+        });
+        return void 0;
+      };
+      freeHandMgr = function(map, polys) {
+        var disableMap, enable,
+          _this = this;
+        this.map = map;
+        this.polys = polys;
+        enable = function() {
+          return _this.map.setOptions(_this.oldOptions);
+        };
+        disableMap = function() {
+          $log.info('disabling map move');
+          _this.oldOptions = map.getOptions();
+          return _this.map.setOptions({
+            draggable: false,
+            zoomControl: false,
+            scrollwheel: false,
+            disableDoubleClickZoom: false
+          });
+        };
+        this.engage = function() {
+          disableMap(_this.map);
+          $log.info('DrawFreeHandChildModel is engaged (drawing).');
+          return google.maps.event.addDomListener(_this.map.getDiv(), 'mousedown', function(e) {
+            return drawFreeHand(_this.map, _this.polys, enable);
+          });
+        };
+        return this;
+      };
+      return freeHandMgr;
     }
   ]);
 
@@ -6532,7 +6612,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Control", [
-    "IControl", "$http", "$templateCache", "$timeout", "$compile", "$controller", function(IControl, $http, $templateCache, $timeout, $compile, $controller) {
+    "IControl", "$http", "$templateCache", "$compile", "$controller", function(IControl, $http, $templateCache, $compile, $controller) {
       var Control;
       return Control = (function(_super) {
         __extends(Control, _super);
@@ -6556,9 +6636,8 @@ Nicholas McCready - https://twitter.com/nmccready
             this.$log.error('mapControl: invalid position property');
             return;
           }
-          return $timeout(function() {
-            var control, controlDiv, map;
-            map = ctrl.getMap();
+          return IControl.mapPromise(scope, ctrl).then(function(map) {
+            var control, controlDiv;
             control = void 0;
             controlDiv = angular.element('<div></div>');
             return $http.get(scope.template, {
@@ -6594,6 +6673,68 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 /*
+  - Link up Polygons to be sent back to a controller
+  - inject the draw function into a controllers scope so that controller can call the directive to draw on demand
+  - draw function creates the DrawFreeHandChildModel which manages itself
+*/
+
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  angular.module("google-maps.directives.api").factory('FreeDrawPolygons', [
+    'Logger', 'BaseObject', 'CtrlHandle', 'DrawFreeHandChildModel', function($log, BaseObject, CtrlHandle, DrawFreeHandChildModel) {
+      var FreeDrawPolygons, _ref;
+      return FreeDrawPolygons = (function(_super) {
+        __extends(FreeDrawPolygons, _super);
+
+        function FreeDrawPolygons() {
+          this.link = __bind(this.link, this);
+          _ref = FreeDrawPolygons.__super__.constructor.apply(this, arguments);
+          return _ref;
+        }
+
+        FreeDrawPolygons.include(CtrlHandle);
+
+        FreeDrawPolygons.prototype.restrict = 'EA';
+
+        FreeDrawPolygons.prototype.replace = true;
+
+        FreeDrawPolygons.prototype.require = '^googleMap';
+
+        FreeDrawPolygons.prototype.scope = {
+          polygons: '=',
+          draw: '='
+        };
+
+        FreeDrawPolygons.prototype.link = function(scope, element, attrs, ctrl) {
+          var _this = this;
+          return this.mapPromise(scope, ctrl).then(function(map) {
+            var freeHand;
+            if (!scope.polygons) {
+              return $log.error("No polygons to bind to!");
+            }
+            if (!_.isArray(scope.polygons)) {
+              return $log.error("Free Draw Polygons must be of type Array!");
+            }
+            freeHand = new DrawFreeHandChildModel(map, scope.polygons, scope.originalMapOpts);
+            return scope.draw = function() {
+              return freeHand.engage();
+            };
+          });
+        };
+
+        return FreeDrawPolygons;
+
+      })(BaseObject);
+    }
+  ]);
+
+}).call(this);
+
+/*
  - interface for all controls to derive from
  - to enforce a minimum set of requirements
 	- attributes
@@ -6610,15 +6751,15 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("IControl", [
-    "BaseObject", "Logger", function(BaseObject, Logger) {
+    "BaseObject", "Logger", "CtrlHandle", function(BaseObject, Logger, CtrlHandle) {
       var IControl;
       return IControl = (function(_super) {
         __extends(IControl, _super);
 
+        IControl.extend(CtrlHandle);
+
         function IControl() {
           this.link = __bind(this.link, this);
-          var self;
-          self = this;
           this.restrict = 'EA';
           this.replace = true;
           this.require = '^googleMap';
@@ -6712,10 +6853,12 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("IMarker", [
-    "Logger", "BaseObject", function(Logger, BaseObject) {
+    "Logger", "BaseObject", "CtrlHandle", function(Logger, BaseObject, CtrlHandle) {
       var IMarker;
       return IMarker = (function(_super) {
         __extends(IMarker, _super);
+
+        IMarker.extend(CtrlHandle);
 
         function IMarker() {
           this.link = __bind(this.link, this);
@@ -6741,15 +6884,6 @@ Nicholas McCready - https://twitter.com/nmccready
           if (!ctrl) {
             throw new Error("No Map Control! Marker Directive Must be inside the map!");
           }
-        };
-
-        IMarker.prototype.mapPromise = function(scope, ctrl) {
-          var mapScope;
-          mapScope = ctrl.getScope();
-          mapScope.deferred.promise.then(function(map) {
-            return scope.map = map;
-          });
-          return mapScope.deferred.promise;
         };
 
         return IMarker;
@@ -6931,7 +7065,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
 
         Map.prototype.link = function(scope, element, attrs) {
-          var dragging, el, eventName, getEventHandler, opts, settingCenterFromScope, type, _m,
+          var dragging, el, eventName, getEventHandler, mapOptions, opts, settingCenterFromScope, type, _m,
             _this = this;
           if (!this.validateCoords(scope.center)) {
             $log.error("angular-google-maps: could not find a valid center property");
@@ -6960,12 +7094,13 @@ Nicholas McCready - https://twitter.com/nmccready
               $log.error("angular-google-maps: invalid map type \"" + attrs.type + "\"");
             }
           }
-          _m = new google.maps.Map(el.find("div")[1], angular.extend({}, DEFAULTS, opts, {
+          mapOptions = angular.extend({}, DEFAULTS, opts, {
             center: this.getCoords(scope.center),
             draggable: this.isTrue(attrs.draggable),
             zoom: scope.zoom,
             bounds: scope.bounds
-          }));
+          });
+          _m = new google.maps.Map(el.find("div")[1], mapOptions);
           dragging = false;
           if (!_m) {
             google.maps.event.addListener(_m, 'tilesloaded ', function(map) {
@@ -7079,6 +7214,9 @@ Nicholas McCready - https://twitter.com/nmccready
               }
             }
           }
+          _m.getOptions = function() {
+            return mapOptions;
+          };
           scope.map = _m;
           if ((attrs.control != null) && (scope.control != null)) {
             scope.control.refresh = function(maybeCoords) {
@@ -7102,6 +7240,9 @@ Nicholas McCready - https://twitter.com/nmccready
 
             scope.control.getGMap = function() {
               return _m;
+            };
+            scope.control.getMapOptions = function() {
+              return mapOptions;
             };
           }
           scope.$watch("center", (function(newValue, oldValue) {
@@ -7177,7 +7318,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Marker", [
-    "IMarker", "MarkerParentModel", "MarkerManager", "CtrlHandle", function(IMarker, MarkerParentModel, MarkerManager, CtrlHandle) {
+    "IMarker", "MarkerParentModel", "MarkerManager", function(IMarker, MarkerParentModel, MarkerManager) {
       var Marker;
       return Marker = (function(_super) {
         var _this = this;
@@ -7194,7 +7335,7 @@ Nicholas McCready - https://twitter.com/nmccready
         Marker.prototype.controller = [
           '$scope', '$element', function($scope, $element) {
             $scope.ctrlType = 'Marker';
-            return CtrlHandle.handle($scope, $element);
+            return IMarker.handle($scope, $element);
           }
         ];
 
@@ -7204,7 +7345,7 @@ Nicholas McCready - https://twitter.com/nmccready
           if (scope.fit) {
             doFit = true;
           }
-          return this.mapPromise(scope, ctrl).then(function(map) {
+          return IMarker.mapPromise(scope, ctrl).then(function(map) {
             if (!_this.gMarkerManager) {
               _this.gMarkerManager = new MarkerManager(map);
             }
@@ -7230,7 +7371,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("Markers", [
-    "IMarker", "MarkersParentModel", "CtrlHandle", function(IMarker, MarkersParentModel, CtrlHandle) {
+    "IMarker", "MarkersParentModel", function(IMarker, MarkersParentModel) {
       var Markers;
       return Markers = (function(_super) {
         __extends(Markers, _super);
@@ -7255,13 +7396,13 @@ Nicholas McCready - https://twitter.com/nmccready
         Markers.prototype.controller = [
           '$scope', '$element', function($scope, $element) {
             $scope.ctrlType = 'Markers';
-            return CtrlHandle.handle($scope, $element);
+            return IMarker.handle($scope, $element);
           }
         ];
 
         Markers.prototype.link = function(scope, element, attrs, ctrl) {
           var _this = this;
-          return this.mapPromise(scope, ctrl).then(function(map) {
+          return IMarker.mapPromise(scope, ctrl).then(function(map) {
             var parentModel;
             parentModel = new MarkersParentModel(scope, element, attrs, map, _this.$timeout);
             scope.deferred.resolve();
@@ -8733,6 +8874,26 @@ This directive creates a new scope.
   angular.module("google-maps").directive("mapControl", [
     "Control", function(Control) {
       return new Control();
+    }
+  ]);
+
+}).call(this);
+
+/*
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicholas McCready - https://twitter.com/nmccready
+
+# Brunt of the work is in DrawFreeHandChildModel
+*/
+
+
+(function() {
+  angular.module('google-maps').directive('ngmapFreeDrawPolygons', [
+    'FreeDrawPolygons', function(FreeDrawPolygons) {
+      return new FreeDrawPolygons();
     }
   ]);
 

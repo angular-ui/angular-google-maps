@@ -9,7 +9,7 @@
 angular.module("google-maps.directives.api")
 .factory "IMarker", [ "Logger", "BaseObject", "CtrlHandle", (Logger, BaseObject, CtrlHandle)->
   class IMarker extends BaseObject
-    @include CtrlHandle
+    @extend CtrlHandle
     constructor: ->
       @$log = Logger
       @restrict = 'EMA'

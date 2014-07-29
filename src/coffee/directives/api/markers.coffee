@@ -18,11 +18,11 @@ angular.module("google-maps.directives.api")
 
     controller: ['$scope', '$element', ($scope, $element) ->
       $scope.ctrlType = 'Markers'
-      @handle $scope,$element
+      IMarker.handle $scope,$element
     ]
 
     link: (scope, element, attrs, ctrl) =>
-      @mapPromise(scope, ctrl).then (map) =>
+      IMarker.mapPromise(scope, ctrl).then (map) =>
         parentModel = new MarkersParentModel(scope, element, attrs, map, @$timeout)
         scope.deferred.resolve()
         if scope.control?

@@ -8,20 +8,21 @@
 		- index
 ###
 angular.module("google-maps.directives.api")
-.factory "IControl", [ "BaseObject", "Logger", (BaseObject, Logger) ->
-	class IControl extends BaseObject
-		constructor: ->
-			self = @
-			@restrict = 'EA'
-			@replace = true
-			@require = '^googleMap'
-			@scope =
-				template: '@template'
-				position: '@position'
-				controller: '@controller'
-				index: '@index'
-			@$log = Logger
+.factory "IControl", [ "BaseObject", "Logger", "CtrlHandle",
+  (BaseObject, Logger, CtrlHandle) ->
+    class IControl extends BaseObject
+      @extend CtrlHandle
+      constructor: ->
+        @restrict = 'EA'
+        @replace = true
+        @require = '^googleMap'
+        @scope =
+          template: '@template'
+          position: '@position'
+          controller: '@controller'
+          index: '@index'
+        @$log = Logger
 
-		link: (scope, element, attrs, ctrl) =>
-			throw new Exception("Not implemented!!")
+      link: (scope, element, attrs, ctrl) =>
+        throw new Exception("Not implemented!!")
 ]
