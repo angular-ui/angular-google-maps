@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api")
-.factory "Marker", ["IMarker", "MarkerParentModel", "MarkerManager", "CtrlHandle", (IMarker, MarkerParentModel,MarkerManager, CtrlHandle) ->
+.factory "Marker", ["IMarker", "MarkerParentModel", "MarkerManager", (IMarker, MarkerParentModel,MarkerManager) ->
     class Marker extends IMarker
       constructor:  ->
         super()
@@ -8,7 +8,7 @@ angular.module("google-maps.directives.api")
 
       controller: ['$scope', '$element', ($scope, $element) =>
         $scope.ctrlType = 'Marker'
-        CtrlHandle.handle $scope,$element
+        @handle $scope,$element
       ]
       link: (scope, element, attrs, ctrl) =>
         doFit = true if scope.fit

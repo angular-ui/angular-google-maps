@@ -7,8 +7,9 @@
 		- implementation needed on watches
 ###
 angular.module("google-maps.directives.api")
-.factory "IMarker", [ "Logger", "BaseObject", (Logger, BaseObject)->
+.factory "IMarker", [ "Logger", "BaseObject", "CtrlHandle", (Logger, BaseObject, CtrlHandle)->
   class IMarker extends BaseObject
+    @include CtrlHandle
     constructor: ->
       @$log = Logger
       @restrict = 'EMA'
@@ -28,11 +29,5 @@ angular.module("google-maps.directives.api")
 
     link: (scope, element, attrs, ctrl) =>
       throw new Error "No Map Control! Marker Directive Must be inside the map!" unless ctrl
-
-    mapPromise: (scope, ctrl) ->
-      mapScope = ctrl.getScope()
-      mapScope.deferred.promise.then (map) ->
-        scope.map = map
-      mapScope.deferred.promise
 ]
 
