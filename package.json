@@ -19,6 +19,7 @@
   "license": "MIT",
   "devDependencies": {
     "bower": "~1.2.8",
+    "grunt-bump": "0.0.15",
     "grunt-contrib-clean": "~0.5.0",
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-compress": "~0.5.3",
