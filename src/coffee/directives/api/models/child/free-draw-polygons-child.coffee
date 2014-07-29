@@ -8,8 +8,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
   http://jsfiddle.net/YsQdh/88/
 ###
 angular.module("google-maps.directives.api.models.child")
-.factory "DrawFreeHandChildModel", ['Logger', ($log) ->
-  drawFreeHand = (map, polys, enable) ->
+.factory "DrawFreeHandChildModel", ['Logger', '$q', ($log,$q) ->
+  drawFreeHand = (map, @polys, enable) ->
     #the polygon
     poly = new google.maps.Polyline
       map: map
@@ -32,9 +32,10 @@ angular.module("google-maps.directives.api.models.child")
       enable()
     undefined
 
-  freeHandMgr = (@map, @polys) ->
+  freeHandMgr = (@map) ->
     #freeze map to make drawing easy (need to drag to draw .. instead of moving the map)
     enable = =>
+      @deferred?.resolve()
       #set map back to old setting
       @map.setOptions @oldOptions
 
@@ -47,11 +48,13 @@ angular.module("google-maps.directives.api.models.child")
         scrollwheel: false
         disableDoubleClickZoom: false
 
-    @engage = =>
-      disableMap @map
+    @engage = (@polys) =>
+      @deferred = $q.defer()
+      disableMap()
       $log.info('DrawFreeHandChildModel is engaged (drawing).');
       google.maps.event.addDomListener @map.getDiv(), 'mousedown', (e) =>
         drawFreeHand @map, @polys, enable
+      @deferred.promise
     return @
   freeHandMgr
 ]

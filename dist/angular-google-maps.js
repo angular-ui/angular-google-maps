@@ -3262,13 +3262,11 @@ Nicholas McCready - https://twitter.com/nmccready
       comparison = void 0;
     }
     return _.filter(array1, function(value) {
-      return !_.containsObject(array2, value);
+      return !_.containsObject(array2, value, comparison);
     });
   };
 
-  _.withoutObjects = function(array, array2) {
-    return _.differenceObjects(array, array2);
-  };
+  _.withoutObjects = _.differenceObjects;
 
   _.indexOfObject = function(array, item, comparison, isSorted) {
     var i, length;
@@ -3316,6 +3314,15 @@ Nicholas McCready - https://twitter.com/nmccready
   String.prototype.contains = function(value, fromIndex) {
     return this.indexOf(value, fromIndex) !== -1;
   };
+
+  String.prototype.flare = function(flare) {
+    if (flare == null) {
+      flare = 'nggmap';
+    }
+    return flare + this;
+  };
+
+  String.prototype.ns = String.prototype.flare;
 
 }).call(this);
 
@@ -4703,10 +4710,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 (function() {
   angular.module("google-maps.directives.api.models.child").factory("DrawFreeHandChildModel", [
-    'Logger', function($log) {
+    'Logger', '$q', function($log, $q) {
       var drawFreeHand, freeHandMgr;
       drawFreeHand = function(map, polys, enable) {
         var move, poly;
+        this.polys = polys;
         poly = new google.maps.Polyline({
           map: map,
           clickable: false
@@ -4729,12 +4737,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         });
         return void 0;
       };
-      freeHandMgr = function(map, polys) {
+      freeHandMgr = function(map) {
         var disableMap, enable,
           _this = this;
         this.map = map;
-        this.polys = polys;
         enable = function() {
+          var _ref;
+          if ((_ref = _this.deferred) != null) {
+            _ref.resolve();
+          }
           return _this.map.setOptions(_this.oldOptions);
         };
         disableMap = function() {
@@ -4747,12 +4758,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             disableDoubleClickZoom: false
           });
         };
-        this.engage = function() {
-          disableMap(_this.map);
+        this.engage = function(polys) {
+          _this.polys = polys;
+          _this.deferred = $q.defer();
+          disableMap();
           $log.info('DrawFreeHandChildModel is engaged (drawing).');
-          return google.maps.event.addDomListener(_this.map.getDiv(), 'mousedown', function(e) {
+          google.maps.event.addDomListener(_this.map.getDiv(), 'mousedown', function(e) {
             return drawFreeHand(_this.map, _this.polys, enable);
           });
+          return _this.deferred.promise;
         };
         return this;
       };
@@ -6712,16 +6726,34 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         FreeDrawPolygons.prototype.link = function(scope, element, attrs, ctrl) {
           var _this = this;
           return this.mapPromise(scope, ctrl).then(function(map) {
-            var freeHand;
+            var freeHand, listener;
             if (!scope.polygons) {
               return $log.error("No polygons to bind to!");
             }
             if (!_.isArray(scope.polygons)) {
               return $log.error("Free Draw Polygons must be of type Array!");
             }
-            freeHand = new DrawFreeHandChildModel(map, scope.polygons, scope.originalMapOpts);
+            freeHand = new DrawFreeHandChildModel(map, scope.originalMapOpts);
+            listener = void 0;
             return scope.draw = function() {
-              return freeHand.engage();
+              if (typeof listener === "function") {
+                listener();
+              }
+              return freeHand.engage(scope.polygons).then(function() {
+                var firstTime;
+                firstTime = true;
+                return listener = scope.$watch('polygons', function(newValue, oldValue) {
+                  var removals;
+                  if (firstTime) {
+                    firstTime = false;
+                    return;
+                  }
+                  removals = _.differenceObjects(oldValue, newValue);
+                  return removals.forEach(function(p) {
+                    return p.setMap(null);
+                  });
+                });
+              });
             };
           });
         };
@@ -8891,7 +8923,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
 
 (function() {
-  angular.module('google-maps').directive('ngmapFreeDrawPolygons', [
+  angular.module('google-maps').directive('FreeDrawPolygons'.ns(), [
     'FreeDrawPolygons', function(FreeDrawPolygons) {
       return new FreeDrawPolygons();
     }

@@ -1,18 +1,26 @@
 (function (window, ng) {
   ng.module('app', ['google-maps'])
-    .factory('channel', function () {
-      var callbacks = [];
-      this.add = function (cb) {
-        callbacks.push(cb);
+    .factory('channel', function(){
+      return function () {
+        var callbacks = [];
+        this.add = function (cb) {
+          callbacks.push(cb);
+        };
+        this.invoke = function () {
+          callbacks.forEach(function (cb) {
+            cb();
+          });
+        };
+        return this;
       };
-      this.invoke = function () {
-        callbacks.forEach(function (cb) {
-          cb();
-        });
-      };
-      return this;
     })
-    .controller('mapWidgetCtrl', ['$scope', 'channel','channel', function ($scope, drawChannel, clearChannel) {
+    .service('drawChannel',['channel',function(channel){
+      return new channel()
+    }])
+    .service('clearChannel',['channel',function(channel){
+      return new channel()
+    }])
+    .controller('mapWidgetCtrl', ['$scope', 'drawChannel','clearChannel', function ($scope, drawChannel, clearChannel) {
       $scope.drawWidget = {
         controlText: 'draw',
         controlClick: function () {
@@ -26,7 +34,7 @@
         }
       };
     }])
-    .controller('ctrl', ['$rootScope', '$scope','Logger', 'channel','channel',function ($rootScope, $scope, $log,drawChannel, clearChannel) {
+    .controller('ctrl', ['$rootScope', '$scope','Logger', 'drawChannel','clearChannel',function ($rootScope, $scope, $log,drawChannel, clearChannel) {
       $scope.map = {
         center: {
           latitude: 53.406754,
@@ -44,7 +52,7 @@
         draw: undefined
       };
       var clear = function(){
-        $scope.map.polys.length = 0;
+        $scope.map.polys = [];
       };
       var draw = function(){
         $scope.map.draw();//should be defined by now

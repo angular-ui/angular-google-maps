@@ -29,7 +29,7 @@
         <map-control template="draw.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></map-control>
         <map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></map-control>
 
-        <ngmap-free-draw-polygons polygons="map.polys" draw="map.draw" ></ngmap-free-draw-polygons>
+        <nggmap-free-draw-polygons polygons="map.polys" draw="map.draw" ></nggmap-free-draw-polygons>
     </google-map>
     <ul>
         <li ng-repeat="p in map.polys">{{p.getPath()}}</li>
