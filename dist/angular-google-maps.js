@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-28
+/*! angular-google-maps 1.2.0-SNAPSHOT 2014-07-29
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -5179,6 +5179,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.getLatestPosition = __bind(this.getLatestPosition, this);
           this.showWindow = __bind(this.showWindow, this);
           this.handleClick = __bind(this.handleClick, this);
+          this.watchOptions = __bind(this.watchOptions, this);
           this.watchCoords = __bind(this.watchCoords, this);
           this.watchShow = __bind(this.watchShow, this);
           this.createGWin = __bind(this.createGWin, this);
@@ -5190,6 +5191,7 @@ Nicholas McCready - https://twitter.com/nmccready
             this.markerCtrl.setClickable(true);
           }
           this.watchElement();
+          this.watchOptions();
           this.watchShow();
           this.watchCoords();
           this.$log.info(this);
@@ -5296,6 +5298,20 @@ Nicholas McCready - https://twitter.com/nmccready
                 if (_this.opts) {
                   return _this.opts.position = pos;
                 }
+              }
+            }
+          }, true);
+        };
+
+        WindowChildModel.prototype.watchOptions = function() {
+          var scope,
+            _this = this;
+          scope = this.markerCtrl != null ? this.scope.$parent : this.scope;
+          return scope.$watch('options', function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              _this.opts = newValue;
+              if (_this.gWin != null) {
+                return _this.gWin.setOptions(_this.opts);
               }
             }
           }, true);
