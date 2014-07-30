@@ -14,6 +14,7 @@ angular.module('testApp', ['google-maps']).controller('TestController', ['$scope
         var lat = e.latLng.lat(),
             lon = e.latLng.lng();
         $scope.map.clickedMarker = {
+          id:0,
           title: 'You clicked here ' + 'lat: ' + lat + ' lon: ' + lon,
           latitude: lat,
           longitude: lon
@@ -47,6 +48,7 @@ angular.module('testApp', ['google-maps']).controller('TestController', ['$scope
       }
     ],
     clickedMarker: {
+      id:0,
       title: ''
     },
     onMarkerClicked: function (marker) {

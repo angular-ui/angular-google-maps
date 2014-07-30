@@ -29,11 +29,10 @@ _.containsObject = _.includeObject = (obj, target, comparison = undefined) ->
 
 _.differenceObjects = (array1, array2, comparison = undefined) ->
     _.filter array1, (value) ->
-        !_.containsObject array2, value
+        !_.containsObject array2, value, comparison
 
 #alias to differenceObjects
-_.withoutObjects = (array, array2) ->
-    _.differenceObjects(array, array2)
+_.withoutObjects = _.differenceObjects
 
 _.indexOfObject = (array, item, comparison, isSorted) ->
     return -1  unless array?
@@ -58,3 +57,7 @@ _.extends=(arrayOfObjectsToCombine)->
     _.reduce arrayOfObjectsToCombine,(combined,toAdd)->
         _.extend(combined,toAdd)
     ,{}#starting point empty object
+
+
+_.isNullOrUndefined = (thing) ->
+  _.isNull thing or _.isUndefined thing

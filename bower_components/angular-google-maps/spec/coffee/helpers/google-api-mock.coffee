@@ -1,15 +1,5 @@
 angular.module("google-maps.mocks", [])
 .factory "GoogleApiMock", ->
-  class _Map
-    constructor:()->
-      @lat = 47
-      @lon = -27
-      @zoom = 0
-      @getCoords = -> return {latitude: @lat, longitude: @lon}
-      @center = new window.google.maps.LatLng @lat,@lon
-      @setCenter = (coords) =>
-        @center = coords
-      @setZoom = (@zoom) ->
   class GoogleApiMock
     constructor: ->
     mockAPI: ->
@@ -44,13 +34,58 @@ angular.module("google-maps.mocks", [])
 
       window.google.maps.LatLngBounds = LatLngBounds
 
-    mockMap:(map) ->
+    # mockMap:(Map = () -> return) ->
+    #   @mockMapTypeId()
+    #   @mockLatLng()
+    #   @mockOverlayView()
+    #   @mockEvent()
+    #   Map.getCoords = -> return {latitude: 47, longitude: -27} unless Map.getCoords?
+    #   window.google.maps.Map = Map
+    mockMap: ->
+      Map = () ->
+        @center =
+          lat: -> 0
+          lng: -> 0
+        @controls = {
+          TOP_CENTER: [],
+          TOP_LEFT: [],
+          TOP_RIGHT: [],
+          LEFT_TOP: [],
+          RIGHT_TOP: [],
+          LEFT_CENTER: [],
+          RIGHT_CENTER: [],
+          LEFT_BOTTOM: [],
+          RIGHT_BOTTOM: [],
+          BOTTOM_CENTER: [],
+          BOTTOM_LEFT: [],
+          BOTTOM_RIGHT: []
+        }
+        @getControls = -> return @controls
+        @setZoom = -> return
+        @setCenter = -> return
+        @getCoords = -> return {latitude: 47, longitude: -27} unless Map.getCoords?
+        return @
       @mockMapTypeId()
       @mockLatLng()
       @mockOverlayView()
       @mockEvent()
-      map = _Map unless map
-      window.google.maps.Map = map
+      window.google.maps.Map = Map
+
+    mockControlPosition: ->
+      ControlPosition = 
+        TOP_CENTER: 'TOP_CENTER',
+        TOP_LEFT: 'TOP_LEFT',
+        TOP_RIGHT: 'TOP_RIGHT',
+        LEFT_TOP: 'LEFT_TOP',
+        RIGHT_TOP: 'RIGHT_TOP',
+        LEFT_CENTER: 'LEFT_CENTER',
+        RIGHT_CENTER: 'RIGHT_CENTER',
+        LEFT_BOTTOM: 'LEFT_BOTTOM',
+        RIGHT_BOTTOM: 'RIGHT_BOTTOM',
+        BOTTOM_CENTER: 'BOTTOM_CENTER',
+        BOTTOM_LEFT: 'BOTTOM_LEFT',
+        BOTTOM_RIGHT: 'BOTTOM_RIGHT'
+      window.google.maps.ControlPosition = ControlPosition
 
     mockAnimation: (Animation = {BOUNCE: "bounce"}) ->
       window.google.maps.Animation = Animation

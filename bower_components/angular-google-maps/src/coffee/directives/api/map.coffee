@@ -1,41 +1,38 @@
 angular.module("google-maps.directives.api")
-.factory "Map", ["$timeout", '$q','Logger', "GmapUtil", "BaseObject", "ExtendGWin", "CtrlHandle",
-  ($timeout,$q, Logger, GmapUtil, BaseObject,ExtendGWin, CtrlHandle) ->
+.factory "Map", ["$timeout", '$q','Logger', "GmapUtil", "BaseObject", "ExtendGWin", "CtrlHandle", 'IsReady'.ns(), "uuid".ns(),
+  ($timeout,$q, Logger, GmapUtil, BaseObject,ExtendGWin, CtrlHandle, IsReady, uuid) ->
         "use strict"
         $log = Logger
-
         DEFAULTS =
             mapTypeId: google.maps.MapTypeId.ROADMAP
-
         class Map extends BaseObject
             @include GmapUtil
-            constructor:()->
+            constructor: ->
+                ctrlFn = ($scope) ->
+                    ctrlObj = CtrlHandle.handle $scope
+                    $scope.ctrlType = 'Map'
+                    $scope.deferred.promise.then ->
+                      ExtendGWin.init()
+                    _.extend ctrlObj, getMap: ->
+                      $scope.map
+                @controller = ["$scope", ctrlFn ]
                 self = @
-            restrict: "ECMA"
+            restrict: "EMA"
             transclude: true
             replace: false
             #priority: 100,
-            template: "<div class=\"angular-google-map\"><div class=\"angular-google-map-container\"></div><div ng-transclude style=\"display: none\"></div></div>"
+            template: '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>'
 
             scope:
-                center: "=center" # required
-                zoom: "=zoom" # required
-                dragging: "=dragging" # optional
+                center: "=" # required
+                zoom: "=" # required
+                dragging: "=" # optional
                 control: "=" # optional
-                windows: "=windows" # optional  TODO is this still needed looks like dead code
-                options: "=options" # optional
-                events: "=events" # optional
-                styles: "=styles" # optional
-                bounds: "=bounds"
-
-            controller: ["$scope", ($scope) ->
-                ctrlObj = CtrlHandle.handle $scope
-                $scope.ctrlType = 'Map'
-                $scope.deferred.promise.then ->
-                  ExtendGWin.init()
-                _.extend ctrlObj, getMap: ->
-                    $scope.map
-            ]
+                windows: "=" # optional  TODO is this still needed looks like dead code
+                options: "=" # optional
+                events: "=" # optional
+                styles: "=" # optional
+                bounds: "="
 
             ###
             @param scope
@@ -43,6 +40,11 @@ angular.module("google-maps.directives.api")
             @param attrs
             ###
             link: (scope, element, attrs) =>
+                spawned = IsReady.spawn()
+                resolveSpawned = =>
+                  spawned.deferred.resolve
+                    instance: spawned.instance
+                    map: _m
                 # Center property must be specified and provide lat &
                 # lng properties
                 if not @validateCoords(scope.center)
@@ -68,18 +70,23 @@ angular.module("google-maps.directives.api")
                         $log.error "angular-google-maps: invalid map type \"" + attrs.type + "\""
 
                 # Create the map
-                _m = new google.maps.Map(el.find("div")[1], angular.extend({}, DEFAULTS, opts,
-                    center: @getCoords(scope.center)
-                    draggable: @isTrue(attrs.draggable)
-                    zoom: scope.zoom
-                    bounds: scope.bounds
-                ))
+                mapOptions = angular.extend({}, DEFAULTS, opts,
+                  center: @getCoords(scope.center)
+                  draggable: @isTrue(attrs.draggable)
+                  zoom: scope.zoom
+                  bounds: scope.bounds
+                )
+                _m = new google.maps.Map(el.find("div")[1], mapOptions)
+                _m.nggmap_id = uuid.generate()
+
                 dragging = false
                 if not _m
                   google.maps.event.addListener _m, 'tilesloaded ', (map) ->
                     scope.deferred.resolve map
+                    resolveSpawned()
                 else
                   scope.deferred.resolve _m
+                  resolveSpawned()
 
                 google.maps.event.addListener _m, "dragstart", ->
                     dragging = true
@@ -153,6 +160,9 @@ angular.module("google-maps.directives.api")
                         google.maps.event.addListener _m, eventName, getEventHandler(eventName)  if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
 
                 # Put the map into the scope
+                #extending map , maybe hacky.. don't really care right now
+                _m.getOptions = ->
+                  mapOptions
                 scope.map = _m
                 #            google.maps.event.trigger _m, "resize"
 
@@ -173,6 +183,8 @@ angular.module("google-maps.directives.api")
                     ###
                     scope.control.getGMap = ()=>
                         _m
+                    scope.control.getMapOptions = ->
+                      mapOptions
 
                 # Update map when center coordinates change
                 scope.$watch "center", ((newValue, oldValue) =>

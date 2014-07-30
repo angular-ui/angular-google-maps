@@ -1,4 +1,7 @@
 <div id="map_canvas" ng-controller="mainCtrl">
+    <script type="text/ng-template" id="control.tpl.html">
+        <button class="btn btn-sm btn-primary" ng-class="{'btn-warning': danger}" ng-click="controlClick()">{{controlText}}</button>
+    </script>
     <google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
         <map-control template="control.tpl.html" position="top-right" controller="controlCtrl" index="-1"></map-control>
     </google-map>

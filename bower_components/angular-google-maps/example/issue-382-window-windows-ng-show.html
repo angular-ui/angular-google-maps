@@ -42,7 +42,7 @@
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <marker ng-repeat="m in map.markers" coords="m" click="m.click()">
+            <marker ng-repeat="m in map.markers" coords="m" click="m.click()" idkey='m.wonkyId'>
                 <window show="true">
                     <div class="popup" style="width: 200px; height: 100px;">
                         <article style="word-wrap: break-word;">{{m}}</article>

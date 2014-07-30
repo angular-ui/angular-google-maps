@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api")
-.factory "Markers", ["IMarker", "MarkersParentModel", "CtrlHandle", (IMarker, MarkersParentModel, CtrlHandle) ->
+.factory "Markers", ["IMarker", "MarkersParentModel", (IMarker, MarkersParentModel) ->
   class Markers extends IMarker
     constructor: ($timeout) ->
       super($timeout)
@@ -11,21 +11,23 @@ angular.module("google-maps.directives.api")
         doCluster: '=docluster'
         clusterOptions: '=clusteroptions'
         clusterEvents: '=clusterevents'
-        labelContent: '=labelcontent'
-        labelAnchor: '@labelanchor'
-        labelClass: '@labelclass'
+        isLabel: '=islabel' #if is truthy consult http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/docs/reference.html for additional options documentation
 
       @$timeout = $timeout
-      self = @
       @$log.info @
 
     controller: ['$scope', '$element', ($scope, $element) ->
       $scope.ctrlType = 'Markers'
-      CtrlHandle.handle $scope,$element
+      IMarker.handle $scope,$element
     ]
 
     link: (scope, element, attrs, ctrl) =>
-      @mapPromise(scope, ctrl).then (map) =>
-        new MarkersParentModel(scope, element, attrs, map, @$timeout)
+      IMarker.mapPromise(scope, ctrl).then (map) =>
+        parentModel = new MarkersParentModel(scope, element, attrs, map, @$timeout)
         scope.deferred.resolve()
+        if scope.control?
+          scope.control.getGMarkers = =>
+            parentModel.gMarkerManager?.getGMarkers()
+          scope.control.getChildMarkers = =>
+            parentModel.markerModels
 ]

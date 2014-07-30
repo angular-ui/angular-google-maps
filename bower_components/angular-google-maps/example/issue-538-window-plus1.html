@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script data-require="angular.js@1.2.x" src="https://code.angularjs.org/1.2.16/angular.js" data-semver="1.2.16"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+    <script src="assets/scripts/controllers/issue-538-window-plus1.js"></script>
+    <title>Map</title>
+</head>
+
+<body ng-controller="mainCtrl">
+<button ng-click="click()"> +1 </button>
+<div id="map_canvas" >
+    <google-map center="map.center" zoom="map.zoom">
+        <marker coords="map.marker.coords" idkey="map.marker.id">
+            <window>
+                <div>
+                    {{ number }}
+                </div>
+            </window>
+        </marker>
+    </google-map>
+</div>
+{{number}}
+</body>
+
+</html>

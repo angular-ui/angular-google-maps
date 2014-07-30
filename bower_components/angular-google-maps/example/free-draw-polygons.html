@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script data-require="angular.js@1.2.x" src="https://code.angularjs.org/1.2.16/angular.js" data-semver="1.2.16"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+    <script src="assets/scripts/controllers/free-draw-polygons.js"></script>
+    <title>Map</title>
+</head>
+
+<body>
+<div data-ng-controller="ctrl">
+    <google-map id="map"
+         center="map.center"
+         pan="map.pan"
+         zoom="map.zoom"
+         draggable="true"
+         refresh="map.refresh"
+         options="map.options"
+         events="map.events"
+         bounds="map.bounds">
+
+        <map-control template="draw.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></map-control>
+        <map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></map-control>
+
+        <nggmap-free-draw-polygons polygons="map.polys" draw="map.draw" ></nggmap-free-draw-polygons>
+    </google-map>
+    <ul>
+        <li ng-repeat="p in map.polys">{{p.getPath()}}</li>
+    </ul>
+</div>
+</body>
+
+</html>

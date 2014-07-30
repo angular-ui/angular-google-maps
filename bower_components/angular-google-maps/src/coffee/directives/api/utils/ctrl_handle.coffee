@@ -5,4 +5,10 @@ angular.module("google-maps.directives.api.utils")
       $scope.deferred = $q.defer()
       getScope: ->
         $scope
+
+    mapPromise: (scope, ctrl) ->
+      mapScope = ctrl.getScope()
+      mapScope.deferred.promise.then (map) ->
+        scope.map = map
+      mapScope.deferred.promise
 ]

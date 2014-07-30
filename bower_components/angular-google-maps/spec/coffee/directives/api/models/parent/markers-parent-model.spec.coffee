@@ -6,8 +6,8 @@ describe "MarkersParentModel - Clusterer Event Extensions", ->
   beforeEach ->
     @clusterTest =
       getMarkers: ->
-        [
-          {key: 1},
+        values: () -> [
+          {key: 1}
           {key: 2}
         ]
     @index = 0

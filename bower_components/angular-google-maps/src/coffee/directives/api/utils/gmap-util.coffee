@@ -1,5 +1,21 @@
 angular.module("google-maps.directives.api.utils")
 .service "GmapUtil",["Logger", "$compile", (Logger, $compile) ->
+    getLatitude = (value) ->
+        if Array.isArray(value) and value.length is 2
+            value[1]
+        else if angular.isDefined(value.type) and value.type is "Point"
+            value.coordinates[1]
+        else
+            value.latitude
+
+    getLongitude = (value) ->
+        if Array.isArray(value) and value.length is 2
+            value[0]
+        else if angular.isDefined(value.type) and value.type is "Point"
+            value.coordinates[0]
+        else
+            value.longitude
+
     getCoords = (value) ->
         return unless value
         if Array.isArray(value) and value.length is 2
@@ -8,6 +24,20 @@ angular.module("google-maps.directives.api.utils")
             new google.maps.LatLng(value.coordinates[1], value.coordinates[0])
         else
             new google.maps.LatLng(value.latitude, value.longitude)
+
+    setCoordsFromEvent = (prevValue,newLatLon) ->
+        return unless prevValue
+        if Array.isArray(prevValue) and prevValue.length is 2
+            prevValue[1] = newLatLon.lat()
+            prevValue[0] = newLatLon.lng()
+        else if angular.isDefined(prevValue.type) and prevValue.type is "Point"
+            prevValue.coordinates[1] = newLatLon.lat()
+            prevValue.coordinates[0] = newLatLon.lng()
+        else
+            prevValue.latitude  = newLatLon.lat()
+            prevValue.longitude = newLatLon.lng()
+
+        prevValue
 
     validateCoords = (coords) ->
         return false if angular.isUndefined coords
@@ -77,6 +107,10 @@ angular.module("google-maps.directives.api.utils")
     getCoords: getCoords
 
     validateCoords: validateCoords
+
+    equalCoords: (coord1, coord2) ->
+      getLatitude(coord1) == getLatitude(coord2) and
+      getLongitude(coord1) == getLongitude(coord2)
 
     validatePath: (path) ->
       i = 0
@@ -176,4 +210,13 @@ angular.module("google-maps.directives.api.utils")
             bounds.extend points.getAt(i)
             i++
         map.fitBounds bounds
+        
+    getPath: (object, key) ->
+        obj = object
+        _.each key.split("."), (value) ->
+          if obj then obj = obj[value]
+
+        obj
+
+    setCoordsFromEvent: setCoordsFromEvent
 ]

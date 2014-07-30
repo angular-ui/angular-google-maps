@@ -102,3 +102,9 @@ describe "utils.gmap-util", ->
     ]
     testCases.forEach (testCase)=>
       result = @subject.getLabelPositionPoint(testCase.input)
+
+  it "should correctly fetch object values using dot-notation", ->
+    object = { foo: { sea: "hawks" }}
+    expect(@subject.getPath(object, "foo.sea")).toEqual("hawks")
+    expect(@subject.getPath(object, "foo.sea.birds")).toEqual(undefined)
+    expect(@subject.getPath(object, "boo.hoo")).toEqual(undefined)

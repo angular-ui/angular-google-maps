@@ -42,7 +42,7 @@
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <marker ng-repeat="m in map.dynamicMarkers"  coords='m' icon='m.icon' ng-click='onMarkerClicked(m)' fit="true">
+            <marker ng-repeat="m in map.dynamicMarkers"  coords='m' icon='m.icon' ng-click='onMarkerClicked(m)' fit="true" idkey='m.id'>
                 <window show="m.showWindow"  closeClick="'closeClick'" ng-cloak>
                     <div ng-controller="InfoController">
                         <a href="javascript:void(0)" ng-click="clickedButtonInWindow()">hit me</a>

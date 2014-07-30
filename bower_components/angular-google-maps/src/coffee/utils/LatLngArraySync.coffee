@@ -5,6 +5,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
     isSetFromScope = false
     scopePath = scope.$eval(pathEval)
     if !scope.static
+      #should pathChangedFn be called for changes made via the UI too?  Currently not needed, and not implemented
       legacyHandlers =
       #listeners / handles to changes of the points from the map direction to update back to our scope (two way)
         set_at: (index) ->
@@ -62,10 +63,11 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
 
       mapArrayListener = mapEvents mapArray,
         if angular.isUndefined scopePath.type then legacyHandlers else geojsonHandlers
-
+        
     legacyWatcher = (newPath) ->
       isSetFromScope = true
       oldArray = mapArray
+      changed = false
       if newPath
         i = 0
         oldLength = oldArray.getLength()
@@ -79,9 +81,11 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           if typeof newValue.equals == "function" #LatLng object
             if not newValue.equals(oldValue)
               oldArray.setAt i, newValue
+              changed = true
           else # latitude/longitude object
             if (oldValue.lat() isnt newValue.latitude) or (oldValue.lng() isnt newValue.longitude)
               oldArray.setAt i, new google.maps.LatLng(newValue.latitude, newValue.longitude)
+              changed = true
           
           i++
         #add new points
@@ -92,16 +96,21 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           else
             oldArray.push new google.maps.LatLng(newValue.latitude, newValue.longitude)
           
+          changed = true
           i++
         #remove old no longer there
         while i < oldLength
           oldArray.pop()
+          changed = true
           i++
+          
       isSetFromScope = false
+      pathChangedFn oldArray if changed
 
     geojsonWatcher = (newPath) ->
       isSetFromScope = true
       oldArray = mapArray
+      changed = false
       if newPath
         array
         if scopePath.type == "Polygon"
@@ -117,17 +126,23 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
         while i < l
           oldValue = oldArray.getAt(i)
           newValue = array[i]
-          oldArray.setAt i, new google.maps.LatLng(newValue[1],
-              newValue[0])  if (oldValue.lat() isnt newValue[1]) or (oldValue.lng() isnt newValue[0])
+          if (oldValue.lat() isnt newValue[1]) or (oldValue.lng() isnt newValue[0])
+            oldArray.setAt i, new google.maps.LatLng(newValue[1], newValue[0])
+            changed = true
+            
           i++
         while i < newLength
           newValue = array[i]
           oldArray.push new google.maps.LatLng(newValue[1], newValue[0])
+          changed = true
           i++
         while i < oldLength
           oldArray.pop()
+          changed = true
           i++
+          
       isSetFromScope = false
+      pathChangedFn oldArray if changed
 
     watchListener
     if !scope.static

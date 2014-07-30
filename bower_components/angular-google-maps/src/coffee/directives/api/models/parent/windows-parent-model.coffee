@@ -172,6 +172,10 @@ angular.module("google-maps.directives.api.models.parent")
                         childScope.$watch('model', (newValue, oldValue) =>
                             if(newValue != oldValue)
                                 @setChildScope(childScope, newValue)
+                                if @markerScope
+                                  @windows[newValue[@idKey]].markerCtrl = @markerScope.markerModels[newValue[@idKey]].gMarker
+#                                childScope.$apply()
+#                                @setChildScope(@windows[newValue[@idKey].scope], newValue)
                         , true)
                         fakeElement =
                           html: =>
