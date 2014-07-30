@@ -1,159 +1,186 @@
-<p id="windows">The <code>windows</code> directive is used to display multiple <acronym>InfoWindows</acronym> objects on
-    your map. It
-    has a performance advantage over the <code><a href="/api#window">window</a></code> directive, since you don't have to
-    rely on <code>ng-repeat</code> to instantiate the multiple objects. Thus, this avoids excessive dom manipulation.
-    The overall design of this directive is identical to <code>markers</code> in how the <code>models</code> attribute
-    is a replacement to ng-repeat. Therefore the same restrictions apply where every model requires an
-    <code>idKey</code> which defaults to the <code>id</code> field of a model object.
-</p>
-<br/>
-<p>
-    This directive has every attribute that <code>window</code> has, along with extra attributes that go along with a
-    plural directive. Where the attributes, idKey, doRebuildAll, and models are provided.
-</p>
+<div id="windows">
+    <p>The <code>windows</code> directive is used to display multiple <acronym>InfoWindows</acronym> objects on
+        your map. It
+        has a performance advantage over the <code><a href="/api#window">window</a></code> directive, since you don't
+        have to
+        rely on <code>ng-repeat</code> to instantiate the multiple objects. Thus, this avoids excessive dom
+        manipulation.
+        The overall design of this directive is identical to <code>markers</code> in how the <code>models</code>
+        attribute
+        is a replacement to ng-repeat. Therefore the same restrictions apply where every model requires an
+        <code>idKey</code> which defaults to the <code>id</code> field of a model object.
+    </p>
+    <br/>
 
-<br/>
-<p>
-    The <code>windows</code> directive is only optimal if you need to render a lot of windows all at once. Otherwise it
-    is highly suggested to use <code>window</code>.
-</p>
-<p>Another use case for windows might be using them as css styled markers (just thinking outside the box).</p>
+    <p>
+        This directive has every attribute that <code>window</code> has, along with extra attributes that go along with
+        a
+        plural directive. Where the attributes, idKey, doRebuildAll, and models are provided.
+    </p>
 
-<h4>Usage</h4>
+    <br/>
 
-<div hljs language="html" include="'windowsTemplate'"></div>
+    <p>
+        The <code>windows</code> directive is only optimal if you need to render a lot of windows all at once. Otherwise
+        it
+        is highly suggested to use <code>window</code>.
+    </p>
 
-<h4>Parameters</h4>
+    <p>Another use case for windows might be using them as css styled markers (just thinking outside the box).</p>
 
-<p class="muted">Required properties are in <span class="text-error">red</span>.</p>
+    <h4>Usage</h4>
 
-<table class="table table-bordered table-striped">
-    <thead>
-    <tr>
-        <th>Param</th>
-        <th>Type</th>
-        <th>Details</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>models</td>
-        <td><span class="label label-danger">expression</span></td>
-        <td>
-            <div>
-                An array of objects defining each marker to add to the map
-                <div class="bs-callout bs-callout-danger">
-                    <h4>Model Id/Key</h4>
-                    <span class="badge badge-danger">New in v1.1</span>
-                    <br/>
-                    Models (any plural directive) are now required to have some sort of identifier property. Please see
-                    the idKey attribute.
-                    This is for performance reasons; where under the hood, models are a map instead of an array.
-                    This removed the "flash bug" and is much faster.
+    <div hljs language="html" include="'windowsTemplate'"></div>
+
+    <h4>Parameters</h4>
+
+    <p class="muted">Required properties are in <span class="text-error">red</span>.</p>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Param</th>
+            <th>Type</th>
+            <th>Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>models</td>
+            <td><span class="label label-danger">expression</span></td>
+            <td>
+                <div>
+                    An array of objects defining each marker to add to the map
+                    <div class="bs-callout bs-callout-danger">
+                        <h4>Model Id/Key</h4>
+                        <span class="badge badge-danger">New in v1.1</span>
+                        <br/>
+                        Models (any plural directive) are now required to have some sort of identifier property. Please
+                        see
+                        the idKey attribute.
+                        This is for performance reasons; where under the hood, models are a map instead of an array.
+                        This removed the "flash bug" and is much faster.
+                    </div>
                 </div>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>idkey</td>
-        <td><span class="label label-info">expression</span></td>
-        <td>
-            <span class="badge badge-info">New in v1.1</span>
+            </td>
+        </tr>
+        <tr>
+            <td>idkey</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>
+                <span class="badge badge-info">New in v1.1</span>
 
-            <p>The name of the property in a model which identifies its key/id. This should be an integer
-                or numeric string. (not required) If the attribute is not defined they it defaults to the <code>model.id</code> field.</p>
-        </td>
-    </tr>
-    <tr>
-        <td>doRebuildAll</td>
-        <td><span class="label label-info">expression</span></td>
-        <td>boolean property to tell the directive to refresh all the markers on any kind change to models. (Think
-            legacy "flash"). Yes sometimes this is wanted.
-        </td>
-    </tr>
-    <tr>
-        <td>coords</td>
-        <td><span class="label label-danger">string</span></td>
-        <td>
-            <p>The name of the property in the models array containing the windows coordinates. Must refer to an object
-                containing <code>latitude</code> and <code>longitude</code> properties, or <span
-                        class="badge badge-info">New in v1.1</span> a <a
-                        href="http://geojson.org/geojson-spec.html#point">GeoJSON Point</a> object.</p>
-            <span>The special value <code>'self'</code> can be used to tell the directive that the objects in the array directly contain the marker coordinate object values</span>
-        </td>
-    </tr>
-    <tr>
-        <td>show</td>
-        <td><span class="label label-danger">string</span></td>
-        <td>The name of the property in the models array. Property should be a boolean value used to show or hide the
-            window
-        </td>
-    </tr>
-    <tr>
-        <td>templateUrl</td>
-        <td><span class="label label-danger">string</span></td>
-        <td>The name of the property in the models array. Property should be a string URL to a template which will be
-            used as the window's content
-        </td>
-    </tr>
-    <tr>
-        <td>templateParameter</td>
-        <td><span class="label label-danger">string</span></td>
-        <td>The name of the property in the models array. Property should be an object to expose to the window's
-            template scope if <code>templateUrl</code> is used, or to the scope
-            provided to the inner HTML of the directive
-        </td>
-    </tr>
-    <tr>
-        <td>isIconVisibleOnClick</td>
-        <td><span class="label label-danger">string</span></td>
-        <td>The name of the property in the models array. Property is expected to be boolean value indicating that the
-            marker's icon will be shown or hidden when opening a window which is
-            included within a marker
-        </td>
-    </tr>
-    <tr>
-        <td>closeClick</td>
-        <td><span class="label label-danger">string</span></td>
-        <td>The name of the property in the models array to evaluate when closing the window via a click event</td>
-    </tr>
-    <tr>
-        <td>options</td>
-        <td><span class="label label-info">expression</span></td>
-        <td>object containing <a google-api="InfoWindowOptions">InfoWindowOptions</a> to apply to all windows created by
-            the directive.
-        </td>
-    </tr>
-    <tr>
-        <td>control</td>
-        <td><span class="label label-default">Object</span></td>
-        <td>
-            <span class="badge badge-info">New in v1.2.0</span>
-            <p></p>
-            <code>{}</code> otherwise <code>undefined / null </code>
-            <p></p>
-            If some object is passed (via scope binding) functionality is appended to that object. This allows you to get "control" of some
-            underlying logic of the marker directive..
-            <br>
-            <p>
-                The following functions are added:
-            </p>
-            <p></p>
-            <p><code>getGMarkers() </code> - Array of all the google.markers associated with this directive</p>
-            <p>example</p>
-            <code>$scope.winControl.getGWindows();</code>
-            <p><code>getChildMarkers() </code> - PropMap() (see code) all child objects which encapsulate gWindow.</p>
-            <p>example: get all ChildWindows as an array</p>
-            <code>$scope.winControl.getChildWindows().values();</code>
-            <p>example: get a specific ChildMarker by id/idKey</p>
-            <code>$scope.winControl.getChildWindows()[id] <br/>or $scope.winControl.getChildWindows().get(id)</code>
-        </td>
-    </tr>
-    </tbody>
-</table>
+                <p>The name of the property in a model which identifies its key/id. This should be an integer
+                    or numeric string. (not required) If the attribute is not defined they it defaults to the <code>model.id</code>
+                    field.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>doRebuildAll</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>boolean property to tell the directive to refresh all the markers on any kind change to models. (Think
+                legacy "flash"). Yes sometimes this is wanted.
+            </td>
+        </tr>
+        <tr>
+            <td>coords</td>
+            <td><span class="label label-danger">string</span></td>
+            <td>
+                <p>The name of the property in the models array containing the windows coordinates. Must refer to an
+                    object
+                    containing <code>latitude</code> and <code>longitude</code> properties, or <span
+                            class="badge badge-info">New in v1.1</span> a <a
+                            href="http://geojson.org/geojson-spec.html#point">GeoJSON Point</a> object.</p>
+                <span>The special value <code>'self'</code> can be used to tell the directive that the objects in the array directly contain the marker coordinate object values</span>
+            </td>
+        </tr>
+        <tr>
+            <td>show</td>
+            <td><span class="label label-danger">string</span></td>
+            <td>The name of the property in the models array. Property should be a boolean value used to show or hide
+                the
+                window
+            </td>
+        </tr>
+        <tr>
+            <td>templateUrl</td>
+            <td><span class="label label-danger">string</span></td>
+            <td>The name of the property in the models array. Property should be a string URL to a template which will
+                be
+                used as the window's content
+            </td>
+        </tr>
+        <tr>
+            <td>templateParameter</td>
+            <td><span class="label label-danger">string</span></td>
+            <td>The name of the property in the models array. Property should be an object to expose to the window's
+                template scope if <code>templateUrl</code> is used, or to the scope
+                provided to the inner HTML of the directive
+            </td>
+        </tr>
+        <tr>
+            <td>isIconVisibleOnClick</td>
+            <td><span class="label label-danger">string</span></td>
+            <td>The name of the property in the models array. Property is expected to be boolean value indicating that
+                the
+                marker's icon will be shown or hidden when opening a window which is
+                included within a marker
+            </td>
+        </tr>
+        <tr>
+            <td>closeClick</td>
+            <td><span class="label label-danger">string</span></td>
+            <td>The name of the property in the models array to evaluate when closing the window via a click event</td>
+        </tr>
+        <tr>
+            <td>options</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>object containing <a google-api="InfoWindowOptions">InfoWindowOptions</a> to apply to all windows
+                created by
+                the directive.
+            </td>
+        </tr>
+        <tr>
+            <td>control</td>
+            <td><span class="label label-default">Object</span></td>
+            <td>
+                <span class="badge badge-info">New in v1.2.0</span>
 
-<h4>Example</h4>
-<runnable-example example="'windows'"></runnable-example>
+                <p></p>
+                <code>{}</code> otherwise <code>undefined / null </code>
+
+                <p></p>
+                If some object is passed (via scope binding) functionality is appended to that object. This allows you
+                to get "control" of some
+                underlying logic of the marker directive..
+                <br>
+
+                <p>
+                    The following functions are added:
+                </p>
+
+                <p></p>
+
+                <p><code>getGMarkers() </code> - Array of all the google.markers associated with this directive</p>
+
+                <p>example</p>
+                <code>$scope.winControl.getGWindows();</code>
+
+                <p><code>getChildMarkers() </code> - PropMap() (see code) all child objects which encapsulate gWindow.
+                </p>
+
+                <p>example: get all ChildWindows as an array</p>
+                <code>$scope.winControl.getChildWindows().values();</code>
+
+                <p>example: get a specific ChildMarker by id/idKey</p>
+                <code>$scope.winControl.getChildWindows()[id] <br/>or $scope.winControl.getChildWindows().get(id)</code>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h4>Example</h4>
+    <runnable-example example="'windows'"></runnable-example>
 
 <script type="text/ng-template" id="windowsTemplate">
 <windows
@@ -174,4 +201,4 @@
 
 </windows>
 </script>
-
+</div>

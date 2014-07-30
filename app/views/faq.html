@@ -1,11 +1,12 @@
 <h1 class="page-header">FAQ</h1>
 
-<p>Here are the most frequently asked questions about this library from the issue tracker and the Google+ community. You can suggest an addition to this list by opening an issue in the issue tracker.</p>
+<p>Here are the most frequently asked questions about this library from the issue tracker and the Google+ community. You
+    can suggest an addition to this list by opening an issue in the issue tracker.</p>
 
 <ul>
-	<li><a href="#faq-map-instance">How do I access the map instance?</a></li>
-	<li><a href="#faq-map-height">Can I dynamically set the map height?</a></li>
-	<li><a href="#faq-map-events-apply">Map events are not working!</a></li>
+    <li><a href="#faq-map-instance">How do I access the map instance?</a></li>
+    <li><a href="#faq-map-height">Can I dynamically set the map height?</a></li>
+    <li><a href="#faq-map-events-apply">Map events are not working!</a></li>
     <li><a href="#faq-map-partial-render">My map is only partially rendering!</a></li>
 </ul>
 
@@ -14,26 +15,29 @@
 <p>It is possible to access the map instance using the <code>tilesloaded</code> event:</p>
 
 <ul class="nav nav-tabs">
-	<li class="active"><a href="" data-target="#faq-map-instance-tab-html" data-toggle="tab">HTML</a></li>
-	<li><a href="" data-target="#faq-map-instance-tab-script" data-toggle="tab">Script</a></li>	
+    <li class="active"><a href="" data-target="#faq-map-instance-tab-html" data-toggle="tab">HTML</a></li>
+    <li><a href="" data-target="#faq-map-instance-tab-script" data-toggle="tab">Script</a></li>
 </ul>
 
 <div class="tab-content">
-	<div id="faq-map-instance-tab-html" class="tab-pane active">
-		<div hljs><google-map events="map.events"></google-map></div>
-	</div>
-	<div id="faq-map-instance-tab-script" class="tab-pane">
-		<div hljs>
-$scope.map = {
-	events: {
-		tilesloaded: function (map) {
-			$scope.$apply(function () {
-				$log.info('this is the map instance', map);				
-			});
-		}
-	}
-}</div>
-	</div>
+    <div id="faq-map-instance-tab-html-js" class="tab-pane active">
+        <div hljs>
+            <google-map events="map.events"></google-map>
+        </div>
+    </div>
+    <div id="faq-map-instance-tab-script" class="tab-pane">
+        <div hljs>
+            $scope.map = {
+            events: {
+            tilesloaded: function (map) {
+            $scope.$apply(function () {
+            $log.info('this is the map instance', map);
+            });
+            }
+            }
+            }
+        </div>
+    </div>
 </div>
 
 <h3 id="faq-map-height" class="faq-entry-title">Can I dynamically set the map height?</h3>
@@ -41,43 +45,96 @@ $scope.map = {
 <p>The map's height can be set either statically using CSS or dynamically:</p>
 
 <ul class="nav nav-tabs">
-	<li class="active"><a href="" data-target="#faq-map-height-tab-html" data-toggle="tab">HTML</a></li>
-	<li><a href="" data-target="#faq-map-height-tab-script" data-toggle="tab">Script</a></li>
+    <li class="active"><a href="" data-target="#faq-map-height-tab-css" data-toggle="tab">CSS Only</a></li>
+    <li><a href="" data-target="#faq-map-height-tab-html-css" data-toggle="tab">HTML w CSS</a></li>
+    <li><a href="" data-target="#faq-map-height-tab-html" data-toggle="tab">HTML w $ Script</a></li>
+    <li><a href="" data-target="#faq-map-height-tab-script" data-toggle="tab">Script</a></li>
 </ul>
 
 <div class="tab-content">
-	<div id="faq-map-height-tab-html" class="tab-pane active">
-		<div hljs><google-map id="my-map"></google-map></div>
-	</div>
-	<div id="faq-map-height-tab-script" class="tab-pane">
-		<p>Let's assume we include the map in an <code>ng-view</code> block:</p>
-		<div hljs>
-$scope.$on('$viewContentLoaded', function () {
-	var mapHeight = 500; // or any other calculated value
-	$("#my-map .angular-google-map-container").height(mapHeight);
-});</div>
-	</div>
+    <div id="faq-map-height-tab-html" class="tab-pane">
+        <div hljs>
+            <google-map id="my-map"></google-map>
+        </div>
+    </div>
+    <div id="faq-map-height-tab-script" class="tab-pane">
+        <p>Let's assume we include the map in an <code>ng-view</code> block:</p>
+
+        <div hljs>
+            $scope.$on('$viewContentLoaded', function () {
+            var mapHeight = 500; // or any other calculated value
+            $("#my-map .angular-google-map-container").height(mapHeight);
+            });
+        </div>
+    </div>
+    <div id="faq-map-height-tab-html-css" class="tab-pane">
+        <div hljs>
+            <div ng-controller="ctrl" class="middle">
+                <google-map></google-map>
+            </div>
+        </div>
+    </div>
+    <div id="faq-map-height-tab-css" class="tab-pane active">
+        <div>With CSS only full example <a href='https://gist.github.com/nmccready/503e3d778852f7ab48f1'>here</a> or on master dynamic-map-height.html</div>
+        <div hljs>
+            /*
+            let me google that for you (many ways to skin this cat)
+            http://stackoverflow.com/questions/10209704/set-google-maps-container-div-width-and-height-100 (implemented here)
+            http://stackoverflow.com/questions/2821596/100-height-with-fixed-footer-and-embedded-google-map
+            */
+
+            body, html {
+            height: 100%;
+            width: 100%;
+            }
+            .angular-google-map-container {
+            height: 100%;
+            width: 50%;
+            position: absolute;
+            }
+
+            .middle {
+            display: table;
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;
+            }
+
+            /*
+            Use bootstraps container w/ some overrides, nice thing about this on bootstrap is there is
+            psuedo element with clearfix and display: table; , all after (which is why I know .middle works above)
+            */
+            .container{
+            width: 50%;
+            padding-left: 0;
+            padding-right: 0;
+            }
+        </div>
+    </div>
 </div>
 
 <h3 id="faq-map-events-apply" class="faq-entry-title">Maps events are not working!</h3>
 
-<p>Since Google Map's SDK events are fired outside the scope of the Angular application, a call to <code>$apply</code> is necessary to 
-trigger dirty checking (see <a href="https://github.com/nlaplante/angular-google-maps/issues/241" rel="external">this issue</a>).</p>
+<p>Since Google Map's SDK events are fired outside the scope of the Angular application, a call to <code>$apply</code>
+    is necessary to
+    trigger dirty checking (see <a href="https://github.com/nlaplante/angular-google-maps/issues/241" rel="external">this
+        issue</a>).</p>
 
 <div hljs>
-$scope.map = {
-	events: {
-		tilesloaded: function (map) {
-			$scope.$apply(function () {
-				$scope.mapInstance = map;			
-			});
-		}
-	}
-}</div>
+    $scope.map = {
+    events: {
+    tilesloaded: function (map) {
+    $scope.$apply(function () {
+    $scope.mapInstance = map;
+    });
+    }
+    }
+    }
+</div>
 
 <h3 id="faq-map-partial-render" class="faq-entry-title">My map is only partially rendering!</h3>
 
 <p>If rendering starts before elements are full size, google maps calculates according to the smaller size. This is most
-commonly the case with a hidden element (eg, ng-show). To fix this, use "ng-if" instead, as this will wait to attach
-to the DOM until the condition is true, which should be after everything has rendered fully.</p>
+    commonly the case with a hidden element (eg, ng-show). To fix this, use "ng-if" instead, as this will wait to attach
+    to the DOM until the condition is true, which should be after everything has rendered fully.</p>
 

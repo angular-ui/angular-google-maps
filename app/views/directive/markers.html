@@ -7,7 +7,10 @@
     case when you only need to render one window at a time.
 </p>
 <p>
-    This directive is intended to be used with <code><a href="#window">window</a></code> or <code><a href="#windows">windows</a></code>.
+
+    This directive is intended to be used with
+    <code><a ui-sref="api.window" class="ng-binding" href="#!/api">window</a></code> or
+    <code><a ui-sref="api.windows" class="ng-binding" href="#!/api">windows</a></code>
     Where <code>windows</code> can be used inside (associated positioning with each marker) or outside (association is independent) to the MarkersDirective's scope.
     <code>window</code> however can only be used outside the scope of markers and the association would be independent.
 </p>
