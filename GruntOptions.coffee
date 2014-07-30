@@ -116,7 +116,6 @@ module.exports = (grunt) ->
       all:
         options:
           livereload: true
-#          debug:true
 
         files: [
           "src/coffee/*.coffee", "src/coffee/**/*.coffee", "src/coffee/**/**/*.coffee",
