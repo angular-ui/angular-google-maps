@@ -1,0 +1,4 @@
+{
+    "name": "window",
+    "files": ["index.html", "script.js", "../base/plnkr.html"]
+}

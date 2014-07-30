@@ -61,8 +61,36 @@
         <td><span class="label label-info">expression</span></td>
         <td>object containing <a google-api="InfoWindowOptions">InfoWindowOptions</a> to apply to the window</td>
     </tr>
+    <tr>
+        <td>control</td>
+        <td><span class="label label-default">Object</span></td>
+        <td>
+            <span class="badge badge-info">New in v1.2.0</span>
+            <p></p>
+            <code>{}</code> otherwise <code>undefined / null </code>
+            <p></p>
+            If some object is passed (via scope binding) functionality is appended to that object. This allows you to get "control" of some
+            underlying logic of the marker directive..
+            <br>
+            <p>
+                The following functions are added:
+            </p>
+            <p></p>
+            <p><code>getGMarkers() </code> - Array of all the google.markers associated with this directive</p>
+            <p>example</p>
+            <code>$scope.winControl.getGWindows();</code>
+            <p><code>getChildMarkers() </code> - PropMap() (see code) all child objects which encapsulate gWindow.</p>
+            <p>example: get all ChildWindows as an array</p>
+            <code>$scope.winControl.getChildWindows().values();</code>
+            <p>example: get a specific ChildMarker by id/idKey</p>
+            <code>$scope.winControl.getChildWindows()[id] <br>or $scope.winControl.getChildWindows().get(id)</code>
+        </td>
+    </tr>
     </tbody>
 </table>
+
+<h4>Example</h4>
+<runnable-example example="'window'"></runnable-example>
 
 <script type="text/ng-template" id="windowTemplate">
 <window
@@ -72,6 +100,8 @@
         templateParameter='{expression}'
         isIconVisibleOnClick='{expression}'
         closeClick='{expression}'
-        options='{expression}'>
+        options='{expression}'
+        control='{expression}'
+        >
 </window>
 </script>

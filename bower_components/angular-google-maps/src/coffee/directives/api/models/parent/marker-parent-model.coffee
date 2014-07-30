@@ -10,16 +10,14 @@ angular.module("google-maps.directives.api.models.parent")
       class MarkerParentModel extends IMarkerParentModel
         @include GmapUtil
         @include EventsHelper
-        constructor: (scope, element, attrs, mapCtrl, $timeout, @gMarkerManager, @doFit) ->
-          super(scope, element, attrs, mapCtrl, $timeout)
+        constructor: (scope, element, attrs, map, $timeout, @gMarkerManager, @doFit) ->
+          super(scope, element, attrs, map, $timeout)
           self = @
-
-        onTimeOut: (scope)=>
-          opts = @createMarkerOptions scope.coords, scope.icon, scope.options, @mapCtrl.getMap()
+          opts = @createMarkerOptions scope.coords, scope.icon, scope.options, @map
           #using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
           @setGMarker new google.maps.Marker(opts)
 
-          google.maps.event.addListener @scope.gMarker, 'click', =>
+          @listener = google.maps.event.addListener @scope.gMarker, 'click', =>
             if @doClick and scope.click?
               @$timeout =>
                 @scope.click()
@@ -27,30 +25,33 @@ angular.module("google-maps.directives.api.models.parent")
           @setEvents @scope.gMarker, scope, scope
           @$log.info(@)
 
+
         onWatch: (propNameToWatch, scope) =>
           switch propNameToWatch
             when 'coords'
               if (@validateCoords(scope.coords) and @scope.gMarker?)
-                @scope.gMarker.setMap @mapCtrl.getMap()
+                pos = @scope.gMarker?.getPosition()
+                return if(pos.lat() == @scope.coords.latitude and @scope.coords.longitude == pos.lng())
+                old = @scope.gMarker.getAnimation()
+                @scope.gMarker.setMap @map
                 @scope.gMarker.setPosition @getCoords(scope.coords)
                 @scope.gMarker.setVisible @validateCoords(scope.coords)
-                @scope.gMarker.setOptions scope.options
+                @scope.gMarker.setAnimation(old)
               else
                 # Remove marker
                 @scope.gMarker.setMap null
             when 'icon'
               if (scope.icon? and @validateCoords(scope.coords) and @scope.gMarker?)
-                @scope.gMarker.setOptions scope.options
                 @scope.gMarker.setIcon scope.icon
                 @scope.gMarker.setMap null
-                @scope.gMarker.setMap @mapCtrl.getMap()
+                @scope.gMarker.setMap @map
                 @scope.gMarker.setPosition @getCoords(scope.coords)
                 @scope.gMarker.setVisible @validateCoords(scope.coords)
             when 'options'
               if @validateCoords(scope.coords) and scope.icon? and scope.options
-                @scope.gMarker.setMap(null) if @scope.gMarker?
-                @setGMarker new google.maps.Marker @createMarkerOptions(scope.coords, scope.icon, scope.options,
-                    @mapCtrl.getMap())
+                if @scope.gMarker?
+                  @onDestroy(scope)
+                  @onTimeOut(scope)
 
         setGMarker: (gMarker) =>
           if @scope.gMarker
@@ -67,6 +68,8 @@ angular.module("google-maps.directives.api.models.parent")
             return
           #remove from gMaps and then free resources
           @scope.gMarker.setMap null
+          google.maps.event.removeListener @listener
+          @listener = null
           @gMarkerManager.remove @scope.gMarker, false
           delete @scope.gMarker
           self = undefined

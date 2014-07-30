@@ -1,0 +1,4 @@
+{
+    "name": "circle",
+    "files": ["index.html", "script.js", "../base/plnkr.html"]
+}

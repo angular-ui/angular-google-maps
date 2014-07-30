@@ -12,10 +12,10 @@ angular.module("google-maps.directives.api.utils")
                     adds.push m
                 else
                     child = childObjects[m[idKey]]
-                    #we're update in this case
+                    #we're UPDATE in this case
                     unless comparison m, child.model
                         adds.push m
-                        removals.push child.model
+                        removals.push child
             else
                 Logger.error("id missing for model #{m.toString()}, can not use do comparison/insertion")
         , () =>
@@ -27,8 +27,8 @@ angular.module("google-maps.directives.api.utils")
                     Logger.error("child.model undefined in ModelsWatcher.")
                     return
                 id = c.model[idKey]
-                removals.push c.model[idKey] unless mappedScopeModelIds[id]?
-                    #if we done have the object we can remove it
+                #if we do not have the object we can remove it, this case is when it no longer exists and should be removed
+                removals.push c unless mappedScopeModelIds[id]?
             , () =>
                 callBack
                     adds: adds

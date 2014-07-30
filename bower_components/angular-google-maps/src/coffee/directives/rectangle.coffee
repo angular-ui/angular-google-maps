@@ -73,7 +73,7 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
             return
 
         # Wrap rectangle initialization inside a $timeout() call to make sure the map is created already
-        $timeout ->
+        mapCtrl.getScope().deferred.promise.then (map) =>
             buildOpts = (bounds) ->
                 opts = angular.extend({}, DEFAULTS,
                     map: map
@@ -96,7 +96,7 @@ angular.module("google-maps").directive "rectangle", ["$log", "$timeout", ($log,
                         opts[key] = scope[key]
 
                 opts
-            map = mapCtrl.getMap()
+
             rectangle = new google.maps.Rectangle(buildOpts(convertBoundPoints(scope.bounds)))
             fitMapBounds map, bounds  if isTrue(attrs.fit)
 

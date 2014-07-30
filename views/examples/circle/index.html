@@ -1,0 +1,6 @@
+<div id="map_canvas" ng-controller="mainCtrl">
+    <google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
+        <circle ng-repeat="c in circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
+                visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></circle>
+    </google-map>
+</div>

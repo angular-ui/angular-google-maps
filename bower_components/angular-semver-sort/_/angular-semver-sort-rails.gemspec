@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   # This is the only reason why this asset gem was created.
 
   spec.name          = 'angular-semver-sort-rails'
-  spec.version       = '0.2.2'
+  spec.version       = '0.2.3'
   spec.authors       = ['Dominik Porada']
   spec.email         = ['dominik@porada.co']
   spec.summary       = 'angular-semver-sort packaged for Rails assets pipeline'

@@ -2,9 +2,7 @@ describe "LayerParentModelSpec", ->
     beforeEach ->
         module("google-maps.mocks")
         angular.module('mockModule', ["google-maps"])
-        .value('mapCtrl',
-          getMap: ()->
-            document.gMap)
+        .value('mapCtrl', {})
         .value('element', {})
         .value('attrs', {})
         .value('model', {})
@@ -29,8 +27,9 @@ describe "LayerParentModelSpec", ->
         google.maps.testLayer =  (opts)=>
             self.setOpts = opts
             setMap:()->
-        @mapCtrl =
-            getMap: ->
+
+        @mapCtrl = {}
+
         @timeout = (fnc,time) =>
             fnc()
 
@@ -38,7 +37,7 @@ describe "LayerParentModelSpec", ->
             scope = $rootScope.$new()
             @constructor = LayerParentModel
             @scope = _.extend @scope, scope
-            @subject = new @constructor(@scope,{},@attrs,@mapCtrl,@timeout)
+            @subject = new @constructor(@scope,{},@attrs,@mapCtrl)
 
     afterEach ->
         google.map = @tempMaps

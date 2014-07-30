@@ -16,6 +16,20 @@
 			<th>Details</th>
 		</tr>
 	</thead>
+    <tbody>
+    <tr>
+        <td>idKey</td>
+        <td><span class="label label-danger">expression</span></td>
+        <td>
+            <span class="badge badge-info">New in v1.2.0</span>
+            REQUIRED!!
+            <p></p>
+            This was added to avoid unnecessary re-draws on the map.
+            <p></p>
+            Expression to evaluate a field as key/id to identify a marker. Normally this is some identifier <br> which can
+            be used out of your database. Examples: 1,2,3 or "1","2","3", or "one","two","three". Important part, is that they should be
+            unique!
+    </td></tr>
 	<tbody>
 		<tr>
 			<td>coords</td>
@@ -45,14 +59,41 @@
 			<td><span class="label label-info">events</span></td>
 			<td>Object containing event handlers for this marker. The keys are the event names and the values are the handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Marker" rel="external">Marker documentation</a> (under Events section) for a list of all events.</td>
 		</tr>
+        <tr>
+            <td>control</td>
+            <td><span class="label label-default">Object</span></td>
+            <td>
+                <span class="badge badge-info">New in v1.2.0</span>
+                <p></p>
+                <code>{}</code> otherwise <code>undefined / null </code>
+                <p></p>
+                If some object is passed (via scope binding) functionality is appended to that object. This allows you to get "control" of some
+                underlying logic of the marker directive..
+                <br>
+                <p>
+                    The following functions are added:
+                </p>
+                <p></p>
+                <p><code>getGMarkers() </code> - Array of all the google.markers associated with this directive</p>
+                <p>example</p>
+                <code>$scope.markerControl.getGMarkers();</code>
+            </td>
+        </tr>
 	</tbody>
-</table>
+</tbody></table>
+
+<h4>Example</h4>
+<runnable-example example="'marker'"></runnable-example>
 
 <script type="text/ng-template" id="markerTemplate">
-<marker coords='{expression}'
-	icon='{expression}'
-	click='{expression}'
-	options='{expression}'
-	events='{expression}'>
+<marker
+        idKey='{expression}'
+        coords='{expression}'
+        icon='{expression}'
+        click='{expression}'
+        options='{expression}'
+        events='{expression}'
+        control='{expression}'
+        >
 </marker>
 </script>

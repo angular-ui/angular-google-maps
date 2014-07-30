@@ -14,10 +14,26 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks "grunt-contrib-coffee"
     grunt.loadNpmTasks "grunt-contrib-jasmine"
     grunt.loadNpmTasks "grunt-conventional-changelog"
+    grunt.loadNpmTasks "grunt-bump"
 
     options =
         # Project configuration.
+        bump:
+            options:
+                files: ['package.json','bower.json']
+                updateConfigs: []
+                commit: true
+                commitMessage: "Release %VERSION%"
+                commitFiles: ['package.json','bower.json','Gruntfile.coffee','dist/*']
+                createTag: true
+                tagName: "%VERSION%"
+                tagMessage: "Version %VERSION%"
+                push: false
+                pushTo: "origin"
+                gitDescribeOptions: "--tags --always --abbrev=1 --dirty=-d"
         pkg: grunt.file.readJSON("package.json")
+        pkgFn: ->
+          grunt.file.readJSON("package.json") #always get latest!
         clean:
             coffee: ["tmp/output_coffee.js", "tmp"]
             dist: ["dist/*", "tmp"]
@@ -69,7 +85,7 @@ module.exports = (grunt) ->
 
         concat:
             options:
-                banner: "/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
+                banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
                 separator: ";"
 
             dist:
@@ -89,7 +105,7 @@ module.exports = (grunt) ->
 
         uglify:
             options:
-                banner: "/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
+                banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
                 compress: true
                 report: "gzip"
 
@@ -110,9 +126,9 @@ module.exports = (grunt) ->
 
                 files: [
                     "src/coffee/*.coffee", "src/coffee/**/*.coffee", "src/coffee/**/**/*.coffee",
-                    "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js"
+                    "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js", "spec/**/*.spec.coffee", "spec/coffee/helpers/**"
                 ]
-                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "uglify", "jasmine:spec",
+                tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "jasmine:spec", #"uglify"
                         "clean:example", "coffee"]
             spec:
                 options:
@@ -169,7 +185,7 @@ module.exports = (grunt) ->
 
     # run default "grunt" prior to generate _SpecRunner.html
     grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
-                                "connect:jasmineServer", "uglify", "open:jasmine", "watch:spec"]
+                                "connect:jasmineServer", "open:jasmine", "watch:spec"]
 
     grunt.registerTask "coverage", ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist",
                                  "uglify", "jasmine:coverage"]
@@ -181,3 +197,7 @@ module.exports = (grunt) ->
     grunt.registerTask "twomaps", ["clean:example", "connect:server", "open:twomaps", "watch:all"]
     grunt.registerTask "geojson", ["clean:example", "connect:server", "open:geojson", "watch:all"]
     grunt.registerTask "hugedata", ["clean:example", "connect:server", "open:hugedata", "watch:all"]
+
+    grunt.registerTask 'bump-@', ['bump-only','default','bump-commit']
+    grunt.registerTask 'bump-@-minor', ['bump-only:minor','default','bump-commit']
+    grunt.registerTask 'bump-@-major', ['bump-only:major','default','bump-commit']

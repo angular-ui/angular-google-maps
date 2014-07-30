@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html ng-app="testApp">
+
+<head>
+    <script src="http://maps.googleapis.com/maps/api/js?libraries=visualization&sensor=false&language=en&v=3.13"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+
+    <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
+</head>
+
+<body ng-controller="TestController">
+    {{sites}}
+    <google-map class="col-sm-12 pad-none" center="map.center" zoom="map.zoom" style="min-height: 600px" draggable="true">
+        <markers models="sites" coords="'coords'" icon="'icon'" click="'click'" idKey="'site_id'" doCluster="'true'" doRebuildAll="false">
+        </markers>
+    </google-map>
+</body>
+<script src="assets/scripts/controllers/issue-504-markers-flash.js"></script>
+</html>

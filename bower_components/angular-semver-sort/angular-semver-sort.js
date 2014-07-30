@@ -1,5 +1,5 @@
 /*!
-  angular-semver-sort v0.2.2 <http://git.io/angular-semver>
+  angular-semver-sort v0.2.3 <http://git.io/angular-semver>
   @includes <http://git.io/semver> by Isaac Z. Schlueter
   @license BSD
 */
@@ -361,6 +361,10 @@ SemVer.prototype.inc = function(release) {
       this.inc('pre');
       break;
     case 'prepatch':
+      // If this is already a prerelease, it will bump to the next version
+      // drop any prereleases that might already exist, since they are not
+      // relevant at this point.
+      this.prerelease.length = 0
       this.inc('patch');
       this.inc('pre');
       break;

@@ -2,67 +2,60 @@ angular.module("google-maps.directives.api.models.child")
 .factory "MarkerLabelChildModel", [ "BaseObject", "GmapUtil", (BaseObject, GmapUtil) ->
     class MarkerLabelChildModel extends BaseObject
         @include GmapUtil
-        constructor: (gMarker, opt_options) ->
+        constructor: (gMarker, options, map) ->
             super()
             self = @
+            @gMarker = gMarker
+            @setOptions options
+            @gMarkerLabel = new MarkerLabel_(@gMarker, options.crossImage, options.handCursor)
 
-            @marker = gMarker
-            @marker.set("labelContent", opt_options.labelContent)
-            @marker.set("labelAnchor", @getLabelPositionPoint(opt_options.labelAnchor))
-            @marker.set("labelClass", opt_options.labelClass || 'labels')
-            @marker.set("labelStyle", opt_options.labelStyle || { opacity: 100 })
-            @marker.set("labelInBackground", opt_options.labelInBackground || false;)
+            @gMarker.set "setMap", (theMap) ->
+                self.gMarkerLabel.setMap theMap
+                google.maps.Marker.prototype.setMap.apply @, arguments
 
-            if !opt_options.labelVisible
-                @marker.set("labelVisible", true)
+            @gMarker.setMap map
+            
+        setOption:(optStr,content) ->
+          ###
+             COMENTED CODE SHOWS AWFUL CHROME BUG in Google Maps SDK 3, still happens in version 3.16
+            any animation will cause markers to disappear
+          ###
+#          oldAnim = @gMarker.getAnimation()
+#          @gMarker.setAnimation null
+          @gMarker.set optStr, content
+#          _.delay =>
+#            @gMarker.setAnimation oldAnim
+#          , 1000
 
-            if !opt_options.raiseOnDrag
-                @marker.set("raiseOnDrag", true)
+        setOptions:(options) =>
+            @gMarker.set("labelContent", options.labelContent) if options?.labelContent
+            @gMarker.set("labelAnchor", @getLabelPositionPoint(options.labelAnchor)) if options?.labelAnchor
+            @gMarker.set("labelClass", options.labelClass || 'labels')
+            @gMarker.set("labelStyle", options.labelStyle || { opacity: 100 })
+            @gMarker.set("labelInBackground", options.labelInBackground || false;)
 
-            if !opt_options.clickable
-                @marker.set("clickable", true)
+            if !options.labelVisible
+              @gMarker.set("labelVisible", true)
 
-            if !opt_options.draggable
-                @marker.set("draggable", false)
+            if !options.raiseOnDrag
+              @gMarker.set("raiseOnDrag", true)
 
-            if !opt_options.optimized
-                @marker.set("optimized", false)
+            if !options.clickable
+              @gMarker.set("clickable", true)
+
+            if !options.draggable
+              @gMarker.set("draggable", false)
+
+            if !options.optimized
+              @gMarker.set("optimized", false)
 
             #TODO: This should be overrideable and only gets set as a default if nothing is defined
-            opt_options.crossImage = opt_options.crossImage ? document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/drag_cross_67_16.png";
-            opt_options.handCursor = opt_options.handCursor ? document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/closedhand_8_8.cur";
+            options.crossImage = options.crossImage ? document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/drag_cross_67_16.png";
+            options.handCursor = options.handCursor ? document.location.protocol + "//maps.gstatic.com/intl/en_us/mapfiles/closedhand_8_8.cur";
 
-            @markerLabel = new MarkerLabel_(@marker, opt_options.crossImage, opt_options.handCursor)
-
-            @marker.set("setMap", (theMap)->
-                google.maps.Marker.prototype.setMap.apply(this, arguments);
-                self.markerLabel.setMap(theMap)
-            )
-
-            @marker.setMap(@marker.getMap())
-
-        getSharedCross: (crossUrl)=>
-            @markerLabel.getSharedCross(crossUrl)
-        setTitle: ()=>
-            @markerLabel.setTitle()
-        setContent: ()=>
-            @markerLabel.setContent()
-        setStyles: ()=>
-            @markerLabel.setStyles()
-        setMandatoryStyles: ()=>
-            @markerLabel.setMandatoryStyles()
-        setAnchor: ()=>
-            @markerLabel.setAnchor()
-        setVisible: ()=>
-            @markerLabel.setVisible()
-        setZIndex: ()=>
-            @markerLabel.setZIndex()
-        setPosition: ()=>
-            @markerLabel.setPosition()
-        draw: ()=>
-            @markerLabel.draw()
         destroy: ()=>
             #bug in MarkerLabel_ so we will check it here and maybe submit a patch
-            @markerLabel.onRemove() if @markerLabel.labelDiv_.parentNode? and @markerLabel.eventDiv_.parentNode?
+            @gMarkerLabel.onRemove() if @gMarkerLabel.labelDiv_.parentNode? and @gMarkerLabel.eventDiv_.parentNode?
+
     MarkerLabelChildModel
 ]

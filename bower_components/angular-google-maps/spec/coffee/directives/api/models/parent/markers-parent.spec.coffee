@@ -44,8 +44,8 @@ xdescribe "MarkersParentModel", ->
       @scope.click = () =>
         @clickCount++
 
-    @mapCtrl = jasmine.createSpyObj('mapCtrl', ['getMap'])
-    @subject = new @MarkersParentModel(@scope, @ele, @attrs, @mapCtrl, @$timeout)
+    @map = jasmine.createSpyObj('map')
+    @subject = new @MarkersParentModel(@scope, @ele, @attrs, @map, @$timeout)
 
   it "should instantiate", ->
     expect(@subject?).toEqual(true)

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org/" ng-app="appMaps">
+
+<head>
+    <meta charset="utf-8" />
+    <title>AngularJS Plunker</title>
+    <script src="//maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.14"></script>
+    <script src="../../../bower_components/angular/angular.js" ></script>
+    <script src="../../../bower_components/lodash/dist/lodash.underscore.js"></script>
+    <script src="../../../bower_components/angular-google-maps/dist/angular-google-maps.min.js"></script>
+    <script src="example.js"></script>
+    <style type="text/css">
+        html, body, #map_canvas {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+        }
+
+        #map_canvas {
+            position: relative;
+        }
+
+        .angular-google-map-container {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body ng-controller="exampleCtrl">
+</body>
+
+</html>

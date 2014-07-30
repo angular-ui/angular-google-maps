@@ -1,0 +1,4 @@
+{
+    "name": "marker",
+    "files": ["index.html", "script.js", "../base/plnkr.html"]
+}
