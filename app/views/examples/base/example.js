@@ -1,7 +1,11 @@
 var app = angular.module("appMaps", ['google-maps'])
     .config(function($controllerProvider) {
         // Override the normal controller process so controllers can be late loaded.
-        app.controller = $controllerProvider.register;
+        var chainableRegister = function(name, constructor) {
+            $controllerProvider.register(name, constructor);
+            return app;
+        };
+        app.controller = chainableRegister;
     })
     .controller("exampleCtrl", function($scope, $element, $document, $compile, $http, $q, $controller) {
         function getParameterByName(name) {

@@ -117,7 +117,9 @@ angular.module('angularGoogleMapsApp')
                     insertScripts(files);
                     insertExample(files);
                     angular.forEach(files, function(file) {
-                        postData['files[' + file.name + ']'] = file.content;
+                        if (!!file && !!file.name) {
+                            postData['files[' + file.name + ']'] = file.content;
+                        }
                     });
 
                     postData['tags[0]'] = "angularjs";
