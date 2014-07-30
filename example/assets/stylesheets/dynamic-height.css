@@ -1,3 +1,9 @@
+/*
+let me google that for you (many ways to skin this cat)
+http://stackoverflow.com/questions/10209704/set-google-maps-container-div-width-and-height-100 (implemented here)
+http://stackoverflow.com/questions/2821596/100-height-with-fixed-footer-and-embedded-google-map
+*/
+
 body, html {
     height: 100%;
     width: 100%;
@@ -13,6 +19,7 @@ body, html {
     margin-left: auto;
     margin-right: auto;
 }
+
 /*
 Use bootstraps container w/ some overrides, nice thing about this on bootstrap is there is psuedo element clearfix after it.
 */
