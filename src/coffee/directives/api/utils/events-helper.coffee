@@ -12,6 +12,6 @@ angular.module("google-maps.directives.api.utils")
               $log.info "EventHelper: invalid event listener #{eventName}"
 
       removeEvents: (listeners) ->
-        listeners.forEach (l) ->
+        listeners?.forEach (l) ->
           google.maps.event.removeListener l
   ]

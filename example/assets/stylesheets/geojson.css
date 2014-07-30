@@ -36,11 +36,9 @@ body {
     font-size: 10px;
     font-weight: bold;
     text-align: center;
-    width: 40px;
     border: 1px solid black;
     white-space: nowrap;
 }
-
 /* uncomment this if you are using the <google-map> element instead of a div
 .angular-google-map {
   display: block;

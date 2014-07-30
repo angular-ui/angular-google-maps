@@ -3518,9 +3518,9 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         },
         removeEvents: function(listeners) {
-          return listeners.forEach(function(l) {
+          return listeners != null ? listeners.forEach(function(l) {
             return google.maps.event.removeListener(l);
-          });
+          }) : void 0;
         }
       };
     }

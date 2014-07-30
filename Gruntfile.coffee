@@ -59,21 +59,32 @@ module.exports = (grunt) ->
   grunt.registerTask 'bump-@-minor', ['bump-only:minor', 'default', 'bump-commit']
   grunt.registerTask 'bump-@-major', ['bump-only:major', 'default', 'bump-commit']
 
-  allBasicExampleTasks = _(allExamplesOpen).map (v, key) ->
+  exampleOpenTasks = []
+  _(allExamplesOpen).each (v, key) ->
     basicTask = "open:" + key
     #register individual task (runs by itself)
     grunt.registerTask key, ["clean:example", "connect:server", basicTask, "watch:all"]
-    basicTask
+    exampleOpenTasks.push basicTask
 
-  allExamplesTaskToRun = ["clean:example", "connect:server"].concat(['open:free-draw-polygons','open:example']).concat ['watch:all']
-#  allExamplesTaskToRun = ["clean:example", "connect:server"].concat(allBasicExampleTasks).concat ['watch:all']
+#  allExamplesTaskToRun = ["clean:example", "connect:server"].concat(['open:free-draw-polygons','open:example']).concat ['watch:all']
+  allExamplesTaskToRun = ["clean:example", "connect:server"].concat(exampleOpenTasks).concat ['watch:all']
+
+
+  listWithQuotes = (collection, doLog = true) ->
+    last = collection.length - 1
+    all = ''
+    collection.forEach (t,i) ->
+      all += if i < last then "'#{t}'," else "'#{t}'"
+    if doLog
+      return log all
+    all
 
   grunt.registerTask 'listExamples', showOpenType
   grunt.registerTask 'listAllOpen', ->
     showOpenType(options.open)
 
   grunt.registerTask 'listAllExamplesTasks', ->
-    log allExamplesTaskToRun
+    listWithQuotes exampleOpenTasks
 
   grunt.registerTask 'allExamples', allExamplesTaskToRun
 

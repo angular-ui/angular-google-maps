@@ -78,7 +78,8 @@
                 templateParameter="map.templatedInfoWindow.templateParameter" ng-cloak>
         </window>
 
-        <marker coords="searchLocationMarker.geometry" options="searchLocationMarker.options" events="searchLocationMarker.events" >
+        <marker coords="searchLocationMarker.geometry" options="searchLocationMarker.options" events="searchLocationMarker.events" idKey="searchLocationMarker.id">
+            <marker-label content="searchLocationMarker.title" anchor="22 0" class="marker-labels"/>
         </marker>
 
         <markers models="map.randomMarkers" coords="'geometry'" icon="'icon'" click="'onClicked'"
@@ -121,7 +122,7 @@
 
         <!-- predefined markers -->
         <!-- rendering via ng-repeat, HIGH OVERHEAD via DOM Manipulation -->
-        <marker ng-repeat="m in map.markers" coords="m.geometry" icon="m.icon" click="onMarkerClicked(m)">
+        <marker ng-repeat="m in map.markers" coords="m.geometry" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id">
             <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
             <window ng-cloak  coords="map.infoWindowWithCustomClass.geometry" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
                     <p>This is an info window at {{ m.geometry.coordinates[1] | number:4 }}, {{ m.geometry.coordinates[0] | number:4 }}!</p>
@@ -129,15 +130,12 @@
             </window>
         </marker>
 
-         <!--marker for clicked position can not put google.map.animations.BOUNCE , since it is not initiaized yet-->
-        <div ng-init="opts = {animation:1}">
-            <marker coords="map.clickedMarker" options="opts">
-                <!--<marker-label content="map.clickedMarker.title" anchor="24 40" class="marker-labels"/>-->
-                <window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
-                    <p class="muted">My marker will reappear when you close me.</p>
-                </window>
-            </marker>
-        </div>
+        <marker coords="map.clickedMarker.geometry" idKey="map.clickedMarker.id">
+            <marker-label content="map.clickedMarker.title" anchor="24 80" class="marker-labels"/>
+            <window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
+                <p class="muted">My marker will reappear when you close me.</p>
+            </window>
+        </marker>
 
 		<!-- polyline example -->
         <polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'

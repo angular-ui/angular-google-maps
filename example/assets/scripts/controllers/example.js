@@ -194,7 +194,7 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
       dynamicMarkers: [],
       randomMarkers: [],
       doClusterRandomMarkers: true,
-      doUgly: true, //great name :)
+      doUgly: false, //great name :)
       clusterOptions: {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2,
         imageExtension: 'png', imagePath: 'assets/images/cluster', imageSizes: [72]},
       clickedMarker: {
@@ -513,16 +513,24 @@ function ExampleController($scope, $timeout, $log, $http, Logger) {
       $scope.map.clusterOptions = angular.fromJson($scope.map.clusterOptionsText);
   });
 
-  $scope.$watch('map.doUgly', function (newValue, oldValue) {
+  var doUglyFn = function(value) {
+    if(value === undefined || value === null){
+      value = $scope.map.doUgly;
+    }
     var json;
+    if (value)
+      json = {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2,
+        imageExtension: 'png', imagePath: 'assets/images/cluster', imageSizes: [72]};
+    else
+      json = {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2};
+    $scope.map.clusterOptions = json;
+    $scope.map.clusterOptionsText = angular.toJson(json);
+  };
+  doUglyFn();
+
+  $scope.$watch('map.doUgly', function (newValue, oldValue) {
     if (newValue !== oldValue) {
-      if (newValue)
-        json = {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2,
-          imageExtension: 'png', imagePath: 'http://localhost:3000/example/cluster', imageSizes: [72]};
-      else
-        json = {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2};
-      $scope.map.clusterOptions = json;
-      $scope.map.clusterOptionsText = angular.toJson(json);
+      doUglyFn(newValue);
     }
   });
 
