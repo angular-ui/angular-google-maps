@@ -1,0 +1,4 @@
+{
+    "name": "polyline",
+    "files": ["index.html", "script.js", "../base/plnkr.html"]
+}

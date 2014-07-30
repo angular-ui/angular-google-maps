@@ -6,6 +6,7 @@
 	<li><a href="#faq-map-instance">How do I access the map instance?</a></li>
 	<li><a href="#faq-map-height">Can I dynamically set the map height?</a></li>
 	<li><a href="#faq-map-events-apply">Map events are not working!</a></li>
+    <li><a href="#faq-map-partial-render">My map is only partially rendering!</a></li>
 </ul>
 
 <h3 id="faq-map-instance" class="faq-entry-title">How do I access the map instance?</h3>
@@ -73,4 +74,10 @@ $scope.map = {
 		}
 	}
 }</div>
+
+<h3 id="faq-map-partial-render" class="faq-entry-title">My map is only partially rendering!</h3>
+
+<p>If rendering starts before elements are full size, google maps calculates according to the smaller size. This is most
+commonly the case with a hidden element (eg, ng-show). To fix this, use "ng-if" instead, as this will wait to attach
+to the DOM until the condition is true, which should be after everything has rendered fully.</p>
 

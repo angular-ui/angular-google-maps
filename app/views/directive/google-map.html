@@ -53,8 +53,8 @@
                     The following functions are added:
                 </p>
                 <p></p>
-                <p><code>getGMap:() </code> - returns the direct reference of the google map instance being used by the directive.</p>
-                <p><code>refresh:(optionalCoords({latitude:, longitude}) </code>- refreshes the current map on its current coords if no coords are specified.</p>
+                <p><code>getGMap() </code> - returns the direct reference of the google map instance being used by the directive.</p>
+                <p><code>refresh(optionalCoords({latitude:, longitude}) </code>- refreshes the current map on its current coords if no coords are specified.</p>
                 <p>example</p>
                 <code>$scope.map.control.refresh({latitude: 32.779680, longitude: -79.935493});</code>
             </td>
@@ -105,6 +105,8 @@
 		</tr>
 	</tbody>
 </table>
+<h4>Example</h4>
+<runnable-example example="'google-map'"></runnable-example>
 
 <script type="text/ng-template" id="googleMapTemplate">
 <google-map center='{expression}' 

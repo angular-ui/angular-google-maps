@@ -254,7 +254,8 @@ module.exports = function (grunt) {
             'README.md',
             'bower_components/**/*',
             'images/{,*/}*.{gif,webp}',
-            'styles/fonts/*'
+            'styles/fonts/*',
+            'views/examples/{,*/}*.*'
           ]
         }, {
           expand: true,
