@@ -1,15 +1,21 @@
 angular.module("google-maps.directives.api")
-.factory "Map", ["$timeout", '$q','Logger', "GmapUtil", "BaseObject", "ExtendGWin", "CtrlHandle",
-  ($timeout,$q, Logger, GmapUtil, BaseObject,ExtendGWin, CtrlHandle) ->
+.factory "Map", ["$timeout", '$q','Logger', "GmapUtil", "BaseObject", "ExtendGWin", "CtrlHandle", 'IsReady'.ns(), "uuid".ns(),
+  ($timeout,$q, Logger, GmapUtil, BaseObject,ExtendGWin, CtrlHandle, IsReady, uuid) ->
         "use strict"
         $log = Logger
-
         DEFAULTS =
             mapTypeId: google.maps.MapTypeId.ROADMAP
-
         class Map extends BaseObject
             @include GmapUtil
-            constructor:()->
+            constructor: ->
+                ctrlFn = ($scope) ->
+                    ctrlObj = CtrlHandle.handle $scope
+                    $scope.ctrlType = 'Map'
+                    $scope.deferred.promise.then ->
+                      ExtendGWin.init()
+                    _.extend ctrlObj, getMap: ->
+                      $scope.map
+                @controller = ["$scope", ctrlFn ]
                 self = @
             restrict: "EMA"
             transclude: true
@@ -28,21 +34,17 @@ angular.module("google-maps.directives.api")
                 styles: "=" # optional
                 bounds: "="
 
-            controller: ["$scope", ($scope) ->
-                ctrlObj = CtrlHandle.handle $scope
-                $scope.ctrlType = 'Map'
-                $scope.deferred.promise.then ->
-                  ExtendGWin.init()
-                _.extend ctrlObj, getMap: ->
-                    $scope.map
-            ]
-
             ###
             @param scope
             @param element
             @param attrs
             ###
             link: (scope, element, attrs) =>
+                spawned = IsReady.spawn()
+                resolveSpawned = =>
+                  spawned.deferred.resolve
+                    instance: spawned.instance
+                    map: _m
                 # Center property must be specified and provide lat &
                 # lng properties
                 if not @validateCoords(scope.center)
@@ -75,12 +77,16 @@ angular.module("google-maps.directives.api")
                   bounds: scope.bounds
                 )
                 _m = new google.maps.Map(el.find("div")[1], mapOptions)
+                _m.nggmap_id = uuid.generate()
+
                 dragging = false
                 if not _m
                   google.maps.event.addListener _m, 'tilesloaded ', (map) ->
                     scope.deferred.resolve map
+                    resolveSpawned()
                 else
                   scope.deferred.resolve _m
+                  resolveSpawned()
 
                 google.maps.event.addListener _m, "dragstart", ->
                     dragging = true

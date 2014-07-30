@@ -14,6 +14,8 @@ angular.module("google-maps.directives.api.models.child")
                     @watchElement()
                     @watchShow()
                     @watchCoords()
+                    @scope.$on "$destroy", =>
+                      @destroy()
                     @$log.info(@)
                     #todo: watch model in here, and recreate / clean gWin on change
 

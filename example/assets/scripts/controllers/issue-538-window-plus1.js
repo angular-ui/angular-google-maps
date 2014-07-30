@@ -10,6 +10,7 @@ angular.module('app', ['google-maps'])
         },
         zoom: 4,
         marker: {
+          id:0,
           coords: {
             latitude: 40.1451,
             longitude: -99.6680

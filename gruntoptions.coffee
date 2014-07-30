@@ -83,6 +83,7 @@ module.exports = (grunt) ->
         src: [
           "lib/*.js"
           "tmp/output_coffee.js"
+          "tmp/wrapped.js"
           "src/js/**/*.js" #this all will only work if the dependency orders do not matter
           "src/js/**/**/*.js"
           "src/js/**/**/**/*.js"]
@@ -158,6 +159,12 @@ module.exports = (grunt) ->
 
     jasmine:
       spec: jasmineSettings.spec
+    wrap:
+      basic:
+        src: ['bower_components/uuid/dist/uuid.core.js']
+        dest: 'tmp/wrapped.js'
+        options:
+          wrapper: ['angular.module("google-maps.wrapped").service("uuid".ns(), function(){\n', '\nreturn UUID;\n});']
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

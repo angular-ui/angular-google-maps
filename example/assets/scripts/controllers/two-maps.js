@@ -6,7 +6,7 @@ var rndAddToLatLon = function () {
   return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1)
 }
 
-function DebugController($scope, $timeout, $log, $http) {
+function DebugController($scope, $timeout, $log, $http, nggmapIsReady) {
   // Enable the new Google Maps visuals until it gets enabled by default.
   // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
   google.maps.visualRefresh = true;
@@ -40,7 +40,6 @@ function DebugController($scope, $timeout, $log, $http) {
         latitude: 45.2,
         longitude: -74.5
       },
-//            dragging:false, //appears to be required
       zoom: 7,
       options: {
         disableDefaultUI: true,
@@ -106,16 +105,16 @@ function DebugController($scope, $timeout, $log, $http) {
         m.lastSignal = Math.round(Date.now()).toString();
         m.show = true;
         $scope.map2.markers3.length = 0;
-        // _defer to allow the directive to clean up all old markers and windows
-        // since we know it is only the one marker just wipe and replace
-        // otherwise find it in the array or have a hashmap to array index to get it quick
-        _.defer(function () {
-          $scope.map2.markers3 = [m];
-          $scope.$apply();
-        });
+        $scope.map2.markers3 = [m];
+        $scope.$apply();
 
       }
     }
+  });
+  nggmapIsReady.promise(2).then(function (instances) {
+    instances.forEach(function(inst){
+      inst.map.ourID = inst.instance;
+    });
   });
 
   var origCenter = {latitude: $scope.map.center.latitude, longitude: $scope.map.center.longitude};

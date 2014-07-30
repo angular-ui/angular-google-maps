@@ -26,6 +26,7 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
   };
   $scope.map.markers = [
     {
+      wonkyId:0,
       longitude: 4.404418,
       latitude: 51.219053
     }

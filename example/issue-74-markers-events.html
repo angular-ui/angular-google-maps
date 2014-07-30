@@ -42,11 +42,10 @@
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <marker ng-repeat="m in map.markers2" coords="m" icon="m.icon" fit='true' events="markersEvents">
+            <marker ng-repeat="m in map.markers2" coords="m" icon="m.icon" fit='true' events="markersEvents" idkey="m.id">
             </marker>
 
-            <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'
-                     events="markersEvents">
+            <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true' events="markersEvents">
                 <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                     <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
                 </windows>
