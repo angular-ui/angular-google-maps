@@ -1,0 +1,23 @@
+body, html {
+    height: 100%;
+    width: 100%;
+}
+.angular-google-map-container {
+    height: 100%;
+    width: 50%;
+    position: absolute;
+}
+
+.middle {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+/*
+Use bootstraps container w/ some overrides, nice thing about this on bootstrap is there is psuedo element clearfix after it.
+*/
+.container{
+    width: 50%;
+    padding-left: 0;
+    padding-right: 0;
+}
