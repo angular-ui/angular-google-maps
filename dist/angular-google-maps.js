@@ -5105,97 +5105,108 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("PolylineChildModel", [
-    "BaseObject", "Logger", "$timeout", "array-sync", "GmapUtil", function(BaseObject, Logger, $timeout, arraySync, GmapUtil) {
-      var $log, PolylineChildModel;
-      $log = Logger;
+    "BaseObject", "Logger", "$timeout", "array-sync", "GmapUtil", function(BaseObject, $log, $timeout, arraySync, GmapUtil) {
+      var PolylineChildModel;
       return PolylineChildModel = (function(_super) {
         __extends(PolylineChildModel, _super);
 
         PolylineChildModel.include(GmapUtil);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
-          var arraySyncer, pathPoints,
-            _this = this;
+          var _this = this;
           this.scope = scope;
           this.attrs = attrs;
           this.map = map;
           this.defaults = defaults;
           this.model = model;
+          this.clean = __bind(this.clean, this);
           this.buildOpts = __bind(this.buildOpts, this);
-          pathPoints = this.convertPathPoints(scope.path);
-          this.polyline = new google.maps.Polyline(this.buildOpts(pathPoints));
-          if (scope.fit) {
-            GmapUtil.extendMapBounds(map, pathPoints);
-          }
+          scope.$watch('path', function(newValue, oldValue) {
+            var pathPoints;
+            if (!_.isEqual(newValue, oldValue) || !_this.polyline) {
+              pathPoints = _this.convertPathPoints(scope.path);
+              if (pathPoints.length > 0) {
+                _this.polyline = new google.maps.Polyline(_this.buildOpts(pathPoints));
+              }
+              if (_this.polyline) {
+                if (scope.fit) {
+                  _this.extendMapBounds(map, pathPoints);
+                }
+                return arraySync(_this.polyline.getPath(), scope, "path", function(pathPoints) {
+                  if (scope.fit) {
+                    return _this.extendMapBounds(map, pathPoints);
+                  }
+                });
+              }
+            }
+          });
           if (!scope["static"] && angular.isDefined(scope.editable)) {
             scope.$watch("editable", function(newValue, oldValue) {
+              var _ref;
               if (newValue !== oldValue) {
-                return _this.polyline.setEditable(newValue);
+                return (_ref = _this.polyline) != null ? _ref.setEditable(newValue) : void 0;
               }
             });
           }
           if (angular.isDefined(scope.draggable)) {
             scope.$watch("draggable", function(newValue, oldValue) {
+              var _ref;
               if (newValue !== oldValue) {
-                return _this.polyline.setDraggable(newValue);
+                return (_ref = _this.polyline) != null ? _ref.setDraggable(newValue) : void 0;
               }
             });
           }
           if (angular.isDefined(scope.visible)) {
             scope.$watch("visible", function(newValue, oldValue) {
+              var _ref;
               if (newValue !== oldValue) {
-                return _this.polyline.setVisible(newValue);
+                return (_ref = _this.polyline) != null ? _ref.setVisible(newValue) : void 0;
               }
             });
           }
           if (angular.isDefined(scope.geodesic)) {
             scope.$watch("geodesic", function(newValue, oldValue) {
+              var _ref;
               if (newValue !== oldValue) {
-                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
+                return (_ref = _this.polyline) != null ? _ref.setOptions(_this.buildOpts(_this.polyline.getPath())) : void 0;
               }
             });
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
             scope.$watch("stroke.weight", function(newValue, oldValue) {
+              var _ref;
               if (newValue !== oldValue) {
-                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
+                return (_ref = _this.polyline) != null ? _ref.setOptions(_this.buildOpts(_this.polyline.getPath())) : void 0;
               }
             });
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
             scope.$watch("stroke.color", function(newValue, oldValue) {
+              var _ref;
               if (newValue !== oldValue) {
-                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
+                return (_ref = _this.polyline) != null ? _ref.setOptions(_this.buildOpts(_this.polyline.getPath())) : void 0;
               }
             });
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.opacity)) {
             scope.$watch("stroke.opacity", function(newValue, oldValue) {
+              var _ref;
               if (newValue !== oldValue) {
-                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
+                return (_ref = _this.polyline) != null ? _ref.setOptions(_this.buildOpts(_this.polyline.getPath())) : void 0;
               }
             });
           }
           if (angular.isDefined(scope.icons)) {
             scope.$watch("icons", function(newValue, oldValue) {
+              var _ref;
               if (newValue !== oldValue) {
-                return _this.polyline.setOptions(_this.buildOpts(_this.polyline.getPath()));
+                return (_ref = _this.polyline) != null ? _ref.setOptions(_this.buildOpts(_this.polyline.getPath())) : void 0;
               }
             });
           }
-          arraySyncer = arraySync(this.polyline.getPath(), scope, "path", function(pathPoints) {
-            if (scope.fit) {
-              return GmapUtil.extendMapBounds(map, pathPoints);
-            }
-          });
           scope.$on("$destroy", function() {
-            _this.polyline.setMap(null);
-            _this.polyline = null;
-            _this.scope = null;
-            if (arraySyncer) {
-              arraySyncer();
-              return arraySyncer = null;
-            }
+            _this.clean();
+            return _this.scope = null;
           });
           $log.info(this);
         }
@@ -5230,6 +5241,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             opts.editable = false;
           }
           return opts;
+        };
+
+        PolylineChildModel.prototype.clean = function() {
+          var arraySyncer;
+          this.polyline.setMap(null);
+          this.polyline = null;
+          if (arraySyncer) {
+            arraySyncer();
+            return arraySyncer = null;
+          }
         };
 
         PolylineChildModel.prototype.destroy = function() {
@@ -6931,17 +6952,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("IPolyline", [
-    "GmapUtil", "BaseObject", "Logger", function(GmapUtil, BaseObject, Logger) {
+    "GmapUtil", "BaseObject", "Logger", 'CtrlHandle', function(GmapUtil, BaseObject, Logger, CtrlHandle) {
       var IPolyline;
       return IPolyline = (function(_super) {
         __extends(IPolyline, _super);
 
         IPolyline.include(GmapUtil);
 
-        function IPolyline() {
-          var self;
-          self = this;
-        }
+        IPolyline.extend(CtrlHandle);
+
+        function IPolyline() {}
 
         IPolyline.prototype.restrict = "EA";
 
@@ -7481,7 +7501,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.$log.error("polyline: no valid path attribute found");
             return;
           }
-          return mapCtrl.getScope().deferred.promise.then(function(map) {
+          return IPolyline.mapPromise(scope, mapCtrl).then(function(map) {
             return new PolylineChildModel(scope, attrs, map, _this.DEFAULTS);
           });
         };
