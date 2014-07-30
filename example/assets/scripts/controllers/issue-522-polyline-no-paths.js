@@ -51,6 +51,11 @@
           events: {},
           bounds: {},
           polys: [],
+          polyEvents: {
+            click: function (gPoly, eventName, polyModel) {
+              window.alert("Poly Clicked: id:" + polyModel.$id + ' ' + JSON.stringify(polyModel.path));
+            }
+          },
           draw: undefined
         };
         var createPolys = function () {

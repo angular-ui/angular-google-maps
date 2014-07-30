@@ -3500,7 +3500,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("google-maps.directives.api.utils").service("EventsHelper", [
     "Logger", function($log) {
       return {
-        setEvents: function(marker, scope, model, ignores) {
+        setEvents: function(gObject, scope, model, ignores) {
           if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
             return _.compact(_.map(scope.events, function(eventHandler, eventName) {
               var doIgnore;
@@ -3508,14 +3508,19 @@ Nicholas McCready - https://twitter.com/nmccready
                 doIgnore = _(ignores).contains(eventName);
               }
               if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName]) && !doIgnore) {
-                return google.maps.event.addListener(marker, eventName, function() {
-                  return eventHandler.apply(scope, [marker, eventName, model, arguments]);
+                return google.maps.event.addListener(gObject, eventName, function() {
+                  return eventHandler.apply(scope, [gObject, eventName, model, arguments]);
                 });
               } else {
-                return $log.info("MarkerEventHelper: invalid event listener " + eventName);
+                return $log.info("EventHelper: invalid event listener " + eventName);
               }
             }));
           }
+        },
+        removeEvents: function(listeners) {
+          return listeners.forEach(function(l) {
+            return google.maps.event.removeListener(l);
+          });
         }
       };
     }
@@ -5105,12 +5110,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api").factory("PolylineChildModel", [
-    "BaseObject", "Logger", "$timeout", "array-sync", "GmapUtil", function(BaseObject, $log, $timeout, arraySync, GmapUtil) {
+    "BaseObject", "Logger", "$timeout", "array-sync", "GmapUtil", "EventsHelper", function(BaseObject, $log, $timeout, arraySync, GmapUtil, EventsHelper) {
       var PolylineChildModel;
       return PolylineChildModel = (function(_super) {
         __extends(PolylineChildModel, _super);
 
         PolylineChildModel.include(GmapUtil);
+
+        PolylineChildModel.include(EventsHelper);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
           var _this = this;
@@ -5132,11 +5139,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (scope.fit) {
                   _this.extendMapBounds(map, pathPoints);
                 }
-                return arraySync(_this.polyline.getPath(), scope, "path", function(pathPoints) {
+                arraySync(_this.polyline.getPath(), scope, "path", function(pathPoints) {
                   if (scope.fit) {
                     return _this.extendMapBounds(map, pathPoints);
                   }
                 });
+                return _this.listeners = _this.model ? _this.setEvents(_this.polyline, scope, _this.model) : _this.setEvents(_this.polyline, scope, scope);
               }
             }
           });
@@ -5245,6 +5253,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         PolylineChildModel.prototype.clean = function() {
           var arraySyncer;
+          this.removeEvents(this.listeners);
           this.polyline.setMap(null);
           this.polyline = null;
           if (arraySyncer) {
@@ -6979,7 +6988,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           icons: "=",
           visible: "=",
           "static": "=",
-          fit: "="
+          fit: "=",
+          events: "="
         };
 
         IPolyline.prototype.DEFAULTS = {};

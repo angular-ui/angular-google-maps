@@ -31,7 +31,7 @@
                      controller="mapWidgetCtrl"></map-control>
         <map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></map-control>
         <polyline ng-repeat="p in map.polys" path="p.path" stroke="p.stroke" visible='p.visible'
-                  geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'>
+                  geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons' events='map.polyEvents'>
         </polyline>
     </google-map>
     <ul>
