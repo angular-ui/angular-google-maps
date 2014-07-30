@@ -16,7 +16,7 @@ var app = angular.module("appMaps", ['google-maps'])
         }
 
         var example = getParameterByName("example");
-        var examplePath = "/views/examples/" + example + "/";
+        var examplePath = "../" + example + "/";
 
         // Get the manifest to determine what files to load and what order (based on manifest definition).
         $http.get(examplePath + "manifest.json").then(function(manifest) {
