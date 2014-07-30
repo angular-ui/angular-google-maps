@@ -1,7 +1,7 @@
 _ = require('lodash')
 log = require('util').log
 
-doCover = false #clean cheap way to disable coverage so you can debug the darn code.. thank you blanket
+doCover = true #clean cheap way to disable coverage so you can debug the darn code.. thank you blanket
 
 requireConfig =
     paths:
