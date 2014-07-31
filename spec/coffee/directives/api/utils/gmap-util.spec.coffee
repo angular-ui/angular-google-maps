@@ -1,9 +1,9 @@
 describe "utils.gmap-util", ->
   beforeEach ->
-    module "google-maps.directives.api.utils"
+    module "google-maps.directives.api.utils".ns()
     module "google-maps.mocks"
-    inject (GmapUtil, GoogleApiMock) =>
-      @subject = GmapUtil
+    inject (nggmapGmapUtil, GoogleApiMock) =>
+      @subject = nggmapGmapUtil
       @gmap = new GoogleApiMock()
       @gmap.mockAPI()
       @gmap.mockMVCArray()

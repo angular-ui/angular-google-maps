@@ -1,9 +1,9 @@
 ###
 	Windows directive where many windows map to the models property
 ###
-angular.module("google-maps.directives.api.models.parent")
-.factory "PolylinesParentModel",
-        ["$timeout","Logger","ModelKey", "ModelsWatcher", "PropMap", "PolylineChildModel",
+angular.module("google-maps.directives.api.models.parent".ns())
+.factory "PolylinesParentModel".ns(),
+        ["$timeout","Logger".ns(),"ModelKey".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "PolylineChildModel".ns(),
             ($timeout,Logger,ModelKey,ModelsWatcher,PropMap,PolylineChildModel) ->
                 class PolylinesParentModel extends ModelKey
                     @include ModelsWatcher

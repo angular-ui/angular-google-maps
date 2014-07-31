@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.models.child")
-.factory "MarkerLabelChildModel", [ "BaseObject", "GmapUtil", (BaseObject, GmapUtil) ->
+angular.module("google-maps.directives.api.models.child".ns())
+.factory "MarkerLabelChildModel".ns(), [ "BaseObject".ns(), "GmapUtil".ns(), (BaseObject, GmapUtil) ->
     class MarkerLabelChildModel extends BaseObject
         @include GmapUtil
         constructor: (gMarker, options, map) ->

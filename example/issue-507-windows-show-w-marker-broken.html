@@ -34,11 +34,11 @@
 <body>
     <div id="map_canvas" ng-controller="mainCtrl">
     <google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
-        <markers models="randomMarkers" coords="'self'" icon="'icon'" click="'onClick'">
-            <windows show="'show'">
+        <nggmap-markers models="randomMarkers" coords="'self'" icon="'icon'" click="'onClick'">
+            <nggmap-windows show="'show'">
                 <div ng-non-bindable>{{title}}</div>
-            </windows>
-        </markers>
+            </nggmap-windows>
+        </nggmap-markers>
     </google-map>
 </div>
 <!--example-->

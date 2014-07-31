@@ -41,11 +41,9 @@ module.exports = (grunt) ->
 
   # Default task: build a release in dist/
   grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "wrap:basic", "concat:dist", "copy:dist",
-                                 "uglify",
-                                 "jasmine:spec"]
+                                 "uglify", "jasmine:spec"]
 
-  grunt.registerTask "fast", ["clean:dist", "jshint", "mkdir", "coffee", "wrap:basic", "concat:dist", "copy:dist",
-                              "jasmine:spec"]
+  grunt.registerTask "fast", ["clean:dist", "jshint", "mkdir", "coffee", "wrap:basic", "concat:dist", "copy:dist", "jasmine:spec"]
 
   # run default "grunt" prior to generate _SpecRunner.html
   grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "wrap:basic", "concat:dist", "copy:dist",
@@ -66,11 +64,11 @@ module.exports = (grunt) ->
   _(allExamplesOpen).each (v, key) ->
     basicTask = "open:" + key
     #register individual task (runs by itself)
-    grunt.registerTask key, ["clean:example", "connect:server", basicTask, "watch:all"]
+    grunt.registerTask key, ["fast", "clean:example", "connect:server", basicTask, "watch:all"]
     exampleOpenTasks.push basicTask
 
   #  allExamplesTaskToRun = ["clean:example", "connect:server"].concat(['open:free-draw-polygons','open:example']).concat ['watch:all']
-  allExamplesTaskToRun = ["clean:example", "connect:server"].concat(exampleOpenTasks).concat ['watch:all']
+  allExamplesTaskToRun = ["fast","clean:example", "connect:server"].concat(exampleOpenTasks).concat ['watch:all']
 
 
   listWithQuotes = (collection, doLog = true) ->

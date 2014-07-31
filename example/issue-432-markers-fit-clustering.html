@@ -43,19 +43,19 @@
                     draggable="true"
                     control="map.control">
 
-            <!--<markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'-->
+            <!--<nggmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'-->
                      <!--doCluster="true" clusterEvents="clusterEvents">-->
-                <!--<windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
+                <!--<nggmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
                     <!--<p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
-                <!--</windows>-->
-            <!--</markers>-->
+                <!--</nggmap-windows>-->
+            <!--</nggmap-markers>-->
 
-            <markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'
+            <nggmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'
                      doCluster="true" clusterEvents="clusterEvents">
-                <windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
+                <nggmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                     <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-                </windows>
-            </markers>
+                </nggmap-windows>
+            </nggmap-markers>
         </google-map>
     </div>
 </div>

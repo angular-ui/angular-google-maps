@@ -51,32 +51,32 @@
          control="map.control"
         >
 
-        <layer type="TrafficLayer" show="map.showTraffic"></layer>
-        <layer type="BicyclingLayer" show="map.showBicycling"></layer>
-        <layer namespace="weather" type="WeatherLayer" show="map.showWeather"></layer>
-        <layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></layer>
+        <nggmap-layer type="TrafficLayer" show="map.showTraffic"></nggmap-layer>
+        <nggmap-layer type="BicyclingLayer" show="map.showBicycling"></nggmap-layer>
+        <nggmap-layer namespace="weather" type="WeatherLayer" show="map.showWeather"></nggmap-layer>
+        <nggmap-layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></nggmap-layer>
 
 
 		<!-- polyline example -->
-        <!--<polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'-->
-            <!--geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></polyline>-->
+        <!--<nggmap-polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'-->
+            <!--geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></nggmap-polyline>-->
 
-        <polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"
+        <nggmap-polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"
                   geodesic="'geodesic'" fit="'false'" editable="'editable'" draggable="'draggable'" ></polylines>
 
-        <!--<polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"-->
+        <!--<nggmap-polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"-->
                    <!--geodesic="'geodesic'" fit="'false'" editable="'editable'" draggable="'draggable'" static="true"></polylines>-->
 
         <!-- polygon example -->
-        <!--<polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"-->
-        	<!--geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>-->
+        <!--<nggmap-polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"-->
+        	<!--geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></nggmap-polygon>-->
 
-        <polygon ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
-                 geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></polygon>
+        <nggmap-polygon ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
+                 geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></nggmap-polygon>
 
         <!-- circle example -->
-        <circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
-            visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></circle>
+        <nggmap-circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
+            visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></nggmap-circle>
 
 </div>
 <div class="span5">

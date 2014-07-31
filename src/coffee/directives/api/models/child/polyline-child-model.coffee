@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api")
-.factory "PolylineChildModel", ["BaseObject", "Logger", "$timeout", "array-sync", "GmapUtil", "EventsHelper"
+angular.module("google-maps.directives.api".ns())
+.factory "PolylineChildModel".ns(), ["BaseObject".ns(), "Logger".ns(), "$timeout", "array-sync".ns(), "GmapUtil".ns(), "EventsHelper".ns()
   (BaseObject, $log, $timeout, arraySync, GmapUtil,EventsHelper) ->
     class PolylineChildModel extends BaseObject
       @include GmapUtil

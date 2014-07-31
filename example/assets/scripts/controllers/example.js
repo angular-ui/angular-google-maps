@@ -1,5 +1,5 @@
 (function () {
-  var module = angular.module("angular-google-maps-example", ["google-maps"]);
+  var module = angular.module("angular-google-maps-example", ["google-maps".ns()]);
 
   module.run(function ($templateCache) {
     $templateCache.put('control.tpl.html', '<button class="btn btn-sm btn-primary" ng-class="{\'btn-warning\': danger}" ng-click="controlClick()">{{controlText}}</button>');
@@ -19,7 +19,8 @@ var rndAddToLatLon = function () {
   return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1)
 }
 
-function ExampleController($scope, $timeout, $log, $http, Logger) {
+function ExampleController($scope, $timeout, $log, $http, nggmapLogger) {
+  var Logger = nggmapLogger;
   Logger.doLog = true
   // Enable the new Google Maps visuals until it gets enabled by default.
   // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html

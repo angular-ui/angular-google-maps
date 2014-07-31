@@ -39,8 +39,8 @@ This directive creates a new scope.
 {attribute coords required}  object containing latitude and longitude properties
 {attribute show optional}    map will show when this expression returns true
 ###
-angular.module("google-maps")
-.directive "windows", ["$timeout", "$compile", "$http", "$templateCache", "$interpolate", "Windows",
-        ($timeout, $compile, $http, $templateCache, $interpolate, Windows) ->
-            new Windows($timeout, $compile, $http, $templateCache, $interpolate)
-    ]
+angular.module("google-maps".ns())
+.directive "Windows".ns(), ["$timeout", "$compile", "$http", "$templateCache", "$interpolate", "Windows".ns(),
+  ($timeout, $compile, $http, $templateCache, $interpolate, Windows) ->
+    new Windows($timeout, $compile, $http, $templateCache, $interpolate)
+]

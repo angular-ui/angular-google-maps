@@ -1,6 +1,6 @@
 #boot strap angular and extend google maps
-angular.module("google-maps.extensions")
-.service('ExtendGWin', ->
+angular.module("google-maps.extensions".ns())
+.service('ExtendGWin'.ns(), ->
     init: _.once ->
       return unless google or google?.maps or google.maps.InfoWindow?
       #Taken from : http://stackoverflow.com/questions/12410062/check-if-infowindow-is-opened-google-maps-v3

@@ -21,9 +21,9 @@ async =
       cnt = chunk
       i = index
 
-      while cnt-- and i < (if array then array.length  else i + 1)
+      while cnt-- and i < (if array then array.length else i + 1)
         # process array[index] here
-        callback(array[i],i)
+        callback(array[i], i)
         ++i
 
       if array
@@ -47,6 +47,6 @@ async =
 
 window._async = async
 
-angular.module("google-maps.directives.api.utils")
-.factory "async", ->
-    window._async
+angular.module("google-maps.directives.api.utils".ns())
+.factory "async".ns(), ->
+  window._async

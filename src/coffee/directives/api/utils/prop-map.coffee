@@ -1,7 +1,8 @@
 ###
     Simple Object Map with a lenght property to make it easy to track length/size
 ###
-propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length', 'push', 'didValueStateChange','didKeyStateChange', 'slice', 'removeAll', 'allVals', 'allKeys', 'stateChanged']
+propsToPop = ['get', 'put', 'remove', 'values', 'keys', 'length', 'push', 'didValueStateChange', 'didKeyStateChange',
+              'slice', 'removeAll', 'allVals', 'allKeys', 'stateChanged']
 class window.PropMap
   constructor: () ->
     @length = 0
@@ -13,7 +14,7 @@ class window.PropMap
   get: (key)=>
     @[key]
 
-  stateChanged:() =>
+  stateChanged: () =>
     @didValueStateChange = true
     @didKeyStateChange = true
 
@@ -62,6 +63,6 @@ class window.PropMap
   removeAll: () =>
     @slice()
 
-angular.module("google-maps.directives.api.utils")
-.factory "PropMap",  ->
-    window.PropMap
+angular.module("google-maps.directives.api.utils".ns())
+.factory "PropMap".ns(), ->
+  window.PropMap

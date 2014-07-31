@@ -17,7 +17,7 @@
 
 <body>
 <div data-ng-controller="ctrl">
-    <google-map id="map"
+    <nggmap-google-map id="map"
                 center="map.center"
                 pan="map.pan"
                 zoom="map.zoom"
@@ -27,13 +27,13 @@
                 events="map.events"
                 bounds="map.bounds">
 
-        <map-control template="polyButton.tpl.html" position="top-right" index="1"
-                     controller="mapWidgetCtrl"></map-control>
-        <map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></map-control>
-        <polyline ng-repeat="p in map.polys" path="p.path" stroke="p.stroke" visible='p.visible'
+        <nggmap-map-control template="polyButton.tpl.html" position="top-right" index="1"
+                     controller="mapWidgetCtrl"></nggmap-map-control>
+        <nggmap-map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></nggmap-map-control>
+        <nggmap-polyline ng-repeat="p in map.polys" path="p.path" stroke="p.stroke" visible='p.visible'
                   geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons' events='map.polyEvents'>
-        </polyline>
-    </google-map>
+        </nggmap-polyline>
+    </nggmap-google-map>
     <ul>
         <li ng-repeat="p in map.polys">
             <div>{{p.id}}</div>

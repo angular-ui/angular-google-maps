@@ -44,16 +44,16 @@
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <window show="true" coords="map.center" options="windowOptions">
+            <nggmap-window show="true" coords="map.center" options="windowOptions">
                 <div class="popup" style="width: 100px; height: 50px;">
                     <p>test = {{test.name}}</p>
                 </div>
-            </window>
-            <windows models="windows" show="'show'" coords="'self'" options="windowOptions">
+            </nggmap-window>
+            <nggmap-windows models="windows" show="'show'" coords="'self'" options="windowOptions">
                 <div style="width: 100px; height: 50px;">
                     <p>test = {{test.name}}</p>
                 </div>
-            </windows>
+            </nggmap-windows>
         </google-map>
     </div>
 </div>

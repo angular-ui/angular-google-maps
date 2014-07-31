@@ -1,5 +1,5 @@
 (function (window, ng) {
-  ng.module('app', ['google-maps'])
+  ng.module('app', ['google-maps'.ns()])
     .factory('channel', function(){
       return function () {
         var callbacks = [];
@@ -34,7 +34,7 @@
         }
       };
     }])
-    .controller('ctrl', ['$rootScope', '$scope','Logger', 'drawChannel','clearChannel',function ($rootScope, $scope, $log,drawChannel, clearChannel) {
+    .controller('ctrl', ['$rootScope', '$scope',"Logger".ns(), 'drawChannel','clearChannel',function ($rootScope, $scope, $log,drawChannel, clearChannel) {
       $scope.map = {
         center: {
           latitude: 53.406754,
@@ -61,8 +61,8 @@
       drawChannel.add(draw);
       clearChannel.add(clear);
     }])
-    .run(function ($templateCache,Logger) {
-      Logger.doLog = true;
+    .run(function ($templateCache,nggmapLogger) {
+      nggmapLogger.doLog = true;
       $templateCache.put('draw.tpl.html', '<button class="btn btn-lg btn-primary"  ng-click="drawWidget.controlClick()">{{drawWidget.controlText}}</button>');
       $templateCache.put('clear.tpl.html', '<button class="btn btn-lg btn-primary"  ng-click="clearWidget.controlClick()">{{clearWidget.controlText}}</button>');
     });

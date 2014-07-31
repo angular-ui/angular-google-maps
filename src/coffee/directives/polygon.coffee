@@ -30,8 +30,8 @@ Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
 Rick Huizinga - https://plus.google.com/+RickHuizinga
 ###
-angular.module("google-maps")
-.directive "polygon", ["$log", "$timeout", "array-sync", "GmapUtil", ($log, $timeout, arraySync, GmapUtil) ->
+angular.module("google-maps".ns())
+.directive "Polygon".ns(), ["Logger".ns(), "$timeout", "array-sync".ns(), "GmapUtil".ns(), ($log, $timeout, arraySync, GmapUtil) ->
     #
     #         * Utility functions
     #
@@ -45,7 +45,7 @@ angular.module("google-maps")
     DEFAULTS = {}
     restrict: "EA"
     replace: true
-    require: "^googleMap"
+    require: "^nggmapGoogleMap"
     scope:
         path: "=path"
         stroke: "=stroke"

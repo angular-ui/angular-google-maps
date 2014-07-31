@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api")
-.factory "Map", ["$timeout", '$q','Logger', "GmapUtil", "BaseObject", "ExtendGWin", "CtrlHandle", 'IsReady'.ns(), "uuid".ns(),
+angular.module("google-maps.directives.api".ns())
+.factory "Map".ns(), ["$timeout", '$q',"Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(), "ExtendGWin".ns(), "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(),
   ($timeout,$q, Logger, GmapUtil, BaseObject,ExtendGWin, CtrlHandle, IsReady, uuid) ->
         "use strict"
         $log = Logger

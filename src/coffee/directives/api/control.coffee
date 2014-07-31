@@ -1,12 +1,11 @@
-angular.module("google-maps.directives.api")
-.factory "Control", ["IControl", "$http", "$templateCache", "$compile", "$controller",
+angular.module("google-maps.directives.api".ns())
+.factory "Control".ns(), ["IControl".ns(), "$http", "$templateCache", "$compile", "$controller",
   (IControl, $http, $templateCache, $compile, $controller) ->
     class Control extends IControl
       constructor: ->
         super()
-        self = @
 
-      link: (scope, element, attrs, ctrl) ->
+      link: (scope, element, attrs, ctrl) =>
         # Validate attributes
         if angular.isUndefined scope.template
           @$log.error 'mapControl: could not find a valid template property'

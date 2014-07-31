@@ -7,8 +7,8 @@ Nicholas McCready - https://twitter.com/nmccready
 Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawing-freehand  , &
   http://jsfiddle.net/YsQdh/88/
 ###
-angular.module("google-maps.directives.api.models.child")
-.factory "DrawFreeHandChildModel", ['Logger', '$q', ($log,$q) ->
+angular.module("google-maps.directives.api.models.child".ns())
+.factory "DrawFreeHandChildModel".ns(), ["Logger".ns(), '$q', ($log,$q) ->
   drawFreeHand = (map, @polys, enable) ->
     #the polygon
     poly = new google.maps.Polyline

@@ -42,26 +42,26 @@
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <marker ng-repeat="m in map.dynamicMarkers"  coords='m' icon='m.icon' ng-click='onMarkerClicked(m)' fit="true" idkey='m.id'>
-                <window show="m.showWindow"  closeClick="'closeClick'" ng-cloak>
+            <nggmap-marker ng-repeat="m in map.dynamicMarkers"  coords='m' icon='m.icon' ng-click='onMarkerClicked(m)' fit="true" idkey='m.id'>
+                <nggmap-window show="m.showWindow"  closeClick="'closeClick'" ng-cloak>
                     <div ng-controller="InfoController">
                         <a href="javascript:void(0)" ng-click="clickedButtonInWindow()">hit me</a>
                         <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
                         <p class="muted">My marker will stay open when the window is popped up!</p>
                     </div>
-                </window>
-            </marker>
+                </nggmap-window>
+            </nggmap-marker>
 
 
-            <!--<markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>-->
-                <!--<windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
+            <!--<nggmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>-->
+                <!--<nggmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
                     <!--<p>Dynamic Marker created via a delay!</p>-->
 
                     <!--<p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
 
                     <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
-                <!--</windows>-->
-            <!--</markers>-->
+                <!--</nggmap-windows>-->
+            <!--</nggmap-markers>-->
         </google-map>
     </div>
 </div>

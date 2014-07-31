@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.utils")
-.service 'CtrlHandle', ['$q', ($q) ->
+angular.module("google-maps.directives.api.utils".ns())
+.service "CtrlHandle".ns(), ['$q', ($q) ->
   CtrlHandle =
     handle: ($scope, $element) ->
       $scope.deferred = $q.defer()

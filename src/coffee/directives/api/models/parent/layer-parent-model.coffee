@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.models.parent")
-.factory "LayerParentModel", ["BaseObject", "Logger", '$timeout',(BaseObject, Logger,$timeout) ->
+angular.module("google-maps.directives.api.models.parent".ns())
+.factory "LayerParentModel".ns(), ["BaseObject".ns(), "Logger".ns(), '$timeout',(BaseObject, Logger,$timeout) ->
     class LayerParentModel extends BaseObject
         constructor: (@scope, @element, @attrs, @gMap, @onLayerCreated = undefined, @$log = Logger) ->
             unless @attrs.type?

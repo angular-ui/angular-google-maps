@@ -17,24 +17,26 @@
 
 <body>
 <div data-ng-controller="ctrl">
-    <google-map id="map"
-                center="map.center"
-                pan="map.pan"
-                zoom="map.zoom"
-                draggable="true"
-                refresh="map.refresh"
-                options="map.options"
-                events="map.events"
-                bounds="map.bounds">
+    <nggmap-google-map id="map"
+                       center="map.center"
+                       pan="map.pan"
+                       zoom="map.zoom"
+                       draggable="true"
+                       refresh="map.refresh"
+                       options="map.options"
+                       events="map.events"
+                       bounds="map.bounds">
 
-        <map-control template="polyButton.tpl.html" position="top-right" index="1"
-                     controller="mapWidgetCtrl"></map-control>
-        <map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl">
-        </map-control>
-        <polylines models="map.polys" path="'path'" stroke="'stroke'" visible="'visible'"
-                   geodesic="'geodesic'" fit="'false'" editable="'editable'" draggable="'draggable'">
-        </polylines>
-    </google-map>
+        <nggmap-map-control template="polyButton.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl">
+        </nggmap-map-control>
+
+        <nggmap-map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl">
+        </nggmap-map-control>
+
+        <nggmap-polylines models="map.polys" path="'path'" stroke="'stroke'" visible="'visible'"
+                          geodesic="'geodesic'" fit="'false'" editable="'editable'" draggable="'draggable'">
+        </nggmap-polylines>
+    </nggmap-google-map>
     <ul>
         <li ng-repeat="p in map.polys">
             <div>{{p.id}}</div>

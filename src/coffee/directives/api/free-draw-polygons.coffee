@@ -3,14 +3,14 @@
   - inject the draw function into a controllers scope so that controller can call the directive to draw on demand
   - draw function creates the DrawFreeHandChildModel which manages itself
 ###
-angular.module("google-maps.directives.api")
-.factory 'FreeDrawPolygons', ['Logger', 'BaseObject', 'CtrlHandle', 'DrawFreeHandChildModel',
+angular.module("google-maps.directives.api".ns())
+.factory 'ApiFreeDrawPolygons'.ns(), ["Logger".ns(), 'BaseObject'.ns(), "CtrlHandle".ns(), "DrawFreeHandChildModel".ns(),
   ($log, BaseObject, CtrlHandle, DrawFreeHandChildModel) ->
     class FreeDrawPolygons extends BaseObject
       @include CtrlHandle
-      restrict: 'EA'
+      restrict: 'EMA'
       replace: true
-      require: '^googleMap'
+      require: '^nggmapGoogleMap'
       scope:
         polygons: '='
         draw: '='

@@ -46,11 +46,11 @@
                     draggable="true"
                     control="map.control"
                 >
-            <marker coords="map.marker2" idkey="map.marker2.id" >
-                <window isIconVisibleOnClick="true">
+            <nggmap-marker coords="map.marker2" idkey="map.marker2.id" >
+                <nggmap-window isIconVisibleOnClick="true">
                     <p ng-cloak>Marker , MAP 1 Clicked on me2!</p>
-                </window>
-            </marker>
+                </nggmap-window>
+            </nggmap-marker>
         </google-map>
 
         <!-- ng-if to remove and replace from dom completley see issue #76 thanks facultymatt-->
@@ -63,20 +63,20 @@
                 draggable="true"
                 control="map2.control"
                 >
-            <marker coords="map2.marker2" idkey="map2.marker2.id">
-                <window isIconVisibleOnClick="true">
+            <nggmap-marker coords="map2.marker2" idkey="map2.marker2.id">
+                <nggmap-window isIconVisibleOnClick="true">
                     <p ng-cloak>Marker 2Clicked on me2!</p>
-                </window>
-            </marker>
-            <marker ng-repeat="m in map2.markers3" icon="m.icon" coords="m.coords" click="map2.onMarkerClick(m)" idkey="m.id">
-                <window show="m.show" ng-cloak>
+                </nggmap-window>
+            </nggmap-marker>
+            <nggmap-marker ng-repeat="m in map2.markers3" icon="m.icon" coords="m.coords" click="map2.onMarkerClick(m)" idkey="m.id">
+                <nggmap-window show="m.show" ng-cloak>
                     <p>
                         Latitude: {{m.coords.latitude}}<br/>
                         Longitude: {{m.coords.longitude}}<br/>
                         Last signal: <strong>{{m.lastSignal}}</strong>
                     </p>
-                </window>
-            </marker>
+                </nggmap-window>
+            </nggmap-marker>
         </google-map>
     </div>
 </div>

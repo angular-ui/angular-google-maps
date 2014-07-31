@@ -1,8 +1,8 @@
 ###
 	- interface directive for all window(s) to derrive from
 ###
-angular.module("google-maps.directives.api.models.parent")
-.factory "IWindowParentModel", ["ModelKey", "GmapUtil", "Logger",(ModelKey, GmapUtil,Logger) ->
+angular.module("google-maps.directives.api.models.parent".ns())
+.factory "IWindowParentModel".ns(), ["ModelKey".ns(), "GmapUtil".ns(), "Logger".ns(),(ModelKey, GmapUtil,Logger) ->
     class IWindowParentModel extends ModelKey
         @include GmapUtil
         # Animation is enabled by default

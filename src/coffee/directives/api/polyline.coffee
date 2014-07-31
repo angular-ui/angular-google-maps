@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api")
-.factory "Polyline", ["IPolyline", "$timeout", "array-sync", "PolylineChildModel",
+angular.module("google-maps.directives.api".ns())
+.factory "Polyline".ns(), ["IPolyline".ns(), "$timeout", "array-sync".ns(), "PolylineChildModel".ns(),
   (IPolyline, $timeout, arraySync, PolylineChildModel) ->
     class Polyline extends IPolyline
       link: (scope, element, attrs, mapCtrl) =>

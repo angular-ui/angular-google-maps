@@ -37,14 +37,15 @@ module.exports = (grunt) ->
       compile:
         files:
           "tmp/output_coffee.js": [
+            "src/coffee/extensions/string.coffee"
+            "src/coffee/extensions/lodash.coffee"
             "src/coffee/module.coffee"
-            "src/coffee/extensions/*.coffee"
+            "src/coffee/extensions/google.maps.coffee"
             "src/coffee/directives/api/utils/*.coffee"
             "src/coffee/directives/api/managers/*.coffee"
 
             "src/coffee/controllers/polyline-display.js"
-            "src/coffee/utils/LatLngArraySync.coffee"
-            "src/coffee/utils/MapEvents.coffee"
+            "src/coffee/utils/*.coffee"
 
             "src/coffee/directives/api/models/child/*.coffee"
             "src/coffee/directives/api/models/parent/*.coffee"
@@ -121,16 +122,14 @@ module.exports = (grunt) ->
           "src/coffee/*.coffee", "src/coffee/**/*.coffee", "src/coffee/**/**/*.coffee",
           "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js", "spec/**/*.spec.coffee", "spec/coffee/helpers/**"
         ]
-        tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "jasmine:spec", #"uglify"
-                "clean:example", "coffee"]
+        tasks: ["fast"]
       spec:
         options:
           livereload: true
 
         files: ["src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee", "spec/**/*.spec.coffee",
                 "spec/coffee/helpers/**"]
-        tasks: ["clean:dist", "jshint", "mkdir", "coffee", "concat:dist", "copy:dist", "jasmine:spec", "clean:example",
-                "coffee"]
+        tasks: ["fast"]
 
     open:
     #examples replaced by lookup via allExamplesOpen see below
@@ -163,7 +162,7 @@ module.exports = (grunt) ->
         src: ['bower_components/uuid/dist/uuid.core.js']
         dest: 'tmp/wrapped.js'
         options:
-          wrapper: ['angular.module("google-maps.wrapped").service("uuid".ns(), function(){\n', '\nreturn UUID;\n});']
+          wrapper: ['angular.module("google-maps.wrapped".ns()).service("uuid".ns(), function(){\n', '\nreturn UUID;\n});']
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

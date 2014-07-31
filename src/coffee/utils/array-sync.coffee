@@ -1,4 +1,4 @@
-angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) ->
+angular.module("google-maps".ns()).factory "array-sync".ns(), ["add-events".ns(), (mapEvents) ->
   # pathChangedFn is an optional callback that is called whenever a change to the path
   #  is detected.  The first parameter contains the internal array of Google LatLng objects.
   (mapArray, scope, pathEval, pathChangedFn) ->
@@ -17,7 +17,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           else
             scopePath[index].latitude = value.lat()
             scopePath[index].longitude = value.lng()
-        
+
         insert_at: (index) ->
           return if isSetFromScope #important to avoid cyclic forever change loop watch to map event change and back
           value = mapArray.getAt(index)
@@ -29,7 +29,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
             scopePath.splice index, 0,
               latitude: value.lat()
               longitude: value.lng()
-        
+
         remove_at: (index) ->
           return if isSetFromScope #important to avoid cyclic forever change loop watch to map event change and back
           scopePath.splice index, 1
@@ -63,7 +63,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
 
       mapArrayListener = mapEvents mapArray,
         if angular.isUndefined scopePath.type then legacyHandlers else geojsonHandlers
-        
+
     legacyWatcher = (newPath) ->
       isSetFromScope = true
       oldArray = mapArray
@@ -86,7 +86,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
             if (oldValue.lat() isnt newValue.latitude) or (oldValue.lng() isnt newValue.longitude)
               oldArray.setAt i, new google.maps.LatLng(newValue.latitude, newValue.longitude)
               changed = true
-          
+
           i++
         #add new points
         while i < newLength
@@ -95,7 +95,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
             oldArray.push newValue
           else
             oldArray.push new google.maps.LatLng(newValue.latitude, newValue.longitude)
-          
+
           changed = true
           i++
         #remove old no longer there
@@ -103,7 +103,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           oldArray.pop()
           changed = true
           i++
-          
+
       isSetFromScope = false
       pathChangedFn oldArray if changed
 
@@ -129,7 +129,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           if (oldValue.lat() isnt newValue[1]) or (oldValue.lng() isnt newValue[0])
             oldArray.setAt i, new google.maps.LatLng(newValue[1], newValue[0])
             changed = true
-            
+
           i++
         while i < newLength
           newValue = array[i]
@@ -140,7 +140,7 @@ angular.module("google-maps").factory "array-sync", ["add-events", (mapEvents) -
           oldArray.pop()
           changed = true
           i++
-          
+
       isSetFromScope = false
       pathChangedFn oldArray if changed
 

@@ -36,7 +36,7 @@
         <google-map center="map.center" zoom="map.zoom" options="map.options" draggable="true">
             <!--<any ng-init="poly = map.polygons[0]">-->
             <!-- a Tested Without a repeat and same problem happens -->
-            <polygon
+            <nggmap-polygon
                     ng-repeat="poly in map.polygons"
                     path='poly.path'
                     fill='poly.fill'
@@ -45,7 +45,7 @@
                     draggable='poly.draggable'
                     editable='poly.editable'
                     visible='poly.visible'>
-            </polygon>
+            </nggmap-polygon>
             <!--</any>-->
         </google-map>
     </div>

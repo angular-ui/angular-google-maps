@@ -1,7 +1,7 @@
-angular.module("google-maps.directives.api.utils")
-.factory "nggmap-PropertyAction", ["Logger", (Logger) ->
+angular.module("google-maps.directives.api.utils".ns())
+.factory "PropertyAction".ns(), ["Logger".ns(), (Logger) ->
   PropertyAction = (setterFn, isFirstSet) ->
-    @setIfChange = (newVal,oldVal) ->
+    @setIfChange = (newVal, oldVal) ->
       if not _.isEqual oldVal, newVal or isFirstSet
         setterFn newVal
     @sic = (oldVal, newVal) =>

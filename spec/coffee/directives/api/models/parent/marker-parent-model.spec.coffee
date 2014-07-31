@@ -1,10 +1,10 @@
-describe "MarkerParentModel", ->
+describe "MarkerParentModel".ns(), ->
     afterEach ->
          window.google.maps = @gMapsTemp
     beforeEach ->
         module "google-maps.mocks"
         #define / inject values into the item we are testing... not a controller but it allows us to inject
-        angular.module('mockModule', ["google-maps"])
+        angular.module('mockModule', ["google-maps".ns()])
         .value('mapCtrl',
           getMap: ()->
             document.gMap)
@@ -61,12 +61,12 @@ describe "MarkerParentModel", ->
                 obj.obj == thing
 
             found.events[eventName](found.obj) if found?
-        inject ($rootScope, $timeout, element, attrs, mapCtrl, MarkerParentModel, MarkerManager) =>
+        inject ($rootScope, $timeout, element, attrs, mapCtrl, nggmapMarkerParentModel, nggmapMarkerManager) =>
             scope = $rootScope.$new()
             @scope = _.extend @scope, scope
-            @testCtor = MarkerParentModel
-            mgr = new MarkerManager(mapCtrl.getMap())
-            @subject = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, mgr, false)
+            @testCtor = nggmapMarkerParentModel
+            mgr = new nggmapMarkerManager(mapCtrl.getMap())
+            @subject = new nggmapMarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, mgr, false)
 
         @subject.setEvents(@, @scope)
 

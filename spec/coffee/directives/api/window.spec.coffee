@@ -1,7 +1,7 @@
 describe "directives.api.Window", ->
     beforeEach ->
         window.google
-        module "google-maps"
+        module "google-maps".ns()
         module "google-maps.mocks"
         inject (GoogleApiMock) =>
           @gmap = new GoogleApiMock()
@@ -37,7 +37,7 @@ describe "directives.api.Window", ->
         @timeOutNoW = (fnc,time) =>
             fnc()
 #        @gMarker = new google.maps.Marker(@commonOpts)
-        inject (_$rootScope_,$q, $compile, $http, $templateCache, Window) =>
+        inject (_$rootScope_,$q, $compile, $http, $templateCache, nggmapWindow) =>
             @$rootScope =  _$rootScope_
             d = $q.defer()
             d.resolve @gmap
@@ -48,7 +48,7 @@ describe "directives.api.Window", ->
             @windowScope = _.extend @$rootScope.$new(), @mocks.scope
 
 
-            @subject = new Window(@timeOutNoW,$compile, $http, $templateCache)
+            @subject = new nggmapWindow(@timeOutNoW,$compile, $http, $templateCache)
             @subject.onChildCreation = (child) =>
                 @childWindow = child
 

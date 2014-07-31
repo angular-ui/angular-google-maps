@@ -34,7 +34,7 @@
         }
       };
     }])
-    .controller('ctrl', ['$rootScope', '$scope','Logger', 'drawChannel','clearChannel',function ($rootScope, $scope, $log,drawChannel, clearChannel) {
+    .controller('ctrl', ['$rootScope', '$scope',"Logger".ns(), 'drawChannel','clearChannel',function ($rootScope, $scope, $log,drawChannel, clearChannel) {
       $scope.map = {
         center: {
           latitude: 53.406754,

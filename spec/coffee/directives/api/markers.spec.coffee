@@ -2,10 +2,10 @@ describe "markers directive test", ->
   beforeEach ->
     #TODO: These modules really need dependencies setup properly
     module("google-maps.mocks")
-    module("google-maps")
-    module("google-maps.directives.api.utils")
+    module("google-maps".ns())
+    module("google-maps.directives.api.utils".ns())
 
-    inject ($rootScope, $timeout, $compile, GoogleApiMock, Markers, $q) =>
+    inject ($rootScope, $timeout, $compile, GoogleApiMock, nggmapMarkers, $q) =>
       @rootScope = $rootScope
       @timeout = $timeout
       @compile = $compile
@@ -15,15 +15,15 @@ describe "markers directive test", ->
       @markerCount = 0
       @marker = (opts) => @markerCount++
       @marker.prototype = @apiMock.getMarker().prototype
-      @subject = Markers
+      @subject = nggmapMarkers
       @apiMock.mockMarker(@marker)
 
   it "should add markers for each object in model", ->
     #TODO: We ought to be able to make this test pass, just need to figure _async I think -MDB.
     html = """
-      <google-map draggable="true" center="map.center" zoom="map.zoom">
-          <markers models="items" coords="'self'" ></markers>
-      </google-map>
+      <nggmap-google-map draggable="true" center="map.center" zoom="map.zoom">
+          <nggmap-markers models="items" coords="'self'" ></nggmap-markers>
+      </nggmap-google-map>
            """
     scope = @rootScope.$new()
     scope.items = []

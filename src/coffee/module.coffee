@@ -14,7 +14,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED "AS IS".ns(), WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -30,27 +30,27 @@ Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
 ###
 #define application wide modules
-angular.module("google-maps.wrapped", [])
-angular.module("google-maps.extensions", ["google-maps.wrapped"])
-angular.module("google-maps.directives.api.utils", ['google-maps.extensions'])
-angular.module("google-maps.directives.api.managers", [])
-angular.module("google-maps.directives.api.models.child", [
-    "google-maps.directives.api.utils"])
-angular.module("google-maps.directives.api.models.parent", [
-    "google-maps.directives.api.managers",
-    "google-maps.directives.api.models.child"
+angular.module("google-maps.wrapped".ns(), [])
+angular.module("google-maps.extensions".ns(), ["google-maps.wrapped".ns()])
+angular.module("google-maps.directives.api.utils".ns(), ['google-maps.extensions'.ns()])
+angular.module("google-maps.directives.api.managers".ns(), [])
+angular.module("google-maps.directives.api.models.child".ns(), [
+  "google-maps.directives.api.utils".ns()])
+angular.module("google-maps.directives.api.models.parent".ns(), [
+  "google-maps.directives.api.managers".ns(),
+  "google-maps.directives.api.models.child".ns()
 ])
-angular.module("google-maps.directives.api", [ "google-maps.directives.api.models.parent"])
-angular.module("google-maps", [ "google-maps.directives.api"])
-.factory("debounce", ["$timeout", ($timeout) ->
-        (fn) -> # debounce fn
-            nthCall = 0
-            -> # intercepting fn
-                that = this
-                argz = arguments
-                nthCall++
-                later = ((version) ->
-                    ->
-                        fn.apply that, argz  if version is nthCall)(nthCall)
-                $timeout later, 0, true
-])
+angular.module("google-maps.directives.api".ns(), [ "google-maps.directives.api.models.parent".ns()])
+angular.module("google-maps".ns(), [ "google-maps.directives.api".ns()])
+.factory "debounce".ns(), ["$timeout", ($timeout) ->
+  (fn) -> # debounce fn
+    nthCall = 0
+    -> # intercepting fn
+      that = this
+      argz = arguments
+      nthCall++
+      later = ((version) ->
+        ->
+          fn.apply that, argz  if version is nthCall)(nthCall)
+      $timeout later, 0, true
+]

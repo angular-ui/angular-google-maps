@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api")
-.factory "Windows", ["IWindow", "WindowsParentModel", (IWindow, WindowsParentModel) ->
+angular.module("google-maps.directives.api".ns())
+.factory "Windows".ns(), ["IWindow".ns(), "WindowsParentModel".ns(), (IWindow, WindowsParentModel) ->
   ###
   Windows directive where many windows map to the models property
   ###
@@ -8,7 +8,7 @@ angular.module("google-maps.directives.api")
       super($timeout, $compile, $http, $templateCache)
       self = @
       @$interpolate = $interpolate
-      @require = ['^googleMap', '^?markers']
+      @require = ['^nggmapGoogleMap', '^?nggmapMarkers']
       @template = '<span class="angular-google-maps-windows" ng-transclude></span>'
       @scope.idKey = '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
       @scope.doRebuildAll = '=dorebuildall' #root level directive attribute not a model level

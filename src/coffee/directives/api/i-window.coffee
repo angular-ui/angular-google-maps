@@ -1,8 +1,8 @@
 ###
 	- interface directive for all window(s) to derive from
 ###
-angular.module("google-maps.directives.api")
-.factory "IWindow", [ "BaseObject", "ChildEvents", "Logger", (BaseObject, ChildEvents, Logger) ->
+angular.module("google-maps.directives.api".ns())
+.factory "IWindow".ns(), [ "BaseObject".ns(), "ChildEvents".ns(), "Logger".ns(), (BaseObject, ChildEvents, Logger) ->
   class IWindow extends BaseObject
     @include ChildEvents
     constructor: (@$timeout, @$compile, @$http, @$templateCache) ->
@@ -10,7 +10,7 @@ angular.module("google-maps.directives.api")
       @template = undefined
       @transclude = true
       @priority = -100
-      @require = undefined
+      @require = '^nggmapGoogleMap'
       @replace = true
       @scope = {
         coords: '=coords',

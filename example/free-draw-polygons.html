@@ -16,7 +16,7 @@
 
 <body>
 <div data-ng-controller="ctrl">
-    <google-map id="map"
+    <nggmap-google-map id="map"
          center="map.center"
          pan="map.pan"
          zoom="map.zoom"
@@ -26,11 +26,12 @@
          events="map.events"
          bounds="map.bounds">
 
-        <map-control template="draw.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></map-control>
-        <map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></map-control>
+        <nggmap-map-control template="draw.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></nggmap-map-control>
+        <nggmap-map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></nggmap-map-control>
 
         <nggmap-free-draw-polygons polygons="map.polys" draw="map.draw" ></nggmap-free-draw-polygons>
-    </google-map>
+
+    </nggmap-google-map>
     <ul>
         <li ng-repeat="p in map.polys">{{p.getPath()}}</li>
     </ul>

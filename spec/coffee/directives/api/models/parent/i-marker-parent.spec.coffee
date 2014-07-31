@@ -1,14 +1,14 @@
-describe "IMarkerParentModel", ->
+describe "IMarkerParentModel".ns(), ->
   beforeEach ->
-    angular.mock.module("google-maps.directives.api.models.parent")
+    angular.mock.module("google-maps.directives.api.models.parent".ns())
 
     @clickCount = 0
-    inject ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, IMarkerParentModel) =>
+    inject ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, nggmapIMarkerParentModel) =>
       @rootScope = $rootScope
       @scope = $rootScope.$new()
-      @ele = $compile('<markers models="models"></markers>')(@scope)
+      @ele = $compile('<nggmap-markers models="models"></nggmap-markers>')(@scope)
       @attrs = {click: @click}
-      @IMarkerParentModel = IMarkerParentModel
+      @IMarkerParentModel = nggmapIMarkerParentModel
       @$timeout = $timeout
       @scope.click = () =>
         @clickCount++

@@ -1,5 +1,5 @@
 (function (window, ng) {
-  ng.module('app', ['google-maps'])
+  ng.module('app', ['google-maps'.ns()])
     .factory('channel', function () {
       return function () {
         var callbacks = [];
@@ -35,7 +35,7 @@
           }
         };
       }])
-    .controller('ctrl', ['$rootScope', '$scope', 'Logger', 'polyChannel', 'clearChannel',
+    .controller('ctrl', ['$rootScope', '$scope', "Logger".ns(), 'polyChannel', 'clearChannel',
       function ($rootScope, $scope, $log, polyChannel, clearChannel) {
         $scope.map = {
           center: {
@@ -157,9 +157,9 @@
           $scope.map.polys = [];
         });
       }])
-    .run(function ($templateCache, Logger) {
-      Logger.doLog = true;
-      Logger.info('polyButton.tpl.html should be in cache');
+    .run(function ($templateCache, nggmapLogger) {
+      nggmapLogger.doLog = true;
+      nggmapLogger.info('polyButton.tpl.html should be in cache');
       $templateCache.put('polyButton.tpl.html',
         '<button class="btn btn-lg btn-primary"  ng-click="polyButton.controlClick()">{{polyButton.controlText}}</button>');
       $templateCache.put('clear.tpl.html',

@@ -1,9 +1,9 @@
 describe "ModelKey Tests", ->
   beforeEach ->
-    angular.mock.module("google-maps.directives.api.utils")
-    inject ($rootScope, ModelKey) =>
+    angular.mock.module("google-maps.directives.api.utils".ns())
+    inject ($rootScope, nggmapModelKey) =>
       @scope = $rootScope.$new()
-      @subject = new ModelKey(@scope)
+      @subject = new nggmapModelKey(@scope)
 
   it "should eval model handle correctly", ->
     model = {key: 'key', sub: { foo: 'bar' }}

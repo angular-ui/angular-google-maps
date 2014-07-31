@@ -15,13 +15,13 @@
 <button ng-click="click()"> +1 </button>
 <div id="map_canvas" >
     <google-map center="map.center" zoom="map.zoom">
-        <marker coords="map.marker.coords" idkey="map.marker.id">
-            <window>
+        <nggmap-marker coords="map.marker.coords" idkey="map.marker.id">
+            <nggmap-nggmap-window>
                 <div>
                     {{ number }}
                 </div>
-            </window>
-        </marker>
+            </nggmap-window>
+        </nggmap-marker>
     </google-map>
 </div>
 {{number}}

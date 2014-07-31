@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.utils")
-.service "Logger", [ "$log", ($log)->
+angular.module("google-maps.directives.api.utils".ns())
+.service "Logger".ns(), [ "$log", ($log)->
   doLog: false
   info: (msg) ->
     if(@doLog)

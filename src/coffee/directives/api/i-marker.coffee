@@ -6,14 +6,14 @@
  			- icon
 		- implementation needed on watches
 ###
-angular.module("google-maps.directives.api")
-.factory "IMarker", [ "Logger", "BaseObject", "CtrlHandle", (Logger, BaseObject, CtrlHandle)->
+angular.module("google-maps.directives.api".ns())
+.factory "IMarker".ns(), [ "Logger".ns(), "BaseObject".ns(), "CtrlHandle".ns(), (Logger, BaseObject, CtrlHandle)->
   class IMarker extends BaseObject
     @extend CtrlHandle
     constructor: ->
       @$log = Logger
       @restrict = 'EMA'
-      @require = '^googleMap'
+      @require = '^nggmapGoogleMap'
       @priority = -1
       @transclude = true
       @replace = true

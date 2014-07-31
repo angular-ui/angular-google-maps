@@ -1,7 +1,7 @@
-describe "MarkerChildModel", ->
+describe "MarkerChildModel".ns(), ->
     beforeEach ->
         #define / inject values into the item we are testing... not a controller but it allows us to inject
-        angular.module('mockModule', ["google-maps"])
+        angular.module('mockModule', ["google-maps".ns()])
         module('mockModule')
         module("google-maps.mocks")
         inject (GoogleApiMock) =>
@@ -25,14 +25,14 @@ describe "MarkerChildModel", ->
         @coordsKey = 'coords'
         @optionsKey = 'options'
 
-        inject ($timeout, $rootScope, $controller, MarkerChildModel, MarkerManager) =>
+        inject ($timeout, $rootScope, $controller, nggmapMarkerChildModel, nggmapMarkerManager) =>
             scope = $rootScope.$new()
             scope.click = ->
             scope.icon = @iconKey
             scope.coords = @coordsKey
             scope.options = @optionsKey
-            mgr = new MarkerManager(document.gMap, undefined, undefined)
-            @subject = new MarkerChildModel(@model, scope, document.gMap, $timeout, defaults = {},
+            mgr = new nggmapMarkerManager(document.gMap, undefined, undefined)
+            @subject = new nggmapMarkerChildModel(@model, scope, document.gMap, $timeout, defaults = {},
                 doClick = (()->),mgr)
 
 

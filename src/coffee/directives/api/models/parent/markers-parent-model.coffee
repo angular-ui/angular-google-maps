@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.models.parent")
-.factory "MarkersParentModel", ["IMarkerParentModel", "ModelsWatcher", "PropMap", "MarkerChildModel", "ClustererMarkerManager", "MarkerManager",
+angular.module("google-maps.directives.api.models.parent".ns())
+.factory "MarkersParentModel".ns(), ["IMarkerParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "MarkerChildModel".ns(), "ClustererMarkerManager".ns(), "MarkerManager".ns(),
     (IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, ClustererMarkerManager, MarkerManager) ->
         class MarkersParentModel extends IMarkerParentModel
             @include ModelsWatcher

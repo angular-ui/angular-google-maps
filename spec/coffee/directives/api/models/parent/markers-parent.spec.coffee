@@ -1,6 +1,6 @@
-xdescribe "MarkersParentModel", ->
+xdescribe "MarkersParentModel".ns(), ->
   beforeEach ->
-    angular.mock.module "google-maps.directives.api.models.parent", ($provide) =>
+    angular.mock.module "google-maps.directives.api.models.parent".ns(), ($provide) =>
       @provide = $provide
       class MarkerManager
         constructor: (args...) ->
@@ -34,12 +34,12 @@ xdescribe "MarkersParentModel", ->
       @provide.decorator 'MarkerChildModel', () => @markerChildModel
 
     @clickCount = 0
-    inject ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, MarkersParentModel) =>
+    inject ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, nggmapMarkersParentModel) =>
       @rootScope = $rootScope
       @scope = $rootScope.$new()
-      @ele = $compile('<markers models="models"></markers>')(@scope)
+      @ele = $compile('<nggmap-markers models="models"></nggmap-markers>')(@scope)
       @attrs = {click: @click}
-      @MarkersParentModel = MarkersParentModel
+      @MarkersParentModel = nggmapMarkersParentModel
       @$timeout = $timeout
       @scope.click = () =>
         @clickCount++

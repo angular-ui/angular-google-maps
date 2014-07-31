@@ -17,12 +17,12 @@
     <google-map class="col-sm-12 pad-none" center="map.center" zoom="map.zoom" style="min-height: 600px" draggable="true" events="map.events">
         <!--marker for clicked position can not put google.map.animations.BOUNCE , since it is not initiaized yet-->
         <div ng-init="opts = {animation:1}">
-            <marker coords="map.clickedMarker" options="opts" idkey='map.clickedMarker.id'>
-                <marker-label content="map.clickedMarker.title" anchor="100 -10" class="marker-labels"/>
-                <window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
+            <nggmap-marker coords="map.clickedMarker" options="opts" idkey='map.clickedMarker.id'>
+                <nggmap-marker-label content="map.clickedMarker.title" anchor="100 -10" class="marker-labels"/>
+                <nggmap-window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
                     <p class="muted">My marker will reappear when you close me.</p>
-                </window>
-            </marker>
+                </nggmap-window>
+            </nggmap-marker>
         </div>
     </google-map>
 </body>

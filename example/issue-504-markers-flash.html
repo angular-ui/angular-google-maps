@@ -15,8 +15,8 @@
 <body ng-controller="TestController">
     {{sites}}
     <google-map class="col-sm-12 pad-none" center="map.center" zoom="map.zoom" style="min-height: 600px" draggable="true">
-        <markers models="sites" coords="'coords'" icon="'icon'" click="'click'" idKey="'site_id'" doCluster="'true'" doRebuildAll="false">
-        </markers>
+        <nggmap-markers models="sites" coords="'coords'" icon="'icon'" click="'click'" idKey="'site_id'" doCluster="'true'" doRebuildAll="false">
+        </nggmap-markers>
     </google-map>
 </body>
 <script src="assets/scripts/controllers/issue-504-markers-flash.js"></script>

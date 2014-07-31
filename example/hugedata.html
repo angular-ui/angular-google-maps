@@ -21,7 +21,7 @@
       <div class="row">
         <div class="span12">
           <google-map class="thumbnail buying-map" center="center" zoom="11" draggable="true" options="{ scrollwheel: false, streetViewControl: false }">
-            <polygon ng-repeat="place in places" path="place.boundary" fill="{ color: '#772953', opacity: '0.3' }" stroke="{ color: '#772953', weight: 3, opacity: '1.0' }" editable="false" static="true"></polygon>
+            <nggmap-polygon ng-repeat="place in places" path="place.boundary" fill="{ color: '#772953', opacity: '0.3' }" stroke="{ color: '#772953', weight: 3, opacity: '1.0' }" editable="false" static="true"></nggmap-polygon>
           </google-map>
         </div>
       </div>

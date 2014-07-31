@@ -29,4 +29,4 @@ https://github.com/nlaplante/angular-google-maps
 Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
 ###
-angular.module("google-maps").directive "polylines", [ "Polylines",(Polylines) -> new Polylines() ]
+angular.module("google-maps".ns()).directive "Polylines".ns(), [ "Polylines".ns(),(Polylines) -> new Polylines() ]

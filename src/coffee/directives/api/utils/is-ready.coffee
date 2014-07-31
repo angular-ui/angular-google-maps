@@ -1,7 +1,7 @@
-angular.module("google-maps.directives.api.utils")
+angular.module("google-maps.directives.api.utils".ns())
 .service "IsReady".ns(), ['$q', '$timeout', ($q, $timeout) ->
   ctr = 0
-  proms= []
+  proms = []
   promises = ->
     $q.all proms
 
@@ -11,7 +11,7 @@ angular.module("google-maps.directives.api.utils")
     ctr += 1
 
     instance: ctr
-    deferred : d
+    deferred: d
 
   promises: promises
 

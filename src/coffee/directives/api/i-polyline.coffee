@@ -1,12 +1,12 @@
-angular.module("google-maps.directives.api")
-.factory "IPolyline", ["GmapUtil", "BaseObject", "Logger", 'CtrlHandle', (GmapUtil, BaseObject, Logger, CtrlHandle) ->
+angular.module("google-maps.directives.api".ns())
+.factory "IPolyline".ns(), ["GmapUtil".ns(), "BaseObject".ns(), "Logger".ns(), "CtrlHandle".ns(), (GmapUtil, BaseObject, Logger, CtrlHandle) ->
   class IPolyline extends BaseObject
     @include GmapUtil
     @extend CtrlHandle
     constructor: ()->
-    restrict: "EA"
+    restrict: "EMA"
     replace: true
-    require: "^googleMap"
+    require: "^nggmapGoogleMap"
     scope:
       path: "="
       stroke: "="

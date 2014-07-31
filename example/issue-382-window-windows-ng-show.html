@@ -42,8 +42,8 @@
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <marker ng-repeat="m in map.markers" coords="m" click="m.click()" idkey='m.wonkyId'>
-                <window show="true">
+            <nggmap-marker ng-repeat="m in map.markers" coords="m" click="m.click()" idkey='m.wonkyId'>
+                <nggmap-window show="true">
                     <div class="popup" style="width: 200px; height: 100px;">
                         <article style="word-wrap: break-word;">{{m}}</article>
                         <div ng-controller="winCtrl">
@@ -51,8 +51,8 @@
                             <span ng-show="showSpan">This won't show..</span>
                         </div>
                     </div>
-                </window>
-            </marker>
+                </nggmap-window>
+            </nggmap-marker>
         </google-map>
     </div>
 </div>

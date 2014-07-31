@@ -6,8 +6,8 @@
  			- anchor
 		- implementation needed on watches
 ###
-angular.module("google-maps.directives.api")
-.factory "ILabel", [ "BaseObject", "Logger", (BaseObject, Logger) ->
+angular.module("google-maps.directives.api".ns())
+.factory "ILabel".ns(), [ "BaseObject".ns(), "Logger".ns(), (BaseObject, Logger) ->
     class ILabel extends BaseObject
         constructor: ($timeout) ->
             self = @
