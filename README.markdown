@@ -5,12 +5,19 @@
 [![Dependencies](https://david-dm.org/nlaplante/angular-google-maps.png)](https://david-dm.org/nlaplante/angular-google-maps)&nbsp;
 [![Dependencies](https://david-dm.org/nlaplante/angular-google-maps/dev-status.png)](https://david-dm.org/nlaplante/angular-google-maps)&nbsp;
 [![Build Status](https://travis-ci.org/nlaplante/angular-google-maps.png?branch=r1-dev)](https://travis-ci.org/nlaplante/angular-google-maps)
-##Whats new (1.2.X):
+##What is new (1.2.X):
 
 With the minor release of 1.2.0 (which is why it is a minor) there are a few breaking changes:
 
 - all directives are now restricted to ```EA``` see [here](https://docs.angularjs.org/guide/directive) and search for 'restrict'
-- marker directive now requires the attribute ```idkey``` to be defined and it is not optional like markers or windows. This is to prevent unecessary redraws.
+- marker directive now requires the attribute ```idkey``` to be defined and it is not optional like markers or windows. This is to prevent unnecessary redraws.
+
+If I have forgotten anything then it can be added here or to the website branch which is responsible for... the website. Feel free to contribute and make pull requests to either.
+
+##What is to come (2.0.X):
+2.0.0 will introduce the (major change) nggmap namespace which will be appended to all directives, services, and factories.
+
+The main goal for this is to decrease conflicts with external libraries. The other major reason for this is to not conflict with svg definitions like polygon or marker.
 
 ## Getting started
 This is a directive for AngularJS `~1.0.7+, ~1.2.2+`.
