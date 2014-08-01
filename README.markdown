@@ -5,6 +5,12 @@
 [![Dependencies](https://david-dm.org/nlaplante/angular-google-maps.png)](https://david-dm.org/nlaplante/angular-google-maps)&nbsp;
 [![Dependencies](https://david-dm.org/nlaplante/angular-google-maps/dev-status.png)](https://david-dm.org/nlaplante/angular-google-maps)&nbsp;
 [![Build Status](https://travis-ci.org/nlaplante/angular-google-maps.png?branch=r1-dev)](https://travis-ci.org/nlaplante/angular-google-maps)
+##Whats new (1.2.X):
+
+With the minor release of 1.2.0 (which is why it is a minor) there are a few breaking changes:
+
+- all directives are now restricted to ```EA``` see [here](https://docs.angularjs.org/guide/directive) and search for 'restrict'
+- marker directive now requires the attribute ```idkey``` to be defined and it is not optional like markers or windows. This is to prevent unecessary redraws.
 
 ## Getting started
 This is a directive for AngularJS `~1.0.7+, ~1.2.2+`.
