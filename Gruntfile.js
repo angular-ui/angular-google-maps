@@ -251,7 +251,7 @@ module.exports = function (grunt) {
             '*.{ico,png,txt,json}',
             '.htaccess',
             'CNAME',
-            'README.md',
+            'sitemap.xml',
             'bower_components/**/*',
             'images/{,*/}*.{gif,webp}',
             'styles/fonts/*',
@@ -264,11 +264,6 @@ module.exports = function (grunt) {
           src: [
             'generated/*'
           ]
-        }, {
-        	expand: true,
-        	cwd: '<%= yeoman.app %>',
-        	dest: '<%= yeoman.dist %>',
-        	src: ['CNAME', 'sitemap.xml']
         }]
       },
       styles: {
