@@ -6,8 +6,8 @@ angular.module('angularGoogleMapsApp')
             restrict: 'E',
             template: '<div>' +
                 '<div>' +
-                    '<button ng-click="click()">index.html</button>' +
-                    '<button ng-click="click()">script.js</button>' +
+                    '<button ng-click="click(\'index\')">index.html</button>' +
+                    '<button ng-click="click(\'script\')">script.js</button>' +
                     '<button style="float:right" ng-click="editPlnkr()">Edit in Plnkr</button>' +
                 '</div>' +
                 '<div ng-show="index">' +
@@ -29,9 +29,10 @@ angular.module('angularGoogleMapsApp')
                 $scope.script = false;
                 var prefix = window.location.pathname + "views/examples/";
 
-                $scope.click = function() {
-                    $scope.index = !$scope.index;
-                    $scope.script = !$scope.script;
+                $scope.click = function(clicked) {
+                    var indexClicked = clicked === 'index';
+                    $scope.index = indexClicked;
+                    $scope.script = !indexClicked;
                 };
 
                 $scope.editPlnkr = function() {
