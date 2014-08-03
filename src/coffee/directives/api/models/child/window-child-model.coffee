@@ -12,6 +12,7 @@ angular.module("google-maps.directives.api.models.child")
                     @markerCtrl.setClickable(true) if @markerCtrl?
 
                     @watchElement()
+                    @watchOptions()
                     @watchShow()
                     @watchCoords()
                     @scope.$on "$destroy", =>
@@ -86,6 +87,15 @@ angular.module("google-maps.directives.api.models.child")
                                 pos = @getCoords(newValue)
                                 @gWin.setPosition pos
                                 @opts.position = pos if @opts
+                    , true)
+
+                watchOptions: ()=>
+                    scope = if @markerCtrl? then @scope.$parent else @scope
+                    scope.$watch('options', (newValue, oldValue) =>
+                        if (newValue != oldValue)
+                            @opts = newValue
+                            if @gWin?
+                                @gWin.setOptions(@opts)
                     , true)
 
                 handleClick: (forceClick)=>
