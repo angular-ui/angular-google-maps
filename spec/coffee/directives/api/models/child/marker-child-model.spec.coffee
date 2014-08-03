@@ -93,7 +93,14 @@ describe "MarkerChildModel".ns(), ->
             @subject.destroy()
             expect(@subject.scope.$$destroyed).toEqual(true)
 
-        it 'wipes gMarker', ->
-            @subject.destroy()
-            expect(@subject.gMarker).toEqual(undefined)
-            expect(@subject.gMarkerManager.gMarkers.length).toEqual(0)
+    it 'wipes gMarker', ->
+      @subject.destroy()
+      expect(@subject.gMarker).toEqual(undefined)
+      expect(@subject.gMarkerManager.gMarkers.length).toEqual(0)
+
+    describe 'attaches to marker events', ->
+      it 'setEvents exists', ->
+        expect(@subject.setEvents).toBeDefined()
+
+      it 'removeEvents exists', ->
+        expect(@subject.removeEvents).toBeDefined()

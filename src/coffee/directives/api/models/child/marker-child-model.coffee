@@ -60,11 +60,8 @@ angular.module("google-maps.directives.api.models.child".ns())
 
         destroy: () =>
           if @gMarker? #this is possible due to _async in that we created some Children but no gMarker yet
-            _(@internalEvents()).each (event,name) =>
-              google.maps.event.clearListeners @gMarker, name
-            if @parentScope?.events and _.isArray @parentScope.events
-              _(@parentScope.events).each (event, eventName) =>
-                google.maps.event.clearListeners @gMarker, eventName
+            @removeEvents @externalListeners
+            @removeEvents @internalListeners
             @gMarkerManager.remove @gMarker, true
             delete @gMarker
             @scope.$destroy()
@@ -110,8 +107,8 @@ angular.module("google-maps.directives.api.models.child".ns())
             @gMarker = new google.maps.Marker(@opts)
 
           #hook external event handlers for events
-          @setEvents @gMarker, @parentScope, @model, ignore = ['dragend']
-          @setEvents @gMarker, events:@internalEvents(), @model
+          @externalListeners = @setEvents @gMarker, @parentScope, @model, ignore = ['dragend']
+          @internalListeners = @setEvents @gMarker, events:@internalEvents(), @model
 
           @gMarker.key = @id if @id?
           @gMarkerManager.add @gMarker

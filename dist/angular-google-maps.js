@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-07-31
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-08-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -5039,17 +5039,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.destroy = function() {
-          var _ref,
-            _this = this;
           if (this.gMarker != null) {
-            _(this.internalEvents()).each(function(event, name) {
-              return google.maps.event.clearListeners(_this.gMarker, name);
-            });
-            if (((_ref = this.parentScope) != null ? _ref.events : void 0) && _.isArray(this.parentScope.events)) {
-              _(this.parentScope.events).each(function(event, eventName) {
-                return google.maps.event.clearListeners(_this.gMarker, eventName);
-              });
-            }
+            this.removeEvents(this.externalListeners);
+            this.removeEvents(this.internalListeners);
             this.gMarkerManager.remove(this.gMarker, true);
             delete this.gMarker;
             return this.scope.$destroy();
@@ -5103,8 +5095,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           } else {
             this.gMarker = new google.maps.Marker(this.opts);
           }
-          this.setEvents(this.gMarker, this.parentScope, this.model, ignore = ['dragend']);
-          this.setEvents(this.gMarker, {
+          this.externalListeners = this.setEvents(this.gMarker, this.parentScope, this.model, ignore = ['dragend']);
+          this.internalListeners = this.setEvents(this.gMarker, {
             events: this.internalEvents()
           }, this.model);
           if (this.id != null) {
@@ -5354,6 +5346,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.getLatestPosition = __bind(this.getLatestPosition, this);
           this.showWindow = __bind(this.showWindow, this);
           this.handleClick = __bind(this.handleClick, this);
+          this.watchOptions = __bind(this.watchOptions, this);
           this.watchCoords = __bind(this.watchCoords, this);
           this.watchShow = __bind(this.watchShow, this);
           this.createGWin = __bind(this.createGWin, this);
@@ -5365,6 +5358,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.markerCtrl.setClickable(true);
           }
           this.watchElement();
+          this.watchOptions();
           this.watchShow();
           this.watchCoords();
           this.scope.$on("$destroy", function() {
@@ -5474,6 +5468,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (_this.opts) {
                   return _this.opts.position = pos;
                 }
+              }
+            }
+          }, true);
+        };
+
+        WindowChildModel.prototype.watchOptions = function() {
+          var scope,
+            _this = this;
+          scope = this.markerCtrl != null ? this.scope.$parent : this.scope;
+          return scope.$watch('options', function(newValue, oldValue) {
+            if (newValue !== oldValue) {
+              _this.opts = newValue;
+              if (_this.gWin != null) {
+                return _this.gWin.setOptions(_this.opts);
               }
             }
           }, true);
@@ -6659,7 +6667,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             }
           };
           opts = this.createWindowOptions(gMarker, childScope, fakeElement.html(), this.DEFAULTS);
-          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, fakeElement, true, true);
+          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, fakeElement, false, true);
           if (model[this.idKey] == null) {
             this.$log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
             return;

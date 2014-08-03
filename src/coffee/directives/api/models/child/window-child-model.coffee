@@ -12,12 +12,13 @@ angular.module("google-maps.directives.api.models.child".ns())
           @markerCtrl.setClickable(true) if @markerCtrl?
 
           @watchElement()
+          @watchOptions()
           @watchShow()
           @watchCoords()
           @scope.$on "$destroy", =>
             @destroy()
           @$log.info(@)
-        #todo: watch model in here, and recreate / clean gWin on change
+          #todo: watch model in here, and recreate / clean gWin on change
 
         watchElement: =>
           @scope.$watch =>
@@ -74,19 +75,28 @@ angular.module("google-maps.directives.api.models.child".ns())
           , true)
 
         watchCoords: ()=>
-          scope = if @markerCtrl? then @scope.$parent else @scope
-          scope.$watch('coords', (newValue, oldValue) =>
-            if (newValue != oldValue)
-              unless newValue?
-                @hideWindow()
-              else
-                if !@validateCoords(newValue)
-                  @$log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
-                  return
-                pos = @getCoords(newValue)
-                @gWin.setPosition pos
-                @opts.position = pos if @opts
-          , true)
+            scope = if @markerCtrl? then @scope.$parent else @scope
+            scope.$watch('coords', (newValue, oldValue) =>
+                if (newValue != oldValue)
+                    unless newValue?
+                        @hideWindow()
+                    else
+                        if !@validateCoords(newValue)
+                            @$log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
+                            return
+                        pos = @getCoords(newValue)
+                        @gWin.setPosition pos
+                        @opts.position = pos if @opts
+            , true)
+
+        watchOptions: ()=>
+            scope = if @markerCtrl? then @scope.$parent else @scope
+            scope.$watch('options', (newValue, oldValue) =>
+                if (newValue != oldValue)
+                    @opts = newValue
+                    if @gWin?
+                        @gWin.setOptions(@opts)
+            , true)
 
         handleClick: (forceClick)=>
           # Show the window and hide the marker on click
