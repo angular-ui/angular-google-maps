@@ -198,7 +198,7 @@ Nicholas McCready - https://twitter.com/nmccready
         load: function(options) {
           var deferred, query, randomizedFunctionName, script;
           deferred = $q.defer();
-          if (_.isDefined(window.google) && _.isDefined(window.google.maps)) {
+          if (angular.isDefined(window.google) && angular.isDefined(window.google.maps)) {
             deferred.resolve(window.google.maps);
             return deferred.promise;
           }
@@ -219,27 +219,25 @@ Nicholas McCready - https://twitter.com/nmccready
         }
       };
     }
-  ]).provider('GoogleMapApi'.ns(), [
-    '$injector', 'MapScriptLoaderProvider'.ns(), function($injector, loadScript) {
-      var _this = this;
-      this.options = {
-        v: '3.16',
-        libraries: 'places',
-        language: 'en',
-        sensor: 'false'
-      };
-      this.configure = function(options) {
-        angular.extend(this.options, options);
-      };
-      this.$get = function() {
-        var loader;
-        loader = $injector.invoke(loadScript.$get);
+  ]).provider('GoogleMapApi'.ns(), function() {
+    var _this = this;
+    this.options = {
+      v: '3.16',
+      libraries: 'places',
+      language: 'en',
+      sensor: 'false'
+    };
+    this.configure = function(options) {
+      angular.extend(this.options, options);
+    };
+    this.$get = [
+      "MapScriptLoader".ns(), function(loader) {
         _this.promise = loader.load(_this.options);
         return _this.promise;
-      };
-      return this;
-    }
-  ]);
+      }
+    ];
+    return this;
+  });
 
 }).call(this);
 
@@ -3739,7 +3737,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api".ns()).factory("Control".ns(), [
-    "IControl".ns(), "$http", "$templateCache", "$compile", "$controller", function(IControl, $http, $templateCache, $compile, $controller) {
+    "IControl".ns(), "$http", "$templateCache", "$compile", "$controller", 'GoogleMapApi'.ns(), function(IControl, $http, $templateCache, $compile, $controller, GoogleMapApi) {
       var Control;
       return Control = (function(_super) {
         __extends(Control, _super);
@@ -3750,42 +3748,44 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         }
 
         Control.prototype.link = function(scope, element, attrs, ctrl) {
-          var index, position,
-            _this = this;
-          if (angular.isUndefined(scope.template)) {
-            this.$log.error('mapControl: could not find a valid template property');
-            return;
-          }
-          index = angular.isDefined(scope.index && !isNaN(parseInt(scope.index))) ? parseInt(scope.index) : void 0;
-          position = angular.isDefined(scope.position) ? scope.position.toUpperCase().replace(/-/g, '_') : 'TOP_CENTER';
-          if (!google.maps.ControlPosition[position]) {
-            this.$log.error('mapControl: invalid position property');
-            return;
-          }
-          return IControl.mapPromise(scope, ctrl).then(function(map) {
-            var control, controlDiv;
-            control = void 0;
-            controlDiv = angular.element('<div></div>');
-            return $http.get(scope.template, {
-              cache: $templateCache
-            }).success(function(template) {
-              var templateCtrl, templateScope;
-              templateScope = scope.$new();
-              controlDiv.append(template);
-              if (index) {
-                controlDiv[0].index = index;
-              }
-              if (angular.isDefined(scope.controller)) {
-                templateCtrl = $controller(scope.controller, {
-                  $scope: templateScope
-                });
-                controlDiv.children().data('$ngControllerController', templateCtrl);
-              }
-              return control = $compile(controlDiv.contents())(templateScope);
-            }).error(function(error) {
-              return _this.$log.error('mapControl: template could not be found');
-            }).then(function() {
-              return map.controls[google.maps.ControlPosition[position]].push(control[0]);
+          var _this = this;
+          return GoogleMapApi.then(function(maps) {
+            var index, position;
+            if (angular.isUndefined(scope.template)) {
+              _this.$log.error('mapControl: could not find a valid template property');
+              return;
+            }
+            index = angular.isDefined(scope.index && !isNaN(parseInt(scope.index))) ? parseInt(scope.index) : void 0;
+            position = angular.isDefined(scope.position) ? scope.position.toUpperCase().replace(/-/g, '_') : 'TOP_CENTER';
+            if (!maps.ControlPosition[position]) {
+              _this.$log.error('mapControl: invalid position property');
+              return;
+            }
+            return IControl.mapPromise(scope, ctrl).then(function(map) {
+              var control, controlDiv;
+              control = void 0;
+              controlDiv = angular.element('<div></div>');
+              return $http.get(scope.template, {
+                cache: $templateCache
+              }).success(function(template) {
+                var templateCtrl, templateScope;
+                templateScope = scope.$new();
+                controlDiv.append(template);
+                if (index) {
+                  controlDiv[0].index = index;
+                }
+                if (angular.isDefined(scope.controller)) {
+                  templateCtrl = $controller(scope.controller, {
+                    $scope: templateScope
+                  });
+                  controlDiv.children().data('$ngControllerController', templateCtrl);
+                }
+                return control = $compile(controlDiv.contents())(templateScope);
+              }).error(function(error) {
+                return _this.$log.error('mapControl: template could not be found');
+              }).then(function() {
+                return map.controls[google.maps.ControlPosition[position]].push(control[0]);
+              });
             });
           });
         };
@@ -4148,70 +4148,71 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
   angular.module("google-maps.directives.api".ns()).factory("Map".ns(), [
     "$timeout", '$q', "Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(), "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(), "ExtendGWin".ns(), "ExtendMarkerClusterer".ns(), "GoogleMapsUtilV3".ns(), 'GoogleMapApi'.ns(), function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3, GoogleMapApi) {
-      return GoogleMapApi.then(function(maps) {
-        "use strict";
-        var DEFAULTS, Map, initializeItems;
-        DEFAULTS = {
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        initializeItems = [GoogleMapsUtilV3, ExtendGWin, ExtendMarkerClusterer];
-        return Map = (function(_super) {
-          __extends(Map, _super);
+      "use strict";
+      var DEFAULTS, Map, initializeItems;
+      DEFAULTS = void 0;
+      initializeItems = [GoogleMapsUtilV3, ExtendGWin, ExtendMarkerClusterer];
+      return Map = (function(_super) {
+        __extends(Map, _super);
 
-          Map.include(GmapUtil);
+        Map.include(GmapUtil);
 
-          function Map() {
-            this.link = __bind(this.link, this);
-            var ctrlFn, self;
-            ctrlFn = function($scope) {
-              var ctrlObj;
-              ctrlObj = CtrlHandle.handle($scope);
-              $scope.ctrlType = 'Map';
-              $scope.deferred.promise.then(function() {
-                return initializeItems.forEach(function(i) {
-                  return i.init();
-                });
+        function Map() {
+          this.link = __bind(this.link, this);
+          var ctrlFn, self;
+          ctrlFn = function($scope) {
+            var ctrlObj;
+            ctrlObj = CtrlHandle.handle($scope);
+            $scope.ctrlType = 'Map';
+            $scope.deferred.promise.then(function() {
+              return initializeItems.forEach(function(i) {
+                return i.init();
               });
-              return _.extend(ctrlObj, {
-                getMap: function() {
-                  return $scope.map;
-                }
-              });
-            };
-            this.controller = ["$scope", ctrlFn];
-            self = this;
-          }
-
-          Map.prototype.restrict = "EMA";
-
-          Map.prototype.transclude = true;
-
-          Map.prototype.replace = false;
-
-          Map.prototype.template = '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>';
-
-          Map.prototype.scope = {
-            center: "=",
-            zoom: "=",
-            dragging: "=",
-            control: "=",
-            windows: "=",
-            options: "=",
-            events: "=",
-            styles: "=",
-            bounds: "="
+            });
+            return _.extend(ctrlObj, {
+              getMap: function() {
+                return $scope.map;
+              }
+            });
           };
+          this.controller = ["$scope", ctrlFn];
+          self = this;
+        }
 
-          /*
-          @param scope
-          @param element
-          @param attrs
-          */
+        Map.prototype.restrict = "EMA";
+
+        Map.prototype.transclude = true;
+
+        Map.prototype.replace = false;
+
+        Map.prototype.template = '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>';
+
+        Map.prototype.scope = {
+          center: "=",
+          zoom: "=",
+          dragging: "=",
+          control: "=",
+          windows: "=",
+          options: "=",
+          events: "=",
+          styles: "=",
+          bounds: "="
+        };
+
+        /*
+        @param scope
+        @param element
+        @param attrs
+        */
 
 
-          Map.prototype.link = function(scope, element, attrs) {
-            var dragging, el, eventName, getEventHandler, mapOptions, opts, resolveSpawned, settingCenterFromScope, spawned, type, _m,
-              _this = this;
+        Map.prototype.link = function(scope, element, attrs) {
+          var _this = this;
+          return GoogleMapApi.then(function(maps) {
+            var dragging, el, eventName, getEventHandler, mapOptions, opts, resolveSpawned, settingCenterFromScope, spawned, type, _m;
+            DEFAULTS = {
+              mapTypeId: maps.MapTypeId.ROADMAP
+            };
             spawned = IsReady.spawn();
             resolveSpawned = function() {
               return spawned.deferred.resolve({
@@ -4219,7 +4220,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 map: _m
               });
             };
-            if (!this.validateCoords(scope.center)) {
+            if (!_this.validateCoords(scope.center)) {
               $log.error("angular-google-maps: could not find a valid center property");
               return;
             }
@@ -4247,8 +4248,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             }
             mapOptions = angular.extend({}, DEFAULTS, opts, {
-              center: this.getCoords(scope.center),
-              draggable: this.isTrue(attrs.draggable),
+              center: _this.getCoords(scope.center),
+              draggable: _this.isTrue(attrs.draggable),
               zoom: scope.zoom,
               bounds: scope.bounds
             });
@@ -4457,12 +4458,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
               }
             }, true);
-          };
+          });
+        };
 
-          return Map;
+        return Map;
 
-        })(BaseObject);
-      });
+      })(BaseObject);
     }
   ]);
 
