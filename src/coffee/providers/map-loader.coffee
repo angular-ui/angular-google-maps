@@ -1,48 +1,52 @@
 # The service, that is a promise for a reference to window.google.maps
 angular.module('google-maps.providers'.ns())
-.service('MapLoader'.ns(), [ '$q', 'options', ($q, options) ->
-    deferred = $q.defer()
-    # Early-resolve if google-maps-api is already in global-scope
-    if _.isDefined(window.google) and _.isDefined(window.google.maps)
-      deferred.resolve window.google.maps
-      return deferred.promise
-    randomizedFunctionName = options.callback = 'onGoogleMapsReady' + Math.round(Math.random() * 1000)
-    window[randomizedFunctionName] = ->
-      window[randomizedFunctionName] = null
-      # Resolve the promise
-      deferred.resolve window.google.maps
-      return
+.factory('MapScriptLoader'.ns(), ['$q', ($q) ->
+      load: (options)->
+        deferred = $q.defer()
+        # Early-resolve if google-maps-api is already in global-scope
+        if _.isDefined(window.google) and _.isDefined(window.google.maps)
+          deferred.resolve window.google.maps
+          return deferred.promise
+        randomizedFunctionName = options.callback = 'onGoogleMapsReady' + Math.round(Math.random() * 1000)
+        window[randomizedFunctionName] = ->
+          window[randomizedFunctionName] = null
+          # Resolve the promise
+          deferred.resolve window.google.maps
+          return
 
-    q = _.map options, (v, k) ->
-      k + '=' + v
+        query = _.map options, (v, k) ->
+          k + '=' + v
 
-    q = q.join '&'
-    script = document.createElement 'script'
-    script.type = 'text/javascript'
-    script.src = 'https://maps.googleapis.com/maps/api/js?' + q
-    document.body.appendChild script
+        query = query.join '&'
+        script = document.createElement 'script'
+        script.type = 'text/javascript'
+        script.src = 'https://maps.googleapis.com/maps/api/js?' + query
+        document.body.appendChild script
 
-    # Return the promise
-    deferred.promise
-  ])
-.provider('GoogleMapApi'.ns(), ['MapLoader'.ns(), (Loader) ->
+        # Return the promise
+        deferred.promise
+])
+#holy hool!!, any time your passing a dependency to a "provider" you must append the Provider text to the service
+# name.. makes no sense and this is not documented well
+.provider('GoogleMapApi'.ns(), ['$injector', 'MapScriptLoaderProvider'.ns(), ($injector, loadScript) ->
     # Some nice default options
     @options =
     #    key: 'api-key here',
-      v: '3.15'
+      v: '3.16'
       libraries: 'places'
       language: 'en'
       sensor: 'false'
-
 
     # A function that lets us configure options of the service
     @configure = (options) ->
       angular.extend @options, options
       return
 
-
     # Return an instance of the service
-    @$get = ['$q', ($q) ->
-      return new Loader($q, @options)
-    ]
+    @$get = =>
+      loader = $injector.invoke(loadScript.$get)
+
+      @promise = loader.load @options
+      @promise
+    @
   ])

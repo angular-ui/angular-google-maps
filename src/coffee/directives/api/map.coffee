@@ -1,8 +1,9 @@
 angular.module("google-maps.directives.api".ns())
 .factory "Map".ns(), ["$timeout", '$q',"Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(),
                       "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(),
-                      "ExtendGWin".ns(),"ExtendMarkerClusterer".ns(),"GoogleMapsUtilV3".ns(),
-  ($timeout,$q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3) ->
+                      "ExtendGWin".ns(),"ExtendMarkerClusterer".ns(),"GoogleMapsUtilV3".ns(),'GoogleMapApi'.ns(),
+  ($timeout,$q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3,GoogleMapApi) ->
+      GoogleMapApi.then (maps)->
         "use strict"
         DEFAULTS =
             mapTypeId: google.maps.MapTypeId.ROADMAP

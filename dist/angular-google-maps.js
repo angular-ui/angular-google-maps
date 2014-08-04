@@ -166,7 +166,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
   angular.module("google-maps.directives.api".ns(), ["google-maps.directives.api.models.parent".ns()]);
 
-  angular.module("google-maps".ns(), ["google-maps.directives.api".ns()]).factory("debounce".ns(), [
+  angular.module("google-maps".ns(), ["google-maps.directives.api".ns(), 'google-maps.providers'.ns()]).factory("debounce".ns(), [
     "$timeout", function($timeout) {
       return function(fn) {
         var nthCall;
@@ -186,6 +186,58 @@ Nicholas McCready - https://twitter.com/nmccready
           return $timeout(later, 0, true);
         };
       };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
+  angular.module('google-maps.providers'.ns()).factory('MapScriptLoader'.ns(), [
+    '$q', function($q) {
+      return {
+        load: function(options) {
+          var deferred, query, randomizedFunctionName, script;
+          deferred = $q.defer();
+          if (_.isDefined(window.google) && _.isDefined(window.google.maps)) {
+            deferred.resolve(window.google.maps);
+            return deferred.promise;
+          }
+          randomizedFunctionName = options.callback = 'onGoogleMapsReady' + Math.round(Math.random() * 1000);
+          window[randomizedFunctionName] = function() {
+            window[randomizedFunctionName] = null;
+            deferred.resolve(window.google.maps);
+          };
+          query = _.map(options, function(v, k) {
+            return k + '=' + v;
+          });
+          query = query.join('&');
+          script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = 'https://maps.googleapis.com/maps/api/js?' + query;
+          document.body.appendChild(script);
+          return deferred.promise;
+        }
+      };
+    }
+  ]).provider('GoogleMapApi'.ns(), [
+    '$injector', 'MapScriptLoaderProvider'.ns(), function($injector, loadScript) {
+      var _this = this;
+      this.options = {
+        v: '3.16',
+        libraries: 'places',
+        language: 'en',
+        sensor: 'false'
+      };
+      this.configure = function(options) {
+        angular.extend(this.options, options);
+      };
+      this.$get = function() {
+        var loader;
+        loader = $injector.invoke(loadScript.$get);
+        _this.promise = loader.load(_this.options);
+        return _this.promise;
+      };
+      return this;
     }
   ]);
 
@@ -4095,320 +4147,322 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api".ns()).factory("Map".ns(), [
-    "$timeout", '$q', "Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(), "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(), "ExtendGWin".ns(), "ExtendMarkerClusterer".ns(), "GoogleMapsUtilV3".ns(), function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3) {
-      "use strict";
-      var DEFAULTS, Map, initializeItems;
-      DEFAULTS = {
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-      };
-      initializeItems = [GoogleMapsUtilV3, ExtendGWin, ExtendMarkerClusterer];
-      return Map = (function(_super) {
-        __extends(Map, _super);
-
-        Map.include(GmapUtil);
-
-        function Map() {
-          this.link = __bind(this.link, this);
-          var ctrlFn, self;
-          ctrlFn = function($scope) {
-            var ctrlObj;
-            ctrlObj = CtrlHandle.handle($scope);
-            $scope.ctrlType = 'Map';
-            $scope.deferred.promise.then(function() {
-              return initializeItems.forEach(function(i) {
-                return i.init();
-              });
-            });
-            return _.extend(ctrlObj, {
-              getMap: function() {
-                return $scope.map;
-              }
-            });
-          };
-          this.controller = ["$scope", ctrlFn];
-          self = this;
-        }
-
-        Map.prototype.restrict = "EMA";
-
-        Map.prototype.transclude = true;
-
-        Map.prototype.replace = false;
-
-        Map.prototype.template = '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>';
-
-        Map.prototype.scope = {
-          center: "=",
-          zoom: "=",
-          dragging: "=",
-          control: "=",
-          windows: "=",
-          options: "=",
-          events: "=",
-          styles: "=",
-          bounds: "="
+    "$timeout", '$q', "Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(), "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(), "ExtendGWin".ns(), "ExtendMarkerClusterer".ns(), "GoogleMapsUtilV3".ns(), 'GoogleMapApi'.ns(), function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3, GoogleMapApi) {
+      return GoogleMapApi.then(function(maps) {
+        "use strict";
+        var DEFAULTS, Map, initializeItems;
+        DEFAULTS = {
+          mapTypeId: google.maps.MapTypeId.ROADMAP
         };
+        initializeItems = [GoogleMapsUtilV3, ExtendGWin, ExtendMarkerClusterer];
+        return Map = (function(_super) {
+          __extends(Map, _super);
 
-        /*
-        @param scope
-        @param element
-        @param attrs
-        */
+          Map.include(GmapUtil);
 
-
-        Map.prototype.link = function(scope, element, attrs) {
-          var dragging, el, eventName, getEventHandler, mapOptions, opts, resolveSpawned, settingCenterFromScope, spawned, type, _m,
-            _this = this;
-          spawned = IsReady.spawn();
-          resolveSpawned = function() {
-            return spawned.deferred.resolve({
-              instance: spawned.instance,
-              map: _m
-            });
-          };
-          if (!this.validateCoords(scope.center)) {
-            $log.error("angular-google-maps: could not find a valid center property");
-            return;
-          }
-          if (!angular.isDefined(scope.zoom)) {
-            $log.error("angular-google-maps: map zoom property not set");
-            return;
-          }
-          el = angular.element(element);
-          el.addClass("angular-google-map");
-          opts = {
-            options: {}
-          };
-          if (attrs.options) {
-            opts.options = scope.options;
-          }
-          if (attrs.styles) {
-            opts.styles = scope.styles;
-          }
-          if (attrs.type) {
-            type = attrs.type.toUpperCase();
-            if (google.maps.MapTypeId.hasOwnProperty(type)) {
-              opts.mapTypeId = google.maps.MapTypeId[attrs.type.toUpperCase()];
-            } else {
-              $log.error("angular-google-maps: invalid map type \"" + attrs.type + "\"");
-            }
-          }
-          mapOptions = angular.extend({}, DEFAULTS, opts, {
-            center: this.getCoords(scope.center),
-            draggable: this.isTrue(attrs.draggable),
-            zoom: scope.zoom,
-            bounds: scope.bounds
-          });
-          _m = new google.maps.Map(el.find("div")[1], mapOptions);
-          _m.nggmap_id = uuid.generate();
-          dragging = false;
-          if (!_m) {
-            google.maps.event.addListener(_m, 'tilesloaded ', function(map) {
-              scope.deferred.resolve(map);
-              return resolveSpawned();
-            });
-          } else {
-            scope.deferred.resolve(_m);
-            resolveSpawned();
-          }
-          google.maps.event.addListener(_m, "dragstart", function() {
-            dragging = true;
-            return _.defer(function() {
-              return scope.$apply(function(s) {
-                if (s.dragging != null) {
-                  return s.dragging = dragging;
-                }
-              });
-            });
-          });
-          google.maps.event.addListener(_m, "dragend", function() {
-            dragging = false;
-            return _.defer(function() {
-              return scope.$apply(function(s) {
-                if (s.dragging != null) {
-                  return s.dragging = dragging;
-                }
-              });
-            });
-          });
-          google.maps.event.addListener(_m, "drag", function() {
-            var c;
-            c = _m.center;
-            return _.defer(function() {
-              return scope.$apply(function(s) {
-                if (angular.isDefined(s.center.type)) {
-                  s.center.coordinates[1] = c.lat();
-                  return s.center.coordinates[0] = c.lng();
-                } else {
-                  s.center.latitude = c.lat();
-                  return s.center.longitude = c.lng();
-                }
-              });
-            });
-          });
-          google.maps.event.addListener(_m, "zoom_changed", function() {
-            if (scope.zoom !== _m.zoom) {
-              return _.defer(function() {
-                return scope.$apply(function(s) {
-                  return s.zoom = _m.zoom;
+          function Map() {
+            this.link = __bind(this.link, this);
+            var ctrlFn, self;
+            ctrlFn = function($scope) {
+              var ctrlObj;
+              ctrlObj = CtrlHandle.handle($scope);
+              $scope.ctrlType = 'Map';
+              $scope.deferred.promise.then(function() {
+                return initializeItems.forEach(function(i) {
+                  return i.init();
                 });
               });
-            }
-          });
-          settingCenterFromScope = false;
-          google.maps.event.addListener(_m, "center_changed", function() {
-            var c;
-            c = _m.center;
-            if (settingCenterFromScope) {
+              return _.extend(ctrlObj, {
+                getMap: function() {
+                  return $scope.map;
+                }
+              });
+            };
+            this.controller = ["$scope", ctrlFn];
+            self = this;
+          }
+
+          Map.prototype.restrict = "EMA";
+
+          Map.prototype.transclude = true;
+
+          Map.prototype.replace = false;
+
+          Map.prototype.template = '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>';
+
+          Map.prototype.scope = {
+            center: "=",
+            zoom: "=",
+            dragging: "=",
+            control: "=",
+            windows: "=",
+            options: "=",
+            events: "=",
+            styles: "=",
+            bounds: "="
+          };
+
+          /*
+          @param scope
+          @param element
+          @param attrs
+          */
+
+
+          Map.prototype.link = function(scope, element, attrs) {
+            var dragging, el, eventName, getEventHandler, mapOptions, opts, resolveSpawned, settingCenterFromScope, spawned, type, _m,
+              _this = this;
+            spawned = IsReady.spawn();
+            resolveSpawned = function() {
+              return spawned.deferred.resolve({
+                instance: spawned.instance,
+                map: _m
+              });
+            };
+            if (!this.validateCoords(scope.center)) {
+              $log.error("angular-google-maps: could not find a valid center property");
               return;
             }
-            return _.defer(function() {
-              return scope.$apply(function(s) {
-                if (!_m.dragging) {
-                  if (angular.isDefined(s.center.type)) {
-                    if (s.center.coordinates[1] !== c.lat()) {
-                      s.center.coordinates[1] = c.lat();
-                    }
-                    if (s.center.coordinates[0] !== c.lng()) {
-                      return s.center.coordinates[0] = c.lng();
-                    }
-                  } else {
-                    if (s.center.latitude !== c.lat()) {
-                      s.center.latitude = c.lat();
-                    }
-                    if (s.center.longitude !== c.lng()) {
-                      return s.center.longitude = c.lng();
-                    }
-                  }
-                }
-              });
-            });
-          });
-          google.maps.event.addListener(_m, "idle", function() {
-            var b, ne, sw;
-            b = _m.getBounds();
-            ne = b.getNorthEast();
-            sw = b.getSouthWest();
-            return _.defer(function() {
-              return scope.$apply(function(s) {
-                if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
-                  s.bounds.northeast = {
-                    latitude: ne.lat(),
-                    longitude: ne.lng()
-                  };
-                  return s.bounds.southwest = {
-                    latitude: sw.lat(),
-                    longitude: sw.lng()
-                  };
-                }
-              });
-            });
-          });
-          if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
-            getEventHandler = function(eventName) {
-              return function() {
-                return scope.events[eventName].apply(scope, [_m, eventName, arguments]);
-              };
+            if (!angular.isDefined(scope.zoom)) {
+              $log.error("angular-google-maps: map zoom property not set");
+              return;
+            }
+            el = angular.element(element);
+            el.addClass("angular-google-map");
+            opts = {
+              options: {}
             };
-            for (eventName in scope.events) {
-              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-                google.maps.event.addListener(_m, eventName, getEventHandler(eventName));
+            if (attrs.options) {
+              opts.options = scope.options;
+            }
+            if (attrs.styles) {
+              opts.styles = scope.styles;
+            }
+            if (attrs.type) {
+              type = attrs.type.toUpperCase();
+              if (google.maps.MapTypeId.hasOwnProperty(type)) {
+                opts.mapTypeId = google.maps.MapTypeId[attrs.type.toUpperCase()];
+              } else {
+                $log.error("angular-google-maps: invalid map type \"" + attrs.type + "\"");
               }
             }
-          }
-          _m.getOptions = function() {
-            return mapOptions;
-          };
-          scope.map = _m;
-          if ((attrs.control != null) && (scope.control != null)) {
-            scope.control.refresh = function(maybeCoords) {
-              var coords;
-              if (_m == null) {
+            mapOptions = angular.extend({}, DEFAULTS, opts, {
+              center: this.getCoords(scope.center),
+              draggable: this.isTrue(attrs.draggable),
+              zoom: scope.zoom,
+              bounds: scope.bounds
+            });
+            _m = new google.maps.Map(el.find("div")[1], mapOptions);
+            _m.nggmap_id = uuid.generate();
+            dragging = false;
+            if (!_m) {
+              google.maps.event.addListener(_m, 'tilesloaded ', function(map) {
+                scope.deferred.resolve(map);
+                return resolveSpawned();
+              });
+            } else {
+              scope.deferred.resolve(_m);
+              resolveSpawned();
+            }
+            google.maps.event.addListener(_m, "dragstart", function() {
+              dragging = true;
+              return _.defer(function() {
+                return scope.$apply(function(s) {
+                  if (s.dragging != null) {
+                    return s.dragging = dragging;
+                  }
+                });
+              });
+            });
+            google.maps.event.addListener(_m, "dragend", function() {
+              dragging = false;
+              return _.defer(function() {
+                return scope.$apply(function(s) {
+                  if (s.dragging != null) {
+                    return s.dragging = dragging;
+                  }
+                });
+              });
+            });
+            google.maps.event.addListener(_m, "drag", function() {
+              var c;
+              c = _m.center;
+              return _.defer(function() {
+                return scope.$apply(function(s) {
+                  if (angular.isDefined(s.center.type)) {
+                    s.center.coordinates[1] = c.lat();
+                    return s.center.coordinates[0] = c.lng();
+                  } else {
+                    s.center.latitude = c.lat();
+                    return s.center.longitude = c.lng();
+                  }
+                });
+              });
+            });
+            google.maps.event.addListener(_m, "zoom_changed", function() {
+              if (scope.zoom !== _m.zoom) {
+                return _.defer(function() {
+                  return scope.$apply(function(s) {
+                    return s.zoom = _m.zoom;
+                  });
+                });
+              }
+            });
+            settingCenterFromScope = false;
+            google.maps.event.addListener(_m, "center_changed", function() {
+              var c;
+              c = _m.center;
+              if (settingCenterFromScope) {
                 return;
               }
-              google.maps.event.trigger(_m, "resize");
-              if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.latitude : void 0) != null)) {
-                coords = _this.getCoords(maybeCoords);
-                if (_this.isTrue(attrs.pan)) {
-                  return _m.panTo(coords);
-                } else {
-                  return _m.setCenter(coords);
+              return _.defer(function() {
+                return scope.$apply(function(s) {
+                  if (!_m.dragging) {
+                    if (angular.isDefined(s.center.type)) {
+                      if (s.center.coordinates[1] !== c.lat()) {
+                        s.center.coordinates[1] = c.lat();
+                      }
+                      if (s.center.coordinates[0] !== c.lng()) {
+                        return s.center.coordinates[0] = c.lng();
+                      }
+                    } else {
+                      if (s.center.latitude !== c.lat()) {
+                        s.center.latitude = c.lat();
+                      }
+                      if (s.center.longitude !== c.lng()) {
+                        return s.center.longitude = c.lng();
+                      }
+                    }
+                  }
+                });
+              });
+            });
+            google.maps.event.addListener(_m, "idle", function() {
+              var b, ne, sw;
+              b = _m.getBounds();
+              ne = b.getNorthEast();
+              sw = b.getSouthWest();
+              return _.defer(function() {
+                return scope.$apply(function(s) {
+                  if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
+                    s.bounds.northeast = {
+                      latitude: ne.lat(),
+                      longitude: ne.lng()
+                    };
+                    return s.bounds.southwest = {
+                      latitude: sw.lat(),
+                      longitude: sw.lng()
+                    };
+                  }
+                });
+              });
+            });
+            if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
+              getEventHandler = function(eventName) {
+                return function() {
+                  return scope.events[eventName].apply(scope, [_m, eventName, arguments]);
+                };
+              };
+              for (eventName in scope.events) {
+                if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+                  google.maps.event.addListener(_m, eventName, getEventHandler(eventName));
                 }
               }
-            };
-            /*
-            I am sure you all will love this. You want the instance here you go.. BOOM!
-            */
-
-            scope.control.getGMap = function() {
-              return _m;
-            };
-            scope.control.getMapOptions = function() {
+            }
+            _m.getOptions = function() {
               return mapOptions;
             };
-          }
-          scope.$watch("center", (function(newValue, oldValue) {
-            var coords;
-            coords = _this.getCoords(newValue);
-            if (coords.lat() === _m.center.lat() && coords.lng() === _m.center.lng()) {
-              return;
+            scope.map = _m;
+            if ((attrs.control != null) && (scope.control != null)) {
+              scope.control.refresh = function(maybeCoords) {
+                var coords;
+                if (_m == null) {
+                  return;
+                }
+                google.maps.event.trigger(_m, "resize");
+                if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.latitude : void 0) != null)) {
+                  coords = _this.getCoords(maybeCoords);
+                  if (_this.isTrue(attrs.pan)) {
+                    return _m.panTo(coords);
+                  } else {
+                    return _m.setCenter(coords);
+                  }
+                }
+              };
+              /*
+              I am sure you all will love this. You want the instance here you go.. BOOM!
+              */
+
+              scope.control.getGMap = function() {
+                return _m;
+              };
+              scope.control.getMapOptions = function() {
+                return mapOptions;
+              };
             }
-            settingCenterFromScope = true;
-            if (!dragging) {
-              if (!_this.validateCoords(newValue)) {
-                $log.error("Invalid center for newValue: " + (JSON.stringify(newValue)));
+            scope.$watch("center", (function(newValue, oldValue) {
+              var coords;
+              coords = _this.getCoords(newValue);
+              if (coords.lat() === _m.center.lat() && coords.lng() === _m.center.lng()) {
+                return;
               }
-              if (_this.isTrue(attrs.pan) && scope.zoom === _m.zoom) {
-                _m.panTo(coords);
-              } else {
-                _m.setCenter(coords);
+              settingCenterFromScope = true;
+              if (!dragging) {
+                if (!_this.validateCoords(newValue)) {
+                  $log.error("Invalid center for newValue: " + (JSON.stringify(newValue)));
+                }
+                if (_this.isTrue(attrs.pan) && scope.zoom === _m.zoom) {
+                  _m.panTo(coords);
+                } else {
+                  _m.setCenter(coords);
+                }
               }
-            }
-            return settingCenterFromScope = false;
-          }), true);
-          scope.$watch("zoom", function(newValue, oldValue) {
-            if (newValue === _m.zoom) {
-              return;
-            }
-            return _.defer(function() {
-              return _m.setZoom(newValue);
+              return settingCenterFromScope = false;
+            }), true);
+            scope.$watch("zoom", function(newValue, oldValue) {
+              if (newValue === _m.zoom) {
+                return;
+              }
+              return _.defer(function() {
+                return _m.setZoom(newValue);
+              });
             });
-          });
-          scope.$watch("bounds", function(newValue, oldValue) {
-            var bounds, ne, sw;
-            if (newValue === oldValue) {
-              return;
-            }
-            if ((newValue.northeast.latitude == null) || (newValue.northeast.longitude == null) || (newValue.southwest.latitude == null) || (newValue.southwest.longitude == null)) {
-              $log.error("Invalid map bounds for new value: " + (JSON.stringify(newValue)));
-              return;
-            }
-            ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude);
-            sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude);
-            bounds = new google.maps.LatLngBounds(sw, ne);
-            return _m.fitBounds(bounds);
-          });
-          scope.$watch("options", function(newValue, oldValue) {
-            if (!_.isEqual(newValue, oldValue)) {
-              opts.options = newValue;
-              if (_m != null) {
-                return _m.setOptions(opts);
+            scope.$watch("bounds", function(newValue, oldValue) {
+              var bounds, ne, sw;
+              if (newValue === oldValue) {
+                return;
               }
-            }
-          }, true);
-          return scope.$watch("styles", function(newValue, oldValue) {
-            if (!_.isEqual(newValue, oldValue)) {
-              opts.styles = newValue;
-              if (_m != null) {
-                return _m.setOptions(opts);
+              if ((newValue.northeast.latitude == null) || (newValue.northeast.longitude == null) || (newValue.southwest.latitude == null) || (newValue.southwest.longitude == null)) {
+                $log.error("Invalid map bounds for new value: " + (JSON.stringify(newValue)));
+                return;
               }
-            }
-          }, true);
-        };
+              ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude);
+              sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude);
+              bounds = new google.maps.LatLngBounds(sw, ne);
+              return _m.fitBounds(bounds);
+            });
+            scope.$watch("options", function(newValue, oldValue) {
+              if (!_.isEqual(newValue, oldValue)) {
+                opts.options = newValue;
+                if (_m != null) {
+                  return _m.setOptions(opts);
+                }
+              }
+            }, true);
+            return scope.$watch("styles", function(newValue, oldValue) {
+              if (!_.isEqual(newValue, oldValue)) {
+                opts.styles = newValue;
+                if (_m != null) {
+                  return _m.setOptions(opts);
+                }
+              }
+            }, true);
+          };
 
-        return Map;
+          return Map;
 
-      })(BaseObject);
+        })(BaseObject);
+      });
     }
   ]);
 

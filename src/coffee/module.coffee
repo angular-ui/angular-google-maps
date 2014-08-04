@@ -43,7 +43,7 @@ angular.module("google-maps.directives.api.models.parent".ns(), [
   'google-maps.providers'.ns()
 ])
 angular.module("google-maps.directives.api".ns(), [ "google-maps.directives.api.models.parent".ns()])
-angular.module("google-maps".ns(), [ "google-maps.directives.api".ns()])
+angular.module("google-maps".ns(), [ "google-maps.directives.api".ns(), 'google-maps.providers'.ns()])
 .factory "debounce".ns(), ["$timeout", ($timeout) ->
   (fn) -> # debounce fn
     nthCall = 0

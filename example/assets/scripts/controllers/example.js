@@ -1,28 +1,40 @@
-angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLatLon",function () {
-  return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1)
-}).config(['googleMapsProvider', function(googleMapsProvider) {
-  googleMapsProvider.configure({
+//<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.16"></script>
+angular.module("angular-google-maps-example", ["google-maps".ns(),'google-maps.providers'.ns()])
+
+.value("rndAddToLatLon", function () {
+  return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1);
+})
+
+.config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
+  GoogleMapApi.configure({
 //    key: 'your api key',
-    v:'3.15',
+    v: '3.16',
     libraries: 'weather,geometry,visualization'
   });
-}]).run(function ($templateCache) {
+  GoogleMapApi.$get().then(function(maps) {
+    maps.visualRefresh = true;
+  });
+}])
+
+.run(['$templateCache', function ($templateCache) {
   $templateCache.put('control.tpl.html', '<button class="btn btn-sm btn-primary" ng-class="{\'btn-warning\': danger}" ng-click="controlClick()">{{controlText}}</button>');
-}).controller('controlController', function ($scope) {
+}])
+
+.controller('controlController', function ($scope) {
   $scope.controlText = 'I\'m a custom control';
   $scope.danger = false;
   $scope.controlClick = function () {
     $scope.danger = !$scope.danger;
     alert('custom control clicked!')
   };
-}).controller("ExampleController", function ($scope, $timeout, $log, $http, rndAddToLatLon) {
-  Logger.doLog = true
-  // Enable the new Google Maps visuals until it gets enabled by default.
-  // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
-  google.maps.visualRefresh = true;
+})
+
+.controller("ExampleController",['$scope', '$timeout', 'nggmapLogger', '$http', 'rndAddToLatLon'
+    , function ($scope, $timeout, $log, $http, rndAddToLatLon) {
+  $log.doLog = true
 
   var versionUrl = (window.location.host === "rawgithub.com" || window.location.host === "rawgit.com") ?
-      "http://rawgit.com/nlaplante/angular-google-maps/master/package.json" : "/package.json";
+    "http://rawgit.com/nlaplante/angular-google-maps/master/package.json" : "/package.json";
 
   $http.get(versionUrl).success(function (data) {
     if (!data)
@@ -46,9 +58,9 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
 
   var createRandomMarker = function (i, bounds, idKey) {
     var lat_min = bounds.southwest.latitude,
-        lat_range = bounds.northeast.latitude - lat_min,
-        lng_min = bounds.southwest.longitude,
-        lng_range = bounds.northeast.longitude - lng_min;
+      lat_range = bounds.northeast.latitude - lat_min,
+      lng_min = bounds.southwest.longitude,
+      lng_range = bounds.northeast.longitude - lng_min;
 
     if (idKey == null)
       idKey = "id";
@@ -206,7 +218,7 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
 
           var e = originalEventArgs[0];
           var lat = e.latLng.lat(),
-              lon = e.latLng.lng();
+            lon = e.latLng.lng();
           $scope.map.clickedMarker = {
             id: 0,
             title: 'You clicked here ' + 'lat: ' + lat + ' lon: ' + lon,
@@ -458,11 +470,11 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
     }
 
   });
-  var marker2Dragend = function(marker,eventName,model,args){
+  var marker2Dragend = function (marker, eventName, model, args) {
     model.options.labelContent = "Dragged lat: " + model.latitude + " lon: " + model.longitude;
 //    $scope.map.markers2[marker.key-1] = model;
   };
-  $scope.map.markers2Events= {
+  $scope.map.markers2Events = {
     dragend: marker2Dragend
   };
 
@@ -516,8 +528,8 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
       $scope.map.clusterOptions = angular.fromJson($scope.map.clusterOptionsText);
   });
 
-  var doUglyFn = function(value) {
-    if(value === undefined || value === null){
+  var doUglyFn = function (value) {
+    if (value === undefined || value === null) {
       value = $scope.map.doUgly;
     }
     var json;
@@ -629,4 +641,4 @@ angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLa
     });
     $scope.map.dynamicMarkers = dynamicMarkers;
   }, 2000);
-}
+}]);

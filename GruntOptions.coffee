@@ -40,6 +40,7 @@ module.exports = (grunt) ->
             "src/coffee/extensions/string.coffee"
             "src/coffee/extensions/lodash.coffee"
             "src/coffee/module.coffee"
+            "src/coffee/providers/*.coffee"
             "src/coffee/extensions/google.maps.coffee"
             "src/coffee/directives/api/utils/*.coffee"
             "src/coffee/directives/api/managers/*.coffee"
