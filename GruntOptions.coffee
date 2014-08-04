@@ -82,13 +82,18 @@ module.exports = (grunt) ->
 
       dist:
         src: [
-          "lib/*.js"
           "tmp/output_coffee.js"
-          "tmp/wrapped.js"
+          "tmp/wrapped_uuid.js"
+          "tmp/wrapped_libs.js"
           "src/js/**/*.js" #this all will only work if the dependency orders do not matter
           "src/js/**/**/*.js"
-          "src/js/**/**/**/*.js"]
+          "src/js/**/**/**/*.js"
+          "!src/js/wrapped/*.js"
+        ]
         dest: "tmp/output.js"
+      libs:
+        src  : ["lib/*.js"]
+        dest : "tmp/libs.js"
 
     copy:
       dist:
@@ -109,7 +114,7 @@ module.exports = (grunt) ->
 
     jshint:
       all: ["Gruntfile.js", "temp/spec/js/*.js", "temp/spec/js/**/*.js", "temp/spec/js/**/**/*.js",
-            "src/js/**/*.js", "src/js/**/**/*.js", "src/js/**/**/**/*.js"
+            "src/js/**/*.js", "src/js/**/**/*.js", "src/js/**/**/**/*.js", "!src/js/wrapped/*.js"
       ]
 
     test: {}
@@ -157,12 +162,18 @@ module.exports = (grunt) ->
 
     jasmine:
       spec: jasmineSettings.spec
-    wrap:
-      basic:
-        src: ['bower_components/uuid/dist/uuid.core.js']
-        dest: 'tmp/wrapped.js'
+
+    replace:
+      utils:
         options:
-          wrapper: ['angular.module("google-maps.wrapped".ns()).service("uuid".ns(), function(){\n', '\nreturn UUID;\n});']
+          patterns: [ match: 'REPLACE_W_LIBS', replacement: '<%= grunt.file.read("tmp/libs.js") %>']
+        src: 'src/js/wrapped/google-maps-util-v3.js'
+        dest: 'tmp/wrapped_libs.js'
+      uuid:
+        options:
+          patterns: [match: 'REPLACE_W_LIBS', replacement: '<%= grunt.file.read("bower_components/uuid/dist/uuid.core.js") %>']
+        src: 'src/js/wrapped/uuid.core.js'
+        dest: 'tmp/wrapped_uuid.js'
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

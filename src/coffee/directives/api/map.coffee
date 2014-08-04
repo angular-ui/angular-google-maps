@@ -1,10 +1,13 @@
 angular.module("google-maps.directives.api".ns())
-.factory "Map".ns(), ["$timeout", '$q',"Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(), "ExtendGWin".ns(), "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(),
-  ($timeout,$q, Logger, GmapUtil, BaseObject,ExtendGWin, CtrlHandle, IsReady, uuid) ->
+.factory "Map".ns(), ["$timeout", '$q',"Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(),
+                      "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(),
+                      "ExtendGWin".ns(),"ExtendMarkerClusterer".ns(),"GoogleMapsUtilV3".ns(),
+  ($timeout,$q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3) ->
         "use strict"
-        $log = Logger
         DEFAULTS =
             mapTypeId: google.maps.MapTypeId.ROADMAP
+
+        initializeItems = [GoogleMapsUtilV3, ExtendGWin, ExtendMarkerClusterer]
         class Map extends BaseObject
             @include GmapUtil
             constructor: ->
@@ -12,7 +15,8 @@ angular.module("google-maps.directives.api".ns())
                     ctrlObj = CtrlHandle.handle $scope
                     $scope.ctrlType = 'Map'
                     $scope.deferred.promise.then ->
-                      ExtendGWin.init()
+                      initializeItems.forEach (i) ->
+                        i.init()
                     _.extend ctrlObj, getMap: ->
                       $scope.map
                 @controller = ["$scope", ctrlFn ]

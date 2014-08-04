@@ -16,7 +16,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-contrib-jasmine"
   grunt.loadNpmTasks "grunt-conventional-changelog"
   grunt.loadNpmTasks "grunt-bump"
-  grunt.loadNpmTasks 'grunt-wrap'
+  grunt.loadNpmTasks 'grunt-replace'
 
   #squishing this file done by moving grunt options out to its own file. This way we can focus on tasks!
   options = require('./GruntOptions')(grunt)
@@ -40,16 +40,16 @@ module.exports = (grunt) ->
 
 
   # Default task: build a release in dist/
-  grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "wrap:basic", "concat:dist", "copy:dist",
+  grunt.registerTask "default", ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist", "copy:dist",
                                  "uglify", "jasmine:spec"]
 
-  grunt.registerTask "fast", ["clean:dist", "jshint", "mkdir", "coffee", "wrap:basic", "concat:dist", "copy:dist", "jasmine:spec"]
+  grunt.registerTask "fast", ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist", "copy:dist", "jasmine:spec"]
 
   # run default "grunt" prior to generate _SpecRunner.html
-  grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "wrap:basic", "concat:dist", "copy:dist",
+  grunt.registerTask "spec", ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist", "copy:dist",
                               "connect:jasmineServer", "open:jasmine", "watch:spec"]
 
-  grunt.registerTask "coverage", ["clean:dist", "jshint", "mkdir", "coffee", "wrap:basic", "concat:dist", "copy:dist",
+  grunt.registerTask "coverage", ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist", "copy:dist",
                                   "uglify", "jasmine:coverage"]
 
   # Run the example page by creating a local copy of angular-google-maps.js

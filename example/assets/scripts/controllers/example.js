@@ -1,26 +1,21 @@
-(function () {
-  var module = angular.module("angular-google-maps-example", ["google-maps".ns()]);
-
-  module.run(function ($templateCache) {
-    $templateCache.put('control.tpl.html', '<button class="btn btn-sm btn-primary" ng-class="{\'btn-warning\': danger}" ng-click="controlClick()">{{controlText}}</button>');
-  });
-
-  module.controller('controlController', function ($scope) {
-    $scope.controlText = 'I\'m a custom control';
-    $scope.danger = false;
-    $scope.controlClick = function () {
-      $scope.danger = !$scope.danger;
-      alert('custom control clicked!')
-    };
-  });
-}());
-
-var rndAddToLatLon = function () {
+angular.module("angular-google-maps-example", ["google-maps"]).value("rndAddToLatLon",function () {
   return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1)
-}
-
-function ExampleController($scope, $timeout, $log, $http, nggmapLogger) {
-  var Logger = nggmapLogger;
+}).config(['googleMapsProvider', function(googleMapsProvider) {
+  googleMapsProvider.configure({
+//    key: 'your api key',
+    v:'3.15',
+    libraries: 'weather,geometry,visualization'
+  });
+}]).run(function ($templateCache) {
+  $templateCache.put('control.tpl.html', '<button class="btn btn-sm btn-primary" ng-class="{\'btn-warning\': danger}" ng-click="controlClick()">{{controlText}}</button>');
+}).controller('controlController', function ($scope) {
+  $scope.controlText = 'I\'m a custom control';
+  $scope.danger = false;
+  $scope.controlClick = function () {
+    $scope.danger = !$scope.danger;
+    alert('custom control clicked!')
+  };
+}).controller("ExampleController", function ($scope, $timeout, $log, $http, rndAddToLatLon) {
   Logger.doLog = true
   // Enable the new Google Maps visuals until it gets enabled by default.
   // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
@@ -224,6 +219,13 @@ function ExampleController($scope, $timeout, $log, $http, nggmapLogger) {
         dragend: function () {
           self = this;
           $timeout(function () {
+//                        modified = _.map($scope.map.mexiMarkers, function (marker) {
+//                            return {
+//                                latitude: marker.latitude + rndAddToLatLon(),
+//                                longitude: marker.longitude + rndAddToLatLon()
+//                            }
+//                        })
+//                        $scope.map.mexiMarkers = modified;
             var markers = [];
             var id = 0;
             if ($scope.map.mexiMarkers !== null && $scope.map.mexiMarkers.length > 0) {

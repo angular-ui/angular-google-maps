@@ -48,7 +48,9 @@ describe "MarkersParentModel - Clusterer Event Extensions", ->
       @gmap = new GoogleApiMock(false)
       @gmap.mockEvent()
 
-    inject ($rootScope, element, attrs, map, nggmapMarkersParentModel) =>
+    inject ($rootScope, element, attrs, map, nggmapMarkersParentModel, nggmapGoogleMapsUtilV3,nggmapExtendMarkerClusterer) =>
+      nggmapGoogleMapsUtilV3.init()
+      nggmapExtendMarkerClusterer.init()
       scope = $rootScope.$new()
       $timeout = ((fn)->
         fn())
