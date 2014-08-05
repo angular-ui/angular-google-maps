@@ -1,6 +1,7 @@
 describe "MarkerParentModel", ->
     afterEach ->
          window.google.maps = @gMapsTemp
+
     beforeEach ->
         module "google-maps.mocks"
         #define / inject values into the item we are testing... not a controller but it allows us to inject
@@ -75,6 +76,33 @@ describe "MarkerParentModel", ->
 
     it 'can be created', ->
         expect(@subject).toBeDefined()
+
+    describe 'scope is watched correctly', ->
+      #Demonstrates issue https://github.com/nlaplante/angular-google-maps/issues/476
+      it 'should create options that are bindable', ->
+        #TODO: This is very sloppy because it violates DRY and should be refactored
+        self = @
+        marker = undefined
+        options = {visible: true}
+        @scope =
+          idKey: 0
+          icon: 'icon.png'
+          coords:
+            latitude: 90
+            longitude: 90
+          options: options
+
+        #mocking google maps event listener, don't need except to instantiate
+        window.google.maps.event.addListener = (thing, eventName, callBack) =>
+          return
+
+        inject ($rootScope, $timeout, element, attrs, mapCtrl, MarkerParentModel, MarkerManager) =>
+          @scope = _.extend @scope, $rootScope.$new()
+          mgr = new MarkerManager(mapCtrl.getMap())
+          marker = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, mgr, false)
+
+        options.visible = false
+        expect(@scope.options.visible).toEqual(false)
 
     describe "validateScope", ->
         it 'returns false with scope undefined', ->

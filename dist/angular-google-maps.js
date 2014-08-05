@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.0 2014-08-03
+/*! angular-google-maps 1.2.0 2014-08-05
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -3665,9 +3665,13 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           opts = angular.extend({}, defaults, {
             position: defaults.position != null ? defaults.position : getCoords(coords),
-            icon: defaults.icon != null ? defaults.icon : icon,
             visible: defaults.visible != null ? defaults.visible : validateCoords(coords)
           });
+          if ((defaults.icon != null) || (icon != null)) {
+            opts = angular.extend(opts, {
+              icon: defaults.icon != null ? defaults.icon : icon
+            });
+          }
           if (map != null) {
             opts.map = map;
           }
@@ -5882,7 +5886,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
               break;
             case 'options':
-              if (this.validateCoords(scope.coords) && (scope.icon != null) && scope.options) {
+              if (this.validateCoords(scope.coords) && scope.options) {
                 if (this.scope.gMarker != null) {
                   this.scope.gMarker.setMap(null);
                 }

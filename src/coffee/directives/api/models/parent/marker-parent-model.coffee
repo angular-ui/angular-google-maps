@@ -46,7 +46,7 @@ angular.module("google-maps.directives.api.models.parent")
                 @scope.gMarker.setPosition @getCoords(scope.coords)
                 @scope.gMarker.setVisible @validateCoords(scope.coords)
             when 'options'
-              if @validateCoords(scope.coords) and scope.icon? and scope.options
+              if @validateCoords(scope.coords) and scope.options
                 @scope.gMarker.setMap(null) if @scope.gMarker?
                 @setGMarker new google.maps.Marker @createMarkerOptions(scope.coords, scope.icon, scope.options,@map)
 
