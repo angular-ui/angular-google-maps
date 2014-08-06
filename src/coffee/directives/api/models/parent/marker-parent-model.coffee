@@ -52,8 +52,9 @@ angular.module("google-maps.directives.api.models.parent")
 
         setGMarker: (gMarker) =>
           if @scope.gMarker
+            ret = @gMarkerManager.remove @scope.gMarker, false
             delete @scope.gMarker
-            @gMarkerManager.remove @scope.gMarker, false
+            ret
           @scope.gMarker = gMarker
           if @scope.gMarker
             @scope.gMarker.key = @scope.idKey

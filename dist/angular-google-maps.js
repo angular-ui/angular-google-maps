@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.0 2014-08-05
+/*! angular-google-maps 1.2.0 2014-08-06
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -5896,9 +5896,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerParentModel.prototype.setGMarker = function(gMarker) {
+          var ret;
           if (this.scope.gMarker) {
+            ret = this.gMarkerManager.remove(this.scope.gMarker, false);
             delete this.scope.gMarker;
-            this.gMarkerManager.remove(this.scope.gMarker, false);
+            ret;
           }
           this.scope.gMarker = gMarker;
           if (this.scope.gMarker) {
