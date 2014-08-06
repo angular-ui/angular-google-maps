@@ -5392,7 +5392,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.createGWin = function() {
-          var defaults,
+          var defaults, _opts,
             _this = this;
           if (this.gWin == null) {
             defaults = {};
@@ -5405,7 +5405,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             if (this.element) {
               this.html = _.isObject(this.element) ? this.element.html() : this.element;
             }
-            this.opts = this.createWindowOptions(this.markerCtrl, this.scope, this.html, defaults);
+            _opts = this.scope.options ? this.scope.options : defaults;
+            this.opts = this.createWindowOptions(this.markerCtrl, this.scope, this.html, _opts);
           }
           if ((this.opts != null) && !this.gWin) {
             if (this.opts.boxClass && (window.InfoBox && typeof window.InfoBox === 'function')) {
