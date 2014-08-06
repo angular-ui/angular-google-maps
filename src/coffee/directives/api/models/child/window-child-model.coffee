@@ -39,7 +39,8 @@ angular.module("google-maps.directives.api.models.child")
                             defaults = @opts
                         if @element
                           @html = if _.isObject(@element) then @element.html() else @element
-                        @opts = @createWindowOptions(@markerCtrl, @scope, @html, defaults)
+                        _opts = if @scope.options then @scope.options else defaults
+                        @opts = @createWindowOptions(@markerCtrl, @scope, @html, _opts)
 
                     if @opts? and !@gWin
                         if @opts.boxClass and (window.InfoBox && typeof window.InfoBox == 'function')
