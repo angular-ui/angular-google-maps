@@ -5,7 +5,7 @@ describe('Service: github', function () {
   var fakeModule = angular.module('fake.module', ['angularGoogleMapsApp']);
   
   fakeModule.config(function ($githubProvider) {
-  	$githubProvider.username('nlaplante').repository('angular-google-maps').branch('master');
+  	$githubProvider.username('angular-ui').repository('angular-google-maps').branch('master');
   });
   
   // load the service's module
@@ -14,7 +14,7 @@ describe('Service: github', function () {
   // instantiate service
   var github, $httpBackend, $timeout;
   
-  var apiURL = 'https://api.github.com/repos/nlaplante/angular-google-maps',
+  var apiURL = 'https://api.github.com/repos/angular-ui/angular-google-maps',
   	  apiDefaultOpts = {
 		callback: 'JSON_CALLBACK',
 		sha: 'master'  	  

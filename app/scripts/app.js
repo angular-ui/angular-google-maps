@@ -7,7 +7,7 @@ angular.module('angularGoogleMapsApp')
   	$locationProvider.html5Mode(false).hashPrefix('!');
   	$logProvider.debugEnabled(false);  	
 
-  	$githubProvider.username('nlaplante')
+  	$githubProvider.username('angular-ui')
   		.repository('angular-google-maps')
   		.branch('master');
   		

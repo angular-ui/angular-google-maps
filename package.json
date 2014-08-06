@@ -6,7 +6,7 @@
   "dependencies": {
     "grunt-git-log-json": "0.0.3"
   },
-  "repository": "https://github.com/nlaplante/angular-google-maps",
+  "repository": "https://github.com/angular-ui/angular-google-maps",
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-copy": "~0.4.1",
