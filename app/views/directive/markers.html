@@ -150,6 +150,19 @@ $scope.clickEventsObject =
         </td>
     </tr>
     <tr>
+        <td>events</td>
+        <td><span class="label label-info">expression</span></td>
+        <td>
+           <p>Custom events to apply to the marker. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Marker">Marker Events documentation</a></p>
+           <p>The handler function takes three parameters:
+           <ul>
+           <li>marker: the GoogleMap Marker object
+           <li>eventName: the name of the event
+           <li>arguments: the arguments provided by Google Maps for this event type. See the <a href="https://developers.google.com/maps/documentation/javascript/reference#Marker">Google Marker Event</a> docs for details on the arguments for each event.
+        </td>
+    </tr>
+
+    <tr>
         <td>control</td>
         <td><span class="label label-default">Object</span></td>
         <td>
@@ -178,9 +191,9 @@ $scope.clickEventsObject =
     </tr>
     <tr>
         <td>isLabel</td>
-        <td><span class="label label-info">{boolean}</span></td>
+        <td><span class="label label-info">{truthy}</span></td>
         <td><span class="badge badge-info">New in v1.2.0</span>
-            <p>boolean property. If true it will instruct the directive to create a <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/docs/reference.html">MarkerWithLabel</a> instead of a standard Marker. The default value is 'false'.
+            <p>truthy property. If true it will instruct the directive to create a <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/docs/reference.html">MarkerWithLabel</a> instead of a standard Marker. The default value is 'false' if the param is not specified.
             <p>When creating a MarkerWithLabel, it is necessary to specify additional <i>marker*</i> properties in the <code>options</code> param. The following MarkerWithLabel options are supported
                <ul>
                  <li><code>labelContent</code> - The content of the label
@@ -236,10 +249,9 @@ $scope.clickEventsObject =
              labelAnchor="'{string}'"
              labelClass="'{string}'"
              click="'{string or expression to a function}'"
-             isLabel='{boolean}'
-
-             events="not supported yet..."
+             events='{expression}'
              control='{expression}'
+             isLabel='{truthy}'
             >
     </markers>
 </script>

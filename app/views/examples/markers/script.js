@@ -10,6 +10,15 @@ angular.module('appMaps', ['google-maps'])
 
         $scope.map = {center: {latitude: 40.1451, longitude: -99.6680 }, zoom: 4, bounds: {}};
         $scope.options = {scrollwheel: false};
+        $scope.markersEvents = {
+          click: function (gMarker, eventName, model) {
+            if(model.$id){
+              model = model.coords;//use scope portion then
+            }
+           alert("Model: event:" + eventName + " " + JSON.stringify(model));
+          }
+        };
+
         
         var createRandomMarker = function (i, bounds, idKey) {
             var lat_min = bounds.southwest.latitude,
