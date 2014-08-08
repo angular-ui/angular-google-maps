@@ -11,7 +11,7 @@ angular.module('appMaps', ['google-maps'])
         $scope.map = {center: {latitude: 40.1451, longitude: -99.6680 }, zoom: 4, bounds: {}};
         $scope.options = {scrollwheel: false};
         
-        var createRandomMarker = function (i, bounds, isLabel, idKey) {
+        var createRandomMarker = function (i, bounds, idKey) {
             var lat_min = bounds.southwest.latitude,
                 lat_range = bounds.northeast.latitude - lat_min,
                 lng_min = bounds.southwest.longitude,
@@ -23,6 +23,7 @@ angular.module('appMaps', ['google-maps'])
 
             var latitude = lat_min + (Math.random() * lat_range);
             var longitude = lng_min + (Math.random() * lng_range);
+            // Note, the label* properties are only used if isLabel='true' in the directive.
             var ret = {
               options: {draggable: true,
                 labelAnchor: '10 39',
@@ -44,12 +45,12 @@ angular.module('appMaps', ['google-maps'])
             if (!ov.southwest && nv.southwest) {
                 var markers = [];
                 for (var i = 0; i < 25; i++) {
-                    markers.push(createRandomMarker(i, $scope.map.bounds, false))
+                    markers.push(createRandomMarker(i, $scope.map.bounds))
                 }
                 $scope.randomMarkers = markers;
                 markers = [];
                 for (var i = 25; i < 50; i++) {
-                    markers.push(createRandomMarker(i, $scope.map.bounds, true ))
+                    markers.push(createRandomMarker(i, $scope.map.bounds))
                 }
                 $scope.randomMarkersWithLabel = markers;
 
