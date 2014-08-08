@@ -2,9 +2,9 @@
 
 > AngularJS directives for Google Maps
 
-[![Dependencies](https://david-dm.org/nlaplante/angular-google-maps.png)](https://david-dm.org/nlaplante/angular-google-maps)&nbsp;
-[![Dependencies](https://david-dm.org/nlaplante/angular-google-maps/dev-status.png)](https://david-dm.org/nlaplante/angular-google-maps)&nbsp;
-[![Build Status](https://travis-ci.org/nlaplante/angular-google-maps.png?branch=r1-dev)](https://travis-ci.org/nlaplante/angular-google-maps)
+[![Dependencies](https://david-dm.org/angular-ui/angular-google-maps.png)](https://david-dm.org/angular-ui/angular-google-maps)&nbsp;
+[![Dependencies](https://david-dm.org/angular-ui/angular-google-maps/dev-status.png)](https://david-dm.org/angular-ui/angular-google-maps)&nbsp;
+[![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.png?branch=r1-dev)](https://travis-ci.org/angular-ui/angular-google-maps)
 ##What is new (1.2.X):
 
 With the minor release of 1.2.0 (which is why it is a minor) there are a few breaking changes:
