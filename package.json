@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "grunt",
-    "example": "grunt example"
+    "example": "grunt example",
+    "test" : "grunt"
   },
   "keywords": [
     "angularjs",
