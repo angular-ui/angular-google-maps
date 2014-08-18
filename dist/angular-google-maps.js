@@ -5893,12 +5893,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   this.scope.gMarker.setMap(null);
                 }
 				
-                this.setGMarker(new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, scope.map)));
+                var ret = this.setGMarker(new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, scope.map)));
 				this.listener = google.maps.event.addListener(this.scope.gMarker, 'click', function() {
 					if (_this.doClick && (scope.click != null)) {
 					  return _this.scope.click();
 					}
 				});
+				return ret;
               }
           }
         };
