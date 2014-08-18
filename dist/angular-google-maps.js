@@ -5888,10 +5888,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               break;
             case 'options':
               if (this.validateCoords(scope.coords) && scope.options) {
+                var _this = this;
                 if (this.scope.gMarker != null) {
                   this.scope.gMarker.setMap(null);
                 }
-                return this.setGMarker(new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, this.map)));
+				
+                this.setGMarker(new google.maps.Marker(this.createMarkerOptions(scope.coords, scope.icon, scope.options, scope.map)));
+				this.listener = google.maps.event.addListener(this.scope.gMarker, 'click', function() {
+					if (_this.doClick && (scope.click != null)) {
+					  return _this.scope.click();
+					}
+				});
               }
           }
         };
