@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-08-04
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-08-22
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -683,9 +683,13 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           opts = angular.extend({}, defaults, {
             position: defaults.position != null ? defaults.position : getCoords(coords),
-            icon: defaults.icon != null ? defaults.icon : icon,
             visible: defaults.visible != null ? defaults.visible : validateCoords(coords)
           });
+          if ((defaults.icon != null) || (icon != null)) {
+            opts = angular.extend(opts, {
+              icon: defaults.icon != null ? defaults.icon : icon
+            });
+          }
           if (map != null) {
             opts.map = map;
           }
@@ -2406,7 +2410,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.createGWin = function() {
-          var defaults,
+          var defaults, _opts,
             _this = this;
           if (this.gWin == null) {
             defaults = {};
@@ -2419,7 +2423,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             if (this.element) {
               this.html = _.isObject(this.element) ? this.element.html() : this.element;
             }
-            this.opts = this.createWindowOptions(this.markerCtrl, this.scope, this.html, defaults);
+            _opts = this.scope.options ? this.scope.options : defaults;
+            this.opts = this.createWindowOptions(this.markerCtrl, this.scope, this.html, _opts);
           }
           if ((this.opts != null) && !this.gWin) {
             if (this.opts.boxClass && (window.InfoBox && typeof window.InfoBox === 'function')) {
@@ -2900,7 +2905,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
               break;
             case 'options':
-              if (this.validateCoords(scope.coords) && (scope.icon != null) && scope.options) {
+              if (this.validateCoords(scope.coords) && scope.options) {
                 if (this.scope.gMarker != null) {
                   this.scope.gMarker.setMap(null);
                 }
@@ -2910,9 +2915,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerParentModel.prototype.setGMarker = function(gMarker) {
+          var ret;
           if (this.scope.gMarker) {
+            ret = this.gMarkerManager.remove(this.scope.gMarker, false);
             delete this.scope.gMarker;
-            this.gMarkerManager.remove(this.scope.gMarker, false);
+            ret;
           }
           this.scope.gMarker = gMarker;
           if (this.scope.gMarker) {
@@ -6070,7 +6077,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-08-04
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-08-22
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */

@@ -1,8 +1,8 @@
 describe "oo.BaseObject", ->
     beforeEach ->
         module "google-maps.directives.api.utils".ns()
-        inject (nggmapBaseObject) =>
-            @subject = nggmapBaseObject
+        inject ['BaseObject'.ns(), (BaseObject) =>
+            @subject = BaseObject
             PersonModule =
                 changePersonName: (person, name)->
                     person.name = name
@@ -14,7 +14,7 @@ describe "oo.BaseObject", ->
                 p_name: "no_name"
                 state: "no_state"
             @PersonAttributes = PersonAttributes
-            class Person extends nggmapBaseObject
+            class Person extends BaseObject
                 @include PersonModule
                 @extend PersonAttributes
                 constructor: (name, state)->
@@ -24,6 +24,7 @@ describe "oo.BaseObject", ->
             @state = "fl"
             @defaultUsage = new Person()
             @usage = new Person(@name, @state)
+        ]
 
     it "exists ~ you loaded the script!", ->
         expect(@subject?).toEqual(true)

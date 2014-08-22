@@ -62,12 +62,14 @@ describe "MarkerParentModel".ns(), ->
                 obj.obj == thing
 
             found.events[eventName](found.obj) if found?
-        inject ($rootScope, $timeout, element, attrs, mapCtrl, nggmapMarkerParentModel, nggmapMarkerManager) =>
+        inject ['$rootScope', '$timeout', 'element', 'attrs', 'mapCtrl', 'MarkerParentModel'.ns(), 'MarkerManager'.ns(),
+          ($rootScope, $timeout, element, attrs, mapCtrl, MarkerParentModel, MarkerManager) =>
             scope = $rootScope.$new()
             @scope = _.extend @scope, scope
-            @testCtor = nggmapMarkerParentModel
-            mgr = new nggmapMarkerManager(mapCtrl.getMap())
-            @subject = new nggmapMarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, mgr, false)
+            @testCtor = MarkerParentModel
+            mgr = new MarkerManager(mapCtrl.getMap())
+            @subject = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, mgr, false)
+        ]
 
         @subject.setEvents(@, @scope)
 
@@ -96,10 +98,12 @@ describe "MarkerParentModel".ns(), ->
         window.google.maps.event.addListener = (thing, eventName, callBack) =>
           return
 
-        inject ($rootScope, $timeout, element, attrs, mapCtrl, MarkerParentModel, MarkerManager) =>
-          @scope = _.extend @scope, $rootScope.$new()
-          mgr = new MarkerManager(mapCtrl.getMap())
-          marker = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, mgr, false)
+        inject ['$rootScope', '$timeout', 'element', 'attrs', 'mapCtrl', 'MarkerParentModel'.ns(), 'MarkerManager'.ns(),
+          ($rootScope, $timeout, element, attrs, mapCtrl, MarkerParentModel, MarkerManager) =>
+            @scope = _.extend @scope, $rootScope.$new()
+            mgr = new MarkerManager(mapCtrl.getMap())
+            marker = new MarkerParentModel(@scope, element, attrs, mapCtrl, $timeout, mgr, false)
+        ]
 
         options.visible = false
         expect(@scope.options.visible).toEqual(false)

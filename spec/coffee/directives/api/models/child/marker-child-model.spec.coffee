@@ -25,15 +25,17 @@ describe "MarkerChildModel".ns(), ->
         @coordsKey = 'coords'
         @optionsKey = 'options'
 
-        inject ($timeout, $rootScope, $controller, nggmapMarkerChildModel, nggmapMarkerManager) =>
-            scope = $rootScope.$new()
-            scope.click = ->
-            scope.icon = @iconKey
-            scope.coords = @coordsKey
-            scope.options = @optionsKey
-            mgr = new nggmapMarkerManager(document.gMap, undefined, undefined)
-            @subject = new nggmapMarkerChildModel(@model, scope, document.gMap, $timeout, defaults = {},
-                doClick = (()->),mgr)
+        inject ['$timeout','$rootScope','$controller','MarkerChildModel'.ns(),'MarkerManager'.ns(),
+        ($timeout, $rootScope, $controller, MarkerChildModel, MarkerManager) =>
+          scope = $rootScope.$new()
+          scope.click = ->
+          scope.icon = @iconKey
+          scope.coords = @coordsKey
+          scope.options = @optionsKey
+          mgr = new MarkerManager(document.gMap, undefined, undefined)
+          @subject = new MarkerChildModel(@model, scope, document.gMap, $timeout, defaults = {},
+              doClick = (()->),mgr)
+        ]
 
 
     it 'can be created', ->

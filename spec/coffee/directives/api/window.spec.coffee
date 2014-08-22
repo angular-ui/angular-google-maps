@@ -37,7 +37,8 @@ describe "directives.api.Window", ->
         @timeOutNoW = (fnc,time) =>
             fnc()
 #        @gMarker = new google.maps.Marker(@commonOpts)
-        inject (_$rootScope_,$q, $compile, $http, $templateCache, nggmapWindow) =>
+        inject ['$rootScope','$q', '$compile', '$http', '$templateCache', 'Window'.ns(),
+          (_$rootScope_,$q, $compile, $http, $templateCache, Window) =>
             @$rootScope =  _$rootScope_
             d = $q.defer()
             d.resolve @gmap
@@ -48,12 +49,12 @@ describe "directives.api.Window", ->
             @windowScope = _.extend @$rootScope.$new(), @mocks.scope
 
 
-            @subject = new nggmapWindow(@timeOutNoW,$compile, $http, $templateCache)
+            @subject = new Window(@timeOutNoW,$compile, $http, $templateCache)
             @subject.onChildCreation = (child) =>
                 @childWindow = child
 
             @prom = d.promise
-            return
+        ]
 
     it "should test receive the fulfilled promise!!", ->
         result = undefined

@@ -3,11 +3,12 @@ describe 'EventsHelper'.ns(), ->
   beforeEach ->
     module "google-maps.directives.api.utils".ns()
     module "google-maps.mocks"
-    inject (nggmapEventsHelper, GoogleApiMock) =>
-      @subject = nggmapEventsHelper
+    inject ['EventsHelper'.ns(), 'GoogleApiMock', (EventsHelper, GoogleApiMock) =>
+      @subject = EventsHelper
       @gmap = new GoogleApiMock()
       @gmap.mockAPI()
       @listeners = @gmap.mockEvent()
+    ]
 
     scope =
       events:

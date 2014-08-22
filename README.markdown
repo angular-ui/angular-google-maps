@@ -6,6 +6,7 @@
 [![Dependencies](https://david-dm.org/angular-ui/angular-google-maps/dev-status.png)](https://david-dm.org/angular-ui/angular-google-maps)&nbsp; 
 Master: [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.png?branch=master)](https://travis-ci.org/angular-ui/angular-google-maps)
 Develop: [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.png?branch=develop)](https://travis-ci.org/angular-ui/angular-google-maps)
+
 ##What is new (1.2.X):
 
 With the minor release of 1.2.0 (which is why it is a minor) there are a few breaking changes:
@@ -26,8 +27,7 @@ This is a directive for AngularJS `~1.0.7+, ~1.2.2+`.
 If you plan to hack on the directives or want to run the example, first thing to do is to install NPM dependencies:
 
 ```shell
-npm install
-bower install ( for specs and dev dependencies)
+npm install #note bower install is run on post install 
 ```
 
 ### Building

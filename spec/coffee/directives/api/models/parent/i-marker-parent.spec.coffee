@@ -3,15 +3,17 @@ describe "IMarkerParentModel".ns(), ->
     angular.mock.module("google-maps.directives.api.models.parent".ns())
 
     @clickCount = 0
-    inject ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, nggmapIMarkerParentModel) =>
-      @rootScope = $rootScope
-      @scope = $rootScope.$new()
-      @ele = $compile('<nggmap-markers models="models"></nggmap-markers>')(@scope)
-      @attrs = {click: @click}
-      @IMarkerParentModel = nggmapIMarkerParentModel
-      @$timeout = $timeout
-      @scope.click = () =>
-        @clickCount++
+    inject ['$rootScope', '$timeout', '$compile', '$http', '$templateCache', '$interpolate', 'IMarkerParentModel'.ns(),
+      ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, IMarkerParentModel) =>
+        @rootScope = $rootScope
+        @scope = $rootScope.$new()
+        @ele = $compile('<nggmap-markers models="models"></nggmap-markers>')(@scope)
+        @attrs = {click: @click}
+        @IMarkerParentModel = IMarkerParentModel
+        @$timeout = $timeout
+        @scope.click = () =>
+          @clickCount++
+    ]
 
   it "should instantiate", ->
     @scope.coords = {

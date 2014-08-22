@@ -34,15 +34,17 @@ xdescribe "MarkersParentModel".ns(), ->
       @provide.decorator 'MarkerChildModel', () => @markerChildModel
 
     @clickCount = 0
-    inject ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, nggmapMarkersParentModel) =>
+    inject ['$rootScope', '$timeout', '$compile', '$http', '$templateCache', '$interpolate', 'MarkersParentModel'.ns(),
+      ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, MarkersParentModel) =>
       @rootScope = $rootScope
       @scope = $rootScope.$new()
       @ele = $compile('<nggmap-markers models="models"></nggmap-markers>')(@scope)
       @attrs = {click: @click}
-      @MarkersParentModel = nggmapMarkersParentModel
+      @MarkersParentModel = MarkersParentModel
       @$timeout = $timeout
       @scope.click = () =>
         @clickCount++
+    ]
 
     @map = jasmine.createSpyObj('map')
     @subject = new @MarkersParentModel(@scope, @ele, @attrs, @map, @$timeout)

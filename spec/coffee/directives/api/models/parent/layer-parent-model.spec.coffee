@@ -33,11 +33,12 @@ describe "LayerParentModelSpec", ->
         @timeout = (fnc,time) =>
             fnc()
 
-        inject ($rootScope, nggmapLayerParentModel) =>
+        inject ['$rootScope', 'LayerParentModel'.ns(), ($rootScope, nggmapLayerParentModel) =>
             scope = $rootScope.$new()
             @constructor = nggmapLayerParentModel
             @scope = _.extend @scope, scope
             @subject = new @constructor(@scope,{},@attrs,@mapCtrl)
+        ]
 
     afterEach ->
         google.map = @tempMaps

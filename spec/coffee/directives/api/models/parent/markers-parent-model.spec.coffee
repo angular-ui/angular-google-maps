@@ -48,19 +48,21 @@ describe "MarkersParentModel - Clusterer Event Extensions", ->
       @gmap = new GoogleApiMock(false)
       @gmap.mockEvent()
 
-    inject ($rootScope, element, attrs, map, nggmapMarkersParentModel, nggmapGoogleMapsUtilV3,nggmapExtendMarkerClusterer) =>
-      nggmapGoogleMapsUtilV3.init()
-      nggmapExtendMarkerClusterer.init()
-      scope = $rootScope.$new()
-      $timeout = ((fn)->
-        fn())
-      @scope = _.extend @scope, scope
-      @scope.options =
-        animation: google.maps.Animation.BOUNCE
-      @testCtor = nggmapMarkersParentModel
-      @fireListener = window.google.maps.event.fireListener
-      @subject = new @testCtor(@scope, element, attrs, map, $timeout)
-      @subject
+    inject ['$rootScope', 'element', 'attrs', 'map', 'MarkersParentModel'.ns(), 'GoogleMapsUtilV3'.ns(),'ExtendMarkerClusterer'.ns(),
+      ($rootScope, element, attrs, map, MarkersParentModel, GoogleMapsUtilV3,ExtendMarkerClusterer) =>
+        GoogleMapsUtilV3.init()
+        ExtendMarkerClusterer.init()
+        scope = $rootScope.$new()
+        $timeout = ((fn)->
+          fn())
+        @scope = _.extend @scope, scope
+        @scope.options =
+          animation: google.maps.Animation.BOUNCE
+        @testCtor = MarkersParentModel
+        @fireListener = window.google.maps.event.fireListener
+        @subject = new @testCtor(@scope, element, attrs, map, $timeout)
+        @subject
+    ]
 
   it 'constructor exist', ->
     expect(@testCtor).toBeDefined()

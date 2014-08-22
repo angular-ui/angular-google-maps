@@ -13,11 +13,11 @@ describe "directives.api.control", ->
     inject ($templateCache) ->
       $templateCache.put('mockControl.tpl.html', '<button class="mock">Control</button>')
 
-    inject ($compile, $rootScope, $timeout, nggmapControl, nggmapLogger) ->
+    inject ['$compile', '$rootScope', '$timeout', 'Control'.ns(), 'Logger'.ns(), ($compile, $rootScope, $timeout, Control, Logger) ->
       @compile = $compile
       @rootScope = $rootScope
-      @control = new nggmapControl()
-      @log = nggmapLogger
+      @control = new Control()
+      @log = Logger
 
       # mock map scope
       @scope = @rootScope.$new()
@@ -26,6 +26,7 @@ describe "directives.api.control", ->
       @scope.map.center =
         longitude: 47
         latitude: -27
+    ]
 
     spyOn @log, 'error'
 
@@ -35,10 +36,10 @@ describe "directives.api.control", ->
 
   it "should log error if no template is supplied", ->
     html = angular.element """
-  								<nggmap-google-map center="map.center" zoom="map.zoom">
-  									<nggmap-map-control></nggmap-map-control>
-  								</nggmap-google-map>
-  								"""
+      <nggmap-google-map center="map.center" zoom="map.zoom">
+        <nggmap-map-control></nggmap-map-control>
+      </nggmap-google-map>
+      """
     element = @compile(html)(@scope)
     @rootScope.$apply()
     expect(@log.error).toHaveBeenCalledWith('mapControl: could not find a valid template property')
@@ -46,10 +47,10 @@ describe "directives.api.control", ->
 
   it "should load template", ->
     html = angular.element """
-                <nggmap-google-map center="map.center" zoom="map.zoom">
-									<nggmap-map-control template="mockControl.tpl.html"></nggmap-map-control>
-								</nggmap-google-map>
-								"""
+      <nggmap-google-map center="map.center" zoom="map.zoom">
+        <nggmap-map-control template="mockControl.tpl.html"></nggmap-map-control>
+      </nggmap-google-map>
+      """
     element = @compile(html)(@scope)
     @rootScope.$apply()
     expect(@log.error).not.toHaveBeenCalled()
@@ -70,10 +71,10 @@ describe "directives.api.control", ->
 
   it "error was called bottom_center", ->
     html = angular.element """
-								<nggmap-google-map center="map.center" zoom="map.zoom">
-									<nggmap-map-control template="mockControl.tpl.html" position="bottom-center"></nggmap-map-control>
-								</nggmap-google-map>
-								"""
+      <nggmap-google-map center="map.center" zoom="map.zoom">
+        <nggmap-map-control template="mockControl.tpl.html" position="bottom-center"></nggmap-map-control>
+      </nggmap-google-map>
+      """
     element = @compile(html)(@scope)
     @rootScope.$apply()
     expect(@log.error).not.toHaveBeenCalled()
@@ -81,10 +82,10 @@ describe "directives.api.control", ->
 
   it "error was called - top_left", ->
     html = angular.element """
-								<nggmap-google-map center="map.center" zoom="map.zoom">
-									<nggmap-map-control template="mockControl.tpl.html" position="ToP_LefT"></nggmap-map-control>
-								</nggmap-google-map>
-								"""
+      <nggmap-google-map center="map.center" zoom="map.zoom">
+        <nggmap-map-control template="mockControl.tpl.html" position="ToP_LefT"></nggmap-map-control>
+      </nggmap-google-map>
+      """
     element = @compile(html)(@scope)
     @rootScope.$apply()
     expect(@log.error).not.toHaveBeenCalled()

@@ -63,10 +63,14 @@ angular.module("google-maps.directives.api.utils".ns())
     defaults = {} unless defaults?
 
     opts = angular.extend {}, defaults,
-      position: if defaults.position? then defaults.position
-      else getCoords(coords),
-      icon: if defaults.icon? then defaults.icon else icon,
+      position: if defaults.position? then defaults.position else getCoords(coords),
       visible: if defaults.visible? then defaults.visible else validateCoords(coords)
+
+    # Only set icon if there's one to set
+    if defaults.icon? or icon?
+      opts = angular.extend opts,
+        icon: if defaults.icon? then defaults.icon else icon
+
     opts.map = map if map?
     opts
 

@@ -30,7 +30,8 @@ describe "directives.api.Marker", ->
           {}
     @timeOutNoW = (fnc, time) =>
       fnc()
-    inject ($rootScope, nggmapMarker, $q) =>
+
+    inject ['$rootScope', '$q', 'Marker'.ns(),($rootScope, $q, Marker) =>
       @$rootScope = $rootScope
       d = $q.defer()
       d.resolve {}
@@ -40,7 +41,8 @@ describe "directives.api.Marker", ->
       @mocks.scope.$new = () =>
         @$rootScope.$new()
       @mocks.scope.deferred = d
-      @subject = new nggmapMarker()
+      @subject = new Marker()
+    ]
 
   it 'can be created', ->
     expect(@subject).toBeDefined()
