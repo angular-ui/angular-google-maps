@@ -146,6 +146,19 @@ $scope.clickEventsObject =
         </td>
     </tr>
     <tr>
+        <td>events</td>
+        <td><span class="label label-info">expression</span></td>
+        <td>
+           <p>Custom events to apply to the marker. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Marker">Marker Events documentation</a></p>
+           <p>The handler function takes three parameters:
+           <ul>
+           <li>marker: the GoogleMap Marker object
+           </li><li>eventName: the name of the event
+           </li><li>arguments: the arguments provided by Google Maps for this event type. See the <a href="https://developers.google.com/maps/documentation/javascript/reference#Marker">Google Marker Event</a> docs for details on the arguments for each event.
+        </li></ul></p></td>
+    </tr>
+
+    <tr>
         <td>control</td>
         <td><span class="label label-default">Object</span></td>
         <td>
@@ -172,6 +185,24 @@ $scope.clickEventsObject =
                 or $scope.markerControl.getChildMarkers().get(id)</code>
         </td>
     </tr>
+    <tr>
+        <td>isLabel</td>
+        <td><span class="label label-info">{truthy}</span></td>
+        <td><span class="badge badge-info">New in v1.2.0</span>
+            <p>truthy property. If true it will instruct the directive to create a <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/docs/reference.html">MarkerWithLabel</a> instead of a standard Marker. The default value is 'false' if the param is not specified.
+            </p><p>When creating a MarkerWithLabel, it is necessary to specify additional <i>marker*</i> properties in the <code>options</code> param. The following MarkerWithLabel options are supported
+               <ul>
+                 <li><code>labelContent</code> - The content of the label
+                 </li><li><code>labelAnchor</code> - By default, a label is drawn with its anchor point at (0,0) so that its top left corner is positioned at the anchor point of the associated marker. Use this
+                     property to change the anchor point of the label. For example, to center a 50px-wide label beneath a marker, specify a <code>labelAnchor</code> of <code>google.maps.Point(25, 0)</code>.
+                      (Note: x-values increase to the right and y-values increase to the top.)
+                 </li><li><code>labelClass</code> - The name of the CSS class defining the styles for the label.
+                 </li><li><code>labelStyle</code> -  An object literal whose properties define specific CSS style values to be applied to the label. Style values defined here override those that may be defined in the <code>labelClass</code> style sheet.
+               </li></ul>
+              See in the example below how these values are specified in the script.js file, and <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/docs/reference.html">MarkerWithLabel</a> for more details on the 
+               supported properties</p>
+        </td>
+    </tr>  
     </tbody>
 </table>
 
@@ -214,9 +245,9 @@ $scope.clickEventsObject =
              labelAnchor="'{string}'"
              labelClass="'{string}'"
              click="'{string or expression to a function}'"
-
-             events="not supported yet..."
+             events='{expression}'
              control='{expression}'
+             isLabel='{truthy}'
             >
     </markers>
 </script>
