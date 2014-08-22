@@ -30,16 +30,17 @@ angular.module("google-maps.directives.api.models.child".ns())
                 @createGWin()
                 @showHide()
 
-        createGWin: () =>
+        createGWin:() =>
           if !@gWin?
-            defaults = {}
-            if @opts?
-              #being double careful for race condition on @opts.position via watch coords (if element and coords change at same time)
-              @opts.position = @getCoords @scope.coords if @scope.coords
-              defaults = @opts
-            if @element
-              @html = if _.isObject(@element) then @element.html() else @element
-            @opts = @createWindowOptions(@markerCtrl, @scope, @html, defaults)
+              defaults = {}
+              if @opts?
+                  #being double careful for race condition on @opts.position via watch coords (if element and coords change at same time)
+                  @opts.position = @getCoords @scope.coords if @scope.coords
+                  defaults = @opts
+              if @element
+                @html = if _.isObject(@element) then @element.html() else @element
+              _opts = if @scope.options then @scope.options else defaults
+              @opts = @createWindowOptions(@markerCtrl, @scope, @html, _opts)
 
           if @opts? and !@gWin
             if @opts.boxClass and (window.InfoBox && typeof window.InfoBox == 'function')

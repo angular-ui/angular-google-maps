@@ -20,7 +20,7 @@
 
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet"
           type="text/css">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700'
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700'
           rel='stylesheet' type='text/css'>
     <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
 </head>
@@ -90,7 +90,7 @@
                     doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
         </nggmap-markers>
 
-        <nggmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'" islabel="true" events="">
+        <nggmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'" islabel="true" events="map.markers2Events">
             <nggmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     I should not be attached to a
@@ -444,7 +444,6 @@
 <script src="assets/scripts/mocks/heat-layer.js"></script>
 <script src="assets/scripts/controllers/example.js"></script>
 <script src="assets/scripts/controllers/templates/info.js"></script>
-<script src="http://localhost:35729/livereload.js"></script>
 </body>
 
 </html>

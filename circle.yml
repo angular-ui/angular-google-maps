@@ -1,0 +1,3 @@
+dependencies:
+  post:
+    - bower install
