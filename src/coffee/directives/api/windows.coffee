@@ -8,7 +8,7 @@ angular.module("google-maps.directives.api".ns())
       super($timeout, $compile, $http, $templateCache)
       self = @
       @$interpolate = $interpolate
-      @require = ['^nggmapGoogleMap', '^?nggmapMarkers']
+      @require = ['^' + 'GoogleMap'.ns(), '^?' + 'Markers'.ns()]
       @template = '<span class="angular-google-maps-windows" ng-transclude></span>'
       @scope.idKey = '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
       @scope.doRebuildAll = '=dorebuildall' #root level directive attribute not a model level

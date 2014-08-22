@@ -23,9 +23,9 @@ describe "markers directive test", ->
   it "should add markers for each object in model", ->
     #TODO: We ought to be able to make this test pass, just need to figure _async I think -MDB.
     html = """
-      <nggmap-google-map draggable="true" center="map.center" zoom="map.zoom">
-          <nggmap-markers models="items" coords="'self'" ></nggmap-markers>
-      </nggmap-google-map>
+      <ui-gmap-google-map draggable="true" center="map.center" zoom="map.zoom">
+          <ui-gmap-markers models="items" coords="'self'" ></ui-gmap-markers>
+      </ui-gmap-google-map>
            """
     scope = @rootScope.$new()
     scope.items = []

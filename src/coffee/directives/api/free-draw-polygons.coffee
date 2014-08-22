@@ -10,7 +10,7 @@ angular.module("google-maps.directives.api".ns())
       @include CtrlHandle
       restrict: 'EMA'
       replace: true
-      require: '^nggmapGoogleMap'
+      require: '^' + 'GoogleMap'.ns()
       scope:
         polygons: '='
         draw: '='

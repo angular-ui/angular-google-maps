@@ -49,7 +49,7 @@ angular.module("google-maps".ns())
       constructor: ($timeout) ->
         super($timeout)
         self = @
-        @require = '^nggmapMarker'
+        @require = '^' + 'Marker'.ns()
         @template = '<span class="angular-google-maps-marker-label" ng-transclude></span>'
         @$log.info(@)
 

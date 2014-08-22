@@ -26,7 +26,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
   };
 })
 
-.controller("ExampleController",['$scope', '$timeout', 'nggmapLogger', '$http', 'rndAddToLatLon','GoogleMapApi'.ns()
+.controller("ExampleController",['$scope', '$timeout', 'Logger'.ns(), '$http', 'rndAddToLatLon','GoogleMapApi'.ns()
     , function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
   $log.doLog = true
 

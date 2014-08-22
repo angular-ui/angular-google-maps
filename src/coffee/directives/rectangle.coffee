@@ -55,7 +55,7 @@ angular.module("google-maps".ns()).directive "Rectangle".ns(), ["Logger".ns(), (
   "use strict"
   DEFAULTS = {}
   restrict: "EMA"
-  require: "^nggmapGoogleMap"
+  require: '^' + 'GoogleMap'.ns()
   replace: true
   scope:
     bounds: "="

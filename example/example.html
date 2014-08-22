@@ -39,7 +39,7 @@
     <button class="btn btn-success" ng-click="getMapInstance()">Get Map Instance</button>
 </div>
 <div class="row-fluid">
-    <div nggmap-google-map="exp" class="span7"
+    <div ui-gmap-google-map="exp" class="span7"
          center="map.center"
          zoom="map.zoom"
          draggable="true"
@@ -51,16 +51,16 @@
          control="map.control"
         >
 
-        <nggmap-map-control template="control.tpl.html" position="top-right" index="1" controller="controlController"></nggmap-map-control>
+        <ui-gmap-map-control template="control.tpl.html" position="top-right" index="1" controller="controlController"></ui-gmap-map-control>
 
-        <nggmap-layer type="TrafficLayer" show="map.showTraffic"></nggmap-layer>
-        <nggmap-layer type="BicyclingLayer" show="map.showBicycling"></nggmap-layer>
-        <nggmap-layer namespace="weather" type="WeatherLayer" show="map.showWeather"></nggmap-layer>
-        <nggmap-layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></nggmap-layer>
+        <ui-gmap-layer type="TrafficLayer" show="map.showTraffic"></ui-gmap-layer>
+        <ui-gmap-layer type="BicyclingLayer" show="map.showBicycling"></ui-gmap-layer>
+        <ui-gmap-layer namespace="weather" type="WeatherLayer" show="map.showWeather"></ui-gmap-layer>
+        <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></ui-gmap-layer>
 
         <!--WINDOWS without markers-->
         <!--NOTICE THEY MUST BE PRIOR TO ANY MARKERS OR THEY WILL ATTACH THEMSELVES walking up the dom tree-->
-        <nggmap-window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false" options="map.infoWindow.options"  ng-cloak>
+        <ui-gmap-window show="map.infoWindow.show" coords="map.infoWindow.coords" isIconVisibleOnClick="false" options="map.infoWindow.options"  ng-cloak>
             <div>
                 <p>This is an info window at {{ map.infoWindow.coords.latitude | number:4 }}, {{ map.infoWindow.coords.longitude | number:4 }}!</p>
                 <div ng-controller='InfoController'>
@@ -70,28 +70,28 @@
                     <a class="btn" ng-click="clickedButtonInWindow()">CLICK ME</a>
                 </div>
             </div>
-        </nggmap-window>
+        </ui-gmap-window>
 
 
-        <nggmap-window show="map.infoWindowWithCustomClass.show" coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
+        <ui-gmap-window show="map.infoWindowWithCustomClass.show" coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
             I'm a window with a custom class set via options.boxClass. I only work when googles <a href ="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
-        </nggmap-window>
+        </ui-gmap-window>
 
-        <nggmap-window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
+        <ui-gmap-window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
                 options="map.templatedInfoWindow.options"
                 templateUrl="map.templatedInfoWindow.templateUrl"
                 templateParameter="map.templatedInfoWindow.templateParameter" ng-cloak>
-        </nggmap-window>
+        </ui-gmap-window>
 
-        <nggmap-marker coords="searchLocationMarker.coords" options="searchLocationMarker.options" events="searchLocationMarker.events" idKey="searchLocationMarker.id">
-        </nggmap-marker>
+        <ui-gmap-marker coords="searchLocationMarker.coords" options="searchLocationMarker.options" events="searchLocationMarker.events" idKey="searchLocationMarker.id">
+        </ui-gmap-marker>
 
-        <nggmap-markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
+        <ui-gmap-markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
                     doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
-        </nggmap-markers>
+        </ui-gmap-markers>
 
-        <nggmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'" islabel="true" events="map.markers2Events">
-            <nggmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
+        <ui-gmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'" islabel="true" events="map.markers2Events">
+            <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     I should not be attached to a
                     marker.
@@ -102,14 +102,14 @@
 
                     <p class="muted">My marker will stay open when the window is popped up!</p>
                 </div>
-            </nggmap-windows>
-        </nggmap-markers>
+            </ui-gmap-windows>
+        </ui-gmap-markers>
 
-        <nggmap-markers models="map.clickMarkers" coords="'self'" click="clackMarker">
-	    </nggmap-markers>
+        <ui-gmap-markers models="map.clickMarkers" coords="'self'" click="clackMarker">
+	    </ui-gmap-markers>
 
-        <nggmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
-            <nggmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
+        <ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
+            <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p>Dynamic Marker created via a delay!</p>
 
@@ -117,54 +117,54 @@
 
                     <p class="muted">My marker will stay open when the window is popped up!</p>
                 </div>
-            </nggmap-windows>
-        </nggmap-markers>
+            </ui-gmap-windows>
+        </ui-gmap-markers>
 
-        <nggmap-markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
-            <nggmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
+        <ui-gmap-markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
+            <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p>Mexi!</p>
                     <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
                     <p class="muted">My marker will stay open when the window is popped up!</p>
                 </div>
-            </nggmap-windows>
-        </nggmap-markers>
+            </ui-gmap-windows>
+        </ui-gmap-markers>
 
         <!--<!-- predefined markers -->-->
         <!--<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->-->
-        <nggmap-marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id" options="m.options">
-            <nggmap-marker-label content="m.title" anchor="22 0" class="marker-labels"/>
-            <nggmap-window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
+        <ui-gmap-marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id" options="m.options">
+            <ui-gmap-marker-label content="m.title" anchor="22 0" class="marker-labels"/>
+            <ui-gmap-window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
                     <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
                     <p class="muted">My marker will stay open when the window is popped up!</p>
-            </nggmap-window>
-        </nggmap-marker>
+            </ui-gmap-window>
+        </ui-gmap-marker>
 
          <!--marker for clicked position can not put google.map.animations.BOUNCE , since it is not initiaized yet-->
         <!--<!-- DISABLED ANIMATION on MarkerLABEL due to Google SDK V3 bug, see MarkerLabelChildModel.setOption-->-->
         <!--<div ng-init="opts = {animation:1}">-->
-            <nggmap-marker coords="map.clickedMarker"  idKey="map.clickedMarker.id">
-                <nggmap-marker-label content="map.clickedMarker.title" anchor="24 80" class="marker-labels"/>
-                <nggmap-window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
+            <ui-gmap-marker coords="map.clickedMarker"  idKey="map.clickedMarker.id">
+                <ui-gmap-marker-label content="map.clickedMarker.title" anchor="24 80" class="marker-labels"/>
+                <ui-gmap-window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
                     <p class="muted">My marker will reappear when you close me.</p>
-                </nggmap-window>
-            </nggmap-marker>
+                </ui-gmap-window>
+            </ui-gmap-marker>
         <!--</div>-->
 
 		<!-- polyline example -->
-        <nggmap-polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'
-            geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'></nggmap-polyline>
+        <ui-gmap-polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'
+            geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'></ui-gmap-polyline>
 
         <!-- polygon example -->
-        <nggmap-polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
-        	geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></nggmap-polygon>
+        <ui-gmap-polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
+        	geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></ui-gmap-polygon>
 
-        <nggmap-polygon ng-repeat="p in map.polygons2 track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
-                 geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></nggmap-polygon>
+        <ui-gmap-polygon ng-repeat="p in map.polygons2 track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
+                 geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></ui-gmap-polygon>
 
         <!-- circle example -->
-        <nggmap-circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
-            visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></nggmap-circle>
+        <ui-gmap-circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
+            visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></ui-gmap-circle>
 
 </div>
 <div class="span5">

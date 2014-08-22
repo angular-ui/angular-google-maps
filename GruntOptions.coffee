@@ -67,6 +67,7 @@ module.exports = (grunt) ->
           ]
 
         #specs
+          "tmp/string.js":"src/coffee/extensions/string.coffee"#to load as a vendor prior to specs to not have ns changes in two spots
           "tmp/spec/js/bootstrap.js": "spec/coffee/bootstrap.coffee"
           "tmp/spec/js/helpers/helpers.js": "spec/coffee/helpers/*.coffee"
           "tmp/spec/js/ng-gmap-module.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"

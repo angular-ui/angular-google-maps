@@ -10,7 +10,7 @@ angular.module("google-maps.directives.api".ns())
       @template = undefined
       @transclude = true
       @priority = -100
-      @require = '^nggmapGoogleMap'
+      @require = '^' + 'GoogleMap'.ns()
       @replace = true
       @scope = {
         coords: '=coords',

@@ -15,7 +15,8 @@ spec =
   src: ["bower_components/lodash-amd/main.js", "dist/angular-google-maps.js"]
   options:
     keepRunner: true
-    vendor: ["http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
+    vendor: ['tmp/string.js'
+             "http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
              "bower_components/jquery/dist/jquery.js",
              "bower_components/angular/angular.js",
              "bower_components/angular-mocks/angular-mocks.js"]

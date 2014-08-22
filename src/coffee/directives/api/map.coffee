@@ -81,7 +81,7 @@ angular.module("google-maps.directives.api".ns())
                     bounds: scope.bounds
                   )
                   _m = new google.maps.Map(el.find("div")[1], mapOptions)
-                  _m.nggmap_id = uuid.generate()
+                  _m['_id'.ns()] = uuid.generate()
 
                   dragging = false
                   if not _m

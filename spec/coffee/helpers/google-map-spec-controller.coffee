@@ -1,5 +1,5 @@
 (->
-    module = angular.module("angular-google-maps-specs", ["nggmapgoogle-maps"])
+    module = angular.module("angular-google-maps-specs", ['google-maps'.ns()])
         .controller('GoogleMapSpecController', ($scope, $timeout, $log) ->
             self = @
             @hasRun = false

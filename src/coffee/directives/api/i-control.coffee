@@ -14,7 +14,7 @@ angular.module("google-maps.directives.api".ns())
     constructor: ->
       @restrict = 'EA'
       @replace = true
-      @require = '^nggmapGoogleMap'
+      @require = '^' + 'GoogleMap'.ns()
       @scope =
         template: '@template'
         position: '@position'

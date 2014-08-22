@@ -4,7 +4,7 @@ angular.module("google-maps.directives.api".ns())
     @include GmapUtil
     constructor: ($timeout, $compile, $http, $templateCache) ->
       super($timeout, $compile, $http, $templateCache)
-      @require = ['^nggmapGoogleMap', '^?nggmapMarker']
+      @require = ['^' + 'GoogleMap'.ns(), '^?' + 'Marker'.ns()]
       @template = '<span class="angular-google-maps-window" ng-transclude></span>'
       @$log.info @
       @childWindows = []

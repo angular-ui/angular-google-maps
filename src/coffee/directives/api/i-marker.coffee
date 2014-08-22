@@ -13,7 +13,7 @@ angular.module("google-maps.directives.api".ns())
     constructor: ->
       @$log = Logger
       @restrict = 'EMA'
-      @require = '^nggmapGoogleMap'
+      @require = '^' + 'GoogleMap'.ns()
       @priority = -1
       @transclude = true
       @replace = true

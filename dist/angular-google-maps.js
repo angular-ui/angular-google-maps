@@ -9,7 +9,7 @@
 
   String.prototype.flare = function(flare) {
     if (flare == null) {
-      flare = 'nggmap';
+      flare = 'uiGmap';
     }
     return flare + this;
   };
@@ -3835,7 +3835,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         FreeDrawPolygons.prototype.replace = true;
 
-        FreeDrawPolygons.prototype.require = '^nggmapGoogleMap';
+        FreeDrawPolygons.prototype.require = '^' + 'GoogleMap'.ns();
 
         FreeDrawPolygons.prototype.scope = {
           polygons: '=',
@@ -3913,7 +3913,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.link = __bind(this.link, this);
           this.restrict = 'EA';
           this.replace = true;
-          this.require = '^nggmapGoogleMap';
+          this.require = '^' + 'GoogleMap'.ns();
           this.scope = {
             template: '@template',
             position: '@position',
@@ -4015,7 +4015,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.link = __bind(this.link, this);
           this.$log = Logger;
           this.restrict = 'EMA';
-          this.require = '^nggmapGoogleMap';
+          this.require = '^' + 'GoogleMap'.ns();
           this.priority = -1;
           this.transclude = true;
           this.replace = true;
@@ -4065,7 +4065,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         IPolyline.prototype.replace = true;
 
-        IPolyline.prototype.require = "^nggmapGoogleMap";
+        IPolyline.prototype.require = '^' + 'GoogleMap'.ns();
 
         IPolyline.prototype.scope = {
           path: "=",
@@ -4121,7 +4121,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.template = void 0;
           this.transclude = true;
           this.priority = -100;
-          this.require = '^nggmapGoogleMap';
+          this.require = '^' + 'GoogleMap'.ns();
           this.replace = true;
           this.scope = {
             coords: '=coords',
@@ -4261,7 +4261,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               bounds: scope.bounds
             });
             _m = new google.maps.Map(el.find("div")[1], mapOptions);
-            _m.nggmap_id = uuid.generate();
+            _m['_id'.ns()] = uuid.generate();
             dragging = false;
             if (!_m) {
               google.maps.event.addListener(_m, 'tilesloaded ', function(map) {
@@ -4685,7 +4685,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.init = __bind(this.init, this);
           this.link = __bind(this.link, this);
           Window.__super__.constructor.call(this, $timeout, $compile, $http, $templateCache);
-          this.require = ['^nggmapGoogleMap', '^?nggmapMarker'];
+          this.require = ['^' + 'GoogleMap'.ns(), '^?' + 'Marker'.ns()];
           this.template = '<span class="angular-google-maps-window" ng-transclude></span>';
           this.$log.info(this);
           this.childWindows = [];
@@ -4787,7 +4787,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           Windows.__super__.constructor.call(this, $timeout, $compile, $http, $templateCache);
           self = this;
           this.$interpolate = $interpolate;
-          this.require = ['^nggmapGoogleMap', '^?nggmapMarkers'];
+          this.require = ['^' + 'GoogleMap'.ns(), '^?' + 'Markers'.ns()];
           this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
           this.scope.idKey = '=idkey';
           this.scope.doRebuildAll = '=dorebuildall';
@@ -5036,7 +5036,7 @@ Thus there will be one html element per marker within the directive.
           var self;
           Label.__super__.constructor.call(this, $timeout);
           self = this;
-          this.require = '^nggmapMarker';
+          this.require = '^' + 'Marker'.ns();
           this.template = '<span class="angular-google-maps-marker-label" ng-transclude></span>';
           this.$log.info(this);
         }
@@ -5153,7 +5153,7 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
       return {
         restrict: "EA",
         replace: true,
-        require: "^nggmapGoogleMap",
+        require: '^' + 'GoogleMap'.ns(),
         scope: {
           path: "=path",
           stroke: "=stroke",
@@ -5353,7 +5353,7 @@ Rick Huizinga - https://plus.google.com/+RickHuizinga
       return {
         restrict: "EA",
         replace: true,
-        require: "^nggmapGoogleMap",
+        require: '^' + 'GoogleMap'.ns(),
         scope: {
           center: "=center",
           radius: "=radius",
@@ -5625,7 +5625,7 @@ Chentsu Lin - https://github.com/ChenTsuLin
       DEFAULTS = {};
       return {
         restrict: "EMA",
-        require: "^nggmapGoogleMap",
+        require: '^' + 'GoogleMap'.ns(),
         replace: true,
         scope: {
           bounds: "=",
@@ -5954,7 +5954,7 @@ This directive creates a new scope.
           this.link = __bind(this.link, this);
           this.$log = Logger;
           this.restrict = "EMA";
-          this.require = "^nggmapGoogleMap";
+          this.require = '^' + 'GoogleMap'.ns();
           this.priority = -1;
           this.transclude = true;
           this.template = '<span class=\"angular-google-map-layer\" ng-transclude></span>';

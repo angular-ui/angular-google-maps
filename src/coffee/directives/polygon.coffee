@@ -45,7 +45,7 @@ angular.module("google-maps".ns())
     DEFAULTS = {}
     restrict: "EA"
     replace: true
-    require: "^nggmapGoogleMap"
+    require: '^' + 'GoogleMap'.ns()
     scope:
         path: "=path"
         stroke: "=stroke"

@@ -29,8 +29,9 @@ describe "WindowChildModel".ns(), ->
         .value('element', '<span>hi</span>')
         .value('needToManualDestroy', false)
         .value('markerIsVisibleAfterWindowClose', true)
-        .controller 'childModel', (nggmapWindowChildModel) ->
-          nggmapWindowChildModel
+        .controller 'childModel', ['WindowChildModel'.ns(),(WindowChildModel) ->
+          WindowChildModel
+        ]
 
         angular.mock.module('mockModule')
 

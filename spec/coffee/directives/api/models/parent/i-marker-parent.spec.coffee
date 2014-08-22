@@ -7,7 +7,7 @@ describe "IMarkerParentModel".ns(), ->
       ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, IMarkerParentModel) =>
         @rootScope = $rootScope
         @scope = $rootScope.$new()
-        @ele = $compile('<nggmap-markers models="models"></nggmap-markers>')(@scope)
+        @ele = $compile('<ui-gmap-markers models="models"></ui-gmap-markers>')(@scope)
         @attrs = {click: @click}
         @IMarkerParentModel = IMarkerParentModel
         @$timeout = $timeout

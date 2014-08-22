@@ -6,7 +6,7 @@ angular.module("google-maps.directives.api".ns())
     constructor: ()->
     restrict: "EMA"
     replace: true
-    require: "^nggmapGoogleMap"
+    require: '^' + 'GoogleMap'.ns()
     scope:
       path: "="
       stroke: "="
