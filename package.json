@@ -9,7 +9,8 @@
   "scripts": {
     "build": "grunt",
     "example": "grunt example",
-    "test": "grunt"
+    "test": "grunt",
+    "postinstall": "bower install"
   },
   "keywords": [
     "angularjs",
