@@ -1,4 +1,5 @@
 dependencies:
   post:
-    - npm cache clean && node install -g grunt-cli grunt
+    - npm cache clean
+    - npm install -g grunt-cli grunt
     - npm install
