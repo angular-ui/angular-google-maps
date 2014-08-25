@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+    <script src="assets/scripts/controllers/issue-654-marker-events-break-after-added.js"></script>
+    <title>Map</title>
+</head>
+
+<body>
+<div ng-controller="TrackingCtrl">
+    <ui-gmap-google-map id="map"
+                        center="map.center"
+                        pan="map.pan"
+                        zoom="map.zoom"
+                        draggable="true"
+                        refresh="map.refresh"
+                        options="map.options"
+                        events="map.events"
+                        bounds="map.bounds">
+        <ui-gmap-markers models="map.markers" coords="'location'"
+                         icon="'icon'" title="'title'" options="'options'"
+                         events="map.markerEvents">
+        </ui-gmap-markers>
+
+        <!--<ui-gmap-marker ng-repeat="m in map.markers" coords="m.location"-->
+                         <!--icon="m.icon" title="m.title" options="m.options" fit="true" idkey="m.id"-->
+                <!--events="map.markerEvents">-->
+        <!--</ui-gmap-marker>-->
+    </ui-gmap-google-map>
+</div>
+</body>
+
+</html>
