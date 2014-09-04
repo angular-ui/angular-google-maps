@@ -61,6 +61,7 @@ angular.module("google-maps.mocks", [])
           BOTTOM_LEFT: [],
           BOTTOM_RIGHT: []
         }
+        @overlayMapTypes = new window.google.maps.MVCArray()
         @getControls = -> return @controls
         @setZoom = -> return
         @setCenter = -> return
@@ -70,10 +71,11 @@ angular.module("google-maps.mocks", [])
       @mockLatLng()
       @mockOverlayView()
       @mockEvent()
+      @mockMVCArray()
       window.google.maps.Map = Map
 
     mockControlPosition: ->
-      ControlPosition = 
+      ControlPosition =
         TOP_CENTER: 'TOP_CENTER',
         TOP_LEFT: 'TOP_LEFT',
         TOP_RIGHT: 'TOP_RIGHT',
