@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.1 2014-08-21
+/*! angular-google-maps 1.2.1 2014-09-05
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -7183,6 +7183,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           options: "=",
           events: "=",
           styles: "=",
+          draggable: "=",
           bounds: "="
         };
 
@@ -7232,7 +7233,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           mapOptions = angular.extend({}, DEFAULTS, opts, {
             center: this.getCoords(scope.center),
-            draggable: this.isTrue(attrs.draggable),
+            draggable: attrs.draggable != null ? this.isTrue(scope.draggable) : true,
             zoom: scope.zoom,
             bounds: scope.bounds
           });
