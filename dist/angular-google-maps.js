@@ -1,6 +1,6 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-08-25
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-05
  *  AngularJS directives for Google Maps
- *  git: https://github.com/nlaplante/angular-google-maps.git
+ *  git: https://github.com/angular-ui/angular-google-maps.git
  */
 (function() {
   String.prototype.contains = function(value, fromIndex) {
@@ -6204,9 +6204,9 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-08-25
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-05
  *  AngularJS directives for Google Maps
- *  git: https://github.com/nlaplante/angular-google-maps.git
+ *  git: https://github.com/angular-ui/angular-google-maps.git
  */
 /**
  * @name InfoBox
