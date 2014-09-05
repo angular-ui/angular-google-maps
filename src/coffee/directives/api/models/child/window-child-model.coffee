@@ -61,6 +61,10 @@ angular.module("google-maps.directives.api.models.child")
                             @gWin.isOpen(false)
                             @scope.closeClick() if @scope.closeClick?
 
+
+                getGWin: () =>
+                    return @gWin
+
                 watchShow: () =>
                     @scope.$watch('show', (newValue, oldValue) =>
                         if (newValue != oldValue)

@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.1 2014-08-21
+/*! angular-google-maps 1.2.1 2014-09-05
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -5353,6 +5353,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchOptions = __bind(this.watchOptions, this);
           this.watchCoords = __bind(this.watchCoords, this);
           this.watchShow = __bind(this.watchShow, this);
+          this.getGWin = __bind(this.getGWin, this);
           this.createGWin = __bind(this.createGWin, this);
           this.watchElement = __bind(this.watchElement, this);
           this.googleMapsHandles = [];
@@ -5433,6 +5434,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             }));
           }
+        };
+
+        WindowChildModel.prototype.getGWin = function() {
+          return this.gWin;
         };
 
         WindowChildModel.prototype.watchShow = function() {
@@ -7232,7 +7237,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           mapOptions = angular.extend({}, DEFAULTS, opts, {
             center: this.getCoords(scope.center),
-            draggable: this.isTrue(attrs.draggable),
+            draggable: this.isTrue(scope.draggable),
             zoom: scope.zoom,
             bounds: scope.bounds
           });
