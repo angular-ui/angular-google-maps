@@ -7188,6 +7188,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           options: "=",
           events: "=",
           styles: "=",
+          draggable: "=",
           bounds: "="
         };
 
@@ -7237,7 +7238,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           mapOptions = angular.extend({}, DEFAULTS, opts, {
             center: this.getCoords(scope.center),
-            draggable: this.isTrue(scope.draggable),
+            draggable: attrs.draggable != null ? this.isTrue(scope.draggable) : true,
             zoom: scope.zoom,
             bounds: scope.bounds
           });

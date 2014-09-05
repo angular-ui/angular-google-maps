@@ -32,6 +32,7 @@ angular.module("google-maps.directives.api")
                 options: "=" # optional
                 events: "=" # optional
                 styles: "=" # optional
+                draggable: "=" # optional
                 bounds: "="
 
             ###
@@ -72,7 +73,7 @@ angular.module("google-maps.directives.api")
                 # Create the map
                 mapOptions = angular.extend({}, DEFAULTS, opts,
                   center: @getCoords(scope.center)
-                  draggable: @isTrue(scope.draggable)
+                  draggable: if attrs.draggable? then @isTrue(scope.draggable) else true
                   zoom: scope.zoom
                   bounds: scope.bounds
                 )
