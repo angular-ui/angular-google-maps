@@ -61,9 +61,9 @@
       drawChannel.add(draw);
       clearChannel.add(clear);
     }])
-    .run(function ($templateCache,nggmapLogger) {
-      nggmapLogger.doLog = true;
+    .run(['$templateCache','uiGmapLogger', function ($templateCache,Logger) {
+      Logger.doLog = true;
       $templateCache.put('draw.tpl.html', '<button class="btn btn-lg btn-primary"  ng-click="drawWidget.controlClick()">{{drawWidget.controlText}}</button>');
       $templateCache.put('clear.tpl.html', '<button class="btn btn-lg btn-primary"  ng-click="clearWidget.controlClick()">{{clearWidget.controlText}}</button>');
-    });
+    }]);
 })(window, angular);

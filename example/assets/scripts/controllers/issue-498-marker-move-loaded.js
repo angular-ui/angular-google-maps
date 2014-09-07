@@ -1,4 +1,4 @@
-angular.module('testApp', ['google-maps']).controller('TestController', ['$scope', function ($scope) {
+angular.module('testApp', ['google-maps'.ns()]).controller('TestController', ['$scope', function ($scope) {
   $scope.map = {
     center: {
       latitude: 45,

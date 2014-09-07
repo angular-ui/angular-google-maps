@@ -26,17 +26,17 @@
 </head>
 
 <body ng-controller="controller">
-<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
+<!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 <div class="page-title ">
     <h2 ng-cloak>angular-google-maps example {{version}}</h2>
 </div>
 <div class="container">
     <div class="row">
-        <google-map center="map.center" zoom="map.zoom" options="map.options" draggable="true">
+        <ui-gmap-google-map center="map.center" zoom="map.zoom" options="map.options" draggable="true">
             <!--<any ng-init="poly = map.polygons[0]">-->
             <!-- a Tested Without a repeat and same problem happens -->
-            <nggmap-polygon
+            <ui-gmap-polygon
                     ng-repeat="poly in map.polygons"
                     path='poly.path'
                     fill='poly.fill'
@@ -45,9 +45,9 @@
                     draggable='poly.draggable'
                     editable='poly.editable'
                     visible='poly.visible'>
-            </nggmap-polygon>
+            </ui-gmap-polygon>
             <!--</any>-->
-        </google-map>
+        </ui-gmap-google-map>
     </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>

@@ -1,12 +1,12 @@
 (function () {
-  var module = angular.module("angular-google-maps-example", ["google-maps"]);
+  var module = angular.module("angular-google-maps-example", ["google-maps".ns()]);
 }());
 
 var rndAddToLatLon = function () {
   return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1)
 }
 
-function DebugController($scope, $timeout, $log, $http, nggmapIsReady) {
+function DebugController($scope, $timeout, $log, $http, uiGmapIsReady) {
   // Enable the new Google Maps visuals until it gets enabled by default.
   // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
   google.maps.visualRefresh = true;
@@ -111,7 +111,8 @@ function DebugController($scope, $timeout, $log, $http, nggmapIsReady) {
       }
     }
   });
-  nggmapIsReady.promise(2).then(function (instances) {
+
+  uiGmapIsReady.promise(2).then(function (instances) {
     instances.forEach(function(inst){
       inst.map.ourID = inst.instance;
     });

@@ -1,4 +1,4 @@
-var app = angular.module("HugeData", ["google-maps"]);
+var app = angular.module("HugeData", ["google-maps".ns()]);
 
 app.controller("HugeDataCtrl", function ($scope) {
   $scope.center = {

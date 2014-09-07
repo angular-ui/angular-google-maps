@@ -26,7 +26,7 @@
 </head>
 
 <body ng-controller="ExampleController">
-<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
+<!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 
 <div class="container-fluid">
@@ -39,7 +39,7 @@
     <button class="btn btn-success" ng-click="getMapInstance()">Get Map Instance</button>
 </div>
 <div class="row-fluid">
-    <div ui-gmap-google-map="exp" class="span7"
+    <ui-gmap-google-map class="span7"
          center="map.center"
          zoom="map.zoom"
          draggable="true"
@@ -166,7 +166,7 @@
         <ui-gmap-circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
             visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></ui-gmap-circle>
 
-</div>
+</ui-gmap-google-map>
 <div class="span5">
     <fieldset>
         <table class="table">

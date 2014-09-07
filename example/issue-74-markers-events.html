@@ -26,7 +26,7 @@
 </head>
 
 <body ng-controller="controller">
-<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
+<!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 <div class="page-title ">
     <h2 ng-cloak>angular-google-maps example {{version}}</h2>
@@ -36,21 +36,21 @@
         <button class="col-md-2 btn btn-success" ng-click="map.refresh()">Refresh Map</button>
     </div>
     <div class="row">
-        <google-map class="col-md-12"
+        <ui-gmap-google-map class="col-md-12"
                     center="map.center"
                     zoom="map.zoom"
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <nggmap-marker ng-repeat="m in map.markers2" coords="m" icon="m.icon" fit='true' events="markersEvents" idkey="m.id">
-            </nggmap-marker>
+            <ui-gmap-marker ng-repeat="m in map.markers2" coords="m" icon="m.icon" fit='true' events="markersEvents" idkey="m.id">
+            </ui-gmap-marker>
 
-            <nggmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true' events="markersEvents">
-                <nggmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
+            <ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true' events="markersEvents">
+                <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                     <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
-                </nggmap-windows>
-            </nggmap-markers>
-        </google-map>
+                </ui-gmap-windows>
+            </ui-gmap-markers>
+        </ui-gmap-google-map>
     </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>

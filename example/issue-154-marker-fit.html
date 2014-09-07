@@ -26,7 +26,7 @@
 </head>
 
 <body ng-controller="controller">
-<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
+<!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 <div class="page-title ">
     <h2 ng-cloak>angular-google-maps example {{version}}</h2>
@@ -36,33 +36,33 @@
         <button class="col-md-2 btn btn-success" ng-click="map.refresh()">Refresh Map</button>
     </div>
     <div class="row">
-        <google-map class="col-md-12"
+        <ui-gmap-google-map class="col-md-12"
                     center="map.center"
                     zoom="map.zoom"
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <nggmap-marker ng-repeat="m in map.dynamicMarkers"  coords='m' icon='m.icon' ng-click='onMarkerClicked(m)' fit="true" idkey='m.id'>
-                <nggmap-window show="m.showWindow"  closeClick="'closeClick'" ng-cloak>
+            <ui-gmap-marker ng-repeat="m in map.dynamicMarkers"  coords='m' icon='m.icon' ng-click='onMarkerClicked(m)' fit="true" idkey='m.id'>
+                <ui-gmap-window show="m.showWindow"  closeClick="'closeClick'" ng-cloak>
                     <div ng-controller="InfoController">
                         <a href="javascript:void(0)" ng-click="clickedButtonInWindow()">hit me</a>
                         <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
                         <p class="muted">My marker will stay open when the window is popped up!</p>
                     </div>
-                </nggmap-window>
-            </nggmap-marker>
+                </ui-gmap-window>
+            </ui-gmap-marker>
 
 
-            <!--<nggmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>-->
-                <!--<nggmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
+            <!--<ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>-->
+                <!--<ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
                     <!--<p>Dynamic Marker created via a delay!</p>-->
 
                     <!--<p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
 
                     <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
-                <!--</nggmap-windows>-->
-            <!--</nggmap-markers>-->
-        </google-map>
+                <!--</ui-gmap-windows>-->
+            <!--</ui-gmap-markers>-->
+        </ui-gmap-google-map>
     </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>

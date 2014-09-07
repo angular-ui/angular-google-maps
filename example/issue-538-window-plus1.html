@@ -14,15 +14,15 @@
 <body ng-controller="mainCtrl">
 <button ng-click="click()"> +1 </button>
 <div id="map_canvas" >
-    <google-map center="map.center" zoom="map.zoom">
-        <nggmap-marker coords="map.marker.coords" idkey="map.marker.id">
-            <nggmap-nggmap-window>
+    <ui-gmap-google-map center="map.center" zoom="map.zoom">
+        <ui-gmap-marker coords="map.marker.coords" idkey="map.marker.id">
+            <ui-gmap-ui-gmap-window>
                 <div>
                     {{ number }}
                 </div>
-            </nggmap-window>
-        </nggmap-marker>
-    </google-map>
+            </ui-gmap-window>
+        </ui-gmap-marker>
+    </ui-gmap-google-map>
 </div>
 {{number}}
 </body>

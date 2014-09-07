@@ -33,13 +33,13 @@
 
 <body>
     <div id="map_canvas" ng-controller="mainCtrl">
-    <google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
-        <nggmap-markers models="randomMarkers" coords="'self'" icon="'icon'" click="'onClick'">
-            <nggmap-windows show="'show'">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+        <ui-gmap-markers models="randomMarkers" coords="'self'" icon="'icon'" click="'onClick'">
+            <ui-gmap-windows show="'show'">
                 <div ng-non-bindable>{{title}}</div>
-            </nggmap-windows>
-        </nggmap-markers>
-    </google-map>
+            </ui-gmap-windows>
+        </ui-gmap-markers>
+    </ui-gmap-google-map>
 </div>
 <!--example-->
 </body>

@@ -26,7 +26,7 @@
 </head>
 
 <body ng-controller="controller">
-<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
+<!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 <div class="page-title ">
     <h2 ng-cloak>angular-google-maps example {{version}}</h2>
@@ -38,23 +38,23 @@
         test = {{ test.name }}
     </div>
     <div class="row">
-        <google-map class="col-md-12"
+        <ui-gmap-google-map class="col-md-12"
                     center="map.center"
                     zoom="map.zoom"
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <nggmap-window show="true" coords="map.center" options="windowOptions">
+            <ui-gmap-window show="true" coords="map.center" options="windowOptions">
                 <div class="popup" style="width: 100px; height: 50px;">
                     <p>test = {{test.name}}</p>
                 </div>
-            </nggmap-window>
-            <nggmap-windows models="windows" show="'show'" coords="'self'" options="windowOptions">
+            </ui-gmap-window>
+            <ui-gmap-windows models="windows" show="'show'" coords="'self'" options="windowOptions">
                 <div style="width: 100px; height: 50px;">
                     <p>test = {{test.name}}</p>
                 </div>
-            </nggmap-windows>
-        </google-map>
+            </ui-gmap-windows>
+        </ui-gmap-google-map>
     </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>

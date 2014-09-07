@@ -157,12 +157,12 @@
           $scope.map.polys = [];
         });
       }])
-    .run(function ($templateCache, nggmapLogger) {
-      nggmapLogger.doLog = true;
-      nggmapLogger.info('polyButton.tpl.html should be in cache');
+    .run(['$templateCache', 'Logger'.ns(),function ($templateCache, Logger) {
+      Logger.doLog = true;
+      Logger.info('polyButton.tpl.html should be in cache');
       $templateCache.put('polyButton.tpl.html',
         '<button class="btn btn-lg btn-primary"  ng-click="polyButton.controlClick()">{{polyButton.controlText}}</button>');
       $templateCache.put('clear.tpl.html',
         '<button class="btn btn-lg btn-primary"  ng-click="clearWidget.controlClick()">{{clearWidget.controlText}}</button>');
-    });
+    }]);
 })(window, angular);

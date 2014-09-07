@@ -26,17 +26,17 @@
 </head>
 
 <body ng-controller="controller">
-<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
+<!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 <div class="page-title ">
     <h2 ng-cloak>angular-google-maps example {{version}}</h2>
 </div>
 <div class="container">
     <div class="row">
-        <google-map center="map.center" zoom="map.zoom" pan="true" draggable="true">
-            <nggmap-markers models="locations" coords="'self'" idkey="'title'" labelContent="'title'" doCluster="true"></nggmap-markers>
-            <nggmap-polyline path="locations" draggable="false" geodesic="true" stroke="map.lineStyle" fit="true"></nggmap-polyline>
-        </google-map>
+        <ui-gmap-google-map center="map.center" zoom="map.zoom" pan="true" draggable="true">
+            <ui-gmap-markers models="locations" coords="'self'" idkey="'title'" labelContent="'title'" doCluster="true"></ui-gmap-markers>
+            <ui-gmap-polyline path="locations" draggable="false" geodesic="true" stroke="map.lineStyle" fit="true"></ui-gmap-polyline>
+        </ui-gmap-google-map>
     </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>

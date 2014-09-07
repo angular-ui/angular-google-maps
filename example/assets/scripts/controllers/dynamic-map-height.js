@@ -1,5 +1,5 @@
 (function (window, ng) {
-  ng.module('app', ['google-maps'])
+  ng.module('app', ['google-maps'.ns()])
     .factory('channel', function(){
       return function () {
         var callbacks = [];
@@ -61,9 +61,9 @@
       drawChannel.add(draw);
       clearChannel.add(clear);
     }])
-    .run(function ($templateCache,Logger) {
+    .run(['$templateCache','uiGmapLogger', function ($templateCache,Logger) {
       Logger.doLog = true;
       $templateCache.put('draw.tpl.html', '<button class="btn btn-lg btn-primary"  ng-click="drawWidget.controlClick()">{{drawWidget.controlText}}</button>');
       $templateCache.put('clear.tpl.html', '<button class="btn btn-lg btn-primary"  ng-click="clearWidget.controlClick()">{{clearWidget.controlText}}</button>');
-    });
+    }]);
 })(window, angular);

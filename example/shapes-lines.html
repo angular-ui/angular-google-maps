@@ -7,10 +7,10 @@
     <!-- make IE Happy , http://docs.angularjs.org/guide/ie -->
     <!--[if lte IE 9]>
     <script>
-	    window.html5 = {
-            'elements': 'marker window windows markers layer polyline marker-label ng-controller ng-repeat ng-init ng-model ng-hide ng-show'
-        };
-	</script>
+window.html5 = {
+    'elements': 'marker window windows markers layer polyline marker-label ng-controller ng-repeat ng-init ng-model ng-hide ng-show'
+};
+</script>
 
     <script src="https://rawgithub.com/bestiejs/json3/v3.2.5a/lib/json3.min.js"></script>
     <script src="https://rawgithub.com/kriskowal/es5-shim/v2.1.0/es5-shim.min.js"></script>
@@ -26,8 +26,8 @@
 </head>
 
 <body ng-controller="controller">
-<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
-	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
+<!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
+the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 
 <div class="container-fluid">
 <div class="row-fluid">
@@ -39,44 +39,49 @@
     <button class="btn btn-success" ng-click="getMapInstance()">Get Map Instance</button>
 </div>
 <div class="row-fluid">
-    <div google-map="exp" class="span7"
-         center="map.center"
-         zoom="map.zoom"
-         draggable="true"
-         dragging="map.dragging"
-         bounds="map.bounds"
-         events="map.events"
-         options="map.options"
-         pan="true"
-         control="map.control"
+<div ui-gmap-google-map="exp" class="span7"
+     center="map.center"
+     zoom="map.zoom"
+     draggable="true"
+     dragging="map.dragging"
+     bounds="map.bounds"
+     events="map.events"
+     options="map.options"
+     pan="true"
+     control="map.control"
         >
 
-        <nggmap-layer type="TrafficLayer" show="map.showTraffic"></nggmap-layer>
-        <nggmap-layer type="BicyclingLayer" show="map.showBicycling"></nggmap-layer>
-        <nggmap-layer namespace="weather" type="WeatherLayer" show="map.showWeather"></nggmap-layer>
-        <nggmap-layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></nggmap-layer>
+    <ui-gmap-layer type="TrafficLayer" show="map.showTraffic"></ui-gmap-layer>
+    <ui-gmap-layer type="BicyclingLayer" show="map.showBicycling"></ui-gmap-layer>
+    <ui-gmap-layer namespace="weather" type="WeatherLayer" show="map.showWeather"></ui-gmap-layer>
+    <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="map.showHeat"
+                   onCreated="map.heatLayerCallback"></ui-gmap-layer>
 
 
-		<!-- polyline example -->
-        <!--<nggmap-polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'-->
-            <!--geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></nggmap-polyline>-->
+    <!-- polyline example -->
+    <!--<ui-gmap-polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'-->
+    <!--geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable"></ui-gmap-polyline>-->
 
-        <nggmap-polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"
-                  geodesic="'geodesic'" fit="'false'" editable="'editable'" draggable="'draggable'" ></polylines>
+    <ui-gmap-polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"
+                       geodesic="'geodesic'" fit="'false'" editable="'editable'"
+                       draggable="'draggable'"></ui-gmap-polylines>
 
-        <!--<nggmap-polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"-->
-                   <!--geodesic="'geodesic'" fit="'false'" editable="'editable'" draggable="'draggable'" static="true"></polylines>-->
+    <!--<ui-gmap-polylines models="map.polylines" path="'path'" stroke="'stroke'" visible="'visible'"-->
+    <!--geodesic="'geodesic'" fit="'false'" editable="'editable'" draggable="'draggable'" static="true"></polylines>-->
 
-        <!-- polygon example -->
-        <!--<nggmap-polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"-->
-        	<!--geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></nggmap-polygon>-->
+    <!-- polygon example -->
+    <!--<ui-gmap-polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"-->
+    <!--geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></ui-gmap-polygon>-->
 
-        <nggmap-polygon ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
-                 geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"></nggmap-polygon>
+    <ui-gmap-polygon ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
+                     geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable"
+                     draggable="p.draggable"></ui-gmap-polygon>
 
-        <!-- circle example -->
-        <nggmap-circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
-            visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></nggmap-circle>
+    <!-- circle example -->
+    <ui-gmap-circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill"
+                    radius="c.radius"
+                    visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable"
+                    clickable="c.clickable"></ui-gmap-circle>
 
 </div>
 <div class="span5">
@@ -84,7 +89,8 @@
         <table class="table">
             <tbody>
             <tr>
-                <td><a class="btn btn-primary accordion-toggle" data-toggle="collapse" data-target="#polygons" href="#polygonCollapse">
+                <td><a class="btn btn-primary accordion-toggle" data-toggle="collapse" data-target="#polygons"
+                       href="#polygonCollapse">
                     polygons
                 </a></td>
                 <td>
@@ -93,33 +99,34 @@
                             <li ng-cloak ng-repeat="p in map.polygons">
                                 <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!" ng-cloak>
-                                        <span class="{{p.visible}}" ng-click="p.visible = !p.visible">Polygon:</span> {<br/>
-											<span style="padding-left: 5em" class="{{p.visible}}"
-                                                  ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
-											<span style="padding-left: 5em" class="{{p.editable}}"
-                                                  ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,
+<span class="{{p.visible}}"
+      ng-click="p.visible = !p.visible">Polygon:</span> {<br/>
+<span style="padding-left: 5em" class="{{p.visible}}"
+      ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
+<span style="padding-left: 5em" class="{{p.editable}}"
+      ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.draggable}}"
-                                                  ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,
+<span style="padding-left: 5em" class="{{p.draggable}}"
+      ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.geodesic}}"
-                                                  ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,
+<span style="padding-left: 5em" class="{{p.geodesic}}"
+      ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,
                                         <br/>
                                         <span style="padding-left: 5em">stroke: {</span> <br/>
-											<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
-                                                  style="padding-left: 10em">weight: {{p.stroke.weight}}</span> <br/>
-											<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
-                                                  style="padding-left: 10em">color: {{p.stroke.color}}</span> <br/>
+<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
+      style="padding-left: 10em">weight: {{p.stroke.weight}}</span> <br/>
+<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
+      style="padding-left: 10em">color: {{p.stroke.color}}</span> <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
                                         <span style="padding-left: 5em">path: [ </span> <br/>
-											<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
-                                                  ng-click="p.path.splice($index,1)">
-											{
-											latitude:{{pt.latitude | number:2}},
-											longitude:{{pt.longitude | number:2}}
-										},
-										<br/>
-									</span>
+<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
+      ng-click="p.path.splice($index,1)">
+{
+latitude:{{pt.latitude | number:2}},
+longitude:{{pt.longitude | number:2}}
+},
+<br/>
+</span>
                                         <span style="padding-left: 5em">] </span> <br/>
 
                                         }
@@ -130,7 +137,8 @@
                     </div>
             </tr>
             <tr>
-                <td><a class="btn btn-primary accordion-toggle" data-toggle="collapse" data-target="#polylines" href="#polylineCollapse">
+                <td><a class="btn btn-primary accordion-toggle" data-toggle="collapse" data-target="#polylines"
+                       href="#polylineCollapse">
                     polylines
                 </a></td>
                 <td>
@@ -139,33 +147,34 @@
                             <li ng-repeat="p in map.polylines" ng-cloak>
                                 <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!">
-                                        <span class="{{p.visible}}" ng-click="p.visible = !p.visible">Polyline:</span> {<br/>
-											<span style="padding-left: 5em" class="{{p.visible}}"
-                                                  ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
-											<span style="padding-left: 5em" class="{{p.editable}}"
-                                                  ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,
+<span class="{{p.visible}}"
+      ng-click="p.visible = !p.visible">Polyline:</span> {<br/>
+<span style="padding-left: 5em" class="{{p.visible}}"
+      ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
+<span style="padding-left: 5em" class="{{p.editable}}"
+      ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.draggable}}"
-                                                  ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,
+<span style="padding-left: 5em" class="{{p.draggable}}"
+      ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.geodesic}}"
-                                                  ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,
+<span style="padding-left: 5em" class="{{p.geodesic}}"
+      ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,
                                         <br/>
                                         <span style="padding-left: 5em">stroke: {</span> <br/>
-											<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
-                                                  style="padding-left: 10em">weight: {{p.stroke.weight}}</span> <br/>
-											<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
-                                                  style="padding-left: 10em">color: {{p.stroke.color}}</span> <br/>
+<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
+      style="padding-left: 10em">weight: {{p.stroke.weight}}</span> <br/>
+<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
+      style="padding-left: 10em">color: {{p.stroke.color}}</span> <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
                                         <span style="padding-left: 5em">path: [ </span> <br/>
-											<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
-                                                  ng-click="p.path.splice($index,1)">
-											{
-											latitude:{{pt.latitude | number:2}},
-											longitude:{{pt.longitude | number:2}}
-										},
-										<br/>
-									</span>
+<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
+      ng-click="p.path.splice($index,1)">
+{
+latitude:{{pt.latitude | number:2}},
+longitude:{{pt.longitude | number:2}}
+},
+<br/>
+</span>
                                         <span style="padding-left: 5em">] </span> <br/>
 
                                         }
@@ -176,53 +185,57 @@
                     </div>
                 </td>
             </tr>
-             <tr>
-                 <td><a class="btn btn-primary accordion-toggle" data-toggle="collapse" data-target="#circles" href="#circlesCollapse">
-                     circles
-                 </a></td>
-                 <td>
-                     <div id="circles" class="collapse well sidebar-nav">
+            <tr>
+                <td><a class="btn btn-primary accordion-toggle" data-toggle="collapse" data-target="#circles"
+                       href="#circlesCollapse">
+                    circles
+                </a></td>
+                <td>
+                    <div id="circles" class="collapse well sidebar-nav">
                         <ul class="nav nav-list">
                             <li ng-repeat="c in map.circles" ng-cloak>
                                 <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!">
-                                        <span class="{{c.visible}}" ng-click="c.visible = !c.visible">Circle:</span> {<br/>
-                                            <span style="padding-left: 5em" class="{{c.visible}}"
-                                                  ng-click="c.visible = !c.visible">visible: {{c.visible}}</span>, <br/>
-                                            <span style="padding-left: 5em" class="{{c.editable}}"
-                                                  ng-click="c.editable = !c.editable">editable: {{c.editable}}</span>,
+                                        <span class="{{c.visible}}" ng-click="c.visible = !c.visible">Circle:</span>
+                                        {<br/>
+<span style="padding-left: 5em" class="{{c.visible}}"
+      ng-click="c.visible = !c.visible">visible: {{c.visible}}</span>, <br/>
+<span style="padding-left: 5em" class="{{c.editable}}"
+      ng-click="c.editable = !c.editable">editable: {{c.editable}}</span>,
                                         <br/>
-                                            <span style="padding-left: 5em" class="{{c.draggable}}"
-                                                  ng-click="c.draggable = !c.draggable">draggable: {{c.draggable}}</span>,
+<span style="padding-left: 5em" class="{{c.draggable}}"
+      ng-click="c.draggable = !c.draggable">draggable: {{c.draggable}}</span>,
                                         <br/>
-                                            <span style="padding-left: 5em" class="{{c.geodesic}}"
-                                                  ng-click="c.geodesic = !c.geodesic">geodesic: {{c.geodesic}}</span>,
+<span style="padding-left: 5em" class="{{c.geodesic}}"
+      ng-click="c.geodesic = !c.geodesic">geodesic: {{c.geodesic}}</span>,
                                         <br/>
                                         <span style="padding-left: 5em">stroke: {</span> <br/>
-                                            <span ng-click="c.stroke.weight = (c.stroke.weight % 5) +1"
-                                                  style="padding-left: 10em">weight: {{c.stroke.weight}}</span> <br/>
-                                            <span ng-click="c.stroke.color = toggleColor(c.stroke.color)"
-                                                  style="padding-left: 10em">color: {{c.stroke.color}}</span> <br/>
-                                            <span ng-click="c.stroke.opacity = c.stroke.opacity*0.5"
-                                                  style="padding-left: 10em">opacity: {{c.stroke.opacity}}</span> <br/>
+<span ng-click="c.stroke.weight = (c.stroke.weight % 5) +1"
+      style="padding-left: 10em">weight: {{c.stroke.weight}}</span> <br/>
+<span ng-click="c.stroke.color = toggleColor(c.stroke.color)"
+      style="padding-left: 10em">color: {{c.stroke.color}}</span> <br/>
+<span ng-click="c.stroke.opacity = c.stroke.opacity*0.5"
+      style="padding-left: 10em">opacity: {{c.stroke.opacity}}</span> <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
                                         <span style="padding-left: 5em">fill: {</span> <br/>
-                                            <span ng-click="c.fill.color = toggleColor(c.fill.color)"
-                                                  style="padding-left: 10em">color: {{c.fill.color}}</span> <br/>
-                                            <span ng-click="c.fill.opacity = c.fill.opacity*0.5"
-                                                  style="padding-left: 10em">opacity: {{c.fill.opacity}}</span> <br/>
+<span ng-click="c.fill.color = toggleColor(c.fill.color)"
+      style="padding-left: 10em">color: {{c.fill.color}}</span> <br/>
+<span ng-click="c.fill.opacity = c.fill.opacity*0.5"
+      style="padding-left: 10em">opacity: {{c.fill.opacity}}</span> <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
                                         <span style="padding-left: 5em">center: {</span> <br/>
-                                            <span ng-click="c.center.latitude = (c.center.latitude % 5) +1"
-                                                  style="padding-left: 10em">latitude: {{c.center.latitude}}</span> <br/>
-                                            <span ng-click="c.center.longitude = (c.center.longitude % 5) +1"
-                                                  style="padding-left: 10em">longitude: {{c.center.longitude}}</span> <br/>
+<span ng-click="c.center.latitude = (c.center.latitude % 5) +1"
+      style="padding-left: 10em">latitude: {{c.center.latitude}}</span>
+                                        <br/>
+<span ng-click="c.center.longitude = (c.center.longitude % 5) +1"
+      style="padding-left: 10em">longitude: {{c.center.longitude}}</span>
+                                        <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
-                                        <span style="padding-left: 5em" class="{{c.radius}}"
-                                                  ng-click="c.radius = c.radius*10">radius: {{c.radius}}</span>
+<span style="padding-left: 5em" class="{{c.radius}}"
+      ng-click="c.radius = c.radius*10">radius: {{c.radius}}</span>
                                         <br/>
                                         <br/>
-                                    </span>
+                                        </span>
 
                                         }
                                     </i>

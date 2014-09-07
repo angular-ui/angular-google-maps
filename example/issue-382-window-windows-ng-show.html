@@ -26,7 +26,7 @@
 </head>
 
 <body ng-controller="controller">
-<!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
+<!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 <div class="page-title ">
     <h2 ng-cloak>angular-google-maps example {{version}}</h2>
@@ -36,14 +36,14 @@
         <button class="col-md-2 btn btn-success" ng-click="map.refresh()">Refresh Map</button>
     </div>
     <div class="row">
-        <google-map class="col-md-12"
+        <ui-gmap-google-map class="col-md-12"
                     center="map.center"
                     zoom="map.zoom"
                     dragging="map.dragging"
                     draggable="true"
                     control="map.control">
-            <nggmap-marker ng-repeat="m in map.markers" coords="m" click="m.click()" idkey='m.wonkyId'>
-                <nggmap-window show="true">
+            <ui-gmap-marker ng-repeat="m in map.markers" coords="m" click="m.click()" idkey='m.wonkyId'>
+                <ui-gmap-window show="true">
                     <div class="popup" style="width: 200px; height: 100px;">
                         <article style="word-wrap: break-word;">{{m}}</article>
                         <div ng-controller="winCtrl">
@@ -51,9 +51,9 @@
                             <span ng-show="showSpan">This won't show..</span>
                         </div>
                     </div>
-                </nggmap-window>
-            </nggmap-marker>
-        </google-map>
+                </ui-gmap-window>
+            </ui-gmap-marker>
+        </ui-gmap-google-map>
     </div>
 </div>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
