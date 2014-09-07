@@ -76,11 +76,18 @@ angular.module("google-maps.directives.api.utils".ns())
 
   createWindowOptions: (gMarker, scope, content, defaults) ->
     if content? and defaults? and $compile?
-      angular.extend {}, defaults,
+      options = angular.extend {}, defaults,
         content: @buildContent(scope, defaults, content),
         position: if defaults.position?
         then defaults.position else if angular.isObject(gMarker)
         then gMarker.getPosition() else getCoords(scope.coords)
+      if gMarker? and !options?.pixelOffset?
+        #if we have a marker, center the window above
+        if !options.boxClass?
+          options.pixelOffset = height:-40, width:0
+        else #it is an infoBox center it below
+          options.pixelOffset = height:0, width:-2
+      options
     else
       unless defaults
         Logger.error "infoWindow defaults not defined"

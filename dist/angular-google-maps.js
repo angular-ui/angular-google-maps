@@ -696,11 +696,26 @@ Nicholas McCready - https://twitter.com/nmccready
           return opts;
         },
         createWindowOptions: function(gMarker, scope, content, defaults) {
+          var options;
           if ((content != null) && (defaults != null) && ($compile != null)) {
-            return angular.extend({}, defaults, {
+            options = angular.extend({}, defaults, {
               content: this.buildContent(scope, defaults, content),
               position: defaults.position != null ? defaults.position : angular.isObject(gMarker) ? gMarker.getPosition() : getCoords(scope.coords)
             });
+            if ((gMarker != null) && ((options != null ? options.pixelOffset : void 0) == null)) {
+              if (options.boxClass == null) {
+                options.pixelOffset = {
+                  height: -40,
+                  width: 0
+                };
+              } else {
+                options.pixelOffset = {
+                  height: 0,
+                  width: -2
+                };
+              }
+            }
+            return options;
           } else {
             if (!defaults) {
               Logger.error("infoWindow defaults not defined");
