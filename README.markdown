@@ -20,7 +20,7 @@ With the minor release of 1.2.0 (which is why it is a minor) there are a few bre
 If I have forgotten anything then it can be added here or to the website branch which is responsible for... the website. Feel free to contribute and make pull requests to either.
 
 ##What is to come (2.0.X):
-2.0.0 will introduce the (major change) ui-gmap namespace which will be appended to all directives, services, and factories.
+2.0.0 will introduce the (major change) **ui-gmap** namespace which will be appended to all directives, services, and factories.
 
 The main goal for this is to decrease conflicts with external libraries. The other major reason for this is to not conflict with svg definitions like polygon or marker.
 
