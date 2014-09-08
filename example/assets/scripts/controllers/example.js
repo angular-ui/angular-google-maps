@@ -403,6 +403,11 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
           visible: true // optional: defaults to true
         }
       ],
+      polygonEvents:{
+        dblclick:function(){
+          alert("Polgon Double Clicked!");
+        }
+      },
       polygons: [
         {
           id: 1,

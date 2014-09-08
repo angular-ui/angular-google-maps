@@ -1,7 +1,33 @@
 angular.module("google-maps.mocks", [])
 .factory "GoogleApiMock", ->
+
+  getMarker = ->
+    Marker = (opts) -> return
+    Marker.prototype.setMap = (map) ->
+      return
+    return Marker
+
   class GoogleApiMock
     constructor: ->
+      @mocks = [
+        @mockAPI
+        @mockLatLng
+        @mockLatLngBounds
+        @mockControlPosition
+        @mockAnimation
+        @mockMapTypeId
+        @mockOverlayView
+        @mockOverlayView
+        @mockEvent
+        @mockInfoWindow
+        @mockMarker
+        @mockMVCArray
+        @mockPoint
+        @mockPolygon
+        @mockMap
+      ]
+      @initAll = -> @mocks.forEach (fn) -> fn?()
+
     mockAPI: ->
       window.google = {}
       window.google.maps = {}
@@ -25,8 +51,7 @@ angular.module("google-maps.mocks", [])
       lat: () ->
         y
       lng: () ->
-        x
-    ) ->
+        x) ->
       window.google.maps.LatLng = LatLng
 
     mockLatLngBounds: (LatLngBounds = () -> return) ->
@@ -42,7 +67,7 @@ angular.module("google-maps.mocks", [])
     #   @mockEvent()
     #   Map.getCoords = -> return {latitude: 47, longitude: -27} unless Map.getCoords?
     #   window.google.maps.Map = Map
-    mockMap: ->
+    mockMap: =>
       Map = () ->
         @center =
           lat: -> 0
@@ -73,7 +98,7 @@ angular.module("google-maps.mocks", [])
       window.google.maps.Map = Map
 
     mockControlPosition: ->
-      ControlPosition = 
+      ControlPosition =
         TOP_CENTER: 'TOP_CENTER',
         TOP_LEFT: 'TOP_LEFT',
         TOP_RIGHT: 'TOP_RIGHT',
@@ -94,10 +119,8 @@ angular.module("google-maps.mocks", [])
     mockMapTypeId: (MapTypeId = {ROADMAP: "roadmap"}) ->
       window.google.maps.MapTypeId = MapTypeId
 
-    mockOverlayView: (
-      OverlayView = class OverlayView
-        setMap:() ->
-    ) ->
+    mockOverlayView: (OverlayView = class OverlayView
+      setMap: () ->) ->
       window.google.maps.OverlayView = OverlayView
 
     mockEvent: (event = {}) ->
@@ -139,7 +162,7 @@ angular.module("google-maps.mocks", [])
     mockInfoWindow: (InfoWindow = () -> return) ->
       window.google.maps.InfoWindow = InfoWindow
 
-    mockMarker: (Marker = @getMarker()) ->
+    mockMarker: (Marker = getMarker()) ->
       window.google.maps.Marker = Marker
 
     mockMVCArray: () ->
@@ -157,15 +180,51 @@ angular.module("google-maps.mocks", [])
 
       window.google.maps.MVCArray = MVCArray
 
-    mockPoint: (Point = (x,y) -> return {x: x, y:y}) ->
+    mockPoint: (Point = (x, y) -> return {x: x, y: y}) ->
       window.google.maps.Point = Point
 
-    getMarker: ->
-      Marker = (opts) -> return
-      Marker.prototype.setMap = (map) ->
-        return
+    mockPolygon: (polygon) ->
+      return window.google.maps.Polygon = polygon if polygon?
 
-      return Marker
+      #https://developers.google.com/maps/documentation/javascript/reference#Polygon
+      #https://developers.google.com/maps/documentation/javascript/reference#PolygonOptions
+      window.google.maps.Polygon = (options) ->
+        @getDraggable = ->
+          options.draggable
+        @getEditable = ->
+          options.editable
+        @getMap = ->
+          options.map
+        @getPath = ->
+          _.first(options.paths)
+        @getPaths = ->
+          options.paths
+        @getVisible = ->
+          options.visible
+        @setOptions = (opts) ->
+          options = opts
+
+        @setDraggable = (boolean) ->
+          options.draggable = boolean
+        @setEditable = (boolean) ->
+          options.editable = boolean
+        @setMap = (map) ->
+          options.map = map
+        @setPath = (path) ->
+          if options.paths? and options.paths.length > 0
+            options.paths[0] = path
+          else
+            options.paths = []
+            options.paths.push path
+
+        @setPaths = (paths) ->
+          options.paths = paths
+
+        @setVisible = (boolean) ->
+          options.visible = boolean
+        @
+
+    getMarker: getMarker
 
   GoogleApiMock
 

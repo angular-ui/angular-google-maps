@@ -1,7 +1,7 @@
 angular.module("google-maps.directives.api".ns())
-.factory "PolylineChildModel".ns(), ["BaseObject".ns(), "Logger".ns(), "$timeout", "array-sync".ns(), "GmapUtil".ns(), "EventsHelper".ns()
-  (BaseObject, $log, $timeout, arraySync, GmapUtil,EventsHelper) ->
-    class PolylineChildModel extends BaseObject
+.factory "PolylineChildModel".ns(), ["PolyChildModel".ns(), "Logger".ns(), "$timeout", "array-sync".ns(), "GmapUtil".ns(), "EventsHelper".ns()
+  (PolyChildModel, $log, $timeout, arraySync, GmapUtil,EventsHelper) ->
+    class PolylineChildModel extends PolyChildModel
       @include GmapUtil
       @include EventsHelper
       constructor: (@scope, @attrs, @map, @defaults, @model) ->
@@ -54,31 +54,6 @@ angular.module("google-maps.directives.api".ns())
           @scope = null
 
         $log.info @
-
-      buildOpts: (pathPoints) =>
-        opts = angular.extend({}, @defaults,
-          map: @map
-          path: pathPoints
-          icons: @scope.icons
-          strokeColor: @scope.stroke and @scope.stroke.color
-          strokeOpacity: @scope.stroke and @scope.stroke.opacity
-          strokeWeight: @scope.stroke and @scope.stroke.weight
-        )
-        angular.forEach
-          clickable: true
-          draggable: false
-          editable: false
-          geodesic: false
-          visible: true
-          static: false
-          fit: false
-        , (defaultValue, key) =>
-          if angular.isUndefined(@scope[key]) or @scope[key] is null
-            opts[key] = defaultValue
-          else
-            opts[key] = @scope[key]
-        opts.editable = false if opts.static
-        opts
 
       clean: =>
         @removeEvents @listeners
