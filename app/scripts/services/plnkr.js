@@ -122,6 +122,10 @@ angular.module('angularGoogleMapsApp')
                         }
                     });
 
+                    if (!postData['files[style.css]']) {
+                        postData['files[style.css]'] = '/* style file */';
+                    }
+
                     postData['tags[0]'] = "angularjs";
                     postData['tags[1]'] = "example";
                     postData['tags[2]'] = "angular-google-maps";

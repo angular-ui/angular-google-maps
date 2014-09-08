@@ -1,4 +1,4 @@
-angular.module('appMaps', ['google-maps'])
+angular.module('appMaps', ['google-maps'.ns()])
     .controller('mainCtrl', function($scope) {
         $scope.map = {center: {latitude: 2, longitude: 2}, zoom: 6, bounds: {}};
         $scope.bounds =  {
