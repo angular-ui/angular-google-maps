@@ -1,4 +1,4 @@
-/*! angular-google-maps 1.2.1 2014-09-17
+/*! angular-google-maps 1.2.1 2014-09-19
  *  AngularJS directives for Google Maps
  *  git: https://github.com/nlaplante/angular-google-maps.git
  */
@@ -5581,7 +5581,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.showWindow = function() {
-          var show;
+          var compiled, show, templateScope;
           show = (function(_this) {
             return function() {
               if (_this.gWin) {
@@ -5607,10 +5607,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 };
               })(this));
             }
-            return show();
-          } else {
-            return show();
+          } else if (this.scope.template) {
+            if (this.gWin) {
+              templateScope = this.scope.$new();
+              if (angular.isDefined(this.scope.templateParameter)) {
+                templateScope.parameter = this.scope.templateParameter;
+              }
+              compiled = $compile(this.scope.template)(templateScope);
+              this.gWin.setContent(compiled[0]);
+            }
           }
+          return show();
         };
 
         WindowChildModel.prototype.showHide = function() {
@@ -7345,6 +7352,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             coords: '=coords',
             show: '=show',
             templateUrl: '=templateurl',
+            template: '=template',
             templateParameter: '=templateparameter',
             isIconVisibleOnClick: '=isiconvisibleonclick',
             closeClick: '&closeclick',
