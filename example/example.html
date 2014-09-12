@@ -42,7 +42,6 @@
     <ui-gmap-google-map class="span7"
          center="map.center"
          zoom="map.zoom"
-         draggable="true"
          dragging="map.dragging"
          bounds="map.bounds"
          events="map.events"
@@ -267,7 +266,7 @@
                 <td>bounds</td>
                 <td>
                     <pre ng-cloak>
-                    	north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }} 
+                    	north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }}
                     	<br>
                     	south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
                 	</pre>

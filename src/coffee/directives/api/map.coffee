@@ -30,11 +30,9 @@ angular.module("google-maps.directives.api".ns())
                 zoom: "=" # required
                 dragging: "=" # optional
                 control: "=" # optional
-                windows: "=" # optional  TODO is this still needed looks like dead code
                 options: "=" # optional
                 events: "=" # optional
                 styles: "=" # optional
-                draggable: "=" # optional
                 bounds: "="
 
             ###
@@ -72,15 +70,14 @@ angular.module("google-maps.directives.api".ns())
                       if google.maps.MapTypeId.hasOwnProperty(type)
                           opts.mapTypeId = google.maps.MapTypeId[attrs.type.toUpperCase()]
                       else
-                          $log.error "angular-google-maps: invalid map type \"" + attrs.type + "\""
+                          $log.error "angular-google-maps: invalid map type '#{attrs.type}'"
 
                   # Create the map
-                  mapOptions = angular.extend({}, DEFAULTS, opts,
-                    center: @getCoords(scope.center)
-                    draggable: if attrs.draggable? then @isTrue(scope.draggable) else true
+                  mapOptions = angular.extend {}, DEFAULTS, opts,
+                    center: @getCoords scope.center
                     zoom: scope.zoom
                     bounds: scope.bounds
-                  )
+
                   _m = new google.maps.Map(el.find("div")[1], mapOptions)
                   _m['_id'.ns()] = uuid.generate()
 
@@ -96,14 +93,14 @@ angular.module("google-maps.directives.api".ns())
                   google.maps.event.addListener _m, "dragstart", ->
                       dragging = true
                       _.defer ->
-                          scope.$apply (s) ->
-                              s.dragging = dragging if s.dragging?
+                        scope.$apply (s) ->
+                            s.dragging = dragging if s.dragging?
 
                   google.maps.event.addListener _m, "dragend", ->
                       dragging = false
                       _.defer ->
-                          scope.$apply (s) ->
-                              s.dragging = dragging if s.dragging?
+                        scope.$apply (s) ->
+                            s.dragging = dragging if s.dragging?
 
 
                   google.maps.event.addListener _m, "drag", ->

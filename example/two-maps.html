@@ -25,10 +25,10 @@
     <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
 </head>
 
-<body ng-controller="DebugController">
+<body ng-controller="DebugController" ng-cloak>
 <!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
 	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
-<div class="page-title ">
+<div class="page-title" ng-cloak>
     <h2 ng-cloak>angular-google-maps example {{version}}</h2>
 </div>
 <div class="container">
@@ -43,8 +43,8 @@
                     zoom="map.zoom"
                     options="map.options"
                     dragging="map.dragging"
-                    draggable="true"
                     control="map.control"
+                    ng-cloak
                 >
             <ui-gmap-marker coords="map.marker2" idkey="map.marker2.id" >
                 <ui-gmap-window isIconVisibleOnClick="true">
@@ -60,9 +60,8 @@
                 center="map2.center"
                 zoom="map2.zoom"
                 dragging="map2.dragging"
-                draggable="true"
                 control="map2.control"
-                >
+                ng-cloak>
             <ui-gmap-marker coords="map2.marker2" idkey="map2.marker2.id">
                 <ui-gmap-window isIconVisibleOnClick="true">
                     <p ng-cloak>Marker 2Clicked on me2!</p>
