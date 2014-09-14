@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-11
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-14
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -532,7 +532,7 @@ Nicholas McCready - https://twitter.com/nmccready
               }
               if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName]) && !doIgnore) {
                 return google.maps.event.addListener(gObject, eventName, function() {
-                  return eventHandler.apply(scope, [gObject, eventName, model, arguments]);
+                  return scope.$apply(eventHandler.apply(scope, [gObject, eventName, model, arguments]));
                 });
               } else {
                 return $log.info("EventHelper: invalid event listener " + eventName);
@@ -2189,8 +2189,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             click: (function(_this) {
               return function() {
                 if (_this.doClick && (_this.scope.click != null)) {
-                  _this.scope.click();
-                  return _this.scope.$apply();
+                  return _this.scope.$apply(_this.scope.click());
                 }
               };
             })(this)
@@ -2591,13 +2590,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.getGWin = __bind(this.getGWin, this);
           this.destroy = __bind(this.destroy, this);
           this.remove = __bind(this.remove, this);
-          this.hideWindow = __bind(this.hideWindow, this);
           this.getLatestPosition = __bind(this.getLatestPosition, this);
+          this.hideWindow = __bind(this.hideWindow, this);
           this.showWindow = __bind(this.showWindow, this);
           this.handleClick = __bind(this.handleClick, this);
           this.watchOptions = __bind(this.watchOptions, this);
           this.watchCoords = __bind(this.watchCoords, this);
-          this.watchShow = __bind(this.watchShow, this);
           this.createGWin = __bind(this.createGWin, this);
           this.watchElement = __bind(this.watchElement, this);
           this.googleMapsHandles = [];
@@ -2608,7 +2606,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           this.watchElement();
           this.watchOptions();
-          this.watchShow();
           this.watchCoords();
           this.scope.$on("$destroy", (function(_this) {
             return function() {
@@ -2631,8 +2628,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     _ref.content = void 0;
                   }
                   _this.remove();
-                  _this.createGWin();
-                  return _this.showHide();
+                  return _this.createGWin();
                 }
               }
             };
@@ -2677,31 +2673,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
                 _this.gWin.isOpen(false);
                 if (_this.scope.closeClick != null) {
-                  return _this.scope.closeClick();
+                  return _this.scope.$apply(_this.scope.closeClick());
                 }
               };
             })(this)));
           }
-        };
-
-        WindowChildModel.prototype.watchShow = function() {
-          return this.scope.$watch('show', (function(_this) {
-            return function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                if (newValue) {
-                  return _this.showWindow();
-                } else {
-                  return _this.hideWindow();
-                }
-              } else {
-                if (_this.gWin != null) {
-                  if (newValue && !_this.gWin.getMap()) {
-                    return _this.showWindow();
-                  }
-                }
-              }
-            };
-          })(this), true);
         };
 
         WindowChildModel.prototype.watchCoords = function() {
@@ -2732,12 +2708,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         WindowChildModel.prototype.watchOptions = function() {
           var scope;
           scope = this.markerCtrl != null ? this.scope.$parent : this.scope;
-          return scope.$watch('options', (function(_this) {
+          return this.scope.$watch('options', (function(_this) {
             return function(newValue, oldValue) {
               if (newValue !== oldValue) {
                 _this.opts = newValue;
                 if (_this.gWin != null) {
-                  return _this.gWin.setOptions(_this.opts);
+                  _this.gWin.setOptions(_this.opts);
+                  if ((_this.opts.visible != null) && _this.opts.visible) {
+                    return _this.showWindow();
+                  } else if (_this.opts.visible != null) {
+                    return _this.hideWindow();
+                  }
                 }
               }
             };
@@ -2778,7 +2759,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           show = (function(_this) {
             return function() {
               if (_this.gWin) {
-                if ((_this.scope.show || (_this.scope.show == null)) && !_this.gWin.isOpen()) {
+                if (!_this.gWin.isOpen()) {
                   return _this.gWin.open(_this.mapCtrl);
                 }
               }
@@ -2806,11 +2787,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
         };
 
-        WindowChildModel.prototype.showHide = function() {
-          if (this.scope.show || (this.scope.show == null)) {
-            return this.showWindow();
-          } else {
-            return this.hideWindow();
+        WindowChildModel.prototype.hideWindow = function() {
+          if ((this.gWin != null) && this.gWin.isOpen()) {
+            return this.gWin.close();
           }
         };
 
@@ -2821,12 +2800,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             if (overridePos) {
               return this.gWin.setPosition(overridePos);
             }
-          }
-        };
-
-        WindowChildModel.prototype.hideWindow = function() {
-          if ((this.gWin != null) && this.gWin.isOpen()) {
-            return this.gWin.close();
           }
         };
 
@@ -3119,11 +3092,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.listener = google.maps.event.addListener(this.scope.gMarker, 'click', (function(_this) {
             return function() {
               if (_this.doClick && (scope.click != null)) {
-                return _this.scope.click();
+                return _this.scope.$apply(_this.scope.click());
               }
             };
           })(this));
-          this.setEvents(this.scope.gMarker, scope, scope);
+          this.listeners = this.setEvents(this.scope.gMarker, scope, scope);
           this.$log.info(this);
         }
 
@@ -3188,6 +3161,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           this.scope.gMarker.setMap(null);
+          this.removeEvents(this.listeners);
           google.maps.event.removeListener(this.listener);
           this.listener = null;
           this.gMarkerManager.remove(this.scope.gMarker, false);
@@ -3727,7 +3701,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache);
           self = this;
           this.windows = new PropMap();
-          this.scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
+          this.scopePropNames = ['coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
           _.each(this.scopePropNames, (function(_this) {
             return function(name) {
               return _this[name + 'Key'] = void 0;
@@ -4470,7 +4444,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.replace = true;
           this.scope = {
             coords: '=coords',
-            show: '=show',
             templateUrl: '=templateurl',
             templateParameter: '=templateparameter',
             isIconVisibleOnClick: '=isiconvisibleonclick',
@@ -5143,6 +5116,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             scope.control.getChildWindows = (function(_this) {
               return function() {
                 return _this.childWindows;
+              };
+            })(this);
+            scope.control.showWindow = (function(_this) {
+              return function() {
+                return _this.childWindows.map(function(child) {
+                  return child.showWindow();
+                });
+              };
+            })(this);
+            scope.control.hideWindow = (function(_this) {
+              return function() {
+                return _this.childWindows.map(function(child) {
+                  return child.hideWindow();
+                });
               };
             })(this);
           }
@@ -6309,7 +6296,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-11
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-14
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */

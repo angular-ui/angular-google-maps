@@ -7,7 +7,7 @@ angular.module("google-maps.directives.api.utils".ns())
           doIgnore = _(ignores).contains(eventName)
         if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName]) and !doIgnore
           google.maps.event.addListener(gObject, eventName, ->
-            eventHandler.apply(scope, [gObject, eventName, model, arguments]))
+            scope.$apply(eventHandler.apply(scope, [gObject, eventName, model, arguments])))
         else
           $log.info "EventHelper: invalid event listener #{eventName}"
 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org/" ng-app="appMaps">
+
+<head>
+    <script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization&sensor=false&language=en&v=3.17"></script>
+    <script require="angular.js@1.2.x" src="https://code.angularjs.org/1.2.21/angular.js" semver="1.2.21"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+    <script src="assets/scripts/controllers/issue-686-window-options.js"></script>
+
+    <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
+    <title>Map</title>
+</head>
+
+<body>
+<div id="map_canvas" ng-controller="mainCtrl">
+    <div>Window Options: <span>{{windowoptions|json}}</span></div>
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+        <ui-gmap-marker idKey="0" coords="marker" click="onClick()">
+        </ui-gmap-marker>
+        <ui-gmap-window coords="marker" closeClick="closeClick()" options="windowoptions">
+            <div>{{title}}</div>
+        </ui-gmap-window>
+    </ui-gmap-google-map>
+</div>
+<!--example-->
+</body>
+
+</html>

@@ -13,7 +13,6 @@ angular.module("google-maps.directives.api.models.child".ns())
 
           @watchElement()
           @watchOptions()
-          @watchShow()
           @watchCoords()
           @scope.$on "$destroy", =>
             @destroy()
@@ -28,7 +27,6 @@ angular.module("google-maps.directives.api.models.child".ns())
                 @opts?.content = undefined
                 @remove()
                 @createGWin()
-                @showHide()
 
         createGWin:() =>
           if !@gWin?
@@ -59,21 +57,7 @@ angular.module("google-maps.directives.api.models.child".ns())
                     @markerCtrl.setVisible @markerIsVisibleAfterWindowClose
                   , 250
               @gWin.isOpen(false)
-              @scope.closeClick() if @scope.closeClick?
-
-        watchShow: () =>
-          @scope.$watch('show', (newValue, oldValue) =>
-            if (newValue != oldValue)
-              if (newValue)
-                @showWindow()
-              else
-                @hideWindow()
-            else
-              if @gWin?
-                if (newValue and !@gWin.getMap())
-                  # If we're initially showing the marker and it's not yet visible, show it.
-                  @showWindow()
-          , true)
+              @scope.$apply(@scope.closeClick()) if @scope.closeClick?
 
         watchCoords: ()=>
             scope = if @markerCtrl? then @scope.$parent else @scope
@@ -92,11 +76,17 @@ angular.module("google-maps.directives.api.models.child".ns())
 
         watchOptions: ()=>
             scope = if @markerCtrl? then @scope.$parent else @scope
-            scope.$watch('options', (newValue, oldValue) =>
+            @scope.$watch('options', (newValue, oldValue) =>
                 if (newValue != oldValue)
                     @opts = newValue
                     if @gWin?
                         @gWin.setOptions(@opts)
+
+                        if @opts.visible? && @opts.visible
+                          @showWindow()
+                        else if @opts.visible?
+                          @hideWindow()
+
             , true)
 
         handleClick: (forceClick)=>
@@ -120,7 +110,7 @@ angular.module("google-maps.directives.api.models.child".ns())
         showWindow: () =>
           show = () =>
             if @gWin
-              if (@scope.show || !@scope.show?) and !@gWin.isOpen() #only show if we have no show defined yet or if show is really true
+              if !@gWin.isOpen() #only show if we have no show defined yet or if show is really true
                 @gWin.open(@mapCtrl)
           if @scope.templateUrl
             if @gWin
@@ -134,20 +124,14 @@ angular.module("google-maps.directives.api.models.child".ns())
           else
             show()
 
-        showHide: ->
-          if @scope.show || !@scope.show?
-            @showWindow()
-          else
-            @hideWindow()
+        hideWindow: () =>
+          @gWin.close() if @gWin? and @gWin.isOpen()
 
         getLatestPosition: (overridePos) =>
           if @gWin? and @markerCtrl? and not overridePos
             @gWin.setPosition @markerCtrl.getPosition()
           else
             @gWin.setPosition overridePos if overridePos
-
-        hideWindow: () =>
-          @gWin.close() if @gWin? and @gWin.isOpen()
 
         remove: =>
           @hideWindow()

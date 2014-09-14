@@ -14,7 +14,6 @@ angular.module("google-maps.directives.api".ns())
       @replace = true
       @scope = {
         coords: '=coords',
-        show: '=show',
         templateUrl: '=templateurl',
         templateParameter: '=templateparameter',
         isIconVisibleOnClick: '=isiconvisibleonclick',
