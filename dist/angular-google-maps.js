@@ -3934,6 +3934,15 @@ Nicholas McCready - https://twitter.com/nmccready
             }
           }
         },
+         debug:function(msg) {
+          if (this.doLog) {
+            if (this.logger != null) {
+              return this.logger.debug(msg);
+            } else {
+              return console.debug(msg);
+            }
+          }
+        },
         error: function(msg) {
           if (this.doLog) {
             if ($log != null) {
