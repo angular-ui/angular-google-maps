@@ -1,7 +1,10 @@
 angular.module("google-maps.directives.api".ns())
-.factory "PolylineChildModel".ns(), ["PolyChildModel".ns(), "Logger".ns(), "$timeout", "array-sync".ns(), "GmapUtil".ns(), "EventsHelper".ns()
-  (PolyChildModel, $log, $timeout, arraySync, GmapUtil,EventsHelper) ->
-    class PolylineChildModel extends PolyChildModel
+.factory "PolylineChildModel".ns(), [
+  "PolylineOptionsBuilder".ns(), "Logger".ns(), "$timeout",
+  "array-sync".ns(), "GmapUtil".ns(), "EventsHelper".ns()
+  (Builder, $log, $timeout,
+  arraySync, GmapUtil,EventsHelper) ->
+    class PolylineChildModel extends Builder
       @include GmapUtil
       @include EventsHelper
       constructor: (@scope, @attrs, @map, @defaults, @model) ->
@@ -14,7 +17,6 @@ angular.module("google-maps.directives.api".ns())
               arraySync @polyline.getPath(), scope, "path", (pathPoints) =>
                 @extendMapBounds map, pathPoints if scope.fit
               @listeners = if @model then @setEvents @polyline, scope, @model else @setEvents @polyline, scope, scope
-
 
         if !scope.static and angular.isDefined(scope.editable)
           scope.$watch "editable", (newValue, oldValue) =>
@@ -57,7 +59,7 @@ angular.module("google-maps.directives.api".ns())
 
       clean: =>
         @removeEvents @listeners
-        @polyline.setMap null
+        @polyline?.setMap null
         @polyline = null
         if arraySyncer
           arraySyncer()

@@ -156,17 +156,24 @@
 
         <!-- polygon example -->
         <ui-gmap-polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
-            geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable" events="map.polygonEvents">
+            <!-- geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable" events="map.polygonEvents">
         </ui-gmap-polygon>
 
         <ui-gmap-polygon ng-repeat="p in map.polygons2 track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
                  geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"
                  events="map.polygonEvents">
-        </ui-gmap-polygon>
+        </ui-gmap-polygon> -->
 
         <!-- circle example -->
         <ui-gmap-circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
-            visible="c.visible" geodesic="c.geodesic" editable="c.editable" draggable="c.draggable" clickable="c.clickable"></ui-gmap-circle>
+            events="c.events" visible="c.visible" geodesic="c.geodesic"
+            editable="c.editable" draggable="c.draggable" clickable="c.clickable">
+        </ui-gmap-circle>
+
+        <ui-gmap-rectangle bounds="map.rectangle.bounds" stroke="rectangle.stroke" visible="map.rectangle.visible"
+                 fill="map.rectangle.fill" fit="false" editable="map.rectangle.editable" draggable="map.rectangle.draggable"
+                 events="map.rectangle.events">
+        </ui-gmap-rectangle>
 
 </ui-gmap-google-map>
 <div class="span5">
@@ -194,6 +201,22 @@
                     <div ng-init="numOfMarkers = 1000">
                         <input type="text" text="Number of Markers" ng-model="numOfMarkers">
                         <button ng-click="genRandomMarkers(numOfMarkers)">Generate</button>
+                    </div>
+                </td>
+            </tr>
+            <tr ng-show="map.rectangle !== null">
+                <td>rectangle</td>
+                <td>
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li ng-cloak>
+                                <a href="#">
+                                    <i class="i" >
+                                        Rectangle: {{map.rectangle}}
+                                    </i>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </td>
             </tr>

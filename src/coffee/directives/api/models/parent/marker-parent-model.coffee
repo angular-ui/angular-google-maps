@@ -1,12 +1,19 @@
 ###
-	Basic Directive api for a marker. Basic in the sense that this directive contains 1:1 on scope and model.
+	Basic Directive api for a marker. Basic in the sense that this directive
+  contains 1:1 on scope and model.
 	Thus there will be one html element per marker within the directive.
 ###
 angular.module("google-maps.directives.api.models.parent".ns())
-.factory "MarkerParentModel".ns(), ["IMarkerParentModel".ns(), "GmapUtil".ns(), "EventsHelper".ns(), "ModelKey".ns()
-    (IMarkerParentModel, GmapUtil, EventsHelper) ->
-      # TODO: Eventually this directive should be using marker-child-model (for this to happen something will need to be done with parentScope)
-      # currently this Parent directive is acting as a child where Marker is creating MarkerParentModel which directly creates a Marker (MarkerChild does the same)
+.factory "MarkerParentModel".ns(),
+["IMarkerParentModel".ns(), "GmapUtil".ns(), "EventsHelper".ns(), "ModelKey".ns(),
+    (IMarkerParentModel, GmapUtil, EventsHelper, ModelKey) ->
+      ###
+       TODO: Eventually this directive should be using marker-child-model
+       (for this to happen something will need to be done with parentScope)
+       currently this Parent directive is acting as a child where Marker
+       is creating MarkerParentModel which directly creates a Marker
+       (MarkerChild does the same)
+      ###
       class MarkerParentModel extends IMarkerParentModel
         @include GmapUtil
         @include EventsHelper

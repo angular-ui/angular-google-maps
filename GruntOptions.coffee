@@ -48,6 +48,7 @@ module.exports = (grunt) ->
             "src/coffee/controllers/polyline-display.js"
             "src/coffee/utils/*.coffee"
 
+            "src/coffee/directives/api/options/**/*.coffee"
             "src/coffee/directives/api/models/child/*.coffee"
             "src/coffee/directives/api/models/parent/*.coffee"
             "src/coffee/directives/api/*.coffee"

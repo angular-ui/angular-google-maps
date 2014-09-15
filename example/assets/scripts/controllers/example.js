@@ -32,6 +32,11 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
 
   GoogleMapApi.then(function(maps) {
     maps.visualRefresh = true;
+    $log.info('$scope.map.rectangle.bounds set');
+    $scope.map.rectangle.bounds = new maps.LatLngBounds(
+      new maps.LatLng(55,-100),
+      new maps.LatLng(49,-78)
+    );
     $scope.map.polylines = [
     {
       id: 1,
@@ -400,9 +405,35 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
           draggable: true, // optional: defaults to false
           clickable: true, // optional: defaults to true
           editable: true, // optional: defaults to false
-          visible: true // optional: defaults to true
+          visible: true, // optional: defaults to true
+          events:{
+            dblclick: function(){
+              window.alert("circle dblclick");
+            }
+          }
         }
       ],
+      rectangle:{
+        bounds:{},
+        stroke: {
+          color: '#08B21F',
+          weight: 2,
+          opacity: 1
+        },
+        fill: {
+          color: 'pink',
+          opacity: 0.5
+        },
+        events:{
+          dblclick: function(){
+            window.alert("rectangle dblclick");
+          }
+        },
+        draggable: true, // optional: defaults to false
+        clickable: true, // optional: defaults to true
+        editable: true, // optional: defaults to false
+        visible: true // optional: defaults to true
+      },
       polygonEvents:{
         dblclick:function(){
           alert("Polgon Double Clicked!");

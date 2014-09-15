@@ -229,5 +229,19 @@ angular.module("google-maps.directives.api.utils".ns())
 
     obj
 
-  setCoordsFromEvent: setCoordsFromEvent
+  validateBoundPoints: (bounds) ->
+    return false if angular.isUndefined(bounds.sw.latitude) or
+      angular.isUndefined(bounds.sw.longitude) or
+      angular.isUndefined(bounds.ne.latitude) or
+        angular.isUndefined(bounds.ne.longitude)
+    true
+
+  convertBoundPoints: (bounds) ->
+    result = new google.maps.LatLngBounds new google.maps.LatLng(bounds.sw.latitude, bounds.sw.longitude)
+      ,new google.maps.LatLng(bounds.ne.latitude, bounds.ne.longitude)
+    result
+
+  fitMapBounds: (map, bounds) ->
+    map.fitBounds bounds
+
 ]
