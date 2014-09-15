@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-12
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-15
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3246,7 +3246,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watch('clusterOptions', scope);
           this.watch('clusterEvents', scope);
           this.watch('fit', scope);
-          this.watch('trackFit', scope);
           this.watch('idKey', scope);
           this.gMarkerManager = void 0;
           this.createMarkersFromScratch(scope);
@@ -3359,10 +3358,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
                         _this.gMarkerManager.draw();
                         scope.markerModels = _this.scope.markerModels;
-                        if (scope.trackFit) {
-                          if (scope.fit) {
-                            return _this.gMarkerManager.fit();
-                          }
+                        if (scope.fit) {
+                          return _this.gMarkerManager.fit();
                         }
                       }
                     });
@@ -4326,7 +4323,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             options: '=options',
             events: '=events',
             fit: '=fit',
-            trackFit: '=trackfit',
             idKey: '=idkey',
             control: '=control'
           };
@@ -6316,7 +6312,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-12
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-15
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */

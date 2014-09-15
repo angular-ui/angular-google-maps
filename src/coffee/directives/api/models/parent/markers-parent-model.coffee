@@ -23,7 +23,6 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 @watch('clusterOptions', scope)
                 @watch('clusterEvents', scope)
                 @watch('fit', scope)
-                @watch('trackFit', scope)
                 @watch('idKey', scope)
                 @gMarkerManager = undefined
                 @createMarkersFromScratch(scope)
@@ -115,8 +114,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
                                     if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
                                         @gMarkerManager.draw()
                                         scope.markerModels = @scope.markerModels #for other directives like windows
-                                        if scope.trackFit
-                                            @gMarkerManager.fit() if scope.fit
+                                        @gMarkerManager.fit() if scope.fit
                 else
                     @reBuildMarkers(scope)
 
