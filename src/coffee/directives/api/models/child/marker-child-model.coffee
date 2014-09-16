@@ -125,8 +125,7 @@ angular.module("google-maps.directives.api.models.child".ns())
             @scope.$apply()
           click: =>
             if @doClick and @scope.click?
-              @scope.click()
-              @scope.$apply()
+              @scope.$apply(@scope.click())
 
         watchDestroy: (scope )=>
           scope.$on "$destroy", @destroy

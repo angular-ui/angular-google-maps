@@ -1,6 +1,7 @@
 angular.module("google-maps.directives.api.utils".ns())
 .factory "ModelsWatcher".ns(), [ "Logger".ns(), (Logger) ->
-  #putting a payload together in order to not have to flatten twice, and to not have to flatten again later
+  #putting a payload together in order to not have to flatten twice, and to not
+  #have to flatten again later
   figureOutState: (idKey, scope, childObjects, comparison, callBack)->
     adds = [] #models to add or update
     mappedScopeModelIds = {}
@@ -19,7 +20,8 @@ angular.module("google-maps.directives.api.utils".ns())
               model: m
               child: child
       else
-        Logger.error("id missing for model #{m.toString()}, can not use do comparison/insertion")
+        Logger.error """ id missing for model #{m.toString()},
+          can not use do comparison/insertion"""
     , () =>
       _async.each childObjects.values(), (c) ->
         unless c?
@@ -29,7 +31,8 @@ angular.module("google-maps.directives.api.utils".ns())
           Logger.error("child.model undefined in ModelsWatcher.")
           return
         id = c.model[idKey]
-        #if we do not have the object we can remove it, this case is when it no longer exists and should be removed
+        #if we do not have the object we can remove it,
+        #this case is when it no longer exists and should be removed
         removals.push c unless mappedScopeModelIds[id]?
       , () =>
         callBack

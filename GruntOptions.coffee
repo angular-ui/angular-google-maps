@@ -48,6 +48,7 @@ module.exports = (grunt) ->
             "src/coffee/controllers/polyline-display.js"
             "src/coffee/utils/*.coffee"
 
+            "src/coffee/directives/api/options/**/*.coffee"
             "src/coffee/directives/api/models/child/*.coffee"
             "src/coffee/directives/api/models/parent/*.coffee"
             "src/coffee/directives/api/*.coffee"
@@ -127,7 +128,8 @@ module.exports = (grunt) ->
 
         files: [
           "src/coffee/*.coffee", "src/coffee/**/*.coffee", "src/coffee/**/**/*.coffee",
-          "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js", "spec/**/*.spec.coffee", "spec/coffee/helpers/**"
+          "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js", "spec/**/*.spec.coffee", "spec/coffee/helpers/**",
+          "example/**"
         ]
         tasks: ["fast"]
       spec:

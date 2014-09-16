@@ -1,8 +1,10 @@
 angular.module("google-maps.directives.api".ns())
 .factory "PolygonChildModel".ns(), [
-  "PolyChildModel".ns(), "Logger".ns(), "$timeout", "array-sync".ns(), "GmapUtil".ns(), "EventsHelper".ns()
-  (PolyChildModel, $log, $timeout, arraySync, GmapUtil, EventsHelper) ->
-    class PolygonChildModel extends PolyChildModel
+  "PolygonOptionsBuilder".ns(), "Logger".ns(), "$timeout",
+  "array-sync".ns(), "GmapUtil".ns(), "EventsHelper".ns()
+  (Builder, $log, $timeout,
+  arraySync, GmapUtil, EventsHelper) ->
+    class PolygonChildModel extends Builder
       @include GmapUtil
       @include EventsHelper
       constructor: (@scope, @attrs, @map, @defaults, @model) ->

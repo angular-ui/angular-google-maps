@@ -12,7 +12,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
           self = @
           @windows = new PropMap()
 
-          @scopePropNames = ['show', 'coords', 'templateUrl', 'templateParameter',
+          @scopePropNames = ['coords', 'templateUrl', 'templateParameter',
                              'isIconVisibleOnClick', 'closeClick']
           #setting up local references to propety keys IE: @coordsKey
           _.each @scopePropNames, (name) =>

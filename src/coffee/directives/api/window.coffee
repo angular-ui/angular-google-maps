@@ -53,6 +53,12 @@ angular.module("google-maps.directives.api".ns())
             child.gWin
         scope.control.getChildWindows = =>
           @childWindows
+        scope.control.showWindow = =>
+          @childWindows.map (child) =>
+            child.showWindow()
+        scope.control.hideWindow = =>
+          @childWindows.map (child) =>
+            child.hideWindow()
 
       @onChildCreation window if @onChildCreation? and window?
 ]
