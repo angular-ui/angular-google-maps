@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-15
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-16
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3583,7 +3583,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }, function() {
                       if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
                         _this.gMarkerManager.draw();
-                        return scope.markerModels = _this.scope.markerModels;
+                        scope.markerModels = _this.scope.markerModels;
+                        if (scope.fit) {
+                          return _this.gMarkerManager.fit();
+                        }
                       }
                     });
                   });
@@ -6431,7 +6434,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-15
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-16
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
