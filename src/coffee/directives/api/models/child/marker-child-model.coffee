@@ -107,8 +107,11 @@ angular.module("google-maps.directives.api.models.child".ns())
             @gMarker = new google.maps.Marker(@opts)
 
           #hook external event handlers for events
-          @externalListeners = @setEvents @gMarker, @parentScope, @model, ignore = ['dragend']
-          @internalListeners = @setEvents @gMarker, events:@internalEvents(), @model
+          @removeEvents @externalListeners if @externalListeners
+          @removeEvents @internalListeners if @internalListeners
+          @externalListeners = @setEvents @gMarker, @parentScope, @model, ['dragend']
+          #must pass fake $apply see events-helper
+          @internalListeners = @setEvents @gMarker, {events:@internalEvents(), $apply:() ->}, @model
 
           @gMarker.key = @id if @id?
           @gMarkerManager.add @gMarker
@@ -121,7 +124,8 @@ angular.module("google-maps.directives.api.models.child".ns())
           dragend: (marker,eventName,model,mousearg) =>
             newCoords = @setCoordsFromEvent @modelOrKey(@scope.model,@coordsKey), @gMarker.getPosition()
             @scope.model = @setVal(model,@coordsKey,newCoords)
-            @parentScope.events?.dragend(marker,eventName,@scope.model,mousearg) if @parentScope.events?.dragend?
+            #since we ignored dragend for parent scope above, if parentScope.events has it then we should fire it
+            @parentScope.events.dragend(marker,eventName,@scope.model,mousearg) if @parentScope.events?.dragend?
             @scope.$apply()
           click: =>
             if @doClick and @scope.click?

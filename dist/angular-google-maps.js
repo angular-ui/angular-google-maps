@@ -602,7 +602,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps.directives.api.utils".ns()).service("GmapUtil".ns(), [
     "Logger".ns(), "$compile", function(Logger, $compile) {
-      var getCoords, getLatitude, getLongitude, setCoordsFromEvent, validateCoords;
+      var getCoords, getLatitude, getLongitude, validateCoords;
       getLatitude = function(value) {
         if (Array.isArray(value) && value.length === 2) {
           return value[1];
@@ -633,22 +633,6 @@ Nicholas McCready - https://twitter.com/nmccready
           return new google.maps.LatLng(value.latitude, value.longitude);
         }
       };
-      setCoordsFromEvent = function(prevValue, newLatLon) {
-        if (!prevValue) {
-          return;
-        }
-        if (Array.isArray(prevValue) && prevValue.length === 2) {
-          prevValue[1] = newLatLon.lat();
-          prevValue[0] = newLatLon.lng();
-        } else if (angular.isDefined(prevValue.type) && prevValue.type === "Point") {
-          prevValue.coordinates[1] = newLatLon.lat();
-          prevValue.coordinates[0] = newLatLon.lng();
-        } else {
-          prevValue.latitude = newLatLon.lat();
-          prevValue.longitude = newLatLon.lng();
-        }
-        return prevValue;
-      };
       validateCoords = function(coords) {
         if (angular.isUndefined(coords)) {
           return false;
@@ -668,6 +652,22 @@ Nicholas McCready - https://twitter.com/nmccready
         return false;
       };
       return {
+        setCoordsFromEvent: function(prevValue, newLatLon) {
+          if (!prevValue) {
+            return;
+          }
+          if (Array.isArray(prevValue) && prevValue.length === 2) {
+            prevValue[1] = newLatLon.lat();
+            prevValue[0] = newLatLon.lng();
+          } else if (angular.isDefined(prevValue.type) && prevValue.type === "Point") {
+            prevValue.coordinates[1] = newLatLon.lat();
+            prevValue.coordinates[0] = newLatLon.lng();
+          } else {
+            prevValue.latitude = newLatLon.lat();
+            prevValue.longitude = newLatLon.lng();
+          }
+          return prevValue;
+        },
         getLabelPositionPoint: function(anchor) {
           var xPos, yPos;
           if (anchor === void 0) {
@@ -2363,7 +2363,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.setOptions = function(scope) {
-          var ignore, _ref;
+          var _ref;
           if (scope.$id !== this.scope.$id) {
             return;
           }
@@ -2381,9 +2381,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           } else {
             this.gMarker = new google.maps.Marker(this.opts);
           }
-          this.externalListeners = this.setEvents(this.gMarker, this.parentScope, this.model, ignore = ['dragend']);
+          if (this.externalListeners) {
+            this.removeEvents(this.externalListeners);
+          }
+          if (this.internalListeners) {
+            this.removeEvents(this.internalListeners);
+          }
+          this.externalListeners = this.setEvents(this.gMarker, this.parentScope, this.model, ['dragend']);
           this.internalListeners = this.setEvents(this.gMarker, {
-            events: this.internalEvents()
+            events: this.internalEvents(),
+            $apply: function() {}
           }, this.model);
           if (this.id != null) {
             this.gMarker.key = this.id;
@@ -2400,13 +2407,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return {
             dragend: (function(_this) {
               return function(marker, eventName, model, mousearg) {
-                var newCoords, _ref, _ref1;
+                var newCoords, _ref;
                 newCoords = _this.setCoordsFromEvent(_this.modelOrKey(_this.scope.model, _this.coordsKey), _this.gMarker.getPosition());
                 _this.scope.model = _this.setVal(model, _this.coordsKey, newCoords);
                 if (((_ref = _this.parentScope.events) != null ? _ref.dragend : void 0) != null) {
-                  if ((_ref1 = _this.parentScope.events) != null) {
-                    _ref1.dragend(marker, eventName, _this.scope.model, mousearg);
-                  }
+                  _this.parentScope.events.dragend(marker, eventName, _this.scope.model, mousearg);
                 }
                 return _this.scope.$apply();
               };

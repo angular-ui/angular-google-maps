@@ -1,5 +1,6 @@
 angular.module("google-maps.directives.api.utils".ns())
 .service "GmapUtil".ns(), ["Logger".ns(), "$compile", (Logger, $compile) ->
+  #BEGIN Private Methods
   getLatitude = (value) ->
     if Array.isArray(value) and value.length is 2
       value[1]
@@ -25,7 +26,19 @@ angular.module("google-maps.directives.api.utils".ns())
     else
       new google.maps.LatLng(value.latitude, value.longitude)
 
-  setCoordsFromEvent = (prevValue, newLatLon) ->
+  validateCoords = (coords) ->
+    return false if angular.isUndefined coords
+
+    if _.isArray(coords)
+      return true if coords.length is 2
+    else if coords? and coords?.type
+      return true if coords.type is "Point" and _.isArray(coords.coordinates) and coords.coordinates.length is 2
+    return true if coords and angular.isDefined coords?.latitude and angular.isDefined coords?.longitude
+    false
+  #END Private Methods
+
+  # BEGIN Public Methods
+  setCoordsFromEvent: (prevValue, newLatLon) ->
     return unless prevValue
     if Array.isArray(prevValue) and prevValue.length is 2
       prevValue[1] = newLatLon.lat()
@@ -38,16 +51,6 @@ angular.module("google-maps.directives.api.utils".ns())
       prevValue.longitude = newLatLon.lng()
 
     prevValue
-
-  validateCoords = (coords) ->
-    return false if angular.isUndefined coords
-
-    if _.isArray(coords)
-      return true if coords.length is 2
-    else if coords? and coords?.type
-      return true if coords.type is "Point" and _.isArray(coords.coordinates) and coords.coordinates.length is 2
-    return true if coords and angular.isDefined coords?.latitude and angular.isDefined coords?.longitude
-    false
 
   getLabelPositionPoint: (anchor) ->
     if anchor == undefined
@@ -244,4 +247,5 @@ angular.module("google-maps.directives.api.utils".ns())
   fitMapBounds: (map, bounds) ->
     map.fitBounds bounds
 
+  #end Public Methods
 ]
