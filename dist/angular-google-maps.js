@@ -2929,7 +2929,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.showWindow = function() {
-          var show;
+          var compiled, show, templateScope;
           show = (function(_this) {
             return function() {
               if (_this.gWin) {
@@ -2955,10 +2955,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 };
               })(this));
             }
-            return show();
-          } else {
-            return show();
+          } else if (this.scope.template) {
+            if (this.gWin) {
+              templateScope = this.scope.$new();
+              if (angular.isDefined(this.scope.templateParameter)) {
+                templateScope.parameter = this.scope.templateParameter;
+              }
+              compiled = $compile(this.scope.template)(templateScope);
+              this.gWin.setContent(compiled[0]);
+            }
           }
+          return show();
         };
 
         WindowChildModel.prototype.hideWindow = function() {
@@ -4244,7 +4251,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache);
           self = this;
           this.windows = new PropMap();
-          this.scopePropNames = ['coords', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
+          this.scopePropNames = ['coords', 'template', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
           _.each(this.scopePropNames, (function(_this) {
             return function(name) {
               return _this[name + 'Key'] = void 0;
@@ -5058,6 +5065,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.replace = true;
           this.scope = {
             coords: '=coords',
+            template: '=template',
             templateUrl: '=templateurl',
             templateParameter: '=templateparameter',
             isIconVisibleOnClick: '=isiconvisibleonclick',
