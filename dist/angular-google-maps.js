@@ -2330,7 +2330,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.removeEvents(this.internalListeners);
             this.gMarkerManager.remove(this.gMarker, true);
             delete this.gMarker;
-            return this.scope.$destroy();
+            if (!this.scope.$$destroyed) {
+              return this.scope.$destroy();
+            }
           }
         };
 
