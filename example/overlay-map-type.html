@@ -3,20 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>map-type examples for angular-google-maps</title>
-    <!-- See https://rawgithub.com/ as it returns the correct mimetypes that are requested from github.-->
-    <!-- make IE Happy , http://docs.angularjs.org/guide/ie -->
-    <!--[if lte IE 9]>
-    <script>
-	    window.html5 = {
-            'elements': 'mapt-type marker window windows markers layer polyline marker-label ng-controller ng-repeat ng-init ng-model ng-hide ng-show'
-        };
-	</script>
-
-    <script src="https://rawgithub.com/bestiejs/json3/v3.2.5a/lib/json3.min.js"></script>
-    <script src="https://rawgithub.com/kriskowal/es5-shim/v2.1.0/es5-shim.min.js"></script>
-    <script src="https://rawgithub.com/jwmcpeak/EventShim/master/eventShim.js"></script>
-    <script src="https://rawgithub.com/aFarkas/html5shiv/3.7.0/src/html5shiv.js"></script>
-    <![endif]-->
 
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
@@ -25,117 +11,134 @@
     <link href="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.css" type="text/css">
     <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
     <style>
-    body {
-        padding-top: 70px;
-        padding-bottom: 30px;
-    }
-    .angular-google-map-container {
-        height: 350px;
-    }
+        body {
+            padding-top: 70px;
+            padding-bottom: 30px;
+        }
+
+        .angular-google-map-container {
+            height: 350px;
+        }
     </style>
 </head>
 
 <body ng-controller="maptypeExampleController">
-    <!--	You can use either a div having class 'google-map' or the '<google-map>' element; in
-    	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a href="#" class="navbar-brand">map-type directive</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a href="#usage">Usage</a></li>
-                    <li class="dropdown">
-                        <a href="#examples" data-toggle="dropdown">Examples <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="#basic-overlay">Custom map type overlayed</a></li>
-                            <li><a href="#image-overlay">Image map type overlayed</a></li>
-                            <li><a href="#image-single">Image map type single layer</a></li>
-                            <li><a href="#combo">Combo</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a href="#" class="navbar-brand">map-type directive</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="#usage">Usage</a></li>
+                <li class="dropdown">
+                    <a href="#examples" data-toggle="dropdown">Examples <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#basic-overlay">Custom map type overlayed</a></li>
+                        <li><a href="#image-overlay">Image map type overlayed</a></li>
+                        <li><a href="#image-single">Image map type single layer</a></li>
+                        <li><a href="#combo">Combo</a></li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
-    <div class="container">
-        <div class="jumbotron">
-            <h2 ng-cloak><code>map-type</code> directive for <strong>angular-google-maps {{version}}</strong></h2>
-            <p>As seen on <a href="https://developers.google.com/maps/documentation/javascript/maptypes">
-            Google Maps Javascript API v3 Map Types documentation</a>.</p>
-        </div>
-        <h2>Directive usage</h2>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">map-type</h3>
-            </div>
-            <div class="panel-body">
-                <h4>Usage</h4>
-                <p>The <code>map-type</code> directive is used to add custom map types, as overlays or single layers.</p>
+</div>
+<div class="container">
+<div class="jumbotron">
+    <h2 ng-cloak><code>map-type</code> directive for <strong>angular-google-maps {{version}}</strong></h2>
+
+    <p>As seen on <a href="https://developers.google.com/maps/documentation/javascript/maptypes">
+        Google Maps Javascript API v3 Map Types documentation</a>.</p>
+</div>
+<h2>Directive usage</h2>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">map-type</h3>
+    </div>
+    <div class="panel-body">
+        <h4>Usage</h4>
+
+        <p>The <code>map-type</code> directive is used to add custom map types, as overlays or single layers.</p>
                 <pre class="prettyprint">
-&lt;map-type
+&lt;ui-gmap-map-type
     options='{expression}'
     id="'{string}'"
     show='{expression}'
     refresh='{expression}'>
-&lt;/map-type>
+&lt;/ui-gmap-map-type>
                 </pre>
-                <h4>Parameters</h4>
-                <p>Required properties are in red.</p>
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Param</th>
-                            <th>Type</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>options</td>
-                            <td><span class="label label-danger">expression</span></td>
-                            <td>Map type options, including in particular <code>getTile</code> or <code>getTileUrl</code> methods. For complete list of options see <a href="https://developers.google.com/maps/documentation/javascript/maptypes#MapTypeInterface" target="_blank">Google Maps API documentation</a>.</td>
-                        </tr>
-                        <tr>
-                            <td>id</td>
-                            <td><span class="label label-info">string</span></td>
-                            <td>Map type id, to be used in the controler to display the maptype as a single layer.</td>
-                        </tr>
-                        <tr>
-                            <td>show</td>
-                            <td><span class="label label-info">expression</span></td>
-                            <td>Scope variable used to show the maptype as an overlay. Defaults to <code>true</code>, unless <code>id</code> has been defined</td>
-                        </tr>
-                        <tr>
-                            <td>refresh</td>
-                            <td><span class="label label-info">expression</span></td>
-                            <td>Variable or expression to watch, which will trigger a maptype refresh when changing.<br>
-                            Useful in the case where the <code>getTileUrl</code> is dynamically defined (for example using filters, options&hellip;), and you want to apply changes immediately.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <h4>Parameters</h4>
 
-        </div>
+        <p>Required properties are in red.</p>
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>Param</th>
+                <th>Type</th>
+                <th>Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>options</td>
+                <td><span class="label label-danger">expression</span></td>
+                <td>Map type options, including in particular <code>getTile</code> or <code>getTileUrl</code> methods.
+                    For complete list of options see <a
+                            href="https://developers.google.com/maps/documentation/javascript/maptypes#MapTypeInterface"
+                            target="_blank">Google Maps API documentation</a>.
+                </td>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td><span class="label label-info">string</span></td>
+                <td>Map type id, to be used in the controler to display the maptype as a single layer.</td>
+            </tr>
+            <tr>
+                <td>show</td>
+                <td><span class="label label-info">expression</span></td>
+                <td>Scope variable used to show the maptype as an overlay. Defaults to <code>true</code>, unless <code>id</code>
+                    has been defined
+                </td>
+            </tr>
+            <tr>
+                <td>refresh</td>
+                <td><span class="label label-info">expression</span></td>
+                <td>Variable or expression to watch, which will trigger a maptype refresh when changing.<br>
+                    Useful in the case where the <code>getTileUrl</code> is dynamically defined (for example using
+                    filters, options&hellip;), and you want to apply changes immediately.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-        <h2>Examples</h2>
-        <div class="page-header">
-            <h3 id="basic-overlay">Map with Custom map type overlayed</h3>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <p>
-                    The most simple way to overlay a custom map type is just to define the map type options in the controller and then add the directive in the google-map widget.
-                </p>
-                <p>In this example a map type displaying black squares is overlayed on the map. This can be hidden changing the <code>showOverlay</code> value in the scope, as seen in <a href="https://developers.google.com/maps/documentation/javascript/examples/maptype-overlay" target="_blank">Overlay map types</a> API example.</p>
-                <google-map center="map1.center" zoom="map1.zoom">
-                    <map-type options="squaresMapType" show="map1.showOverlay"></map-type>
-                </google-map>
-                <a class="btn btn-primary" ng-click="map1.showOverlay = !map1.showOverlay">Toggle overlay</a>
-            </div>
-            <div class="col-md-6">
-                <h4>Javascript</h4>
+</div>
+
+<h2>Examples</h2>
+
+<div class="page-header">
+    <h3 id="basic-overlay">Map with Custom map type overlayed</h3>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            The most simple way to overlay a custom map type is just to define the map type options in the controller
+            and then add the directive in the google-map widget.
+        </p>
+
+        <p>In this example a map type displaying black squares is overlayed on the map. This can be hidden changing the
+            <code>showOverlay</code> value in the scope, as seen in <a
+                    href="https://developers.google.com/maps/documentation/javascript/examples/maptype-overlay"
+                    target="_blank">Overlay map types</a> API example.</p>
+        <ui-gmap-google-map center="map1.center" zoom="map1.zoom">
+            <ui-gmap-map-type options="squaresMapType" show="map1.showOverlay"></ui-gmap-map-type>
+        </ui-gmap-google-map>
+        <a class="btn btn-primary" ng-click="map1.showOverlay = !map1.showOverlay">Toggle overlay</a>
+    </div>
+    <div class="col-md-6">
+        <h4>Javascript</h4>
 <pre class="prettyprint">
 // Define map type options
 $scope.squaresMapType = {
@@ -165,32 +168,37 @@ $scope.map1 = {
     zoom: 10,
 };
 </pre>
-                <h4>HTML</h4>
+        <h4>HTML</h4>
 <pre class="prettyprint">
-&lt;google-map center="map1.center" zoom="map1.zoom">
-    &lt;map-type options="squaresMapType" show="map1.showOverlay">&lt;/map-type>
-&lt;/google-map>
+&lt;ui-gmap-google-map center="map1.center" zoom="map1.zoom">
+    &lt;ui-gmap-map-type options="squaresMapType" show="map1.showOverlay">&lt;/ui-gmap-map-type>
+&lt;/ui-gmap-google-map>
 &lt;a ng-click="map1.showOverlay = !map1.showOverlay">Toggle overlay&lt;/a>
 </pre>
-            </div>
-        </div>
+    </div>
+</div>
 
-        <div class="page-header">
-            <h3 id="image-overlay">Map with Image map type overlayed</h3>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-            <p>
-                You can overlay an Image map type pretty much the same way, just by defining the method <code>getTileUrl</code> in its options. MapTypes are handled internally and you don't need to care about creating a custom type or using Google API ones.
-            </p>
-            <p>This example overlays Moscone Center pictures over the map, as seen in <a href="https://developers.google.com/maps/documentation/javascript/examples/maptype-image-overlay" target="_blank">Overlaying an image map type</a> API example.</p>
+<div class="page-header">
+    <h3 id="image-overlay">Map with Image map type overlayed</h3>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <p>
+            You can overlay an Image map type pretty much the same way, just by defining the method
+            <code>getTileUrl</code> in its options. MapTypes are handled internally and you don't need to care about
+            creating a custom type or using Google API ones.
+        </p>
 
-                <google-map center="map2.center" zoom="map2.zoom" options="map2.options">
-                    <map-type options="mosconeCenterMapType"></map-type>
-                </google-map>
-            </div>
-            <div class="col-md-6">
-                <h4>Javascript</h4>
+        <p>This example overlays Moscone Center pictures over the map, as seen in <a
+                href="https://developers.google.com/maps/documentation/javascript/examples/maptype-image-overlay"
+                target="_blank">Overlaying an image map type</a> API example.</p>
+
+        <ui-gmap-google-map center="map2.center" zoom="map2.zoom" options="map2.options">
+            <ui-gmap-map-type options="mosconeCenterMapType"></ui-gmap-map-type>
+        </ui-gmap-google-map>
+    </div>
+    <div class="col-md-6">
+        <h4>Javascript</h4>
 <pre class="prettyprint">
 // Define map type options
 $scope.mosconeCenterMapType = {
@@ -229,32 +237,41 @@ $scope.map2 = {
     }
 };
 </pre>
-                <h4>HTML</h4>
+        <h4>HTML</h4>
 <pre class="prettyprint">
-&lt;google-map center="map2.center" zoom="map2.zoom" options="map2.options">
-    &lt;map-type options="mosconeCenterMapType">&lt;/map-type>
-&lt;/google-map>
+&lt;ui-gmap-google-map center="map2.center" zoom="map2.zoom" options="map2.options">
+    &lt;ui-gmap-map-type options="mosconeCenterMapType">&lt;/ui-gmap-map-type>
+&lt;/ui-gmap-google-map>
 </pre>
-            </div>
-        </div>
+    </div>
+</div>
 
-        <div class="page-header">
-            <h3 id="image-single">Map with Image map type as single layer</h3>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <p>You can alternatively give the directive an <code>id</code> attribute, so the map type can be used as a single layer like the ROAD, SATELLITE or other <a href="https://developers.google.com/maps/documentation/javascript/maptypes#BasicMapTypes" target="_blank">basic map types</a>.</p>
-                <ul>
-                    <li><code>show</code> attribute is not used for single-layer map types, you need to use controls or explicitely set the map type you want in the javascript code.</li>
-                    <li>Additionnaly, you need to specify <code>maxZoom</code> parameter in the maptype options when using the maptype as a single layer.</li>
-                </ul>
-                <p>This example displays a map of the moon instead of the earth, as seen on <a href="https://developers.google.com/maps/documentation/javascript/examples/maptype-image" target="_blank">Image map types</a> API example.</p>
-                <google-map center="map3.center" zoom="map3.zoom" options="map3.options">
-                    <map-type id="moon" options="moonMapType"></map-type>
-                </google-map>
-            </div>
-            <div class="col-md-6">
-                <h4>Javascript</h4>
+<div class="page-header">
+    <h3 id="image-single">Map with Image map type as single layer</h3>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <p>You can alternatively give the directive an <code>id</code> attribute, so the map type can be used as a
+            single layer like the ROAD, SATELLITE or other <a
+                    href="https://developers.google.com/maps/documentation/javascript/maptypes#BasicMapTypes"
+                    target="_blank">basic map types</a>.</p>
+        <ul>
+            <li><code>show</code> attribute is not used for single-layer map types, you need to use controls or
+                explicitely set the map type you want in the javascript code.
+            </li>
+            <li>Additionnaly, you need to specify <code>maxZoom</code> parameter in the maptype options when using the
+                maptype as a single layer.
+            </li>
+        </ul>
+        <p>This example displays a map of the moon instead of the earth, as seen on <a
+                href="https://developers.google.com/maps/documentation/javascript/examples/maptype-image"
+                target="_blank">Image map types</a> API example.</p>
+        <ui-gmap-google-map center="map3.center" zoom="map3.zoom" options="map3.options">
+            <ui-gmap-map-type id="moon" options="moonMapType"></map-type>
+        </ui-gmap-google-map>
+    </div>
+    <div class="col-md-6">
+        <h4>Javascript</h4>
 <pre class="prettyprint">
 // Define map type options.
 $scope.moonMapType = {
@@ -290,30 +307,35 @@ $scope.map3 = {
     }
 };
 </pre>
-                <h4>HTML</h4>
+        <h4>HTML</h4>
 <pre class="prettyprint">
-&lt;google-map center="map3.center" zoom="map3.zoom" options="map3.options">
-    &lt;map-type id="moon" options="moonMapType">&lt;/map-type>
-&lt;/google-map>
+&lt;ui-gmap-google-map center="map3.center" zoom="map3.zoom" options="map3.options">
+    &lt;ui-gmap-map-type id="moon" options="moonMapType">&lt;/ui-gmap-map-type>
+&lt;/ui-gmap-google-map>
 </pre>
-            </div>
-        </div>
+    </div>
+</div>
 
 
-        <div class="page-header">
-            <h3 id="combo">Combo : map type overlayed and map type as single layer</h3>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <p>With several <code>map-type</code> directives you can mix custom overlays and single layers, using <code>id</code> and <code>show</code> parameters. This is even possible to render the maptype in both ways, despite you may not want do this.</p>
-                <p>This example features the previously defined "<em>moon</em>" image map type, and "<em>squares</em>" map type. One is visible using the controls, the other is overlayed on the map (and can be toggled on/off using <code>show</code>).</p>
-                <google-map center="map4.center" zoom="map4.zoom" options="map4.options">
-                    <map-type options="squaresMapType"></map-type>
-                    <map-type id="moon" options="moonMapType"></map-type>
-                </google-map>
-            </div>
-            <div class="col-md-6">
-                <h4>Javascript</h4>
+<div class="page-header">
+    <h3 id="combo">Combo : map type overlayed and map type as single layer</h3>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <p>With several <code>map-type</code> directives you can mix custom overlays and single layers, using
+            <code>id</code> and <code>show</code> parameters. This is even possible to render the maptype in both ways,
+            despite you may not want do this.</p>
+
+        <p>This example features the previously defined "<em>moon</em>" image map type, and "<em>squares</em>" map type.
+            One is visible using the controls, the other is overlayed on the map (and can be toggled on/off using <code>show</code>).
+        </p>
+        <ui-gmap-google-map center="map4.center" zoom="map4.zoom" options="map4.options">
+            <ui-gmap-map-type options="squaresMapType"></ui-gmap-map-type>
+            <ui-gmap-map-type id="moon" options="moonMapType"></ui-gmap-map-type>
+        </ui-gmap-google-map>
+    </div>
+    <div class="col-md-6">
+        <h4>Javascript</h4>
 <pre class="prettyprint">
 // Previously defined map types are reused
 
@@ -331,28 +353,27 @@ $scope.map4 = {
     }
 };
 </pre>
-                <h4>HTML</h4>
+        <h4>HTML</h4>
 <pre class="prettyprint">
-&lt;google-map center="map4.center" zoom="map4.zoom" options="map4.options">
-    &lt;map-type id="moon" options="moonMapType">&lt;/map-type>
-    &lt;map-type options="squaresMapType">&lt;/map-type>
-&lt;/google-map>
+&lt;ui-gmap-google-map center="map4.center" zoom="map4.zoom" options="map4.options">
+    &lt;ui-gmap-map-type id="moon" options="moonMapType">&lt;/ui-gmap-map-type>
+    &lt;ui-gmap-map-type options="squaresMapType">&lt;/ui-gmap-map-type>
+&lt;/ui-gmap-google-map>
 </pre>
-            </div>
-        </div>
-
     </div>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-    <script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en&v=3.13"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/run_prettify.js" type="text/javascript"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
-    <script src="../dist/angular-google-maps.js"></script>
-    <script src="assets/scripts/mocks/heat-layer.js"></script>
-    <script src="assets/scripts/controllers/overlay-map-type.js"></script>
-    <script src="assets/scripts/controllers/templates/info.js"></script>
-    <script src="http://localhost:35729/livereload.js"></script>
+</div>
+
+</div>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false&language=en&v=3.17"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/run_prettify.js" type="text/javascript"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
+<script src="../dist/angular-google-maps.js"></script>
+<script src="assets/scripts/controllers/overlay-map-type.js"></script>
+<script src="assets/scripts/controllers/templates/info.js"></script>
+<script src="http://localhost:35729/livereload.js"></script>
 </body>
 
 </html>

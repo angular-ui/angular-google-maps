@@ -38,14 +38,14 @@ This directive creates a new scope.
 
 {attribute show optional}  true (default) shows the trafficlayer otherwise it is hidden
 ###
-angular.module("google-maps")
-.directive "mapType", ["$timeout", "Logger", "MapTypeParentModel",
+angular.module("google-maps".ns())
+.directive "MapType".ns(), ["$timeout", "Logger".ns(), "MapTypeParentModel".ns(),
   ($timeout, Logger, MapTypeParentModel) ->
     class MapType
       constructor:  ->
         @$log = Logger
         @restrict = "EMA"
-        @require = '^' + 'googleMap'
+        @require = '^' + 'GoogleMap'.ns()
         @priority = -1
         @transclude = true
         @template = '<span class=\"angular-google-map-layer\" ng-transclude></span>'

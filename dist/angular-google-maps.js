@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-16
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-17
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3301,6 +3301,129 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  angular.module("google-maps.directives.api.models.parent".ns()).factory("MapTypeParentModel".ns(), [
+    "BaseObject".ns(), "Logger".ns(), '$timeout', function(BaseObject, Logger, $timeout) {
+      var MapTypeParentModel;
+      MapTypeParentModel = (function(_super) {
+        __extends(MapTypeParentModel, _super);
+
+        function MapTypeParentModel(scope, element, attrs, gMap, $log) {
+          this.scope = scope;
+          this.element = element;
+          this.attrs = attrs;
+          this.gMap = gMap;
+          this.$log = $log != null ? $log : Logger;
+          this.hideOverlay = __bind(this.hideOverlay, this);
+          this.showOverlay = __bind(this.showOverlay, this);
+          this.refreshMapType = __bind(this.refreshMapType, this);
+          this.createMapType = __bind(this.createMapType, this);
+          if (this.attrs.options == null) {
+            this.$log.info("options attribute for the map-type directive is mandatory. Map type creation aborted!!");
+            return;
+          }
+          this.id = this.gMap.overlayMapTypesCount = this.gMap.overlayMapTypesCount + 1 || 0;
+          this.doShow = true;
+          this.createMapType();
+          if (angular.isDefined(this.attrs.show)) {
+            this.doShow = this.scope.show;
+          }
+          if (this.doShow && (this.gMap != null)) {
+            this.showOverlay();
+          }
+          this.scope.$watch("show", (function(_this) {
+            return function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                _this.doShow = newValue;
+                if (newValue) {
+                  return _this.showOverlay();
+                } else {
+                  return _this.hideOverlay();
+                }
+              }
+            };
+          })(this), true);
+          this.scope.$watch("options", (function(_this) {
+            return function(newValue, oldValue) {
+              if (!_.isEqual(newValue, oldValue)) {
+                return _this.refreshMapType();
+              }
+            };
+          })(this), true);
+          if (angular.isDefined(this.attrs.refresh)) {
+            this.scope.$watch("refresh", (function(_this) {
+              return function(newValue, oldValue) {
+                if (!_.isEqual(newValue, oldValue)) {
+                  return _this.refreshMapType();
+                }
+              };
+            })(this), true);
+          }
+          this.scope.$on("$destroy", (function(_this) {
+            return function() {
+              _this.hideOverlay();
+              return _this.mapType = null;
+            };
+          })(this));
+        }
+
+        MapTypeParentModel.prototype.createMapType = function() {
+          if (this.scope.options.getTile != null) {
+            this.mapType = this.scope.options;
+          } else if (this.scope.options.getTileUrl != null) {
+            this.mapType = new google.maps.ImageMapType(this.scope.options);
+          } else {
+            this.$log.info("options should provide either getTile or getTileUrl methods. Map type creation aborted!!");
+            return;
+          }
+          if (this.attrs.id && this.scope.id) {
+            this.gMap.mapTypes.set(this.scope.id, this.mapType);
+            if (!angular.isDefined(this.attrs.show)) {
+              this.doShow = false;
+            }
+          }
+          return this.mapType.layerId = this.id;
+        };
+
+        MapTypeParentModel.prototype.refreshMapType = function() {
+          this.hideOverlay();
+          this.mapType = null;
+          this.createMapType();
+          if (this.doShow && (this.gMap != null)) {
+            return this.showOverlay();
+          }
+        };
+
+        MapTypeParentModel.prototype.showOverlay = function() {
+          return this.gMap.overlayMapTypes.push(this.mapType);
+        };
+
+        MapTypeParentModel.prototype.hideOverlay = function() {
+          var found;
+          found = false;
+          return this.gMap.overlayMapTypes.forEach((function(_this) {
+            return function(mapType, index) {
+              if (!found && mapType.layerId === _this.id) {
+                found = true;
+                _this.gMap.overlayMapTypes.removeAt(index);
+              }
+            };
+          })(this));
+        };
+
+        return MapTypeParentModel;
+
+      })(BaseObject);
+      return MapTypeParentModel;
+    }
+  ]);
+
+}).call(this);
+
 
 /*
 	Basic Directive api for a marker. Basic in the sense that this directive
@@ -4240,7 +4363,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           being that we cannot tell the difference in Key String vs. a normal value string (TemplateUrl)
           we will assume that all scope values are string expressions either pointing to a key (propName) or using
           'self' to point the model as container/object of interest.
-
+          
           This may force redundant information into the model, but this appears to be the most flexible approach.
            */
           this.isIconVisibleOnClick = true;
@@ -6418,6 +6541,90 @@ Nicholas McCready - https://twitter.com/nmccready
   ]);
 
 }).call(this);
+
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors:
+- Nicolas Laplante https://plus.google.com/108189012221374960701
+- Nicholas McCready - https://twitter.com/nmccready
+ */
+
+
+/*
+Map Layer directive
+
+This directive is used to create any type of Layer from the google maps sdk.
+This directive creates a new scope.
+
+{attribute show optional}  true (default) shows the trafficlayer otherwise it is hidden
+ */
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  angular.module("google-maps".ns()).directive("MapType".ns(), [
+    "$timeout", "Logger".ns(), "MapTypeParentModel".ns(), function($timeout, Logger, MapTypeParentModel) {
+      var MapType;
+      MapType = (function() {
+        function MapType() {
+          this.link = __bind(this.link, this);
+          this.$log = Logger;
+          this.restrict = "EMA";
+          this.require = '^' + 'GoogleMap'.ns();
+          this.priority = -1;
+          this.transclude = true;
+          this.template = '<span class=\"angular-google-map-layer\" ng-transclude></span>';
+          this.replace = true;
+          this.scope = {
+            show: "=show",
+            options: '=options',
+            refresh: '=refresh',
+            id: '@'
+          };
+        }
+
+        MapType.prototype.link = function(scope, element, attrs, mapCtrl) {
+          return mapCtrl.getScope().deferred.promise.then((function(_this) {
+            return function(map) {
+              return new MapTypeParentModel(scope, element, attrs, map);
+            };
+          })(this));
+        };
+
+        return MapType;
+
+      })();
+      return new MapType();
+    }
+  ]);
+
+}).call(this);
 ;angular.module("google-maps.wrapped".ns()).service("uuid".ns(), function() {
   //BEGIN REPLACE
   /*
@@ -6434,7 +6641,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-16
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-17
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
