@@ -120,9 +120,14 @@ angular.module("google-maps.directives.api.models.child".ns())
                   templateScope.parameter = @scope.templateParameter
                 compiled = $compile(content.data)(templateScope)
                 @gWin.setContent(compiled[0])
-            show()
-          else
-            show()
+          else if @scope.template
+            if @gWin
+              templateScope = @scope.$new()
+              if angular.isDefined(@scope.templateParameter)
+                templateScope.parameter = @scope.templateParameter
+              compiled = $compile(@scope.template)(templateScope)
+              @gWin.setContent(compiled[0])
+          show()
 
         hideWindow: () =>
           @gWin.close() if @gWin? and @gWin.isOpen()
