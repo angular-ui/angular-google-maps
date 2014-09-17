@@ -64,7 +64,8 @@ angular.module("google-maps.directives.api.models.child")
             @removeEvents @internalListeners
             @gMarkerManager.remove @gMarker, true
             delete @gMarker
-            @scope.$destroy()
+            if !@scope.$$destroyed
+              @scope.$destroy()
 
         setCoords: (scope) =>
           if scope.$id != @scope.$id or @gMarker == undefined
