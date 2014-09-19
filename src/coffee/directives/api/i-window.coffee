@@ -16,6 +16,7 @@ angular.module("google-maps.directives.api".ns())
         coords: '=coords',
         template: '=template',
         templateUrl: '=templateurl',
+        template: '=template',
         templateParameter: '=templateparameter',
         isIconVisibleOnClick: '=isiconvisibleonclick',
         closeClick: '&closeclick', #scope glue to gmap InfoWindow closeclick
