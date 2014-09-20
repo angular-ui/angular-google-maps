@@ -128,8 +128,8 @@ module.exports = (grunt) ->
 
         files: [
           "src/coffee/*.coffee", "src/coffee/**/*.coffee", "src/coffee/**/**/*.coffee",
-          "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js", "spec/**/*.spec.coffee", "spec/coffee/helpers/**",
-          "example/**"
+          "src/js/*.js", "src/js/**/*.js", "src/js/**/**/*.js", "spec/**/*.spec.coffee", "spec/coffee/helpers/**"#,
+          #"example/**"
         ]
         tasks: ["fast"]
       spec:

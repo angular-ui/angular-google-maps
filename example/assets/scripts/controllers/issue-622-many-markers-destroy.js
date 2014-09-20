@@ -16,11 +16,10 @@ angular.module("app", ["google-maps".ns()])
 .run(['$templateCache', function ($templateCache) {
   $templateCache.put('genMarkersInput.tpl.html',
   '<div>' +
-  '<button type="button" class="btn btn-sm btn-primary" ' +
+  '<button type="button" class="btn btn-sm btn-primary pull-left"' +
   'ng-click="genClick()">gen markers</button>' +
   '<div class="input-group">' +
-  '<strong>{{numOfMarkers.val}}</strong>' +
-  '<input type="text" class="form-control" ng-model="numOfMarkers.val">' +
+  '<input type="text" class="form-control pull-left" ng-model="numOfMarkers.val">' +
   '</div>' +
   '</div>'
   );
