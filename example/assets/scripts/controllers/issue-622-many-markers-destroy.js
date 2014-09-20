@@ -14,32 +14,74 @@ angular.module("app", ["google-maps".ns()])
 }])
 
 .run(['$templateCache', function ($templateCache) {
-  $templateCache.put('genMarkers.tpl.html',
-  '<button class="btn btn-sm btn-primary" ng-class="{\'btn-warning\': danger}" ' +
-  'ng-click="controlClick()">gen markers</button>'
+  $templateCache.put('genMarkersInput.tpl.html',
+  '<div>' +
+  '<button type="button" class="btn btn-sm btn-primary" ' +
+  'ng-click="genClick()">gen markers</button>' +
+  '<div class="input-group">' +
+  '<strong>{{numOfMarkers.val}}</strong>' +
+  '<input type="text" class="form-control" ng-model="numOfMarkers.val">' +
+  '</div>' +
+  '</div>'
   );
 
-  $templateCache.put('genMarkersInput.tpl.html',
-    '<div class="input-group">' +
-    '<input type="text" class="form-control" ng-model="numberOfMarkers">' +
-    '</div>'
-  );
+  $templateCache.put('clearMarkers.tpl.html',
+  '<button type="button"  class="btn btn-sm btn-danger"' +
+  'ng-click="clearClick()">clear</button>');
 }])
 
-.controller('controlCtrl', function ($scope) {
-  $scope.controlText = 'I\'m a custom control';
-  $scope.danger = false;
-  $scope.controlClick = function () {
-    $scope.danger = !$scope.danger;
-    alert('custom control clicked!')
+.factory('channel', function(){
+  return function () {
+    var callbacks = [];
+    this.add = function (cb) {
+      callbacks.push(cb);
+    };
+    this.invoke = function () {
+      var args = arguments;
+      callbacks.forEach(function (cb) {
+        cb.apply(undefined,args);
+      });
+    };
+    return this;
   };
 })
+.service('genMarkersChannel',['channel',function(channel){
+  return new channel()
+}])
+.service('clearMarkersChannel',['channel',function(channel){
+  return new channel()
+}])
+
+.controller('controlCtrl', ['$scope','clearMarkersChannel','genMarkersChannel',
+function ($scope, clearMarkersChannel,genMarkersChannel) {
+  angular.extend($scope, {
+    clearClick: function () {
+      clearMarkersChannel.invoke();
+    },
+    genClick: function () {
+      genMarkersChannel.invoke(parseInt($scope.numOfMarkers.val));
+    },
+    numOfMarkers: {val: 0}
+  });
+}])
 
 .controller("mainCtrl",[
 '$scope', '$timeout', 'Logger'.ns(),
-'$http', 'rndAddToLatLon','GoogleMapApi'.ns(), function (
+'$http', 'rndAddToLatLon','GoogleMapApi'.ns(),
+'clearMarkersChannel','genMarkersChannel', function (
   $scope, $timeout, $log,
-  $http, rndAddToLatLon,GoogleMapApi) {
+  $http, rndAddToLatLon,GoogleMapApi,
+  clearMarkersChannel,genMarkersChannel) {
+
+    genMarkersChannel.add(function(numOfMarkers){
+      $timeout(function(){
+        $scope.map.markers = $scope.genRandomMarkers(numOfMarkers);
+      },0);
+    });
+    clearMarkersChannel.add(function(){
+      $scope.map.markers = []
+    });
+
     $log.doLog = true
 
     GoogleMapApi.then(function(maps) {
@@ -138,15 +180,5 @@ angular.module("app", ["google-maps".ns()])
       $scope.genRandomMarkers = function (numberOfMarkers) {
         return genRandomMarkers(numberOfMarkers, $scope);
       };
-
-      $timeout(function () {
-        var markers = $scope.genRandomMarkers(1000);
-        console.info(markers);
-        $scope.map.markers = markers;
-      }, 2000);
-
-      $timeout(function () {
-        $scope.map.markers = $scope.genRandomMarkers(2000);
-      }, 10000);
 
     }]);
