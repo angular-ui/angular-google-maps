@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-17
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-18
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -5069,6 +5069,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             coords: '=coords',
             template: '=template',
             templateUrl: '=templateurl',
+            template: '=template',
             templateParameter: '=templateparameter',
             isIconVisibleOnClick: '=isiconvisibleonclick',
             closeClick: '&closeclick',
@@ -6656,7 +6657,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-17
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-18
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
