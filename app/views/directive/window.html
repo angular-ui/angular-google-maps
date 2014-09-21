@@ -35,6 +35,11 @@
         <td>boolean value used to show or hide the window</td>
     </tr>
     <tr>
+        <td>template</td>
+        <td><span class="label label-info">expression</span></td>
+        <td>string which will be used as the window's content</td>
+    </tr>
+    <tr>
         <td>templateUrl</td>
         <td><span class="label label-info">expression</span></td>
         <td>URL to a template which will be used as the window's content</td>
@@ -42,7 +47,7 @@
     <tr>
         <td>templateParameter</td>
         <td><span class="label label-info">expression</span></td>
-        <td>object to expose to the window's template scope if <code>templateUrl</code> is used, or to the scope
+        <td>object to expose to the window's template scope if <code>template/templateUrl</code> is used, or to the scope
             provided to the inner HTML of the directive
         </td>
     </tr>
@@ -98,6 +103,7 @@
 <window
         coords='{expression}'
         show='{expression}'
+        template='{expression}'
         templateUrl='{expression}'
         templateParameter='{expression}'
         isIconVisibleOnClick='{expression}'
