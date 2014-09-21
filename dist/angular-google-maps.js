@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-20
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-21
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4214,6 +4214,73 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  angular.module("google-maps.directives.api.models.parent".ns()).factory("SearchBoxParentModel".ns(), [
+    "BaseObject".ns(), "Logger".ns(), "EventsHelper".ns(), '$timeout', function(BaseObject, Logger, EventsHelper, $timeout) {
+      var SearchBoxParentModel;
+      SearchBoxParentModel = (function(_super) {
+        __extends(SearchBoxParentModel, _super);
+
+        SearchBoxParentModel.include(EventsHelper);
+
+        function SearchBoxParentModel(scope, element, attrs, gMap, $log) {
+          this.scope = scope;
+          this.element = element;
+          this.attrs = attrs;
+          this.gMap = gMap;
+          this.$log = $log != null ? $log : Logger;
+          this.getBounds = __bind(this.getBounds, this);
+          this.setBounds = __bind(this.setBounds, this);
+          this.createSearchBox = __bind(this.createSearchBox, this);
+          this.gMap.controls[google.maps.ControlPosition.TOP_LEFT].push(this.element.find('input'));
+          this.createSearchBox();
+          this.listener = google.maps.event.addListener(this.searchBox, 'places_changed', (function(_this) {
+            return function() {
+              _this.$log.info("places_changed");
+              return _this.places = _this.searchBox.getPlaces();
+            };
+          })(this));
+          this.listeners = this.setEvents(this.searchBox, scope, scope);
+          this.$log.info(this);
+          this.scope.$watch("options", (function(_this) {
+            return function(newValue, oldValue) {
+              if (!_.isEqual(newValue, oldValue)) {
+                return _this.$log.info('watch options');
+              }
+            };
+          })(this), true);
+          this.scope.$on("$destroy", (function(_this) {
+            return function() {
+              return _this.searchBox = null;
+            };
+          })(this));
+        }
+
+        SearchBoxParentModel.prototype.createSearchBox = function() {
+          return this.searchBox = new google.maps.places.SearchBox(this.element.find('input'), this.scope.options);
+        };
+
+        SearchBoxParentModel.prototype.setBounds = function(bounds) {
+          return this.searchBox.setBounds(bounds);
+        };
+
+        SearchBoxParentModel.prototype.getBounds = function() {
+          return this.searchBox.getBounds();
+        };
+
+        return SearchBoxParentModel;
+
+      })(BaseObject);
+      return SearchBoxParentModel;
+    }
+  ]);
+
+}).call(this);
+
 
 /*
 	Windows directive where many windows map to the models property
@@ -6641,6 +6708,90 @@ This directive creates a new scope.
   ]);
 
 }).call(this);
+
+
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors:
+- Nicolas Laplante https://plus.google.com/108189012221374960701
+- Nicholas McCready - https://twitter.com/nmccready
+ */
+
+
+/*
+Places Search Box directive
+
+This directive is used to create a Places Search Box.
+This directive creates a new scope.
+
+{attribute input required}  HTMLInputElement
+{attribute options optional} SearchBoxOption The options that can be set on a SearchBox object
+ */
+
+(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  angular.module("google-maps".ns()).directive("SearchBox".ns(), [
+    "GoogleMapApi".ns(), "Logger".ns(), "SearchBoxParentModel".ns(), function(GoogleMapApi, Logger, SearchBoxParentModel) {
+      var SearchBox;
+      SearchBox = (function() {
+        function SearchBox() {
+          this.link = __bind(this.link, this);
+          this.$log = Logger;
+          this.restrict = "EMA";
+          this.require = '^' + 'GoogleMap'.ns();
+          this.priority = -1;
+          this.transclude = true;
+          this.template = '<span class=\"angular-google-map-search\" ng-transclude></span>';
+          this.replace = true;
+          this.scope = {
+            options: '=options'
+          };
+        }
+
+        SearchBox.prototype.link = function(scope, element, attrs, mapCtrl) {
+          return GoogleMapApi.then((function(_this) {
+            return function(maps) {
+              return mapCtrl.getScope().deferred.promise.then(function(map) {
+                return new SearchBoxParentModel(scope, element, attrs, map);
+              });
+            };
+          })(this));
+        };
+
+        return SearchBox;
+
+      })();
+      return new SearchBox();
+    }
+  ]);
+
+}).call(this);
 ;angular.module("google-maps.wrapped".ns()).service("uuid".ns(), function() {
   //BEGIN REPLACE
   /*
@@ -6657,7 +6808,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-20
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-21
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
