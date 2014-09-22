@@ -6,7 +6,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             #unless @attrs.input?
             #    @$log.info("input attribute for the search-box directive is mandatory. Places Search Box creation aborted!!")
             #    return
-            @gMap.controls[google.maps.ControlPosition.TOP_LEFT].push(@element.find('input'))
+            @gMap.controls[google.maps.ControlPosition.TOP_LEFT].push(@element.find('input')[0])
             @createSearchBox()
 
             @listener = google.maps.event.addListener @searchBox, 'places_changed', =>
@@ -26,7 +26,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
 
         createSearchBox: () =>
             #bounds = new google.maps.LatLngBounds()
-            @searchBox = new google.maps.places.SearchBox @element.find('input'), @scope.options
+            @searchBox = new google.maps.places.SearchBox @element.find('input')[0], @scope.options
 
         setBounds: (bounds) =>
             @searchBox.setBounds(bounds)

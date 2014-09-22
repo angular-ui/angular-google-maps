@@ -4236,7 +4236,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.getBounds = __bind(this.getBounds, this);
           this.setBounds = __bind(this.setBounds, this);
           this.createSearchBox = __bind(this.createSearchBox, this);
-          this.gMap.controls[google.maps.ControlPosition.TOP_LEFT].push(this.element.find('input'));
+          this.gMap.controls[google.maps.ControlPosition.TOP_LEFT].push(this.element.find('input')[0]);
           this.createSearchBox();
           this.listener = google.maps.event.addListener(this.searchBox, 'places_changed', (function(_this) {
             return function() {
@@ -4261,7 +4261,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         }
 
         SearchBoxParentModel.prototype.createSearchBox = function() {
-          return this.searchBox = new google.maps.places.SearchBox(this.element.find('input'), this.scope.options);
+          return this.searchBox = new google.maps.places.SearchBox(this.element.find('input')[0], this.scope.options);
         };
 
         SearchBoxParentModel.prototype.setBounds = function(bounds) {
