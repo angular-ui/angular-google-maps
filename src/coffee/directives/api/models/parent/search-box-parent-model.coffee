@@ -1,19 +1,38 @@
 angular.module("google-maps.directives.api.models.parent".ns())
-.factory "SearchBoxParentModel".ns(), ["BaseObject".ns(), "Logger".ns(), "EventsHelper".ns(), '$timeout', (BaseObject, Logger, EventsHelper, $timeout) ->
+.factory "SearchBoxParentModel".ns(), ["BaseObject".ns(), "Logger".ns(), "EventsHelper".ns(), '$timeout', '$http', '$templateCache', (BaseObject, Logger, EventsHelper, $timeout, $http, $templateCache) ->
     class SearchBoxParentModel extends BaseObject
         @include EventsHelper
-        constructor: (@scope, @element, @attrs, @gMap, @$log = Logger) ->
-            #unless @attrs.input?
-            #    @$log.info("input attribute for the search-box directive is mandatory. Places Search Box creation aborted!!")
-            #    return
-            @gMap.controls[google.maps.ControlPosition.TOP_LEFT].push(@element.find('input')[0])
+        constructor: (@scope, @element, @attrs, @gMap, @maps, @template, @$log = Logger) ->
+            unless @attrs.template?
+                @$log.info("template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!")
+                return
+
+            @ctrlPosition = if angular.isDefined @scope.position then @scope.position.toUpperCase().replace /-/g, '_' else 'TOP_LEFT'
+            if not @maps.ControlPosition[@ctrlPosition]
+                @$log.error 'searchBox: invalid position property'
+                return
+
+            controlDiv = angular.element '<div></div>'
+            controlDiv.append @template
+            @input = controlDiv.find('input')[0]
+          
+            @init()
+
+        init: () =>
             @createSearchBox()
 
+            if @attrs.parentdiv?
+                @addToParentDiv()
+            else
+                @addAsMapControl()
+                
             @listener = google.maps.event.addListener @searchBox, 'places_changed', =>
-                @$log.info "places_changed"
                 @places = @searchBox.getPlaces()
+                #TODO: put the places on the map
+                @$log.info @places
 
-            @listeners = @setEvents @searchBox, scope, scope
+
+            @listeners = @setEvents @searchBox, @scope, @scope
             @$log.info @
 
             @scope.$watch("options", (newValue, oldValue) =>
@@ -24,9 +43,16 @@ angular.module("google-maps.directives.api.models.parent".ns())
             @scope.$on "$destroy", =>
                 @searchBox = null
 
+        addAsMapControl: () =>
+            console.log 'add as map control'
+            @gMap.controls[google.maps.ControlPosition[@ctrlPosition]].push(@input)
+
+        addToParentDiv: () =>
+            @parentDiv = angular.element document.getElementById(@scope.parentdiv)
+            @parentDiv.append @input
+
         createSearchBox: () =>
-            #bounds = new google.maps.LatLngBounds()
-            @searchBox = new google.maps.places.SearchBox @element.find('input')[0], @scope.options
+            @searchBox = new google.maps.places.SearchBox @input, @scope.options
 
         setBounds: (bounds) =>
             @searchBox.setBounds(bounds)

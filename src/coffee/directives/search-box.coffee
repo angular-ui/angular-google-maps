@@ -37,11 +37,11 @@ This directive is used to create a Places Search Box.
 This directive creates a new scope.
 
 {attribute input required}  HTMLInputElement
-{attribute options optional} SearchBoxOption The options that can be set on a SearchBox object
+{attribute options optional} The options that can be set on a SearchBox object (google.maps.places.SearchBoxOptions object specification)
 ###
 angular.module("google-maps".ns())
-.directive "SearchBox".ns(), ["GoogleMapApi".ns(), "Logger".ns(), "SearchBoxParentModel".ns(),
-  (GoogleMapApi, Logger, SearchBoxParentModel) ->
+.directive "SearchBox".ns(), ["GoogleMapApi".ns(), "Logger".ns(), "SearchBoxParentModel".ns(), '$http', '$templateCache',
+  (GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache) ->
     class SearchBox
       constructor:  ->
         @$log = Logger
@@ -52,11 +52,17 @@ angular.module("google-maps".ns())
         @template = '<span class=\"angular-google-map-search\" ng-transclude></span>'
         @replace = true
         @scope =
+          template: '=template'
+          position: '=position'
           options: '=options'
-          
+          events: '=events'
+          parentdiv: '=parentdiv'
+
       link: (scope, element, attrs, mapCtrl) =>
         GoogleMapApi.then (maps) =>
-          mapCtrl.getScope().deferred.promise.then (map) =>
-            new SearchBoxParentModel(scope, element, attrs, map)
+          $http.get(scope.template, { cache: $templateCache })
+            .success (template) =>
+              mapCtrl.getScope().deferred.promise.then (map) =>
+                new SearchBoxParentModel(scope, element, attrs, map, maps, template)
     new SearchBox()
 ]

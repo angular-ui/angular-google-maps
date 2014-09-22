@@ -9,11 +9,8 @@ angular.module("search-box-example", ["google-maps".ns()])
 }])
 
 .run(['$templateCache', function ($templateCache) {
-  //$templateCache.put('searchbox.tpl.html', '<input id="pac-input" class="controls" type="text" placeholder="Search Box">');
+  $templateCache.put('searchbox.tpl.html', '<input id="pac-input" class="pac-controls" type="text" placeholder="Search Box">');
 }])
-
-.controller('ControlController', function ($scope) {
-})
 
 .controller("SearchBoxController",['$scope', '$timeout', 'Logger'.ns(), '$http','GoogleMapApi'.ns()
     , function ($scope, $timeout, $log, $http, GoogleMapApi) {
@@ -35,8 +32,20 @@ angular.module("search-box-example", ["google-maps".ns()])
       dragging: false,
       bounds: {},
       markers: []
+    },
+    searchbox: {
+      template:'searchbox.tpl.html',
+      position:'top-left',
+      //parentdiv:'searchBoxParent',
+      events: {
+        places_changed: function (places) {
+        }
+      }
+
+      
     }
   });
+
 
   
 

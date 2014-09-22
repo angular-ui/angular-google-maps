@@ -4,18 +4,17 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet"
-          type="text/css">
+    
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700'
           rel='stylesheet' type='text/css'>
     <link href="assets/stylesheets/search-box-example.css" rel="stylesheet" type="text/css">
     <title>Places search box</title>
   </head>
   <body ng-controller="SearchBoxController">
-    <div class="container-fluid">
-      <div class="row-fluid">
-      
-      <div id="map-canvas">
+
+    <div>
+      <div id="searchBoxParent"></div>
+      <div>
         <ui-gmap-google-map
            center="map.center"
            zoom="map.zoom"
@@ -27,14 +26,9 @@
            control="map.control"
           >
 
-          
-          <ui-gmap-search-box>
-            <input id="pac-input" class="controls" type="text" placeholder="Search Box" options="options">
-          </ui-gmap-search-box>
-          
+          <!--<ui-gmap-search-box options="searchbox.options" template="searchbox.template" parentdiv="searchbox.parentdiv"></ui-gmap-search-box>-->
+          <ui-gmap-search-box options="searchbox.options" template="searchbox.template" events="searchbox.events"></ui-gmap-search-box>
         </ui-gmap-google-map>
-        
-        </div>
       </div>
     </div>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>

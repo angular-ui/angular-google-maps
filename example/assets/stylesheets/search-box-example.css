@@ -1,16 +1,16 @@
-html, body, #map-canvas {
+html, body {
   height: 100%;
   margin: 0px;
   padding: 0px
 }
 
-.controls {
+.pac-controls {
   margin-top: 16px;
   border: 1px solid transparent;
   border-radius: 2px 0 0 2px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
-  height: 32px;
+  height: 32px !important;
   outline: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
@@ -19,7 +19,7 @@ html, body, #map-canvas {
   background-color: #fff;
   padding: 0 11px 0 13px;
   width: 400px;
-  font-family: Roboto;
+  font-family: 'Open Sans', sans-serif;
   font-size: 15px;
   font-weight: 300;
   text-overflow: ellipsis;
@@ -56,8 +56,4 @@ html, body, #map-canvas {
 /* fix for Twitter Bootstrap handling of responsive images */
 .angular-google-map img {
     max-width: inherit;
-}
-
-.angular-google-map {
-    top: 80px;
 }
