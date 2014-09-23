@@ -6774,6 +6774,7 @@ https://github.com/nlaplante/angular-google-maps
 @authors:
 - Nicolas Laplante https://plus.google.com/108189012221374960701
 - Nicholas McCready - https://twitter.com/nmccready
+- Carrie Kengle - http://about.me/carrie
  */
 
 
