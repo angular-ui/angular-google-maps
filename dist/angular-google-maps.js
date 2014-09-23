@@ -5221,11 +5221,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return i.init();
               });
             });
-            return _.extend(ctrlObj, {
-              getMap: function() {
-                return $scope.map;
-              }
-            });
+            ctrlObj.getMap = function() {
+              return $scope.map;
+            };
+            return _.extend(this, ctrlObj);
           };
           this.controller = ["$scope", ctrlFn];
           self = this;
