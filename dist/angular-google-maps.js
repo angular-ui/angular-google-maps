@@ -4299,12 +4299,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         SearchBoxParentModel.prototype.setBounds = function(bounds) {
-          console.log(bounds.getNorthEast().lat());
-          console.log(bounds.getNorthEast().lng());
-          console.log(bounds.getSouthWest().lat());
-          console.log(bounds.getSouthWest().lng());
           if (this.searchBox != null) {
-            console.log('setting bounds');
             return this.searchBox.setBounds(bounds);
           }
         };
