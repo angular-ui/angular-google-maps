@@ -4264,7 +4264,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           } else {
             this.addAsMapControl();
           }
-          console.log(this.gMap.bounds);
           this.listener = google.maps.event.addListener(this.searchBox, 'places_changed', (function(_this) {
             return function() {
               return _this.places = _this.searchBox.getPlaces();
@@ -4274,8 +4273,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.$log.info(this);
           this.scope.$watch("options", (function(_this) {
             return function(newValue, oldValue) {
-              if (!_.isEqual(newValue, oldValue)) {
-                return _this.$log.info('watch options');
+              if (newValue.bounds != null) {
+                return _this.setBounds(newValue.bounds);
               }
             };
           })(this), true);
@@ -4287,7 +4286,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         SearchBoxParentModel.prototype.addAsMapControl = function() {
-          console.log('add as map control');
           return this.gMap.controls[google.maps.ControlPosition[this.ctrlPosition]].push(this.input);
         };
 
@@ -4301,7 +4299,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         SearchBoxParentModel.prototype.setBounds = function(bounds) {
-          return this.searchBox.setBounds(bounds);
+          console.log(bounds.getNorthEast().lat());
+          console.log(bounds.getNorthEast().lng());
+          console.log(bounds.getSouthWest().lat());
+          console.log(bounds.getSouthWest().lng());
+          if (this.searchBox != null) {
+            console.log('setting bounds');
+            return this.searchBox.setBounds(bounds);
+          }
         };
 
         SearchBoxParentModel.prototype.getBounds = function() {
@@ -5849,7 +5854,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               };
             })(this));
           }
-          console.log('scope.control', scope.control);
           if (scope.control != null) {
             scope.control.getGWindows = (function(_this) {
               return function() {

@@ -27,10 +27,6 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 @addToParentDiv()
             else
                 @addAsMapControl()
-
-            #@setBounds()
-            console.log @gMap.bounds
-
   
             @listener = google.maps.event.addListener @searchBox, 'places_changed', =>
                 @places = @searchBox.getPlaces()
@@ -39,15 +35,14 @@ angular.module("google-maps.directives.api.models.parent".ns())
             @$log.info @
 
             @scope.$watch("options", (newValue, oldValue) =>
-                unless _.isEqual newValue, oldValue
-                    @$log.info('watch options')
+                if newValue.bounds?
+                    @setBounds(newValue.bounds)
             , true)
 
             @scope.$on "$destroy", =>
                 @searchBox = null
 
         addAsMapControl: () =>
-            console.log 'add as map control'
             @gMap.controls[google.maps.ControlPosition[@ctrlPosition]].push(@input)
 
         addToParentDiv: () =>
@@ -58,7 +53,13 @@ angular.module("google-maps.directives.api.models.parent".ns())
             @searchBox = new google.maps.places.SearchBox @input, @scope.options
 
         setBounds: (bounds) =>
-            @searchBox.setBounds(bounds)
+            console.log bounds.getNorthEast().lat()
+            console.log bounds.getNorthEast().lng()
+            console.log bounds.getSouthWest().lat()
+            console.log bounds.getSouthWest().lng()
+            if @searchBox?
+                console.log 'setting bounds'
+                @searchBox.setBounds(bounds)
 
         getBounds: () =>
             @searchBox.getBounds()
