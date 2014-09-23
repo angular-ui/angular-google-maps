@@ -25,6 +25,8 @@ angular.module("google-maps.mocks", [])
         @mockPoint
         @mockPolygon
         @mockMap
+        @mockPlaces
+        @mockSearchBox
       ]
       @initAll = -> @mocks.forEach (fn) -> fn?()
 
@@ -45,6 +47,12 @@ angular.module("google-maps.mocks", [])
       window.google.maps.MVCArray = unmocked("MVCArray")
       window.google.maps.Point = unmocked("Point")
       window.google.maps.LatLngBounds = unmocked("LatLngBounds")
+
+    mockPlaces: ->
+      window.google.maps.places = {}
+
+    mockSearchBox: (SearchBox = () -> return) ->
+      window.google.maps.places.SearchBox = SearchBox
 
     #http://gis.stackexchange.com/questions/11626/does-y-mean-latitude-and-x-mean-longitude-in-every-gis-software
     mockLatLng: (LatLng = (y, x) ->

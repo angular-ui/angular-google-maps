@@ -2,14 +2,9 @@ angular.module("google-maps.directives.api.models.parent".ns())
 .factory "SearchBoxParentModel".ns(), ["BaseObject".ns(), "Logger".ns(), "EventsHelper".ns(), '$timeout', '$http', '$templateCache', (BaseObject, Logger, EventsHelper, $timeout, $http, $templateCache) ->
     class SearchBoxParentModel extends BaseObject
         @include EventsHelper
-        constructor: (@scope, @element, @attrs, @gMap, @maps, @template, @$log = Logger) ->
+        constructor: (@scope, @element, @attrs, @gMap, @ctrlPosition, @template, @$log = Logger) ->
             unless @attrs.template?
-                @$log.info("template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!")
-                return
-
-            @ctrlPosition = if angular.isDefined @scope.position then @scope.position.toUpperCase().replace /-/g, '_' else 'TOP_LEFT'
-            if not @maps.ControlPosition[@ctrlPosition]
-                @$log.error 'searchBox: invalid position property'
+                @$log.error "template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!"
                 return
 
             controlDiv = angular.element '<div></div>'
