@@ -4227,13 +4227,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         SearchBoxParentModel.include(EventsHelper);
 
-        function SearchBoxParentModel(scope, element, attrs, gMap, maps, template, $log) {
+        function SearchBoxParentModel(scope, element, attrs, gMap, ctrlPosition, template, $log) {
           var controlDiv;
           this.scope = scope;
           this.element = element;
           this.attrs = attrs;
           this.gMap = gMap;
-          this.maps = maps;
+          this.ctrlPosition = ctrlPosition;
           this.template = template;
           this.$log = $log != null ? $log : Logger;
           this.getBounds = __bind(this.getBounds, this);
@@ -4243,12 +4243,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.addAsMapControl = __bind(this.addAsMapControl, this);
           this.init = __bind(this.init, this);
           if (this.attrs.template == null) {
-            this.$log.info("template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!");
-            return;
-          }
-          this.ctrlPosition = angular.isDefined(this.scope.position) ? this.scope.position.toUpperCase().replace(/-/g, '_') : 'TOP_LEFT';
-          if (!this.maps.ControlPosition[this.ctrlPosition]) {
-            this.$log.error('searchBox: invalid position property');
+            this.$log.error("template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!");
             return;
           }
           controlDiv = angular.element('<div></div>');
@@ -6820,7 +6815,13 @@ This directive creates a new scope.
                 cache: $templateCache
               }).success(function(template) {
                 return mapCtrl.getScope().deferred.promise.then(function(map) {
-                  return new SearchBoxParentModel(scope, element, attrs, map, maps, template);
+                  var ctrlPosition;
+                  ctrlPosition = angular.isDefined(scope.position) ? scope.position.toUpperCase().replace(/-/g, '_') : 'TOP_LEFT';
+                  if (!maps.ControlPosition[ctrlPosition]) {
+                    _this.$log.error('searchBox: invalid position property');
+                    return;
+                  }
+                  return new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, template);
                 });
               });
             };

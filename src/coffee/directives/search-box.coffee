@@ -64,6 +64,10 @@ angular.module("google-maps".ns())
           $http.get(scope.template, { cache: $templateCache })
             .success (template) =>
               mapCtrl.getScope().deferred.promise.then (map) =>
-                new SearchBoxParentModel(scope, element, attrs, map, maps, template)
+                ctrlPosition = if angular.isDefined scope.position then scope.position.toUpperCase().replace /-/g, '_' else 'TOP_LEFT'
+                if not maps.ControlPosition[ctrlPosition]
+                    @$log.error 'searchBox: invalid position property'
+                    return
+                new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, template)
     new SearchBox()
 ]
