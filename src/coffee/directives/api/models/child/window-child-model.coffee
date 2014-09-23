@@ -101,7 +101,6 @@ angular.module("google-maps.directives.api.models.child".ns())
             @initialMarkerVisibility = @markerCtrl.getVisible()
             @oldMarkerAnimation = @markerCtrl.getAnimation()
             @markerCtrl.setVisible(@isIconVisibleOnClick)
-
           if @markerCtrl?
             click() if forceClick
             @googleMapsHandles.push google.maps.event.addListener @markerCtrl, 'click', click

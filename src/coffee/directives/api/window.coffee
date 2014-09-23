@@ -46,7 +46,7 @@ angular.module("google-maps.directives.api".ns())
         scope.$on "$destroy", =>
           @childWindows = _.withoutObjects @childWindows,[window], (child1,child2) ->
             child1.scope.$id == child2.scope.$id
-
+      console.log 'scope.control', scope.control
       if scope.control?
         scope.control.getGWindows = =>
           @childWindows.map (child)=>

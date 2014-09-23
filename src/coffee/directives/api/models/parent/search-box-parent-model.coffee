@@ -12,6 +12,8 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 @$log.error 'searchBox: invalid position property'
                 return
 
+            
+
             controlDiv = angular.element '<div></div>'
             controlDiv.append @template
             @input = controlDiv.find('input')[0]
@@ -25,12 +27,13 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 @addToParentDiv()
             else
                 @addAsMapControl()
-                
+
+            #@setBounds()
+            console.log @gMap.bounds
+
+  
             @listener = google.maps.event.addListener @searchBox, 'places_changed', =>
                 @places = @searchBox.getPlaces()
-                #TODO: put the places on the map
-                @$log.info @places
-
 
             @listeners = @setEvents @searchBox, @scope, @scope
             @$log.info @
