@@ -28,8 +28,9 @@ angular.module("google-maps.directives.api.models.parent".ns())
             @$log.info @
 
             @scope.$watch("options", (newValue, oldValue) =>
-                if newValue.bounds?
-                    @setBounds(newValue.bounds)
+                if angular.isObject newValue
+                    if newValue.bounds?
+                        @setBounds(newValue.bounds)
             , true)
 
             @scope.$on "$destroy", =>
@@ -46,8 +47,13 @@ angular.module("google-maps.directives.api.models.parent".ns())
             @searchBox = new google.maps.places.SearchBox @input, @scope.options
 
         setBounds: (bounds) =>
-            if @searchBox?
-                @searchBox.setBounds(bounds)
+            if angular.isUndefined bounds.isEmpty
+              @$log.error "Error: SearchBoxParentModel setBounds. Bounds not an instance of LatLngBounds."
+              return
+            else 
+              if bounds.isEmpty() == false
+                  if @searchBox?
+                      @searchBox.setBounds(bounds)
 
         getBounds: () =>
             @searchBox.getBounds()

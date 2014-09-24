@@ -4268,8 +4268,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.$log.info(this);
           this.scope.$watch("options", (function(_this) {
             return function(newValue, oldValue) {
-              if (newValue.bounds != null) {
-                return _this.setBounds(newValue.bounds);
+              if (angular.isObject(newValue)) {
+                if (newValue.bounds != null) {
+                  return _this.setBounds(newValue.bounds);
+                }
               }
             };
           })(this), true);
@@ -4294,8 +4296,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         SearchBoxParentModel.prototype.setBounds = function(bounds) {
-          if (this.searchBox != null) {
-            return this.searchBox.setBounds(bounds);
+          if (angular.isUndefined(bounds.isEmpty)) {
+            this.$log.error("Error: SearchBoxParentModel setBounds. Bounds not an instance of LatLngBounds.");
+          } else {
+            if (bounds.isEmpty() === false) {
+              if (this.searchBox != null) {
+                return this.searchBox.setBounds(bounds);
+              }
+            }
           }
         };
 
