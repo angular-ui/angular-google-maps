@@ -14,6 +14,7 @@ angular.module('angularGoogleMapsApp')
             'polyline',
             'polylines',
             'rectangle',
+            'search-box',
             'window',
             'windows'
         ]
