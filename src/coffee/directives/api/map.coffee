@@ -13,8 +13,9 @@ angular.module("google-maps.directives.api")
                     $scope.ctrlType = 'Map'
                     $scope.deferred.promise.then ->
                       ExtendGWin.init()
-                    _.extend ctrlObj, getMap: ->
+                    ctrlObj.getMap = ->
                       $scope.map
+                    _.extend this, ctrlObj
                 @controller = ["$scope", ctrlFn ]
                 self = @
             restrict: "EMA"

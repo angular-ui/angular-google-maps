@@ -3,11 +3,11 @@
   "version": "1.2.1",
   "main": "./dist/angular-google-maps.js",
   "dependencies": {
-    "angular": "1.2.x",
+    "angular": ">=1.2.0",
     "lodash": "~2.4.1"
   },
   "devDependencies": {
-    "angular-mocks": "1.2.x",
+    "angular-mocks": ">=1.2.x",
     "jquery": "2.1.x",
     "uuid": "http://github.com/LiosK/UUID.js/archive/v3.2.tar.gz"
   }
