@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-27
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-28
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -351,84 +351,95 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 
-
-/*
-    Author: Nicholas McCready & jfriend00
-    _async handles things asynchronous-like :), to allow the UI to be free'd to do other things
-    Code taken from http://stackoverflow.com/questions/10344498/best-way-to-iterate-over-an-array-without-blocking-the-ui
-
-    The design of any funcitonality of _async is to be like lodash/underscore and replicate it but call things
-    asynchronously underneath. Each should be sufficient for most things to be derrived from.
-
-    TODO: Handle Object iteration like underscore and lodash as well.. not that important right now
- */
-
 (function() {
-  var async;
+  angular.module("google-maps.directives.api.utils".ns()).factory("_async".ns(), [
+    '$q', function($q) {
 
-  async = {
-    each: function(array, callback, doneCallBack, pausedCallBack, chunk, index, pause) {
-      var doChunk;
-      if (chunk == null) {
-        chunk = 20;
-      }
-      if (index == null) {
-        index = 0;
-      }
-      if (pause == null) {
-        pause = 1;
-      }
-      if (!pause) {
-        throw "pause (delay) must be set from _async!";
-        return;
-      }
-      if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
-        doneCallBack();
-        return;
-      }
-      doChunk = function() {
-        var cnt, i;
-        cnt = chunk;
-        i = index;
-        while (cnt-- && i < (array ? array.length : i + 1)) {
-          callback(array[i], i);
-          ++i;
-        }
-        if (array) {
-          if (i < array.length) {
-            index = i;
-            if (pausedCallBack != null) {
-              pausedCallBack();
-            }
-            return setTimeout(doChunk, pause);
+      /*
+        Author: Nicholas McCready & jfriend00
+        _async handles things asynchronous-like :), to allow the UI to be free'd to do other things
+        Code taken from http://stackoverflow.com/questions/10344498/best-way-to-iterate-over-an-array-without-blocking-the-ui
+      
+        The design of any functionality of _async is to be like lodash/underscore and replicate it but call things
+        asynchronously underneath. Each should be sufficient for most things to be derived from.
+      
+        Optional Asynchronous Chunking via promises.
+       */
+      var doChunk, each, map;
+      doChunk = function(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index) {
+        var cnt, e, i;
+        try {
+          if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
+            cnt = chunkSizeOrDontChunk;
           } else {
-            if (doneCallBack) {
-              return doneCallBack();
+            cnt = array.length;
+          }
+          i = index;
+          while (cnt-- && i < (array ? array.length : i + 1)) {
+            chunkCb(array[i], i);
+            ++i;
+          }
+          if (array) {
+            if (i < array.length) {
+              index = i;
+              if (chunkSizeOrDontChunk) {
+                pauseCb();
+                return setTimeout(function() {
+                  return doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index);
+                }, pauseMilli);
+              }
+            } else {
+              return overallD.resolve();
             }
           }
+        } catch (_error) {
+          e = _error;
+          return overallD.reject("error within chunking iterator: " + e);
         }
       };
-      return doChunk();
-    },
-    map: function(objs, iterator, doneCallBack, pausedCallBack, chunk) {
-      var results;
-      results = [];
-      if (objs == null) {
-        return results;
-      }
-      return _async.each(objs, function(o) {
-        return results.push(iterator(o));
-      }, function() {
-        return doneCallBack(results);
-      }, pausedCallBack, chunk);
+      each = function(array, chunk, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) {
+        var overallD, ret;
+        if (chunkSizeOrDontChunk == null) {
+          chunkSizeOrDontChunk = 20;
+        }
+        if (index == null) {
+          index = 0;
+        }
+        if (pauseMilli == null) {
+          pauseMilli = 1;
+        }
+        ret = void 0;
+        overallD = Promise.defer();
+        ret = overallD.promise;
+        if (!pauseMilli) {
+          overallD.reject("pause (delay) must be set from _async!");
+          return ret;
+        }
+        if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
+          overallD.resolve();
+          return ret;
+        }
+        doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index);
+        return ret;
+      };
+      map = function(objs, iterator, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) {
+        var results;
+        results = [];
+        if (!((objs != null) && (objs != null ? objs.length : void 0) > 0)) {
+          return Promise.resolve(results);
+        }
+        return each(objs, function(o) {
+          return results.push(iterator(o));
+        }, pauseCb, chunkSizeOrDontChunk, index, pauseMilli).then(function() {
+          return results;
+        });
+      };
+      return {
+        each: each,
+        map: map
+      };
     }
-  };
-
-  window._async = async;
-
-  angular.module("google-maps.directives.api.utils".ns()).factory("async".ns(), function() {
-    return window._async;
-  });
+  ]);
 
 }).call(this);
 
@@ -6860,7 +6871,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-27
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-28
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */

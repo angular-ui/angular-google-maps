@@ -5,7 +5,9 @@ doCover = false #clean cheap way to disable coverage so you can debug the darn c
 
 requireConfig =
     paths:
+      "bluebird": "bower_components/bluebird/js/browser/bluebird.js",
       "lodash": "bower_components/lodash/dist/lodash.underscore"
+
     deps: ["lodash"]
     callback: (_) ->
 
