@@ -1,6 +1,11 @@
 angular.module("google-maps.directives.api.models.parent".ns())
-.factory "MarkersParentModel".ns(), ["IMarkerParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "MarkerChildModel".ns(), "ClustererMarkerManager".ns(), "MarkerManager".ns(),
-    (IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, ClustererMarkerManager, MarkerManager) ->
+.factory "MarkersParentModel".ns(), [
+  "IMarkerParentModel".ns(), "ModelsWatcher".ns(),
+  "PropMap".ns(), "MarkerChildModel".ns(), "_async".ns(),
+  "ClustererMarkerManager".ns(), "MarkerManager".ns(),
+    (IMarkerParentModel, ModelsWatcher,
+      PropMap, MarkerChildModel, _async
+      ClustererMarkerManager, MarkerManager) ->
         class MarkersParentModel extends IMarkerParentModel
             @include ModelsWatcher
             constructor: (scope, element, attrs, map, $timeout) ->
@@ -80,7 +85,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
 
                 _async.each scope.models, (model) =>
                     @newChildMarker(model, scope)
-                , () => #handle done callBack
+                .then => #handle done callBack
                     @gMarkerManager.draw()
                     @gMarkerManager.fit() if scope.fit
 
@@ -102,19 +107,19 @@ angular.module("google-maps.directives.api.models.parent".ns())
                             if child?
                                 child.destroy() if child.destroy?
                                 @scope.markerModels.remove(child.id)
-                        , () =>
+                        .then =>
                             #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
-                            _async.each payload.adds, (modelToAdd) =>
-                                @newChildMarker(modelToAdd, scope)
-                            , () =>
-                                _async.each payload.updates, (update) =>
-                                    @updateChild update.child, update.model
-                                , () =>
-                                    #finally redraw if something has changed
-                                    if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
-                                        @gMarkerManager.draw()
-                                        scope.markerModels = @scope.markerModels #for other directives like windows
-                                        @gMarkerManager.fit() if scope.fit
+                          _async.each payload.adds, (modelToAdd) =>
+                              @newChildMarker(modelToAdd, scope)
+                        .then () =>
+                          _async.each payload.updates, (update) =>
+                              @updateChild update.child, update.model
+                        .then =>
+                            #finally redraw if something has changed
+                            if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
+                                @gMarkerManager.draw()
+                                scope.markerModels = @scope.markerModels #for other directives like windows
+                                @gMarkerManager.fit() if scope.fit
                 else
                     @reBuildMarkers(scope)
 

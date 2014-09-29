@@ -43,6 +43,7 @@
     "should": "~1.2.0",
     "grunt-replace": "^0.7.8",
     "grunt": "~0.4.5",
-    "grunt-cli": "~0.1.11"
+    "grunt-cli": "~0.1.11",
+    "grunt-subgrunt": "^0.4.1"
   }
 }

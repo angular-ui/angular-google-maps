@@ -59,7 +59,7 @@ angular.module("google-maps.directives.api.models.child".ns())
               @gMarkerManager.draw() if @doDrawSelf
 
         destroy: () =>
-          if @gMarker? #this is possible due to _async in that we created some Children but no gMarker yet
+          if @gMarker? #this is possible due to async code in that we created some Children but no gMarker yet
             @removeEvents @externalListeners
             @removeEvents @internalListeners
             @gMarkerManager.remove @gMarker, true

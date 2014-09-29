@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api.utils".ns())
-.factory "_async".ns(), ['$q', ($q) ->
+.factory "_async".ns(), [ ->
   ###
     Author: Nicholas McCready & jfriend00
     _async handles things asynchronous-like :), to allow the UI to be free'd to do other things
@@ -28,7 +28,7 @@ angular.module("google-maps.directives.api.utils".ns())
         if i < array.length
           index = i
           if chunkSizeOrDontChunk
-            pauseCb()
+            pauseCb?()
             setTimeout(->
               doChunk array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index
             , pauseMilli)
@@ -39,7 +39,7 @@ angular.module("google-maps.directives.api.utils".ns())
 
   each = (array, chunk, pauseCb, chunkSizeOrDontChunk = 20, index = 0, pauseMilli = 1) ->
     ret = undefined
-    #    overallD = $q.defer()
+#    overallD = $q.defer()
     overallD = Promise.defer()
     ret = overallD.promise
 

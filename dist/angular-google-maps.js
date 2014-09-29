@@ -353,7 +353,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
 (function() {
   angular.module("google-maps.directives.api.utils".ns()).factory("_async".ns(), [
-    '$q', function($q) {
+    function() {
 
       /*
         Author: Nicholas McCready & jfriend00
@@ -383,7 +383,9 @@ Nicholas McCready - https://twitter.com/nmccready
             if (i < array.length) {
               index = i;
               if (chunkSizeOrDontChunk) {
-                pauseCb();
+                if (typeof pauseCb === "function") {
+                  pauseCb();
+                }
                 return setTimeout(function() {
                   return doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index);
                 }, pauseMilli);
@@ -569,7 +571,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.utils".ns()).factory("FitHelper".ns(), [
-    "BaseObject".ns(), "Logger".ns(), function(BaseObject, $log) {
+    "BaseObject".ns(), "Logger".ns(), "_async".ns(), function(BaseObject, $log, _async) {
       var FitHelper;
       return FitHelper = (function(_super) {
         __extends(FitHelper, _super);
@@ -592,13 +594,11 @@ Nicholas McCready - https://twitter.com/nmccready
                   return bounds.extend(gMarker.getPosition());
                 }
               };
-            })(this), (function(_this) {
-              return function() {
-                if (everSet) {
-                  return gMap.fitBounds(bounds);
-                }
-              };
-            })(this));
+            })(this)).then(function() {
+              if (everSet) {
+                return gMap.fitBounds(bounds);
+              }
+            });
           }
         };
 
@@ -1089,7 +1089,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
 (function() {
   angular.module("google-maps.directives.api.utils".ns()).factory("ModelsWatcher".ns(), [
-    "Logger".ns(), function(Logger) {
+    "Logger".ns(), "_async".ns(), function(Logger, _async) {
       return {
         figureOutState: function(idKey, scope, childObjects, comparison, callBack) {
           var adds, mappedScopeModelIds, removals, updates;
@@ -1115,7 +1115,7 @@ Nicholas McCready - https://twitter.com/nmccready
             } else {
               return Logger.error(" id missing for model " + (m.toString()) + ",\ncan not use do comparison/insertion");
             }
-          }, (function(_this) {
+          }).then((function(_this) {
             return function() {
               return _async.each(childObjects.values(), function(c) {
                 var id;
@@ -1131,12 +1131,14 @@ Nicholas McCready - https://twitter.com/nmccready
                 if (mappedScopeModelIds[id] == null) {
                   return removals.push(c);
                 }
-              }, function() {
-                return callBack({
-                  adds: adds,
-                  removals: removals,
-                  updates: updates
-                });
+              });
+            };
+          })(this)).then((function(_this) {
+            return function() {
+              return callBack({
+                adds: adds,
+                removals: removals,
+                updates: updates
               });
             };
           })(this));
@@ -3584,7 +3586,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.parent".ns()).factory("MarkersParentModel".ns(), [
-    "IMarkerParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "MarkerChildModel".ns(), "ClustererMarkerManager".ns(), "MarkerManager".ns(), function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, ClustererMarkerManager, MarkerManager) {
+    "IMarkerParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "MarkerChildModel".ns(), "_async".ns(), "ClustererMarkerManager".ns(), "MarkerManager".ns(), function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager) {
       var MarkersParentModel;
       MarkersParentModel = (function(_super) {
         __extends(MarkersParentModel, _super);
@@ -3691,7 +3693,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(model) {
               return _this.newChildMarker(model, scope);
             };
-          })(this), (function(_this) {
+          })(this)).then((function(_this) {
             return function() {
               _this.gMarkerManager.draw();
               if (scope.fit) {
@@ -3722,22 +3724,22 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                     return _this.scope.markerModels.remove(child.id);
                   }
-                }, function() {
+                }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     return _this.newChildMarker(modelToAdd, scope);
-                  }, function() {
-                    return _async.each(payload.updates, function(update) {
-                      return _this.updateChild(update.child, update.model);
-                    }, function() {
-                      if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
-                        _this.gMarkerManager.draw();
-                        scope.markerModels = _this.scope.markerModels;
-                        if (scope.fit) {
-                          return _this.gMarkerManager.fit();
-                        }
-                      }
-                    });
                   });
+                }).then(function() {
+                  return _async.each(payload.updates, function(update) {
+                    return _this.updateChild(update.child, update.model);
+                  });
+                }).then(function() {
+                  if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
+                    _this.gMarkerManager.draw();
+                    scope.markerModels = _this.scope.markerModels;
+                    if (scope.fit) {
+                      return _this.gMarkerManager.fit();
+                    }
+                  }
                 });
               };
             })(this));
@@ -3874,7 +3876,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
                 return _async.each(_.values(_this.plurals), function(model) {
                   return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                }, function() {});
+                });
               }
             };
           })(this));
@@ -3905,7 +3907,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(model) {
               return model.destroy();
             };
-          })(this), (function(_this) {
+          })(this)).then((function(_this) {
             return function() {
               if (doDelete) {
                 delete _this.plurals;
@@ -3982,7 +3984,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(model) {
               return _this.createChild(model, _this.gMap);
             };
-          })(this), (function(_this) {
+          })(this)).then((function(_this) {
             return function() {
               return _this.firstTime = false;
             };
@@ -4006,10 +4008,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     child.destroy();
                     return _this.plurals.remove(id);
                   }
-                }, function() {
+                }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     return _this.createChild(modelToAdd, _this.gMap);
-                  }, function() {});
+                  });
                 });
               };
             })(this));
@@ -4342,7 +4344,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.parent".ns()).factory("WindowsParentModel".ns(), [
-    "IWindowParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "WindowChildModel".ns(), "Linked".ns(), function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked) {
+    "IWindowParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "WindowChildModel".ns(), "Linked".ns(), "_async".ns(), function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async) {
       var WindowsParentModel;
       WindowsParentModel = (function(_super) {
         __extends(WindowsParentModel, _super);
@@ -4421,7 +4423,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
                 return _async.each(_.values(_this.windows), function(model) {
                   return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                }, function() {});
+                });
               }
             };
           })(this));
@@ -4452,7 +4454,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(model) {
               return model.destroy();
             };
-          })(this), (function(_this) {
+          })(this)).then((function(_this) {
             return function() {
               if (doDelete) {
                 delete _this.windows;
@@ -4558,7 +4560,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               gMarker = hasGMarker ? scope[modelsPropToIterate][[model[_this.idKey]]].gMarker : void 0;
               return _this.createWindow(model, gMarker, _this.gMap);
             };
-          })(this), (function(_this) {
+          })(this)).then((function(_this) {
             return function() {
               return _this.firstTime = false;
             };
@@ -4585,12 +4587,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                     return _this.windows.remove(child.id);
                   }
-                }, function() {
+                }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     var gMarker;
                     gMarker = scope[modelsPropToIterate][modelToAdd[_this.idKey]].gMarker;
                     return _this.createWindow(modelToAdd, gMarker, _this.gMap);
-                  }, function() {});
+                  });
                 });
               };
             })(this));

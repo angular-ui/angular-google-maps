@@ -87,6 +87,7 @@ module.exports = (grunt) ->
         src: [
           "tmp/output_coffee.js"
           "tmp/wrapped_uuid.js"
+          "tmp/wrapped_bluebird.js"
           "tmp/wrapped_libs.js"
           "src/js/**/*.js" #this all will only work if the dependency orders do not matter
           "src/js/**/**/*.js"
@@ -175,9 +176,17 @@ module.exports = (grunt) ->
         dest: 'tmp/wrapped_libs.js'
       uuid:
         options:
-          patterns: [match: 'REPLACE_W_LIBS', replacement: '<%= grunt.file.read("bower_components/uuid/dist/uuid.core.js") %>']
+          patterns: [
+            match: 'REPLACE_W_LIBS',
+            replacement: '<%= grunt.file.read("bower_components/uuid/dist/uuid.core.js") %>'
+          ]
         src: 'src/js/wrapped/uuid.core.js'
         dest: 'tmp/wrapped_uuid.js'
+
+    subgrunt:
+      bluebird:
+        projects:
+          'bower_components/bluebird': ["build","--features='core'"]
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

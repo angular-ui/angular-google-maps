@@ -3,8 +3,9 @@
 ###
 angular.module("google-maps.directives.api.models.parent".ns())
 .factory "WindowsParentModel".ns(),
-  ["IWindowParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "WindowChildModel".ns(), "Linked".ns(),
-    (IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked) ->
+  ["IWindowParentModel".ns(), "ModelsWatcher".ns(),
+    "PropMap".ns(), "WindowChildModel".ns(), "Linked".ns(), "_async".ns(),
+    (IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async) ->
       class WindowsParentModel extends IWindowParentModel
         @include ModelsWatcher
         constructor: (scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache, @$interpolate) ->
@@ -52,7 +53,6 @@ angular.module("google-maps.directives.api.models.parent".ns())
               @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
               _async.each _.values(@windows), (model) =>
                 model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
-              , () =>
 
         watchModels: (scope) =>
           scope.$watch 'models', (newValue, oldValue) =>
@@ -70,7 +70,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
         rebuildAll: (scope, doCreate, doDelete) =>
           _async.each @windows.values(), (model) =>
             model.destroy()
-          , () => #handle done callBack
+          .then => #handle done callBack
             delete @windows if doDelete
             @windows = new PropMap()
             @createChildScopesWindows() if doCreate
@@ -139,7 +139,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             gMarker = if hasGMarker
             then scope[modelsPropToIterate][[model[@idKey]]].gMarker else undefined
             @createWindow(model, gMarker, @gMap)
-          , () => #handle done callBack
+          .then => #handle done callBack
             @firstTime = false
 
 
@@ -153,12 +153,11 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 if child?
                   child.destroy() if child.destroy?
                   @windows.remove(child.id)
-              , () =>
+              .then =>
                 #add all adds via creating new ChildMarkers which are appended to @markers
                 _async.each payload.adds, (modelToAdd) =>
                   gMarker = scope[modelsPropToIterate][modelToAdd[@idKey]].gMarker
                   @createWindow(modelToAdd, gMarker, @gMap)
-                , ()=>
           else
             @rebuildAll(@scope, true, true)
 
