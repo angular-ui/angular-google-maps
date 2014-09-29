@@ -9,10 +9,11 @@ angular.module("google-maps.directives.api.models.child".ns())
           if child?.gMarker?
             child.removeEvents child.externalListeners
             child.removeEvents child.internalListeners
-            child.gMarkerManager.remove child.gMarker, true
-            delete child.gMarker
+            if child?.gMarker
+              child?.gMarkerManager.remove child?.gMarker, true
+              delete child.gMarker
 
-        constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager, @idKey = "id", @doDrawSelf = true)->
+        constructor: (@model, @parentScope, @gMap, @defaults, @doClick, @gMarkerManager, @idKey = "id", @doDrawSelf = true)->
           @id = @model[@idKey] if @model[@idKey]?
           @iconKey = @parentScope.icon
           @coordsKey = @parentScope.coords

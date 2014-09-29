@@ -5,8 +5,8 @@
 ###
 angular.module("google-maps.directives.api.models.parent".ns())
 .factory "MarkerParentModel".ns(),
-["IMarkerParentModel".ns(), "GmapUtil".ns(), "EventsHelper".ns(), "ModelKey".ns(),
-    (IMarkerParentModel, GmapUtil, EventsHelper, ModelKey) ->
+["IMarkerParentModel".ns(), "GmapUtil".ns(), "EventsHelper".ns(), "ModelKey".ns(), "_async".ns(),
+    (IMarkerParentModel, GmapUtil, EventsHelper, ModelKey, _async) ->
       ###
        TODO: Eventually this directive should be using marker-child-model
        (for this to happen something will need to be done with parentScope)
@@ -32,6 +32,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
 
 
         onWatch: (propNameToWatch, scope) =>
+          return unless @scope?.gMarker
           switch propNameToWatch
             when 'coords'
               if (@validateCoords(scope.coords) and @scope.gMarker?)
@@ -58,7 +59,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 @setGMarker new google.maps.Marker @createMarkerOptions(scope.coords, scope.icon, scope.options,@map)
 
         setGMarker: (gMarker) =>
-          if @scope.gMarker
+          if @scope?.gMarker
             ret = @gMarkerManager.remove @scope.gMarker, false
             delete @scope.gMarker
             ret
@@ -66,10 +67,13 @@ angular.module("google-maps.directives.api.models.parent".ns())
           if @scope.gMarker
             @scope.gMarker.key = @scope.idKey
             @gMarkerManager.add @scope.gMarker, false
-            @gMarkerManager.fit() if @doFit
+
+            if @doFit
+              _async.waitOrGo @, ->
+                @gMarkerManager.fit()
 
         onDestroy: (scope)=>
-          unless @scope.gMarker
+          unless @scope?.gMarker
             self = undefined
             return
           #remove from gMaps and then free resources

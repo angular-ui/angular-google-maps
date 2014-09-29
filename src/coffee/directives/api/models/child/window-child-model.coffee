@@ -14,6 +14,11 @@ angular.module("google-maps.directives.api.models.child".ns())
           @watchElement()
           @watchOptions()
           @watchCoords()
+
+#          @scope.watch 'show', (newValue, oldValue) =>
+#            if newValue != oldValue
+#              @showWindow()
+
           @scope.$on "$destroy", =>
             @destroy()
           @$log.info(@)
@@ -147,7 +152,7 @@ angular.module("google-maps.directives.api.models.child".ns())
 
         destroy: (manualOverride = false)=>
           @remove()
-          if @scope? and (@needToManualDestroy or manualOverride)
+          if @scope? and @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
             @scope.$destroy()
           self = undefined
 

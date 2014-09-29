@@ -5,7 +5,7 @@ angular.module("google-maps.directives.api".ns())
 .factory "IWindow".ns(), [ "BaseObject".ns(), "ChildEvents".ns(), "Logger".ns(), (BaseObject, ChildEvents, Logger) ->
   class IWindow extends BaseObject
     @include ChildEvents
-    constructor: (@$timeout, @$compile, @$http, @$templateCache) ->
+    constructor:  ->
       @restrict = 'EMA'
       @template = undefined
       @transclude = true

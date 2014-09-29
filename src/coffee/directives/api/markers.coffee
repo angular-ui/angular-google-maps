@@ -1,5 +1,5 @@
 angular.module("google-maps.directives.api".ns())
-.factory "Markers".ns(), ["IMarker".ns(), "MarkersParentModel".ns(), (IMarker, MarkersParentModel) ->
+.factory "Markers".ns(), ["IMarker".ns(), "MarkersParentModel".ns(),"_sync".ns(), (IMarker, MarkersParentModel,_sync) ->
   class Markers extends IMarker
     constructor: ($timeout) ->
       super($timeout)
@@ -13,7 +13,6 @@ angular.module("google-maps.directives.api".ns())
         clusterEvents: '=clusterevents'
         isLabel: '=islabel' #if is truthy consult http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/docs/reference.html for additional options documentation
 
-      @$timeout = $timeout
       @$log.info @
 
     controller: ['$scope', '$element', ($scope, $element) ->
@@ -22,12 +21,28 @@ angular.module("google-maps.directives.api".ns())
     ]
 
     link: (scope, element, attrs, ctrl) =>
-      IMarker.mapPromise(scope, ctrl).then (map) =>
-        parentModel = new MarkersParentModel(scope, element, attrs, map, @$timeout)
-        scope.deferred.resolve()
+      parentModel = undefined
+      ready = =>
         if scope.control?
           scope.control.getGMarkers = =>
             parentModel.gMarkerManager?.getGMarkers()
           scope.control.getChildMarkers = =>
             parentModel.markerModels
+        scope.deferred.resolve()
+
+      IMarker.mapPromise(scope, ctrl).then (map) =>
+#        if @parentModel?
+#          scope.deferred = Promise.defer()#reset deferred as the other is expired
+#        fake = _sync.fakePromise()
+#        maybeDeferred = @parentModel?.existingPieces || fake
+#        maybeDeferred.then =>
+        parentModel = new MarkersParentModel(scope, element, attrs, map)
+        parentModel.existingPieces.then ->
+          ready()
+
+#        unless @parentModel?
+#          maybeDeferred.resolve()
+
+
+
 ]

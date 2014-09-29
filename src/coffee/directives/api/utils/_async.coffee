@@ -1,5 +1,29 @@
 angular.module("google-maps.directives.api.utils".ns())
+.service("_sync".ns(), [ ->
+  fakePromise: ->
+    _cb = undefined
+    then: (cb) ->
+      _cb = cb
+    resolve:() ->
+      _cb.apply(undefined,arguments)
+])
 .factory "_async".ns(), [ ->
+
+  defaultChunkSize = 20
+
+  ###
+  utility to reduce code bloat. The whole point is to check if there is existing synchronous work going on.
+  If so we wait on it.
+
+  Note: This is fully intended to be mutable (ie existingPiecesObj is getting existingPieces prop slapped on)
+  ###
+  waitOrGo = (existingPiecesObj,fnPromise) ->
+    unless existingPiecesObj.existingPieces
+      existingPiecesObj.existingPieces = fnPromise()
+    else
+      existingPiecesObj.existingPieces = existingPiecesObj.existingPieces.then ->
+        fnPromise()
+
   ###
     Author: Nicholas McCready & jfriend00
     _async handles things asynchronous-like :), to allow the UI to be free'd to do other things
@@ -37,7 +61,7 @@ angular.module("google-maps.directives.api.utils".ns())
     catch e
       overallD.reject("error within chunking iterator: #{e}")
 
-  each = (array, chunk, pauseCb, chunkSizeOrDontChunk = 20, index = 0, pauseMilli = 1) ->
+  each = (array, chunk, pauseCb, chunkSizeOrDontChunk = defaultChunkSize, index = 0, pauseMilli = 1) ->
     ret = undefined
 #    overallD = $q.defer()
     overallD = Promise.defer()
@@ -69,5 +93,7 @@ angular.module("google-maps.directives.api.utils".ns())
 
   each: each
   map: map
+  waitOrGo: waitOrGo
+  defaultChunkSize: defaultChunkSize
 
 ]
