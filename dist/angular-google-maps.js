@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-27
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-29
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -351,84 +351,97 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 
-
-/*
-    Author: Nicholas McCready & jfriend00
-    _async handles things asynchronous-like :), to allow the UI to be free'd to do other things
-    Code taken from http://stackoverflow.com/questions/10344498/best-way-to-iterate-over-an-array-without-blocking-the-ui
-
-    The design of any funcitonality of _async is to be like lodash/underscore and replicate it but call things
-    asynchronously underneath. Each should be sufficient for most things to be derrived from.
-
-    TODO: Handle Object iteration like underscore and lodash as well.. not that important right now
- */
-
 (function() {
-  var async;
+  angular.module("google-maps.directives.api.utils".ns()).factory("_async".ns(), [
+    function() {
 
-  async = {
-    each: function(array, callback, doneCallBack, pausedCallBack, chunk, index, pause) {
-      var doChunk;
-      if (chunk == null) {
-        chunk = 20;
-      }
-      if (index == null) {
-        index = 0;
-      }
-      if (pause == null) {
-        pause = 1;
-      }
-      if (!pause) {
-        throw "pause (delay) must be set from _async!";
-        return;
-      }
-      if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
-        doneCallBack();
-        return;
-      }
-      doChunk = function() {
-        var cnt, i;
-        cnt = chunk;
-        i = index;
-        while (cnt-- && i < (array ? array.length : i + 1)) {
-          callback(array[i], i);
-          ++i;
-        }
-        if (array) {
-          if (i < array.length) {
-            index = i;
-            if (pausedCallBack != null) {
-              pausedCallBack();
-            }
-            return setTimeout(doChunk, pause);
+      /*
+        Author: Nicholas McCready & jfriend00
+        _async handles things asynchronous-like :), to allow the UI to be free'd to do other things
+        Code taken from http://stackoverflow.com/questions/10344498/best-way-to-iterate-over-an-array-without-blocking-the-ui
+      
+        The design of any functionality of _async is to be like lodash/underscore and replicate it but call things
+        asynchronously underneath. Each should be sufficient for most things to be derived from.
+      
+        Optional Asynchronous Chunking via promises.
+       */
+      var doChunk, each, map;
+      doChunk = function(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index) {
+        var cnt, e, i;
+        try {
+          if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
+            cnt = chunkSizeOrDontChunk;
           } else {
-            if (doneCallBack) {
-              return doneCallBack();
+            cnt = array.length;
+          }
+          i = index;
+          while (cnt-- && i < (array ? array.length : i + 1)) {
+            chunkCb(array[i], i);
+            ++i;
+          }
+          if (array) {
+            if (i < array.length) {
+              index = i;
+              if (chunkSizeOrDontChunk) {
+                if (typeof pauseCb === "function") {
+                  pauseCb();
+                }
+                return setTimeout(function() {
+                  return doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index);
+                }, pauseMilli);
+              }
+            } else {
+              return overallD.resolve();
             }
           }
+        } catch (_error) {
+          e = _error;
+          return overallD.reject("error within chunking iterator: " + e);
         }
       };
-      return doChunk();
-    },
-    map: function(objs, iterator, doneCallBack, pausedCallBack, chunk) {
-      var results;
-      results = [];
-      if (objs == null) {
-        return results;
-      }
-      return _async.each(objs, function(o) {
-        return results.push(iterator(o));
-      }, function() {
-        return doneCallBack(results);
-      }, pausedCallBack, chunk);
+      each = function(array, chunk, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) {
+        var overallD, ret;
+        if (chunkSizeOrDontChunk == null) {
+          chunkSizeOrDontChunk = 20;
+        }
+        if (index == null) {
+          index = 0;
+        }
+        if (pauseMilli == null) {
+          pauseMilli = 1;
+        }
+        ret = void 0;
+        overallD = Promise.defer();
+        ret = overallD.promise;
+        if (!pauseMilli) {
+          overallD.reject("pause (delay) must be set from _async!");
+          return ret;
+        }
+        if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
+          overallD.resolve();
+          return ret;
+        }
+        doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index);
+        return ret;
+      };
+      map = function(objs, iterator, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) {
+        var results;
+        results = [];
+        if (!((objs != null) && (objs != null ? objs.length : void 0) > 0)) {
+          return Promise.resolve(results);
+        }
+        return each(objs, function(o) {
+          return results.push(iterator(o));
+        }, pauseCb, chunkSizeOrDontChunk, index, pauseMilli).then(function() {
+          return results;
+        });
+      };
+      return {
+        each: each,
+        map: map
+      };
     }
-  };
-
-  window._async = async;
-
-  angular.module("google-maps.directives.api.utils".ns()).factory("async".ns(), function() {
-    return window._async;
-  });
+  ]);
 
 }).call(this);
 
@@ -558,7 +571,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.utils".ns()).factory("FitHelper".ns(), [
-    "BaseObject".ns(), "Logger".ns(), function(BaseObject, $log) {
+    "BaseObject".ns(), "Logger".ns(), "_async".ns(), function(BaseObject, $log, _async) {
       var FitHelper;
       return FitHelper = (function(_super) {
         __extends(FitHelper, _super);
@@ -581,13 +594,11 @@ Nicholas McCready - https://twitter.com/nmccready
                   return bounds.extend(gMarker.getPosition());
                 }
               };
-            })(this), (function(_this) {
-              return function() {
-                if (everSet) {
-                  return gMap.fitBounds(bounds);
-                }
-              };
-            })(this));
+            })(this)).then(function() {
+              if (everSet) {
+                return gMap.fitBounds(bounds);
+              }
+            });
           }
         };
 
@@ -1078,7 +1089,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
 (function() {
   angular.module("google-maps.directives.api.utils".ns()).factory("ModelsWatcher".ns(), [
-    "Logger".ns(), function(Logger) {
+    "Logger".ns(), "_async".ns(), function(Logger, _async) {
       return {
         figureOutState: function(idKey, scope, childObjects, comparison, callBack) {
           var adds, mappedScopeModelIds, removals, updates;
@@ -1104,7 +1115,7 @@ Nicholas McCready - https://twitter.com/nmccready
             } else {
               return Logger.error(" id missing for model " + (m.toString()) + ",\ncan not use do comparison/insertion");
             }
-          }, (function(_this) {
+          }).then((function(_this) {
             return function() {
               return _async.each(childObjects.values(), function(c) {
                 var id;
@@ -1120,12 +1131,14 @@ Nicholas McCready - https://twitter.com/nmccready
                 if (mappedScopeModelIds[id] == null) {
                   return removals.push(c);
                 }
-              }, function() {
-                return callBack({
-                  adds: adds,
-                  removals: removals,
-                  updates: updates
-                });
+              });
+            };
+          })(this)).then((function(_this) {
+            return function() {
+              return callBack({
+                adds: adds,
+                removals: removals,
+                updates: updates
               });
             };
           })(this));
@@ -3573,7 +3586,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.parent".ns()).factory("MarkersParentModel".ns(), [
-    "IMarkerParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "MarkerChildModel".ns(), "ClustererMarkerManager".ns(), "MarkerManager".ns(), function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, ClustererMarkerManager, MarkerManager) {
+    "IMarkerParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "MarkerChildModel".ns(), "_async".ns(), "ClustererMarkerManager".ns(), "MarkerManager".ns(), function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager) {
       var MarkersParentModel;
       MarkersParentModel = (function(_super) {
         __extends(MarkersParentModel, _super);
@@ -3680,7 +3693,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(model) {
               return _this.newChildMarker(model, scope);
             };
-          })(this), (function(_this) {
+          })(this)).then((function(_this) {
             return function() {
               _this.gMarkerManager.draw();
               if (scope.fit) {
@@ -3711,22 +3724,22 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                     return _this.scope.markerModels.remove(child.id);
                   }
-                }, function() {
+                }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     return _this.newChildMarker(modelToAdd, scope);
-                  }, function() {
-                    return _async.each(payload.updates, function(update) {
-                      return _this.updateChild(update.child, update.model);
-                    }, function() {
-                      if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
-                        _this.gMarkerManager.draw();
-                        scope.markerModels = _this.scope.markerModels;
-                        if (scope.fit) {
-                          return _this.gMarkerManager.fit();
-                        }
-                      }
-                    });
                   });
+                }).then(function() {
+                  return _async.each(payload.updates, function(update) {
+                    return _this.updateChild(update.child, update.model);
+                  });
+                }).then(function() {
+                  if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
+                    _this.gMarkerManager.draw();
+                    scope.markerModels = _this.scope.markerModels;
+                    if (scope.fit) {
+                      return _this.gMarkerManager.fit();
+                    }
+                  }
                 });
               };
             })(this));
@@ -3863,7 +3876,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
                 return _async.each(_.values(_this.plurals), function(model) {
                   return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                }, function() {});
+                });
               }
             };
           })(this));
@@ -3894,7 +3907,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(model) {
               return model.destroy();
             };
-          })(this), (function(_this) {
+          })(this)).then((function(_this) {
             return function() {
               if (doDelete) {
                 delete _this.plurals;
@@ -3971,7 +3984,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(model) {
               return _this.createChild(model, _this.gMap);
             };
-          })(this), (function(_this) {
+          })(this)).then((function(_this) {
             return function() {
               return _this.firstTime = false;
             };
@@ -3995,10 +4008,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     child.destroy();
                     return _this.plurals.remove(id);
                   }
-                }, function() {
+                }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     return _this.createChild(modelToAdd, _this.gMap);
-                  }, function() {});
+                  });
                 });
               };
             })(this));
@@ -4331,7 +4344,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.parent".ns()).factory("WindowsParentModel".ns(), [
-    "IWindowParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "WindowChildModel".ns(), "Linked".ns(), function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked) {
+    "IWindowParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "WindowChildModel".ns(), "Linked".ns(), "_async".ns(), function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async) {
       var WindowsParentModel;
       WindowsParentModel = (function(_super) {
         __extends(WindowsParentModel, _super);
@@ -4410,7 +4423,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
                 return _async.each(_.values(_this.windows), function(model) {
                   return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                }, function() {});
+                });
               }
             };
           })(this));
@@ -4441,7 +4454,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(model) {
               return model.destroy();
             };
-          })(this), (function(_this) {
+          })(this)).then((function(_this) {
             return function() {
               if (doDelete) {
                 delete _this.windows;
@@ -4547,7 +4560,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               gMarker = hasGMarker ? scope[modelsPropToIterate][[model[_this.idKey]]].gMarker : void 0;
               return _this.createWindow(model, gMarker, _this.gMap);
             };
-          })(this), (function(_this) {
+          })(this)).then((function(_this) {
             return function() {
               return _this.firstTime = false;
             };
@@ -4574,12 +4587,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                     return _this.windows.remove(child.id);
                   }
-                }, function() {
+                }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     var gMarker;
                     gMarker = scope[modelsPropToIterate][modelToAdd[_this.idKey]].gMarker;
                     return _this.createWindow(modelToAdd, gMarker, _this.gMap);
-                  }, function() {});
+                  });
                 });
               };
             })(this));
@@ -6860,7 +6873,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-27
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-29
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */

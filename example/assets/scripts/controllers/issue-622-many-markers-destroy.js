@@ -21,6 +21,7 @@ angular.module("app", ["google-maps".ns()])
   '<div class="input-group">' +
   '<input type="text" class="form-control pull-left" ng-model="numOfMarkers.val">' +
   '</div>' +
+  '<div>{{checked ? "overwrite" : "Dont overwrite"}}<input type="checkbox" ng-model="checked" ng-init="checked=false" />'+
   '</div>'
   );
 
@@ -58,7 +59,7 @@ function ($scope, clearMarkersChannel,genMarkersChannel) {
       clearMarkersChannel.invoke();
     },
     genClick: function () {
-      genMarkersChannel.invoke(parseInt($scope.numOfMarkers.val));
+      genMarkersChannel.invoke(parseInt($scope.numOfMarkers.val),$scope.checked);
     },
     numOfMarkers: {val: 0}
   });
@@ -71,10 +72,40 @@ function ($scope, clearMarkersChannel,genMarkersChannel) {
   $scope, $timeout, $log,
   $http, rndAddToLatLon,GoogleMapApi,
   clearMarkersChannel,genMarkersChannel) {
+    var staticMarkers =  [
+          {
+            id: 1,
+            latitude: 45,
+            longitude: -74,
+            showWindow: false,
+            title: 'Marker 2',
+            options: {
+              animation: 1
+            }
+          },
+          {
+            id: 2,
+            latitude: 15,
+            longitude: 30,
+            showWindow: false,
+            title: 'Marker 2'
+          },
+          {
+            id: 3,
+            icon: 'assets/images/plane.png',
+            latitude: 37,
+            longitude: -122,
+            showWindow: false,
+            title: 'Plane'
+          }
+    ];
 
-    genMarkersChannel.add(function(numOfMarkers){
+    genMarkersChannel.add(function(numOfMarkers, overwriteWStatic){
       $timeout(function(){
         $scope.map.markers = $scope.genRandomMarkers(numOfMarkers);
+        if(overwriteWStatic){
+          $scope.map.markers = staticMarkers;
+        }
       },0);
     });
     clearMarkersChannel.add(function(){
@@ -146,33 +177,7 @@ function ($scope, clearMarkersChannel,genMarkersChannel) {
           zoom: 3,
           dragging: false,
           bounds: {},
-          markers: [
-          {
-            id: 1,
-            latitude: 45,
-            longitude: -74,
-            showWindow: false,
-            title: 'Marker 2',
-            options: {
-              animation: 1
-            }
-          },
-          {
-            id: 2,
-            latitude: 15,
-            longitude: 30,
-            showWindow: false,
-            title: 'Marker 2'
-          },
-          {
-            id: 3,
-            icon: 'assets/images/plane.png',
-            latitude: 37,
-            longitude: -122,
-            showWindow: false,
-            title: 'Plane'
-          }
-          ],
+          markers: staticMarkers
         }
       });
 

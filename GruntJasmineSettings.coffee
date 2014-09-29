@@ -5,53 +5,61 @@ doCover = false #clean cheap way to disable coverage so you can debug the darn c
 
 requireConfig =
     paths:
-      "lodash": "bower_components/lodash/dist/lodash.underscore"
-    deps: ["lodash"]
-    callback: (_) ->
+#      'bluebird': 'bower_components/bluebird/js/browser/bluebird.js',
+      'lodash': 'bower_components/lodash/dist/lodash.underscore'
+      'bluebird': 'bower_components/bluebird/js/browser/bluebird',
 
-log("jasmineSettings: past requireConfig")
+    deps: ['lodash', 'bluebird']
+    callback: (_,Bluebird) ->
+      window.Promise = Bluebird
+      # console.log window.Promise
+      return
+
+log('jasmineSettings: past requireConfig')
 
 spec =
-  src: ["bower_components/lodash-amd/main.js", "dist/angular-google-maps.js"]
+  src: ['dist/angular-google-maps.js']
   options:
     keepRunner: true
-    vendor: ['tmp/string.js'
-             "http://maps.googleapis.com/maps/api/js?sensor=false&language=en",
-             "bower_components/jquery/dist/jquery.js",
-             "bower_components/angular/angular.js",
-             "bower_components/angular-mocks/angular-mocks.js"]
-    specs: ["tmp/spec/js/bootstrap.js", "tmp/spec/js/**/*spec.js"]
-    helpers: ["tmp/spec/js/helpers/helpers.js"]
-    template: require "grunt-template-jasmine-requirejs"
+    vendor: [
+      'tmp/string.js'
+      'http://maps.googleapis.com/maps/api/js?sensor=false&language=en',
+      'bower_components/jquery/dist/jquery.js',
+      'bower_components/angular/angular.js',
+      'bower_components/angular-mocks/angular-mocks.js'
+    ]
+    specs: ['tmp/spec/js/bootstrap.js', 'tmp/spec/js/**/*spec.js']
+    helpers: ['tmp/spec/js/helpers/helpers.js']
+    template: require 'grunt-template-jasmine-requirejs'
     templateOptions:
       requireConfig: requireConfig
 
-log("jasmineSettings: past spec")
+log('jasmineSettings: past spec')
 
 coverage = undefined
 
 if doCover
   coverage = _.clone spec
   coverage.options =  _.extend coverage.options,
-    template: require "grunt-template-jasmine-istanbul"
+    template: require 'grunt-template-jasmine-istanbul'
     templateOptions:
-      template: require "grunt-template-jasmine-requirejs"
+      template: require 'grunt-template-jasmine-requirejs'
       templateOptions:
         requireConfig:
           requireConfig
-      coverage: "spec/coverage/coverage.json"
-      report: "spec/coverage"
+      coverage: 'spec/coverage/coverage.json'
+      report: 'spec/coverage'
       thresholds:
         lines: 25
         statements: 25
         branches: 5
         functions: 25
 
-log("jasmineSettings: past coverage")
+log('jasmineSettings: past coverage')
 
 toExport =
   spec: spec
-toExport["coverage"] = coverage if coverage
+toExport['coverage'] = coverage if coverage
 
-log("jasmineSettings: past toExport")
+log('jasmineSettings: past toExport')
 module.exports = toExport

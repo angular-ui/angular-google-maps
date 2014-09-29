@@ -35,12 +35,11 @@ angular.module("google-maps.directives.api.models.parent".ns())
                     #watch this scope(Parent to all Models), these updates reflect expression / Key changes
                     #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
                     watch: (scope, name, nameKey) =>
-                        scope.$watch name, (newValue, oldValue) =>
-                            if (newValue != oldValue)
-                                @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
-                                _async.each _.values(@plurals), (model) =>
-                                    model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
-                                , () =>
+                      scope.$watch name, (newValue, oldValue) =>
+                        if (newValue != oldValue)
+                          @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
+                          _async.each _.values(@plurals), (model) =>
+                              model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
 
                     watchModels: (scope) =>
                         scope.$watch 'models', (newValue, oldValue) =>
@@ -59,10 +58,10 @@ angular.module("google-maps.directives.api.models.parent".ns())
                     rebuildAll: (scope, doCreate, doDelete) =>
                         _async.each @plurals.values(), (model) =>
                             model.destroy()
-                        , () => #handle done callBack
-                            delete @plurals if doDelete
-                            @plurals = new PropMap()
-                            @createChildScopes() if doCreate
+                        .then => #handle done callBack
+                          delete @plurals if doDelete
+                          @plurals = new PropMap()
+                          @createChildScopes() if doCreate
 
                     watchDestroy: (scope)=>
                         scope.$on "$destroy", =>
@@ -70,9 +69,9 @@ angular.module("google-maps.directives.api.models.parent".ns())
 
                     watchOurScope: (scope) =>
                         _.each @scopePropNames, (name) =>
-                            nameKey = name + 'Key'
-                            @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
-                            @watch(scope, name, nameKey)
+                          nameKey = name + 'Key'
+                          @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
+                          @watch(scope, name, nameKey)
 
                     createChildScopes: (isCreatingFromScratch = true) =>
                         if angular.isUndefined(@scope.models)
@@ -102,7 +101,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
                             @watchDestroy scope
                         _async.each scope.models, (model) =>
                             @createChild(model, @gMap)
-                        , () => #handle done callBack
+                        .then => #handle done callBack
                             @firstTime = false
 
                     pieceMeal: (scope, isArray = true)=>
@@ -115,11 +114,10 @@ angular.module("google-maps.directives.api.models.parent".ns())
                                     if child?
                                         child.destroy()
                                         @plurals.remove(id)
-                                , () =>
-                                    #add all adds via creating new ChildMarkers which are appended to @markers
-                                    _async.each payload.adds, (modelToAdd) =>
-                                        @createChild(modelToAdd, @gMap)
-                                    , ()=>
+                                .then =>
+                                  #add all adds via creating new ChildMarkers which are appended to @markers
+                                  _async.each payload.adds, (modelToAdd) =>
+                                      @createChild(modelToAdd, @gMap)
                         else
                             @rebuildAll(@scope, true, true)
 
