@@ -39,7 +39,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 if @doRebuildAll
                     @reBuildMarkers(scope)
                 else
-                    @pieceMeal(scope)
+                    @maybePieceMeal(scope)
 
             validateScope: (scope)=>
                 modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
@@ -83,8 +83,9 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 else
                     @gMarkerManager = new MarkerManager @map
 
-                _async.each scope.models, (model) =>
+                @existingPieces = _async.each scope.models, (model) =>
                     @newChildMarker(model, scope)
+                ,false
                 .then => #handle done callBack
                     @gMarkerManager.draw()
                     @gMarkerManager.fit() if scope.fit
@@ -94,26 +95,38 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 if(!scope.doRebuild and scope.doRebuild != undefined)
                     return
                 @onDestroy(scope) #clean @scope.markerModels
-                @createMarkersFromScratch(scope)
+                unless scope.$$destroyed
+                  @createMarkersFromScratch(scope)
 
-            pieceMeal: (scope)=>
+            maybePieceMeal: (scope) =>
+              unless @existingPieces
+                @pieceMeal scope
+              else
+                @existingPieces.then =>
+                  @pieceMeal scope, false
+
+            pieceMeal: (scope, doChunk=20)=>
                 if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
                     #find the current state, async operation that calls back
                     @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison, (state) =>
                         payload = state
                         #payload contains added, removals and flattened (existing models with their gProp appended)
                         #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @scope.markerModels
-                        _async.each payload.removals, (child)=>
+
+                        @existingPieces = _async.each(payload.removals, (child)=>
                             if child?
                                 child.destroy() if child.destroy?
                                 @scope.markerModels.remove(child.id)
+                        ,doChunk)
                         .then =>
                             #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
-                          _async.each payload.adds, (modelToAdd) =>
+                          _async.each(payload.adds, (modelToAdd) =>
                               @newChildMarker(modelToAdd, scope)
+                          ,doChunk)
                         .then () =>
-                          _async.each payload.updates, (update) =>
+                          _async.each(payload.updates, (update) =>
                               @updateChild update.child, update.model
+                          ,doChunk)
                         .then =>
                             #finally redraw if something has changed
                             if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
@@ -141,15 +154,22 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 child
 
             onDestroy: (scope)=>
-                #need to figure out how to handle individual destroys
-                #slap index to the external model so that when they pass external back
-                #for destroy we have a lookup?
-                #this will require another attribute for destroySingle(marker)
+              #need to figure out how to handle individual destroys
+              #slap index to the external model so that when they pass external back
+              #for destroy we have a lookup?
+              #this will require another attribute for destroySingle(marker)
+              work = =>
+                @gMarkerManager.clear() if @gMarkerManager?
                 _.each @scope.markerModels.values(), (model)->
                     model.destroy() if model?
                 delete @scope.markerModels
                 @scope.markerModels = new PropMap()
-                @gMarkerManager.clear() if @gMarkerManager?
+
+              unless @existingPieces
+                work()
+              else
+                @existingPieces.then ->
+                  work()
 
             maybeExecMappedEvent:(cluster, fnName) ->
               if _.isFunction @scope.clusterEvents?[fnName]

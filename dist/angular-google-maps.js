@@ -2222,11 +2222,22 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     "ModelKey".ns(), "GmapUtil".ns(), "Logger".ns(), "$injector", "EventsHelper".ns(), function(ModelKey, GmapUtil, $log, $injector, EventsHelper) {
       var MarkerChildModel;
       MarkerChildModel = (function(_super) {
+        var destroy;
+
         __extends(MarkerChildModel, _super);
 
         MarkerChildModel.include(GmapUtil);
 
         MarkerChildModel.include(EventsHelper);
+
+        destroy = function(child) {
+          if ((child != null ? child.gMarker : void 0) != null) {
+            child.removeEvents(child.externalListeners);
+            child.removeEvents(child.internalListeners);
+            child.gMarkerManager.remove(child.gMarker, true);
+            return delete child.gMarker;
+          }
+        };
 
         function MarkerChildModel(model, parentScope, gMap, $timeout, defaults, doClick, gMarkerManager, idKey, doDrawSelf) {
           this.model = model;
@@ -2238,16 +2249,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.gMarkerManager = gMarkerManager;
           this.idKey = idKey != null ? idKey : "id";
           this.doDrawSelf = doDrawSelf != null ? doDrawSelf : true;
-          this.watchDestroy = __bind(this.watchDestroy, this);
           this.internalEvents = __bind(this.internalEvents, this);
           this.setLabelOptions = __bind(this.setLabelOptions, this);
           this.setOptions = __bind(this.setOptions, this);
           this.setIcon = __bind(this.setIcon, this);
           this.setCoords = __bind(this.setCoords, this);
-          this.destroy = __bind(this.destroy, this);
           this.maybeSetScopeValue = __bind(this.maybeSetScopeValue, this);
           this.createMarker = __bind(this.createMarker, this);
           this.setMyScope = __bind(this.setMyScope, this);
+          this.destroy = __bind(this.destroy, this);
           if (this.model[this.idKey] != null) {
             this.id = this.model[this.idKey];
           }
@@ -2268,9 +2278,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this), true);
+          this.scope.$on("$destroy", (function(_this) {
+            return function() {
+              return destroy(_this);
+            };
+          })(this));
           $log.info(this);
-          this.watchDestroy(this.scope);
         }
+
+        MarkerChildModel.prototype.destroy = function() {
+          return this.scope.$destroy();
+        };
 
         MarkerChildModel.prototype.setMyScope = function(model, oldModel, isInit) {
           if (oldModel == null) {
@@ -2333,18 +2351,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (this.doDrawSelf) {
                 return this.gMarkerManager.draw();
               }
-            }
-          }
-        };
-
-        MarkerChildModel.prototype.destroy = function() {
-          if (this.gMarker != null) {
-            this.removeEvents(this.externalListeners);
-            this.removeEvents(this.internalListeners);
-            this.gMarkerManager.remove(this.gMarker, true);
-            delete this.gMarker;
-            if (!this.scope.$$destroyed) {
-              return this.scope.$destroy();
             }
           }
         };
@@ -2439,10 +2445,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               };
             })(this)
           };
-        };
-
-        MarkerChildModel.prototype.watchDestroy = function(scope) {
-          return scope.$on("$destroy", this.destroy);
         };
 
         return MarkerChildModel;
@@ -3598,6 +3600,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.newChildMarker = __bind(this.newChildMarker, this);
           this.updateChild = __bind(this.updateChild, this);
           this.pieceMeal = __bind(this.pieceMeal, this);
+          this.maybePieceMeal = __bind(this.maybePieceMeal, this);
           this.reBuildMarkers = __bind(this.reBuildMarkers, this);
           this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
           this.validateScope = __bind(this.validateScope, this);
@@ -3634,7 +3637,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (this.doRebuildAll) {
             return this.reBuildMarkers(scope);
           } else {
-            return this.pieceMeal(scope);
+            return this.maybePieceMeal(scope);
           }
         };
 
@@ -3689,11 +3692,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           } else {
             this.gMarkerManager = new MarkerManager(this.map);
           }
-          return _async.each(scope.models, (function(_this) {
+          return this.existingPieces = _async.each(scope.models, (function(_this) {
             return function(model) {
               return _this.newChildMarker(model, scope);
             };
-          })(this)).then((function(_this) {
+          })(this), false).then((function(_this) {
             return function() {
               _this.gMarkerManager.draw();
               if (scope.fit) {
@@ -3708,30 +3711,47 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           this.onDestroy(scope);
-          return this.createMarkersFromScratch(scope);
+          if (!scope.$$destroyed) {
+            return this.createMarkersFromScratch(scope);
+          }
         };
 
-        MarkersParentModel.prototype.pieceMeal = function(scope) {
+        MarkersParentModel.prototype.maybePieceMeal = function(scope) {
+          if (!this.existingPieces) {
+            return this.pieceMeal(scope);
+          } else {
+            return this.existingPieces.then((function(_this) {
+              return function() {
+                return _this.pieceMeal(scope, false);
+              };
+            })(this));
+          }
+        };
+
+        MarkersParentModel.prototype.pieceMeal = function(scope, doChunk) {
+          if (doChunk == null) {
+            doChunk = 20;
+          }
           if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.markerModels.length > 0) {
             return this.figureOutState(this.idKey, scope, this.scope.markerModels, this.modelKeyComparison, (function(_this) {
               return function(state) {
                 var payload;
                 payload = state;
-                return _async.each(payload.removals, function(child) {
+                return _this.existingPieces = _async.each(payload.removals, function(child) {
                   if (child != null) {
                     if (child.destroy != null) {
                       child.destroy();
                     }
                     return _this.scope.markerModels.remove(child.id);
                   }
-                }).then(function() {
+                }, doChunk).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     return _this.newChildMarker(modelToAdd, scope);
-                  });
+                  }, doChunk);
                 }).then(function() {
                   return _async.each(payload.updates, function(update) {
                     return _this.updateChild(update.child, update.model);
-                  });
+                  }, doChunk);
                 }).then(function() {
                   if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
                     _this.gMarkerManager.draw();
@@ -3769,15 +3789,27 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.onDestroy = function(scope) {
-          _.each(this.scope.markerModels.values(), function(model) {
-            if (model != null) {
-              return model.destroy();
-            }
-          });
-          delete this.scope.markerModels;
-          this.scope.markerModels = new PropMap();
-          if (this.gMarkerManager != null) {
-            return this.gMarkerManager.clear();
+          var work;
+          work = (function(_this) {
+            return function() {
+              if (_this.gMarkerManager != null) {
+                _this.gMarkerManager.clear();
+              }
+              _.each(_this.scope.markerModels.values(), function(model) {
+                if (model != null) {
+                  return model.destroy();
+                }
+              });
+              delete _this.scope.markerModels;
+              return _this.scope.markerModels = new PropMap();
+            };
+          })(this);
+          if (!this.existingPieces) {
+            return work();
+          } else {
+            return this.existingPieces.then(function() {
+              return work();
+            });
           }
         };
 
