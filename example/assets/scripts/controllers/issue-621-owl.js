@@ -25,7 +25,7 @@ angular.module('appMaps', ['google-maps'.ns()])
         ret.icon = icon;
       }
       ret[idKey] = i;
-      ret.showWindow=true;
+      ret.show= true;
       return ret;
     };
     $scope.randomMarkers = [];

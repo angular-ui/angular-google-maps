@@ -15,14 +15,18 @@ angular.module("google-maps.directives.api.models.child".ns())
           @watchOptions()
           @watchCoords()
 
-#          @scope.watch 'show', (newValue, oldValue) =>
-#            if newValue != oldValue
-#              @showWindow()
-
+          @watchAndDoShow()
           @scope.$on "$destroy", =>
             @destroy()
           @$log.info(@)
           #todo: watch model in here, and recreate / clean gWin on change
+
+        watchAndDoShow: =>
+          @scope.show = @model.show if @model.show?
+          doShow = =>
+            @showWindow() if @scope.show
+          @scope.$watch 'show', doShow, true
+          doShow()
 
         watchElement: =>
           @scope.$watch =>
@@ -113,11 +117,12 @@ angular.module("google-maps.directives.api.models.child".ns())
 
         showWindow: () =>
           show = () =>
-            if @gWin
-              if !@gWin.isOpen() #only show if we have no show defined yet or if show is really true
+            if @gWin?
+              unless @gWin.isOpen() #only show if we have no show defined yet or if show is really true
                 @gWin.open(@mapCtrl)
+
           if @scope.templateUrl
-            if @gWin
+            if @gWin?
               $http.get(@scope.templateUrl, { cache: $templateCache }).then (content) =>
                 templateScope = @scope.$new()
                 if angular.isDefined(@scope.templateParameter)
@@ -125,7 +130,7 @@ angular.module("google-maps.directives.api.models.child".ns())
                 compiled = $compile(content.data)(templateScope)
                 @gWin.setContent(compiled[0])
           else if @scope.template
-            if @gWin
+            if @gWin?
               templateScope = @scope.$new()
               if angular.isDefined(@scope.templateParameter)
                 templateScope.parameter = @scope.templateParameter

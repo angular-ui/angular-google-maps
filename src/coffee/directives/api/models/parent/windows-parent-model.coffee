@@ -17,7 +17,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             @windows = new PropMap()
 
             @scopePropNames = ['coords', 'template', 'templateUrl', 'templateParameter',
-                               'isIconVisibleOnClick', 'closeClick']
+                               'isIconVisibleOnClick', 'closeClick', 'options', 'show']
             #setting up local references to propety keys IE: @coordsKey
             _.each @scopePropNames, (name) =>
               @[name + 'Key'] = undefined
@@ -42,15 +42,22 @@ angular.module("google-maps.directives.api.models.parent".ns())
             @createChildScopesWindows()
           #watch this scope(Parent to all WindowModels), these updates reflect expression / Key changes
           #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
-          watch: (scope, name, nameKey) =>
-            scope.$watch name, (newValue, oldValue) =>
-              if (newValue != oldValue)
-                @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
-                _async.waitOrGo @, =>
-                  _async.each _.values(@windows), (model) =>
-                    model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
-                  .then =>
-                    @existingPieces = undefined
+#          watch: (scope, name, nameKey) =>
+#            scope.$watch name, (newValue, oldValue) =>
+##              if (newValue != oldValue)
+#              return unless newValue
+#              @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
+#              _async.waitOrGo @, =>
+#                _async.each @windows.values(), (m) =>
+#                  model = if @markersScope? then m.model else m
+#                  if _.isString newValue
+#                    val = if @[nameKey] == 'self' then model else model?[@[nameKey]]
+#                  else
+#                    val = newValue #object or function
+#                  m.scope[name] = val
+#                ,false
+##              .then =>
+##                @existingPieces = undefined
 
           watchModels: (scope) =>
             scope.$watch 'models', (newValue, oldValue) =>
@@ -86,7 +93,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             _.each @scopePropNames, (name) =>
               nameKey = name + 'Key'
               @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
-              @watch(scope, name, nameKey)
+#              @watch(scope, name, nameKey)
 
           createChildScopesWindows: (isCreatingFromScratch = true) =>
             ###
@@ -189,6 +196,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             fakeElement =
               html: =>
                 @interpolateContent(@linked.element.html(), model)
+            @DEFAULTS = if @markersScope then model[@DEFAULTS] else @DEFAULTS
             opts = @createWindowOptions gMarker, childScope, fakeElement.html(), @DEFAULTS
             child = new WindowChildModel model, childScope, opts, @isIconVisibleOnClick, gMap, gMarker, fakeElement, false, true
 

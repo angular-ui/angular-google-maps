@@ -256,13 +256,19 @@ Nicholas McCready - https://twitter.com/nmccready
         google.maps.InfoWindow.prototype._open = google.maps.InfoWindow.prototype.open;
         google.maps.InfoWindow.prototype._close = google.maps.InfoWindow.prototype.close;
         google.maps.InfoWindow.prototype._isOpen = false;
-        google.maps.InfoWindow.prototype.open = function(map, anchor) {
+        google.maps.InfoWindow.prototype.open = function(map, anchor, recurse) {
+          if (recurse != null) {
+            return;
+          }
           this._isOpen = true;
-          this._open(map, anchor);
+          this._open(map, anchor, true);
         };
-        google.maps.InfoWindow.prototype.close = function() {
+        google.maps.InfoWindow.prototype.close = function(recurse) {
+          if (recurse != null) {
+            return;
+          }
           this._isOpen = false;
-          this._close();
+          this._close(true);
         };
         google.maps.InfoWindow.prototype.isOpen = function(val) {
           if (val == null) {
@@ -279,72 +285,73 @@ Nicholas McCready - https://twitter.com/nmccready
         Do the same for InfoBox
         TODO: Clean this up so the logic is defined once, wait until develop becomes master as this will be easier
          */
-        if (!window.InfoBox) {
-          return;
+        if (window.InfoBox) {
+          window.InfoBox.prototype._open = window.InfoBox.prototype.open;
+          window.InfoBox.prototype._close = window.InfoBox.prototype.close;
+          window.InfoBox.prototype._isOpen = false;
+          window.InfoBox.prototype.open = function(map, anchor) {
+            this._isOpen = true;
+            this._open(map, anchor);
+          };
+          window.InfoBox.prototype.close = function() {
+            this._isOpen = false;
+            this._close();
+          };
+          window.InfoBox.prototype.isOpen = function(val) {
+            if (val == null) {
+              val = void 0;
+            }
+            if (val == null) {
+              return this._isOpen;
+            } else {
+              return this._isOpen = val;
+            }
+          };
         }
-        window.InfoBox.prototype._open = window.InfoBox.prototype.open;
-        window.InfoBox.prototype._close = window.InfoBox.prototype.close;
-        window.InfoBox.prototype._isOpen = false;
-        window.InfoBox.prototype.open = function(map, anchor) {
-          this._isOpen = true;
-          this._open(map, anchor);
-        };
-        window.InfoBox.prototype.close = function() {
-          this._isOpen = false;
-          this._close();
-        };
-        window.InfoBox.prototype.isOpen = function(val) {
-          if (val == null) {
-            val = void 0;
-          }
-          if (val == null) {
-            return this._isOpen;
-          } else {
-            return this._isOpen = val;
-          }
-        };
-        MarkerLabel_.prototype.setContent = function() {
-          var content;
-          content = this.marker_.get("labelContent");
-          if (!content || _.isEqual(this.oldContent, content)) {
-            return;
-          }
-          if (typeof (content != null ? content.nodeType : void 0) === "undefined") {
-            this.labelDiv_.innerHTML = content;
-            this.eventDiv_.innerHTML = this.labelDiv_.innerHTML;
-            this.oldContent = content;
-          } else {
-            this.labelDiv_.innerHTML = "";
-            this.labelDiv_.appendChild(content);
-            content = content.cloneNode(true);
-            this.eventDiv_.appendChild(content);
-            this.oldContent = content;
-          }
-        };
+        if (window.MarkerLabel_) {
+          window.MarkerLabel_.prototype.setContent = function() {
+            var content;
+            content = this.marker_.get("labelContent");
+            if (!content || _.isEqual(this.oldContent, content)) {
+              return;
+            }
+            if (typeof (content != null ? content.nodeType : void 0) === "undefined") {
+              this.labelDiv_.innerHTML = content;
+              this.eventDiv_.innerHTML = this.labelDiv_.innerHTML;
+              this.oldContent = content;
+            } else {
+              this.labelDiv_.innerHTML = "";
+              this.labelDiv_.appendChild(content);
+              content = content.cloneNode(true);
+              this.eventDiv_.appendChild(content);
+              this.oldContent = content;
+            }
+          };
 
-        /*
-        Removes the DIV for the label from the DOM. It also removes all event handlers.
-        This method is called automatically when the marker's <code>setMap(null)</code>
-        method is called.
-        @private
-         */
-        return MarkerLabel_.prototype.onRemove = function() {
-          if (this.labelDiv_.parentNode != null) {
-            this.labelDiv_.parentNode.removeChild(this.labelDiv_);
-          }
-          if (this.eventDiv_.parentNode != null) {
-            this.eventDiv_.parentNode.removeChild(this.eventDiv_);
-          }
-          if (!this.listeners_) {
-            return;
-          }
-          if (!this.listeners_.length) {
-            return;
-          }
-          this.listeners_.forEach(function(l) {
-            return google.maps.event.removeListener(l);
-          });
-        };
+          /*
+          Removes the DIV for the label from the DOM. It also removes all event handlers.
+          This method is called automatically when the marker's <code>setMap(null)</code>
+          method is called.
+          @private
+           */
+          return window.MarkerLabel_.prototype.onRemove = function() {
+            if (this.labelDiv_.parentNode != null) {
+              this.labelDiv_.parentNode.removeChild(this.labelDiv_);
+            }
+            if (this.eventDiv_.parentNode != null) {
+              this.eventDiv_.parentNode.removeChild(this.eventDiv_);
+            }
+            if (!this.listeners_) {
+              return;
+            }
+            if (!this.listeners_.length) {
+              return;
+            }
+            this.listeners_.forEach(function(l) {
+              return google.maps.event.removeListener(l);
+            });
+          };
+        }
       })
     };
   });
@@ -2837,6 +2844,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchCoords = __bind(this.watchCoords, this);
           this.createGWin = __bind(this.createGWin, this);
           this.watchElement = __bind(this.watchElement, this);
+          this.watchAndDoShow = __bind(this.watchAndDoShow, this);
           this.googleMapsHandles = [];
           this.$log = Logger;
           this.createGWin();
@@ -2846,6 +2854,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchElement();
           this.watchOptions();
           this.watchCoords();
+          this.watchAndDoShow();
           this.scope.$on("$destroy", (function(_this) {
             return function() {
               return _this.destroy();
@@ -2853,6 +2862,22 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
           this.$log.info(this);
         }
+
+        WindowChildModel.prototype.watchAndDoShow = function() {
+          var doShow;
+          if (this.model.show != null) {
+            this.scope.show = this.model.show;
+          }
+          doShow = (function(_this) {
+            return function() {
+              if (_this.scope.show) {
+                return _this.showWindow();
+              }
+            };
+          })(this);
+          this.scope.$watch('show', doShow, true);
+          return doShow();
+        };
 
         WindowChildModel.prototype.watchElement = function() {
           return this.scope.$watch((function(_this) {
@@ -2997,7 +3022,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           var compiled, show, templateScope;
           show = (function(_this) {
             return function() {
-              if (_this.gWin) {
+              if (_this.gWin != null) {
                 if (!_this.gWin.isOpen()) {
                   return _this.gWin.open(_this.mapCtrl);
                 }
@@ -3005,7 +3030,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this);
           if (this.scope.templateUrl) {
-            if (this.gWin) {
+            if (this.gWin != null) {
               $http.get(this.scope.templateUrl, {
                 cache: $templateCache
               }).then((function(_this) {
@@ -3021,7 +3046,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               })(this));
             }
           } else if (this.scope.template) {
-            if (this.gWin) {
+            if (this.gWin != null) {
               templateScope = this.scope.$new();
               if (angular.isDefined(this.scope.templateParameter)) {
                 templateScope.parameter = this.scope.templateParameter;
@@ -4445,12 +4470,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.rebuildAll = __bind(this.rebuildAll, this);
           this.doINeedToWipe = __bind(this.doINeedToWipe, this);
           this.watchModels = __bind(this.watchModels, this);
-          this.watch = __bind(this.watch, this);
           this.go = __bind(this.go, this);
           WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache);
           self = this;
           this.windows = new PropMap();
-          this.scopePropNames = ['coords', 'template', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick'];
+          this.scopePropNames = ['coords', 'template', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick', 'options', 'show'];
           _.each(this.scopePropNames, (function(_this) {
             return function(name) {
               return _this[name + 'Key'] = void 0;
@@ -4477,23 +4501,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this));
           return this.createChildScopesWindows();
-        };
-
-        WindowsParentModel.prototype.watch = function(scope, name, nameKey) {
-          return scope.$watch(name, (function(_this) {
-            return function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
-                return _async.waitOrGo(_this, function() {
-                  return _async.each(_.values(_this.windows), function(model) {
-                    return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                  }).then(function() {
-                    return _this.existingPieces = void 0;
-                  });
-                });
-              }
-            };
-          })(this));
         };
 
         WindowsParentModel.prototype.watchModels = function(scope) {
@@ -4555,8 +4562,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(name) {
               var nameKey;
               nameKey = name + 'Key';
-              _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
-              return _this.watch(scope, name, nameKey);
+              return _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
             };
           })(this));
         };
@@ -4716,6 +4722,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               };
             })(this)
           };
+          this.DEFAULTS = this.markersScope ? model[this.DEFAULTS] : this.DEFAULTS;
           opts = this.createWindowOptions(gMarker, childScope, fakeElement.html(), this.DEFAULTS);
           child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, gMarker, fakeElement, false, true);
           if (model[this.idKey] == null) {
@@ -5276,7 +5283,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             isIconVisibleOnClick: '=isiconvisibleonclick',
             closeClick: '&closeclick',
             options: '=options',
-            control: '=control'
+            control: '=control',
+            show: '=show'
           };
           this.$log = Logger;
         }

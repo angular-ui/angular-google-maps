@@ -1,6 +1,24 @@
 angular.module("google-maps.mocks", [])
 .factory "GoogleApiMock", ->
 
+  class MockInfoWindow
+    constructor: ->
+      @_isOpen = false
+
+    open: (map, anchor) =>
+      @_isOpen = true
+      return
+
+    close: =>
+      @_isOpen = false
+      return
+
+    isOpen: (val = undefined) ->
+      unless val?
+        return @_isOpen
+      else
+        @_isOpen = val
+
   getMarker = ->
     Marker = (opts) -> return
     Marker.prototype.setMap = (map) ->
@@ -169,7 +187,7 @@ angular.module("google-maps.mocks", [])
       window.google.maps.event = event
       return listeners
 
-    mockInfoWindow: (InfoWindow = () -> return) ->
+    mockInfoWindow: (InfoWindow = MockInfoWindow) ->
       window.google.maps.InfoWindow = InfoWindow
 
     mockMarker: (Marker = getMarker()) ->

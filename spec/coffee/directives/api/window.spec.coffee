@@ -5,11 +5,7 @@ describe "directives.api.Window", ->
         module "google-maps.mocks"
         inject (GoogleApiMock) =>
           @gmap = new GoogleApiMock()
-          @gmap.mockAPI()
-          @gmap.mockLatLng()
-          @gmap.mockMarker()
-          @gmap.mockInfoWindow()
-          @gmap.mockEvent()
+#          @gmap.mockAPI()
 
         @mocks =
             scope:
@@ -37,8 +33,9 @@ describe "directives.api.Window", ->
         @timeOutNoW = (fnc,time) =>
             fnc()
 #        @gMarker = new google.maps.Marker(@commonOpts)
-        inject ['$rootScope','$q', '$compile', '$http', '$templateCache', 'Window'.ns(),
-          (_$rootScope_,$q, $compile, $http, $templateCache, Window) =>
+        inject ['$rootScope','$q', '$compile', '$http', '$templateCache', 'ExtendGWin'.ns(), 'Window'.ns(),
+          (_$rootScope_,$q, $compile, $http, $templateCache, ExtendGWin, Window) =>
+            ExtendGWin.init()
             @$rootScope =  _$rootScope_
             d = $q.defer()
             d.resolve @gmap
