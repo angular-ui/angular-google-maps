@@ -10,7 +10,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
 .factory "IMarkerParentModel".ns(), ["ModelKey".ns(),"Logger".ns(), (ModelKey, Logger) ->
     class IMarkerParentModel extends ModelKey
         DEFAULTS: {}
-        constructor: (@scope, @element, @attrs, @map, @$timeout) ->
+        constructor: (@scope, @element, @attrs, @map) ->
             super(@scope)
             self = @
             @$log = Logger

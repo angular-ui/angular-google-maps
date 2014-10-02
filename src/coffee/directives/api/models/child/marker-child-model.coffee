@@ -4,7 +4,16 @@ angular.module("google-maps.directives.api.models.child".ns())
       class MarkerChildModel extends ModelKey
         @include GmapUtil
         @include EventsHelper
-        constructor: (@model, @parentScope, @gMap, @$timeout, @defaults, @doClick, @gMarkerManager, @idKey = "id", @doDrawSelf = true)->
+
+        destroy = (child) ->
+          if child?.gMarker?
+            child.removeEvents child.externalListeners
+            child.removeEvents child.internalListeners
+            if child?.gMarker
+              child?.gMarkerManager.remove child?.gMarker, true
+              delete child.gMarker
+
+        constructor: (@model, @parentScope, @gMap, @defaults, @doClick, @gMarkerManager, @idKey = "id", @doDrawSelf = true)->
           @id = @model[@idKey] if @model[@idKey]?
           @iconKey = @parentScope.icon
           @coordsKey = @parentScope.coords
@@ -24,8 +33,14 @@ angular.module("google-maps.directives.api.models.child".ns())
               @needRedraw = true
           , true
 
+          #hiding destroy functionality as it should only be called via scope.$destroy()
+          @scope.$on "$destroy", =>
+            destroy @
+
           $log.info @
-          @watchDestroy(@scope)
+
+        destroy: =>
+          @scope.$destroy()
 
         setMyScope: (model, oldModel = undefined, isInit = false) =>
           @maybeSetScopeValue('icon', model, oldModel, @iconKey, @evalModelHandle, isInit, @setIcon)
@@ -57,15 +72,6 @@ angular.module("google-maps.directives.api.models.child".ns())
             unless isInit
               gSetter(@scope) if gSetter?
               @gMarkerManager.draw() if @doDrawSelf
-
-        destroy: () =>
-          if @gMarker? #this is possible due to async code in that we created some Children but no gMarker yet
-            @removeEvents @externalListeners
-            @removeEvents @internalListeners
-            @gMarkerManager.remove @gMarker, true
-            delete @gMarker
-            if !@scope.$$destroyed
-              @scope.$destroy()
 
         setCoords: (scope) =>
           if scope.$id != @scope.$id or @gMarker == undefined
@@ -131,9 +137,6 @@ angular.module("google-maps.directives.api.models.child".ns())
           click: =>
             if @doClick and @scope.click?
               @scope.$apply(@scope.click())
-
-        watchDestroy: (scope )=>
-          scope.$on "$destroy", @destroy
 
       MarkerChildModel
   ]

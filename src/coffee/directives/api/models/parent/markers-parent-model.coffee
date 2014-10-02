@@ -2,18 +2,17 @@ angular.module("google-maps.directives.api.models.parent".ns())
 .factory "MarkersParentModel".ns(), [
   "IMarkerParentModel".ns(), "ModelsWatcher".ns(),
   "PropMap".ns(), "MarkerChildModel".ns(), "_async".ns(),
-  "ClustererMarkerManager".ns(), "MarkerManager".ns(),
+  "ClustererMarkerManager".ns(), "MarkerManager".ns(), "$timeout",
     (IMarkerParentModel, ModelsWatcher,
-      PropMap, MarkerChildModel, _async
-      ClustererMarkerManager, MarkerManager) ->
+      PropMap, MarkerChildModel, _async,
+      ClustererMarkerManager, MarkerManager,$timeout) ->
         class MarkersParentModel extends IMarkerParentModel
             @include ModelsWatcher
-            constructor: (scope, element, attrs, map, $timeout) ->
-                super(scope, element, attrs, map, $timeout)
+            constructor: (scope, element, attrs, map) ->
+                super(scope, element, attrs, map)
                 self = @
                 @scope.markerModels = new PropMap()
 
-                @$timeout = $timeout
                 @$log.info @
                 #assume do rebuild all is false and were lookging for a modelKey prop of id
                 @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
@@ -83,43 +82,57 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 else
                     @gMarkerManager = new MarkerManager @map
 
-                _async.each scope.models, (model) =>
-                    @newChildMarker(model, scope)
-                .then => #handle done callBack
+                _async.waitOrGo @, =>
+                  _async.each scope.models, (model) =>
+                      @newChildMarker(model, scope)
+                  , false
+                  .then =>
                     @gMarkerManager.draw()
                     @gMarkerManager.fit() if scope.fit
+                .then =>
+                  @existingPieces = undefined
 
 
             reBuildMarkers: (scope) =>
-                if(!scope.doRebuild and scope.doRebuild != undefined)
-                    return
+              if(!scope.doRebuild and scope.doRebuild != undefined)
+                  return
+              if @scope.markerModels?.length
                 @onDestroy(scope) #clean @scope.markerModels
-                @createMarkersFromScratch(scope)
+
+              @createMarkersFromScratch(scope)
 
             pieceMeal: (scope)=>
+                doChunk = if @existingPieces? then false else _async.defaultChunkSize
                 if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
                     #find the current state, async operation that calls back
                     @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison, (state) =>
                         payload = state
                         #payload contains added, removals and flattened (existing models with their gProp appended)
                         #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @scope.markerModels
-                        _async.each payload.removals, (child)=>
-                            if child?
-                                child.destroy() if child.destroy?
-                                @scope.markerModels.remove(child.id)
-                        .then =>
-                            #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
-                          _async.each payload.adds, (modelToAdd) =>
-                              @newChildMarker(modelToAdd, scope)
-                        .then () =>
-                          _async.each payload.updates, (update) =>
-                              @updateChild update.child, update.model
-                        .then =>
+
+                        _async.waitOrGo @, =>
+                          _async.each(payload.removals, (child) =>
+                              if child?
+                                  child.destroy() if child.destroy?
+                                  @scope.markerModels.remove(child.id)
+                          ,doChunk)
+                          .then =>
+                              #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
+                            _async.each(payload.adds, (modelToAdd) =>
+                                @newChildMarker(modelToAdd, scope)
+                            ,doChunk)
+                          .then () =>
+                            _async.each(payload.updates, (update) =>
+                                @updateChild update.child, update.model
+                            ,doChunk)
+                          .then =>
                             #finally redraw if something has changed
                             if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
-                                @gMarkerManager.draw()
-                                scope.markerModels = @scope.markerModels #for other directives like windows
-                                @gMarkerManager.fit() if scope.fit
+                              @gMarkerManager.draw()
+                              scope.markerModels = @scope.markerModels #for other directives like windows
+                              @gMarkerManager.fit() if scope.fit #note fit returns a promise
+                        .then =>
+                          @existingPieces = undefined
                 else
                     @reBuildMarkers(scope)
 
@@ -135,21 +148,23 @@ angular.module("google-maps.directives.api.models.parent".ns())
                     @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                     return
                 @$log.info('child', child, 'markers', @scope.markerModels)
-                child = new MarkerChildModel(model, scope, @map, @$timeout, @DEFAULTS,
+                child = new MarkerChildModel(model, scope, @map, @DEFAULTS,
                     @doClick, @gMarkerManager, @idKey, doDrawSelf = false) #this is managed so child is not drawing itself
                 @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
                 child
 
             onDestroy: (scope)=>
-                #need to figure out how to handle individual destroys
-                #slap index to the external model so that when they pass external back
-                #for destroy we have a lookup?
-                #this will require another attribute for destroySingle(marker)
-                _.each @scope.markerModels.values(), (model)->
-                    model.destroy() if model?
-                delete @scope.markerModels
-                @scope.markerModels = new PropMap()
-                @gMarkerManager.clear() if @gMarkerManager?
+              #need to figure out how to handle individual destroys
+              #slap index to the external model so that when they pass external back
+              #for destroy we have a lookup?
+              #this will require another attribute for destroySingle(marker)
+              _async.waitOrGo @, =>
+                  @gMarkerManager.clear() if @gMarkerManager?
+                  _.each @scope.markerModels.values(), (model)->
+                      model.destroy() if model?
+                  delete @scope.markerModels
+                  @scope.markerModels = new PropMap()
+                  Promise.resolve()
 
             maybeExecMappedEvent:(cluster, fnName) ->
               if _.isFunction @scope.clusterEvents?[fnName]

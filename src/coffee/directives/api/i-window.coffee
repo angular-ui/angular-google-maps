@@ -5,7 +5,7 @@ angular.module("google-maps.directives.api".ns())
 .factory "IWindow".ns(), [ "BaseObject".ns(), "ChildEvents".ns(), "Logger".ns(), (BaseObject, ChildEvents, Logger) ->
   class IWindow extends BaseObject
     @include ChildEvents
-    constructor: (@$timeout, @$compile, @$http, @$templateCache) ->
+    constructor:  ->
       @restrict = 'EMA'
       @template = undefined
       @transclude = true
@@ -21,6 +21,8 @@ angular.module("google-maps.directives.api".ns())
         closeClick: '&closeclick', #scope glue to gmap InfoWindow closeclick
         options: '=options'
         control: '=control'
+        #show is not part of options, (https://developers.google.com/maps/documentation/javascript/reference#InfoWindowOptions) we need it then
+        show: '=show'
       }
       @$log = Logger
 
