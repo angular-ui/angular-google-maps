@@ -18,7 +18,7 @@ angular.module("google-maps.directives.api")
 
     controller: ['$scope', '$element', ($scope, $element) ->
       $scope.ctrlType = 'Markers'
-      IMarker.handle $scope,$element
+      _.extend @, IMarker.handle($scope,$element)
     ]
 
     link: (scope, element, attrs, ctrl) =>
