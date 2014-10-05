@@ -1,6 +1,6 @@
 <p>The <code>rectangle</code> directive is used to draw a rectangular overlay connected to various points on the map.
 See <a google-api="Rectangle">Rectangle API</a>.</p>
-	
+
 <div class="alert">This directive is currently only available in the <em>develop</em> branch. It will be generally
 available in the next release.</div>
 
@@ -29,9 +29,9 @@ available in the next release.</div>
 		<tr>
 			<td>fill</td>
 			<td><span class="label label-danger">expression</span></td>
-			<td>Object to configure the rectangle fill type. Valid properties are <code>color</code> (CSS hex notation) 
+			<td>Object to configure the rectangle fill type. Valid properties are <code>color</code> (CSS hex notation)
 			and <code>opacity</code> (between 0.0 and 1.0)</td>
-		</tr>			
+		</tr>
 		<tr>
 			<td>stroke</td>
 			<td><span class="label label-info">expression</span></td>
@@ -58,6 +58,20 @@ available in the next release.</div>
 			<td><span class="label label-info">expression</span></td>
 			<td>boolean property which shows or hides the polyline</td>
 		</tr>
+		<tr>
+			<td>events</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>
+			  <p><span class="badge badge-info"></span> Custom events to apply to the polygon. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">polygon events</a>.</p>
+			  <span>The handler function takes three parameters:</span>
+			  <ol>
+  			  <li>polygon: the GoogleMaps Polygon object</li>
+  			  <li>eventName: the name of the event</li>
+  			  <li>arguments: the arguments provided by Google Maps for this event type. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">the Polygon docs</a></li>
+
+			  </ol>
+		  </td>
+		</tr>
 	</tbody>
 </table>
 
@@ -72,8 +86,8 @@ available in the next release.</div>
 	clickable='{expression}'
 	draggable='{expression}'
 	editable='{expression}'
-	visible='{expression}'>
-	...
+	visible='{expression}'
+	events='{expression}'
+	>
 </rectangle>
 </script>
-

@@ -129,6 +129,20 @@
             </p>
         </td>
     </tr>
+    <tr>
+			<td>events</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>
+			  <p><span class="badge badge-info"></span> Custom events to apply to the polygon. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">polygon events</a>.</p>
+			  <span>The handler function takes three parameters:</span>
+			  <ol>
+  			  <li>polygon: the GoogleMaps Polygon object</li>
+  			  <li>eventName: the name of the event</li>
+  			  <li>arguments: the arguments provided by Google Maps for this event type. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">the Polygon docs</a></li>
+
+			  </ol>
+		  </td>
+		</tr>
     </tbody>
 </table>
 
@@ -149,8 +163,7 @@
         icons="'{string}'"
         visible="'{string}'"
         fit='{string or boolean}'
-
+        events='{expression}'
         static='{expression}'>
 </polylines>
 </script>
-

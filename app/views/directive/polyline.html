@@ -1,6 +1,6 @@
 <p>The <code>polyline</code> directive is used to draw an overlay connected to various points on the map.
 See <a google-api="Polyline">Polyline API</a>.</p>
-	
+
 <h4>Usage</h4>
 
 <div hljs language="html" include="'polylineTemplate'"></div>
@@ -66,7 +66,7 @@ See <a google-api="Polyline">Polyline API</a>.</p>
 			<td>fit</td>
 			<td><span class="label label-info">expression</span></td>
 			<td>boolean property to instruct the map to fit its bounds around the polyline</td>
-		</tr>		
+		</tr>
 		<tr>
 			<td>static</td>
 			<td><span class="label label-info">string or boolean</span></td>
@@ -79,7 +79,21 @@ See <a google-api="Polyline">Polyline API</a>.</p>
 			    <li>For static paths, the path attribute will watched by reference so the path may be changed in its entirety and the map will update.</li>
 			    <li>Changes to the static declaration are ignored after the directive is instantiated. (NOT WATCHED)</li>
 			  </ul>
-              </p>
+        </p>
+		  </td>
+		</tr>
+		<tr>
+			<td>events</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>
+			  <p><span class="badge badge-info"></span> Custom events to apply to the polygon. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">polygon events</a>.</p>
+			  <span>The handler function takes three parameters:</span>
+			  <ol>
+  			  <li>polygon: the GoogleMaps Polygon object</li>
+  			  <li>eventName: the name of the event</li>
+  			  <li>arguments: the arguments provided by Google Maps for this event type. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">the Polygon docs</a></li>
+
+			  </ol>
 		  </td>
 		</tr>
 	</tbody>
@@ -97,8 +111,9 @@ See <a google-api="Polyline">Polyline API</a>.</p>
 	geodesic='{expression}'
 	icons='{expression}'
 	visible='{expression}'
-    fit='{string or boolean}'
-	static='{expression}'>
+  fit='{string or boolean}'
+	static='{expression}'
+	events='{expression}'
+	>
 </polyline>
 </script>
-
