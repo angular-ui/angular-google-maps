@@ -15,7 +15,7 @@ var mountFolder = function (connect, dir) {
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
-  
+
   grunt.loadNpmTasks("grunt-git-log-json");
   grunt.loadNpmTasks('grunt-gh-pages');
 
@@ -179,7 +179,7 @@ module.exports = function (grunt) {
       }
     },
     usemin: {
-      html: ['<%= yeoman.dist %>/{,*/}*.html', '<%= yeoman.dist %>/views/*.html', '<%= yeoman.dist %>/views/directive/*.html'],
+    html: ['<%= yeoman.dist %>/{,*/}*.html', '<%= yeoman.dist %>/views/*.html', '<%= yeoman.dist %>/views/**/directive/*.html'],
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
       options: {
         dirs: ['<%= yeoman.dist %>']
@@ -234,7 +234,7 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= yeoman.app %>',
-          src: ['*.html', 'views/*.html', 'views/directive/*.html'],
+          src: ['*.html', 'views/*.html', 'views/directive/**/*.html'],
           dest: '<%= yeoman.dist %>'
         }]
       }
@@ -298,7 +298,7 @@ module.exports = function (grunt) {
     },
     cdnify: {
       dist: {
-        html: ['<%= yeoman.dist %>/*.html', '<%= yeoman.dist %>/views/*.html', '<%= yeoman.dist %>/views/directive/*.html']
+        html: ['<%= yeoman.dist %>/*.html', '<%= yeoman.dist %>/views/*.html', '<%= yeoman.dist %>/views/directive/**/*.html']
       }
     },
     ngmin: {

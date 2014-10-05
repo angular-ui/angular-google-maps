@@ -1,3 +1,4 @@
+<new-scope>
 <p>The <code>markers</code> directive is similar to the <code>marker</code> directive,
     but it is used when many markers need to be added to the map. It overcomes the high overhead of
     using the <code>ng-repeat</code><code>marker</code> directive.</p>
@@ -176,6 +177,8 @@ $scope.clickEventsObject =
                 or $scope.markerControl.getChildMarkers().get(id)</code>
         </td>
     </tr>
+    <tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Marker'">
+		</tr>
     </tbody>
 </table>
 
@@ -219,9 +222,9 @@ $scope.clickEventsObject =
              labelClass="'{string}'"
              click="'{string or expression to a function}'"
 
-             events="not supported yet..."
+             events="{expression}"
              control='{expression}'
             >
     </markers>
 </script>
-
+</new-scope>

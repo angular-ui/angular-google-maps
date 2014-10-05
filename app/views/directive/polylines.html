@@ -1,3 +1,4 @@
+<new-scope>
 <p>The <code>polylines</code> directive is used to draw an overlay connected to various points on the map.
     See <a google-api="Polyline">Polyline API</a>.</p>
 <br/>
@@ -129,19 +130,7 @@
             </p>
         </td>
     </tr>
-    <tr>
-			<td>events</td>
-			<td><span class="label label-info">expression</span></td>
-			<td>
-			  <p><span class="badge badge-info"></span> Custom events to apply to the polygon. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">polygon events</a>.</p>
-			  <span>The handler function takes three parameters:</span>
-			  <ol>
-  			  <li>polygon: the GoogleMaps Polygon object</li>
-  			  <li>eventName: the name of the event</li>
-  			  <li>arguments: the arguments provided by Google Maps for this event type. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">the Polygon docs</a></li>
-
-			  </ol>
-		  </td>
+    <tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Polyline'">
 		</tr>
     </tbody>
 </table>
@@ -167,3 +156,4 @@
         static='{expression}'>
 </polylines>
 </script>
+</new-scope>

@@ -1,3 +1,4 @@
+<new-scope>
 <p>The <code>marker</code> directive is used to add a <code>google.maps.Marker</code> object to an existing map.</p>
 
 <h4>Usage</h4>
@@ -54,10 +55,7 @@
 			<td><span class="label label-info">expression</span>
 			<td>Object containing additional options for the marker. See <a href="https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions" rel="external">MarkerOptions</a>.</td>
 		</tr>
-		<tr>
-			<td>events</td>
-			<td><span class="label label-info">events</span></td>
-			<td>Object containing event handlers for this marker. The keys are the event names and the values are the handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Marker" rel="external">Marker documentation</a> (under Events section) for a list of all events.</td>
+		<tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Marker'">
 		</tr>
         <tr>
             <td>control</td>
@@ -97,3 +95,4 @@
         >
 </marker>
 </script>
+</new-scope>
