@@ -4486,6 +4486,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.contentKeys = void 0;
           this.isIconVisibleOnClick = void 0;
           this.firstTime = true;
+          this.firstWatchModels = true;
           this.$log.info(self);
           this.parentScope = void 0;
           this.go(scope);
@@ -4508,7 +4509,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return scope.$watch('models', (function(_this) {
             return function(newValue, oldValue) {
               var doScratch;
-              if (!_.isEqual(newValue, oldValue)) {
+              if (!_.isEqual(newValue, oldValue) || _this.firstWatchModels) {
+                _this.firstWatchModels = false;
                 if (_this.doRebuildAll || _this.doINeedToWipe(newValue)) {
                   return _this.rebuildAll(scope, true, true);
                 } else {
@@ -4553,6 +4555,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         WindowsParentModel.prototype.watchDestroy = function(scope) {
           return scope.$on("$destroy", (function(_this) {
             return function() {
+              _this.firstWatchModels = true;
+              _this.firstTime = true;
               return _this.rebuildAll(scope, false, true);
             };
           })(this));
@@ -5649,7 +5653,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         Marker.prototype.controller = [
           '$scope', '$element', function($scope, $element) {
             $scope.ctrlType = 'Marker';
-            return IMarker.handle($scope, $element);
+            return _.extend(Marker, IMarker.handle($scope, $element));
           }
         ];
 
@@ -5710,7 +5714,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         Markers.prototype.controller = [
           '$scope', '$element', function($scope, $element) {
             $scope.ctrlType = 'Markers';
-            return IMarker.handle($scope, $element);
+            return _.extend(this, IMarker.handle($scope, $element));
           }
         ];
 

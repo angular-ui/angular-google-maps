@@ -26,6 +26,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             @contentKeys = undefined #model keys to parse html angular content
             @isIconVisibleOnClick = undefined
             @firstTime = true
+            @firstWatchModels = true
             @$log.info(self)
             @parentScope = undefined
 
@@ -62,7 +63,8 @@ angular.module("google-maps.directives.api.models.parent".ns())
           watchModels: (scope) =>
             scope.$watch 'models', (newValue, oldValue) =>
               #check to make sure that the newValue Array is really a set of new objects
-              unless _.isEqual(newValue, oldValue)
+              if not _.isEqual(newValue, oldValue) or @firstWatchModels
+                @firstWatchModels = false
                 if @doRebuildAll or @doINeedToWipe(newValue)
                   @rebuildAll(scope, true, true)
                 else
@@ -87,6 +89,8 @@ angular.module("google-maps.directives.api.models.parent".ns())
 
           watchDestroy: (scope)=>
             scope.$on "$destroy", =>
+              @firstWatchModels = true
+              @firstTime = true
               @rebuildAll(scope, false, true)
 
           watchOurScope: (scope) =>
