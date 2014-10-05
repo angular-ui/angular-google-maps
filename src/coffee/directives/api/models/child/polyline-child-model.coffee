@@ -11,6 +11,8 @@ angular.module("google-maps.directives.api".ns())
         scope.$watch 'path', (newValue, oldValue) =>
           if not _.isEqual(newValue, oldValue) or not @polyline
             pathPoints = @convertPathPoints scope.path
+            if @polyline?
+              @clean()
             @polyline = new google.maps.Polyline @buildOpts pathPoints if pathPoints.length > 0
             if @polyline
               @extendMapBounds map, pathPoints if scope.fit
