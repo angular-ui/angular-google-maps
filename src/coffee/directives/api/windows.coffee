@@ -20,7 +20,7 @@ angular.module("google-maps.directives.api".ns())
       mapScope.deferred.promise.then (map) =>
         markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1] else undefined
         markerScope = markerCtrl?.getScope()
-        promise = markerScope?.deferred?.promise
+        promise = markerScope?.deferred?.promise or Promise.resolve()
         promise.then =>
           pieces = @parentModel?.existingPieces
           if pieces

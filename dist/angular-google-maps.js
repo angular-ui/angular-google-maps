@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-29
+/*! angular-google-maps 2.0.0-SNAPSHOT 2014-10-05
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -2845,6 +2845,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.createGWin = __bind(this.createGWin, this);
           this.watchElement = __bind(this.watchElement, this);
           this.watchAndDoShow = __bind(this.watchAndDoShow, this);
+          this.doShow = __bind(this.doShow, this);
           this.googleMapsHandles = [];
           this.$log = Logger;
           this.createGWin();
@@ -2863,20 +2864,18 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.$log.info(this);
         }
 
+        WindowChildModel.prototype.doShow = function() {
+          if (this.scope.show) {
+            return this.showWindow();
+          }
+        };
+
         WindowChildModel.prototype.watchAndDoShow = function() {
-          var doShow;
           if (this.model.show != null) {
             this.scope.show = this.model.show;
           }
-          doShow = (function(_this) {
-            return function() {
-              if (_this.scope.show) {
-                return _this.showWindow();
-              }
-            };
-          })(this);
-          this.scope.$watch('show', doShow, true);
-          return doShow();
+          this.scope.$watch('show', this.doShow, true);
+          return this.doShow();
         };
 
         WindowChildModel.prototype.watchElement = function() {
@@ -2921,9 +2920,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             } else {
               this.gWin = new google.maps.InfoWindow(this.opts);
             }
-            if (this.gWin) {
-              this.handleClick();
-            }
+            this.handleClick();
+            this.doShow();
             return this.googleMapsHandles.push(google.maps.event.addListener(this.gWin, 'closeclick', (function(_this) {
               return function() {
                 if (_this.markerCtrl) {
@@ -2991,6 +2989,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         WindowChildModel.prototype.handleClick = function(forceClick) {
           var click;
+          if (this.gWin == null) {
+            return;
+          }
           click = (function(_this) {
             return function() {
               var pos;
@@ -6039,7 +6040,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               var markerCtrl, markerScope, promise, _ref;
               markerCtrl = ctrls.length > 1 && (ctrls[1] != null) ? ctrls[1] : void 0;
               markerScope = markerCtrl != null ? markerCtrl.getScope() : void 0;
-              promise = markerScope != null ? (_ref = markerScope.deferred) != null ? _ref.promise : void 0 : void 0;
+              promise = (markerScope != null ? (_ref = markerScope.deferred) != null ? _ref.promise : void 0 : void 0) || Promise.resolve();
               return promise.then(function() {
                 var pieces, _ref1;
                 pieces = (_ref1 = _this.parentModel) != null ? _ref1.existingPieces : void 0;
@@ -6994,7 +6995,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-09-29
+      /*! angular-google-maps 2.0.0-SNAPSHOT 2014-10-05
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
