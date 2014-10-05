@@ -2679,6 +2679,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               var pathPoints;
               if (!_.isEqual(newValue, oldValue) || !_this.polyline) {
                 pathPoints = _this.convertPathPoints(scope.path);
+                if (_this.polyline != null) {
+                  _this.clean();
+                }
                 if (pathPoints.length > 0) {
                   _this.polyline = new google.maps.Polyline(_this.buildOpts(pathPoints));
                 }

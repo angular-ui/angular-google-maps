@@ -15,27 +15,32 @@
     <title>Map</title>
 </head>
 
-  <body class="container" ng-controller="TestingCtrl">
-    <div class="row">
-      <div class="span6">
+<body class="container" ng-controller="TestingCtrl">
+<div class="row">
+    <div class="span6">
         <div class="well mapContainer">
 
-          <google-map center="map.centerProperty" zoom="map.zoomProperty" mark-click="true" draggable="true" dragging="map.dragging" type="terrain" latitude="latitude" longitude="longitude" events="map.events">
-            <marker coords="map.waterfall" idkey="1" options="map.waterfall.opts" events="map.waterfall.events"></marker>
-            <marker coords="map.parking" idkey="2" options="map.parking.opts" events="map.parking.events"></marker>
-            <polyline path="map.trails.path" stroke="map.trails.stroke" visible="map.trails.visible" geodesic="map.trails.geodesic" editable="map.trails.editable" idkey="trailID" draggable="map.trails.draggable"></polyline>
-          </google-map>
+            <ui-gmap-google-map center="map.centerProperty" zoom="map.zoomProperty" mark-click="true" draggable="true"
+                        dragging="map.dragging" type="terrain" latitude="latitude" longitude="longitude"
+                        events="map.events">
+                <ui-gmap-marker coords="map.waterfall" idkey="1" options="map.waterfall.opts"
+                        events="map.waterfall.events"></ui-gmap-marker>
+                <ui-gmap-marker coords="map.parking" idkey="2" options="map.parking.opts" events="map.parking.events"></ui-gmap-marker>
+                <ui-gmap-polyline path="map.trails.path" stroke="map.trails.stroke" visible="map.trails.visible"
+                          geodesic="map.trails.geodesic" editable="map.trails.editable" idkey="trailID"
+                          draggable="map.trails.draggable"></ui-gmap-polyline>
+            </ui-gmap-google-map>
 
         </div>
         <div class="well">
-          <div class="col-lg-2">
-						<button class="btn btn-success" ng-click="drawTrail()" ng-if="!trailExists">Add Trail</button>
-						<button class="btn btn-danger" ng-click="removeTrail()" ng-if="trailExists">Remove Trail</button>
-					</div>
+            <div class="col-lg-2">
+                <button class="btn btn-success" ng-click="drawTrail()" ng-if="!trailExists">Add Trail</button>
+                <button class="btn btn-danger" ng-click="removeTrail()" ng-if="trailExists">Remove Trail</button>
+            </div>
         </div>
-      </div>
     </div>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
-  </body>
+</div>
+<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+</body>
 
 </html>
