@@ -60,7 +60,7 @@ describe "IMarkerParentModel".ns(), ->
       @subject = new @IMarkerParentModel(@scope, @ele, @attrs, null, @$timeout)
 
     it "should throw onWatch", ->
-      expect(@subject.onWatch).toThrow()
+      expect(@subject.onWatch).not.toThrow()
 
     it "should throw onDestroy", ->
       expect(@subject.onDestroy).toThrow()

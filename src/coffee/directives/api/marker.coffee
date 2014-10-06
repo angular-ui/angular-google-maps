@@ -14,8 +14,9 @@ angular.module("google-maps.directives.api".ns())
         doFit = true if scope.fit
         IMarker.mapPromise(scope,ctrl).then (map) =>
           @gMarkerManager = new MarkerManager map unless @gMarkerManager
-          new MarkerParentModel scope, element, attrs, map, @$timeout, @gMarkerManager, doFit
-          scope.deferred.resolve()
+          new MarkerParentModel(scope, element, attrs, map, @$timeout, @gMarkerManager, doFit)
+          .promise.then (gMarker) =>
+            scope.deferred.resolve(gMarker)
 
           if scope.control?
             scope.control.getGMarkers = @gMarkerManager.getGMarkers

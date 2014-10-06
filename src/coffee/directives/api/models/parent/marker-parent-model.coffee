@@ -5,85 +5,30 @@
 ###
 angular.module("google-maps.directives.api.models.parent".ns())
 .factory "MarkerParentModel".ns(),
-["IMarkerParentModel".ns(), "GmapUtil".ns(), "EventsHelper".ns(), "ModelKey".ns(), "_async".ns(),
-    (IMarkerParentModel, GmapUtil, EventsHelper, ModelKey, _async) ->
-      ###
-       TODO: Eventually this directive should be using marker-child-model
-       (for this to happen something will need to be done with parentScope)
-       currently this Parent directive is acting as a child where Marker
-       is creating MarkerParentModel which directly creates a Marker
-       (MarkerChild does the same)
-      ###
-      class MarkerParentModel extends IMarkerParentModel
-        @include GmapUtil
-        @include EventsHelper
-        constructor: (scope, element, attrs, map, $timeout, @gMarkerManager, @doFit) ->
-          super(scope, element, attrs, map, $timeout)
-          opts = @createMarkerOptions scope.coords, scope.icon, scope.options, @map
-          #using scope.$id as the identifier for a marker as scope.$id should be unique, no need for an index (as it is the index)
-          @setGMarker new google.maps.Marker(opts)
+["IMarkerParentModel".ns(), "GmapUtil".ns(), "EventsHelper".ns(),
+"ModelKey".ns(), "_async".ns(),
+"MarkerOptions".ns(),"MarkerChildModel".ns(),
+    (IMarkerParentModel, GmapUtil, EventsHelper, ModelKey, _async,
+        MarkerOptions, MarkerChildModel) ->
+        class MarkerParentModel extends IMarkerParentModel
+          @include GmapUtil
+          @include EventsHelper
+          @include MarkerOptions
+          constructor: (scope, element, attrs, map, $timeout, @gMarkerManager, @doFit) ->
+            super(scope, element, attrs, map, $timeout)
 
-          @listener = google.maps.event.addListener @scope.gMarker, 'click', =>
-            if @doClick and scope.click?
-              @scope.$apply(@scope.click())
+            keys =
+              icon :"icon"
+              coords :"coords"
+              click : ->
+                "click"
+              options :"options"
+              idKey: "idKey"
 
-          @listeners = @setEvents @scope.gMarker, scope, scope
-          @$log.info @
+            @promise =  new MarkerChildModel(scope, scope, keys, map, {}, doClick = true,
+              @gMarkerManager, doDrawSelf = false, trackModel = false).deferred.promise
 
-
-        onWatch: (propNameToWatch, scope) =>
-          return unless @scope?.gMarker
-          switch propNameToWatch
-            when 'coords'
-              if (@validateCoords(scope.coords) and @scope.gMarker?)
-                pos = @scope.gMarker?.getPosition()
-                return if(pos.lat() == @scope.coords.latitude and @scope.coords.longitude == pos.lng())
-                old = @scope.gMarker.getAnimation()
-                @scope.gMarker.setMap @map
-                @scope.gMarker.setPosition @getCoords(scope.coords)
-                @scope.gMarker.setVisible @validateCoords(scope.coords)
-                @scope.gMarker.setAnimation(old)
-              else
-                # Remove marker
-                @scope.gMarker.setMap null
-            when 'icon'
-              if (scope.icon? and @validateCoords(scope.coords) and @scope.gMarker?)
-                @scope.gMarker.setIcon scope.icon
-                @scope.gMarker.setMap null
-                @scope.gMarker.setMap @map
-                @scope.gMarker.setPosition @getCoords(scope.coords)
-                @scope.gMarker.setVisible @validateCoords(scope.coords)
-            when 'options'
-              if @validateCoords(scope.coords) and scope.options
-                @scope.gMarker.setMap(null) if @scope.gMarker?
-                @setGMarker new google.maps.Marker @createMarkerOptions(scope.coords, scope.icon, scope.options,@map)
-
-        setGMarker: (gMarker) =>
-          if @scope?.gMarker
-            ret = @gMarkerManager.remove @scope.gMarker, false
-            delete @scope.gMarker
-            ret
-          @scope.gMarker = gMarker
-          if @scope.gMarker
-            @scope.gMarker.key = @scope.idKey
-            @gMarkerManager.add @scope.gMarker, false
-
-            if @doFit
-              _async.waitOrGo @, ->
-                @gMarkerManager.fit()
-
-        onDestroy: (scope)=>
-          unless @scope?.gMarker
-            self = undefined
-            return
-          #remove from gMaps and then free resources
-          @scope.gMarker.setMap null
-          @removeEvents @listeners
-          google.maps.event.removeListener @listener
-          @listener = null
-          @gMarkerManager.remove @scope.gMarker, false
-          delete @scope.gMarker
-          self = undefined
-
-      return MarkerParentModel
+          onDestroy: (scope) =>
+            #do nothing as MarkerChildModel handles this
+        return MarkerParentModel
   ]

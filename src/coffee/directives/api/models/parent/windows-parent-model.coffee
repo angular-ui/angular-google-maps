@@ -200,7 +200,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             fakeElement =
               html: =>
                 @interpolateContent(@linked.element.html(), model)
-            @DEFAULTS = if @markersScope then model[@DEFAULTS] else @DEFAULTS
+            @DEFAULTS = if @markersScope then model[@optionsKey] or {} else @DEFAULTS
             opts = @createWindowOptions gMarker, childScope, fakeElement.html(), @DEFAULTS
             child = new WindowChildModel model, childScope, opts, @isIconVisibleOnClick, gMap, gMarker, fakeElement, false, true
 

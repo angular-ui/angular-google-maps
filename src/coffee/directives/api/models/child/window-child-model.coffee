@@ -4,7 +4,8 @@ angular.module("google-maps.directives.api.models.child".ns())
     (BaseObject, GmapUtil, Logger, $compile, $http, $templateCache) ->
       class WindowChildModel extends BaseObject
         @include GmapUtil
-        constructor: (@model, @scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerCtrl, @element, @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true)->
+        constructor: (@model, @scope, @opts, @isIconVisibleOnClick,
+          @mapCtrl, @markerCtrl, @element, @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
           @googleMapsHandles = []
           @$log = Logger
           @createGWin()

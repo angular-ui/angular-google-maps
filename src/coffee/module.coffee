@@ -35,9 +35,11 @@ angular.module("google-maps.wrapped".ns(), [])
 angular.module("google-maps.extensions".ns(), ["google-maps.wrapped".ns(),'google-maps.providers'.ns()])
 angular.module("google-maps.directives.api.utils".ns(), ['google-maps.extensions'.ns()])
 angular.module("google-maps.directives.api.managers".ns(), [])
+angular.module("google-maps.directives.api.options".ns(),[])
 angular.module("google-maps.directives.api.options.builders".ns(),[])
 angular.module("google-maps.directives.api.models.child".ns(), [
   "google-maps.directives.api.utils".ns()
+  "google-maps.directives.api.options".ns()
   "google-maps.directives.api.options.builders".ns()
   ])
 angular.module("google-maps.directives.api.models.parent".ns(), [
