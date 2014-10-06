@@ -1,6 +1,6 @@
 angular.module("google-maps.directives.api.options".ns())
 .service "MarkerOptions".ns(),
-[ "BaseObject".ns(), "Logger".ns(), "GmapUtil".ns(), (BaseObject, $log, GmapUtil) ->
+[ "Logger".ns(), "GmapUtil".ns(), ($log, GmapUtil) ->
     _.extend GmapUtil,
       createOptions: (coords, icon, defaults, map = undefined) ->
         defaults = {} unless defaults?

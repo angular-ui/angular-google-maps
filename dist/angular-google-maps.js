@@ -162,7 +162,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
   angular.module("google-maps.directives.api.managers".ns(), []);
 
-  angular.module("google-maps.directives.api.options".ns(), []);
+  angular.module("google-maps.directives.api.options".ns(), ["google-maps.directives.api.utils".ns()]);
 
   angular.module("google-maps.directives.api.options.builders".ns(), []);
 
@@ -2087,7 +2087,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
 (function() {
   angular.module("google-maps.directives.api.options".ns()).service("MarkerOptions".ns(), [
-    "BaseObject".ns(), "Logger".ns(), "GmapUtil".ns(), function(BaseObject, $log, GmapUtil) {
+    "Logger".ns(), "GmapUtil".ns(), function($log, GmapUtil) {
       return _.extend(GmapUtil, {
         createOptions: function(coords, icon, defaults, map) {
           var opts;
@@ -4473,8 +4473,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
                 _this.windows = new PropMap();
                 if (doCreate) {
-                  return _this.createChildScopesWindows();
+                  _this.createChildScopesWindows();
                 }
+                return Promise.resolve();
               });
             };
           })(this));
@@ -5937,7 +5938,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             })(this);
           }
           if ((this.onChildCreation != null) && (childWindow != null)) {
-            return this.onChildCreation(window);
+            return this.onChildCreation(childWindow);
           }
         };
 

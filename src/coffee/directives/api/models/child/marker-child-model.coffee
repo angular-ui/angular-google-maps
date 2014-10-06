@@ -17,7 +17,8 @@ angular.module("google-maps.directives.api.models.child".ns())
               child?.gMarkerManager.remove child?.gMarker, true
               delete child.gMarker
 
-        constructor: (scope, @model, @keys, @gMap, @defaults, @doClick, @gMarkerManager, @doDrawSelf = true, @trackModel=true)->
+        constructor: (scope, @model, @keys, @gMap, @defaults,
+          @doClick, @gMarkerManager, @doDrawSelf = true, @trackModel=true)->
           _.each @keys, (v,k) =>
             @[k + 'Key'] = if _.isFunction @keys[k] then @keys[k]() else @keys[k]
           @idKey= @idKeyKey or "id"

@@ -86,6 +86,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 delete @windows if doDelete
                 @windows = new PropMap()
                 @createChildScopesWindows() if doCreate
+                Promise.resolve()
 
           watchDestroy: (scope)=>
             scope.$on "$destroy", =>

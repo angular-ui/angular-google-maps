@@ -63,5 +63,5 @@ angular.module("google-maps.directives.api".ns())
           @childWindows.map (child) =>
             child.hideWindow()
 
-      @onChildCreation window if @onChildCreation? and childWindow?
+      @onChildCreation childWindow if @onChildCreation? and childWindow?
 ]
