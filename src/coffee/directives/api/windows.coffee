@@ -17,9 +17,10 @@ angular.module("google-maps.directives.api".ns())
 
     link: (scope, element, attrs, ctrls) =>
       mapScope = ctrls[0].getScope()
+      markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1] else undefined
+      markerScope = markerCtrl?.getScope()
+
       mapScope.deferred.promise.then (map) =>
-        markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1] else undefined
-        markerScope = markerCtrl?.getScope()
         promise = markerScope?.deferred?.promise or Promise.resolve()
         promise.then =>
           pieces = @parentModel?.existingPieces

@@ -62,12 +62,19 @@ angular.module("google-maps.directives.api.models.parent".ns())
           return if dragging
           updateBounds()
 
+      clear = =>
+        @removeEvents myListeners
+        @removeEvents listeners if listeners?
+        rectangle.setMap null
 
       init() if bounds?
       # Update map when center coordinates change
       scope.$watch "bounds", ((newValue, oldValue) ->
         return  if _.isEqual(newValue, oldValue) and bounds? or dragging
         settingBoundsFromScope = true
+        unless newValue?
+          clear()
+          return
         unless bounds?
           isNew = true
         else
@@ -80,7 +87,8 @@ angular.module("google-maps.directives.api.models.parent".ns())
 
       @setMyOptions = (newVals, oldVals) =>
         unless _.isEqual newVals,oldVals
-          rectangle.setOptions @buildOpts bounds
+          if bounds? and newVals?
+            rectangle.setOptions @buildOpts bounds
 
       @props.push 'bounds'
       @watchProps @props
@@ -93,9 +101,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             listeners = @setEvents rectangle, scope, scope
       # Remove rectangle on scope $destroy
       scope.$on "$destroy", =>
-        @removeEvents myListeners
-        @removeEvents listeners if listeners?
-        rectangle.setMap null
+        clear()
 
       $log.info @
 ]

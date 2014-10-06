@@ -2,10 +2,10 @@ angular.module("google-maps.directives.api.models.parent".ns())
 .factory "MarkersParentModel".ns(), [
   "IMarkerParentModel".ns(), "ModelsWatcher".ns(),
   "PropMap".ns(), "MarkerChildModel".ns(), "_async".ns(),
-  "ClustererMarkerManager".ns(), "MarkerManager".ns(), "$timeout",
+  "ClustererMarkerManager".ns(), "MarkerManager".ns(), "$timeout", "IMarker".ns(),
     (IMarkerParentModel, ModelsWatcher,
       PropMap, MarkerChildModel, _async,
-      ClustererMarkerManager, MarkerManager,$timeout) ->
+      ClustererMarkerManager, MarkerManager,$timeout,IMarker) ->
         class MarkersParentModel extends IMarkerParentModel
             @include ModelsWatcher
             constructor: (scope, element, attrs, map) ->
@@ -150,7 +150,10 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 @$log.info('child', child, 'markers', @scope.markerModels)
                 childScope = scope.$new(false)
                 childScope.events = scope.events
-                child = new MarkerChildModel(scope.$new(false), model, scope, @map, @DEFAULTS,
+                keys = {}
+                _.each IMarker.keys, (v,k) ->
+                  keys[k] = scope[k]
+                child = new MarkerChildModel(childScope, model, keys, @map, @DEFAULTS,
                     @doClick, @gMarkerManager, doDrawSelf = false) #this is managed so child is not drawing itself
                 @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
                 child
