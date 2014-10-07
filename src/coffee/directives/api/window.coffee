@@ -10,43 +10,46 @@ angular.module("google-maps.directives.api".ns())
       @childWindows = []
 
     link: (scope, element, attrs, ctrls) =>
+
+      #keep out of promise.then to keep scopes unique , not sure why yet
       mapScope = ctrls[0].getScope()
+      markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1] else undefined
+      markerScope = markerCtrl?.getScope()
+      #end of keep out of promise
+
       mapScope.deferred.promise.then (mapCtrl) =>
         isIconVisibleOnClick = true
         if angular.isDefined attrs.isiconvisibleonclick
           isIconVisibleOnClick = scope.isIconVisibleOnClick
-        markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1] else undefined
         if not markerCtrl
           @init scope, element, isIconVisibleOnClick, mapCtrl
           return
-        markerScope = markerCtrl.getScope()
-        markerScope.deferred.promise.then =>
-          @init scope, element, isIconVisibleOnClick, mapCtrl, markerScope
+        markerScope.deferred.promise.then  (gMarker) =>
+          @init scope, element, isIconVisibleOnClick, mapCtrl, markerScope, gMarker
 
-    init: (scope, element, isIconVisibleOnClick, mapCtrl, markerScope) =>
+    init: (scope, element, isIconVisibleOnClick, mapCtrl, markerScope, gMarker) ->
       defaults = if scope.options? then scope.options else {}
       hasScopeCoords = scope? and @validateCoords(scope.coords)
       if markerScope?
-        gMarker = markerScope.gMarker
         markerScope.$watch 'coords', (newValue, oldValue) =>
-          if markerScope.gMarker? and !window.markerCtrl
-            window.markerCtrl = gMarker
-            window.handleClick true
-          return window.hideWindow() unless @validateCoords(newValue)
+          if gMarker? and !childWindow.markerCtrl
+            childWindow.markerCtrl = gMarker
+            childWindow.handleClick true
+          return childWindow.hideWindow() unless @validateCoords(newValue)
           if !angular.equals(newValue, oldValue)
-            window.getLatestPosition @getCoords newValue
+            childWindow.getLatestPosition @getCoords newValue
         ,true
 
 
       opts = if hasScopeCoords then @createWindowOptions(gMarker, scope, element.html(), defaults) else defaults
       if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
-        window = new WindowChildModel {}, scope, opts, isIconVisibleOnClick, mapCtrl, gMarker, element
-        @childWindows.push window
+        childWindow = new WindowChildModel {}, scope, opts, isIconVisibleOnClick, mapCtrl, gMarker, element
+        @childWindows.push childWindow
 
         scope.$on "$destroy", =>
-          @childWindows = _.withoutObjects @childWindows,[window], (child1,child2) ->
+          @childWindows = _.withoutObjects @childWindows,[childWindow], (child1,child2) ->
             child1.scope.$id == child2.scope.$id
-      
+
       if scope.control?
         scope.control.getGWindows = =>
           @childWindows.map (child)=>
@@ -60,5 +63,5 @@ angular.module("google-maps.directives.api".ns())
           @childWindows.map (child) =>
             child.hideWindow()
 
-      @onChildCreation window if @onChildCreation? and window?
+      @onChildCreation childWindow if @onChildCreation? and childWindow?
 ]

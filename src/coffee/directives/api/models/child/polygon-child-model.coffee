@@ -65,9 +65,9 @@ angular.module("google-maps.directives.api".ns())
           @extendMapBounds @map, pathPoints  if scope.fit
 
         # Remove polygon on scope $destroy
-        scope.$on "$destroy", ->
+        scope.$on "$destroy", =>
           polygon.setMap null
-          removeEvents @listeners
+          @removeEvents @listeners
           if arraySyncer
             arraySyncer()
             arraySyncer = null

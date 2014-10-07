@@ -12,7 +12,6 @@ angular.module("google-maps.directives.api.models.parent".ns())
         DEFAULTS: {}
         constructor: (@scope, @element, @attrs, @map) ->
             super(@scope)
-            self = @
             @$log = Logger
             # Validate required properties
             throw new String("Unable to construct IMarkerParentModel due to invalid scope") unless @validateScope scope
@@ -43,7 +42,6 @@ angular.module("google-maps.directives.api.models.parent".ns())
             , true
 
         onWatch: (propNameToWatch, scope, newValue, oldValue) =>
-            throw new String("OnWatch Not Implemented!!")
 
         onDestroy: (scope) =>
             throw new String("OnDestroy Not Implemented!!")

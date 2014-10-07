@@ -7,6 +7,12 @@ angular.module("google-maps.directives.api.utils".ns())
         $log.info(msg)
       else
         console.info(msg)
+  log: (msg) ->
+    if(@doLog)
+      if $log?
+        $log.log(msg)
+      else
+        console.log(msg)
   error: (msg) ->
     if(@doLog)
       if $log?

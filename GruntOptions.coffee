@@ -76,6 +76,7 @@ module.exports = (grunt) ->
           "tmp/spec/js/directives/api/apis.spec.js": "spec/coffee/directives/api/*.spec.coffee"
           "tmp/spec/js/directives/api/models/child/children.spec.js": "spec/coffee/directives/api/models/child/*.spec.coffee"
           "tmp/spec/js/directives/api/models/parent/parents.spec.js": "spec/coffee/directives/api/models/parent/*.spec.coffee"
+          "tmp/spec/js/directives/api/options/options.spec.js": "spec/coffee/directives/api/options/**/*.spec.coffee"
           "tmp/spec/js/directives/api/utils/utils.spec.js": "spec/coffee/directives/api/utils/*.spec.coffee"
 
     concat:

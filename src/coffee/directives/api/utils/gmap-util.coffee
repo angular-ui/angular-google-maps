@@ -62,21 +62,6 @@ angular.module("google-maps.directives.api.utils".ns())
     if xPos? && yPos?
       new google.maps.Point(xPos, yPos)
 
-  createMarkerOptions: (coords, icon, defaults, map = undefined) ->
-    defaults = {} unless defaults?
-
-    opts = angular.extend {}, defaults,
-      position: if defaults.position? then defaults.position else getCoords(coords),
-      visible: if defaults.visible? then defaults.visible else validateCoords(coords)
-
-    # Only set icon if there's one to set
-    if defaults.icon? or icon?
-      opts = angular.extend opts,
-        icon: if defaults.icon? then defaults.icon else icon
-
-    opts.map = map if map?
-    opts
-
   createWindowOptions: (gMarker, scope, content, defaults) ->
     if content? and defaults? and $compile?
       options = angular.extend {}, defaults,

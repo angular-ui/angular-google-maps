@@ -33,7 +33,7 @@ describe "MarkerChildModel".ns(), ->
         scope.coords = @coordsKey
         scope.options = @optionsKey
         mgr = new MarkerManager(document.gMap, undefined, undefined)
-        @subject = new MarkerChildModel(@model, scope, document.gMap, defaults = {},
+        @subject = new MarkerChildModel(scope, @model, scope, document.gMap, defaults = {},
           doClick = (()->), mgr)
     ]
 

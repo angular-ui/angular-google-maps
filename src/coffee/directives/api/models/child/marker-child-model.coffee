@@ -1,9 +1,13 @@
 angular.module("google-maps.directives.api.models.child".ns())
-.factory "MarkerChildModel".ns(), [ "ModelKey".ns(), "GmapUtil".ns(), "Logger".ns(), "$injector", "EventsHelper".ns(),
-  (ModelKey, GmapUtil, $log, $injector, EventsHelper) ->
+.factory "MarkerChildModel".ns(), [ "ModelKey".ns(), "GmapUtil".ns(),
+"Logger".ns(), "EventsHelper".ns(),
+"MarkerOptions".ns(),
+  (ModelKey, GmapUtil, $log, EventsHelper, MarkerOptions) ->
+      keys = ['coords','icon','options','fit']
       class MarkerChildModel extends ModelKey
         @include GmapUtil
         @include EventsHelper
+        @include MarkerOptions
 
         destroy = (child) ->
           if child?.gMarker?
@@ -13,25 +17,32 @@ angular.module("google-maps.directives.api.models.child".ns())
               child?.gMarkerManager.remove child?.gMarker, true
               delete child.gMarker
 
-        constructor: (@model, @parentScope, @gMap, @defaults, @doClick, @gMarkerManager, @idKey = "id", @doDrawSelf = true)->
+        constructor: (scope, @model, @keys, @gMap, @defaults,
+          @doClick, @gMarkerManager, @doDrawSelf = true, @trackModel=true)->
+          _.each @keys, (v,k) =>
+            @[k + 'Key'] = if _.isFunction @keys[k] then @keys[k]() else @keys[k]
+          @idKey= @idKeyKey or "id"
           @id = @model[@idKey] if @model[@idKey]?
-          @iconKey = @parentScope.icon
-          @coordsKey = @parentScope.coords
-          @clickKey = @parentScope.click()
-          @optionsKey = @parentScope.options
+
           @needRedraw = false
+          @deferred = Promise.defer()
 
-          super(@parentScope.$new(false))
+          super(scope)
 
-          @scope.model = @model
           @setMyScope(@model, undefined, true)
           @createMarker(@model)
 
-          @scope.$watch 'model', (newValue, oldValue) =>
-            if (newValue != oldValue)
-              @setMyScope newValue, oldValue
-              @needRedraw = true
-          , true
+          if @trackModel
+            @scope.model = @model
+            @scope.$watch 'model', (newValue, oldValue) =>
+              if (newValue != oldValue)
+                @setMyScope newValue, oldValue
+                @needRedraw = true
+            , true
+          else
+            _.each @keys, (v,k) =>
+              @scope.$watch k, =>
+                @setMyScope @scope
 
           #hiding destroy functionality as it should only be called via scope.$destroy()
           @scope.$on "$destroy", =>
@@ -45,18 +56,15 @@ angular.module("google-maps.directives.api.models.child".ns())
         setMyScope: (model, oldModel = undefined, isInit = false) =>
           @maybeSetScopeValue('icon', model, oldModel, @iconKey, @evalModelHandle, isInit, @setIcon)
           @maybeSetScopeValue('coords', model, oldModel, @coordsKey, @evalModelHandle, isInit, @setCoords)
-          if _.isFunction(@clickKey) and $injector
+          if _.isFunction(@clickKey)
             @scope.click = () =>
-              $injector.invoke(@clickKey, undefined, {"$markerModel": model})
+              @clickKey(@gMarker, "click",@model,undefined)
           else
             @maybeSetScopeValue('click', model, oldModel, @clickKey, @evalModelHandle, isInit)
             @createMarker(model, oldModel, isInit)
 
         createMarker: (model, oldModel = undefined, isInit = false)=>
           @maybeSetScopeValue 'options', model, oldModel, @optionsKey, @evalModelHandle, isInit, @setOptions
-          if @parentScope.options and !@scope.options
-            $log.error('Options not found on model!')
-
 
         maybeSetScopeValue: (scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter = undefined) =>
           if oldModel == undefined
@@ -78,7 +86,7 @@ angular.module("google-maps.directives.api.models.child".ns())
             return
           if scope.coords?
             if !@validateCoords(@scope.coords)
-              $log.error "MarkerChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
+              $log.debug "MarkerChild does not have coords yet. They may be defined later."
               return
             @gMarker.setPosition @getCoords(scope.coords)
             @gMarker.setVisible @validateCoords(scope.coords)
@@ -105,18 +113,27 @@ angular.module("google-maps.directives.api.models.child".ns())
             delete @gMarker
           unless scope.coords ? scope.icon? scope.options?
             return
-          @opts = @createMarkerOptions(scope.coords, scope.icon, scope.options)
+          @opts = @createOptions(scope.coords, scope.icon, scope.options)
 
           delete @gMarker
-          if scope.isLabel
+          if @isLabel @opts
             @gMarker = new MarkerWithLabel @setLabelOptions @opts
           else
             @gMarker = new google.maps.Marker(@opts)
 
+          if @gMarker
+            @deferred.resolve @gMarker
+          else
+            @deferred.reject "gMarker is null"
+
+          if @model["fitKey"]
+            @gMarkerManager.fit()
+
+
           #hook external event handlers for events
           @removeEvents @externalListeners if @externalListeners
           @removeEvents @internalListeners if @internalListeners
-          @externalListeners = @setEvents @gMarker, @parentScope, @model, ['dragend']
+          @externalListeners = @setEvents @gMarker, @scope, @model, ['dragend']
           #must pass fake $apply see events-helper
           @internalListeners = @setEvents @gMarker, {events:@internalEvents(), $apply:() ->}, @model
 
@@ -131,12 +148,12 @@ angular.module("google-maps.directives.api.models.child".ns())
           dragend: (marker,eventName,model,mousearg) =>
             newCoords = @setCoordsFromEvent @modelOrKey(@scope.model,@coordsKey), @gMarker.getPosition()
             @scope.model = @setVal(model,@coordsKey,newCoords)
-            #since we ignored dragend for parent scope above, if parentScope.events has it then we should fire it
-            @parentScope.events.dragend(marker,eventName,@scope.model,mousearg) if @parentScope.events?.dragend?
+            #since we ignored dragend for scope above, if @scope.events has it then we should fire it
+            @scope.events.dragend(marker,eventName,@scope.model,mousearg) if @scope.events?.dragend?
             @scope.$apply()
-          click: =>
+          click: (marker,eventName,model,mousearg) =>
             if @doClick and @scope.click?
-              @scope.$apply(@scope.click())
+              @scope.$apply @scope.click(marker,eventName,@model,mousearg)
 
       MarkerChildModel
   ]
