@@ -16,15 +16,8 @@ angular.module("google-maps.directives.api".ns())
         IMarker.mapPromise(scope, ctrl).then (map) =>
           @gMarkerManager = new MarkerManager map unless @gMarkerManager
 
-
-          keys =
-            icon: "icon"
-            coords: "coords"
-            click: ->
-              "click"
-            options: "options"
-            idKey: "idKey"
-            fit: "fit"
+          keys = _.keys(IMarker.keys)
+          keys = _.object(keys,keys)
 
           @promise = new MarkerChildModel(
             scope, scope, keys, map, {}, doClick = true, @gMarkerManager, doDrawSelf = false,

@@ -5461,16 +5461,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (!_this.gMarkerManager) {
                 _this.gMarkerManager = new MarkerManager(map);
               }
-              keys = {
-                icon: "icon",
-                coords: "coords",
-                click: function() {
-                  return "click";
-                },
-                options: "options",
-                idKey: "idKey",
-                fit: "fit"
-              };
+              keys = _.keys(IMarker.keys);
+              keys = _.object(keys, keys);
               _this.promise = new MarkerChildModel(scope, scope, keys, map, {}, doClick = true, _this.gMarkerManager, doDrawSelf = false, trackModel = false).deferred.promise.then(function(gMarker) {
                 return scope.deferred.resolve(gMarker);
               });
