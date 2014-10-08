@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT-e 2014-10-06
+/*! angular-google-maps 2.0.0-SNAPSHOT-e 2014-10-08
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3151,6 +3151,48 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 
+(function() {
+  angular.module("google-maps.directives.api.models.parent".ns()).factory("DrawingManagerParentModel".ns(), [
+    'Logger'.ns(), '$timeout', function($log, $timeout) {
+      var DrawingManagerParentModel;
+      return DrawingManagerParentModel = (function() {
+        function DrawingManagerParentModel(scope, element, attrs, map) {
+          var drawingManager;
+          this.scope = scope;
+          this.attrs = attrs;
+          this.map = map;
+          drawingManager = new google.maps.drawing.DrawingManager(this.scope.options);
+          drawingManager.setMap(this.map);
+          if (this.scope.control != null) {
+            this.scope.control.getDrawingManager = (function(_this) {
+              return function() {
+                return drawingManager;
+              };
+            })(this);
+          }
+          if (!this.scope["static"] && this.scope.options) {
+            this.scope.$watch("options", (function(_this) {
+              return function(newValue) {
+                return drawingManager != null ? drawingManager.setOptions(newValue) : void 0;
+              };
+            })(this), true);
+          }
+          scope.$on("$destroy", (function(_this) {
+            return function() {
+              drawingManager.setMap(null);
+              return drawingManager = null;
+            };
+          })(this));
+        }
+
+        return DrawingManagerParentModel;
+
+      })();
+    }
+  ]);
+
+}).call(this);
+
 
 /*
 	- interface for all markers to derrive from
@@ -4705,6 +4747,23 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 
+(function() {
+  angular.module("google-maps.directives.api".ns()).factory("DrawingManager".ns(), [
+    "IDrawingManager".ns(), "DrawingManagerParentModel".ns(), function(IDrawingManager, DrawingManagerParentModel) {
+      return _.extend(IDrawingManager, {
+        link: function(scope, element, attrs, mapCtrl) {
+          return mapCtrl.getScope().deferred.promise.then((function(_this) {
+            return function(map) {
+              return new DrawingManagerParentModel(scope, element, attrs, map);
+            };
+          })(this));
+        }
+      });
+    }
+  ]);
+
+}).call(this);
+
 
 /*
   - Link up Polygons to be sent back to a controller
@@ -4858,6 +4917,24 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         return IControl;
 
       })(BaseObject);
+    }
+  ]);
+
+}).call(this);
+
+(function() {
+  angular.module("google-maps.directives.api".ns()).service("IDrawingManager".ns(), [
+    function() {
+      return {
+        restrict: "EA",
+        replace: true,
+        require: '^' + 'GoogleMap'.ns(),
+        scope: {
+          "static": "@",
+          control: "=",
+          options: "="
+        }
+      };
     }
   ]);
 
@@ -6441,6 +6518,15 @@ This directive creates a new scope.
 
 }).call(this);
 
+(function() {
+  angular.module("google-maps".ns()).directive("DrawingManager".ns(), [
+    "DrawingManager".ns(), function(DrawingManager) {
+      return DrawingManager;
+    }
+  ]);
+
+}).call(this);
+
 
 /*
 angular-google-maps
@@ -6659,7 +6745,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT-e 2014-10-06
+      /*! angular-google-maps 2.0.0-SNAPSHOT-e 2014-10-08
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */

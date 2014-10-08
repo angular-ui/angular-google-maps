@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org/">
+
+<head>
+    <script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization,drawing&sensor=false&language=en&v=3.17"></script>
+    <script require="angular.js@1.2.x" src="https://code.angularjs.org/1.2.21/angular.js" semver="1.2.21"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+    <script src="assets/scripts/controllers/issue-624-drawing-manager.js"></script>
+
+    <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
+    <title>Map</title>
+</head>
+
+<body>
+<div ng-app="appMaps">
+    <h4>3 different usage examples are included in this file; see source of this html file to uncomment/try the other 2</h4>
+    <div id="map_canvas" ng-controller="mainCtrl">
+        <!-- Example 1: dynamic (watched) options and control -->
+            <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+                <ui-gmap-drawing-manager options="drawingManagerOptions" control="drawingManagerControl"></ui-gmap-drawing-manager>
+            </ui-gmap-google-map>
+            <h3>Example 1: dynamic (watched) options and control</h3>
+        <!-- end example 1 -->
+        
+        <!-- Example 2: dynamic (watched) options without control ->
+            <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+                <ui-gmap-drawing-manager options="drawingManagerOptions"></ui-gmap-drawing-manager>
+            </ui-gmap-google-map>
+            <h3>Example 2: dynamic (watched) options without control</h3>
+        <!-- end example 2 -->
+        
+        <!-- Example 3: static (non-watched) options and control ->
+            <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+                <ui-gmap-drawing-manager options="drawingManagerOptions" static="true" control="drawingManagerControl"></ui-gmap-drawing-manager>
+            </ui-gmap-google-map>
+            <h3>Example 3: static (non-watched) options with control</h3>
+        <!-- end example 3 -->
+        <label>Show drawing manager (via options)? <input type="checkbox" ng-model="drawingManagerOptions.drawingControl"/></label><br/>
+        <label>Allow polygon drawing mode (via control)? <input type="checkbox" ng-model="markersAndCircleFlag"/></label>
+    </div>
+</div>
+</div>
+</body>
+
+</html>
