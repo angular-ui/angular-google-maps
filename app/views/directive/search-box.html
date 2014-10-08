@@ -32,11 +32,7 @@
       <td><span class="label label-info">expression</span></td>
       <td>The id of another div on the page to which the the Search Box field should be appended. If this property is set the Search Box will not be added as a control on the map and the position parameter is not required.</td>
     </tr>
-    <tr>
-      <td>options</td>
-      <td><span class="label label-info">expression</span>
-      <td><p>An object specifying the bounds of the search. See <a href="https://developers.google.com/maps/documentation/javascript/reference#SearchBoxOptions" rel="external">SearchBoxOptions</a></p></td>
-    </tr>
+    <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='SearchBox';directive='search-box'">
     <tr>
       <td>events</td>
       <td><span class="label label-info">expression</span>
