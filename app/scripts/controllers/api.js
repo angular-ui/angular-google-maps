@@ -3,6 +3,7 @@
 angular.module('angularGoogleMapsApp')
     .constant("directiveList", [
             'google-map',
+            'drawing-manager',
             'free-draw-polygons',
             'circle',
             'layer',
