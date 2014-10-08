@@ -1,0 +1,4 @@
+{
+    "name": "drawing-manager",
+    "files": ["index.html", "script.js", "../base/plnkr.html"]
+}
