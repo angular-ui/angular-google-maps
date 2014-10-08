@@ -58,11 +58,7 @@
         <td><span class="label label-info">expression</span></td>
         <td>expression to evaluate when closing the window via a click event</td>
     </tr>
-    <tr>
-        <td>options</td>
-        <td><span class="label label-info">expression</span></td>
-        <td>object containing <a google-api="InfoWindowOptions">InfoWindowOptions</a> to apply to the window</td>
-    </tr>
+    <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='InfoWindow',directive='Window'">
     <tr>
         <td>control</td>
         <td><span class="label label-default">Object</span></td>
@@ -95,7 +91,7 @@
 <runnable-example example="'window'"></runnable-example>
 
 <script type="text/ng-template" id="windowTemplate">
-<window
+<ui-gmap-window
         coords='{expression}'
         show='{expression}'
         templateUrl='{expression}'
@@ -105,5 +101,5 @@
         options='{expression}'
         control='{expression}'
         >
-</window>
+</ui-gmap-window>
 </script>

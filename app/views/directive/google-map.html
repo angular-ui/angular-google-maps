@@ -109,7 +109,7 @@
 <runnable-example example="'google-map'"></runnable-example>
 
 <script type="text/ng-template" id="googleMapTemplate">
-<google-map center='{expression}' 
+<ui-gmap-google-map center='{expression}'
 	zoom='{expression}'
 	draggable='{string}'
 	dragging='{expression}'
@@ -118,9 +118,8 @@
 	events='{expression}'
 	bounds='{expression}'
     pan='{string or boolean}'>
-	
-	<!-- other directives here -->
-	
-</google-map>	
-</script>
 
+	<!-- other directives here -->
+
+</ui-gmap-google-map>
+</script>
