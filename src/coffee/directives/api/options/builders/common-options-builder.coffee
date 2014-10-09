@@ -16,11 +16,14 @@ angular.module("google-maps.directives.api.options.builders".ns())
       unless @map
         $log.error "this.map not defined in CommonOptionsBuilder can not buildOpts"
         return
+      hasModel = _(@scope).chain().keys().contains('model').value()
+      model = if hasModel then @scope.model else @scope #handle plurals
+
       opts = angular.extend customOpts, @DEFAULTS,
         map: @map
-        strokeColor: @scope.stroke?.color
-        strokeOpacity: @scope.stroke?.opacity
-        strokeWeight: @scope.stroke?.weight
+        strokeColor: model.stroke?.color
+        strokeOpacity: model.stroke?.opacity
+        strokeWeight: model.stroke?.weight
 
       angular.forEach angular.extend(forEachOpts,
           clickable: true
@@ -31,10 +34,10 @@ angular.module("google-maps.directives.api.options.builders".ns())
           visible: true
           zIndex: 0
       ), (defaultValue, key) =>
-        if angular.isUndefined(@scope[key]) or @scope[key] is null
+        if angular.isUndefined model[key] or model[key] is null
           opts[key] = defaultValue
         else
-          opts[key] = @scope[key]
+          opts[key] = model[key]
 
       opts.editable = false if opts.static
       opts

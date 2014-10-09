@@ -155,7 +155,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()]).value("rndAd
                 color: '#6060FB',
                 weight: 3
               },
-              editable: true,
+              editable: false,
               draggable: true,
               geodesic: true,
               visible: true

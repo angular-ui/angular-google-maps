@@ -1900,7 +1900,7 @@ Nicholas McCready - https://twitter.com/nmccready
         ];
 
         CommonOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
-          var opts, _ref, _ref1, _ref2;
+          var hasModel, model, opts, _ref, _ref1, _ref2;
           if (customOpts == null) {
             customOpts = {};
           }
@@ -1915,11 +1915,13 @@ Nicholas McCready - https://twitter.com/nmccready
             $log.error("this.map not defined in CommonOptionsBuilder can not buildOpts");
             return;
           }
+          hasModel = _(this.scope).chain().keys().contains('model').value();
+          model = hasModel ? this.scope.model : this.scope;
           opts = angular.extend(customOpts, this.DEFAULTS, {
             map: this.map,
-            strokeColor: (_ref = this.scope.stroke) != null ? _ref.color : void 0,
-            strokeOpacity: (_ref1 = this.scope.stroke) != null ? _ref1.opacity : void 0,
-            strokeWeight: (_ref2 = this.scope.stroke) != null ? _ref2.weight : void 0
+            strokeColor: (_ref = model.stroke) != null ? _ref.color : void 0,
+            strokeOpacity: (_ref1 = model.stroke) != null ? _ref1.opacity : void 0,
+            strokeWeight: (_ref2 = model.stroke) != null ? _ref2.weight : void 0
           });
           angular.forEach(angular.extend(forEachOpts, {
             clickable: true,
@@ -1931,10 +1933,10 @@ Nicholas McCready - https://twitter.com/nmccready
             zIndex: 0
           }), (function(_this) {
             return function(defaultValue, key) {
-              if (angular.isUndefined(_this.scope[key]) || _this.scope[key] === null) {
+              if (angular.isUndefined(model[key] || model[key] === null)) {
                 return opts[key] = defaultValue;
               } else {
-                return opts[key] = _this.scope[key];
+                return opts[key] = model[key];
               }
             };
           })(this));
@@ -2632,34 +2634,41 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         PolylineChildModel.include(EventsHelper);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
+          var createPolyline;
           this.scope = scope;
           this.attrs = attrs;
           this.map = map;
           this.defaults = defaults;
           this.model = model;
           this.clean = __bind(this.clean, this);
+          createPolyline = (function(_this) {
+            return function() {
+              var pathPoints;
+              pathPoints = _this.convertPathPoints(_this.scope.path);
+              if (_this.polyline != null) {
+                _this.clean();
+              }
+              if (pathPoints.length > 0) {
+                _this.polyline = new google.maps.Polyline(_this.buildOpts(pathPoints));
+              }
+              if (_this.polyline) {
+                if (_this.scope.fit) {
+                  _this.extendMapBounds(map, pathPoints);
+                }
+                arraySync(_this.polyline.getPath(), _this.scope, "path", function(pathPoints) {
+                  if (_this.scope.fit) {
+                    return _this.extendMapBounds(map, pathPoints);
+                  }
+                });
+                return _this.listeners = _this.model ? _this.setEvents(_this.polyline, _this.scope, _this.model) : _this.setEvents(_this.polyline, _this.scope, _this.scope);
+              }
+            };
+          })(this);
+          createPolyline();
           scope.$watch('path', (function(_this) {
             return function(newValue, oldValue) {
-              var pathPoints;
               if (!_.isEqual(newValue, oldValue) || !_this.polyline) {
-                pathPoints = _this.convertPathPoints(scope.path);
-                if (_this.polyline != null) {
-                  _this.clean();
-                }
-                if (pathPoints.length > 0) {
-                  _this.polyline = new google.maps.Polyline(_this.buildOpts(pathPoints));
-                }
-                if (_this.polyline) {
-                  if (scope.fit) {
-                    _this.extendMapBounds(map, pathPoints);
-                  }
-                  arraySync(_this.polyline.getPath(), scope, "path", function(pathPoints) {
-                    if (scope.fit) {
-                      return _this.extendMapBounds(map, pathPoints);
-                    }
-                  });
-                  return _this.listeners = _this.model ? _this.setEvents(_this.polyline, scope, _this.model) : _this.setEvents(_this.polyline, scope, scope);
-                }
+                return createPolyline();
               }
             };
           })(this));

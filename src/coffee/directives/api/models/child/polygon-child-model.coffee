@@ -18,6 +18,7 @@ angular.module("google-maps.directives.api".ns())
         polygon = new google.maps.Polygon(@buildOpts(pathPoints))
         @extendMapBounds @map, pathPoints  if scope.fit
 
+        #TODO refactor all these sets and watches to be handled functionally as an array
         if !scope.static and angular.isDefined(scope.editable)
           scope.$watch "editable", (newValue, oldValue) ->
             polygon.setEditable newValue if newValue != oldValue
