@@ -1,8 +1,8 @@
  <span class="badge badge-info">New in v2.0.0</span>
- <span class="badge badge-warn bs-callout-warning">OBSOLETE / REMOVED</span>
+ <span class="label label-danger" >OBSOLETE / REMOVED</span>
  <p>
-  The <code>marker-label</code> directive <strong>was</strong> used to create a marker labels on an existing map. As a child of the marker element.
-  This directive has been removed and your should now use <a href="#marker"/> or <a href="#markers"/> options. Where the label options are now defined in options.
+  The <code>marker-label</code> directive <strong>was</strong> used to create a marker with a label on an existing map as a child of the marker element / directive.
+  This directive has been removed and your should now use <a href="#marker"/> or <a href="#markers"/> options attribute. The label options are now combined all into one options object to handle all marker customizations.
 
-  It was removed as the code is more maintainable where MarkerLabel is now decided in the underlying MarkerChild which both Marker and Markers directives ultimatley create.
+  It was removed as the code is more maintainable where a MarkerLabel is now decided in the underlying MarkerChild which both Marker and Markers directives ultimately create.
 </p>

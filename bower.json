@@ -11,11 +11,12 @@
     "angular-cookies": "~1.2.21",
     "angular-sanitize": "~1.2.21",
     "angular-google-maps": "2.0.0-SNAPSHOT-e",
-    "underscore": "~1.5.2",
     "angular-highlightjs": "~0.2.5",
     "share-button": "~0.0.3",
     "angular-semver-sort": "~0.2.0",
-    "angular-ui-router": "~0.2.10"
+    "angular-ui-router": "~0.2.10",
+    "bootstrap": "~3.2.0",
+    "lodash": "~2.4.1"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.21",
