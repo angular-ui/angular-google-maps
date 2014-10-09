@@ -1,7 +1,7 @@
 angular-google-maps
 ===================
 
-[![Build Status](https://travis-ci.org/nlaplante/angular-google-maps.png?branch=website)](https://travis-ci.org/nlaplante/angular-google-maps)
+[![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.png?branch=website)](https://travis-ci.org/angular-ui/angular-google-maps)
 
 This is the angular google maps website branch. This is where you'll find sources for the official 
 website including the API documentation and the live example.
@@ -18,3 +18,19 @@ $ npm install
 $ bower install
 $ grunt server
 ```
+
+Deployment
+===
+`grunt gh-pages`
+
+Basic Build
+===
+`grunt build`
+
+Prod Build (minifies and all that jaz)
+===
+`grunt prod_build`
+
+Serve the Files
+===
+`grunt s` or `grunt server`

@@ -142,14 +142,7 @@ $scope.clickEventsObject =
         <td><span class="label label-info">string or expression</span></td>
         <td>PerModel / or expression binding : event handler executed when clicking a marker</td>
     </tr>
-    <tr>
-        <td>options</td>
-        <td><span class="label label-info">expression</span></td>
-        <td>additional options to pass to the marker. See <a
-                href="https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions"
-                rel="external">MarkerOptions</a>.
-        </td>
-    </tr>
+    <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='Marker';directive='Markers';hasLabelOptions=true">
     <tr>
         <td>control</td>
         <td><span class="label label-default">Object</span></td>
@@ -203,7 +196,7 @@ $scope.clickEventsObject =
 
             click: //used as "'someProp'" or '"someProp"' , notice the quotes!! otherwise a normal expression (non special quotes)
     -->
-    <markers
+    <ui-gmap-markers
              models='{expression}'
              idKey='{expression}'
              doRebuildAll="{string or object}"
@@ -225,6 +218,6 @@ $scope.clickEventsObject =
              events="{expression}"
              control='{expression}'
             >
-    </markers>
+    </ui-gmap-markers>
 </script>
 </new-scope>

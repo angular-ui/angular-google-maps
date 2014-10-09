@@ -2,88 +2,88 @@
     font-family: 'chunkfiveroman';
     src: url('fonts/chunkfive-webfont.eot');
     src: url('fonts/chunkfive-webfont.eot?#iefix') format('embedded-opentype'),
-         url('fonts/chunkfive-webfont.woff') format('woff'),
-         url('fonts/chunkfive-webfont.ttf') format('truetype'),
-         url('fonts/chunkfive-webfont.svg#chunkfiveroman') format('svg');
+    url('fonts/chunkfive-webfont.woff') format('woff'),
+    url('fonts/chunkfive-webfont.ttf') format('truetype'),
+    url('fonts/chunkfive-webfont.svg#chunkfiveroman') format('svg');
     font-weight: normal;
     font-style: normal;
 
 }
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-  display: none !important;
+    display: none !important;
 }
 
 body {
-	background: #fff url(../images/light_mosaic.png) repeat 0 0;
+    background: #fff url(../images/light_mosaic.png) repeat 0 0;
 }
 
 body, h1, h2, h3, h4, h5, h6 {
-	font-family: 'Noto Sans', 'PT Sans', 'Open Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-family: 'Noto Sans', 'PT Sans', 'Open Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
 
 h1 small,
 h2 small,
 h3 small {
-	letter-spacing: -1px;
+    letter-spacing: -1px;
 }
 
 h1.page-header {
-	font-size: 80px;
-	text-align: center;
-	font-weight: 600;
-	padding-bottom: 60px !important;
-	padding-top: 40px;
-	letter-spacing: -6px;
+    font-size: 80px;
+    text-align: center;
+    font-weight: 600;
+    padding-bottom: 60px !important;
+    padding-top: 40px;
+    letter-spacing: -6px;
 }
 
 table {
-	font-size: 15px;
+    font-size: 15px;
 }
 
 .navbar-default .navbar-nav > li > a {
-	font-size: 15px;
+    font-size: 15px;
 }
 
 .btn {
-	font-weight: bold !important;
+    font-weight: bold !important;
 }
 
 footer h3 {
-	border-bottom: 1px #eee solid;
-	padding-bottom: 10px;
-	letter-spacing: -1px;
+    border-bottom: 1px #eee solid;
+    padding-bottom: 10px;
+    letter-spacing: -1px;
 }
 
 footer h3 small.pull-right {
-	line-height: 36px;
-	letter-spacing: 0px;
-	font-size: 14px;
-	font-weight: normal;
+    line-height: 36px;
+    letter-spacing: 0px;
+    font-size: 14px;
+    font-weight: normal;
 }
 
 a.brand, h2, h3 {
-	font-weight: normal;
+    font-weight: normal;
 }
 
 .well a {
-	font-weight: 400;
+    font-weight: 400;
 }
 
 /** style for the map on the main page */
 .main .angular-google-map-container {
-	height: 265px;
-	margin-bottom: 30px;
-	border: 10px #fff solid;
-	box-shadow: 0 0 5px #ccc;
+    height: 265px;
+    margin-bottom: 30px;
+    border: 10px #fff solid;
+    box-shadow: 0 0 5px #ccc;
 }
 
 /** style for the map on the demo page */
 .demo .angular-google-map-container {
-	height: 500px;
-	margin-bottom: 30px;
-	border: 10px #fff solid;
-	box-shadow: 0 0 5px #ccc;
+    height: 500px;
+    margin-bottom: 30px;
+    border: 10px #fff solid;
+    box-shadow: 0 0 5px #ccc;
 }
 
 /* fix for Twitter Bootstrap handling of responsive images */
@@ -92,123 +92,122 @@ a.brand, h2, h3 {
 }
 
 footer {
-	background: #282828 url(../images/dark_mosaic.png) repeat 0 0;
-	color: #ddd;
-	border-top: 2px #f70 solid;
-	font-size: 85%;
-	padding-top: 20px;
-	padding-bottom: 40px;
-	margin-top: 60px;
+    background: #282828 url(../images/dark_mosaic.png) repeat 0 0;
+    color: #ddd;
+    border-top: 2px #f70 solid;
+    font-size: 85%;
+    padding-top: 20px;
+    padding-bottom: 40px;
+    margin-top: 60px;
 }
 
 footer li.thumbnail img {
-	max-height: 48px;
+    max-height: 48px;
 
 }
 
 footer li.thumbnail {
-	margin-right: 5px;
-	margin-bottom: 0;
+    margin-right: 5px;
+    margin-bottom: 0;
 }
 
-.list-inline>li:first-child {
-	padding-left: 5px;
+.list-inline > li:first-child {
+    padding-left: 5px;
 }
 
 footer > .container {
-	margin-top: 20px;
+    margin-top: 20px;
 }
 
 footer .copyright {
-	margin-top: 60px;
+    margin-top: 60px;
 }
 
 .text-tiny {
-	font-size: 80%;
+    font-size: 80%;
 }
 
 ol.steps {
-	margin-top: 40px;
+    margin-top: 40px;
 }
 
 ol.steps li {
-	margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
 ol.steps li pre {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
 .btn.btn-large [class^="icon-"], .btn.btn-large [class*=" icon-"] {
-	display: inline-block;
-	width: 30px;
-	margin-top: 5px;
+    display: inline-block;
+    width: 30px;
+    margin-top: 5px;
 }
 
 article {
-	margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 #docs-api-menu {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
 .headline {
-	padding-bottom: 20px;
-	margin-bottom: 30px;
-	border-bottom: 1px #eee solid;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    border-bottom: 1px #eee solid;
 }
 
 .headline:last-child {
-	border-bottom: none;
+    border-bottom: none;
 }
 
 h2 {
-	border-bottom: 1px solid #ecf0f1;
-	padding-bottom: 4px;
-/*	font-weight: 900;*/
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 4px;
+    /*	font-weight: 900;*/
 }
 
 h2:not(:first-child) {
-	margin-top: 40px;
+    margin-top: 40px;
 }
 
-.dropdown-menu>li>a  {
-	font-weight: 300;
+.dropdown-menu > li > a {
+    font-weight: 300;
 }
 
 .issue-label a {
-	color: inherit !important;
+    color: inherit !important;
 }
 
 ul.separated li:not(:first-child) {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 
 .icons-ul.icons-2x li {
-	line-height: 2.3em;
+    line-height: 2.3em;
 }
 
 /* fix addthis bubble */
 .addthis_32x32_style .addthis_counter.addthis_bubble_style {
-	width: 80px !important;
+    width: 80px !important;
 }
 
 .share-button {
-	margin: auto;
-	margin-bottom: 15px;
-	display: none;
+    margin: auto;
+    margin-bottom: 15px;
+    display: none;
 }
 
 .affix {
-	top: 20px;
-	width: 262px;
+    top: 20px;
+    width: 262px;
 }
 
 .faq-entry-title {
-	margin-top: 80px;
+    margin-top: 80px;
 }
-
 
 /* Side notes for calling out things
 -------------------------------------------------- */
@@ -219,12 +218,15 @@ ul.separated li:not(:first-child) {
     padding: 15px 30px 15px 15px;
     border-left: 5px solid #eee;
 }
+
 .bs-callout h4 {
     margin-top: 0;
 }
+
 .bs-callout p:last-child {
     margin-bottom: 0;
 }
+
 .bs-callout code,
 .bs-callout .highlight {
     background-color: #fff;
@@ -235,10 +237,12 @@ ul.separated li:not(:first-child) {
     background-color: #fcf2f2;
     border-color: #dFb5b4;
 }
+
 .bs-callout-warning {
     background-color: #fefbed;
     border-color: #f1e7bc;
 }
+
 .bs-callout-info {
     background-color: #f0f7fd;
     border-color: #d0e3f0;

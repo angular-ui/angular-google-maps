@@ -4,18 +4,19 @@
   "dependencies": {
     "angular": "~1.2.21",
     "json3": "~3.2.4",
-    "jquery": "~1.9.1",
+    "jquery": "~2.1.x",
     "es5-shim": "~2.0.8",
     "angular-animate": "~1.2.21",
     "angular-resource": "~1.2.21",
     "angular-cookies": "~1.2.21",
     "angular-sanitize": "~1.2.21",
-    "angular-google-maps": "2.0.0-SNAPSHOT-c",
-    "underscore": "~1.5.2",
+    "angular-google-maps": "2.0.0-SNAPSHOT-f",
     "angular-highlightjs": "~0.2.5",
     "share-button": "~0.0.3",
     "angular-semver-sort": "~0.2.0",
-    "angular-ui-router": "~0.2.10"
+    "angular-ui-router": "~0.2.10",
+    "bootstrap": "~3.2.0",
+    "lodash": "~2.4.1"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.21",
