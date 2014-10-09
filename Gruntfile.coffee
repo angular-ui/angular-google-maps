@@ -84,5 +84,4 @@ module.exports = (grunt) ->
 
   grunt.registerTask 's', ['server']
 
-  grunt.registerTask 'prodserver', ['default','s']
   return
