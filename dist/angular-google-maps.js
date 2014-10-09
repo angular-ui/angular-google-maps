@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0-SNAPSHOT-e 2014-10-08
+/*! angular-google-maps 2.0.0-SNAPSHOT-e 2014-10-09
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3791,7 +3791,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.parent".ns()).factory("PolylinesParentModel".ns(), [
-    "$timeout", "Logger".ns(), "ModelKey".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "PolylineChildModel".ns(), function($timeout, Logger, ModelKey, ModelsWatcher, PropMap, PolylineChildModel) {
+    "$timeout", "Logger".ns(), "ModelKey".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "PolylineChildModel".ns(), "_async".ns(), function($timeout, Logger, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async) {
       var PolylinesParentModel;
       return PolylinesParentModel = (function(_super) {
         __extends(PolylinesParentModel, _super);
@@ -6745,7 +6745,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0-SNAPSHOT-e 2014-10-08
+      /*! angular-google-maps 2.0.0-SNAPSHOT-e 2014-10-09
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */

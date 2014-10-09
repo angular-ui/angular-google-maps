@@ -1,7 +1,8 @@
 angular.module("google-maps.directives.api.models.parent".ns())
 .factory "PolylinesParentModel".ns(),
-        ["$timeout","Logger".ns(),"ModelKey".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "PolylineChildModel".ns(),
-            ($timeout,Logger,ModelKey,ModelsWatcher,PropMap,PolylineChildModel) ->
+        ["$timeout","Logger".ns(),"ModelKey".ns(), "ModelsWatcher".ns(),
+          "PropMap".ns(), "PolylineChildModel".ns(), "_async".ns(),
+            ($timeout,Logger,ModelKey,ModelsWatcher,PropMap,PolylineChildModel, _async) ->
                 class PolylinesParentModel extends ModelKey
                     @include ModelsWatcher
                     constructor: (@scope, @element, @attrs, @gMap, @defaults) ->
