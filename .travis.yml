@@ -1,10 +1,10 @@
 language: node_js
 node_js:
     - "0.10"
-before_script: 
-    - npm install -g bower
+before_script:
+    - PATH="$(npm bin):$PATH" npm install -g bower
     - bower cache clean
-    - bower install
+    - PATH="$(npm bin):$PATH" npm install npm install
 script: grunt test --force
 branches:
   only:

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('angularGoogleMapsApp')
-  .controller('MainCtrl', function ($scope, $github, $log, analytics) {
+  .controller('MainCtrl',['$scope', '$github', '$log', 'analytics', function ($scope, $github, $log, analytics) {
 
     var DOWNLOAD_URL_TEMPLATE = 'https://rawgit.com/angular-ui/angular-google-maps/%REF%/dist/angular-google-maps.min.js',
       FALLBACK_BRANCH = 'master';
@@ -45,4 +45,4 @@ angular.module('angularGoogleMapsApp')
       $scope.latestTag = { name: FALLBACK_BRANCH };
       $scope.downloadUrl = DOWNLOAD_URL_TEMPLATE.replace('%REF%', FALLBACK_BRANCH);
     });
-  });
+  }]);

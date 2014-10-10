@@ -30,7 +30,8 @@ angular.module('angularGoogleMapsApp')
     'String',
     'lodash'
   ])
-  .config(function ($stateProvider, directiveList, providerList, serviceList, globalList) {
+  .config([ '$stateProvider', 'directiveList', 'providerList', 'serviceList', 'globalList',
+    function ($stateProvider, directiveList, providerList, serviceList, globalList) {
     [
       {modules: directiveList, loc: 'directive/'},
       {modules: providerList, loc: 'provider/'},
@@ -45,9 +46,11 @@ angular.module('angularGoogleMapsApp')
           })(cur)
         })
       });
-  })
-  .controller('ApiCtrl', function ($scope, $rootScope, $location, $state,
-                                   directiveList, providerList, serviceList, globalList) {
+  }])
+  .controller('ApiCtrl',[ '$scope', '$rootScope', '$location', '$state',
+    'directiveList', 'providerList', 'serviceList', 'globalList',
+    function ($scope, $rootScope, $location, $state,
+      directiveList, providerList, serviceList, globalList) {
     if ($state.current.name === "api") {
       $state.go("api." + providerList[0]);
     }
@@ -75,4 +78,4 @@ angular.module('angularGoogleMapsApp')
         $('#content' + newValue).collapse('show');
       }
     });
-  });
+  }]);

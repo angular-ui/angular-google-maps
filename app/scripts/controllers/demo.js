@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('angularGoogleMapsApp').controller('DemoCtrl', function ($scope, $timeout) {
+angular.module('angularGoogleMapsApp').controller('DemoCtrl', [ '$scope', '$timeout', function ($scope, $timeout) {
 
   $scope.tab = 'status';
 
@@ -64,4 +64,4 @@ angular.module('angularGoogleMapsApp').controller('DemoCtrl', function ($scope, 
       title: 'Marker 3'
     });
   }, 4000);
-});
+}]);
