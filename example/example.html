@@ -7,10 +7,10 @@
     <!-- make IE Happy , http://docs.angularjs.org/guide/ie -->
     <!--[if lte IE 9]>
     <script>
-	    window.html5 = {
+        window.html5 = {
             'elements': 'marker window windows markers layer polyline ng-controller ng-repeat ng-init ng-model ng-hide ng-show'
         };
-	</script>
+    </script>
 
     <script src="https://rawgithub.com/bestiejs/json3/v3.2.5a/lib/json3.min.js"></script>
     <script src="https://rawgithub.com/kriskowal/es5-shim/v2.1.0/es5-shim.min.js"></script>
@@ -27,7 +27,7 @@
 
 <body ng-controller="ExampleController">
 <!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
-	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
+    the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 
 <div class="container-fluid">
 <div class="row-fluid">
@@ -105,7 +105,7 @@
         </ui-gmap-markers>
 
         <ui-gmap-markers models="map.clickMarkers" coords="'self'" click="clackMarker">
-	    </ui-gmap-markers>
+        </ui-gmap-markers>
 
         <ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
             <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
@@ -269,14 +269,14 @@
             <tr>
                 <td>center</td>
                 <td>
-					<pre ng-cloak>
-						<span ng-show="map.center.latitude >= 0">&nbsp;
-						</span>
-						{{ map.center.latitude | number:4 }} lat
-						<br>
-						<span ng-show="map.center.longitude >= 0">&nbsp;
-						</span>{{ map.center.longitude | number:4 }} lng
-					</pre>
+                    <pre ng-cloak>
+                        <span ng-show="map.center.latitude >= 0">&nbsp;
+                        </span>
+                        {{ map.center.latitude | number:4 }} lat
+                        <br>
+                        <span ng-show="map.center.longitude >= 0">&nbsp;
+                        </span>{{ map.center.longitude | number:4 }} lng
+                    </pre>
                 </td>
             </tr>
             <tr>
@@ -287,10 +287,10 @@
                 <td>bounds</td>
                 <td>
                     <pre ng-cloak>
-                    	north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }}
-                    	<br>
-                    	south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
-                	</pre>
+                        north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }}
+                        <br>
+                        south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
+                    </pre>
                 </td>
             </tr>
             <tr>
@@ -300,14 +300,14 @@
             <tr>
                 <td>clicked position</td>
                 <td>
-						<pre ng-show="map.clickedMarker.latitude != null && map.clickedMarker.longitude != null" ng-cloak>
-							<span ng-show="map.clickedMarker.latitude >= 0">&nbsp;
-							</span>
-							{{ map.clickedMarker.latitude | number:4 }} lat
-							<br>
-							<span ng-show="map.clickedMarker.longitude >= 0">&nbsp;</span>
-							{{ map.clickedMarker.longitude | number:4 }} lng
-						</pre>
+                        <pre ng-show="map.clickedMarker.latitude != null && map.clickedMarker.longitude != null" ng-cloak>
+                            <span ng-show="map.clickedMarker.latitude >= 0">&nbsp;
+                            </span>
+                            {{ map.clickedMarker.latitude | number:4 }} lat
+                            <br>
+                            <span ng-show="map.clickedMarker.longitude >= 0">&nbsp;</span>
+                            {{ map.clickedMarker.longitude | number:4 }} lng
+                        </pre>
                     <span ng-show="map.clickedMarker.latitude == null || map.clickedMarker.longitude == null">Click the map to see</span>
                 </td>
             </tr>
@@ -320,32 +320,32 @@
                                 <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!">
                                         <span class="{{p.visible}}" ng-click="p.visible = !p.visible">Polyline:</span> {<br/>
-											<span style="padding-left: 5em" class="{{p.visible}}"
+                                            <span style="padding-left: 5em" class="{{p.visible}}"
                                                   ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
-											<span style="padding-left: 5em" class="{{p.editable}}"
+                                            <span style="padding-left: 5em" class="{{p.editable}}"
                                                   ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.draggable}}"
+                                            <span style="padding-left: 5em" class="{{p.draggable}}"
                                                   ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.geodesic}}"
+                                            <span style="padding-left: 5em" class="{{p.geodesic}}"
                                                   ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,
                                         <br/>
                                         <span style="padding-left: 5em">stroke: {</span> <br/>
-											<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
+                                            <span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
                                                   style="padding-left: 10em">weight: {{p.stroke.weight}}</span> <br/>
-											<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
+                                            <span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
                                                   style="padding-left: 10em">color: {{p.stroke.color}}</span> <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
                                         <span style="padding-left: 5em">path: [ </span> <br/>
-											<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
+                                            <span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
                                                   ng-click="p.path.splice($index,1)">
-											{
-											latitude:{{pt.latitude | number:2}},
-											longitude:{{pt.longitude | number:2}}
-										},
-										<br/>
-									</span>
+                                            {
+                                            latitude:{{pt.latitude | number:2}},
+                                            longitude:{{pt.longitude | number:2}}
+                                        },
+                                        <br/>
+                                    </span>
                                         <span style="padding-left: 5em">] </span> <br/>
 
                                         }
@@ -411,55 +411,55 @@
                 </td>
             </tr>
             <tr>
-            	<td>polygons</td>
-            	<td>
-            		<div class="well sidebar-nav">
-            			<ul class="nav nav-list">
-            				<li ng-repeat="p in map.polygons">
-            					<a href="#">
+                <td>polygons</td>
+                <td>
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li ng-repeat="p in map.polygons">
+                                <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!">
                                         <span class="{{p.visible}}" ng-click="p.visible = !p.visible">Polygon:</span> {<br/>
-											<span style="padding-left: 5em" class="{{p.visible}}"
+                                            <span style="padding-left: 5em" class="{{p.visible}}"
                                                   ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
-											<span style="padding-left: 5em" class="{{p.editable}}"
+                                            <span style="padding-left: 5em" class="{{p.editable}}"
                                                   ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.draggable}}"
+                                            <span style="padding-left: 5em" class="{{p.draggable}}"
                                                   ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.geodesic}}"
+                                            <span style="padding-left: 5em" class="{{p.geodesic}}"
                                                   ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,
                                         <br/>
                                         <span style="padding-left: 5em">stroke: {</span> <br/>
-											<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
+                                            <span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
                                                   style="padding-left: 10em">weight: {{p.stroke.weight}}</span> <br/>
-											<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
+                                            <span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
                                                   style="padding-left: 10em">color: {{p.stroke.color}}</span> <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
                                         <span style="padding-left: 5em">path: [ </span> <br/>
-											<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
+                                            <span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
                                                   ng-click="p.path.splice($index,1)">
-											{
-											latitude:{{pt.latitude | number:2}},
-											longitude:{{pt.longitude | number:2}}
-										},
-										<br/>
-									</span>
+                                            {
+                                            latitude:{{pt.latitude | number:2}},
+                                            longitude:{{pt.longitude | number:2}}
+                                        },
+                                        <br/>
+                                    </span>
                                         <span style="padding-left: 5em">] </span> <br/>
 
                                         }
                                     </i>
                                 </a>
-            				</li>
-            			</ul>
-            		</div>
+                            </li>
+                        </ul>
+                    </div>
             </tbody>
         </table>
     </fieldset>
 </div>
 </div>
 </div>
-<script src="../bower_components/bluebird/js/browser/bluebird.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bluebird/1.2.2/bluebird.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
 <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
