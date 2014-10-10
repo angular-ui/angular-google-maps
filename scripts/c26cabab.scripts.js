@@ -86,7 +86,7 @@ angular.module('angularGoogleMapsApp').constant('directiveList', [
   'IsReady'
 ]).constant('globalList', [
   'String',
-  'lodash'
+  'Lodash'
 ]).config([
   '$stateProvider',
   'directiveList',
