@@ -1,6 +1,6 @@
 <div id="map_canvas" ng-controller="mainCtrl">
     <google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
-        <marker coords="marker.coords" options="marker.options" events="marker.events" >
+        <marker coords="marker.coords" options="marker.options" events="marker.events" idKey='marker.id'>
             <window show="show">
                 <div>{{title}}</div>
             </window>
