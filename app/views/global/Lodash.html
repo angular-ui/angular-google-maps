@@ -1,0 +1,38 @@
+<h2 id="Lodash">Lodash Extensions</h2>
+Set of utility functions added to lodash / underscore.
+<br>
+        <a href=https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/extensions/lodash.coffee">source code</a>
+        <ul>
+            <li>
+                <strong>intersectionObjects:</strong><br>
+                Intersection of Objects if the arrays have something in common each intersecting object will be returned.
+                Arguments: array1, array2, comparison (optional) || defaults to  _.isEqual
+            </li>
+            <li>
+                <strong>containsObject:</strong><br>
+                Utilizes _.any underneath with an optional comparison function vs _.isEqual <br>
+                Args: obj, target (thing to look for), comparison (optional) || defaults to  _.isEqual
+            </li>
+            <li>
+                <strong>differenceObjects:</strong><br>
+                Filters all the differences between array1 and array2. <br>
+                Args: array1, array2, comparison (optional) || defaults to  _.isEqual
+            </li>
+            <li>
+                <strong>withoutObjects:</strong> Alias to differenceObjects.
+            </li>
+            <li>
+                <strong>indexOfObject:</strong><br>
+                Find the index of an item in an array via a comparison function. <br>
+                Args: array, item, comparison (required), isSorted (if true the performance is better)
+            </li>
+            <li>
+                <strong>extends:</strong><br>
+                Iterates of an array of object to run _.extend on. Very similar to _.merge.
+                arrayOfObjectsToCombine
+            </li>
+            <li>
+                <strong>isNullOrUndefined:</strong>
+                Returns truthy if something is null or undefined.
+            </li>
+        </ul>

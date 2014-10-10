@@ -26,11 +26,16 @@ angular.module('angularGoogleMapsApp')
     'Logger',
     'IsReady'
   ])
-  .config(function ($stateProvider, directiveList, providerList, serviceList) {
+  .constant("globalList", [
+    'String',
+    'lodash'
+  ])
+  .config(function ($stateProvider, directiveList, providerList, serviceList, globalList) {
     [
       {modules: directiveList, loc: 'directive/'},
       {modules: providerList, loc: 'provider/'},
-      {modules: serviceList, loc: 'services/'}
+      {modules: serviceList, loc: 'service/'},
+      {modules: globalList, loc: 'global/'}
     ].forEach(function (modsToLoc) {
         modsToLoc.modules.forEach(function (cur) {
           (function (cur) {
@@ -42,13 +47,14 @@ angular.module('angularGoogleMapsApp')
       });
   })
   .controller('ApiCtrl', function ($scope, $rootScope, $location, $state,
-                                   directiveList, providerList, serviceList) {
+                                   directiveList, providerList, serviceList, globalList) {
     if ($state.current.name === "api") {
       $state.go("api." + providerList[0]);
     }
     $scope.providers = providerList;
     $scope.services = serviceList;
     $scope.directives = directiveList;
+    $scope.globals = globalList;
     $scope.current = providerList[0];
     $scope.current = $state.$current.name;
 
