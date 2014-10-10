@@ -24,7 +24,8 @@ angular.module('angularGoogleMapsApp').provider('analytics', function () {
     return _trackViewChange;
   };
 
-  this.$get = function ($window, $log, $rootScope, $document, $location) {
+  this.$get = [ '$window', '$log', '$rootScope', '$document', '$location',
+    function ($window, $log, $rootScope, $document, $location) {
 
     var _trackingCodeSet = false;
 
@@ -70,5 +71,5 @@ angular.module('angularGoogleMapsApp').provider('analytics', function () {
       trackPageView: _trackPageView,
       trackEvent: _trackEvent
     };
-  };
+  }];
 });

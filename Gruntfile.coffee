@@ -72,8 +72,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'prod_build', [
     'build'
-#    'cssmin'
-#    'uglify'
+    'cssmin'
+    'uglify'
     'rev'
     'usemin'
   ]

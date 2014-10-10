@@ -17,7 +17,7 @@ angular.module('angularGoogleMapsApp')
        * @param type
        * @param options
        * @return string
-     */
+       */
       function apiURL(type, options) {
         var url = api + '/' + type + '?callback=JSON_CALLBACK';
 
@@ -31,7 +31,7 @@ angular.module('angularGoogleMapsApp')
 
         $log.debug('github: api url', url);
 
-      return url;
+        return url;
       }
 
       function apiCall(type, options) {
@@ -53,9 +53,9 @@ angular.module('angularGoogleMapsApp')
       }
 
       var apiURLOpts = branch ? {
-      sha: branch,
-      per_page: 1000
-    } : null;
+        sha: branch,
+        per_page: 1000
+      } : null;
 
       this.getRepository = function () {
         return repository;
@@ -70,7 +70,7 @@ angular.module('angularGoogleMapsApp')
       };
 
       this.getContributors = function () {
-      return apiCall('contributors', {});
+        return apiCall('contributors', {});
       };
 
       this.getCommits = function () {
@@ -106,7 +106,7 @@ angular.module('angularGoogleMapsApp')
           $q.all(qs).then(function (allCommits) {
             var flattened = _.flatten(allCommits);
 
-            var sorted  = _.sortBy(flattened, function (commit) {
+            var sorted = _.sortBy(flattened, function (commit) {
               return -Date.parse(commit.commit.committer.date);
             });
 
@@ -119,7 +119,7 @@ angular.module('angularGoogleMapsApp')
         });
 
 
-      return deferred.promise;
+        return deferred.promise;
       };
 
       this.getIssues = function () {
@@ -164,7 +164,7 @@ angular.module('angularGoogleMapsApp')
     };
 
     // Method for instantiating
-    this.$get = function ($log, $http, $q) {
+    this.$get = [ '$log', '$http', '$q', function ($log, $http, $q) {
       return new GithubService($log, $http, $q);
-    };
+    }];
   });
