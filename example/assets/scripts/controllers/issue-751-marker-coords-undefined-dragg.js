@@ -1,7 +1,9 @@
 angular.module('app', ['google-maps'.ns()])
-  .controller('ctrl', function ($scope, $log) {
+  .controller('ctrl', function ($scope, $log, $timeout) {
     $scope.map = {center: {latitude: 40.1451, longitude: -99.6680 }, zoom: 4 }
     $scope.options = {scrollwheel: false};
+    $scope.coordsUpdates = 0;
+    $scope.dynamicMoveCtr = 0;
     $scope.marker = {
       id: 0,
       coords: {
@@ -25,5 +27,24 @@ angular.module('app', ['google-maps'.ns()])
           };
         }
       }
-    }
+    };
+    $scope.$watchCollection("marker.coords",function(newVal,oldVal){
+      if(_.isEqual(newVal,oldVal))
+        return;
+      $scope.coordsUpdates++;
+    });
+    $timeout(function(){
+      $scope.marker.coords = {
+        latitude: 42.1451,
+        longitude: -100.6680
+      };
+      $scope.dynamicMoveCtr++;
+      $timeout(function(){
+        $scope.marker.coords = {
+          latitude: 43.1451,
+          longitude: -102.6680
+        };
+        $scope.dynamicMoveCtr++;
+      },2000);
+    },1000);
   });
