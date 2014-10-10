@@ -27,7 +27,7 @@ To utilize this provider you must load it and configure it properly. Please note
 </div>
 <h3> When is Google SDK ready?</h3>
 <div hljs language="js">
-    .controller("someController",['$scope', 'GoogleMapApi'.ns(),
+    .controller("someController",['$scope', 'GoogleMapApi'.ns(), function ($scope, GoogleMapApi) {
         //do stuff with your $scope
         // it should be NOTED that some of the directives at least require something to be defined originally
         // ie:
