@@ -58,6 +58,8 @@ module.exports = (grunt) ->
     'concat:vendor_css'#for testing /devs, overwritten by cssmin/usemin
     'concat:vendor_app_css'
     "concat:generated"
+    "concat:main_js"
+    "concat:main_css"
     'concurrent:dist'
     'autoprefixer'
     'copy:vendor_fonts'
@@ -70,8 +72,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'prod_build', [
     'build'
-    'cssmin'
-    'uglify'
+#    'cssmin'
+#    'uglify'
     'rev'
     'usemin'
   ]

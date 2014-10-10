@@ -17,6 +17,16 @@ vendor_css =
 
 
 module.exports =
+  #for non min
+  main_js:
+    src: ['.tmp/concat/scripts/scripts.js']
+    dest:
+      '<%= yeoman.dist %>/scripts/scripts.js'
+  #for non min
+  main_css:
+    src: ['.tmp/concat/styles/main.css']
+    dest:
+      '<%= yeoman.dist %>/styles/main.css'
   vendor_js: vendor_js
   vendor_app_js:
     _.merge _.cloneDeep(vendor_js),
