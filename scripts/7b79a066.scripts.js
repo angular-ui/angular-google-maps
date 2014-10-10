@@ -30,9 +30,10 @@ angular.module('angularGoogleMapsApp').controller('MainCtrl', [
     $scope.marker = {
       id: 0,
       coords: {
-        latitude: 40.47,
-        longitude: -74.5
-      }
+        latitude: 40.7081,
+        longitude: -74.0041
+      },
+      options: { animation: 1 }
     };
     $scope.dlClick = function () {
       analytics.trackEvent('click', 'download');
