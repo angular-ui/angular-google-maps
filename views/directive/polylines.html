@@ -1,3 +1,4 @@
+<new-scope>
 <p>The <code>polylines</code> directive is used to draw an overlay connected to various points on the map.
     See <a google-api="Polyline">Polyline API</a>.</p>
 <br>
@@ -8,7 +9,7 @@
 </p>
 <h4>Usage</h4>
 
-<div hljs="" language="html" include="'polylinesTemplate'"></div>
+<div hljs language="html" include="'polylinesTemplate'"></div>
 
 <h4>Parameters</h4>
 
@@ -127,6 +128,8 @@
             
         </td>
     </tr>
+    <tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Polyline'">
+		</tr>
     </tbody>
 </table>
 
@@ -134,7 +137,7 @@
 <runnable-example example="'polylines'"></runnable-example>
 
 <script type="text/ng-template" id="polylinesTemplate">
-<polylines
+<ui-gmap-polylines
         idKey="{expression}"
         models="{expression}"
 
@@ -147,7 +150,9 @@
         icons="'{string}'"
         visible="'{string}'"
         fit='{string or boolean}'
-
-        static='{expression}'>
-</polylines>
+        events='{expression}'
+        static='{expression}'
+>
+</ui-gmap-polylines>
 </script>
+</new-scope>

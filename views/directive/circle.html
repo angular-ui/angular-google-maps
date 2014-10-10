@@ -1,9 +1,10 @@
+<new-scope>
 <p>The <code>circle</code> directive is used to draw circle shape layers on the map.
 See <a href="https://developers.google.com/maps/documentation/javascript/reference#Circle" rel="external">Circle API</a>.</p>
-	
+
 <h4>Usage</h4>
 
-<div hljs="" language="html" include="'circleTemplate'"></div>
+<div hljs language="html" include="'circleTemplate'"></div>
 
 <h4>Parameters</h4>
 
@@ -30,7 +31,7 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 			<td>radius</td>
 			<td><span class="label label-danger">expression</span></td>
 			<td>The radius of the circle</td>
-		</tr>		
+		</tr>
 		<tr>
 			<td>stroke</td>
 			<td><span class="label label-danger">expression</span></td>
@@ -40,9 +41,9 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 		<tr>
 			<td>fill</td>
 			<td><span class="label label-danger">expression</span></td>
-			<td>Object to configure the circle fill type. Valid properties are <code>color</code> (CSS hex notation) 
+			<td>Object to configure the circle fill type. Valid properties are <code>color</code> (CSS hex notation)
 			and <code>opacity</code> (between 0.0 and 1.0)</td>
-		</tr>		
+		</tr>
 		<tr>
 			<td>clickable</td>
 			<td><span class="label label-info">expression</span></td>
@@ -63,6 +64,8 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 			<td><span class="label label-info">expression</span></td>
 			<td>boolean property which shows or hides the circle</td>
 		</tr>
+		<tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Circle'">
+		</tr>
 	</tbody>
 </table>
 
@@ -70,7 +73,7 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 <runnable-example example="'circle'"></runnable-example>
 
 <script type="text/ng-template" id="circleTemplate">
-<circle center='{expression}'
+<ui-gmap-circle center='{expression}'
   radius='{expression}'
 	fill='{expression}'
 	stroke='{expression}'
@@ -78,5 +81,8 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 	draggable='{expression}'
 	editable='{string}'
 	visible='{expression}'
-</circle>
+	events='{expression}'
+>
+</ui-gmap-circle>
 </script>
+</new-scope>

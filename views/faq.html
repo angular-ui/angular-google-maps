@@ -21,12 +21,12 @@
 
 <div class="tab-content">
     <div id="faq-map-instance-tab-html-js" class="tab-pane active">
-        <div hljs="">
-            <google-map events="map.events"></google-map>
+        <div hljs>
+            <ui-gmap-google-map events="map.events"></ui-gmap-google-map>
         </div>
     </div>
     <div id="faq-map-instance-tab-script" class="tab-pane">
-        <div hljs="">
+        <div hljs>
             $scope.map = {
             events: {
             tilesloaded: function (map) {
@@ -53,14 +53,14 @@
 
 <div class="tab-content">
     <div id="faq-map-height-tab-html" class="tab-pane">
-        <div hljs="">
-            <google-map id="my-map"></google-map>
+        <div hljs>
+            <ui-gmap-google-map id="my-map"></ui-gmap-google-map>
         </div>
     </div>
     <div id="faq-map-height-tab-script" class="tab-pane">
         <p>Let's assume we include the map in an <code>ng-view</code> block:</p>
 
-        <div hljs="">
+        <div hljs>
             $scope.$on('$viewContentLoaded', function () {
             var mapHeight = 500; // or any other calculated value
             $("#my-map .angular-google-map-container").height(mapHeight);
@@ -68,15 +68,15 @@
         </div>
     </div>
     <div id="faq-map-height-tab-html-css" class="tab-pane">
-        <div hljs="">
+        <div hljs>
             <div ng-controller="ctrl" class="middle">
-                <google-map></google-map>
+                <ui-gmap-google-map></ui-gmap-google-map>
             </div>
         </div>
     </div>
     <div id="faq-map-height-tab-css" class="tab-pane active">
         <div>With CSS only full example <a href="https://gist.github.com/nmccready/503e3d778852f7ab48f1">here</a> or on master dynamic-map-height.html</div>
-        <div hljs="">
+        <div hljs>
             /*
             let me google that for you (many ways to skin this cat)
             http://stackoverflow.com/questions/10209704/set-google-maps-container-div-width-and-height-100 (implemented here)
@@ -120,7 +120,7 @@
     trigger dirty checking (see <a href="https://github.com/angular-ui/angular-google-maps/issues/241" rel="external">this
         issue</a>).</p>
 
-<div hljs="">
+<div hljs>
     $scope.map = {
     events: {
     tilesloaded: function (map) {

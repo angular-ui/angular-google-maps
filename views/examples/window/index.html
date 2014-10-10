@@ -1,9 +1,9 @@
 <div id="map_canvas" ng-controller="mainCtrl">
-    <google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
-        <marker coords="marker.coords" options="marker.options" events="marker.events" >
-            <window show="show">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
+        <ui-gmap-marker idkey="marker.id" coords="marker.coords" options="marker.options" click="onClick()" events="marker.events" >
+            <ui-gmap-window options="windowOptions" closeClick="closeClick()">
                 <div>{{title}}</div>
-            </window>
-        </marker>
-    </google-map>
+            </ui-gmap-window>
+        </ui-gmap-marker>
+    </ui-gmap-google-map>
 </div>

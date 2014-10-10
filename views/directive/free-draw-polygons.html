@@ -1,7 +1,7 @@
 <div id="free-draw-polygons">
     <span class="badge badge-info">New in v1.2.0</span>
 
-    <p>The <code>nggmap-free-draw-polygons</code> directive is used to draw polylines which are converted to polygons.
+    <p>The <code>ui-gmap-free-draw-polygons</code> directive is used to draw polylines which are converted to polygons.
         Eventually this may be extended to draw polygons and shapes.
 
         The attributes options and events are planned to be added as well for styling and polygon callbacks. If you need
@@ -10,7 +10,7 @@
 
     <h4>Usage</h4>
 
-    <div hljs="" language="html" include="'controlTemplate'"></div>
+    <div hljs language="html" include="'controlTemplate'"></div>
 
     <h4>Parameters</h4>
 
@@ -55,9 +55,10 @@
     </table>
 
 <script type="text/ng-template" id="controlTemplate">
-     <nggmap-free-draw-polygons
+     <ui-gmap-free-draw-polygons
              polygons='{expression}'
-             draw='{expression}'>
-     </nggmap-free-draw-polygons>
+             draw='{expression}'
+     >
+     </ui-gmap-free-draw-polygons>
 </script>
 </div>

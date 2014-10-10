@@ -1,8 +1,8 @@
 <p>The <code>map-control</code> directive is used to add custom controls to the maps UI.</p>
-	
+
 <h4>Usage</h4>
 
-<div hljs="" language="html" include="'controlTemplate'"></div>
+<div hljs language="html" include="'controlTemplate'"></div>
 
 <h4>Parameters</h4>
 
@@ -44,10 +44,11 @@
 <runnable-example example="'map-control'"></runnable-example>
 
 <script type="text/ng-template" id="controlTemplate">
-<map-control
+<ui-gmap-map-control
 	template='{expression}'
 	position="'{string}'"
 	controller='{expression}'
-	index='{expression}'>
-</map-control>
+	index='{expression}'
+>
+</ui-gmap-map-control>
 </script>

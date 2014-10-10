@@ -1,8 +1,9 @@
+<new-scope>
 <p>The <code>marker</code> directive is used to add a <code>google.maps.Marker</code> object to an existing map.</p>
 
 <h4>Usage</h4>
 
-<div hljs="" language="html" include="'markerTemplate'"></div>
+<div hljs language="html" include="'markerTemplate'"></div>
 
 <h4>Parameters</h4>
 
@@ -49,15 +50,8 @@
 			<td><span class="label label-info">expression|function</span></td>
 			<td>Event handler to call when clicking on the marker</td>
 		</tr>
-		<tr>
-			<td>options</td>
-			<td><span class="label label-info">expression</span>
-			</td><td>Object containing additional options for the marker. See <a href="https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions" rel="external">MarkerOptions</a>.</td>
-		</tr>
-		<tr>
-			<td>events</td>
-			<td><span class="label label-info">events</span></td>
-			<td>Object containing event handlers for this marker. The keys are the event names and the values are the handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Marker" rel="external">Marker documentation</a> (under Events section) for a list of all events.</td>
+		<tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='Marker';directive='Marker';hasLabelOptions=true">
+		</tr><tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Marker'">
 		</tr>
         <tr>
             <td>control</td>
@@ -86,7 +80,7 @@
 <runnable-example example="'marker'"></runnable-example>
 
 <script type="text/ng-template" id="markerTemplate">
-<marker
+<ui-gmap-marker
         idKey='{expression}'
         coords='{expression}'
         icon='{expression}'
@@ -95,5 +89,6 @@
         events='{expression}'
         control='{expression}'
         >
-</marker>
+</ui-gmap-marker>
 </script>
+</new-scope>
