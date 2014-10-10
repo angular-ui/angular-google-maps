@@ -3,13 +3,13 @@
 angular.module('angularGoogleMapsApp')
   .controller('MainCtrl', function ($scope, $github, $log, analytics) {
 
-    var DOWNLOAD_URL_TEMPLATE = 'https://raw.github.com/nlaplante/angular-google-maps/%REF%/dist/angular-google-maps.min.js',
+    var DOWNLOAD_URL_TEMPLATE = 'https://rawgit.com/angular-ui/angular-google-maps/%REF%/dist/angular-google-maps.min.js',
       FALLBACK_BRANCH = 'master';
 
     $scope.map = {
       center: {
-        latitude: 40.7081,	// NYC
-        longitude: -74.0041	// NYC
+        latitude: 40.7081,  // NYC
+        longitude: -74.0041 // NYC
       },
       zoom: 13,
       options: {
