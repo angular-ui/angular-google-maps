@@ -7,6 +7,7 @@ angular.module('appMaps', ['google-maps'])
                 latitude: 40.1451,
                 longitude: -99.6680
             },
+            id: 0,
             show: false
         };
 
