@@ -22,8 +22,11 @@ angular.module('angularGoogleMapsApp')
     $scope.marker = {
       id:0,
       coords: {
-        latitude: 40.47,
-        longitude: -74.50
+        latitude: 40.7081,  // NYC
+        longitude: -74.0041 // NYC
+      },
+      options:{
+        animation:1
       }
     };
 
