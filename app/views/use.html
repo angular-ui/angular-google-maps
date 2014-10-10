@@ -7,23 +7,60 @@
 
 		<ol class="steps">
 			<li>
-				<a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.js">Download angular-google-maps.js</a> (<a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.min.js">minified version</a>)
+				<a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.js">Download angular-google-maps.js
+				</a> (<a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.min.js">minified version</a>)
 				and put it with your other scripts. Alternatively, you can use bower to install it automatically:
 
 				<div hljs language="bash">bower install angular-google-maps</div>
 
-				If you're not using bower, you'll need to fetch <a href="http://lodash.com/" rel="external">lodash.js</a> (underscore build) and save it
-				alongside your other scripts.
+				If you're not using bower <strong>(YOU SHOULD)</strong>, you'll need to fetch:
+				<ul>
+					<li>
+						<a href="http://jquery.com/" rel="external">jquery.js</a>
+					</li>
+					<li>
+						<a href="http://lodash.com/" rel="external">lodash.js</a>
+					</li>
+					<li>
+						<a href="https://github.com/petkaantonov/bluebird/tree/master/js/browser" rel="external">bluebird.js</a> use a real version! <span class="badge badge-info">New in v2.0.0</span><br>
+					</li>
+				</ul>
+
+				and save them it alongside your other scripts.
 			</li>
 			<li>
-				Include the Google Maps API v3, lodash and angular-google.maps.js in your index.html or layout template:
-				<div hljs source="'<script src=\'//maps.googleapis.com/maps/api/js?sensor=false\'></script>
-<script src=\'/path/to/lodash.underscore[.min].js\'></script>
-<script src=\'/path/to/angular-google-maps[.min].js\'></script>'"></div>
+				Load/include lodash, bluebird and angular-google.maps.js
+				<div hljs source="'
+					<script src=\'/path/to/lodash[.min].js\'></script>
+					<script src=\'/path/to/bluebird[.min].js\'></script>
+					<script src=\'/path/to/angular-google-maps[.min].js\'></script>'">
+				</div>
 			</li>
+			<li>
+				Include the Google Maps API v3,  via one of two ways:
+				<ul>
+					<li>
+						<span class="badge badge-info">New in v2.0.0</span><br>
+						<a  href="#!/api#GoogleMapsApiLoader">GoogleMapsApi Loader (Async)</a>
+						<br>
+						This is the <span class="label label-success" >RECOMMENDED</span> way as it is trying to garuntee that google maps is ready prior to running any google dependencies!
+					</li>
+					<li>Load into your html page:
+						<br>
+						<span class="label label-danger" >Warning</span>
+						<br>
+						 Note: If you go this route this must be loaded prior to angular-google-maps.js
+						<div hljs source="'<script src=\'//maps.googleapis.com/maps/api/js?sensor=false\'></script>"</div>
+					</li>
+				</ul>
+			</li>
+
 			<li>
 				Make your application module depend on the <code>google-maps</code> module:
-				<div hljs>angular.module('myApplicationModule', ['google-maps']);</div>
+				<div hljs>
+					//note ns() (global string prototype),
+					//this prepends uiGmap to 'google-maps', so it is really 'uiGmapgoogle-maps'
+					angular.module('myApplicationModule', ['google-maps'.ns()]);</div>
 			</li>
 			<li>
 				Add a <code>map</code> object in your scope like this:
@@ -39,8 +76,8 @@ $scope.map = {
 					See the <a href="/api">API documentation</a> for the full list of supported properties.</p>
 			</li>
 			<li>
-				Add a <code>&lt;google-map&gt;</code> element in your template like this:
-				<div hljs><google-map center='map.center' zoom='map.zoom'></google-map></div>
+				Add a <code>&lt;ui-gmap-google-map&gt;</code> element in your template like this:
+				<div hljs><ui-gmap-google-map center='map.center' zoom='map.zoom'></ui-gmap-google-map></div>
 			</li>
 			<li>
 				Specify an height via CSS for the map container:
@@ -49,4 +86,3 @@ $scope.map = {
 		</ol>
 	</div>
 </div>
-

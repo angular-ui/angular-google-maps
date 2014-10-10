@@ -22,7 +22,7 @@
 <div class="tab-content">
     <div id="faq-map-instance-tab-html-js" class="tab-pane active">
         <div hljs>
-            <google-map events="map.events"></google-map>
+            <ui-gmap-google-map events="map.events"></ui-gmap-google-map>
         </div>
     </div>
     <div id="faq-map-instance-tab-script" class="tab-pane">
@@ -54,7 +54,7 @@
 <div class="tab-content">
     <div id="faq-map-height-tab-html" class="tab-pane">
         <div hljs>
-            <google-map id="my-map"></google-map>
+            <ui-gmap-google-map id="my-map"></ui-gmap-google-map>
         </div>
     </div>
     <div id="faq-map-height-tab-script" class="tab-pane">
@@ -70,7 +70,7 @@
     <div id="faq-map-height-tab-html-css" class="tab-pane">
         <div hljs>
             <div ng-controller="ctrl" class="middle">
-                <google-map></google-map>
+                <ui-gmap-google-map></ui-gmap-google-map>
             </div>
         </div>
     </div>
@@ -137,4 +137,3 @@
 <p>If rendering starts before elements are full size, google maps calculates according to the smaller size. This is most
     commonly the case with a hidden element (eg, ng-show). To fix this, use "ng-if" instead, as this will wait to attach
     to the DOM until the condition is true, which should be after everything has rendered fully.</p>
-

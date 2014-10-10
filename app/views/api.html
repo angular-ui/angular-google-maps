@@ -1,5 +1,4 @@
 <h1 class="page-header">API documentation</h1>
-
 <div class="row">
     <div class="col-md-3">
         <div affix offset-top="200" offset-bottom="650">
@@ -9,6 +8,9 @@
 
                 <ul class="nav nav-list" id="docs-api-menu">
                     <li class="delimiter"></li>
+                    <li class="nav-header">Providers</li>
+                    <li ng-repeat='d in providers | filter:query' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
+                        }}</a></li>
                     <li class="nav-header">Directives</li>
                     <li ng-repeat='d in directives | filter:query' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
                         }}</a></li>
@@ -18,11 +20,6 @@
     </div>
 
     <div class="col-md-9">
-        <p>This is the API documentation. All information needed to use the various directives is present on this page.
-            Choose the directive you're interested in in the left panel to begin.</p>
-
-        <h2>Directives</h2>
-
         <div class="panel-group" id="directivesAccordion">
             <div class="panel panel-default animate-repeat">
                 <div class="panel-heading">
@@ -38,20 +35,6 @@
                     </div>
                 </div>
             </div>
-            <!--<div class="panel panel-default animate-repeat" ng-repeat='d in directives | filter:query' id='{{ d }}'>
-                <div class="panel-heading">
-                    <div class="panel-title">
-                        <a href='' data-toggle="collapse"  data-target="#content{{ d }}">
-                            {{ d }}
-                        </a>
-                    </div>
-                </div>
-                <div id="content{{ d }}" class="panel-collapse collapse" ng-class="{'in': $first}">
-                    <div class="panel-body">
-                        <ng-include src="viewUrl(d)"></ng-include>
-                    </div>
-                </div>
-            </div>-->
         </div>
     </div>
 </div>
