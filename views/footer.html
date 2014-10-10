@@ -1,70 +1,70 @@
 <footer ng-controller="FooterCtrl">
-	<div class="container" ng-switch="github === null">		
-	
-		<!-- GitHub API access success -->	
-		<div ng-switch-when="false">
-			<div class="row">
-				<div class="col-md-3">
-					<h3>Collaborators</h3>
-					<ul class="list-inline">
-						<li class="thumbnail collaborator" ng-repeat="c in github.contributors track by c.login">
-							<a ng-href="{{ c.url }}" rel="external nofollow">
-								<img ng-src="{{ c.avatar_url }}" alt="{{ c.login }}" title="{{ c.login }}">
-							</a>
-						</li>
-					</ul>
-				</div>
-				
-				<div class="col-md-4">
-					<h3>Recent issues <small class="pull-right"><a href="https://github.com/angular-ui/angular-google-maps/issues?state=open">show all</a></small></h3>
+    <div class="container" ng-switch="github === null">
 
-					<ul class="list-unstyled separated">
-						<li ng-repeat="issue in github.issues | limitTo:8 ">
-							<span class="label label-danger">{{ issue.number }}</span>&nbsp;
-							<a ng-href="{{ issue.html_url }}" rel="external">{{ issue.title }}</a>
-						</li>
-					</ul>									
-				</div>
-				
-				<div class="col-md-3">
-					<h3>Activity <small class="pull-right"><a href="https://github.com/angular-ui/angular-google-maps/pulse">show all</a></small></h3>
-				
-					<ul class="list-unstyled separated">
-						<li ng-repeat="e in github.events | limitTo: 5">
-							<small class="muted">{{ e.created_at | date:"MMM d, y, hh:mm"}}</small><br>
-							<a ng-href="{{ e.actor.url }}" rel="external nofollow">{{ e.actor.login }}</a>
-							<span ng-bind-html="eventLabel(e)"></span>
-						</li>
-					</ul>
-				</div>
-				
-				<div class="col-md-2">
-					<h3>Latest commit</h3>
+        <!-- GitHub API access success -->
+        <div ng-switch-when="false">
+            <div class="row">
+                <div class="col-md-3">
+                    <h3>Collaborators</h3>
+                    <ul class="list-inline">
+                        <li class="thumbnail collaborator" ng-repeat="c in github.contributors track by c.login">
+                            <a ng-href="{{ c.url }}" rel="external nofollow">
+                                <img ng-src="{{ c.avatar_url }}" alt="{{ c.login }}" title="{{ c.login }}">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-					<p>{{ github.commits.latest.commit.committer.date | date:"MMM d, y hh:mm" }}<br>
-					by <a href="#!/">{{ github.commits.latest.author.login }}</a></p>
-					
-					<blockquote class="muted"><i>{{ github.commits.latest.commit.message }}</i></blockquote>
-					<a class="btn btn-sm btn-default" href="{{ github.commits.latest.html_url }}">More details</a>					
-				</div>				
-			</div>
-		</div>
-		
-		<!-- GitHub API access problems -->
-		<div class="row" ng-switch-when="true" ng-cloak>
-			<div class="alert alert-block">
-				<h4>Uh oh...</h4>
-				<p>We cannot fetch repository statistics for the moment. Please try again later.</p>
-			</div>
-		</div>
+                <div class="col-md-4">
+                    <h3>Recent issues <small class="pull-right"><a href="https://github.com/angular-ui/angular-google-maps/issues?state=open">show all</a></small></h3>
 
-		<div class="row">
-			<p class="text-center text-tiny copyright">
-				&copy; 2013, 2014 <a href="https://github.com/angular-ui/angular-google-maps" rel="external">angular-google-maps</a>
-				&mdash;
-				released under <a href="http://opensource.org/licenses/MIT" rel="external">the MIT license</a>
-			</p>
-		</div>
+                    <ul class="list-unstyled separated">
+                        <li ng-repeat="issue in github.issues | limitTo:8 ">
+                            <span class="label label-danger">{{ issue.number }}</span>&nbsp;
+                            <a ng-href="{{ issue.html_url }}" rel="external">{{ issue.title }}</a>
+                        </li>
+                    </ul>
+                </div>
 
-	</div>				
+                <div class="col-md-3">
+                    <h3>Activity <small class="pull-right"><a href="https://github.com/angular-ui/angular-google-maps/pulse">show all</a></small></h3>
+
+                    <ul class="list-unstyled separated">
+                        <li ng-repeat="e in github.events | limitTo: 5">
+                            <small class="muted">{{ e.created_at | date:"MMM d, y, hh:mm"}}</small><br>
+                            <a ng-href="{{ e.actor.url }}" rel="external nofollow">{{ e.actor.login }}</a>
+                            <span ng-bind-html="eventLabel(e)"></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-md-2">
+                    <h3>Latest commit</h3>
+
+                    <p>{{ github.commits.latest.commit.committer.date | date:"MMM d, y hh:mm" }}<br>
+                    by <a href="#!/">{{ github.commits.latest.author.login }}</a></p>
+
+                    <blockquote class="muted"><i>{{ github.commits.latest.commit.message }}</i></blockquote>
+                    <a class="btn btn-sm btn-default" href="{{ github.commits.latest.html_url }}">More details</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- GitHub API access problems -->
+        <div class="row" ng-switch-when="true" ng-cloak>
+            <div class="alert alert-block">
+                <h4>Uh oh...</h4>
+                <p>We cannot fetch repository statistics for the moment. Please try again later.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <p class="text-center text-tiny copyright">
+                &copy; 2013, 2014 <a href="https://github.com/angular-ui/angular-google-maps" rel="external">angular-google-maps</a>
+                &mdash;
+                released under <a href="http://opensource.org/licenses/MIT" rel="external">the MIT license</a>
+            </p>
+        </div>
+
+    </div>
 </footer>
