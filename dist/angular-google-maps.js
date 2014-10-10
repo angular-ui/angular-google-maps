@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.0 2014-10-09
+/*! angular-google-maps 2.0.0 2014-10-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -6754,7 +6754,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.0 2014-10-09
+      /*! angular-google-maps 2.0.0 2014-10-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
