@@ -28,6 +28,7 @@ angular.module('angularGoogleMapsApp').controller('MainCtrl', [
       }
     };
     $scope.marker = {
+      id: 0,
       coords: {
         latitude: 40.47,
         longitude: -74.5
@@ -771,7 +772,7 @@ angular.module('angularGoogleMapsApp').directive('rel', [
     return {
       restrict: 'A',
       link: function postLink(scope, element, attrs) {
-        // Open links wil rel='external' in new window/tab      	
+        // Open links wil rel='external' in new window/tab
         var el = angular.element(element);
         if (el.attr('rel').indexOf('external') !== -1) {
           el.attr('target', '_blank').addClass('link-external');
@@ -789,7 +790,7 @@ angular.module('angularGoogleMapsApp').directive('share', [
       template: '<div class="share-button" ng-cloak></div>',
       replace: true,
       link: function postLink(scope, element, attrs) {
-        // Open links wil rel='external' in new window/tab      	
+        // Open links wil rel='external' in new window/tab
         var el = angular.element(element);
         var opts = {};
         if (attrs.url) {
@@ -854,7 +855,7 @@ angular.module('angularGoogleMapsApp').directive('googleApi', [
       restrict: 'A',
       link: function postLink(scope, element, attrs) {
         $log.debug('generating link to Google Maps API reference for ' + attrs.googleApi);
-        // Open links wil rel='external' in new window/tab      	
+        // Open links wil rel='external' in new window/tab
         var el = angular.element(element);
         el.attr('href', 'https://developers.google.com/maps/documentation/javascript/reference#' + attrs.googleApi).attr('rel', 'external').attr('target', '_blank');
       }
