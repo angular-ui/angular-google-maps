@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.11 2014-11-28
+/*! angular-google-maps 2.0.11 2014-12-01
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -5831,7 +5831,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 ;(function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   angular.module("uiGmapgoogle-maps.directives.api").factory("uiGmapMap", [
     "$timeout", '$q', "uiGmapLogger", "uiGmapGmapUtil", "uiGmapBaseObject", "uiGmapCtrlHandle", 'uiGmapIsReady', "uiGmapuuid", "uiGmapExtendGWin", "uiGmapExtendMarkerClusterer", "uiGmapGoogleMapsUtilV3", 'uiGmapGoogleMapApi', function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3, GoogleMapApi) {
@@ -5888,7 +5889,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           eventOpts: "=",
           styles: "=",
           bounds: "=",
-          update: '='
+          update: '=',
+          disableEvents: "="
         };
 
         Map.prototype.link = function(scope, element, attrs) {
@@ -5958,125 +5960,143 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 scope.deferred.resolve(_m);
                 return resolveSpawned();
               });
-              google.maps.event.addListener(_m, "dragstart", function() {
-                var _ref;
-                if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
-                  dragging = true;
-                  return scope.$evalAsync(function(s) {
-                    if (s.dragging != null) {
-                      return s.dragging = dragging;
+              opts.disableEvents = attrs.disableEvents ? scope.disableEvents : [];
+              if (typeof opts.disableEvents === 'string') {
+                opts.disableEvents = [opts.disableEvents];
+              }
+              if (__indexOf.call(opts.disableEvents, "all") < 0) {
+                if (__indexOf.call(opts.disableEvents, "dragstart") < 0) {
+                  google.maps.event.addListener(_m, "dragstart", function() {
+                    var _ref;
+                    if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
+                      dragging = true;
+                      return scope.$evalAsync(function(s) {
+                        if (s.dragging != null) {
+                          return s.dragging = dragging;
+                        }
+                      });
                     }
                   });
                 }
-              });
-              google.maps.event.addListener(_m, "dragend", function() {
-                var _ref;
-                if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
-                  dragging = false;
-                  return scope.$evalAsync(function(s) {
-                    if (s.dragging != null) {
-                      return s.dragging = dragging;
+                if (__indexOf.call(opts.disableEvents, "dragend") < 0) {
+                  google.maps.event.addListener(_m, "dragend", function() {
+                    var _ref;
+                    if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
+                      dragging = false;
+                      return scope.$evalAsync(function(s) {
+                        if (s.dragging != null) {
+                          return s.dragging = dragging;
+                        }
+                      });
                     }
                   });
                 }
-              });
-              google.maps.event.addListener(_m, "drag", function() {
-                var c, _ref, _ref1, _ref2, _ref3;
-                if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
-                  c = _m.center;
-                  return $timeout(function() {
-                    var s;
-                    s = scope;
-                    if (angular.isDefined(s.center.type)) {
-                      s.center.coordinates[1] = c.lat();
-                      return s.center.coordinates[0] = c.lng();
-                    } else {
-                      s.center.latitude = c.lat();
-                      return s.center.longitude = c.lng();
-                    }
-                  }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? (_ref3 = _ref2.debounce) != null ? _ref3.dragMs : void 0 : void 0 : void 0);
-                }
-              });
-              google.maps.event.addListener(_m, "zoom_changed", function() {
-                var _ref, _ref1, _ref2;
-                if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
-                  if (scope.zoom !== _m.zoom) {
-                    return $timeout(function() {
-                      return scope.zoom = _m.zoom;
-                    }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0);
-                  }
-                }
-              });
-              settingCenterFromScope = false;
-              google.maps.event.addListener(_m, "center_changed", function() {
-                var c, _ref, _ref1, _ref2;
-                if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
-                  c = _m.center;
-                  if (settingCenterFromScope) {
-                    return;
-                  }
-                  return $timeout(function() {
-                    var s;
-                    s = scope;
-                    if (!_m.dragging) {
-                      if (angular.isDefined(s.center.type)) {
-                        if (s.center.coordinates[1] !== c.lat()) {
+                if (__indexOf.call(opts.disableEvents, "drag") < 0) {
+                  google.maps.event.addListener(_m, "drag", function() {
+                    var c, _ref, _ref1, _ref2, _ref3;
+                    if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
+                      c = _m.center;
+                      return $timeout(function() {
+                        var s;
+                        s = scope;
+                        if (angular.isDefined(s.center.type)) {
                           s.center.coordinates[1] = c.lat();
-                        }
-                        if (s.center.coordinates[0] !== c.lng()) {
                           return s.center.coordinates[0] = c.lng();
-                        }
-                      } else {
-                        if (s.center.latitude !== c.lat()) {
+                        } else {
                           s.center.latitude = c.lat();
-                        }
-                        if (s.center.longitude !== c.lng()) {
                           return s.center.longitude = c.lng();
                         }
-                      }
+                      }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? (_ref3 = _ref2.debounce) != null ? _ref3.dragMs : void 0 : void 0 : void 0);
                     }
-                  }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.centerMs : void 0 : void 0);
+                  });
                 }
-              });
-              google.maps.event.addListener(_m, "idle", function() {
-                var b, ne, sw;
-                b = _m.getBounds();
-                ne = b.getNorthEast();
-                sw = b.getSouthWest();
-                return scope.$evalAsync(function(s) {
-                  var c, _ref;
-                  if ((_ref = s.update) != null ? _ref.lazy : void 0) {
-                    c = _m.center;
-                    if (angular.isDefined(s.center.type)) {
-                      if (s.center.coordinates[1] !== c.lat()) {
-                        s.center.coordinates[1] = c.lat();
-                      }
-                      if (s.center.coordinates[0] !== c.lng()) {
-                        s.center.coordinates[0] = c.lng();
-                      }
-                    } else {
-                      if (s.center.latitude !== c.lat()) {
-                        s.center.latitude = c.lat();
-                      }
-                      if (s.center.longitude !== c.lng()) {
-                        s.center.longitude = c.lng();
+                if (__indexOf.call(opts.disableEvents, "zoom_changed") < 0) {
+                  google.maps.event.addListener(_m, "zoom_changed", function() {
+                    var _ref, _ref1, _ref2;
+                    if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
+                      if (scope.zoom !== _m.zoom) {
+                        return $timeout(function() {
+                          return scope.zoom = _m.zoom;
+                        }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0);
                       }
                     }
-                  }
-                  if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
-                    s.bounds.northeast = {
-                      latitude: ne.lat(),
-                      longitude: ne.lng()
-                    };
-                    s.bounds.southwest = {
-                      latitude: sw.lat(),
-                      longitude: sw.lng()
-                    };
-                  }
-                  s.zoom = _m.zoom;
-                  return scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
-                });
-              });
+                  });
+                }
+                if (__indexOf.call(opts.disableEvents, "center_changed") < 0) {
+                  settingCenterFromScope = false;
+                  google.maps.event.addListener(_m, "center_changed", function() {
+                    var c, _ref, _ref1, _ref2;
+                    if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
+                      c = _m.center;
+                      if (settingCenterFromScope) {
+                        return;
+                      }
+                      return $timeout(function() {
+                        var s;
+                        s = scope;
+                        if (!_m.dragging) {
+                          if (angular.isDefined(s.center.type)) {
+                            if (s.center.coordinates[1] !== c.lat()) {
+                              s.center.coordinates[1] = c.lat();
+                            }
+                            if (s.center.coordinates[0] !== c.lng()) {
+                              return s.center.coordinates[0] = c.lng();
+                            }
+                          } else {
+                            if (s.center.latitude !== c.lat()) {
+                              s.center.latitude = c.lat();
+                            }
+                            if (s.center.longitude !== c.lng()) {
+                              return s.center.longitude = c.lng();
+                            }
+                          }
+                        }
+                      }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.centerMs : void 0 : void 0);
+                    }
+                  });
+                }
+                if (__indexOf.call(opts.disableEvents, "idle") < 0) {
+                  google.maps.event.addListener(_m, "idle", function() {
+                    var b, ne, sw;
+                    b = _m.getBounds();
+                    ne = b.getNorthEast();
+                    sw = b.getSouthWest();
+                    return scope.$evalAsync(function(s) {
+                      var c, _ref;
+                      if ((_ref = s.update) != null ? _ref.lazy : void 0) {
+                        c = _m.center;
+                        if (angular.isDefined(s.center.type)) {
+                          if (s.center.coordinates[1] !== c.lat()) {
+                            s.center.coordinates[1] = c.lat();
+                          }
+                          if (s.center.coordinates[0] !== c.lng()) {
+                            s.center.coordinates[0] = c.lng();
+                          }
+                        } else {
+                          if (s.center.latitude !== c.lat()) {
+                            s.center.latitude = c.lat();
+                          }
+                          if (s.center.longitude !== c.lng()) {
+                            s.center.longitude = c.lng();
+                          }
+                        }
+                      }
+                      if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
+                        s.bounds.northeast = {
+                          latitude: ne.lat(),
+                          longitude: ne.lng()
+                        };
+                        s.bounds.southwest = {
+                          latitude: sw.lat(),
+                          longitude: sw.lng()
+                        };
+                      }
+                      s.zoom = _m.zoom;
+                      return scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
+                    });
+                  });
+                }
+              }
               if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
                 getEventHandler = function(eventName) {
                   return function() {

@@ -49,6 +49,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
           styles: "=" # optional
           bounds: "="
           update: '=' # optional
+          disableEvents: "=" # optional
 
         link: (scope, element, attrs) =>
           scope.idleAndZoomChanged = false
@@ -106,83 +107,93 @@ angular.module("uiGmapgoogle-maps.directives.api")
               scope.deferred.resolve _m
               resolveSpawned()
 
-            google.maps.event.addListener _m, "dragstart", =>
-              unless scope.update?.lazy
-                dragging = true
-                scope.$evalAsync (s) ->
-                  s.dragging = dragging if s.dragging?
+            opts.disableEvents =
+              if attrs.disableEvents
+                scope.disableEvents
+              else []
+            if  typeof opts.disableEvents is 'string'
+              opts.disableEvents = [opts.disableEvents]
 
-            google.maps.event.addListener _m, "dragend", =>
-              unless scope.update?.lazy
-                dragging = false
-                scope.$evalAsync (s) ->
-                  s.dragging = dragging if s.dragging?
+            if "all" not in opts.disableEvents
+              if "dragstart" not in opts.disableEvents
+                google.maps.event.addListener _m, "dragstart", =>
+                  unless scope.update?.lazy
+                    dragging = true
+                    scope.$evalAsync (s) ->
+                      s.dragging = dragging if s.dragging?
+              if "dragend" not in opts.disableEvents
+                google.maps.event.addListener _m, "dragend", =>
+                  unless scope.update?.lazy
+                    dragging = false
+                    scope.$evalAsync (s) ->
+                      s.dragging = dragging if s.dragging?
 
+              if "drag" not in opts.disableEvents
+                google.maps.event.addListener _m, "drag", =>
+                  unless scope.update?.lazy
+                    c = _m.center
+                    $timeout  ->
+                      s = scope
+                      if angular.isDefined(s.center.type)
+                        s.center.coordinates[1] = c.lat()
+                        s.center.coordinates[0] = c.lng()
+                      else
+                        s.center.latitude = c.lat()
+                        s.center.longitude = c.lng()
+                    , scope.eventOpts?.debounce?.debounce?.dragMs
 
-            google.maps.event.addListener _m, "drag", =>
-              unless scope.update?.lazy
-                c = _m.center
-                $timeout  ->
-                  s = scope
-                  if angular.isDefined(s.center.type)
-                    s.center.coordinates[1] = c.lat()
-                    s.center.coordinates[0] = c.lng()
-                  else
-                    s.center.latitude = c.lat()
-                    s.center.longitude = c.lng()
-                , scope.eventOpts?.debounce?.debounce?.dragMs
+              if "zoom_changed" not in opts.disableEvents
+                google.maps.event.addListener _m, "zoom_changed", =>
+                  unless scope.update?.lazy
+                    if scope.zoom isnt _m.zoom
+                      $timeout ->
+                        scope.zoom = _m.zoom
+                      , scope.eventOpts?.debounce?.zoomMs
 
+              if "center_changed" not in opts.disableEvents
+                settingCenterFromScope = false
+                google.maps.event.addListener _m, "center_changed", =>
+                  unless scope.update?.lazy
+                    c = _m.center
+                    return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
+                    $timeout ->
+                      s = scope
+                      unless _m.dragging
+                        if angular.isDefined(s.center.type)
+                          s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
+                          s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
+                        else
+                          s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
+                          s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
+                    , scope.eventOpts?.debounce?.centerMs
 
-            google.maps.event.addListener _m, "zoom_changed", =>
-              unless scope.update?.lazy
-                if scope.zoom isnt _m.zoom
-                  $timeout ->
-                    scope.zoom = _m.zoom
-                  , scope.eventOpts?.debounce?.zoomMs
+              if "idle" not in opts.disableEvents
+                google.maps.event.addListener _m, "idle", =>
+                  b = _m.getBounds()
+                  ne = b.getNorthEast()
+                  sw = b.getSouthWest()
+                  scope.$evalAsync (s)  ->
+                    if s.update?.lazy
+                      # update center
+                      c = _m.center
+                      if angular.isDefined(s.center.type)
+                        s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
+                        s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
+                      else
+                        s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
+                        s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
 
-            settingCenterFromScope = false
-            google.maps.event.addListener _m, "center_changed", =>
-              unless scope.update?.lazy
-                c = _m.center
-                return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
-                $timeout ->
-                  s = scope
-                  unless _m.dragging
-                    if angular.isDefined(s.center.type)
-                      s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
-                      s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
-                    else
-                      s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
-                      s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
-                , scope.eventOpts?.debounce?.centerMs
+                    if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
+                      s.bounds.northeast =
+                        latitude: ne.lat()
+                        longitude: ne.lng()
 
+                      s.bounds.southwest =
+                        latitude: sw.lat()
+                        longitude: sw.lng()
 
-            google.maps.event.addListener _m, "idle", =>
-              b = _m.getBounds()
-              ne = b.getNorthEast()
-              sw = b.getSouthWest()
-              scope.$evalAsync (s)  ->
-                if s.update?.lazy
-                  # update center
-                  c = _m.center
-                  if angular.isDefined(s.center.type)
-                    s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
-                    s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
-                  else
-                    s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
-                    s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
-
-                if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
-                  s.bounds.northeast =
-                    latitude: ne.lat()
-                    longitude: ne.lng()
-
-                  s.bounds.southwest =
-                    latitude: sw.lat()
-                    longitude: sw.lng()
-
-                s.zoom = _m.zoom
-                scope.idleAndZoomChanged = !scope.idleAndZoomChanged
+                    s.zoom = _m.zoom
+                    scope.idleAndZoomChanged = !scope.idleAndZoomChanged
 
             if angular.isDefined(scope.events) and scope.events isnt null and angular.isObject(scope.events)
               getEventHandler = (eventName) ->
