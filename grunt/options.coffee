@@ -146,7 +146,7 @@ module.exports =
     html: [
       '<%= yeoman.dist %>/{,*/}*.html'
       '<%= yeoman.dist %>/views/*.html'
-      '<%= yeoman.dist %>/views/**/directive/*.html'
+      '<%= yeoman.dist %>/views/**/**/*.html'
     ]
     css: ['<%= yeoman.dist %>/styles/{,*/}*.css']
     options:
@@ -202,7 +202,7 @@ module.exports =
         src: [
           '*.html'
           'views/*.html'
-          'views/directive/**/*.html'
+          'views/**/**/*.html'
         ]
         dest: '<%= yeoman.dist %>'
       ]
@@ -274,7 +274,7 @@ module.exports =
       html: [
         '<%= yeoman.dist %>/*.html'
         '<%= yeoman.dist %>/views/*.html'
-        '<%= yeoman.dist %>/views/directive/**/*.html'
+        '<%= yeoman.dist %>/views/**/**/*.html'
       ]
 
   ngmin:

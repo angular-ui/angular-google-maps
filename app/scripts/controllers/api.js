@@ -28,7 +28,7 @@ angular.module('angularGoogleMapsApp')
   ])
   .constant("globalList", [
     'String',
-    'lodash'
+    'Lodash'
   ])
   .config([ '$stateProvider', 'directiveList', 'providerList', 'serviceList', 'globalList',
     function ($stateProvider, directiveList, providerList, serviceList, globalList) {
