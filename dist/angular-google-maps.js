@@ -2447,11 +2447,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return {
             dragend: (function(_this) {
               return function(marker, eventName, model, mousearg) {
-                var newCoords, _ref;
-                newCoords = _this.setCoordsFromEvent(_this.modelOrKey(_this.scope.model, _this.coordsKey), _this.gMarker.getPosition());
-                _this.scope.model = _this.setVal(model, _this.coordsKey, newCoords);
+                var modelToSet, newCoords, _ref;
+                modelToSet = _this.trackModel ? _this.scope.model : _this.model;
+                newCoords = _this.setCoordsFromEvent(_this.modelOrKey(modelToSet, _this.coordsKey), _this.gMarker.getPosition());
+                modelToSet = _this.setVal(model, _this.coordsKey, newCoords);
                 if (((_ref = _this.scope.events) != null ? _ref.dragend : void 0) != null) {
-                  _this.scope.events.dragend(marker, eventName, _this.scope.model, mousearg);
+                  _this.scope.events.dragend(marker, eventName, modelToSet, mousearg);
                 }
                 return _this.scope.$apply();
               };
