@@ -2,73 +2,73 @@
 
 angular.module('angularGoogleMapsApp').provider('analytics', function () {
 
-	var _trackingCode = null,
-		_trackViewChange = true,
-		ga = null;
+  var _trackingCode = null,
+    _trackViewChange = true,
+    ga = null;
 
-	this.trackingCode = function () {
-		if (arguments.length) {
-			_trackingCode = arguments[0];
-			return this;
-		}
+  this.trackingCode = function () {
+    if (arguments.length) {
+      _trackingCode = arguments[0];
+      return this;
+    }
 
-		return _trackingCode;
-	};
+    return _trackingCode;
+  };
 
-	this.trackViewChange = function () {
-		if (arguments.length) {
-			_trackViewChange = arguments[0];
-			return this;
-		}
+  this.trackViewChange = function () {
+    if (arguments.length) {
+      _trackViewChange = arguments[0];
+      return this;
+    }
 
-		return _trackViewChange;
-	};
+    return _trackViewChange;
+  };
 
-	this.$get = function ($window, $log, $rootScope, $document, $location) {
+  this.$get = function ($window, $log, $rootScope, $document, $location) {
 
-		var _trackingCodeSet = false;
-		
-		var _setTrackingCode = function () {
-				if (!_trackingCodeSet && $window.ga) {
-					$window.ga('create', _trackingCode, 'auto');
-					_trackingCodeSet = true;
-				}
-			},
-			_trackPageView = function (path) {
-				$log.debug('analytics: tracking page view', path);
-				
-				_setTrackingCode();
-				
-				if ($window.ga) {
-					$window.ga('send', 'pageView', path);
-				}
-			},
-			_trackEvent = function (name, value) {
-				$log.debug('analytics: tracking event', { 'name': name, 'value': value });
-				
-				_setTrackingCode();
-				
-				if ($window.ga) {
-					$window.ga('send', 'event', 'button', 'click', 'download library')
-				}
-			};
+    var _trackingCodeSet = false;
 
-		if (_trackViewChange) {
-			
-			$log.info('analytics: telling analytics service to track view changes');
+    var _setTrackingCode = function () {
+        if (!_trackingCodeSet && $window.ga) {
+          $window.ga('create', _trackingCode, 'auto');
+          _trackingCodeSet = true;
+        }
+      },
+      _trackPageView = function (path) {
+        $log.debug('analytics: tracking page view', path);
 
-			$rootScope.$on('$routeChangeSuccess', function () {
-				_trackPageView($location.path());
-			});
+        _setTrackingCode();
 
-			$rootScope.$on('$routeChangeError', function () {
-				_trackPageView($location.path());
-			});
-		}
+        if ($window.ga) {
+          $window.ga('send', 'pageView', path);
+        }
+      },
+      _trackEvent = function (name, value) {
+        $log.debug('analytics: tracking event', { 'name': name, 'value': value });
 
-		return {
-			trackPageView: _trackPageView,
-			trackEvent: _trackEvent
-		};
-	};
+        _setTrackingCode();
+
+        if ($window.ga) {
+          $window.ga('send', 'event', 'button', 'click', 'download library')
+        }
+      };
+
+    if (_trackViewChange) {
+
+      $log.info('analytics: telling analytics service to track view changes');
+
+      $rootScope.$on('$routeChangeSuccess', function () {
+        _trackPageView($location.path());
+      });
+
+      $rootScope.$on('$routeChangeError', function () {
+        _trackPageView($location.path());
+      });
+    }
+
+    return {
+      trackPageView: _trackPageView,
+      trackEvent: _trackEvent
+    };
+  };
 });

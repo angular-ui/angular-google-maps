@@ -2,7 +2,8 @@
 
 angular.module('angularGoogleMapsApp')
   .value('headlinesFetchInterval', 300000)
-  .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $githubProvider, analyticsProvider, $sceDelegateProvider, hljsServiceProvider) {
+  .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$logProvider', '$githubProvider', 'analyticsProvider', '$sceDelegateProvider', 'hljsServiceProvider',
+  function ($stateProvider, $urlRouterProvider, $locationProvider, $logProvider, $githubProvider, analyticsProvider, $sceDelegateProvider, hljsServiceProvider) {
 
     $locationProvider.html5Mode(false).hashPrefix('!');
     $logProvider.debugEnabled(false);
@@ -82,8 +83,8 @@ angular.module('angularGoogleMapsApp')
       });
 
     $urlRouterProvider.otherwise('/');
-  })
-  .run(function ($rootScope, $log, $location) {
+  }])
+  .run(['$rootScope', '$log', '$location',function ($rootScope, $log, $location) {
 
     $rootScope.$location = $location;
 
@@ -91,4 +92,4 @@ angular.module('angularGoogleMapsApp')
       $log.error('could not change route', rejection);
     });
 
-  });
+  }]);
