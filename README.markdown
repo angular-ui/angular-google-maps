@@ -11,7 +11,7 @@ Develop: [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.p
 [![Gitter chat](https://badges.gitter.im/angular-ui/angular-google-maps.png)](https://gitter.im/angular-ui/angular-google-maps)
 <img src="http://benschwarz.github.io/bower-badges/badge@2x.png?pkgname=angular-google-maps" width="130" height="30">&nbsp;
 
-##Remeber! post (1.2.X):
+##Post 1.2.X:
 
 With the minor release of 1.2.0 (which is why it is a minor) there are a few breaking changes:
 
@@ -20,10 +20,11 @@ With the minor release of 1.2.0 (which is why it is a minor) there are a few bre
 
 If I have forgotten anything then it can be added here or to the website branch which is responsible for... the website. Feel free to contribute and make pull requests to either.
 
-##What is to come (2.0.X):
-2.0.0 will introduce the (major change) **ui-gmap** namespace which will be appended to all directives, services, and factories.
-
-The main goal for this is to decrease conflicts with external libraries. The other major reason for this is to not conflict with svg definitions like polygon or marker.
+## 2.0.X:
+2.0.0 will introduced major changes:
+- **ui-gmap** namespace which will be appended to all directives, services, and factories.
+  - The main goal for this is to decrease conflicts with external libraries. The other major reason for this is to not conflict with svg definitions like polygon or marker.
+- **GoogleMapAPI**: Is Provider and a Promise at the same time. This allows you to load the Google Maps SDK asynchronously into the DOM. The provider itself is a promise when passed off to the controller. Thefore the API (google and angular-google-maps) is ready on GoogleMapApi.then callback. If your getting nulls on controllers or nulls on google maps objects then this is because you are trying to access things prior to them being initialized. For more details read the website and dig into the code base. Also if your having issues with GoogleMapAPI search closed issues as a lot has been asked about these issues on several closed tickets. Search issues, gitter, and the google plus community!
 
 ## Getting started
 This is a directive for AngularJS `~1.0.7+, ~1.2.2+`.
@@ -56,6 +57,11 @@ and open your browser on `http://localhost:3000/example.html`.
 The various directives are documented at [official site](http://angular-google-maps.org).
 
 ### Contributing
+
+Filing issues: 
+ Prior to submiting an issue:
+- Search open/**closed** issues, src examples (./examples), gitter, and then google plus community! **Again please search!**
+- issues w/ plnkrs get attention quicker
 
 Pull requests more than welcome! If you're adding new features, it would be appreciated if you would provide some docs about the feature. This can be done either by adding a card to our [Trello board](https://trello.com/b/WwTRrkfh/angular-google-maps), forking the website branch and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
 
