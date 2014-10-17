@@ -54,6 +54,7 @@ angular.module("google-maps.directives.api.models.child".ns())
         @scope.$destroy()
 
       setMyScope: (model, oldModel = undefined, isInit = false) =>
+        model = @model unless model?
         @maybeSetScopeValue('icon', model, oldModel, @iconKey, @evalModelHandle, isInit, @setIcon)
         @maybeSetScopeValue('coords', model, oldModel, @coordsKey, @evalModelHandle, isInit, @setCoords)
         if _.isFunction(@clickKey)
@@ -81,9 +82,13 @@ angular.module("google-maps.directives.api.models.child".ns())
             gSetter(@scope) if gSetter?
             @gMarkerManager.draw() if @doDrawSelf
 
+      isNotValid:(scope, doCheckGmarker = true) =>
+        hasNoGmarker = unless doCheckGmarker then false else @gMarker == undefined
+        hasIdenticalScopes = unless @trackModel then scope.$id != @scope.$id else false
+        hasIdenticalScopes or hasNoGmarker
+
       setCoords: (scope) =>
-        if scope.$id != @scope.$id or @gMarker == undefined
-          return
+        return if @isNotValid scope
         if scope.coords?
           if !@validateCoords(@scope.coords)
             $log.debug "MarkerChild does not have coords yet. They may be defined later."
@@ -96,8 +101,7 @@ angular.module("google-maps.directives.api.models.child".ns())
           @gMarkerManager.remove @gMarker
 
       setIcon: (scope) =>
-        if scope.$id != @scope.$id or @gMarker == undefined
-          return
+        return if @isNotValid scope
         @gMarkerManager.remove @gMarker
         @gMarker.setIcon scope.icon
         @gMarkerManager.add @gMarker
@@ -105,15 +109,13 @@ angular.module("google-maps.directives.api.models.child".ns())
         @gMarker.setVisible @validateCoords(scope.coords)
 
       setOptions: (scope) =>
-        if scope.$id != @scope.$id
-          return
-
+        return if @isNotValid scope, false
         if @gMarker?
           @gMarkerManager.remove(@gMarker)
           delete @gMarker
-        unless scope.coords ? scope.icon? scope.options?
+        unless scope.coords?
           return
-        @opts = @createOptions(scope.coords, scope.icon, scope.options)
+        @opts = @createOptions(scope.coords, @getProp('icon',scope.icon), @getProp('icon',scope.options))
 
         delete @gMarker
         if @isLabel @opts

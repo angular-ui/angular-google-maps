@@ -13,4 +13,11 @@ angular.module("google-maps.directives.api.utils".ns())
         @::[key] = value
       obj.included?.apply(@)
       this
+
+    getProp:(propName, otherObject) =>
+      object = if otherObject? then otherObject else @
+      if object[propName]?
+        return object[propName]
+      undefined
+
   BaseObject

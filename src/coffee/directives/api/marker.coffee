@@ -1,6 +1,15 @@
 angular.module("google-maps.directives.api".ns())
 .factory "Marker".ns(), ["IMarker".ns(), "MarkerChildModel".ns(), "MarkerManager".ns(),
-  (IMarker, MarkerChildModel, MarkerManager) ->
+  "PropertyAction".ns(),
+  (IMarker, MarkerChildModel, MarkerManager, PropertyAction) ->
+
+    watchChildMarker = (child, scope) ->
+        action = new PropertyAction child.setMyScope, false
+        scope.$watchCollection(scope,action.sic)
+        IMarker.keys.forEach (k) ->
+           #to debug and know who the calling change is from
+          scope.$watch(k, action.sic, true)
+
     class Marker extends IMarker
       constructor: ->
         super()
@@ -16,14 +25,16 @@ angular.module("google-maps.directives.api".ns())
         IMarker.mapPromise(scope, ctrl).then (map) =>
           @gMarkerManager = new MarkerManager map unless @gMarkerManager
 
-          keys = _.keys(IMarker.keys)
-          keys = _.object(keys,keys)
+          keys = _.object(IMarker.keys,IMarker.keys)
 
-          @promise = new MarkerChildModel(
-            scope, scope, keys, map, {}, doClick = true, @gMarkerManager, doDrawSelf = false,
-            trackModel = false).deferred.promise.then (gMarker) =>
-              scope.deferred.resolve(gMarker)
+          m = new MarkerChildModel scope, scope,
+            keys, map, {}, doClick = true,
+            @gMarkerManager, doDrawSelf = false,
+            trackModel = false
 
+          @promise= m.deferred.promise.then (gMarker) =>
+            watchChildMarker m, scope
+            scope.deferred.resolve(gMarker)
 
           if scope.control?
             scope.control.getGMarkers = @gMarkerManager.getGMarkers
