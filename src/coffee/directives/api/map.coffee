@@ -35,6 +35,7 @@ angular.module("google-maps.directives.api".ns())
                 events: "=" # optional
                 styles: "=" # optional
                 bounds: "="
+                lazyUpdate: "=" # optional
 
             ###
             @param scope
@@ -93,49 +94,54 @@ angular.module("google-maps.directives.api".ns())
 
                   google.maps.event.addListener _m, "dragstart", ->
                       dragging = true
-                      _.defer ->
-                        scope.$apply (s) ->
-                            s.dragging = dragging if s.dragging?
+                      if not scope.lazyUpdate
+                        _.defer ->
+                          scope.$apply (s) ->
+                              s.dragging = dragging if s.dragging?
 
                   google.maps.event.addListener _m, "dragend", ->
                       dragging = false
-                      _.defer ->
-                        scope.$apply (s) ->
-                            s.dragging = dragging if s.dragging?
+                      if not scope.lazyUpdate
+                        _.defer ->
+                          scope.$apply (s) ->
+                              s.dragging = dragging if s.dragging?
 
 
                   google.maps.event.addListener _m, "drag", ->
-                      c = _m.center
-                      _.defer ->
-                          scope.$apply (s) ->
-                              if angular.isDefined(s.center.type)
-                                  s.center.coordinates[1] = c.lat()
-                                  s.center.coordinates[0] = c.lng()
-                              else
-                                  s.center.latitude = c.lat()
-                                  s.center.longitude = c.lng()
+                      if not scope.lazyUpdate
+                        c = _m.center
+                        _.defer ->
+                            scope.$apply (s) ->
+                                if angular.isDefined(s.center.type)
+                                    s.center.coordinates[1] = c.lat()
+                                    s.center.coordinates[0] = c.lng()
+                                else
+                                    s.center.latitude = c.lat()
+                                    s.center.longitude = c.lng()
 
 
                   google.maps.event.addListener _m, "zoom_changed", ->
-                      if scope.zoom isnt _m.zoom
-                          _.defer ->
-                              scope.$apply (s) ->
-                                  s.zoom = _m.zoom
+                      if not scope.lazyUpdate
+                        if scope.zoom isnt _m.zoom
+                            _.defer ->
+                                scope.$apply (s) ->
+                                    s.zoom = _m.zoom
 
 
                   settingCenterFromScope = false
                   google.maps.event.addListener _m, "center_changed", ->
-                      c = _m.center
-                      return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
-                      _.defer ->
-                          scope.$apply (s) ->
-                              unless _m.dragging
-                                  if angular.isDefined(s.center.type)
-                                      s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
-                                      s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
-                                  else
-                                      s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
-                                      s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
+                      if not scope.lazyUpdate
+                        c = _m.center
+                        return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
+                        _.defer ->
+                            scope.$apply (s) ->
+                                unless _m.dragging
+                                    if angular.isDefined(s.center.type)
+                                        s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
+                                        s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
+                                    else
+                                        s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
+                                        s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
 
 
                   google.maps.event.addListener _m, "idle", ->
@@ -144,6 +150,21 @@ angular.module("google-maps.directives.api".ns())
                       sw = b.getSouthWest()
                       _.defer ->
                           scope.$apply (s) ->
+                              if s.lazyUpdate
+                                # update center
+                                c = _m.center
+                                if angular.isDefined(s.center.type)
+                                  s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
+                                  s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
+                                else
+                                  s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
+                                  s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
+
+                                # update zoom
+                                s.zoom = _m.zoom
+
+
+                              # update bounds
                               if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
                                   s.bounds.northeast =
                                       latitude: ne.lat()
