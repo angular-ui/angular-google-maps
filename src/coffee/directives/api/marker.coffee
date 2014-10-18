@@ -1,14 +1,6 @@
 angular.module("google-maps.directives.api".ns())
-.factory "Marker".ns(), ["IMarker".ns(), "MarkerChildModel".ns(), "MarkerManager".ns(),
-  "PropertyAction".ns(),
-  (IMarker, MarkerChildModel, MarkerManager, PropertyAction) ->
-
-    watchChildMarker = (child, scope) ->
-        action = new PropertyAction child.setMyScope, false
-        scope.$watchCollection(scope,action.sic)
-        IMarker.keys.forEach (k) ->
-           #to debug and know who the calling change is from
-          scope.$watch(k, action.sic, true)
+.factory "Marker".ns(), ["IMarker".ns(), "MarkerChildModel".ns(), "MarkerManager".ns()
+  (IMarker, MarkerChildModel, MarkerManager) ->
 
     class Marker extends IMarker
       constructor: ->
@@ -16,7 +8,7 @@ angular.module("google-maps.directives.api".ns())
         @template = '<span class="angular-google-map-marker" ng-transclude></span>'
         @$log.info(@)
 
-      controller: ['$scope', '$element', ($scope, $element) =>
+      controller: ['$scope', '$element', ($scope, $element) ->
         $scope.ctrlType = 'Marker'
         _.extend @, IMarker.handle($scope, $element)
       ]
@@ -33,7 +25,6 @@ angular.module("google-maps.directives.api".ns())
             trackModel = false
 
           @promise= m.deferred.promise.then (gMarker) =>
-            watchChildMarker m, scope
             scope.deferred.resolve(gMarker)
 
           if scope.control?

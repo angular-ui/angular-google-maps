@@ -22,7 +22,10 @@ angular.module("google-maps.mocks", [])
   getMarker = ->
     Marker = (opts) -> return
     Marker.prototype.setMap = (map) ->
-      return
+    Marker.prototype.setPosition = (position) ->
+    Marker.prototype.setIcon = (icon) ->
+    Marker.prototype.setVisible = (isVisible) ->
+    Marker.prototype.setOptions = (options) ->
     return Marker
 
   class GoogleApiMock
@@ -255,4 +258,3 @@ angular.module("google-maps.mocks", [])
     getMarker: getMarker
 
   GoogleApiMock
-

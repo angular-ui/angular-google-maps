@@ -24,15 +24,19 @@ angular.module("markerCoordsTest", ["google-maps".ns()])
   $scope.marker = {
     id: "myMarker",
     coords: coords,
-    icon: undefined
+    icon: 'assets/images/blue_marker.png'
   };
+
+  $scope.markers = [
+    $scope.marker
+  ];
 
   $interval(function() {
     if($scope.marker.icon)
       $scope.marker.icon = undefined;
     else
       $scope.marker.icon = 'assets/images/blue_marker.png';
-    // coords.latitude = coords.latitude + 0.0001;
-    // coords.longitude = coords.longitude + 0.0001;
+    coords.latitude = coords.latitude + 0.0001;
+    coords.longitude = coords.longitude + 0.0001;
   }, 1500);
 });
