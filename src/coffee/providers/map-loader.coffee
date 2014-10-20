@@ -33,7 +33,7 @@ angular.module('google-maps.providers'.ns())
     @options =
     #    key: 'api-key here',
       v: '3.16'
-      libraries: 'places'
+      libraries: 'places' #TODO: remove there should be no libraries for default
       language: 'en'
       sensor: 'false'
 

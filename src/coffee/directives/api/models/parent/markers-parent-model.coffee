@@ -148,10 +148,10 @@ angular.module("google-maps.directives.api.models.parent".ns())
                     @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
                     return
                 @$log.info('child', child, 'markers', @scope.markerModels)
-                childScope = scope.$new(false)
+                childScope = scope.$new(true)
                 childScope.events = scope.events
                 keys = {}
-                _.each IMarker.keys, (v,k) ->
+                _.each IMarker.scopeKeys, (v,k) ->
                   keys[k] = scope[k]
                 child = new MarkerChildModel(childScope, model, keys, @map, @DEFAULTS,
                     @doClick, @gMarkerManager, doDrawSelf = false) #this is managed so child is not drawing itself
@@ -164,12 +164,12 @@ angular.module("google-maps.directives.api.models.parent".ns())
               #for destroy we have a lookup?
               #this will require another attribute for destroySingle(marker)
               _async.waitOrGo @, =>
-                  @gMarkerManager.clear() if @gMarkerManager?
-                  _.each @scope.markerModels.values(), (model)->
-                      model.destroy() if model?
-                  delete @scope.markerModels
-                  @scope.markerModels = new PropMap()
-                  Promise.resolve()
+                _.each @scope.markerModels.values(), (model)->
+                    model.destroy(false) if model?
+                delete @scope.markerModels
+                @gMarkerManager.clear() if @gMarkerManager?
+                @scope.markerModels = new PropMap()
+                Promise.resolve()
 
             maybeExecMappedEvent:(cluster, fnName) ->
               if _.isFunction @scope.clusterEvents?[fnName]

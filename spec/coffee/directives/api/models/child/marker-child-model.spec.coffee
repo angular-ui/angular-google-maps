@@ -97,7 +97,7 @@ describe "MarkerChildModel".ns(), ->
 
   it 'wipes gMarker', ->
     @subject.destroy()
-    expect(@subject.gMarker).toEqual(undefined)
+    expect(@subject.gMarker).toBeFalsy()
     expect(@subject.gMarkerManager.gMarkers.length).toEqual(0)
 
   describe 'attaches to marker events', ->
