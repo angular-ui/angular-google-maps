@@ -1,4 +1,3 @@
-//<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.16"></script>
 angular.module("angular-google-maps-example", ["google-maps".ns()])
 
 .value("rndAddToLatLon", function () {
@@ -8,7 +7,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
 .config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
   GoogleMapApi.configure({
 //    key: 'your api key',
-    v: '3.16',
+    v: '3.17',
     libraries: 'weather,geometry,visualization'
   });
 }])
@@ -31,6 +30,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
   $log.doLog = true
 
   GoogleMapApi.then(function(maps) {
+    $scope.googleVersion = maps.version;
     maps.visualRefresh = true;
     $log.info('$scope.map.rectangle.bounds set');
     $scope.map.rectangle.bounds = new maps.LatLngBounds(

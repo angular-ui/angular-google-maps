@@ -32,14 +32,14 @@
 <div class="container-fluid">
 <div class="row-fluid">
     <div class="page-title">
-        <h2>angular-google-maps example <span ng-cloak>{{version}}</span></h2>
+        <h2>angular-google-maps: <span ng-cloak>{{version}}</span>, google-maps: <span ng-cloak>{{googleVersion}}</span></h2>
     </div>
     <button class="btn btn-danger" ng-click="removeMarkers()">Clear Map</button>
     <button class="btn btn-success" ng-click="refreshMap()">Refresh Map</button>
     <button class="btn btn-success" ng-click="getMapInstance()">Get Map Instance</button>
 </div>
 <div class="row-fluid">
-    <ui-gmap-google-map class="span7"
+    <ui-gmap-google-map class="span8"
          center="map.center"
          zoom="map.zoom"
          dragging="map.dragging"
@@ -129,8 +129,8 @@
             </ui-gmap-windows>
         </ui-gmap-markers>
 
-        <!--<!-- predefined markers -->-->
-        <!--<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->-->
+        <!-- predefined markers -->
+        <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
         <ui-gmap-marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id" options="m.options">
             <ui-gmap-window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
                     <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
@@ -139,7 +139,7 @@
         </ui-gmap-marker>
 
          <!--marker for clicked position can not put google.map.animations.BOUNCE , since it is not initiaized yet-->
-        <!--<!-- DISABLED ANIMATION on MarkerLABEL due to Google SDK V3 bug, see MarkerLabelChildModel.setOption-->-->
+        <!--DISABLED ANIMATION on MarkerLABEL due to Google SDK V3 bug, see MarkerLabelChildModel.setOption -->
         <!--<div ng-init="opts = {animation:1}">-->
             <ui-gmap-marker coords="map.clickedMarker"  idKey="map.clickedMarker.id" options="map.clickedMarker.options">
                 <ui-gmap-window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
@@ -174,7 +174,7 @@
         </ui-gmap-rectangle>
 
 </ui-gmap-google-map>
-<div class="span5">
+<div class="span4">
     <fieldset>
         <table class="table">
             <tbody>

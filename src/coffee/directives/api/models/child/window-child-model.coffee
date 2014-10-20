@@ -1,13 +1,12 @@
 angular.module("google-maps.directives.api.models.child".ns())
 .factory "WindowChildModel".ns(),
   [ "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache",
-    (BaseObject, GmapUtil, Logger, $compile, $http, $templateCache) ->
+    (BaseObject, GmapUtil, $log, $compile, $http, $templateCache) ->
       class WindowChildModel extends BaseObject
         @include GmapUtil
         constructor: (@model, @scope, @opts, @isIconVisibleOnClick,
           @mapCtrl, @markerCtrl, @element, @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
           @googleMapsHandles = []
-          @$log = Logger
           @createGWin()
 
           @markerCtrl.setClickable(true) if @markerCtrl?
@@ -19,7 +18,7 @@ angular.module("google-maps.directives.api.models.child".ns())
           @watchAndDoShow()
           @scope.$on "$destroy", =>
             @destroy()
-          @$log.info(@)
+          $log.info @
           #todo: watch model in here, and recreate / clean gWin on change
 
         doShow: =>
@@ -79,7 +78,7 @@ angular.module("google-maps.directives.api.models.child".ns())
                         @hideWindow()
                     else
                         if !@validateCoords(newValue)
-                            @$log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
+                            $log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
                             return
                         pos = @getCoords(newValue)
                         @gWin.setPosition pos
@@ -123,7 +122,8 @@ angular.module("google-maps.directives.api.models.child".ns())
           show = () =>
             if @gWin?
               unless @gWin.isOpen() #only show if we have no show defined yet or if show is really true
-                @gWin.open(@mapCtrl)
+                @gWin.open(@mapCtrl, if @markerCtrl then @markerCtrl else undefined)
+                # $log.debug "window for marker.key (#{@markerCtrl.key}) opened" if @markerCtrl
 
           if @scope.templateUrl
             if @gWin?

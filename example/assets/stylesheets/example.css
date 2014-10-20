@@ -9,7 +9,7 @@ body {
 
 /* fix for Twitter Bootstrap handling of responsive images */
 .angular-google-map img {
-    max-width: inherit;
+    max-width: none;
 }
 
 .angular-google-map {
@@ -39,6 +39,12 @@ body {
     border: 1px solid black;
     white-space: nowrap;
 }
+
+/** FIX for Bootstrap and Google Maps Info window styes problem **/
+img[src*="gstatic.com/"], img[src*="googleapis.com/"] {
+  max-width: none;
+}
+
 
 /* uncomment this if you are using the <google-map> element instead of a div
 .angular-google-map {

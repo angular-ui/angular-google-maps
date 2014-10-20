@@ -72,7 +72,7 @@ angular.module("google-maps.directives.api.utils".ns())
       if gMarker? and !options?.pixelOffset?
         #if we have a marker, center the window above
         if !options.boxClass?
-          options.pixelOffset = height:-40, width:0
+          # options.pixelOffset = height:-40, width:0 (using anchor)
         else #it is an infoBox center it below
           options.pixelOffset = height:0, width:-2
       options

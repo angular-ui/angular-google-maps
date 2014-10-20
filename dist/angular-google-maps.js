@@ -757,10 +757,7 @@ Nicholas McCready - https://twitter.com/nmccready
             });
             if ((gMarker != null) && ((options != null ? options.pixelOffset : void 0) == null)) {
               if (options.boxClass == null) {
-                options.pixelOffset = {
-                  height: -40,
-                  width: 0
-                };
+
               } else {
                 options.pixelOffset = {
                   height: 0,
@@ -2881,7 +2878,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child".ns()).factory("WindowChildModel".ns(), [
-    "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache", function(BaseObject, GmapUtil, Logger, $compile, $http, $templateCache) {
+    "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache", function(BaseObject, GmapUtil, $log, $compile, $http, $templateCache) {
       var WindowChildModel;
       WindowChildModel = (function(_super) {
         __extends(WindowChildModel, _super);
@@ -2912,7 +2909,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchAndDoShow = __bind(this.watchAndDoShow, this);
           this.doShow = __bind(this.doShow, this);
           this.googleMapsHandles = [];
-          this.$log = Logger;
           this.createGWin();
           if (this.markerCtrl != null) {
             this.markerCtrl.setClickable(true);
@@ -2926,7 +2922,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return _this.destroy();
             };
           })(this));
-          this.$log.info(this);
+          $log.info(this);
         }
 
         WindowChildModel.prototype.doShow = function() {
@@ -3018,7 +3014,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return _this.hideWindow();
                 } else {
                   if (!_this.validateCoords(newValue)) {
-                    _this.$log.error("WindowChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(_this.model)));
+                    $log.error("WindowChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(_this.model)));
                     return;
                   }
                   pos = _this.getCoords(newValue);
@@ -3090,7 +3086,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               if (_this.gWin != null) {
                 if (!_this.gWin.isOpen()) {
-                  return _this.gWin.open(_this.mapCtrl);
+                  return _this.gWin.open(_this.mapCtrl, _this.markerCtrl ? _this.markerCtrl : void 0);
                 }
               }
             };
