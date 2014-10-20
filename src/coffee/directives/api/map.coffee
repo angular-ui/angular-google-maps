@@ -251,4 +251,8 @@ angular.module("google-maps.directives.api".ns())
                           opts.styles = newValue
                           _m.setOptions opts  if _m?
                   ,true
+
+                  $(window).resize ->
+                    $timeout ->
+                        google.maps.event.trigger _m, "resize"
     ]
