@@ -8,17 +8,21 @@ angular.module("google-maps.directives.api".ns())
       @template = '<span class="angular-google-maps-window" ng-transclude></span>'
       @$log.info @
       @childWindows = []
+      # keeping for now if promise order becomes important
+      # @link =
+      #     pre: @pre
+      #     post: @post
 
     link: (scope, element, attrs, ctrls) =>
-
       #keep out of promise.then to keep scopes unique , not sure why yet
-      mapScope = ctrls[0].getScope()
       markerCtrl = if ctrls.length > 1 and ctrls[1]? then ctrls[1] else undefined
       markerScope = markerCtrl?.getScope()
       #end of keep out of promise
-
-      mapScope.deferred.promise.then (mapCtrl) =>
+      @mapPromise = IWindow.mapPromise(scope, ctrls[0])
+      #looks like angulars $q is FIFO and Bluebird is LIFO
+      @mapPromise.then (mapCtrl) =>
         isIconVisibleOnClick = true
+
         if angular.isDefined attrs.isiconvisibleonclick
           isIconVisibleOnClick = scope.isIconVisibleOnClick
         if not markerCtrl
@@ -26,6 +30,8 @@ angular.module("google-maps.directives.api".ns())
           return
         markerScope.deferred.promise.then  (gMarker) =>
           @init scope, element, isIconVisibleOnClick, mapCtrl, markerScope, gMarker
+
+    # post: (scope, element, attrs, ctrls) =>
 
     init: (scope, element, isIconVisibleOnClick, mapCtrl, markerScope, gMarker) ->
       defaults = if scope.options? then scope.options else {}

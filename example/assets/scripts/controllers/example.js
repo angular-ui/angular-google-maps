@@ -181,6 +181,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
       Logger.info('CLICK CLICK');
     },
     map: {
+      show: true,
       control: {},
       version: "uknown",
       heatLayerCallback: function (layer) {

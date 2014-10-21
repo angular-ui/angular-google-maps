@@ -2,6 +2,7 @@ angular.module("google-maps.directives.api.utils".ns())
 .service "IsReady".ns(), ['$q', '$timeout', ($q, $timeout) ->
   ctr = 0
   proms = []
+
   promises = ->
     $q.all proms
 
@@ -28,4 +29,8 @@ angular.module("google-maps.directives.api.utils".ns())
           d.resolve(promises())
     ohCrap()
     d.promise
+
+  reset: ->
+    ctr = 0
+    proms.length = 0
 ]

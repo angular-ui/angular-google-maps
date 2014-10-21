@@ -20,8 +20,12 @@ angular.module("google-maps.mocks", [])
         @_isOpen = val
 
   getMarker = ->
+    map = undefined
     Marker = (opts) -> return
-    Marker.prototype.setMap = (map) ->
+    Marker.prototype.setMap = (_map) ->
+      map = _map
+    Marker.prototype.getMap =  ->
+      map
     Marker.prototype.setPosition = (position) ->
     Marker.prototype.setIcon = (icon) ->
     Marker.prototype.setVisible = (isVisible) ->
@@ -169,6 +173,8 @@ angular.module("google-maps.mocks", [])
             listeners.push toPush
           else
             found.events[eventName] = callBack
+
+        event.addListenerOnce = event.addListener
 
       if not event.clearListeners
         event.clearListeners = () ->

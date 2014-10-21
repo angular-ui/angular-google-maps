@@ -1,8 +1,13 @@
 angular.module("google-maps.directives.api".ns())
-.factory "Map".ns(), ["$timeout", '$q',"Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(),
-                      "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(),
-                      "ExtendGWin".ns(),"ExtendMarkerClusterer".ns(),"GoogleMapsUtilV3".ns(),'GoogleMapApi'.ns(),
-  ($timeout,$q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3,GoogleMapApi) ->
+.factory "Map".ns(), [
+  "$timeout", '$q',"Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(),
+  "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(),
+  "ExtendGWin".ns(),"ExtendMarkerClusterer".ns(),
+  "GoogleMapsUtilV3".ns(),'GoogleMapApi'.ns(),
+  ($timeout,$q, $log, GmapUtil, BaseObject,
+    CtrlHandle, IsReady, uuid,
+    ExtendGWin, ExtendMarkerClusterer,
+    GoogleMapsUtilV3,GoogleMapApi) ->
         "use strict"
         DEFAULTS = undefined
         initializeItems = [GoogleMapsUtilV3, ExtendGWin, ExtendMarkerClusterer]
@@ -10,6 +15,11 @@ angular.module("google-maps.directives.api".ns())
             @include GmapUtil
             constructor: ->
                 ctrlFn = ($scope) ->
+                    retCtrl = undefined
+                    $scope.$on '$destroy', ->
+                      CtrlHandle.handle $scope #resets deferred
+                      IsReady.reset()
+
                     ctrlObj = CtrlHandle.handle $scope
                     $scope.ctrlType = 'Map'
                     $scope.deferred.promise.then ->
@@ -17,9 +27,11 @@ angular.module("google-maps.directives.api".ns())
                         i.init()
                     ctrlObj.getMap = ->
                       $scope.map
-                    _.extend this, ctrlObj
+                    retCtrl = _.extend @, ctrlObj
+                    retCtrl
                 @controller = ["$scope", ctrlFn ]
                 self = @
+            controllerAs: 'mapCtrl'.ns()
             restrict: "EMA"
             transclude: true
             replace: false
@@ -83,11 +95,8 @@ angular.module("google-maps.directives.api".ns())
                   _m['_id'.ns()] = uuid.generate()
 
                   dragging = false
-                  if not _m
-                    google.maps.event.addListener _m, 'tilesloaded ', (map) ->
-                      scope.deferred.resolve map
-                      resolveSpawned()
-                  else
+
+                  google.maps.event.addListenerOnce _m, 'idle', ->
                     scope.deferred.resolve _m
                     resolveSpawned()
 
@@ -205,7 +214,7 @@ angular.module("google-maps.directives.api".ns())
                       settingCenterFromScope = false
                   ), true
                   scope.$watch "zoom", (newValue, oldValue) ->
-                      return  if newValue is _m.zoom
+                      return  if _.isEqual(newValue,oldValue)
                       _.defer ->
                           _m.setZoom newValue
 
@@ -219,15 +228,11 @@ angular.module("google-maps.directives.api".ns())
                       bounds = new google.maps.LatLngBounds(sw, ne)
                       _m.fitBounds bounds
 
-                  scope.$watch "options", (newValue,oldValue) =>
-                      unless _.isEqual(newValue,oldValue)
-                          opts.options = newValue
-                          _m.setOptions opts  if _m?
-                  ,true
-
-                  scope.$watch "styles", (newValue,oldValue) =>
-                      unless _.isEqual(newValue,oldValue)
-                          opts.styles = newValue
-                          _m.setOptions opts  if _m?
+                  ['options','styles'].forEach (toWatch) ->
+                    scope.$watch toWatch, (newValue,oldValue) ->
+                      watchItem = @exp
+                      return  if _.isEqual(newValue,oldValue)
+                      opts.options = newValue
+                      _m.setOptions opts  if _m?
                   ,true
     ]
