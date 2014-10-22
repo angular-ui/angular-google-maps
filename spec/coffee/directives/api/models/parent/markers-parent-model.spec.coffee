@@ -44,23 +44,21 @@ describe "MarkersParentModel - Clusterer Event Extensions", ->
     .value('scope', @scope)
 
     module "mockModule"
-    inject (GoogleApiMock) =>
-      @gmap = new GoogleApiMock(false)
-      @gmap.mockEvent()
+    window["Initiator".ns()].initMock()
 
-    inject ['$rootScope', 'element', 'attrs', 'map', 'MarkersParentModel'.ns(), 'GoogleMapsUtilV3'.ns(),'ExtendMarkerClusterer'.ns(),
+    inject ['$rootScope', 'element', 'attrs', 'map',
+      'MarkersParentModel'.ns(), 'GoogleMapsUtilV3'.ns(),'ExtendMarkerClusterer'.ns(),
       ($rootScope, element, attrs, map, MarkersParentModel, GoogleMapsUtilV3,ExtendMarkerClusterer) =>
         GoogleMapsUtilV3.init()
         ExtendMarkerClusterer.init()
         scope = $rootScope.$new()
-        $timeout = ((fn)->
-          fn())
+
         @scope = _.extend @scope, scope
         @scope.options =
           animation: google.maps.Animation.BOUNCE
         @testCtor = MarkersParentModel
-        @fireListener = window.google.maps.event.fireListener
-        @subject = new @testCtor(@scope, element, attrs, map, $timeout)
+
+        @subject = new @testCtor(@scope, element, attrs, map)
         @subject
     ]
 
@@ -101,4 +99,3 @@ describe "MarkersParentModel - Clusterer Event Extensions", ->
             expect(@markerModelsCluster).toBe("crap")
       describe "not fired", ->
         it 'click - ', ->
-

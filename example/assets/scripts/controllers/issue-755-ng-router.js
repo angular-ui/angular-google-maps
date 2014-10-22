@@ -1,4 +1,4 @@
-angular.module("markerCoordsTest", ["google-maps".ns()])
+angular.module("markerCoordsTest", ['ngRoute',"google-maps".ns()])
 
 .config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
   GoogleMapApi.configure({
@@ -6,6 +6,18 @@ angular.module("markerCoordsTest", ["google-maps".ns()])
     libraries: ''
   });
 }])
+
+.config(['$routeProvider',
+function($routeProvider) {
+    return $routeProvider
+    .when('/map', {
+      templateUrl: 'assets/templates/issue-755-ng-router.html',
+      controller: 'TestController'
+    }).when('/msgs', {
+      template: '<div>HI!</div>',
+    });
+  }
+])
 
 .controller("TestController", function($scope, $interval) {
   var coords = {
@@ -17,20 +29,14 @@ angular.module("markerCoordsTest", ["google-maps".ns()])
 
   $scope.map = {
     title: "A test map",
-    center: {latitude: 45.0,longitude: 11.0},
-    zoom: 15
+    center: coords,
+    zoom: 15,
   };
 
   $scope.marker = {
     id: "myMarker",
     coords: coords,
-    icon: 'assets/images/blue_marker.png',
-    options:{
-      draggable: true,
-      labelContent: "lat: " + coords.latitude + ' ' + 'lon: ' + coords.longitude,
-      labelAnchor: "5 0",
-      labelClass: "marker-labels"
-    }
+    icon: 'assets/images/blue_marker.png'
   };
 
   $scope.markers = [
@@ -44,6 +50,5 @@ angular.module("markerCoordsTest", ["google-maps".ns()])
       $scope.marker.icon = 'assets/images/blue_marker.png';
     coords.latitude = coords.latitude + 0.0001;
     coords.longitude = coords.longitude + 0.0001;
-    $scope.marker.options.labelContent = "lat: " + coords.latitude + ' ' + 'lon: ' + coords.longitude;
   }, 1500);
 });

@@ -30,18 +30,8 @@ angular.module("google-maps.directives.api".ns())
         scope.deferred.resolve()
 
       IMarker.mapPromise(scope, ctrl).then (map) =>
-#        if @parentModel?
-#          scope.deferred = Promise.defer()#reset deferred as the other is expired
-#        fake = _sync.fakePromise()
-#        maybeDeferred = @parentModel?.existingPieces || fake
-#        maybeDeferred.then =>
         parentModel = new MarkersParentModel(scope, element, attrs, map)
         parentModel.existingPieces.then ->
           ready()
-
-#        unless @parentModel?
-#          maybeDeferred.resolve()
-
-
 
 ]

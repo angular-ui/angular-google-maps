@@ -1,4 +1,3 @@
-//<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.16"></script>
 angular.module("angular-google-maps-example", ["google-maps".ns()])
 
 .value("rndAddToLatLon", function () {
@@ -8,7 +7,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
 .config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
   GoogleMapApi.configure({
 //    key: 'your api key',
-    v: '3.16',
+    v: '3.17',
     libraries: 'weather,geometry,visualization'
   });
 }])
@@ -31,6 +30,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
   $log.doLog = true
 
   GoogleMapApi.then(function(maps) {
+    $scope.googleVersion = maps.version;
     maps.visualRefresh = true;
     $log.info('$scope.map.rectangle.bounds set');
     $scope.map.rectangle.bounds = new maps.LatLngBounds(
@@ -181,6 +181,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
       Logger.info('CLICK CLICK');
     },
     map: {
+      show: true,
       control: {},
       version: "uknown",
       heatLayerCallback: function (layer) {
@@ -522,12 +523,10 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
     }
 
   });
-  var marker2Dragend = function (marker, eventName, model, args) {
-    model.options.labelContent = "Dragged lat: " + model.latitude + " lon: " + model.longitude;
-//    $scope.map.markers2[marker.key-1] = model;
-  };
   $scope.map.markers2Events = {
-    dragend: marker2Dragend
+    dragend: function (marker, eventName, model, args) {
+      model.options.labelContent = "Dragged lat: " + model.latitude + " lon: " + model.longitude;
+    }
   };
 
   _.each($scope.map.markers, function (marker) {
@@ -540,11 +539,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
     };
   });
 
-  _.each($scope.map.markers2, function (marker) {
-    marker.closeClick = function () {
-      marker.showWindow = false;
-      $scope.$apply();
-    };
+  $scope.map.markers2.forEach( function (marker) {
     marker.onClicked = function () {
       onMarkerClicked(marker);
     };

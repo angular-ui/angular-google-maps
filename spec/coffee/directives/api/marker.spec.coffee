@@ -1,13 +1,6 @@
 describe "directives.api.Marker", ->
   beforeEach ->
-    module "google-maps".ns()
-    module "google-maps.mocks"
-    inject (GoogleApiMock) =>
-      @gmap = new GoogleApiMock()
-      @gmap.mockAPI()
-      @gmap.mockLatLng()
-      @gmap.mockMarker()
-      @gmap.mockEvent()
+    module "google-maps.mocks".ns()
 
     @mocks =
       scope:
@@ -31,7 +24,9 @@ describe "directives.api.Marker", ->
     @timeOutNoW = (fnc, time) =>
       fnc()
 
-    inject ['$rootScope', '$q', 'Marker'.ns(),($rootScope, $q, Marker) =>
+    inject ['GoogleApiMock','$rootScope', '$q', 'Marker'.ns(),(GoogleApiMock,$rootScope, $q, Marker) =>
+      @gmap = new GoogleApiMock()
+      @gmap.initAll()
       @$rootScope = $rootScope
       d = $q.defer()
       d.resolve {}

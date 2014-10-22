@@ -31,8 +31,4 @@ angular.module("google-maps.directives.api".ns())
       @transclude = true
       @replace = true
       @scope = IMarker.scopeKeys
-
-
-    link: (scope, element, attrs, ctrl) =>
-      throw new Error "No Map Control! Marker Directive Must be inside the map!" unless ctrl
 ]

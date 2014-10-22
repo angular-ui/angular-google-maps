@@ -1,31 +1,24 @@
 describe "markers directive test", ->
   allDone =  undefined
   beforeEach ->
-    #TODO: These modules really need dependencies setup properly
-    module("google-maps.mocks")
-    module("google-maps".ns())
-    module("google-maps.directives.api.utils".ns())
 
+    apiMock = window["Initiator".ns()].initMock().apiMock
 
-    inject ['$rootScope', '$timeout', '$compile', '$q', 'GoogleApiMock', 'Markers'.ns(),
-      ($rootScope, $timeout, $compile, $q, GoogleApiMock, Markers) =>
+    inject ['$rootScope', '$timeout', '$compile', '$q', 'Markers'.ns(),
+      ($rootScope, $timeout, $compile, $q, Markers) =>
         @rootScope = $rootScope
         @timeout = $timeout
         @compile = $compile
-        @apiMock = new GoogleApiMock()
-        @apiMock.mockAPI()
-        @apiMock.mockMap()
         @markerCount = 0
         @marker = (opts) =>
           @markerCount++
           allDone?()
-        @marker.prototype = @apiMock.getMarker().prototype
+        @marker.prototype = apiMock.getMarker().prototype
         @subject = Markers
-        @apiMock.mockMarker(@marker)
+        apiMock.mockMarker(@marker)
     ]
 
   it "should add markers for each object in model", (done) ->
-    #TODO: We ought to be able to make this test pass, just need to figure _async I think -MDB.
     html = """
       <ui-gmap-google-map draggable="true" center="map.center" zoom="map.zoom">
           <ui-gmap-markers models="items" coords="'self'" ></ui-gmap-markers>
@@ -36,7 +29,6 @@ describe "markers directive test", ->
     scope.map = {}
     scope.map.zoom = 12
     scope.map.center = {longitude: 47, latitude: -27}
-
 
     scope.$watch 'items', (nv) ->
       console.log(nv)
@@ -51,6 +43,7 @@ describe "markers directive test", ->
       toPush.longitude = -27
       scope.items.push(toPush)
     scope.$apply()
+    @rootScope.$apply()
     @timeout.flush()
 #    expect(@markerCount).toEqual(1)
 
