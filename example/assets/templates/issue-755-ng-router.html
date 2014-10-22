@@ -1,0 +1,27 @@
+<div>
+  <h1>{{map.title}}</h1>
+
+  <ui-gmap-google-map
+    center="map.center"
+    zoom="map.zoom">
+
+    <ui-gmap-marker
+    idKey="marker.id"
+    coords="marker.coords"
+    icon="marker.icon">
+    <ui-gmap-window show='true'>
+      <div>
+        {{marker.coords}}
+      </div>
+    </ui-gmap-window>
+  </ui-gmap-marker>
+
+  <!-- <ui-gmap-markers
+    models='markers'
+    idKey="'id'"
+    coords="'coords'"
+    icon="'icon'">
+  </ui-gmap-markers>
+  </ui-gmap-google-map> -->
+
+</div>

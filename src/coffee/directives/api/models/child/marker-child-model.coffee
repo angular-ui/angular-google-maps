@@ -139,15 +139,6 @@ angular.module("google-maps.directives.api.models.child".ns())
           else
             @gMarker = new google.maps.Marker(@opts)
 
-        if @gMarker
-          @deferred.resolve @gMarker
-        else
-          @deferred.reject "gMarker is null"
-
-        if @model[@fitKey]
-          @gMarkerManager.fit()
-
-
         #hook external event handlers for events
         @removeEvents @externalListeners if @externalListeners
         @removeEvents @internalListeners if @internalListeners
@@ -157,6 +148,16 @@ angular.module("google-maps.directives.api.models.child".ns())
 
         @gMarker.key = @id if @id?
         @gMarkerManager.add @gMarker
+
+        if @gMarker and @gMarker.getMap()
+          @deferred.resolve @gMarker
+        else
+          @deferred.reject "gMarker is null" unless @gMarker
+          @deferred.reject "gMarker has no map" unless @gMarker.getMap()
+
+        if @model[@fitKey]
+          @gMarkerManager.fit()
+
 
       setLabelOptions: (opts) =>
         opts.labelAnchor = @getLabelPositionPoint opts.labelAnchor

@@ -5,8 +5,7 @@ window["Initiator".ns()] =
     if apiSubjectClassName?
       injects.push apiSubjectClassName.ns()
 
-    module "google-maps.mocks"
-    module "google-maps".ns()
+    module "google-maps.mocks".ns()
 
     inject (GoogleApiMock) ->
       toInit.apiMock = new GoogleApiMock()
@@ -31,3 +30,14 @@ window["Initiator".ns()] =
 
     spyOn toInit.log, 'error'
     toInit
+
+  initMock: ->
+    app = module "google-maps.mocks".ns()
+    module "google-maps.directives.api.utils".ns()
+    apiMock = undefined
+    inject ['GoogleApiMock',(GoogleApiMock) =>
+        apiMock = new GoogleApiMock()
+        apiMock.initAll()
+    ]
+    app: app
+    apiMock: apiMock

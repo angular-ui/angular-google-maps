@@ -1,5 +1,5 @@
 angular.module("google-maps.mocks", [])
-.factory "GoogleApiMock", ->
+.factory("GoogleApiMock", ->
 
   class MockInfoWindow
     constructor: ->
@@ -20,8 +20,12 @@ angular.module("google-maps.mocks", [])
         @_isOpen = val
 
   getMarker = ->
+    map = undefined
     Marker = (opts) -> return
-    Marker.prototype.setMap = (map) ->
+    Marker.prototype.setMap = (_map) ->
+      map = _map
+    Marker.prototype.getMap =  ->
+      map
     Marker.prototype.setPosition = (position) ->
     Marker.prototype.setIcon = (icon) ->
     Marker.prototype.setVisible = (isVisible) ->
@@ -170,6 +174,10 @@ angular.module("google-maps.mocks", [])
           else
             found.events[eventName] = callBack
 
+        event.addListenerOnce = (thing, eventName, callBack) ->
+          callBack() #forcing immediate return for idle so async api kicks off
+          event.addListener(thing, eventName, callBack)
+
       if not event.clearListeners
         event.clearListeners = () ->
           listeners.length = 0
@@ -258,3 +266,6 @@ angular.module("google-maps.mocks", [])
     getMarker: getMarker
 
   GoogleApiMock
+)
+
+angular.module("google-maps.mocks".ns(),["google-maps".ns(),"google-maps.mocks"])
