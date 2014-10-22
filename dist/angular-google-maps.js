@@ -4840,7 +4840,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     });
                     controlDiv.children().data('$ngControllerController', templateCtrl);
                   }
-                  return control = $compile(controlDiv.children())(templateScope);
+                  return control = $compile(controlDiv.contents())(templateScope);
                 }).error(function(error) {
                   return _this.$log.error('mapControl: template could not be found');
                 }).then(function() {
