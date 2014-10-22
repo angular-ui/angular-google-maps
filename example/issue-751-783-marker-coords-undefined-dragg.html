@@ -9,16 +9,23 @@
 
     <script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization&sensor=false&language=en&v=3.17"></script>
     <script src="../dist/angular-google-maps.js"></script>
-    <script src="assets/scripts/controllers/issue-751-marker-coords-undefined-dragg.js"></script>
+    <script src="assets/scripts/controllers/issue-751-783-marker-coords-undefined-dragg.js"></script>
     <title>Map</title>
 </head>
 
 <body>
     <div id="map_canvas" ng-controller="ctrl">
         <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
-            <!-- <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id" >
-            </ui-gmap-marker> -->
+            <ui-gmap-marker icon="marker.icon" coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id" >
+            </ui-gmap-marker>
             <ui-gmap-markers models='markers' coords="'coords'" options="'options'" events="'events'" idkey="'id'" >
+              <ui-gmap-windows show="'show'">
+                <div >
+                  <div ng-non-bindable>
+                    id: {{id}}, lat: {{coords.latitude}}, lon: {{coords.latitude}}
+                  </div>
+                </div>
+              </ui-gmap-windows>
             </ui-gmap-markers>
         </ui-gmap-google-map>
         <div ng-cloak>

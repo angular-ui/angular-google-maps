@@ -1,5 +1,5 @@
 ###
-	Windows directive where many windows map to the models property
+	WindowsChildModel generator where there are many ChildModels to a parent.
 ###
 angular.module("google-maps.directives.api.models.parent".ns())
 .factory "WindowsParentModel".ns(),
@@ -73,6 +73,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
                     @existingPieces.then => @createChildScopesWindows doScratch
                   else
                     @createChildScopesWindows doScratch
+            , true
 
           doINeedToWipe: (newValue) =>
             newValueIsEmpty = if newValue? then newValue.length == 0 else true

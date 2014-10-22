@@ -4453,7 +4453,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 
 /*
-	Windows directive where many windows map to the models property
+	WindowsChildModel generator where there are many ChildModels to a parent.
  */
 
 (function() {
@@ -4540,7 +4540,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
               }
             };
-          })(this));
+          })(this), true);
         };
 
         WindowsParentModel.prototype.doINeedToWipe = function(newValue) {
