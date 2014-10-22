@@ -38,7 +38,7 @@ angular.module("google-maps.directives.api.utils".ns())
     Also we want to limit the amount of props we analyze to whitelisted props that are
     actually tracked by scope. (should make things faster with whitelisted)
     ###
-    getChanges: (prev, now, whitelistedProps) =>
+    getChanges: (now, prev, whitelistedProps) =>
       if whitelistedProps
         prev = _.pick prev, whitelistedProps
         now = _.pick now, whitelistedProps
@@ -52,7 +52,7 @@ angular.module("google-maps.directives.api.utils".ns())
             changes[prop] = now[prop]
           else if _.isObject(now[prop])
             # Recursion alert
-            c = @getChanges(prev[prop], now[prop])
+            c = @getChanges(now[prop], prev[prop])
             changes[prop] = c  unless _.isEmpty(c)
           else
             changes[prop] = now[prop]

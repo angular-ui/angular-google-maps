@@ -16,8 +16,10 @@
 <body>
     <div id="map_canvas" ng-controller="ctrl">
         <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
-            <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id" >
-            </ui-gmap-marker>
+            <!-- <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id" >
+            </ui-gmap-marker> -->
+            <ui-gmap-markers models='markers' coords="'coords'" options="'options'" events="'events'" idkey="'id'" >
+            </ui-gmap-markers>
         </ui-gmap-google-map>
         <div ng-cloak>
             <ul>

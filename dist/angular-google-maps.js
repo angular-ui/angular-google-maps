@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.2 2014-10-21
+/*! angular-google-maps 2.0.2 2014-10-22
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1151,7 +1151,7 @@ Nicholas McCready - https://twitter.com/nmccready
         actually tracked by scope. (should make things faster with whitelisted)
          */
 
-        ModelKey.prototype.getChanges = function(prev, now, whitelistedProps) {
+        ModelKey.prototype.getChanges = function(now, prev, whitelistedProps) {
           var c, changes, prop;
           if (whitelistedProps) {
             prev = _.pick(prev, whitelistedProps);
@@ -1165,7 +1165,7 @@ Nicholas McCready - https://twitter.com/nmccready
               if (_.isArray(now[prop])) {
                 changes[prop] = now[prop];
               } else if (_.isObject(now[prop])) {
-                c = this.getChanges(prev[prop], now[prop]);
+                c = this.getChanges(now[prop], prev[prop]);
                 if (!_.isEmpty(c)) {
                   changes[prop] = c;
                 }
@@ -2493,10 +2493,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (this.isNotValid(scope) || (this.gMarker == null)) {
             return;
           }
-          this.gMarker.setIcon(scope.icon);
+          this.gMarker.setIcon(this.getProp(this.iconKey, scope));
           this.gMarkerManager.add(this.gMarker);
-          this.gMarker.setPosition(this.getCoords(scope.coords));
-          return this.gMarker.setVisible(this.validateCoords(scope.coords));
+          this.gMarker.setPosition(this.getCoords(this.getProp(this.coordsKey, scope)));
+          return this.gMarker.setVisible(this.validateCoords(this.getProp(this.coordsKey, scope)));
         };
 
         MarkerChildModel.prototype.setOptions = function(scope) {
@@ -2506,9 +2506,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (scope.coords == null) {
             return;
           }
-          this.opts = this.createOptions(scope.coords, this.getProp('icon', scope.icon), this.getProp('options', scope.options));
-          if (this.gMarker != null) {
+          this.opts = this.createOptions(this.getProp(this.coordsKey, scope), this.getProp(this.iconKey, scope), this.getProp(this.optionsKey, scope));
+          if ((this.gMarker != null) && (this.isLabel(this.gMarker === this.isLabel(this.opts)))) {
             this.gMarker.setOptions(this.opts);
+          } else {
+            if (this.gMarker != null) {
+              this.gMarkerManager.remove(this.gMarker);
+              this.gMarker = null;
+            }
           }
           if (!this.gMarker) {
             if (this.isLabel(this.opts)) {
@@ -2556,20 +2561,23 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return {
             dragend: (function(_this) {
               return function(marker, eventName, model, mousearg) {
-                var modelToSet, newCoords, _ref;
+                var events, modelToSet, newCoords;
                 modelToSet = _this.trackModel ? _this.scope.model : _this.model;
                 newCoords = _this.setCoordsFromEvent(_this.modelOrKey(modelToSet, _this.coordsKey), _this.gMarker.getPosition());
                 modelToSet = _this.setVal(model, _this.coordsKey, newCoords);
-                if (((_ref = _this.scope.events) != null ? _ref.dragend : void 0) != null) {
-                  _this.scope.events.dragend(marker, eventName, modelToSet, mousearg);
+                events = _this.getProp(_this.eventsKey, _this.model);
+                if ((events != null ? events.dragend : void 0) != null) {
+                  events.dragend(marker, eventName, modelToSet, mousearg);
                 }
                 return _this.scope.$apply();
               };
             })(this),
             click: (function(_this) {
               return function(marker, eventName, model, mousearg) {
-                if (_this.doClick && (_this.scope.click != null)) {
-                  return _this.scope.$apply(_this.scope.click(marker, eventName, _this.model, mousearg));
+                var click;
+                click = _this.getProp(_this.clickKey, _this.model);
+                if (_this.doClick && (click != null)) {
+                  return _this.scope.$apply(click(marker, eventName, _this.model, mousearg));
                 }
               };
             })(this)
@@ -6786,7 +6794,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.2 2014-10-21
+      /*! angular-google-maps 2.0.2 2014-10-22
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */

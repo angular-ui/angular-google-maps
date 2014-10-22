@@ -25,9 +25,12 @@ angular.module('app', ['google-maps'.ns()])
             labelAnchor: "100 0",
             labelClass: "marker-labels"
           };
+          $scope.$apply();
+          $log.log('$apply()');
         }
       }
     };
+    $scope.markers = [$scope.marker];
     $scope.$watchCollection("marker.coords",function(newVal,oldVal){
       if(_.isEqual(newVal,oldVal))
         return;

@@ -117,10 +117,10 @@ angular.module("google-maps.directives.api.models.child".ns())
       setIcon: (scope) =>
         return if @isNotValid(scope) or  !@gMarker?
         # @gMarkerManager.remove @gMarker
-        @gMarker.setIcon scope.icon
+        @gMarker.setIcon @getProp(@iconKey,scope)
         @gMarkerManager.add @gMarker
-        @gMarker.setPosition @getCoords(scope.coords)
-        @gMarker.setVisible @validateCoords(scope.coords)
+        @gMarker.setPosition @getCoords(@getProp(@coordsKey,scope))
+        @gMarker.setVisible @validateCoords(@getProp(@coordsKey,scope))
 
       setOptions: (scope) =>
         return if @isNotValid scope, false
@@ -128,10 +128,14 @@ angular.module("google-maps.directives.api.models.child".ns())
         unless scope.coords?
           return
 
-        @opts = @createOptions(scope.coords, @getProp('icon',scope.icon), @getProp('options',scope.options))
+        @opts = @createOptions(@getProp(@coordsKey,scope), @getProp(@iconKey,scope), @getProp(@optionsKey,scope))
 
-        if @gMarker?
+        if @gMarker? and (@isLabel @gMarker == @isLabel @opts)
           @gMarker.setOptions @opts
+        else
+          if @gMarker?
+            @gMarkerManager.remove @gMarker
+            @gMarker = null
 
         unless @gMarker
           if @isLabel @opts
@@ -169,11 +173,13 @@ angular.module("google-maps.directives.api.models.child".ns())
           newCoords = @setCoordsFromEvent @modelOrKey(modelToSet, @coordsKey), @gMarker.getPosition()
           modelToSet = @setVal(model, @coordsKey, newCoords)
           #since we ignored dragend for scope above, if @scope.events has it then we should fire it
-          @scope.events.dragend(marker, eventName, modelToSet, mousearg) if @scope.events?.dragend?
+          events = @getProp(@eventsKey, @model)
+          events.dragend(marker, eventName, modelToSet, mousearg) if events?.dragend?
           @scope.$apply()
         click: (marker, eventName, model, mousearg) =>
-          if @doClick and @scope.click?
-            @scope.$apply @scope.click(marker, eventName, @model, mousearg)
+          click = @getProp @clickKey, @model
+          if @doClick and click?
+            @scope.$apply click(marker, eventName, @model, mousearg)
 
     MarkerChildModel
 ]
