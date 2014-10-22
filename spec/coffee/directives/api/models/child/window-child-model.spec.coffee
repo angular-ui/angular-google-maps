@@ -9,7 +9,7 @@ describe "WindowChildModel".ns(), ->
                 @content_ = opt_opts.content || "";
                 @div_ = document.createElement("div")
                 @div_.className = @boxClass_
-                
+
         @scope =
             coords:
                 latitude: 90.0
@@ -34,6 +34,7 @@ describe "WindowChildModel".ns(), ->
         ]
 
         angular.mock.module('mockModule')
+        window["Initiator".ns()].initMock()
 
     it 'can be created', ->
         inject(($http, $rootScope, $templateCache, $compile, $controller) =>

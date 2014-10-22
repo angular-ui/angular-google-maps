@@ -1,5 +1,5 @@
 angular.module("google-maps.mocks", [])
-.factory "GoogleApiMock", ->
+.factory("GoogleApiMock", ->
 
   class MockInfoWindow
     constructor: ->
@@ -174,7 +174,9 @@ angular.module("google-maps.mocks", [])
           else
             found.events[eventName] = callBack
 
-        event.addListenerOnce = event.addListener
+        event.addListenerOnce = (thing, eventName, callBack) ->
+          callBack() #forcing immediate return for idle so async api kicks off
+          event.addListener(thing, eventName, callBack)
 
       if not event.clearListeners
         event.clearListeners = () ->
@@ -264,3 +266,6 @@ angular.module("google-maps.mocks", [])
     getMarker: getMarker
 
   GoogleApiMock
+)
+
+angular.module("google-maps.mocks".ns(),["google-maps".ns(),"google-maps.mocks"])

@@ -17,7 +17,6 @@ angular.module("google-maps.directives.api".ns())
                 ctrlFn = ($scope) ->
                     retCtrl = undefined
                     $scope.$on '$destroy', ->
-                      CtrlHandle.handle $scope #resets deferred
                       IsReady.reset()
 
                     ctrlObj = CtrlHandle.handle $scope

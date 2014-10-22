@@ -15,8 +15,6 @@ angular.module("google-maps.directives.api".ns())
 
         #happens top down (promises should be hooked here)
       controller: ['$scope', '$element', ($scope, $element)  ->
-        $scope.$on '$destroy', ->
-          IMarker.handle $scope
         $scope.ctrlType = 'Marker'
         _.extend @, IMarker.handle($scope, $element)
       ]
