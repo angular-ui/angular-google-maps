@@ -12,6 +12,10 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
       window.MarkerClusterer = MarkerClusterer;
       window.MarkerLabel_ = MarkerLabel_;
       window.MarkerWithLabel = MarkerWithLabel;
+      window.BBDiff = BBDiff;
+      window.curve = curve;
+      window.RBTree = RBTree;
+      window.GeoTree = GeoTree;
     })
   };
 });

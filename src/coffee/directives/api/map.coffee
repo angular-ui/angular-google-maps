@@ -226,7 +226,7 @@ angular.module("google-maps.directives.api".ns())
                       settingCenterFromScope = false
                   ), true
                   scope.$watch "zoom", (newValue, oldValue) ->
-                      return  if newValue is _m.zoom
+                      return  if newValue is _m.zoom || typeof newValue == 'undefined' || newValue == null
                       _.defer ->
                           _m.setZoom newValue
 
@@ -252,7 +252,12 @@ angular.module("google-maps.directives.api".ns())
                           _m.setOptions opts  if _m?
                   ,true
 
+                  # trigger map resize event if window was resized
                   $(window).resize ->
                     $timeout ->
                         google.maps.event.trigger _m, "resize"
+
+                  # trigger map resize event if element holding map was resized
+                  element.on 'resize', () =>
+                    google.maps.event.trigger _m, "resize"
     ]

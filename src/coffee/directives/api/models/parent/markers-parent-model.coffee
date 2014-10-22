@@ -11,18 +11,12 @@ angular.module("google-maps.directives.api.models.parent".ns())
             constructor: (scope, element, attrs, map) ->
                 super(scope, element, attrs, map)
                 self = @
-                @scope.markerModels = new PropMap()
 
                 @$log.info @
-                #assume do rebuild all is false and were lookging for a modelKey prop of id
-                @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
                 @setIdKey scope
-                @scope.$watch 'doRebuildAll', (newValue, oldValue) =>
-                    if (newValue != oldValue)
-                        @doRebuildAll = newValue
 
                 #watch all the below properties with end up being processed by onWatch below
-                @watch('models', scope, attrs.modelsbyref)
+                @watch('models', scope, scope.$eval(attrs.modelsbyref))
                 @watch('doCluster', scope)
                 @watch('clusterOptions', scope)
                 @watch('clusterEvents', scope)
@@ -31,14 +25,21 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 @gMarkerManager = undefined
                 @createMarkersFromScratch(scope)
 
+                # listen for map "idle" event. If map was resized, redraw whole
+                # mapview or update only portion of view which is needed
+                google.maps.event.addListener @map, "idle", ->
+                  if self.isMapResized() || !self.initialized
+                    # during first idle, force redraw map
+                    self.redrawMap self.map
+                    self.initialized = true
+                  else
+                    self.updateView.bind(self)(scope)
+
 
             onWatch: (propNameToWatch, scope, newValue, oldValue) =>
                 if propNameToWatch == "idKey" and newValue != oldValue
                     @idKey = newValue
-                if @doRebuildAll
-                    @reBuildMarkers(scope)
-                else
-                    @pieceMeal(scope)
+                @reBuildMarkers(scope)
 
             validateScope: (scope)=>
                 modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
@@ -70,106 +71,114 @@ angular.module("google-maps.directives.api.models.parent".ns())
                             @gMarkerManager = new ClustererMarkerManager @map,
                                     undefined,
                                     scope.clusterOptions,
-                                    @clusterInternalOptions
+                                    @clusterInternalOptions,
+                                    scope,
+                                    undefined
                         else
                             if @gMarkerManager.opt_options != scope.clusterOptions
                                 @gMarkerManager = new ClustererMarkerManager @map,
                                       undefined,
                                       scope.clusterOptions,
-                                      @clusterInternalOptions
+                                      @clusterInternalOptions,
+                                      @clusterInternalOptions,
+                                      scope,
+                                      undefined
                     else
                         @gMarkerManager = new ClustererMarkerManager @map
                 else
-                    @gMarkerManager = new MarkerManager @map
+                    @gMarkerManager = new MarkerManager @map, scope
 
-                _async.waitOrGo @, =>
-                  _async.each scope.models, (model) =>
-                      @newChildMarker(model, scope)
-                  , false
-                  .then =>
-                    @gMarkerManager.draw()
-                    @gMarkerManager.fit() if scope.fit
-                .then =>
-                  @existingPieces = undefined
+                if scope.models
+                    @gMarkerManager.addMany scope.models
+                    @fit(scope.models) if scope.fit
+                    @redrawMap @map
 
+            # checks if google map view was resized
+            isMapResized: () =>
+              $googleMap = @element.parents '.google-map'
+              if(!$googleMap.length)
+                return false
+
+              newWidth = $googleMap.width()
+              newHeight = $googleMap.height()
+
+              ret = false
+              if newWidth != @mapWidth || newHeight != @mapHeight
+                @mapWidth = newWidth
+                @mapHeight = newHeight
+                google.maps.event.trigger this.map, "resize"
+                ret = true
+              ret
+
+            redrawMap: (map) =>
+              return if not map
+              return if @updateInProgress()
+
+              boundary = @mapBoundingBox map
+              zoom = map.zoom
+              if boundary and zoom
+                @fixBoundaries boundary
+                @gMarkerManager.redraw boundary, zoom
+              @inProgress = false
+
+            # make sure that we don't trigger map updates too often. some events
+            # can be triggered a lot which could stall whole app
+            updateInProgress: () =>
+              now = new Date()
+              # two map updates can happen at least 250ms apart
+              if now - @lastUpdate <= 250
+                return true
+              if @inProgress
+                return true
+              @inProgress = true
+              @lastUpdate = now
+              return false
+
+            mapBoundingBox: (map) =>
+              if map && map.getBounds
+                b = map.getBounds()
+                if b
+                  ne = b.getNorthEast()
+                  sw = b.getSouthWest()
+                  boundary = {
+                    ne: {
+                      lat: ne.lat(),
+                      lng: ne.lng()
+                    }, sw: {
+                      lat: sw.lat(),
+                      lng: sw.lng()
+                    }
+                  }
+              boundary
+
+            fixBoundaries: (boundary) =>
+              if boundary.ne.lng < boundary.sw.lng
+                boundary.sw.lng = if boundary.ne.lng > 0 then -180 else 180
+
+            updateView: (scope) =>
+              if @updateInProgress()
+                return
+
+              boundary = @mapBoundingBox @map
+              if not boundary
+                @inProgress = false
+                return true
+
+              @fixBoundaries boundary
+              @gMarkerManager.draw boundary, @map.zoom
+              @inProgress = false
 
             reBuildMarkers: (scope) =>
-              if(!scope.doRebuild and scope.doRebuild != undefined)
-                  return
-              if @scope.markerModels?.length
-                @onDestroy(scope) #clean @scope.markerModels
+              @onDestroy(scope) #clean models
 
               @createMarkersFromScratch(scope)
-
-            pieceMeal: (scope)=>
-                doChunk = if @existingPieces? then false else _async.defaultChunkSize
-                if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
-                    #find the current state, async operation that calls back
-                    @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison, (state) =>
-                        payload = state
-                        #payload contains added, removals and flattened (existing models with their gProp appended)
-                        #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @scope.markerModels
-
-                        _async.waitOrGo @, =>
-                          _async.each(payload.removals, (child) =>
-                              if child?
-                                  child.destroy() if child.destroy?
-                                  @scope.markerModels.remove(child.id)
-                          ,doChunk)
-                          .then =>
-                              #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
-                            _async.each(payload.adds, (modelToAdd) =>
-                                @newChildMarker(modelToAdd, scope)
-                            ,doChunk)
-                          .then () =>
-                            _async.each(payload.updates, (update) =>
-                                @updateChild update.child, update.model
-                            ,doChunk)
-                          .then =>
-                            #finally redraw if something has changed
-                            if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
-                              @gMarkerManager.draw()
-                              scope.markerModels = @scope.markerModels #for other directives like windows
-                              @gMarkerManager.fit() if scope.fit #note fit returns a promise
-                        .then =>
-                          @existingPieces = undefined
-                else
-                    @reBuildMarkers(scope)
-
-            updateChild:(child, model) =>
-                unless model[@idKey]?
-                    @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
-                    return
-                #set isInit to true to force redraw after all updates are processed
-                child.setMyScope model,child.model, false
-
-            newChildMarker: (model, scope)=>
-                unless model[@idKey]?
-                    @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
-                    return
-                @$log.info('child', child, 'markers', @scope.markerModels)
-                childScope = scope.$new(false)
-                childScope.events = scope.events
-                keys = {}
-                _.each IMarker.keys, (v,k) ->
-                  keys[k] = scope[k]
-                child = new MarkerChildModel(childScope, model, keys, @map, @DEFAULTS,
-                    @doClick, @gMarkerManager, doDrawSelf = false) #this is managed so child is not drawing itself
-                @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
-                child
 
             onDestroy: (scope)=>
               #need to figure out how to handle individual destroys
               #slap index to the external model so that when they pass external back
               #for destroy we have a lookup?
               #this will require another attribute for destroySingle(marker)
-              _async.waitOrGo @, =>
-                  @gMarkerManager.clear() if @gMarkerManager?
-                  _.each @scope.markerModels.values(), (model)->
-                      model.destroy() if model?
-                  delete @scope.markerModels
-                  @scope.markerModels = new PropMap()
-                  Promise.resolve()
+              @gMarkerManager.clear(true) if @gMarkerManager?
 
             maybeExecMappedEvent:(cluster, fnName) ->
               if _.isFunction @scope.clusterEvents?[fnName]
@@ -177,11 +186,20 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 @origClusterEvents[fnName](pair.cluster,pair.mapped) if @origClusterEvents[fnName]
 
             mapClusterToMarkerModels:(cluster) ->
-                gMarkers = cluster.getMarkers().values()
+                gMarkers = cluster.getMarkers()
                 mapped = gMarkers.map (g) =>
-                    @scope.markerModels[g.key].model
+                    g.data.model.data
                 cluster: cluster
                 mapped: mapped
+
+            fit: (models) ->
+              if models && models.length > 0
+                bounds = new google.maps.LatLngBounds();
+                everSet = false
+                _.each models, (model) =>
+                  everSet = true unless everSet
+                  bounds.extend(new google.maps.LatLng(model.geo.latitude, model.geo.longitude))
+                @map.fitBounds(bounds) if everSet
 
         return MarkersParentModel
 ]

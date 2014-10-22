@@ -32,7 +32,7 @@ describe "MarkerChildModel".ns(), ->
         scope.icon = @iconKey
         scope.coords = @coordsKey
         scope.options = @optionsKey
-        mgr = new MarkerManager(document.gMap, undefined, undefined)
+        mgr = new MarkerManager(document.gMap, scope, undefined)
         @subject = new MarkerChildModel(scope, @model, scope, document.gMap, defaults = {},
           doClick = (()->), mgr)
     ]
@@ -88,17 +88,6 @@ describe "MarkerChildModel".ns(), ->
         @subject.__proto__.evalModelHandle, @isInit, @gSetter)
       expect(@gSetterCalled).toEqual(true)
       expect(@subject.scope.icon).toEqual(newModel.icon)
-
-
-  describe 'destroy()', ->
-    it 'wipes internal scope', ->
-      @subject.destroy()
-      expect(@subject.scope.$$destroyed).toEqual(true)
-
-  it 'wipes gMarker', ->
-    @subject.destroy()
-    expect(@subject.gMarker).toEqual(undefined)
-    expect(@subject.gMarkerManager.gMarkers.length).toEqual(0)
 
   describe 'attaches to marker events', ->
     it 'setEvents exists', ->

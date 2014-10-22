@@ -15,7 +15,6 @@ angular.module("google-maps.directives.api.models.parent".ns())
             @$log = Logger
             # Validate required properties
             throw new String("Unable to construct IMarkerParentModel due to invalid scope") unless @validateScope scope
-            @doClick = angular.isDefined attrs.click
             if scope.options?
                 @DEFAULTS = scope.options
             # Wrap marker initialization inside a $timeout() call to make sure the map is created already

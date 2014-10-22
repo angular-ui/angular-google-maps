@@ -1,16 +1,15 @@
 angular.module("google-maps.directives.api.managers".ns())
-.factory "ClustererMarkerManager".ns(), ["Logger".ns(), "FitHelper".ns(), "PropMap".ns(), ($log, FitHelper, PropMap) ->
-  class ClustererMarkerManager extends FitHelper
-    constructor: (gMap, opt_markers, opt_options, @opt_events) ->
-      super()
+.factory "ClustererMarkerManager".ns(), ["Logger".ns(), "PropMap".ns(), "MarkerChildModel".ns(), ($log, PropMap, MarkerChildModel) ->
+  class ClustererMarkerManager
+    constructor: (gMap, opt_markers, opt_options, @opt_events, @parentScope, @DEFAULTS) ->
       self = @
       @opt_options = opt_options
       if opt_options? and opt_markers == undefined
-        @clusterer = new NgMapMarkerClusterer(gMap, undefined, opt_options)
+        @clusterer = new MarkerClusterer(gMap, undefined, opt_options, MarkerChildModel, @parentScope, @DEFAULTS, @doClick, @idKey)
       else if opt_options? and opt_markers?
-        @clusterer = new NgMapMarkerClusterer(gMap, opt_markers, opt_options)
+        @clusterer = new MarkerClusterer(gMap, opt_markers, opt_options, MarkerChildModel, @parentScope, @DEFAULTS, @doClick, @idKey)
       else
-        @clusterer = new NgMapMarkerClusterer(gMap)
+        @clusterer = new MarkerClusterer(gMap, null, null, MarkerChildModel, @parentScope, @DEFAULTS, @doClick, @idKey)
       @propMapGMarkers = new PropMap() #keep in sync with cluster.markers_
 
       @attachEvents @opt_events, "opt_events"
@@ -18,42 +17,62 @@ angular.module("google-maps.directives.api.managers".ns())
       @clusterer.setIgnoreHidden(true)
       @noDrawOnSingleAddRemoves = true
       $log.info(@)
+      @gMarkers = new GeoTree()
+      #@currentViewBox
+      @dirty = true
 
-    checkKey: (gMarker) ->
-      unless gMarker.key?
-        msg = "gMarker.key undefined and it is REQUIRED!!"
-        Logger.error msg
+    add: (model)=>
+      @gMarkers.insert model.geo.latitude, model.geo.longitude, {data: {model: model}}
+      @dirty = true
 
-    add: (gMarker)=>
-      @checkKey gMarker
-      exists = @propMapGMarkers.get(gMarker.key)?
+    addMany: (models)=>
+      @add(model) for model in models
+        #@clusterer.addModels(gMarkers)
 
-      @clusterer.addMarker(gMarker, @noDrawOnSingleAddRemoves)
-      @propMapGMarkers.put gMarker.key, gMarker
-      @checkSync()
+    remove: (model)=>
+      #@clusterer.removeMarker(gMarker, @noDrawOnSingleAddRemoves)
 
-    addMany: (gMarkers)=>
-      gMarkers.forEach (gMarker) =>
-        @add gMarker
+    removeMany: (models)=>
+      @remove(model) for model in models
+      #@clusterer.removeModels(gMarkers)
 
-    remove: (gMarker)=>
-      @checkKey gMarker
-      exists = @propMapGMarkers.get gMarker.key
-      if exists
-        @clusterer.removeMarker(gMarker, @noDrawOnSingleAddRemoves)
-        @propMapGMarkers.remove gMarker.key
-      @checkSync()
+    draw: (viewBox, zoom) =>
+      viewBox = @currentViewBox if not viewBox
+      return unless viewBox
 
-    removeMany: (gMarkers)=>
-      gMarkers.forEach (gMarker) =>
-        @remove gMarker
+      if not @currentViewBox
+        @currentViewBox = viewBox
+        @dirty = true
 
-    draw: ()=>
-      @clusterer.repaint()
+      if not @zoom
+        @zoom = zoom
 
-    clear: ()=>
-      @removeMany @getGMarkers()
-      @clusterer.repaint()
+      _self = @
+      # show markers which are new in view
+      @gMarkers.find viewBox.ne, viewBox.sw, (marker) ->
+        marker.visible = {} if not marker.visible
+        if not (marker.visible && marker.visible[zoom])
+          _self.clusterer.addMarker marker, true
+          marker.visible[zoom] = true
+        false
+
+      @currentViewBox = viewBox
+      @zoom = zoom
+
+      @clusterer.repaint @dirty
+      @dirty = false
+
+    redraw: (viewBox, zoom) =>
+      @dirty = true
+      @draw viewBox, zoom
+
+    clear: (dontRepaint)=>
+      @clusterer.clearMarkers()
+      @clusterer.repaint() if not dontRepaint
+      @gMarkers.forEach (marker) ->
+        marker.data.gMarker.setMap null if marker.data.gMarker
+      delete @gMarkers
+      @gMarkers = new GeoTree()
 
     attachEvents: (options, optionsName) ->
       if angular.isDefined(options) and options? and angular.isObject(options)
@@ -73,9 +92,6 @@ angular.module("google-maps.directives.api.managers".ns())
       @clearEvents @opt_events
       @clearEvents @opt_internal_events
       @clear()
-
-    fit: ()=>
-      super @getGMarkers(), @clusterer.getMap()
 
     getGMarkers: =>
       @clusterer.getMarkers().values()

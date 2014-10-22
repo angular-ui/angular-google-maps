@@ -14,17 +14,21 @@ angular.module("google-maps.directives.api".ns())
       link: (scope, element, attrs, ctrl) =>
         doFit = true if scope.fit
         IMarker.mapPromise(scope, ctrl).then (map) =>
-          @gMarkerManager = new MarkerManager map unless @gMarkerManager
+          @gMarkerManager = new MarkerManager(map, scope) unless @gMarkerManager
 
           keys = _.keys(IMarker.keys)
           keys = _.object(keys,keys)
 
           @promise = new MarkerChildModel(
             scope, scope, keys, map, {}, doClick = true, @gMarkerManager, doDrawSelf = false,
-            trackModel = false).deferred.promise.then (gMarker) =>
+            trackModel = false).deferred.promise.then (@gMarker) =>
+              @gMarker.setMap map
               scope.deferred.resolve(gMarker)
 
 
           if scope.control?
-            scope.control.getGMarkers = @gMarkerManager.getGMarkers
+            scope.control.getGMarkers = () ->
+              # TODO: check what this should return
+              scope.key = scope.idKey
+              [scope]
 ]

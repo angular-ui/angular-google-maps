@@ -6,7 +6,6 @@ angular.module("google-maps.directives.api".ns())
       @template = '<span class="angular-google-map-markers" ng-transclude></span>'
       @scope = _.extend @scope or {},
         idKey: '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
-        doRebuildAll: '=dorebuildall' #root level directive attribute not a model level, should default to false
         models: '=models'
         doCluster: '=docluster'
         clusterOptions: '=clusteroptions'
@@ -37,8 +36,8 @@ angular.module("google-maps.directives.api".ns())
 #        maybeDeferred = @parentModel?.existingPieces || fake
 #        maybeDeferred.then =>
         parentModel = new MarkersParentModel(scope, element, attrs, map)
-        parentModel.existingPieces.then ->
-          ready()
+        #parentModel.existingPieces.then ->
+        #  ready()
 
 #        unless @parentModel?
 #          maybeDeferred.resolve()

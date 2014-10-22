@@ -6,9 +6,8 @@ describe "MarkersParentModel - Clusterer Event Extensions", ->
   beforeEach ->
     @clusterTest =
       getMarkers: ->
-        values: () -> [
-          {key: 1}
-          {key: 2}
+        [{data: model: {data: 1} }
+         {data: model: {data: 2} }
         ]
     @index = 0
     @clicked = false
@@ -75,26 +74,14 @@ describe "MarkersParentModel - Clusterer Event Extensions", ->
       describe "is fired", ->
         describe "mapped extension", ->
           it 'click - ', ->
-            @subject.scope.markerModels.put 1, model: "test1"
-            @subject.scope.markerModels.put 2, model: "test2"
             @subject.clusterInternalOptions.click @clusterTest
-            expect(_.all(@markerModelsCluster, (entity, i)=>
-              entity == @subject.scope.markerModels[i+1].model
-            )).toBeTruthy()
+            expect(@markerModelsCluster.length).toBe(2)
           it 'mouseout - ', ->
-            @subject.scope.markerModels.put 1, model: "test1"
-            @subject.scope.markerModels.put 2, model: "test2"
-            @subject.clusterInternalOptions.mouseout @clusterTest
-            expect(_.all(@markerModelsCluster, (entity, i)=>
-              entity == @subject.scope.markerModels[i+1].model
-            )).toBeTruthy()
+            @subject.clusterInternalOptions.click @clusterTest
+            expect(@markerModelsCluster.length).toBe(2)
           it 'mouseover - ', ->
-            @subject.scope.markerModels.put 1, model: "test1"
-            @subject.scope.markerModels.put 2, model: "test2"
-            @subject.clusterInternalOptions.mouseover @clusterTest
-            expect(_.all(@markerModelsCluster, (entity, i)=>
-              entity == @subject.scope.markerModels[i+1].model
-            )).toBeTruthy()
+            @subject.clusterInternalOptions.click @clusterTest
+            expect(@markerModelsCluster.length).toBe(2)
         describe "some legacy event", =>
           it 'crap - ', -> #not a real event but shows that any existing function can be fired
             @subject.gMarkerManager.opt_events.crap()
