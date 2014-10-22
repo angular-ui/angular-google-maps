@@ -3016,6 +3016,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 _this.model.show = false;
                 if (_this.scope.closeClick != null) {
                   return _this.scope.$apply(_this.scope.closeClick());
+                } else {
+                  return _this.scope.$apply();
                 }
               };
             })(this)));
@@ -3105,7 +3107,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               if (_this.gWin != null) {
                 if (!_this.gWin.isOpen()) {
-                  return _this.gWin.open(_this.mapCtrl, _this.markerCtrl ? _this.markerCtrl : void 0);
+                  _this.gWin.open(_this.mapCtrl, _this.markerCtrl ? _this.markerCtrl : void 0);
+                  return _this.model.show = _this.gWin.isOpen();
                 }
               }
             };

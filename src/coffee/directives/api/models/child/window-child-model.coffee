@@ -69,7 +69,11 @@ angular.module("google-maps.directives.api.models.child".ns())
                   , 250
               @gWin.isOpen(false)
               @model.show = false
-              @scope.$apply(@scope.closeClick()) if @scope.closeClick?
+              if @scope.closeClick?
+                @scope.$apply(@scope.closeClick())
+              else
+                #update models state change since it is out of angular scope (closeClick)
+                @scope.$apply()
 
         watchCoords: ()=>
             scope = if @markerCtrl? then @scope.$parent else @scope
@@ -124,6 +128,7 @@ angular.module("google-maps.directives.api.models.child".ns())
             if @gWin?
               unless @gWin.isOpen() #only show if we have no show defined yet or if show is really true
                 @gWin.open(@mapCtrl, if @markerCtrl then @markerCtrl else undefined)
+                @model.show = @gWin.isOpen()
                 # $log.debug "window for marker.key (#{@markerCtrl.key}) opened" if @markerCtrl
 
           if @scope.templateUrl
