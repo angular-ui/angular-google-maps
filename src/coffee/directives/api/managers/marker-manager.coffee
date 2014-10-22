@@ -2,8 +2,10 @@ angular.module("google-maps.directives.api.managers".ns())
 .factory "MarkerManager".ns(), ["Logger".ns(), "FitHelper".ns(), "PropMap".ns(), (Logger, FitHelper, PropMap) ->
   class MarkerManager extends FitHelper
     @include FitHelper
+    @type = 'MarkerManager'
     constructor: (gMap, opt_markers, opt_options) ->
       super()
+      @type = MarkerManager.type
       @gMap = gMap
       @gMarkers = new PropMap()
       @$log = Logger

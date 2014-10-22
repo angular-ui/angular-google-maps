@@ -1,8 +1,8 @@
 angular.module("google-maps.directives.api.models.child".ns())
 .factory "MarkerChildModel".ns(), [ "ModelKey".ns(), "GmapUtil".ns(),
   "Logger".ns(), "EventsHelper".ns(),"PropertyAction".ns(),
-  "MarkerOptions".ns(), "IMarker".ns(),
-  (ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker) ->
+  "MarkerOptions".ns(), "IMarker".ns(), "MarkerManager".ns(),
+  (ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker, MarkerManager) ->
     keys = ['coords', 'icon', 'options', 'fit']
     class MarkerChildModel extends ModelKey
       @include GmapUtil
@@ -149,11 +149,11 @@ angular.module("google-maps.directives.api.models.child".ns())
         @gMarker.key = @id if @id?
         @gMarkerManager.add @gMarker
 
-        if @gMarker and @gMarker.getMap()
+        if @gMarker and (@gMarker.getMap() or @gMarkerManager.type != MarkerManager.type)
           @deferred.resolve @gMarker
         else
           @deferred.reject "gMarker is null" unless @gMarker
-          @deferred.reject "gMarker has no map" unless @gMarker.getMap()
+          @deferred.reject "gMarker has no map" unless @gMarker.getMap() and @gMarkerManager.type == MarkerManager.type
 
         if @model[@fitKey]
           @gMarkerManager.fit()

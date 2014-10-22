@@ -1409,6 +1409,8 @@ Nicholas McCready - https://twitter.com/nmccready
       ClustererMarkerManager = (function(_super) {
         __extends(ClustererMarkerManager, _super);
 
+        ClustererMarkerManager.type = 'ClustererMarkerManager';
+
         function ClustererMarkerManager(gMap, opt_markers, opt_options, opt_events) {
           var self;
           this.opt_events = opt_events;
@@ -1423,6 +1425,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.addMany = __bind(this.addMany, this);
           this.add = __bind(this.add, this);
           ClustererMarkerManager.__super__.constructor.call(this);
+          this.type = ClustererMarkerManager.type;
           self = this;
           this.opt_options = opt_options;
           if ((opt_options != null) && opt_markers === void 0) {
@@ -1568,6 +1571,8 @@ Nicholas McCready - https://twitter.com/nmccready
 
         MarkerManager.include(FitHelper);
 
+        MarkerManager.type = 'MarkerManager';
+
         function MarkerManager(gMap, opt_markers, opt_options) {
           this.getGMarkers = __bind(this.getGMarkers, this);
           this.fit = __bind(this.fit, this);
@@ -1579,6 +1584,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.addMany = __bind(this.addMany, this);
           this.add = __bind(this.add, this);
           MarkerManager.__super__.constructor.call(this);
+          this.type = MarkerManager.type;
           this.gMap = gMap;
           this.gMarkers = new PropMap();
           this.$log = Logger;
@@ -2273,7 +2279,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child".ns()).factory("MarkerChildModel".ns(), [
-    "ModelKey".ns(), "GmapUtil".ns(), "Logger".ns(), "EventsHelper".ns(), "PropertyAction".ns(), "MarkerOptions".ns(), "IMarker".ns(), function(ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker) {
+    "ModelKey".ns(), "GmapUtil".ns(), "Logger".ns(), "EventsHelper".ns(), "PropertyAction".ns(), "MarkerOptions".ns(), "IMarker".ns(), "MarkerManager".ns(), function(ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker, MarkerManager) {
       var MarkerChildModel, keys;
       keys = ['coords', 'icon', 'options', 'fit'];
       MarkerChildModel = (function(_super) {
@@ -2526,13 +2532,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.gMarker.key = this.id;
           }
           this.gMarkerManager.add(this.gMarker);
-          if (this.gMarker && this.gMarker.getMap()) {
+          if (this.gMarker && (this.gMarker.getMap() || this.gMarkerManager.type !== MarkerManager.type)) {
             this.deferred.resolve(this.gMarker);
           } else {
             if (!this.gMarker) {
               this.deferred.reject("gMarker is null");
             }
-            if (!this.gMarker.getMap()) {
+            if (!(this.gMarker.getMap() && this.gMarkerManager.type === MarkerManager.type)) {
               this.deferred.reject("gMarker has no map");
             }
           }
