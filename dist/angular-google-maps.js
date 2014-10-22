@@ -3013,6 +3013,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }
                 }
                 _this.gWin.isOpen(false);
+                _this.model.show = false;
                 if (_this.scope.closeClick != null) {
                   return _this.scope.$apply(_this.scope.closeClick());
                 }

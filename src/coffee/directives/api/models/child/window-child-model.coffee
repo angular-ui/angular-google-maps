@@ -68,6 +68,7 @@ angular.module("google-maps.directives.api.models.child".ns())
                     @markerCtrl.setVisible @markerIsVisibleAfterWindowClose
                   , 250
               @gWin.isOpen(false)
+              @model.show = false
               @scope.$apply(@scope.closeClick()) if @scope.closeClick?
 
         watchCoords: ()=>
