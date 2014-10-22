@@ -523,12 +523,10 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
     }
 
   });
-  var marker2Dragend = function (marker, eventName, model, args) {
-    model.options.labelContent = "Dragged lat: " + model.latitude + " lon: " + model.longitude;
-//    $scope.map.markers2[marker.key-1] = model;
-  };
   $scope.map.markers2Events = {
-    dragend: marker2Dragend
+    dragend: function (marker, eventName, model, args) {
+      model.options.labelContent = "Dragged lat: " + model.latitude + " lon: " + model.longitude;
+    }
   };
 
   _.each($scope.map.markers, function (marker) {
@@ -541,11 +539,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
     };
   });
 
-  _.each($scope.map.markers2, function (marker) {
-    marker.closeClick = function () {
-      marker.showWindow = false;
-      $scope.$apply();
-    };
+  $scope.map.markers2.forEach( function (marker) {
     marker.onClicked = function () {
       onMarkerClicked(marker);
     };

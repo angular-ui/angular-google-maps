@@ -29,8 +29,13 @@ angular.module("google-maps.directives.api.utils".ns())
       model
 
     modelOrKey: (model, key) ->
-      thing = if key != 'self' then model[key] else model
-      thing
+      return unless key?
+      if key != 'self'
+          return model[key]
+      model
+
+    getProp:(propName, model) =>
+      @modelOrKey(model,propName)
 
     ###
     For the cases were watching a large object we only want to know the list of props

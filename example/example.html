@@ -74,7 +74,8 @@
 
 
         <ui-gmap-window show="map.infoWindowWithCustomClass.show" coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
-            I'm a window with a custom class set via options.boxClass. I only work when googles <a href ="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
+            I'm a window with a custom class set via options.boxClass. I only work when googles
+            <a href ="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
         </ui-gmap-window>
 
         <ui-gmap-window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
@@ -151,17 +152,18 @@
 
         <!-- polyline example -->
         <ui-gmap-polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'
-            geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'></ui-gmap-polyline>
+            geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'>
+        </ui-gmap-polyline>
 
         <!-- polygon example -->
         <ui-gmap-polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
-            <!-- geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable" events="map.polygonEvents">
+            geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable" events="map.polygonEvents">
         </ui-gmap-polygon>
 
         <ui-gmap-polygon ng-repeat="p in map.polygons2 track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
                  geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"
                  events="map.polygonEvents">
-        </ui-gmap-polygon> -->
+        </ui-gmap-polygon>
 
         <!-- circle example -->
         <ui-gmap-circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"

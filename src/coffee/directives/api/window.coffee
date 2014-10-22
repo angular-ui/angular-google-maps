@@ -29,27 +29,17 @@ angular.module("google-maps.directives.api".ns())
           @init scope, element, isIconVisibleOnClick, mapCtrl
           return
         markerScope.deferred.promise.then  (gMarker) =>
-          @init scope, element, isIconVisibleOnClick, mapCtrl, markerScope, gMarker
+          @init scope, element, isIconVisibleOnClick, mapCtrl, markerScope
 
     # post: (scope, element, attrs, ctrls) =>
 
-    init: (scope, element, isIconVisibleOnClick, mapCtrl, markerScope, gMarker) ->
+    init: (scope, element, isIconVisibleOnClick, mapCtrl, markerScope) ->
       defaults = if scope.options? then scope.options else {}
       hasScopeCoords = scope? and @validateCoords(scope.coords)
-      if markerScope?
-        markerScope.$watch 'coords', (newValue, oldValue) =>
-          if gMarker? and !childWindow.markerCtrl
-            childWindow.markerCtrl = gMarker
-            childWindow.handleClick true
-          return childWindow.hideWindow() unless @validateCoords(newValue)
-          if !angular.equals(newValue, oldValue)
-            childWindow.getLatestPosition @getCoords newValue
-        ,true
-
-
+      gMarker = markerScope.getGMarker() if markerScope?['getGMarker']?
       opts = if hasScopeCoords then @createWindowOptions(gMarker, scope, element.html(), defaults) else defaults
       if mapCtrl? #at the very least we need a Map, the marker is optional as we can create Windows without markers
-        childWindow = new WindowChildModel {}, scope, opts, isIconVisibleOnClick, mapCtrl, gMarker, element
+        childWindow = new WindowChildModel {}, scope, opts, isIconVisibleOnClick, mapCtrl, markerScope, element
         @childWindows.push childWindow
 
         scope.$on "$destroy", =>

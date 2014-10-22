@@ -39,7 +39,7 @@ angular.module("google-maps.directives.api".ns())
             scope.control.getGMarkers = @gMarkerManager.getGMarkers
 
         scope.$on '$destroy', =>
-          @gMarkerManager.clear()
+          @gMarkerManager?.clear()
           @gMarkerManager = null
 
       # post:(scope, element, attrs, ctrl) =>

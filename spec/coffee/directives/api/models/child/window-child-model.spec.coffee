@@ -24,7 +24,7 @@ describe "WindowChildModel".ns(), ->
         .value('isIconVisibleOnClick', true)
         .value('model', @scope)
         .value('mapCtrl', document.gMap)
-        .value('markerCtrl', @gMarker)
+        .value('gMarker', @gMarker)
         .value('opts', @windowOpts)
         .value('element', '<span>hi</span>')
         .value('needToManualDestroy', false)
