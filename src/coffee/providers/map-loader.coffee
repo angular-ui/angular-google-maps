@@ -8,7 +8,7 @@ angular.module('google-maps.providers'.ns())
         if angular.isDefined(window.google) and angular.isDefined(window.google.maps)
           deferred.resolve window.google.maps
           return deferred.promise
-          
+
         randomizedFunctionName = options.callback = 'onGoogleMapsReady' + Math.round(Math.random() * 1000)
         window[randomizedFunctionName] = ->
           window[randomizedFunctionName] = null
@@ -49,7 +49,7 @@ angular.module('google-maps.providers'.ns())
       return
 
     # Return an instance of the service
-    @$get = ['$q','$timeout','MapScriptLoader'.ns() ,($q, $timeout, loader) =>
+    @$get = ['MapScriptLoader'.ns() ,(loader) =>
       loader.load @options
     ]
     @

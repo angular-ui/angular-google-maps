@@ -30,7 +30,6 @@ angular.module("google-maps.directives.api".ns())
                     retCtrl
                 @controller = ["$scope", ctrlFn ]
                 self = @
-            controllerAs: 'mapCtrl'.ns()
             restrict: "EMA"
             transclude: true
             replace: false

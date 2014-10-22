@@ -243,8 +243,8 @@ Nicholas McCready - https://twitter.com/nmccready
       angular.extend(this.options, options);
     };
     this.$get = [
-      '$q', '$timeout', 'MapScriptLoader'.ns(), (function(_this) {
-        return function($q, $timeout, loader) {
+      'MapScriptLoader'.ns(), (function(_this) {
+        return function(loader) {
           return loader.load(_this.options);
         };
       })(this)
@@ -5319,8 +5319,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.controller = ["$scope", ctrlFn];
           self = this;
         }
-
-        Map.prototype.controllerAs = 'mapCtrl'.ns();
 
         Map.prototype.restrict = "EMA";
 
