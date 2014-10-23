@@ -627,6 +627,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
   $scope.onMarkerClicked = onMarkerClicked;
 
   $scope.clackMarker = function (gMarker,eventName, model) {
+    alert("clackMarker: " + model);
     $log.log("from clackMarker");
     $log.log(model);
   };

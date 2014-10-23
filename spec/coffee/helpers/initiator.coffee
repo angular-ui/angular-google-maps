@@ -1,5 +1,11 @@
+defaultMap =
+  zoom: 12
+  center:
+    longitude: 47
+    latitude: -27
+
 window["Initiator".ns()] =
-  initDirective: (toInit, apiSubjectClassName, thingsToInit = ['initAll'])->
+  initDirective: (toInit, apiSubjectClassName, thingsToInit = ['initAll'], map = defaultMap)->
 
     injects = ['$compile', '$rootScope', '$timeout', 'Logger'.ns()]
     if apiSubjectClassName?
@@ -20,11 +26,7 @@ window["Initiator".ns()] =
 
       # mock map scope
       toInit.scope = toInit.rootScope.$new()
-      toInit.scope.map = {}
-      toInit.scope.map.zoom = 12
-      toInit.scope.map.center =
-        longitude: 47
-        latitude: -27
+      toInit.scope.map = map
 
     inject injects
 
@@ -36,8 +38,8 @@ window["Initiator".ns()] =
     module "google-maps.directives.api.utils".ns()
     apiMock = undefined
     inject ['GoogleApiMock',(GoogleApiMock) =>
-        apiMock = new GoogleApiMock()
-        apiMock.initAll()
+      apiMock = new GoogleApiMock()
+      apiMock.initAll()
     ]
     app: app
     apiMock: apiMock

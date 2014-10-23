@@ -14,12 +14,16 @@
     <div id="map_canvas" ng-controller="mainCtrl">
       <ui-gmap-google-map center="map.center" zoom="map.zoom"
       draggable="true" options="options" bounds="map.bounds">
+          
           <ui-gmap-markers models="randomMarkers" coords="'self'"
           icon="'icon'" fit='true' click="'onClick'" events="markersEvents" doCluster='true'>
+              
               <ui-gmap-windows show="'show'">
                   <div ng-non-bindable>{{text}}</div>
               </ui-gmap-windows>
+              
           </ui-gmap-markers>
+
       </ui-gmap-google-map>
     </div>
 </body>
