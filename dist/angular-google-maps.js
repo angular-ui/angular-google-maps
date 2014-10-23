@@ -3089,11 +3089,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           click = (function(_this) {
             return function() {
-              var pos;
+              var pos, _ref, _ref1;
               if (_this.gWin == null) {
                 _this.createGWin();
               }
-              pos = _this.scope.coords != null ? _this.gWin.getPosition() : _this.getGmarker().getPosition();
+              pos = _this.scope.coords != null ? (_ref = _this.gWin) != null ? _ref.getPosition() : void 0 : (_ref1 = _this.getGmarker()) != null ? _ref1.getPosition() : void 0;
+              if (!pos) {
+                return;
+              }
               if (_this.gWin != null) {
                 _this.gWin.setPosition(pos);
                 if (_this.opts) {

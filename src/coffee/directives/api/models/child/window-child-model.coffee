@@ -114,7 +114,8 @@ angular.module("google-maps.directives.api.models.child".ns())
           # Show the window and hide the marker on click
           click = =>
             @createGWin() unless @gWin?
-            pos = if @scope.coords? then @gWin.getPosition() else @getGmarker().getPosition()
+            pos = if @scope.coords? then @gWin?.getPosition() else @getGmarker()?.getPosition()
+            return unless pos
             if @gWin?
               @gWin.setPosition(pos)
               @opts.position = pos if @opts
