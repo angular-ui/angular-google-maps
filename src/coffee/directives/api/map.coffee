@@ -45,7 +45,6 @@ angular.module("google-maps.directives.api".ns())
                 events: "=" # optional
                 styles: "=" # optional
                 bounds: "="
-                promise: "=" #optional to tell the map to wait on something else (from a controller) use $q
 
             ###
             @param scope
@@ -53,13 +52,14 @@ angular.module("google-maps.directives.api".ns())
             @param attrs
             ###
             link: (scope, element, attrs) =>
-                promise = ->
-                  unless scope.promise? and scope.promise?.then?
-                    GoogleMapApi
-                  else
-                    scope.promise.then ->
-                      GoogleMapApi
-                promise().then (maps) =>
+                unless scope.center?
+                  unbindCenterWatch = scope.$watch 'center', =>
+                    return unless scope.center
+                    unbindCenterWatch()
+                    @link scope, element, attrs #try again
+                  return
+
+                GoogleMapApi.then (maps) =>
                   DEFAULTS = mapTypeId: maps.MapTypeId.ROADMAP
                   spawned = IsReady.spawn()
                   resolveSpawned = =>
