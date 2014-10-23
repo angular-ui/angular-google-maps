@@ -2993,7 +2993,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.createGWin = function() {
-          var defaults, _opts;
+          var defaults, _opts, _ref, _ref1;
           if (this.gWin == null) {
             defaults = {};
             if (this.opts != null) {
@@ -3014,7 +3014,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             } else {
               this.gWin = new google.maps.InfoWindow(this.opts);
             }
-            this.handleClick(typeof options !== "undefined" && options !== null ? options.forceClick : void 0);
+            this.handleClick((_ref = this.scope) != null ? (_ref1 = _ref.options) != null ? _ref1.forceClick : void 0 : void 0);
             this.doShow();
             return this.googleMapsHandles.push(google.maps.event.addListener(this.gWin, 'closeclick', (function(_this) {
               return function() {

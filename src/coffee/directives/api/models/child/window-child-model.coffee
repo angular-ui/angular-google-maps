@@ -59,7 +59,7 @@ angular.module("google-maps.directives.api.models.child".ns())
               @gWin = new window.InfoBox(@opts)
             else
               @gWin = new google.maps.InfoWindow(@opts)
-            @handleClick(options?.forceClick)
+            @handleClick(@scope?.options?.forceClick)
             @doShow()
 
             # Set visibility of marker back to what it was before opening the window
