@@ -3014,7 +3014,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             } else {
               this.gWin = new google.maps.InfoWindow(this.opts);
             }
-            this.handleClick();
+            this.handleClick(typeof options !== "undefined" && options !== null ? options.forceClick : void 0);
             this.doShow();
             return this.googleMapsHandles.push(google.maps.event.addListener(this.gWin, 'closeclick', (function(_this) {
               return function() {
@@ -3111,7 +3111,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (forceClick) {
             click();
           }
-          return this.googleMapsHandles.push(google.maps.event.addListener(this.getGmarker() || this.gWin, 'click', click));
+          if (this.getGmarker()) {
+            return this.googleMapsHandles.push(google.maps.event.addListener(this.getGmarker(), 'click', click));
+          }
         };
 
         WindowChildModel.prototype.showWindow = function() {
