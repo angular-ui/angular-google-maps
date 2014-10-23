@@ -43,6 +43,7 @@ angular.module("google-maps.directives.api".ns())
                 control: "=" # optional
                 options: "=" # optional
                 events: "=" # optional
+                eventOpts: "=" # optional
                 styles: "=" # optional
                 bounds: "="
 
@@ -60,7 +61,7 @@ angular.module("google-maps.directives.api".ns())
                   return
 
                 GoogleMapApi.then (maps) =>
-                  DEFAULTS = mapTypeId: maps.MapTypeId.ROADMAP
+                  DEFAULTS = mapTypeId: maps.MapTypeId.ROADMAP, debounceMs: 300
                   spawned = IsReady.spawn()
                   resolveSpawned = =>
                     spawned.deferred.resolve
@@ -120,7 +121,7 @@ angular.module("google-maps.directives.api".ns())
 
                   google.maps.event.addListener _m, "drag", ->
                       c = _m.center
-                      _.defer ->
+                      _.debounce ( ->
                           scope.$apply (s) ->
                               if angular.isDefined(s.center.type)
                                   s.center.coordinates[1] = c.lat()
@@ -128,20 +129,22 @@ angular.module("google-maps.directives.api".ns())
                               else
                                   s.center.latitude = c.lat()
                                   s.center.longitude = c.lng()
+                      ), scope.eventOpts?dragDebounce ? DEFAULTS.debounceMs
 
 
                   google.maps.event.addListener _m, "zoom_changed", ->
                       if scope.zoom isnt _m.zoom
-                          _.defer ->
+                          _.debounce ( ->
                               scope.$apply (s) ->
                                   s.zoom = _m.zoom
+                          ), scope.eventOpts?zoomDebounce ? DEFAULTS.debounceMs
 
 
                   settingCenterFromScope = false
                   google.maps.event.addListener _m, "center_changed", ->
                       c = _m.center
                       return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
-                      _.defer ->
+                      _.debounce ( ->
                           scope.$apply (s) ->
                               unless _m.dragging
                                   if angular.isDefined(s.center.type)
@@ -150,6 +153,7 @@ angular.module("google-maps.directives.api".ns())
                                   else
                                       s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
                                       s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
+                      ), scope.eventOpts?centerDebounce ? DEFAULTS.debounceMs
 
 
                   google.maps.event.addListener _m, "idle", ->
