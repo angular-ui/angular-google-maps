@@ -3093,7 +3093,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (_this.gWin == null) {
                 _this.createGWin();
               }
-              pos = _this.getGmarker().getPosition();
+              pos = _this.scope.coords != null ? _this.gWin.getPosition() : _this.getGmarker().getPosition();
               if (_this.gWin != null) {
                 _this.gWin.setPosition(pos);
                 if (_this.opts) {
@@ -3101,17 +3101,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
                 _this.showWindow();
               }
-              _this.initialMarkerVisibility = _this.getGmarker().getVisible();
-              _this.oldMarkerAnimation = _this.getGmarker().getAnimation();
-              return _this.getGmarker().setVisible(_this.isIconVisibleOnClick);
+              if (_this.getGmarker() != null) {
+                _this.initialMarkerVisibility = _this.getGmarker().getVisible();
+                _this.oldMarkerAnimation = _this.getGmarker().getAnimation();
+                return _this.getGmarker().setVisible(_this.isIconVisibleOnClick);
+              }
             };
           })(this);
-          if (this.getGmarker() != null) {
-            if (forceClick) {
-              click();
-            }
-            return this.googleMapsHandles.push(google.maps.event.addListener(this.getGmarker(), 'click', click));
+          if (forceClick) {
+            click();
           }
+          return this.googleMapsHandles.push(google.maps.event.addListener(this.getGmarker() || this.gWin, 'click', click));
         };
 
         WindowChildModel.prototype.showWindow = function() {
