@@ -10,7 +10,9 @@ angular.module("google-maps.directives.api".ns())
     GoogleMapsUtilV3,GoogleMapApi) ->
         "use strict"
         DEFAULTS = undefined
+
         initializeItems = [GoogleMapsUtilV3, ExtendGWin, ExtendMarkerClusterer]
+
         class Map extends BaseObject
             @include GmapUtil
             constructor: ->
@@ -61,7 +63,7 @@ angular.module("google-maps.directives.api".ns())
                   return
 
                 GoogleMapApi.then (maps) =>
-                  DEFAULTS = mapTypeId: maps.MapTypeId.ROADMAP, debounceMs: 300
+                  DEFAULTS = mapTypeId: maps.MapTypeId.ROADMAP
                   spawned = IsReady.spawn()
                   resolveSpawned = =>
                     spawned.deferred.resolve
@@ -106,22 +108,22 @@ angular.module("google-maps.directives.api".ns())
                     scope.deferred.resolve _m
                     resolveSpawned()
 
-                  google.maps.event.addListener _m, "dragstart", ->
+                  google.maps.event.addListener _m, "dragstart", =>
                       dragging = true
-                      _.defer ->
+                      @debounceNow  ->
                         scope.$apply (s) ->
                             s.dragging = dragging if s.dragging?
 
-                  google.maps.event.addListener _m, "dragend", ->
+                  google.maps.event.addListener _m, "dragend", =>
                       dragging = false
-                      _.defer ->
+                      @debounceNow  ->
                         scope.$apply (s) ->
                             s.dragging = dragging if s.dragging?
 
 
-                  google.maps.event.addListener _m, "drag", ->
+                  google.maps.event.addListener _m, "drag", =>
                       c = _m.center
-                      _.debounce ( ->
+                      @debounceNow  ->
                           scope.$apply (s) ->
                               if angular.isDefined(s.center.type)
                                   s.center.coordinates[1] = c.lat()
@@ -129,22 +131,22 @@ angular.module("google-maps.directives.api".ns())
                               else
                                   s.center.latitude = c.lat()
                                   s.center.longitude = c.lng()
-                      ), scope.eventOpts?dragDebounce ? DEFAULTS.debounceMs
+                      , scope.eventOpts?.debounce?.debounce?.dragMs
 
 
-                  google.maps.event.addListener _m, "zoom_changed", ->
+                  google.maps.event.addListener _m, "zoom_changed", =>
                       if scope.zoom isnt _m.zoom
-                          _.debounce ( ->
+                          @debounceNow  ->
                               scope.$apply (s) ->
                                   s.zoom = _m.zoom
-                          ), scope.eventOpts?zoomDebounce ? DEFAULTS.debounceMs
+                          , scope.eventOpts?.debounce?.zoomMs
 
 
                   settingCenterFromScope = false
-                  google.maps.event.addListener _m, "center_changed", ->
+                  google.maps.event.addListener _m, "center_changed", =>
                       c = _m.center
                       return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
-                      _.debounce ( ->
+                      @debounceNow  ->
                           scope.$apply (s) ->
                               unless _m.dragging
                                   if angular.isDefined(s.center.type)
@@ -153,14 +155,14 @@ angular.module("google-maps.directives.api".ns())
                                   else
                                       s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
                                       s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
-                      ), scope.eventOpts?centerDebounce ? DEFAULTS.debounceMs
+                      , scope.eventOpts?.debounce?.centerMs
 
 
-                  google.maps.event.addListener _m, "idle", ->
+                  google.maps.event.addListener _m, "idle", =>
                       b = _m.getBounds()
                       ne = b.getNorthEast()
                       sw = b.getSouthWest()
-                      _.defer ->
+                      @debounceNow  ->
                           scope.$apply (s) ->
                               if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
                                   s.bounds.northeast =
@@ -181,14 +183,14 @@ angular.module("google-maps.directives.api".ns())
                           google.maps.event.addListener _m, eventName, getEventHandler(eventName)  if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
 
                   # Put the map into the scope
-                  #extending map , maybe hacky.. don't really care right now
+                  # free-draw-polygons depends on this
                   _m.getOptions = ->
                     mapOptions
                   scope.map = _m
-                  #            google.maps.event.trigger _m, "resize"
 
                   # check if have an external control hook to direct us manually without watches
-                  #this will normally be an empty object that we extend and slap functionality onto with this directive
+                  # this will normally be an empty object that we extend and slap functionality
+                  # onto with this directive
                   if attrs.control? and scope.control?
                       scope.control.refresh = (maybeCoords) =>
                           return unless _m?
@@ -199,9 +201,7 @@ angular.module("google-maps.directives.api".ns())
                                   _m.panTo coords
                               else
                                   _m.setCenter coords
-                      ###
-                      I am sure you all will love this. You want the instance here you go.. BOOM!
-                      ###
+
                       scope.control.getGMap = ()=>
                           _m
                       scope.control.getMapOptions = ->
@@ -222,9 +222,9 @@ angular.module("google-maps.directives.api".ns())
 
                       settingCenterFromScope = false
                   ), true
-                  scope.$watch "zoom", (newValue, oldValue) ->
+                  scope.$watch "zoom", (newValue, oldValue) =>
                       return  if _.isEqual(newValue,oldValue)
-                      _.defer ->
+                      @debounceNow  ->
                           _m.setZoom newValue
 
                   scope.$watch "bounds", (newValue, oldValue) ->
