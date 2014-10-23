@@ -73,12 +73,6 @@ angular.module("google-maps.directives.api.models.child".ns())
             @maybeSetScopeValue('icon', model, oldModel, @iconKey, @evalModelHandle, isInit, @setIcon)
           when 'coords'
             @maybeSetScopeValue('coords', model, oldModel, @coordsKey, @evalModelHandle, isInit, @setCoords)
-          when 'click'
-            if _.isFunction(@clickKey)
-              @scope.click = () =>
-              @clickKey(@gMarker, "click", @model, undefined)
-            else
-              @maybeSetScopeValue('click', model, oldModel, @clickKey, @evalModelHandle, isInit)
           when 'options'
             @createMarker(model, oldModel, isInit) if !justCreated
 
@@ -184,7 +178,7 @@ angular.module("google-maps.directives.api.models.child".ns())
           events.dragend(marker, eventName, modelToSet, mousearg) if events?.dragend?
           @scope.$apply()
         click: (marker, eventName, model, mousearg) =>
-          click = @getProp @clickKey, @model
+          click = if _.isFunction(@clickKey) then @clickKey else @getProp @clickKey, @model
           if @doClick and click?
             @scope.$apply click(marker, eventName, @model, mousearg)
 

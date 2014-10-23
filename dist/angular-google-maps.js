@@ -2408,16 +2408,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon);
             case 'coords':
               return this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
-            case 'click':
-              if (_.isFunction(this.clickKey)) {
-                this.scope.click = (function(_this) {
-                  return function() {};
-                })(this);
-                return this.clickKey(this.gMarker, "click", this.model, void 0);
-              } else {
-                return this.maybeSetScopeValue('click', model, oldModel, this.clickKey, this.evalModelHandle, isInit);
-              }
-              break;
             case 'options':
               if (!justCreated) {
                 return this.createMarker(model, oldModel, isInit);
@@ -2580,7 +2570,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             click: (function(_this) {
               return function(marker, eventName, model, mousearg) {
                 var click;
-                click = _this.getProp(_this.clickKey, _this.model);
+                click = _.isFunction(_this.clickKey) ? _this.clickKey : _this.getProp(_this.clickKey, _this.model);
                 if (_this.doClick && (click != null)) {
                   return _this.scope.$apply(click(marker, eventName, _this.model, mousearg));
                 }
