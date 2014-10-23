@@ -5359,7 +5359,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           options: "=",
           events: "=",
           styles: "=",
-          bounds: "="
+          bounds: "=",
+          promise: "="
         };
 
 
@@ -5370,7 +5371,18 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
          */
 
         Map.prototype.link = function(scope, element, attrs) {
-          return GoogleMapApi.then((function(_this) {
+          var promise;
+          promise = function() {
+            var _ref;
+            if (!((scope.promise != null) && (((_ref = scope.promise) != null ? _ref.then : void 0) != null))) {
+              return GoogleMapApi;
+            } else {
+              return scope.promise.then(function() {
+                return GoogleMapApi;
+              });
+            }
+          };
+          return promise().then((function(_this) {
             return function(maps) {
               var dragging, el, eventName, getEventHandler, mapOptions, opts, resolveSpawned, settingCenterFromScope, spawned, type, _m;
               DEFAULTS = {
