@@ -22,7 +22,12 @@ angular.module("google-maps.directives.api.models.parent".ns())
                         @doRebuildAll = newValue
 
                 #watch all the below properties with end up being processed by onWatch below
-                @watch('models', scope)
+                scope.modelsInitLen = scope.models?.length or 0
+                scope.$watch 'models', (newValue,oldValue) =>
+                  if(!_.isEqual(newValue,oldValue) or (newValue.length != scope.modelsInitLen and scope.modelsInitLen?))
+                    scope.modelsInitLen = undefined
+                    @onWatch 'models', scope,newValue, oldValue
+                , true
                 @watch('doCluster', scope)
                 @watch('clusterOptions', scope)
                 @watch('clusterEvents', scope)

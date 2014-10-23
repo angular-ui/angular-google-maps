@@ -3700,7 +3700,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
           this.validateScope = __bind(this.validateScope, this);
           this.onWatch = __bind(this.onWatch, this);
-          var self;
+          var self, _ref;
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, map);
           self = this;
           this.scope.markerModels = new PropMap();
@@ -3714,7 +3714,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this));
-          this.watch('models', scope);
+          scope.modelsInitLen = ((_ref = scope.models) != null ? _ref.length : void 0) || 0;
+          scope.$watch('models', (function(_this) {
+            return function(newValue, oldValue) {
+              if (!_.isEqual(newValue, oldValue) || (newValue.length !== scope.modelsInitLen && (scope.modelsInitLen != null))) {
+                scope.modelsInitLen = void 0;
+                return _this.onWatch('models', scope, newValue, oldValue);
+              }
+            };
+          })(this), true);
           this.watch('doCluster', scope);
           this.watch('clusterOptions', scope);
           this.watch('clusterEvents', scope);
@@ -4742,7 +4750,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.createWindow = function(model, gMarker, gMap) {
-          var child, childScope, fakeElement, opts;
+          var child, childScope, fakeElement, opts, _ref, _ref1;
           childScope = this.linked.scope.$new(false);
           this.setChildScope(childScope, model);
           childScope.$watch('model', (function(_this) {
@@ -4761,7 +4769,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           };
           this.DEFAULTS = this.markersScope ? model[this.optionsKey] || {} : this.DEFAULTS;
           opts = this.createWindowOptions(gMarker, childScope, fakeElement.html(), this.DEFAULTS);
-          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, this.markersScope.markerModels[model[this.idKey]].scope, fakeElement, false, true);
+          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, (_ref = this.markersScope) != null ? (_ref1 = _ref.markerModels[model[this.idKey]]) != null ? _ref1.scope : void 0 : void 0, fakeElement, false, true);
           if (model[this.idKey] == null) {
             this.$log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
             return;

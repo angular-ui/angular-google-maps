@@ -42,7 +42,6 @@ describe "markers directive test", ->
       toPush.latitude = 47
       toPush.longitude = -27
       scope.items.push(toPush)
-    scope.$apply()
     @rootScope.$apply()
     @timeout.flush()
 #    expect(@markerCount).toEqual(1)
