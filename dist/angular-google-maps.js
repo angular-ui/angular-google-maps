@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2014-10-23
+/*! angular-google-maps 2.1.0-SNAPSHOT 2014-10-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1950,6 +1950,26 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
+  angular.module("google-maps.directives.api.utils".ns()).factory("ChromeFixes".ns(), [
+    function() {
+      return {
+        maybeRepaint: function(el) {
+          var od;
+          if (el) {
+            od = el.style.display;
+            el.style.display = 'none';
+            return _.defer(function() {
+              return el.style.display = od;
+            });
+          }
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2921,7 +2941,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child".ns()).factory("WindowChildModel".ns(), [
-    "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache", function(BaseObject, GmapUtil, $log, $compile, $http, $templateCache) {
+    "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "ChromeFixes".ns(), "$compile", "$http", "$templateCache", function(BaseObject, GmapUtil, $log, ChromeFixes, $compile, $http, $templateCache) {
       var WindowChildModel;
       WindowChildModel = (function(_super) {
         __extends(WindowChildModel, _super);
@@ -3142,7 +3162,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (_this.gWin != null) {
                 if (!_this.gWin.isOpen()) {
                   _this.gWin.open(_this.mapCtrl, _this.getGmarker() ? _this.getGmarker() : void 0);
-                  return _this.model.show = _this.gWin.isOpen();
+                  _this.model.show = _this.gWin.isOpen();
+                  _.defer(function() {
+                    var _ref;
+                    return ChromeFixes.maybeRepaint((_ref = _this.gWin.content) != null ? _ref.parentElement : void 0);
+                  });
+                  return _this.model.show;
                 }
               }
             };
@@ -6819,7 +6844,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.1.0-SNAPSHOT 2014-10-23
+      /*! angular-google-maps 2.1.0-SNAPSHOT 2014-10-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
