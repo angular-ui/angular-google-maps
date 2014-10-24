@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.5 2014-10-23
+/*! angular-google-maps 2.0.5 2014-10-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1943,6 +1943,26 @@ Nicholas McCready - https://twitter.com/nmccready
             return watchListener = null;
           }
         };
+      };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
+  angular.module("google-maps.directives.api.utils".ns()).factory("ChromeFixes".ns(), [
+    function() {
+      return {
+        maybeRepaint: function(el) {
+          var od;
+          if (el) {
+            od = el.style.display;
+            el.style.display = 'none';
+            return _.defer(function() {
+              return el.style.display = od;
+            });
+          }
+        }
       };
     }
   ]);
@@ -6819,7 +6839,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.5 2014-10-23
+      /*! angular-google-maps 2.0.5 2014-10-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
