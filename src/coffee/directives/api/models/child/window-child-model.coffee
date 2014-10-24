@@ -1,7 +1,7 @@
 angular.module("google-maps.directives.api.models.child".ns())
 .factory "WindowChildModel".ns(),
-  [ "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache",
-    (BaseObject, GmapUtil, $log, $compile, $http, $templateCache) ->
+  [ "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "ChromeFixes".ns(), "$compile", "$http", "$templateCache",
+    (BaseObject, GmapUtil, $log, ChromeFixes, $compile, $http, $templateCache) ->
       class WindowChildModel extends BaseObject
         @include GmapUtil
         constructor: (@model, @scope, @opts, @isIconVisibleOnClick,
@@ -135,6 +135,10 @@ angular.module("google-maps.directives.api.models.child".ns())
               unless @gWin.isOpen() #only show if we have no show defined yet or if show is really true
                 @gWin.open(@mapCtrl, if @getGmarker() then @getGmarker() else undefined)
                 @model.show = @gWin.isOpen()
+
+                _.defer => ChromeFixes.maybeRepaint @gWin.content?.parentElement
+
+                @model.show
                 # $log.debug "window for marker.key (#{@markerCtrl.key}) opened" if @markerCtrl
 
           if @scope.templateUrl
