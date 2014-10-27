@@ -174,7 +174,5 @@ angular.module("google-maps.directives.api.models.child".ns())
             @scope.$destroy()
           self = undefined
 
-        getGWin: => @gWin
-
       WindowChildModel
   ]

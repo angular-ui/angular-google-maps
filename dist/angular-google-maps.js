@@ -2958,7 +2958,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.element = element;
           this.needToManualDestroy = needToManualDestroy != null ? needToManualDestroy : false;
           this.markerIsVisibleAfterWindowClose = markerIsVisibleAfterWindowClose != null ? markerIsVisibleAfterWindowClose : true;
-          this.getGWin = __bind(this.getGWin, this);
           this.destroy = __bind(this.destroy, this);
           this.remove = __bind(this.remove, this);
           this.getLatestPosition = __bind(this.getLatestPosition, this);
@@ -3224,10 +3223,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.scope.$destroy();
           }
           return self = void 0;
-        };
-
-        WindowChildModel.prototype.getGWin = function() {
-          return this.gWin;
         };
 
         return WindowChildModel;
