@@ -346,7 +346,6 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
           $scope.$apply();
         },
         dragend: function () {
-          self = this;
           $timeout(function () {
             var markers = [];
 
