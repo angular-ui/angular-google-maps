@@ -7,12 +7,7 @@ angular.module("google-maps.directives.api".ns())
         super()
         @template = '<span class="angular-google-map-marker" ng-transclude></span>'
         @$log.info(@)
-        # keeping for now if promise order becomes important
-        # @link =
-        #   pre: @pre
-        #   post: @post
 
-        #happens top down (promises should be hooked here)
       controller: ['$scope', '$element', ($scope, $element)  ->
         $scope.ctrlType = 'Marker'
         _.extend @, IMarker.handle($scope, $element)
@@ -39,7 +34,5 @@ angular.module("google-maps.directives.api".ns())
         scope.$on '$destroy', =>
           @gMarkerManager?.clear()
           @gMarkerManager = null
-
-      # post:(scope, element, attrs, ctrl) =>
 
 ]
