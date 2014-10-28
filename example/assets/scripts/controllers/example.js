@@ -1,3 +1,4 @@
+'use strict';
 angular.module("angular-google-maps-example", ["google-maps".ns()])
 
 .value("rndAddToLatLon", function () {
