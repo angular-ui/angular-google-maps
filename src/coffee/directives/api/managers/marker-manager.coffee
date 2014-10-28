@@ -65,7 +65,7 @@ angular.module("google-maps.directives.api.managers".ns())
         gMarker.isDrawn = false
         gMarker.doAdd = doAdd
 
-    fit: ()=>
+    fit: =>
       super @getGMarkers(), @gMap
 
     getGMarkers: =>
