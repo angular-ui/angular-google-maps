@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.6 2014-10-27
+/*! angular-google-maps 2.0.6 2014-10-28
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -5689,10 +5689,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         ];
 
         Marker.prototype.link = function(scope, element, attrs, ctrl) {
-          var doFit;
-          if (scope.fit) {
-            doFit = true;
-          }
           this.mapPromise = IMarker.mapPromise(scope, ctrl);
           this.mapPromise.then((function(_this) {
             return function(map) {
@@ -6826,7 +6822,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.6 2014-10-27
+      /*! angular-google-maps 2.0.6 2014-10-28
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */

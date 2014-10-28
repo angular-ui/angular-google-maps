@@ -20,7 +20,6 @@ angular.module("google-maps.directives.api".ns())
       ]
 
       link:(scope, element, attrs, ctrl) =>
-        doFit = true if scope.fit
         @mapPromise = IMarker.mapPromise(scope, ctrl)
         @mapPromise.then (map) =>
           @gMarkerManager = new MarkerManager map unless @gMarkerManager
