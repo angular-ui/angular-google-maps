@@ -5674,11 +5674,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         function Marker() {
           this.link = __bind(this.link, this);
-          var deferred;
           Marker.__super__.constructor.call(this);
           this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
           this.$log.info(this);
-          deferred = void 0;
         }
 
         Marker.prototype.controller = [

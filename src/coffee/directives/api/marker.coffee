@@ -7,7 +7,6 @@ angular.module("google-maps.directives.api".ns())
         super()
         @template = '<span class="angular-google-map-marker" ng-transclude></span>'
         @$log.info(@)
-        deferred = undefined
         # keeping for now if promise order becomes important
         # @link =
         #   pre: @pre
