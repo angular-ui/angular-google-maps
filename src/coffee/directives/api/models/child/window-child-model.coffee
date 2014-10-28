@@ -26,7 +26,7 @@ angular.module("google-maps.directives.api.models.child".ns())
           #todo: watch model in here, and recreate / clean gWin on change
 
         doShow: =>
-            @showWindow() if @scope.show
+          @showWindow() if @scope.show
 
         watchAndDoShow: =>
           @scope.show = @model.show if @model.show?
@@ -35,24 +35,23 @@ angular.module("google-maps.directives.api.models.child".ns())
 
         watchElement: =>
           @scope.$watch =>
-            return if not @element or not @html
-            if @html != @element.html() #has content changed?
-              if @gWin
-                @opts?.content = undefined
-                @remove()
-                @createGWin()
+            return unless @element or @html
+            if @html != @element.html() and @gWin
+              @opts?.content = undefined
+              @remove()
+              @createGWin()
 
-        createGWin:() =>
+        createGWin: =>
           if !@gWin?
-              defaults = {}
-              if @opts?
-                  #being double careful for race condition on @opts.position via watch coords (if element and coords change at same time)
-                  @opts.position = @getCoords @scope.coords if @scope.coords
-                  defaults = @opts
-              if @element
-                @html = if _.isObject(@element) then @element.html() else @element
-              _opts = if @scope.options then @scope.options else defaults
-              @opts = @createWindowOptions(@getGmarker(), @markerScope || @scope, @html, _opts)
+            defaults = {}
+            if @opts?
+              #being double careful for race condition on @opts.position via watch coords (if element and coords change at same time)
+              @opts.position = @getCoords @scope.coords if @scope.coords
+              defaults = @opts
+            if @element
+              @html = if _.isObject(@element) then @element.html() else @element
+            _opts = if @scope.options then @scope.options else defaults
+            @opts = @createWindowOptions(@getGmarker(), @markerScope || @scope, @html, _opts)
 
           if @opts? and !@gWin
             if @opts.boxClass and (window.InfoBox && typeof window.InfoBox == 'function')
@@ -79,37 +78,36 @@ angular.module("google-maps.directives.api.models.child".ns())
                 #update models state change since it is out of angular scope (closeClick)
                 @scope.$apply()
 
-        watchCoords: ()=>
+        watchCoords: =>
             scope = if @markerScope? then @markerScope else @scope
-            scope.$watch('coords', (newValue, oldValue) =>
-                if (newValue != oldValue)
-                    unless newValue?
-                        @hideWindow()
-                    else
-                        if !@validateCoords(newValue)
-                            $log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
-                            return
-                        pos = @getCoords(newValue)
-                        @gWin.setPosition pos
-                        @opts.position = pos if @opts
-            , true)
+            scope.$watch 'coords', (newValue, oldValue) =>
+              if (newValue != oldValue)
+                unless newValue?
+                  @hideWindow()
+                else if !@validateCoords(newValue)
+                  $log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
+                  return
+                pos = @getCoords(newValue)
+                @gWin.setPosition pos
+                @opts.position = pos if @opts
+            , true
 
-        watchOptions: ()=>
-            #windows and markers options are separate
-            @scope.$watch('options', (newValue, oldValue) =>
-                if (newValue != oldValue)
-                    @opts = newValue
-                    if @gWin?
-                        @gWin.setOptions(@opts)
+        watchOptions: =>
+          #windows and markers options are separate
+          @scope.$watch 'options', (newValue, oldValue) =>
+            if (newValue != oldValue)
+              @opts = newValue
+              if @gWin?
+                @gWin.setOptions(@opts)
 
-                        if @opts.visible? && @opts.visible
-                          @showWindow()
-                        else if @opts.visible?
-                          @hideWindow()
+                if @opts.visible? && @opts.visible
+                  @showWindow()
+                else if @opts.visible?
+                  @hideWindow()
 
-            , true)
+          , true
 
-        handleClick: (forceClick)=>
+        handleClick: (forceClick) =>
           return unless @gWin?
           # Show the window and hide the marker on click
           click = =>
@@ -124,41 +122,36 @@ angular.module("google-maps.directives.api.models.child".ns())
               @initialMarkerVisibility = @getGmarker().getVisible()
               @oldMarkerAnimation = @getGmarker().getAnimation()
               @getGmarker().setVisible(@isIconVisibleOnClick)
+
           click() if forceClick
 
           if @getGmarker()
             @googleMapsHandles.push google.maps.event.addListener @getGmarker(), 'click', click
 
-        showWindow: () =>
-          show = () =>
-            if @gWin?
-              unless @gWin.isOpen() #only show if we have no show defined yet or if show is really true
-                @gWin.open(@mapCtrl, if @getGmarker() then @getGmarker() else undefined)
-                @model.show = @gWin.isOpen()
-
-                _.defer => ChromeFixes.maybeRepaint @gWin.content?.parentElement
-
-                @model.show
-                # $log.debug "window for marker.key (#{@markerCtrl.key}) opened" if @markerCtrl
-
-          if @scope.templateUrl
-            if @gWin?
+        showWindow: =>
+          if @gWin?
+            if @scope.templateUrl
               $http.get(@scope.templateUrl, { cache: $templateCache }).then (content) =>
                 templateScope = @scope.$new()
                 if angular.isDefined(@scope.templateParameter)
                   templateScope.parameter = @scope.templateParameter
                 compiled = $compile(content.data)(templateScope)
                 @gWin.setContent(compiled[0])
-          else if @scope.template
-            if @gWin?
+            else if @scope.template
               templateScope = @scope.$new()
               if angular.isDefined(@scope.templateParameter)
                 templateScope.parameter = @scope.templateParameter
               compiled = $compile(@scope.template)(templateScope)
               @gWin.setContent(compiled[0])
-          show()
 
-        hideWindow: () =>
+            unless @gWin.isOpen()
+              @gWin.open(@mapCtrl, if @getGmarker() then @getGmarker() else undefined)
+              @model.show = @gWin.isOpen()
+
+              _.defer => ChromeFixes.maybeRepaint @gWin.content
+
+
+        hideWindow: =>
           @gWin.close() if @gWin? and @gWin.isOpen()
 
         getLatestPosition: (overridePos) =>
@@ -180,9 +173,6 @@ angular.module("google-maps.directives.api.models.child".ns())
           if @scope? and @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
             @scope.$destroy()
           self = undefined
-
-        getGWin: =>
-          @gWin
 
       WindowChildModel
   ]

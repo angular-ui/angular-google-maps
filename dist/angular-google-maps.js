@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.6 2014-10-24
+/*! angular-google-maps 2.0.6 2014-10-28
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -2958,7 +2958,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.element = element;
           this.needToManualDestroy = needToManualDestroy != null ? needToManualDestroy : false;
           this.markerIsVisibleAfterWindowClose = markerIsVisibleAfterWindowClose != null ? markerIsVisibleAfterWindowClose : true;
-          this.getGWin = __bind(this.getGWin, this);
           this.destroy = __bind(this.destroy, this);
           this.remove = __bind(this.remove, this);
           this.getLatestPosition = __bind(this.getLatestPosition, this);
@@ -3012,17 +3011,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return this.scope.$watch((function(_this) {
             return function() {
               var _ref;
-              if (!_this.element || !_this.html) {
+              if (!(_this.element || _this.html)) {
                 return;
               }
-              if (_this.html !== _this.element.html()) {
-                if (_this.gWin) {
-                  if ((_ref = _this.opts) != null) {
-                    _ref.content = void 0;
-                  }
-                  _this.remove();
-                  return _this.createGWin();
+              if (_this.html !== _this.element.html() && _this.gWin) {
+                if ((_ref = _this.opts) != null) {
+                  _ref.content = void 0;
                 }
+                _this.remove();
+                return _this.createGWin();
               }
             };
           })(this));
@@ -3083,17 +3080,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               var pos;
               if (newValue !== oldValue) {
                 if (newValue == null) {
-                  return _this.hideWindow();
-                } else {
-                  if (!_this.validateCoords(newValue)) {
-                    $log.error("WindowChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(_this.model)));
-                    return;
-                  }
-                  pos = _this.getCoords(newValue);
-                  _this.gWin.setPosition(pos);
-                  if (_this.opts) {
-                    return _this.opts.position = pos;
-                  }
+                  _this.hideWindow();
+                } else if (!_this.validateCoords(newValue)) {
+                  $log.error("WindowChildMarker cannot render marker as scope.coords as no position on marker: " + (JSON.stringify(_this.model)));
+                  return;
+                }
+                pos = _this.getCoords(newValue);
+                _this.gWin.setPosition(pos);
+                if (_this.opts) {
+                  return _this.opts.position = pos;
                 }
               }
             };
@@ -3156,24 +3151,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.showWindow = function() {
-          var compiled, show, templateScope;
-          show = (function(_this) {
-            return function() {
-              if (_this.gWin != null) {
-                if (!_this.gWin.isOpen()) {
-                  _this.gWin.open(_this.mapCtrl, _this.getGmarker() ? _this.getGmarker() : void 0);
-                  _this.model.show = _this.gWin.isOpen();
-                  _.defer(function() {
-                    var _ref;
-                    return ChromeFixes.maybeRepaint((_ref = _this.gWin.content) != null ? _ref.parentElement : void 0);
-                  });
-                  return _this.model.show;
-                }
-              }
-            };
-          })(this);
-          if (this.scope.templateUrl) {
-            if (this.gWin != null) {
+          var compiled, templateScope;
+          if (this.gWin != null) {
+            if (this.scope.templateUrl) {
               $http.get(this.scope.templateUrl, {
                 cache: $templateCache
               }).then((function(_this) {
@@ -3187,9 +3167,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return _this.gWin.setContent(compiled[0]);
                 };
               })(this));
-            }
-          } else if (this.scope.template) {
-            if (this.gWin != null) {
+            } else if (this.scope.template) {
               templateScope = this.scope.$new();
               if (angular.isDefined(this.scope.templateParameter)) {
                 templateScope.parameter = this.scope.templateParameter;
@@ -3197,8 +3175,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               compiled = $compile(this.scope.template)(templateScope);
               this.gWin.setContent(compiled[0]);
             }
+            if (!this.gWin.isOpen()) {
+              this.gWin.open(this.mapCtrl, this.getGmarker() ? this.getGmarker() : void 0);
+              this.model.show = this.gWin.isOpen();
+              return _.defer((function(_this) {
+                return function() {
+                  return ChromeFixes.maybeRepaint(_this.gWin.content);
+                };
+              })(this));
+            }
           }
-          return show();
         };
 
         WindowChildModel.prototype.hideWindow = function() {
@@ -3237,10 +3223,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.scope.$destroy();
           }
           return self = void 0;
-        };
-
-        WindowChildModel.prototype.getGWin = function() {
-          return this.gWin;
         };
 
         return WindowChildModel;
@@ -5692,11 +5674,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         function Marker() {
           this.link = __bind(this.link, this);
-          var deferred;
           Marker.__super__.constructor.call(this);
           this.template = '<span class="angular-google-map-marker" ng-transclude></span>';
           this.$log.info(this);
-          deferred = void 0;
         }
 
         Marker.prototype.controller = [
@@ -5707,10 +5687,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         ];
 
         Marker.prototype.link = function(scope, element, attrs, ctrl) {
-          var doFit;
-          if (scope.fit) {
-            doFit = true;
-          }
           this.mapPromise = IMarker.mapPromise(scope, ctrl);
           this.mapPromise.then((function(_this) {
             return function(map) {
@@ -6844,7 +6820,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.6 2014-10-24
+      /*! angular-google-maps 2.0.6 2014-10-28
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
