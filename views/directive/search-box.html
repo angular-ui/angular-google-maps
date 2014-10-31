@@ -1,4 +1,20 @@
 <p>The <code>search-box</code> directive is used to add a Google Places search box to the map.</p>
+<p>Therefore, the google places library is required! Load it by javascript or html.</p>
+js<br>
+<div hljs>
+  angular.module("search-box-example", ["google-maps".ns()])
+
+  .config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
+    GoogleMapApi.configure({
+  //    key: 'your api key',
+      v: '3.17',
+      libraries: 'places' //required for SearchBox
+    });
+  }])
+</div>
+or HTML <br>
+<div hljs src="<script src=&quot;http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false&language=en&v=3.17&quot;></script>"></div>
+
 
 <h4>Usage</h4>
 
