@@ -3003,7 +3003,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         WindowChildModel.prototype.doShow = function() {
           if (this.scope.show) {
-            return this.showWindow();
+            return this.showWindow;
+          } else {
+            return this.hideWindow();
           }
         };
 

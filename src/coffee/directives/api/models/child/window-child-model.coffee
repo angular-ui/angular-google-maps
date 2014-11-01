@@ -26,7 +26,10 @@ angular.module("google-maps.directives.api.models.child".ns())
           #todo: watch model in here, and recreate / clean gWin on change
 
         doShow: =>
-          @showWindow() if @scope.show
+          if @scope.show
+            @showWindow
+          else
+            @hideWindow()
 
         watchAndDoShow: =>
           @scope.show = @model.show if @model.show?
