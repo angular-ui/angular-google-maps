@@ -5,9 +5,9 @@ angular.module('google-maps.providers'.ns())
 
       getScriptUrl = (options)->
         if options.china
-          return 'http://maps.google.cn/'
+          return 'http://maps.google.cn/maps/api/js?'
         else
-          return 'https://maps.googleapis.com/'
+          return 'https://maps.googleapis.com/maps/api/js?'
 
       load: (options)->
         deferred = $q.defer()
@@ -33,7 +33,7 @@ angular.module('google-maps.providers'.ns())
         scriptId = "ui_gmap_map_load_" + uuid.generate()
         script.id = scriptId
         script.type = 'text/javascript'
-        script.src = getScriptUrl(options) + 'maps/api/js?' + query
+        script.src = getScriptUrl(options) + query
         document.body.appendChild script
 
         # Return the promise
@@ -45,7 +45,7 @@ angular.module('google-maps.providers'.ns())
     # Some nice default options
     @options =
     #    key: 'api-key here',
-      china: false,
+      china: false
       v: '3.17'
       libraries: ''
       language: 'en'
