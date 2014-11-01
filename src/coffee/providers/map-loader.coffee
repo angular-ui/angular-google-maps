@@ -2,6 +2,13 @@
 angular.module('google-maps.providers'.ns())
 .factory('MapScriptLoader'.ns(), ['$q', 'uuid'.ns(), ($q, uuid) ->
       scriptId = undefined
+
+      getScriptUrl = (options)->
+        if options.china
+          return 'http://maps.google.cn/'
+        else
+          return 'https://maps.googleapis.com/'
+
       load: (options)->
         deferred = $q.defer()
         # Early-resolve if google-maps-api is already in global-scope
@@ -26,7 +33,7 @@ angular.module('google-maps.providers'.ns())
         scriptId = "ui_gmap_map_load_" + uuid.generate()
         script.id = scriptId
         script.type = 'text/javascript'
-        script.src = 'https://maps.googleapis.com/maps/api/js?' + query
+        script.src = getScriptUrl(options) + 'maps/api/js?' + query
         document.body.appendChild script
 
         # Return the promise
@@ -38,6 +45,7 @@ angular.module('google-maps.providers'.ns())
     # Some nice default options
     @options =
     #    key: 'api-key here',
+      china: false,
       v: '3.17'
       libraries: ''
       language: 'en'

@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.6 2014-10-28
+/*! angular-google-maps 2.0.6 2014-11-01
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -200,8 +200,15 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module('google-maps.providers'.ns()).factory('MapScriptLoader'.ns(), [
     '$q', 'uuid'.ns(), function($q, uuid) {
-      var scriptId;
+      var getScriptUrl, scriptId;
       scriptId = void 0;
+      getScriptUrl = function(options) {
+        if (options.china) {
+          return 'http://maps.google.cn/maps/api/js?';
+        } else {
+          return 'https://maps.googleapis.com/maps/api/js?';
+        }
+      };
       return {
         load: function(options) {
           var deferred, query, randomizedFunctionName, script;
@@ -226,7 +233,7 @@ Nicholas McCready - https://twitter.com/nmccready
           scriptId = "ui_gmap_map_load_" + uuid.generate();
           script.id = scriptId;
           script.type = 'text/javascript';
-          script.src = 'https://maps.googleapis.com/maps/api/js?' + query;
+          script.src = getScriptUrl(options) + query;
           document.body.appendChild(script);
           return deferred.promise;
         }
@@ -234,6 +241,7 @@ Nicholas McCready - https://twitter.com/nmccready
     }
   ]).provider('GoogleMapApi'.ns(), function() {
     this.options = {
+      china: false,
       v: '3.17',
       libraries: '',
       language: 'en',
@@ -6820,7 +6828,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.6 2014-10-28
+      /*! angular-google-maps 2.0.6 2014-11-01
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
