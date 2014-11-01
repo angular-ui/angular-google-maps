@@ -54,6 +54,24 @@
                         </div>
                     </li>
                 </ul>
+                <strong>Serving Google Maps in China (mainland)</strong>
+                <p>
+                    It is a state demand that all online map providers must use an obscured coordinate system called GCJ-02 (aka Coordinates on Mars).
+                    GCJ-02 is WSG-84 based, but added offsets to both latitude and longitude.
+                </p>
+                <p>
+                    If you display a marker from GCJ-02 coordinates on a GCJ-02 map, the place will be marked correctly.<br />
+                    However the offsets can result in a less-than-100 up to 700 meter error from the actual location if you place a GCJ-02 marker on a WSG-84 map and vice versa.
+                </p>
+                <p>
+                    There is an <a href="https://github.com/googollee/eviltransform" target="_blank">open-source project</a> that can provide approximate translation between GCJ-02 and WSG-84.
+                </p>
+                <p>
+                    Google also submits to this regulation. They serve this modified system at maps.google.cn. <br />
+                    Specify a <code>china</code> flag when you load the Google Maps API using the GoogleMapsApi Loader,<br />
+                    or replace <code>//maps.googleapis.com/maps/api/js</code> with
+                        <code>http://maps.google.cn/maps/api/js</code> if you manually load Google Maps API via a script tag.
+                </p>
             </li>
 
             <li>
