@@ -136,7 +136,6 @@ angular.module("google-maps.directives.api.models.parent".ns())
                             if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
                               @gMarkerManager.draw()
                               scope.markerModels = @scope.markerModels #for other directives like windows
-                              scope.$apply()
                               @gMarkerManager.fit() if scope.fit #note fit returns a promise
                         .then =>
                           @existingPieces = undefined
