@@ -3,9 +3,10 @@ angular.module("google-maps.directives.api.models.parent".ns())
   "IMarkerParentModel".ns(), "ModelsWatcher".ns(),
   "PropMap".ns(), "MarkerChildModel".ns(), "_async".ns(),
   "ClustererMarkerManager".ns(), "MarkerManager".ns(), "$timeout", "IMarker".ns(),
+  "uiGmapPromise",
     (IMarkerParentModel, ModelsWatcher,
       PropMap, MarkerChildModel, _async,
-      ClustererMarkerManager, MarkerManager,$timeout,IMarker) ->
+      ClustererMarkerManager, MarkerManager,$timeout,IMarker,uiGmapPromise) ->
         class MarkersParentModel extends IMarkerParentModel
             @include ModelsWatcher
             constructor: (scope, element, attrs, map) ->
@@ -175,7 +176,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 delete @scope.markerModels
                 @gMarkerManager.clear() if @gMarkerManager?
                 @scope.markerModels = new PropMap()
-                Promise.resolve()
+                uiGmapPromise.resolve()
 
             maybeExecMappedEvent:(cluster, fnName) ->
               if _.isFunction @scope.clusterEvents?[fnName]

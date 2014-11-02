@@ -392,8 +392,8 @@ Nicholas McCready - https://twitter.com/nmccready
         }
       };
     }
-  ]).factory("_async".ns(), [
-    function() {
+  ]).factory("uiGmap_async", [
+    "uiGmapPromise", function(uiGmapPromise) {
       var defaultChunkSize, doChunk, each, map, waitOrGo;
       defaultChunkSize = 20;
 
@@ -468,7 +468,7 @@ Nicholas McCready - https://twitter.com/nmccready
           pauseMilli = 1;
         }
         ret = void 0;
-        overallD = Promise.defer();
+        overallD = uiGmapPromise.defer();
         ret = overallD.promise;
         if (!pauseMilli) {
           overallD.reject("pause (delay) must be set from _async!");
@@ -485,7 +485,7 @@ Nicholas McCready - https://twitter.com/nmccready
         var results;
         results = [];
         if (!((objs != null) && (objs != null ? objs.length : void 0) > 0)) {
-          return Promise.resolve(results);
+          return uiGmapPromise.resolve(results);
         }
         return each(objs, function(o) {
           return results.push(iterator(o));
@@ -1244,6 +1244,25 @@ Nicholas McCready - https://twitter.com/nmccready
               });
             };
           })(this));
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
+  angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapPromise', [
+    '$q', function($q) {
+      return {
+        defer: function() {
+          return $q.defer();
+        },
+        resolve: function() {
+          var d;
+          d = $q.defer();
+          d.resolve.apply(arguments);
+          return d.promise;
         }
       };
     }
@@ -3684,7 +3703,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.parent".ns()).factory("MarkersParentModel".ns(), [
-    "IMarkerParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "MarkerChildModel".ns(), "_async".ns(), "ClustererMarkerManager".ns(), "MarkerManager".ns(), "$timeout", "IMarker".ns(), function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager, $timeout, IMarker) {
+    "IMarkerParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "MarkerChildModel".ns(), "_async".ns(), "ClustererMarkerManager".ns(), "MarkerManager".ns(), "$timeout", "IMarker".ns(), "uiGmapPromise", function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise) {
       var MarkersParentModel;
       MarkersParentModel = (function(_super) {
         __extends(MarkersParentModel, _super);
@@ -3906,7 +3925,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 _this.gMarkerManager.clear();
               }
               _this.scope.markerModels = new PropMap();
-              return Promise.resolve();
+              return uiGmapPromise.resolve();
             };
           })(this));
         };
@@ -4489,7 +4508,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.parent".ns()).factory("WindowsParentModel".ns(), [
-    "IWindowParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "WindowChildModel".ns(), "Linked".ns(), "_async".ns(), "Logger".ns(), '$timeout', '$compile', '$http', '$templateCache', '$interpolate', function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async, $log, $timeout, $compile, $http, $templateCache, $interpolate) {
+    "IWindowParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "WindowChildModel".ns(), "Linked".ns(), "_async".ns(), "Logger".ns(), '$timeout', '$compile', '$http', '$templateCache', '$interpolate', 'uiGmapPromise', function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async, $log, $timeout, $compile, $http, $templateCache, $interpolate, uiGmapPromise) {
       var WindowsParentModel;
       WindowsParentModel = (function(_super) {
         __extends(WindowsParentModel, _super);
@@ -4589,7 +4608,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (doCreate) {
                   _this.createChildScopesWindows();
                 }
-                return Promise.resolve();
+                return uiGmapPromise.resolve();
               });
             };
           })(this));
@@ -6018,8 +6037,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.directives.api".ns()).factory("Windows".ns(), [
-    "IWindow".ns(), "WindowsParentModel".ns(), function(IWindow, WindowsParentModel) {
+  angular.module("uiGmapgoogle-maps.directives.api").factory("uiGmapWindows", [
+    "uiGmapIWindow", "uiGmapWindowsParentModel", "uiGmapPromise", function(IWindow, WindowsParentModel, uiGmapPromise) {
 
       /*
       Windows directive where many windows map to the models property
@@ -6032,7 +6051,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.init = __bind(this.init, this);
           this.link = __bind(this.link, this);
           Windows.__super__.constructor.call(this);
-          this.require = ['^' + 'GoogleMap'.ns(), '^?' + 'Markers'.ns()];
+          this.require = ['^' + 'uiGmapGoogleMap', '^?' + 'uiGmapMarkers'];
           this.template = '<span class="angular-google-maps-windows" ng-transclude></span>';
           this.scope.idKey = '=idkey';
           this.scope.doRebuildAll = '=dorebuildall';
@@ -6048,7 +6067,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return mapScope.deferred.promise.then((function(_this) {
             return function(map) {
               var promise, _ref;
-              promise = (markerScope != null ? (_ref = markerScope.deferred) != null ? _ref.promise : void 0 : void 0) || Promise.resolve();
+              promise = (markerScope != null ? (_ref = markerScope.deferred) != null ? _ref.promise : void 0 : void 0) || uiGmapPromise.resolve();
               return promise.then(function() {
                 var pieces, _ref1;
                 pieces = (_ref1 = _this.parentModel) != null ? _ref1.existingPieces : void 0;

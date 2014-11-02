@@ -16,6 +16,7 @@ describe "_async", ->
     .then ->
       expect(chunkHit).toBeTruthy()
       done()
+    @$rootScope.$apply()
 
   it "handle array of 101 outputs 101 elements equal to the original, with 1 pauses", (done) ->
     known = _.range(101)
@@ -32,6 +33,7 @@ describe "_async", ->
       expect(test.length).toEqual(known.length)
       expect(test).toEqual(known)
       done()
+    @$rootScope.$apply()
 
   it "handle array of 200 outputs 200 elements equal to the original, with 2 pauses", (done) ->
     known = _.range(200)
@@ -48,6 +50,7 @@ describe "_async", ->
       expect(test.length).toEqual(known.length)
       expect(test).toEqual(known)
       done()
+    @$rootScope.$apply()
 
   it "handle array of 1000 outputs 1000 elements equal to the original, with 10 pauses", (done) ->
     known = _.range(1000)
@@ -63,7 +66,7 @@ describe "_async", ->
       expect(test).toEqual(known)
       expect(pauses).toEqual(10)
       done()
-
+    @$rootScope.$apply()
   it "handle map of 1000 outputs 1000 elements equal to the original, with 10 pauses", (done) ->
     known = _.range(1000)
     test = []
@@ -86,6 +89,7 @@ describe "_async", ->
       )
       expect(pauses).toEqual(10)
       done()
+    @$rootScope.$apply()
 
   describe "no chunking / pauses", ->
     it "rang 101 zero pauses", (done) ->
@@ -102,3 +106,4 @@ describe "_async", ->
         expect(test.length).toEqual(known.length)
         expect(test).toEqual(known)
         done()
+    @$rootScope.$apply()

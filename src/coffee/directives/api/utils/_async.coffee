@@ -7,7 +7,7 @@ angular.module("google-maps.directives.api.utils".ns())
     resolve:() ->
       _cb.apply(undefined,arguments)
 ])
-.factory "_async".ns(), [ ->
+.factory "uiGmap_async", [ "uiGmapPromise", (uiGmapPromise) ->
 
   defaultChunkSize = 20
 
@@ -63,8 +63,7 @@ angular.module("google-maps.directives.api.utils".ns())
 
   each = (array, chunk, pauseCb, chunkSizeOrDontChunk = defaultChunkSize, index = 0, pauseMilli = 1) ->
     ret = undefined
-#    overallD = $q.defer()
-    overallD = Promise.defer()
+    overallD = uiGmapPromise.defer()
     ret = overallD.promise
 
     unless pauseMilli
@@ -83,7 +82,7 @@ angular.module("google-maps.directives.api.utils".ns())
   map = (objs, iterator, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) ->
 
     results = []
-    return Promise.resolve(results)  unless objs? and objs?.length > 0
+    return uiGmapPromise.resolve(results)  unless objs? and objs?.length > 0
 
     each(objs, (o) ->
       results.push iterator o
