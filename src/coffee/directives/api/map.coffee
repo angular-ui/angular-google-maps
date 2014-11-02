@@ -122,7 +122,8 @@ angular.module("google-maps.directives.api".ns())
 
             google.maps.event.addListener _m, "drag", =>
               c = _m.center
-              $timeout (s)  ->
+              $timeout  ->
+                s = scope
                 if angular.isDefined(s.center.type)
                   s.center.coordinates[1] = c.lat()
                   s.center.coordinates[0] = c.lng()
@@ -134,15 +135,16 @@ angular.module("google-maps.directives.api".ns())
 
             google.maps.event.addListener _m, "zoom_changed", =>
               if scope.zoom isnt _m.zoom
-                $timeout (s)  ->
-                  s.zoom = _m.zoom
+                $timeout ->
+                  scope.zoom = _m.zoom
                 , scope.eventOpts?.debounce?.zoomMs
 
             settingCenterFromScope = false
             google.maps.event.addListener _m, "center_changed", =>
               c = _m.center
               return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
-              $timeout (s)  ->
+              $timeout ->
+                s = scope
                 unless _m.dragging
                   if angular.isDefined(s.center.type)
                     s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()

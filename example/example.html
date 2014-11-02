@@ -193,6 +193,37 @@
                 </td>
             </tr>
             <tr>
+                <td>center</td>
+                <td>
+                    <pre ng-cloak>
+                        <span ng-show="map.center.latitude >= 0">&nbsp;
+                        </span>
+                        {{ map.center.latitude | number:4 }} lat
+                        <br>
+                        <span ng-show="map.center.longitude >= 0">&nbsp;
+                        </span>{{ map.center.longitude | number:4 }} lng
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>zoom</td>
+                <td>{{ map.zoom }}</td>
+            </tr>
+            <tr>
+                <td>bounds</td>
+                <td>
+                    <pre ng-cloak>
+                        north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }}
+                        <br>
+                        south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>dragging</td>
+                <td ng-cloak>{{ map.dragging }}</td>
+            </tr>
+            <tr>
                 <td>Generate Random Markers</td>
                 <td>
                     <div>Do Cluster?: <input type="checkbox" ng-model="map.doClusterRandomMarkers"></div>
@@ -268,37 +299,6 @@
                         </ul>
                     </div>
                 </td>
-            </tr>
-            <tr>
-                <td>center</td>
-                <td>
-                    <pre ng-cloak>
-                        <span ng-show="map.center.latitude >= 0">&nbsp;
-                        </span>
-                        {{ map.center.latitude | number:4 }} lat
-                        <br>
-                        <span ng-show="map.center.longitude >= 0">&nbsp;
-                        </span>{{ map.center.longitude | number:4 }} lng
-                    </pre>
-                </td>
-            </tr>
-            <tr>
-                <td>zoom</td>
-                <td>{{ map.zoom }}</td>
-            </tr>
-            <tr>
-                <td>bounds</td>
-                <td>
-                    <pre ng-cloak>
-                        north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }}
-                        <br>
-                        south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
-                    </pre>
-                </td>
-            </tr>
-            <tr>
-                <td>dragging</td>
-                <td ng-cloak>{{ map.dragging }}</td>
             </tr>
             <tr>
                 <td>clicked position</td>

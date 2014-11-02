@@ -5473,7 +5473,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               google.maps.event.addListener(_m, "drag", function() {
                 var c, _ref, _ref1, _ref2;
                 c = _m.center;
-                return $timeout(function(s) {
+                return $timeout(function() {
+                  var s;
+                  s = scope;
                   if (angular.isDefined(s.center.type)) {
                     s.center.coordinates[1] = c.lat();
                     return s.center.coordinates[0] = c.lng();
@@ -5486,8 +5488,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               google.maps.event.addListener(_m, "zoom_changed", function() {
                 var _ref, _ref1;
                 if (scope.zoom !== _m.zoom) {
-                  return $timeout(function(s) {
-                    return s.zoom = _m.zoom;
+                  return $timeout(function() {
+                    return scope.zoom = _m.zoom;
                   }, (_ref = scope.eventOpts) != null ? (_ref1 = _ref.debounce) != null ? _ref1.zoomMs : void 0 : void 0);
                 }
               });
@@ -5498,7 +5500,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (settingCenterFromScope) {
                   return;
                 }
-                return $timeout(function(s) {
+                return $timeout(function() {
+                  var s;
+                  s = scope;
                   if (!_m.dragging) {
                     if (angular.isDefined(s.center.type)) {
                       if (s.center.coordinates[1] !== c.lat()) {
