@@ -5,6 +5,6 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     $q.defer()
   resolve:  ->
     d = $q.defer()
-    d.resolve.apply(arguments)
+    d.resolve.apply(undefined,arguments)
     d.promise
 ]

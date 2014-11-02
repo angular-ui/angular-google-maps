@@ -1,8 +1,8 @@
 angular.module("google-maps.directives.api.models.child".ns())
 .factory "MarkerChildModel".ns(), [ "ModelKey".ns(), "GmapUtil".ns(),
   "Logger".ns(), "EventsHelper".ns(),"PropertyAction".ns(),
-  "MarkerOptions".ns(), "IMarker".ns(), "MarkerManager".ns(),
-  (ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker, MarkerManager) ->
+  "MarkerOptions".ns(), "IMarker".ns(), "MarkerManager".ns(), "uiGmapPromise",
+  (ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker, MarkerManager, uiGmapPromise) ->
     keys = ['coords', 'icon', 'options', 'fit']
     class MarkerChildModel extends ModelKey
       @include GmapUtil
@@ -21,7 +21,7 @@ angular.module("google-maps.directives.api.models.child".ns())
       constructor: (scope, @model, @keys, @gMap, @defaults, @doClick, @gMarkerManager, @doDrawSelf = true,
 
         @trackModel = true, @needRedraw = false) ->
-        @deferred = Promise.defer()
+        @deferred = uiGmapPromise.defer()
         _.each @keys, (v, k) =>
           @[k + 'Key'] = if _.isFunction @keys[k] then @keys[k]() else @keys[k]
         @idKey = @idKeyKey or "id"

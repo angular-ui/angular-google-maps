@@ -1,4 +1,4 @@
-angular.module("google-maps.directives.api.utils".ns())
+angular.module("uiGmapgoogle-maps.directives.api.utils")
 .service("_sync".ns(), [ ->
   fakePromise: ->
     _cb = undefined
@@ -7,7 +7,7 @@ angular.module("google-maps.directives.api.utils".ns())
     resolve:() ->
       _cb.apply(undefined,arguments)
 ])
-.factory "uiGmap_async", [ "uiGmapPromise", (uiGmapPromise) ->
+.service "uiGmap_async", [ "$timeout", "uiGmapPromise", ($timeout,uiGmapPromise) ->
 
   defaultChunkSize = 20
 
@@ -53,7 +53,7 @@ angular.module("google-maps.directives.api.utils".ns())
           index = i
           if chunkSizeOrDontChunk
             pauseCb?()
-            setTimeout(->
+            $timeout(->
               doChunk array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index
             , pauseMilli)
         else

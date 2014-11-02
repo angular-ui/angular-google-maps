@@ -375,7 +375,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 
 (function() {
-  angular.module("google-maps.directives.api.utils".ns()).service("_sync".ns(), [
+  angular.module("uiGmapgoogle-maps.directives.api.utils").service("_sync".ns(), [
     function() {
       return {
         fakePromise: function() {
@@ -392,8 +392,8 @@ Nicholas McCready - https://twitter.com/nmccready
         }
       };
     }
-  ]).factory("uiGmap_async", [
-    "uiGmapPromise", function(uiGmapPromise) {
+  ]).service("uiGmap_async", [
+    "$timeout", "uiGmapPromise", function($timeout, uiGmapPromise) {
       var defaultChunkSize, doChunk, each, map, waitOrGo;
       defaultChunkSize = 20;
 
@@ -443,7 +443,7 @@ Nicholas McCready - https://twitter.com/nmccready
                 if (typeof pauseCb === "function") {
                   pauseCb();
                 }
-                return setTimeout(function() {
+                return $timeout(function() {
                   return doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index);
                 }, pauseMilli);
               }
@@ -1261,7 +1261,7 @@ Nicholas McCready - https://twitter.com/nmccready
         resolve: function() {
           var d;
           d = $q.defer();
-          d.resolve.apply(arguments);
+          d.resolve.apply(void 0, arguments);
           return d.promise;
         }
       };
@@ -2322,7 +2322,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child".ns()).factory("MarkerChildModel".ns(), [
-    "ModelKey".ns(), "GmapUtil".ns(), "Logger".ns(), "EventsHelper".ns(), "PropertyAction".ns(), "MarkerOptions".ns(), "IMarker".ns(), "MarkerManager".ns(), function(ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker, MarkerManager) {
+    "ModelKey".ns(), "GmapUtil".ns(), "Logger".ns(), "EventsHelper".ns(), "PropertyAction".ns(), "MarkerOptions".ns(), "IMarker".ns(), "MarkerManager".ns(), "uiGmapPromise", function(ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker, MarkerManager, uiGmapPromise) {
       var MarkerChildModel, keys;
       keys = ['coords', 'icon', 'options', 'fit'];
       MarkerChildModel = (function(_super) {
@@ -2371,7 +2371,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.createMarker = __bind(this.createMarker, this);
           this.setMyScope = __bind(this.setMyScope, this);
           this.destroy = __bind(this.destroy, this);
-          this.deferred = Promise.defer();
+          this.deferred = uiGmapPromise.defer();
           _.each(this.keys, (function(_this) {
             return function(v, k) {
               return _this[k + 'Key'] = _.isFunction(_this.keys[k]) ? _this.keys[k]() : _this.keys[k];
