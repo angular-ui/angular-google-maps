@@ -94,6 +94,8 @@ angular.module("google-maps.directives.api.utils".ns())
       ret = defaults.content
     else
       if $compile?
+        # replace leading/trailing whitespace
+        content = content.replace /^\s+|\s+$/g, ""
         parsed = $compile(content)(scope)
         if parsed.length > 0
           ret = parsed[0] #must be one element with children or angular bindings get lost

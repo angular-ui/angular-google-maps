@@ -4,7 +4,6 @@
   "main": "./dist/angular-google-maps.js",
   "dependencies": {
     "angular": ">=1.2.0",
-    "jquery": "2.1.x",
     "lodash": "~2.4.1",
     "bluebird": "~2.3.4"
   },

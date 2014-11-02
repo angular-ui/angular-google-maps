@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.6 2014-11-01
+/*! angular-google-maps 2.0.6 2014-11-02
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -795,6 +795,7 @@ Nicholas McCready - https://twitter.com/nmccready
             ret = defaults.content;
           } else {
             if ($compile != null) {
+              content = content.replace(/^\s+|\s+$/g, "");
               parsed = $compile(content)(scope);
               if (parsed.length > 0) {
                 ret = parsed[0];
@@ -4899,7 +4900,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     });
                     controlDiv.children().data('$ngControllerController', templateCtrl);
                   }
-                  return control = $compile(controlDiv.contents())(templateScope);
+                  return control = $compile(controlDiv.children())(templateScope);
                 }).error(function(error) {
                   return _this.$log.error('mapControl: template could not be found');
                 }).then(function() {
@@ -6830,7 +6831,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.0.6 2014-11-01
+      /*! angular-google-maps 2.0.6 2014-11-02
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
