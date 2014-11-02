@@ -18,8 +18,7 @@
     <script src="https://rawgithub.com/aFarkas/html5shiv/3.7.0/src/html5shiv.js"></script>
     <![endif]-->
 
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet"
-          type="text/css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700'
           rel='stylesheet' type='text/css'>
     <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
@@ -29,8 +28,8 @@
 <!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
     the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 
-<div class="container-fluid">
-<div class="row-fluid">
+<div class="container">
+<div class="row">
     <div class="page-title">
         <h2>angular-google-maps: <span ng-cloak>{{version}}</span>, google-maps: <span ng-cloak>{{googleVersion}}</span></h2>
     </div>
@@ -39,8 +38,8 @@
     <button class="btn btn-success" ng-click="getMapInstance()">Get Map Instance</button>
     Show Map: <input type="checkbox" text="Show / Hide Map" ng-model="map.show">
 </div>
-<div class="row-fluid" ng-if="map.show">
-    <ui-gmap-google-map class="span8"
+<div class="row" ng-if="map.show">
+    <ui-gmap-google-map class="col-md-8"
          center="map.center"
          zoom="map.zoom"
          dragging="map.dragging"
@@ -177,7 +176,7 @@
         </ui-gmap-rectangle>
 
 </ui-gmap-google-map>
-<div class="span4">
+<div class="col-md-4">
     <fieldset>
         <table class="table">
             <tbody>
@@ -191,6 +190,37 @@
                     Weather: <input type="checkbox" text="Weather On/Off" ng-model="map.showWeather">
                     Heat: <input type="checkbox" text="Heat On/Off" ng-model="map.showHeat">
                 </td>
+            </tr>
+            <tr>
+                <td>center</td>
+                <td>
+                    <pre ng-cloak>
+                        <span ng-show="map.center.latitude >= 0">&nbsp;
+                        </span>
+                        {{ map.center.latitude | number:4 }} lat
+                        <br>
+                        <span ng-show="map.center.longitude >= 0">&nbsp;
+                        </span>{{ map.center.longitude | number:4 }} lng
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>zoom</td>
+                <td>{{ map.zoom }}</td>
+            </tr>
+            <tr>
+                <td>bounds</td>
+                <td>
+                    <pre ng-cloak>
+                        north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }}
+                        <br>
+                        south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>dragging</td>
+                <td ng-cloak>{{ map.dragging }}</td>
             </tr>
             <tr>
                 <td>Generate Random Markers</td>
@@ -268,37 +298,6 @@
                         </ul>
                     </div>
                 </td>
-            </tr>
-            <tr>
-                <td>center</td>
-                <td>
-                    <pre ng-cloak>
-                        <span ng-show="map.center.latitude >= 0">&nbsp;
-                        </span>
-                        {{ map.center.latitude | number:4 }} lat
-                        <br>
-                        <span ng-show="map.center.longitude >= 0">&nbsp;
-                        </span>{{ map.center.longitude | number:4 }} lng
-                    </pre>
-                </td>
-            </tr>
-            <tr>
-                <td>zoom</td>
-                <td>{{ map.zoom }}</td>
-            </tr>
-            <tr>
-                <td>bounds</td>
-                <td>
-                    <pre ng-cloak>
-                        north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }}
-                        <br>
-                        south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
-                    </pre>
-                </td>
-            </tr>
-            <tr>
-                <td>dragging</td>
-                <td ng-cloak>{{ map.dragging }}</td>
             </tr>
             <tr>
                 <td>clicked position</td>
@@ -462,10 +461,10 @@
 </div>
 </div>
 </div>
+<script src="../website_libs/dev_deps.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/bluebird/1.2.2/bluebird.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
-<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
 <script src="../dist/angular-google-maps.js"></script>
 <script src="assets/scripts/mocks/heat-layer.js"></script>
 <script src="assets/scripts/controllers/example.js"></script>
