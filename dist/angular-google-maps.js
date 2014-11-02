@@ -3851,6 +3851,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
                       _this.gMarkerManager.draw();
                       scope.markerModels = _this.scope.markerModels;
+                      scope.$apply();
                       if (scope.fit) {
                         return _this.gMarkerManager.fit();
                       }
