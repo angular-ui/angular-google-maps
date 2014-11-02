@@ -27,7 +27,7 @@ If I have forgotten anything then it can be added here or to the website branch 
 - **GoogleMapAPI**: Is Provider and a Promise at the same time. This allows you to load the Google Maps SDK asynchronously into the DOM. The provider itself is a promise when passed off to the controller. Thefore the API (google and angular-google-maps) is ready on GoogleMapApi.then callback. If your getting nulls on controllers or nulls on google maps objects then this is because you are trying to access things prior to them being initialized. For more details read the website and dig into the code base. Also if your having issues with GoogleMapAPI search closed issues as a lot has been asked about these issues on several closed tickets. Search issues, gitter, and the google plus community!
 
 ## 2.0.7+:
-- Bluebird has been removed as a dependency. :clap:
+- Bluebird & JQuery has been removed as a dependency. :clap:
 
 ## Getting started
 This is a directive for AngularJS `~1.0.7+, ~1.2.2+`.
