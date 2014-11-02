@@ -1,4 +1,3 @@
-[![Stories in Ready](https://badge.waffle.io/angular-ui/angular-google-maps.png?label=ready&title=Ready)](https://waffle.io/angular-ui/angular-google-maps)
 # angular-google-maps
 
 > AngularJS directives for Google Maps
@@ -9,7 +8,10 @@
 Master: [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.png?branch=master)](https://travis-ci.org/angular-ui/angular-google-maps)
 Develop: [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.png?branch=develop)](https://travis-ci.org/angular-ui/angular-google-maps)
 
+task board: [![Stories in Ready](https://badge.waffle.io/angular-ui/angular-google-maps.png?label=ready&title=Ready)](https://waffle.io/angular-ui/angular-google-maps)
+
 [![Gitter chat](https://badges.gitter.im/angular-ui/angular-google-maps.png)](https://gitter.im/angular-ui/angular-google-maps)
+
 <img src="http://benschwarz.github.io/bower-badges/badge@2x.png?pkgname=angular-google-maps" width="130" height="30">&nbsp;
 
 ##Post 1.2.X:
