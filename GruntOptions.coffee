@@ -107,6 +107,12 @@ module.exports = (grunt) ->
           src: "tmp/output.js"
           dest: "dist/<%= pkg.name %>.js"
         ]
+      # libraries that are not versioned well, not really on bower, not on a cdn yet
+      poorly_managed_dev__dep_bower_libs:
+        files: [
+          src: ["bower_components/bootstrap-without-jquery/bootstrap3/bootstrap-without-jquery.js"]
+          dest: "lib/dev_deps.js"
+        ]
 
     uglify:
       options:
