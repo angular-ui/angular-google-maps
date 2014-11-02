@@ -787,7 +787,7 @@ Nicholas McCready - https://twitter.com/nmccready
           } else {
             if ($compile != null) {
               content = content.replace(/^\s+|\s+$/g, "");
-              parsed = $compile(content)(scope);
+              parsed = content === '' ? '' : $compile(content)(scope);
               if (parsed.length > 0) {
                 ret = parsed[0];
               }
