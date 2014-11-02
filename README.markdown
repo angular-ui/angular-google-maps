@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/angular-ui/angular-google-maps.png?label=ready&title=Ready)](https://waffle.io/angular-ui/angular-google-maps)
 # angular-google-maps
 
 > AngularJS directives for Google Maps
