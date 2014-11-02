@@ -74,6 +74,7 @@ module.exports = (grunt) ->
           "tmp/spec/js/ng-gmap-module.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"
           "tmp/spec/js/usage/usage.spec.js": "spec/coffee/usage/*.spec.coffee"
           "tmp/spec/js/directives/api/apis.spec.js": "spec/coffee/directives/api/*.spec.coffee"
+          "tmp/spec/js/providers/providers.spec.js": "spec/coffee/providers/*.spec.coffee"
           "tmp/spec/js/directives/api/models/child/children.spec.js": "spec/coffee/directives/api/models/child/*.spec.coffee"
           "tmp/spec/js/directives/api/models/parent/parents.spec.js": "spec/coffee/directives/api/models/parent/*.spec.coffee"
           "tmp/spec/js/directives/api/options/options.spec.js": "spec/coffee/directives/api/options/**/*.spec.coffee"

@@ -146,8 +146,8 @@ angular.module("google-maps.directives.api.models.child".ns())
         @removeEvents @externalListeners if @externalListeners
         @removeEvents @internalListeners if @internalListeners
         @externalListeners = @setEvents @gMarker, @scope, @model, ['dragend']
-        #must pass fake $apply see events-helper
-        @internalListeners = @setEvents @gMarker, {events: @internalEvents(), $apply: () ->}, @model
+        #must pass fake $evalAsync see events-helper
+        @internalListeners = @setEvents @gMarker, {events: @internalEvents(), $evalAsync: () ->}, @model
 
         @gMarker.key = @id if @id?
         @gMarkerManager.add @gMarker
@@ -180,7 +180,7 @@ angular.module("google-maps.directives.api.models.child".ns())
         click: (marker, eventName, model, mousearg) =>
           click = if _.isFunction(@clickKey) then @clickKey else @getProp @clickKey, @model
           if @doClick and click?
-            @scope.$apply click(marker, eventName, @model, mousearg)
+            @scope.$evalAsync click(marker, eventName, @model, mousearg)
 
     MarkerChildModel
 ]

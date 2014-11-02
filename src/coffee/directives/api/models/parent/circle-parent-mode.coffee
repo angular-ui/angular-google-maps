@@ -24,20 +24,17 @@ angular.module("google-maps.directives.api.models.parent".ns())
       listeners = @setEvents circle, scope, scope
 
       google.maps.event.addListener circle, 'radius_changed', ->
-        scope.radius = circle.getRadius()
-        $timeout ->
-          scope.$apply()
+        scope.$evalAsync ->
+          scope.radius = circle.getRadius()
 
       google.maps.event.addListener circle, 'center_changed', ->
-        if angular.isDefined(scope.center.type)
-          scope.center.coordinates[1] = circle.getCenter().lat()
-          scope.center.coordinates[0] = circle.getCenter().lng()
-        else
-          scope.center.latitude = circle.getCenter().lat()
-          scope.center.longitude = circle.getCenter().lng()
-
-        $timeout ->
-          scope.$apply()
+        scope.$evalAsync ->
+          if angular.isDefined(scope.center.type)
+            scope.center.coordinates[1] = circle.getCenter().lat()
+            scope.center.coordinates[0] = circle.getCenter().lng()
+          else
+            scope.center.latitude = circle.getCenter().lat()
+            scope.center.longitude = circle.getCenter().lng()
 
       # Remove circle on scope $destroy
       scope.$on "$destroy", =>

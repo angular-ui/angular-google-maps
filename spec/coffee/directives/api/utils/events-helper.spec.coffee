@@ -13,7 +13,7 @@ describe 'EventsHelper'.ns(), ->
     scope =
       events:
         click: ->
-      $apply: (arg) ->
+      $evalAsync: (arg) ->
         return
   it 'exists', ->
     expect(@subject).toBeDefined()

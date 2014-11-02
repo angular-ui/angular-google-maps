@@ -37,18 +37,17 @@ angular.module("google-maps.directives.api.models.parent".ns())
         #if the scope notified this change then there is no reason
         #to update scope otherwise infinite loop
         return if settingBoundsFromScope
-        _.defer ->
-          scope.$apply (s) ->
-            if s.bounds? and s.bounds.sw? and s.bounds.ne?
-              s.bounds.ne =
-                latitude: ne.lat()
-                longitude: ne.lng()
+        scope.$evalAsync (s) ->
+          if s.bounds? and s.bounds.sw? and s.bounds.ne?
+            s.bounds.ne =
+              latitude: ne.lat()
+              longitude: ne.lng()
 
-              s.bounds.sw =
-                latitude: sw.lat()
-                longitude: sw.lng()
-            if s.bounds.getNorthEast? and s.bounds.getSouthWest?
-              s.bounds = b
+            s.bounds.sw =
+              latitude: sw.lat()
+              longitude: sw.lng()
+          if s.bounds.getNorthEast? and s.bounds.getSouthWest?
+            s.bounds = b
 
       init = =>
         fit()

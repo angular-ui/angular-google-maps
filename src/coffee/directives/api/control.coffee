@@ -36,7 +36,8 @@ angular.module("google-maps.directives.api".ns())
                 templateCtrl = $controller scope.controller, {$scope: templateScope}
                 controlDiv.children().data '$ngControllerController', templateCtrl
 
-              control = $compile(controlDiv.contents())(templateScope)
+              # use children() rather than content() as the former seems to trim the content
+              control = $compile(controlDiv.children())(templateScope)
             .error (error) =>
               @$log.error 'mapControl: template could not be found'
             .then =>
