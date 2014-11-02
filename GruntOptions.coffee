@@ -111,7 +111,7 @@ module.exports = (grunt) ->
       poorly_managed_dev__dep_bower_libs:
         files: [
           src: ["bower_components/bootstrap-without-jquery/bootstrap3/bootstrap-without-jquery.js"]
-          dest: "lib/dev_deps.js"
+          dest: "website_libs/dev_deps.js"
         ]
 
     uglify:
