@@ -111,50 +111,45 @@ angular.module("google-maps.directives.api".ns())
 
             google.maps.event.addListener _m, "dragstart", =>
               dragging = true
-              @debounceNow  ->
-                scope.$apply (s) ->
-                  s.dragging = dragging if s.dragging?
+              scope.$evalAsync (s) ->
+                s.dragging = dragging if s.dragging?
 
             google.maps.event.addListener _m, "dragend", =>
               dragging = false
-              @debounceNow  ->
-                scope.$apply (s) ->
-                  s.dragging = dragging if s.dragging?
+              scope.$evalAsync (s) ->
+                s.dragging = dragging if s.dragging?
 
 
             google.maps.event.addListener _m, "drag", =>
               c = _m.center
-              @debounceNow  ->
-                scope.$apply (s) ->
-                  if angular.isDefined(s.center.type)
-                    s.center.coordinates[1] = c.lat()
-                    s.center.coordinates[0] = c.lng()
-                  else
-                    s.center.latitude = c.lat()
-                    s.center.longitude = c.lng()
+              $timeout (s)  ->
+                if angular.isDefined(s.center.type)
+                  s.center.coordinates[1] = c.lat()
+                  s.center.coordinates[0] = c.lng()
+                else
+                  s.center.latitude = c.lat()
+                  s.center.longitude = c.lng()
               , scope.eventOpts?.debounce?.debounce?.dragMs
 
 
             google.maps.event.addListener _m, "zoom_changed", =>
               if scope.zoom isnt _m.zoom
-                @debounceNow  ->
-                  scope.$apply (s) ->
-                    s.zoom = _m.zoom
+                $timeout (s)  ->
+                  s.zoom = _m.zoom
                 , scope.eventOpts?.debounce?.zoomMs
 
             settingCenterFromScope = false
             google.maps.event.addListener _m, "center_changed", =>
               c = _m.center
               return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
-              @debounceNow  ->
-                scope.$apply (s) ->
-                  unless _m.dragging
-                    if angular.isDefined(s.center.type)
-                      s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
-                      s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
-                    else
-                      s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
-                      s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
+              $timeout (s)  ->
+                unless _m.dragging
+                  if angular.isDefined(s.center.type)
+                    s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
+                    s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
+                  else
+                    s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
+                    s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
               , scope.eventOpts?.debounce?.centerMs
 
 
@@ -162,16 +157,15 @@ angular.module("google-maps.directives.api".ns())
               b = _m.getBounds()
               ne = b.getNorthEast()
               sw = b.getSouthWest()
-              @debounceNow  ->
-                scope.$apply (s) ->
-                  if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
-                    s.bounds.northeast =
-                      latitude: ne.lat()
-                      longitude: ne.lng()
+              scope.$evalAsync (s)  ->
+                if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
+                  s.bounds.northeast =
+                    latitude: ne.lat()
+                    longitude: ne.lng()
 
-                    s.bounds.southwest =
-                      latitude: sw.lat()
-                      longitude: sw.lng()
+                  s.bounds.southwest =
+                    latitude: sw.lat()
+                    longitude: sw.lng()
 
             if angular.isDefined(scope.events) and scope.events isnt null and angular.isObject(scope.events)
               getEventHandler = (eventName) ->
@@ -224,8 +218,9 @@ angular.module("google-maps.directives.api".ns())
 
             scope.$watch "zoom", (newValue, oldValue) =>
               return  if _.isEqual(newValue,oldValue)
-              @debounceNow  ->
+              $timeout  ->
                 _m.setZoom newValue
+              , 0, false # use $timeout as a simple wrapper for setTimeout without calling $apply
 
             scope.$watch "bounds", (newValue, oldValue) ->
               return  if newValue is oldValue

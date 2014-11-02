@@ -609,7 +609,7 @@ Nicholas McCready - https://twitter.com/nmccready
               }
               if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName]) && !doIgnore) {
                 return google.maps.event.addListener(gObject, eventName, function() {
-                  return scope.$apply(eventHandler.apply(scope, [gObject, eventName, model, arguments]));
+                  return scope.$evalAsync(eventHandler.apply(scope, [gObject, eventName, model, arguments]));
                 });
               }
             }));
@@ -673,16 +673,7 @@ Nicholas McCready - https://twitter.com/nmccready
 (function() {
   angular.module("google-maps.directives.api.utils".ns()).service("GmapUtil".ns(), [
     "Logger".ns(), "$compile", function(Logger, $compile) {
-      var DEFAULT_EVENT_OPTS, debounce, getCoords, getLatitude, getLongitude, validateCoords;
-      DEFAULT_EVENT_OPTS = {
-        debounceMs: 5
-      };
-      debounce = function(fn, delay) {
-        if (delay == null) {
-          delay = DEFAULT_EVENT_OPTS.debounceMs;
-        }
-        return _.debounce(fn, delay, true);
-      };
+      var getCoords, getLatitude, getLongitude, validateCoords;
       getLatitude = function(value) {
         if (Array.isArray(value) && value.length === 2) {
           return value[1];
@@ -948,13 +939,6 @@ Nicholas McCready - https://twitter.com/nmccready
         },
         fitMapBounds: function(map, bounds) {
           return map.fitBounds(bounds);
-        },
-        debounce: debounce,
-        debounceNow: function(fn, delay) {
-          if (delay == null) {
-            delay = DEFAULT_EVENT_OPTS.debounceMs;
-          }
-          return debounce(fn, delay = DEFAULT_EVENT_OPTS.debounceMs)();
         }
       };
     }
@@ -2570,7 +2554,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.externalListeners = this.setEvents(this.gMarker, this.scope, this.model, ['dragend']);
           this.internalListeners = this.setEvents(this.gMarker, {
             events: this.internalEvents(),
-            $apply: function() {}
+            $evalAsync: function() {}
           }, this.model);
           if (this.id != null) {
             this.gMarker.key = this.id;
@@ -2617,7 +2601,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 var click;
                 click = _.isFunction(_this.clickKey) ? _this.clickKey : _this.getProp(_this.clickKey, _this.model);
                 if (_this.doClick && (click != null)) {
-                  return _this.scope.$apply(click(marker, eventName, _this.model, mousearg));
+                  return _this.scope.$evalAsync(click(marker, eventName, _this.model, mousearg));
                 }
               };
             })(this)
@@ -3285,21 +3269,19 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchProps();
           listeners = this.setEvents(circle, scope, scope);
           google.maps.event.addListener(circle, 'radius_changed', function() {
-            scope.radius = circle.getRadius();
-            return $timeout(function() {
-              return scope.$apply();
+            return scope.$evalAsync(function() {
+              return scope.radius = circle.getRadius();
             });
           });
           google.maps.event.addListener(circle, 'center_changed', function() {
-            if (angular.isDefined(scope.center.type)) {
-              scope.center.coordinates[1] = circle.getCenter().lat();
-              scope.center.coordinates[0] = circle.getCenter().lng();
-            } else {
-              scope.center.latitude = circle.getCenter().lat();
-              scope.center.longitude = circle.getCenter().lng();
-            }
-            return $timeout(function() {
-              return scope.$apply();
+            return scope.$evalAsync(function() {
+              if (angular.isDefined(scope.center.type)) {
+                scope.center.coordinates[1] = circle.getCenter().lat();
+                return scope.center.coordinates[0] = circle.getCenter().lng();
+              } else {
+                scope.center.latitude = circle.getCenter().lat();
+                return scope.center.longitude = circle.getCenter().lng();
+              }
             });
           });
           scope.$on("$destroy", (function(_this) {
@@ -4279,22 +4261,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (settingBoundsFromScope) {
                 return;
               }
-              return _.defer(function() {
-                return scope.$apply(function(s) {
-                  if ((s.bounds != null) && (s.bounds.sw != null) && (s.bounds.ne != null)) {
-                    s.bounds.ne = {
-                      latitude: ne.lat(),
-                      longitude: ne.lng()
-                    };
-                    s.bounds.sw = {
-                      latitude: sw.lat(),
-                      longitude: sw.lng()
-                    };
-                  }
-                  if ((s.bounds.getNorthEast != null) && (s.bounds.getSouthWest != null)) {
-                    return s.bounds = b;
-                  }
-                });
+              return scope.$evalAsync(function(s) {
+                if ((s.bounds != null) && (s.bounds.sw != null) && (s.bounds.ne != null)) {
+                  s.bounds.ne = {
+                    latitude: ne.lat(),
+                    longitude: ne.lng()
+                  };
+                  s.bounds.sw = {
+                    latitude: sw.lat(),
+                    longitude: sw.lng()
+                  };
+                }
+                if ((s.bounds.getNorthEast != null) && (s.bounds.getSouthWest != null)) {
+                  return s.bounds = b;
+                }
               });
             };
           })(this);
@@ -5475,46 +5455,38 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               });
               google.maps.event.addListener(_m, "dragstart", function() {
                 dragging = true;
-                return _this.debounceNow(function() {
-                  return scope.$apply(function(s) {
-                    if (s.dragging != null) {
-                      return s.dragging = dragging;
-                    }
-                  });
+                return scope.$evalAsync(function(s) {
+                  if (s.dragging != null) {
+                    return s.dragging = dragging;
+                  }
                 });
               });
               google.maps.event.addListener(_m, "dragend", function() {
                 dragging = false;
-                return _this.debounceNow(function() {
-                  return scope.$apply(function(s) {
-                    if (s.dragging != null) {
-                      return s.dragging = dragging;
-                    }
-                  });
+                return scope.$evalAsync(function(s) {
+                  if (s.dragging != null) {
+                    return s.dragging = dragging;
+                  }
                 });
               });
               google.maps.event.addListener(_m, "drag", function() {
                 var c, _ref, _ref1, _ref2;
                 c = _m.center;
-                return _this.debounceNow(function() {
-                  return scope.$apply(function(s) {
-                    if (angular.isDefined(s.center.type)) {
-                      s.center.coordinates[1] = c.lat();
-                      return s.center.coordinates[0] = c.lng();
-                    } else {
-                      s.center.latitude = c.lat();
-                      return s.center.longitude = c.lng();
-                    }
-                  });
+                return $timeout(function(s) {
+                  if (angular.isDefined(s.center.type)) {
+                    s.center.coordinates[1] = c.lat();
+                    return s.center.coordinates[0] = c.lng();
+                  } else {
+                    s.center.latitude = c.lat();
+                    return s.center.longitude = c.lng();
+                  }
                 }, (_ref = scope.eventOpts) != null ? (_ref1 = _ref.debounce) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.dragMs : void 0 : void 0 : void 0);
               });
               google.maps.event.addListener(_m, "zoom_changed", function() {
                 var _ref, _ref1;
                 if (scope.zoom !== _m.zoom) {
-                  return _this.debounceNow(function() {
-                    return scope.$apply(function(s) {
-                      return s.zoom = _m.zoom;
-                    });
+                  return $timeout(function(s) {
+                    return s.zoom = _m.zoom;
                   }, (_ref = scope.eventOpts) != null ? (_ref1 = _ref.debounce) != null ? _ref1.zoomMs : void 0 : void 0);
                 }
               });
@@ -5525,26 +5497,24 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (settingCenterFromScope) {
                   return;
                 }
-                return _this.debounceNow(function() {
-                  return scope.$apply(function(s) {
-                    if (!_m.dragging) {
-                      if (angular.isDefined(s.center.type)) {
-                        if (s.center.coordinates[1] !== c.lat()) {
-                          s.center.coordinates[1] = c.lat();
-                        }
-                        if (s.center.coordinates[0] !== c.lng()) {
-                          return s.center.coordinates[0] = c.lng();
-                        }
-                      } else {
-                        if (s.center.latitude !== c.lat()) {
-                          s.center.latitude = c.lat();
-                        }
-                        if (s.center.longitude !== c.lng()) {
-                          return s.center.longitude = c.lng();
-                        }
+                return $timeout(function(s) {
+                  if (!_m.dragging) {
+                    if (angular.isDefined(s.center.type)) {
+                      if (s.center.coordinates[1] !== c.lat()) {
+                        s.center.coordinates[1] = c.lat();
+                      }
+                      if (s.center.coordinates[0] !== c.lng()) {
+                        return s.center.coordinates[0] = c.lng();
+                      }
+                    } else {
+                      if (s.center.latitude !== c.lat()) {
+                        s.center.latitude = c.lat();
+                      }
+                      if (s.center.longitude !== c.lng()) {
+                        return s.center.longitude = c.lng();
                       }
                     }
-                  });
+                  }
                 }, (_ref = scope.eventOpts) != null ? (_ref1 = _ref.debounce) != null ? _ref1.centerMs : void 0 : void 0);
               });
               google.maps.event.addListener(_m, "idle", function() {
@@ -5552,19 +5522,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 b = _m.getBounds();
                 ne = b.getNorthEast();
                 sw = b.getSouthWest();
-                return _this.debounceNow(function() {
-                  return scope.$apply(function(s) {
-                    if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
-                      s.bounds.northeast = {
-                        latitude: ne.lat(),
-                        longitude: ne.lng()
-                      };
-                      return s.bounds.southwest = {
-                        latitude: sw.lat(),
-                        longitude: sw.lng()
-                      };
-                    }
-                  });
+                return scope.$evalAsync(function(s) {
+                  if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
+                    s.bounds.northeast = {
+                      latitude: ne.lat(),
+                      longitude: ne.lng()
+                    };
+                    return s.bounds.southwest = {
+                      latitude: sw.lat(),
+                      longitude: sw.lng()
+                    };
+                  }
                 });
               });
               if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
@@ -5629,9 +5597,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (_.isEqual(newValue, oldValue)) {
                   return;
                 }
-                return _this.debounceNow(function() {
+                return $timeout(function() {
                   return _m.setZoom(newValue);
-                });
+                }, 0, false);
               });
               scope.$watch("bounds", function(newValue, oldValue) {
                 var bounds, ne, sw;
