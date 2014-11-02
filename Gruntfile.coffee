@@ -20,7 +20,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-subgrunt')
 
   #squishing this file done by moving grunt options out to its own file. This way we can focus on tasks!
-  options = require('./GruntOptions')(grunt)
+  options = require('./grunt/options')(grunt)
 
   allExamples = grunt.file.expand('example/*.html')
 

@@ -1,5 +1,5 @@
 log = require('util').log
-jasmineSettings = require "./GruntJasmineSettings"
+jasmineSettings = require './jasmine'
 _ = require 'lodash'
 
 module.exports = (grunt) ->
