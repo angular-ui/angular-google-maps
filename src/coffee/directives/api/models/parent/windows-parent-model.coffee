@@ -6,9 +6,9 @@ angular.module("google-maps.directives.api.models.parent".ns())
   ["IWindowParentModel".ns(), "ModelsWatcher".ns(),
     "PropMap".ns(), "WindowChildModel".ns(),
     "Linked".ns(), "_async".ns(), "Logger".ns(),
-    '$timeout', '$compile', '$http', '$templateCache', '$interpolate',
+    '$timeout', '$compile', '$http', '$templateCache', '$interpolate','uiGmapPromise',
     (IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async, $log,
-      $timeout, $compile, $http, $templateCache, $interpolate,) ->
+      $timeout, $compile, $http, $templateCache, $interpolate,uiGmapPromise) ->
         class WindowsParentModel extends IWindowParentModel
           @include ModelsWatcher
           constructor: (scope, element, attrs, ctrls, @gMap, @markersScope) ->
@@ -87,7 +87,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 delete @windows if doDelete
                 @windows = new PropMap()
                 @createChildScopesWindows() if doCreate
-                Promise.resolve()
+                uiGmapPromise.resolve()
 
           watchDestroy: (scope)=>
             scope.$on "$destroy", =>

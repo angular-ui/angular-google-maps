@@ -27,7 +27,7 @@ angular.module("google-maps.directives.api.models.child".ns())
 
         doShow: =>
           if @scope.show
-            @showWindow
+            @showWindow()
           else
             @hideWindow()
 
