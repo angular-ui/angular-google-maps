@@ -6,7 +6,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
   "uiGmapPromise",
     (IMarkerParentModel, ModelsWatcher,
       PropMap, MarkerChildModel, _async,
-      ClustererMarkerManager, MarkerManager,$timeout,IMarker,uiGmapPromise) ->
+      ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise) ->
         class MarkersParentModel extends IMarkerParentModel
             @include ModelsWatcher
             constructor: (scope, element, attrs, map) ->
@@ -24,10 +24,10 @@ angular.module("google-maps.directives.api.models.parent".ns())
 
                 #watch all the below properties with end up being processed by onWatch below
                 scope.modelsInitLen = scope.models?.length or 0
-                scope.$watch 'models', (newValue,oldValue) =>
-                  if(!_.isEqual(newValue,oldValue) or (newValue.length != scope.modelsInitLen and scope.modelsInitLen?))
+                scope.$watch 'models', (newValue, oldValue) =>
+                  if(!_.isEqual(newValue, oldValue) or (newValue.length != scope.modelsInitLen and scope.modelsInitLen?))
                     scope.modelsInitLen = undefined
-                    @onWatch 'models', scope,newValue, oldValue
+                    @onWatch 'models', scope, newValue, oldValue
                 , true
                 @watch('doCluster', scope)
                 @watch('clusterOptions', scope)
