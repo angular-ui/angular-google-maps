@@ -53,9 +53,9 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
           index = i
           if chunkSizeOrDontChunk
             pauseCb?()
-            $timeout(->
+            $timeout ->
               doChunk array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index
-            , pauseMilli)
+            , pauseMilli, false
         else
           overallD.resolve()
     catch e
