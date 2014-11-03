@@ -1,7 +1,7 @@
 angular.module("google-maps.directives.api.models.child".ns())
 .factory "WindowChildModel".ns(),
-  [ "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "ChromeFixes".ns(), "$compile", "$http", "$templateCache",
-    (BaseObject, GmapUtil, $log, ChromeFixes, $compile, $http, $templateCache) ->
+  [ "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache",
+    (BaseObject, GmapUtil, $log, $compile, $http, $templateCache) ->
       class WindowChildModel extends BaseObject
         @include GmapUtil
         constructor: (@model, @scope, @opts, @isIconVisibleOnClick,
@@ -150,9 +150,6 @@ angular.module("google-maps.directives.api.models.child".ns())
             unless @gWin.isOpen()
               @gWin.open(@mapCtrl, if @getGmarker() then @getGmarker() else undefined)
               @model.show = @gWin.isOpen()
-
-              _.defer => ChromeFixes.maybeRepaint @gWin.content
-
 
         hideWindow: =>
           @gWin.close() if @gWin? and @gWin.isOpen()

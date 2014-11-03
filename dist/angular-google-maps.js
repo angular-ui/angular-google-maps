@@ -2934,7 +2934,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child".ns()).factory("WindowChildModel".ns(), [
-    "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "ChromeFixes".ns(), "$compile", "$http", "$templateCache", function(BaseObject, GmapUtil, $log, ChromeFixes, $compile, $http, $templateCache) {
+    "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache", function(BaseObject, GmapUtil, $log, $compile, $http, $templateCache) {
       var WindowChildModel;
       WindowChildModel = (function(_super) {
         __extends(WindowChildModel, _super);
@@ -3172,12 +3172,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             }
             if (!this.gWin.isOpen()) {
               this.gWin.open(this.mapCtrl, this.getGmarker() ? this.getGmarker() : void 0);
-              this.model.show = this.gWin.isOpen();
-              return _.defer((function(_this) {
-                return function() {
-                  return ChromeFixes.maybeRepaint(_this.gWin.content);
-                };
-              })(this));
+              return this.model.show = this.gWin.isOpen();
             }
           }
         };
