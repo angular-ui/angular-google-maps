@@ -5374,6 +5374,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         Map.prototype.link = function(scope, element, attrs) {
           var unbindCenterWatch;
+          scope.idleAndZoomChanged = false;
           if (scope.center == null) {
             unbindCenterWatch = scope.$watch('center', (function(_this) {
               return function() {
@@ -5548,11 +5549,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       latitude: ne.lat(),
                       longitude: ne.lng()
                     };
-                    return s.bounds.southwest = {
+                    s.bounds.southwest = {
                       latitude: sw.lat(),
                       longitude: sw.lng()
                     };
                   }
+                  scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
+                  return s.zoom = _m.zoom;
                 });
               });
               if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
@@ -5775,6 +5778,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this);
           return IMarker.mapPromise(scope, ctrl).then((function(_this) {
             return function(map) {
+              var mapScope;
+              mapScope = ctrl.getScope();
+              mapScope.$watch('idleAndZoomChanged', function() {
+                return parentModel.gMarkerManager.draw();
+              });
               parentModel = new MarkersParentModel(scope, element, attrs, map);
               return parentModel.existingPieces.then(function() {
                 return ready();
@@ -8381,7 +8389,6 @@ MarkerClusterer.prototype.onAdd = function () {
             }
         }),
         google.maps.event.addListener(this.getMap(), "idle", function () {
-            console.log('yay yay');
             cMarkerClusterer.redraw_();
         })
     ];
@@ -9278,6 +9285,7 @@ if (typeof String.prototype.trim !== 'function') {
         return this.replace(/^\s+|\s+$/g, '');
     }
 }
+
 ;/**
  * 1.1.9-patched
  * @name MarkerWithLabel for V3
