@@ -3694,7 +3694,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
           this.validateScope = __bind(this.validateScope, this);
           this.onWatch = __bind(this.onWatch, this);
-          var self, _ref;
+          var self;
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, map);
           self = this;
           this.scope.markerModels = new PropMap();
@@ -3708,15 +3708,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this));
-          scope.modelsInitLen = ((_ref = scope.models) != null ? _ref.length : void 0) || 0;
-          scope.$watch('models', (function(_this) {
-            return function(newValue, oldValue) {
-              if (!_.isEqual(newValue, oldValue) || (newValue.length !== scope.modelsInitLen && (scope.modelsInitLen != null))) {
-                scope.modelsInitLen = void 0;
-                return _this.onWatch('models', scope, newValue, oldValue);
-              }
-            };
-          })(this), true);
+          this.watch('models', scope);
           this.watch('doCluster', scope);
           this.watch('clusterOptions', scope);
           this.watch('clusterEvents', scope);
