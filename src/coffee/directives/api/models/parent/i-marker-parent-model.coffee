@@ -35,11 +35,11 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
         return false
       ret
 
-    watch: (propNameToWatch, scope) =>
+    watch: (propNameToWatch, scope, equalityCheck = true) =>
       scope.$watch propNameToWatch, (newValue, oldValue) =>
         if ! _.isEqual newValue,oldValue
           @onWatch(propNameToWatch, scope, newValue, oldValue)
-      , true
+      , equalityCheck
 
     onWatch: (propNameToWatch, scope, newValue, oldValue) =>
 

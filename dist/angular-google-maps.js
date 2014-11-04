@@ -3402,14 +3402,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return ret;
         };
 
-        IMarkerParentModel.prototype.watch = function(propNameToWatch, scope) {
+        IMarkerParentModel.prototype.watch = function(propNameToWatch, scope, equalityCheck) {
+          if (equalityCheck == null) {
+            equalityCheck = true;
+          }
           return scope.$watch(propNameToWatch, (function(_this) {
             return function(newValue, oldValue) {
               if (!_.isEqual(newValue, oldValue)) {
                 return _this.onWatch(propNameToWatch, scope, newValue, oldValue);
               }
             };
-          })(this), true);
+          })(this), equalityCheck);
         };
 
         IMarkerParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {};
