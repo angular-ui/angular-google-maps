@@ -34,7 +34,7 @@ Nick Baugh - https://github.com/niftylettuce
 #jshint indent:4
 
 #globals directives,google
-angular.module("google-maps".ns())
-.directive "GoogleMap".ns(), ["Map".ns(), (Map) ->
+angular.module("uiGmapgoogle-maps")
+.directive "uiGmapGoogleMap", ["uiGmapMap", (Map) ->
     new Map()
 ]
