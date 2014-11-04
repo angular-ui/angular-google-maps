@@ -3677,8 +3677,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.directives.api.models.parent".ns()).factory("MarkersParentModel".ns(), [
-    "IMarkerParentModel".ns(), "ModelsWatcher".ns(), "PropMap".ns(), "MarkerChildModel".ns(), "_async".ns(), "ClustererMarkerManager".ns(), "MarkerManager".ns(), "$timeout", "IMarker".ns(), "uiGmapPromise", function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise) {
+  angular.module("uiGmapgoogle-maps.directives.api.models.parent").factory("uiGmapMarkersParentModel", [
+    "uiGmapIMarkerParentModel", "uiGmapModelsWatcher", "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async", "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker", "uiGmapPromise", function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise) {
       var MarkersParentModel;
       MarkersParentModel = (function(_super) {
         __extends(MarkersParentModel, _super);
@@ -5317,8 +5317,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.directives.api".ns()).factory("Map".ns(), [
-    "$timeout", '$q', "Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(), "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(), "ExtendGWin".ns(), "ExtendMarkerClusterer".ns(), "GoogleMapsUtilV3".ns(), 'GoogleMapApi'.ns(), function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3, GoogleMapApi) {
+  angular.module("uiGmapgoogle-maps.directives.api").factory("uiGmapMap", [
+    "$timeout", '$q', "uiGmapLogger", "uiGmapGmapUtil", "uiGmapBaseObject", "uiGmapCtrlHandle", 'uiGmapIsReady', "uiGmapuuid", "uiGmapExtendGWin", "uiGmapExtendMarkerClusterer", "uiGmapGoogleMapsUtilV3", 'uiGmapGoogleMapApi', function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3, GoogleMapApi) {
       "use strict";
       var DEFAULTS, Map, initializeItems;
       DEFAULTS = void 0;
@@ -5909,8 +5909,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.directives.api".ns()).factory("Window".ns(), [
-    "IWindow".ns(), "GmapUtil".ns(), "WindowChildModel".ns(), function(IWindow, GmapUtil, WindowChildModel) {
+  angular.module("uiGmapgoogle-maps.directives.api").factory("uiGmapWindow", [
+    "uiGmapIWindow", "uiGmapGmapUtil", "uiGmapWindowChildModel", function(IWindow, GmapUtil, WindowChildModel) {
       var Window;
       return Window = (function(_super) {
         __extends(Window, _super);
@@ -5920,7 +5920,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         function Window() {
           this.link = __bind(this.link, this);
           Window.__super__.constructor.call(this);
-          this.require = ['^' + 'GoogleMap'.ns(), '^?' + 'Marker'.ns()];
+          this.require = ['^' + 'uiGmapGoogleMap', '^?' + 'uiGmapMarker'];
           this.template = '<span class="angular-google-maps-window" ng-transclude></span>';
           this.$log.info(this);
           this.childWindows = [];
@@ -6123,8 +6123,8 @@ Nick Baugh - https://github.com/niftylettuce
  */
 
 (function() {
-  angular.module("google-maps".ns()).directive("GoogleMap".ns(), [
-    "Map".ns(), function(Map) {
+  angular.module("uiGmapgoogle-maps").directive("uiGmapGoogleMap", [
+    "uiGmapMap", function(Map) {
       return new Map();
     }
   ]);

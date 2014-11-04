@@ -1,9 +1,9 @@
-angular.module("google-maps.directives.api".ns())
-.factory "Map".ns(), [
-  "$timeout", '$q',"Logger".ns(), "GmapUtil".ns(), "BaseObject".ns(),
-  "CtrlHandle".ns(), 'IsReady'.ns(), "uuid".ns(),
-  "ExtendGWin".ns(),"ExtendMarkerClusterer".ns(),
-  "GoogleMapsUtilV3".ns(),'GoogleMapApi'.ns(),
+angular.module("uiGmapgoogle-maps.directives.api")
+.factory "uiGmapMap", [
+  "$timeout", '$q',"uiGmapLogger", "uiGmapGmapUtil", "uiGmapBaseObject",
+  "uiGmapCtrlHandle", 'uiGmapIsReady', "uiGmapuuid",
+  "uiGmapExtendGWin", "uiGmapExtendMarkerClusterer",
+  "uiGmapGoogleMapsUtilV3",'uiGmapGoogleMapApi',
   ($timeout,$q, $log, GmapUtil, BaseObject,
     CtrlHandle, IsReady, uuid,
     ExtendGWin, ExtendMarkerClusterer,

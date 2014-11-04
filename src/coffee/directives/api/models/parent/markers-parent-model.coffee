@@ -1,8 +1,8 @@
-angular.module("google-maps.directives.api.models.parent".ns())
-.factory "MarkersParentModel".ns(), [
-  "IMarkerParentModel".ns(), "ModelsWatcher".ns(),
-  "PropMap".ns(), "MarkerChildModel".ns(), "_async".ns(),
-  "ClustererMarkerManager".ns(), "MarkerManager".ns(), "$timeout", "IMarker".ns(),
+angular.module("uiGmapgoogle-maps.directives.api.models.parent")
+.factory "uiGmapMarkersParentModel", [
+  "uiGmapIMarkerParentModel", "uiGmapModelsWatcher",
+  "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async",
+  "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker",
   "uiGmapPromise",
     (IMarkerParentModel, ModelsWatcher,
       PropMap, MarkerChildModel, _async,
