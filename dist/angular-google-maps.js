@@ -5371,7 +5371,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           events: "=",
           eventOpts: "=",
           styles: "=",
-          bounds: "="
+          bounds: "=",
+          update: '='
         };
 
 
@@ -5448,72 +5449,84 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return resolveSpawned();
               });
               google.maps.event.addListener(_m, "dragstart", function() {
-                dragging = true;
-                return scope.$evalAsync(function(s) {
-                  if (s.dragging != null) {
-                    return s.dragging = dragging;
-                  }
-                });
+                var _ref;
+                if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
+                  dragging = true;
+                  return scope.$evalAsync(function(s) {
+                    if (s.dragging != null) {
+                      return s.dragging = dragging;
+                    }
+                  });
+                }
               });
               google.maps.event.addListener(_m, "dragend", function() {
-                dragging = false;
-                return scope.$evalAsync(function(s) {
-                  if (s.dragging != null) {
-                    return s.dragging = dragging;
-                  }
-                });
+                var _ref;
+                if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
+                  dragging = false;
+                  return scope.$evalAsync(function(s) {
+                    if (s.dragging != null) {
+                      return s.dragging = dragging;
+                    }
+                  });
+                }
               });
               google.maps.event.addListener(_m, "drag", function() {
-                var c, _ref, _ref1, _ref2;
-                c = _m.center;
-                return $timeout(function() {
-                  var s;
-                  s = scope;
-                  if (angular.isDefined(s.center.type)) {
-                    s.center.coordinates[1] = c.lat();
-                    return s.center.coordinates[0] = c.lng();
-                  } else {
-                    s.center.latitude = c.lat();
-                    return s.center.longitude = c.lng();
-                  }
-                }, (_ref = scope.eventOpts) != null ? (_ref1 = _ref.debounce) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.dragMs : void 0 : void 0 : void 0);
+                var c, _ref, _ref1, _ref2, _ref3;
+                if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
+                  c = _m.center;
+                  return $timeout(function() {
+                    var s;
+                    s = scope;
+                    if (angular.isDefined(s.center.type)) {
+                      s.center.coordinates[1] = c.lat();
+                      return s.center.coordinates[0] = c.lng();
+                    } else {
+                      s.center.latitude = c.lat();
+                      return s.center.longitude = c.lng();
+                    }
+                  }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? (_ref3 = _ref2.debounce) != null ? _ref3.dragMs : void 0 : void 0 : void 0);
+                }
               });
               google.maps.event.addListener(_m, "zoom_changed", function() {
-                var _ref, _ref1;
-                if (scope.zoom !== _m.zoom) {
-                  return $timeout(function() {
-                    return scope.zoom = _m.zoom;
-                  }, (_ref = scope.eventOpts) != null ? (_ref1 = _ref.debounce) != null ? _ref1.zoomMs : void 0 : void 0);
+                var _ref, _ref1, _ref2;
+                if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
+                  if (scope.zoom !== _m.zoom) {
+                    return $timeout(function() {
+                      return scope.zoom = _m.zoom;
+                    }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0);
+                  }
                 }
               });
               settingCenterFromScope = false;
               google.maps.event.addListener(_m, "center_changed", function() {
-                var c, _ref, _ref1;
-                c = _m.center;
-                if (settingCenterFromScope) {
-                  return;
-                }
-                return $timeout(function() {
-                  var s;
-                  s = scope;
-                  if (!_m.dragging) {
-                    if (angular.isDefined(s.center.type)) {
-                      if (s.center.coordinates[1] !== c.lat()) {
-                        s.center.coordinates[1] = c.lat();
-                      }
-                      if (s.center.coordinates[0] !== c.lng()) {
-                        return s.center.coordinates[0] = c.lng();
-                      }
-                    } else {
-                      if (s.center.latitude !== c.lat()) {
-                        s.center.latitude = c.lat();
-                      }
-                      if (s.center.longitude !== c.lng()) {
-                        return s.center.longitude = c.lng();
+                var c, _ref, _ref1, _ref2;
+                if (!((_ref = scope.update) != null ? _ref.lazy : void 0)) {
+                  c = _m.center;
+                  if (settingCenterFromScope) {
+                    return;
+                  }
+                  return $timeout(function() {
+                    var s;
+                    s = scope;
+                    if (!_m.dragging) {
+                      if (angular.isDefined(s.center.type)) {
+                        if (s.center.coordinates[1] !== c.lat()) {
+                          s.center.coordinates[1] = c.lat();
+                        }
+                        if (s.center.coordinates[0] !== c.lng()) {
+                          return s.center.coordinates[0] = c.lng();
+                        }
+                      } else {
+                        if (s.center.latitude !== c.lat()) {
+                          s.center.latitude = c.lat();
+                        }
+                        if (s.center.longitude !== c.lng()) {
+                          return s.center.longitude = c.lng();
+                        }
                       }
                     }
-                  }
-                }, (_ref = scope.eventOpts) != null ? (_ref1 = _ref.debounce) != null ? _ref1.centerMs : void 0 : void 0);
+                  }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.centerMs : void 0 : void 0);
+                }
               });
               google.maps.event.addListener(_m, "idle", function() {
                 var b, ne, sw;
@@ -5521,6 +5534,26 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 ne = b.getNorthEast();
                 sw = b.getSouthWest();
                 return scope.$evalAsync(function(s) {
+                  var c, _ref;
+                  if ((_ref = s.update) != null ? _ref.lazy : void 0) {
+                    c = _m.center;
+                    if (angular.isDefined(s.center.type)) {
+                      if (s.center.coordinates[1] !== c.lat()) {
+                        s.center.coordinates[1] = c.lat();
+                      }
+                      if (s.center.coordinates[0] !== c.lng()) {
+                        s.center.coordinates[0] = c.lng();
+                      }
+                    } else {
+                      if (s.center.latitude !== c.lat()) {
+                        s.center.latitude = c.lat();
+                      }
+                      if (s.center.longitude !== c.lng()) {
+                        s.center.longitude = c.lng();
+                      }
+                      s.zoom = _m.zoom;
+                    }
+                  }
                   if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
                     s.bounds.northeast = {
                       latitude: ne.lat(),
