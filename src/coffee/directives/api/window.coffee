@@ -8,10 +8,6 @@ angular.module("uiGmapgoogle-maps.directives.api")
       @template = '<span class="angular-google-maps-window" ng-transclude></span>'
       @$log.info @
       @childWindows = []
-      # keeping for now if promise order becomes important
-      # @link =
-      #     pre: @pre
-      #     post: @post
 
     link: (scope, element, attrs, ctrls) =>
       #keep out of promise.then to keep scopes unique , not sure why yet
