@@ -5375,13 +5375,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           update: '='
         };
 
-
-        /*
-        @param scope
-        @param element
-        @param attrs
-         */
-
         Map.prototype.link = function(scope, element, attrs) {
           var unbindCenterWatch;
           if (scope.center == null) {

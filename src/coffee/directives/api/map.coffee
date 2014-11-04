@@ -50,11 +50,6 @@ angular.module("google-maps.directives.api".ns())
           bounds: "="
           update: '=' # optional
 
-        ###
-        @param scope
-        @param element
-        @param attrs
-        ###
         link: (scope, element, attrs) =>
           unless scope.center?
             unbindCenterWatch = scope.$watch 'center', =>
