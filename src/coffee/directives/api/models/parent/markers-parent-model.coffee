@@ -30,11 +30,12 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 @onWatch 'models', scope, newValue, oldValue
             , true
 
-            @watch('doCluster', scope)
-            @watch('clusterOptions', scope)
-            @watch('clusterEvents', scope)
-            @watch('fit', scope)
-            @watch('idKey', scope)
+            @watch 'doCluster', scope
+            @watch 'clusterOptions', scope
+            @watch 'clusterEvents', scope
+            @watch 'fit', scope
+            @watch 'idKey', scope
+
             @gMarkerManager = undefined
             @createMarkersFromScratch(scope)
 
