@@ -35,7 +35,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
 
         #this is to deal with race conditions in how MarkerClusterer deals with drawing on idle
         mapScope.$watch 'idleAndZoomChanged', ->
-          parentModel.gMarkerManager.draw()
+          _.defer parentModel.gMarkerManager.draw
 
         parentModel = new MarkersParentModel(scope, element, attrs, map)
         parentModel.existingPieces.then ->

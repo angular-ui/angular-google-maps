@@ -5781,7 +5781,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               var mapScope;
               mapScope = ctrl.getScope();
               mapScope.$watch('idleAndZoomChanged', function() {
-                return parentModel.gMarkerManager.draw();
+                return _.defer(parentModel.gMarkerManager.draw);
               });
               parentModel = new MarkersParentModel(scope, element, attrs, map);
               return parentModel.existingPieces.then(function() {
