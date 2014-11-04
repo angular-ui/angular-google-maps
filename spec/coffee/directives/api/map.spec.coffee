@@ -1,6 +1,6 @@
 describe "directives.api.map", ->
   beforeEach ->
-    window['Initiator'.ns()].initDirective @, "Map", ['initAll'], {}
+    window['uiGmapInitiator'].initDirective @, "Map", ['initAll'], {}
   afterEach ->
     @log.error.calls.reset()
 

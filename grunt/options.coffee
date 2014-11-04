@@ -1,5 +1,5 @@
 log = require('util').log
-jasmineSettings = require "./GruntJasmineSettings"
+jasmineSettings = require './jasmine'
 _ = require 'lodash'
 
 module.exports = (grunt) ->
@@ -89,7 +89,6 @@ module.exports = (grunt) ->
         src: [
           "tmp/output_coffee.js"
           "tmp/wrapped_uuid.js"
-          "tmp/wrapped_bluebird.js"
           "tmp/wrapped_libs.js"
           "src/js/**/*.js" #this all will only work if the dependency orders do not matter
           "src/js/**/**/*.js"
@@ -106,6 +105,12 @@ module.exports = (grunt) ->
         files: [
           src: "tmp/output.js"
           dest: "dist/<%= pkg.name %>.js"
+        ]
+      # libraries that are not versioned well, not really on bower, not on a cdn yet
+      poorly_managed_dev__dep_bower_libs:
+        files: [
+          src: ["bower_components/bootstrap-without-jquery/bootstrap3/bootstrap-without-jquery.js"]
+          dest: "website_libs/dev_deps.js"
         ]
 
     uglify:
@@ -187,8 +192,8 @@ module.exports = (grunt) ->
 
     subgrunt:
       bluebird:
-        projects:
-          'bower_components/bluebird': ["build","--features='core'"]
+        projects: {}
+#          'bower_components/bluebird': ["build","--features='core'"]
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

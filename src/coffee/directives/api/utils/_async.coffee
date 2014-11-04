@@ -1,4 +1,4 @@
-angular.module("google-maps.directives.api.utils".ns())
+angular.module("uiGmapgoogle-maps.directives.api.utils")
 .service("_sync".ns(), [ ->
   fakePromise: ->
     _cb = undefined
@@ -7,7 +7,7 @@ angular.module("google-maps.directives.api.utils".ns())
     resolve:() ->
       _cb.apply(undefined,arguments)
 ])
-.factory "_async".ns(), [ ->
+.service "uiGmap_async", [ "$timeout", "uiGmapPromise", ($timeout,uiGmapPromise) ->
 
   defaultChunkSize = 20
 
@@ -53,9 +53,9 @@ angular.module("google-maps.directives.api.utils".ns())
           index = i
           if chunkSizeOrDontChunk
             pauseCb?()
-            setTimeout(->
+            $timeout ->
               doChunk array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index
-            , pauseMilli)
+            , pauseMilli, false
         else
           overallD.resolve()
     catch e
@@ -63,8 +63,7 @@ angular.module("google-maps.directives.api.utils".ns())
 
   each = (array, chunk, pauseCb, chunkSizeOrDontChunk = defaultChunkSize, index = 0, pauseMilli = 1) ->
     ret = undefined
-#    overallD = $q.defer()
-    overallD = Promise.defer()
+    overallD = uiGmapPromise.defer()
     ret = overallD.promise
 
     unless pauseMilli
@@ -83,7 +82,7 @@ angular.module("google-maps.directives.api.utils".ns())
   map = (objs, iterator, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) ->
 
     results = []
-    return Promise.resolve(results)  unless objs? and objs?.length > 0
+    return uiGmapPromise.resolve(results)  unless objs? and objs?.length > 0
 
     each(objs, (o) ->
       results.push iterator o

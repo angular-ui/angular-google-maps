@@ -634,7 +634,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
 
   $timeout(function () {
     $scope.map.infoWindow.show = true;
-    dynamicMarkers = [
+    var dynamicMarkers = [
       {
         id: 1,
         latitude: 46,

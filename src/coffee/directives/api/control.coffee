@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api".ns())
-.factory "Control".ns(), ["IControl".ns(), "$http", "$templateCache", "$compile", "$controller",'GoogleMapApi'.ns(),
+angular.module("uiGmapgoogle-maps.directives.api")
+.factory "uiGmapControl", ["uiGmapIControl", "$http", "$templateCache", "$compile", "$controller",'uiGmapGoogleMapApi',
   (IControl, $http, $templateCache, $compile, $controller, GoogleMapApi) ->
     class Control extends IControl
       constructor: ->

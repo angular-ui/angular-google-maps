@@ -16,4 +16,3 @@ _SpecRunner.html
 /bower_components
 .tmp
 /app
-dist/angular-google-maps.min.js

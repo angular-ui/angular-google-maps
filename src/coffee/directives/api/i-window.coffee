@@ -1,9 +1,9 @@
 ###
 	- interface directive for all window(s) to derive from
 ###
-angular.module("google-maps.directives.api".ns())
-.factory "IWindow".ns(), [
-  "BaseObject".ns(), "ChildEvents".ns(), "Logger".ns(), "CtrlHandle".ns(),
+angular.module("uiGmapgoogle-maps.directives.api")
+.factory "uiGmapIWindow", [
+  "uiGmapBaseObject", "uiGmapChildEvents", "uiGmapLogger", "uiGmapCtrlHandle",
   (BaseObject, ChildEvents, Logger, CtrlHandle) ->
     class IWindow extends BaseObject
       @include ChildEvents
