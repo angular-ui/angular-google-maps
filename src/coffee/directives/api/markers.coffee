@@ -11,6 +11,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
         doCluster: '=docluster'
         clusterOptions: '=clusteroptions'
         clusterEvents: '=clusterevents'
+        modelsByRef: '=modelsbyref'
 
       @$log.info @
 
