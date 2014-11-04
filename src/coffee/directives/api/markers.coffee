@@ -33,7 +33,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
       IMarker.mapPromise(scope, ctrl).then (map) =>
         mapScope = ctrl.getScope()
 
-        #this is to deal with race conditions in how MarkerClusterer deals with drawing on idle1
+        #this is to deal with race conditions in how MarkerClusterer deals with drawing on idle
         mapScope.$watch 'idleAndZoomChanged', ->
           parentModel.gMarkerManager.draw()
 

@@ -5554,8 +5554,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       longitude: sw.lng()
                     };
                   }
-                  scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
-                  return s.zoom = _m.zoom;
+                  s.zoom = _m.zoom;
+                  return scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
                 });
               });
               if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
