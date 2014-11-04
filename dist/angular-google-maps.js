@@ -3352,8 +3352,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.directives.api.models.parent".ns()).factory("IMarkerParentModel".ns(), [
-    "ModelKey".ns(), "Logger".ns(), function(ModelKey, Logger) {
+  angular.module("uiGmapgoogle-maps.directives.api.models.parent").factory("uiGmapIMarkerParentModel", [
+    "uiGmapModelKey", "uiGmapLogger", function(ModelKey, Logger) {
       var IMarkerParentModel;
       IMarkerParentModel = (function(_super) {
         __extends(IMarkerParentModel, _super);
@@ -5731,8 +5731,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.directives.api".ns()).factory("Markers".ns(), [
-    "IMarker".ns(), "MarkersParentModel".ns(), "_sync".ns(), function(IMarker, MarkersParentModel, _sync) {
+  angular.module("uiGmapgoogle-maps.directives.api").factory("uiGmapMarkers", [
+    "uiGmapIMarker", "uiGmapMarkersParentModel", "uiGmap_sync", function(IMarker, MarkersParentModel, _sync) {
       var Markers;
       return Markers = (function(_super) {
         __extends(Markers, _super);

@@ -6,8 +6,8 @@
  			- icon
 		- implementation needed on watches
 ###
-angular.module("google-maps.directives.api.models.parent".ns())
-.factory "IMarkerParentModel".ns(), ["ModelKey".ns(),"Logger".ns(), (ModelKey, Logger) ->
+angular.module("uiGmapgoogle-maps.directives.api.models.parent")
+.factory "uiGmapIMarkerParentModel", ["uiGmapModelKey","uiGmapLogger", (ModelKey, Logger) ->
     class IMarkerParentModel extends ModelKey
         DEFAULTS: {}
         constructor: (@scope, @element, @attrs, @map) ->
