@@ -42,5 +42,5 @@ This directive creates a new scope.
 ###
 angular.module("uiGmapgoogle-maps")
 .directive "uiGmapMapControl", ["uiGmapControl", (Control) ->
-    new Control()
+  new Control()
 ]
