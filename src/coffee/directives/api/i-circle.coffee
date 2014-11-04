@@ -1,8 +1,8 @@
-angular.module("google-maps.directives.api".ns()).service "ICircle".ns(), [ ->
+angular.module("uiGmapgoogle-maps.directives.api").service "uiGmapICircle", [ ->
   DEFAULTS = {}
   restrict: "EA"
   replace: true
-  require: '^' + 'GoogleMap'.ns()
+  require: '^' + 'uiGmapGoogleMap'
   scope:
     center: "=center"
     radius: "=radius"

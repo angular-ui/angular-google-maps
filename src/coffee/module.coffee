@@ -30,28 +30,28 @@ Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
 ###
 #define application wide modules
-angular.module('google-maps.providers'.ns(),[])
-angular.module("google-maps.wrapped".ns(), [])
-angular.module("google-maps.extensions".ns(), ["google-maps.wrapped".ns(),'google-maps.providers'.ns()])
-angular.module("google-maps.directives.api.utils".ns(), ['google-maps.extensions'.ns()])
-angular.module("google-maps.directives.api.managers".ns(), [])
-angular.module("google-maps.directives.api.options".ns(),[
-  "google-maps.directives.api.utils".ns()
+angular.module('uiGmapgoogle-maps.providers',[])
+angular.module("uiGmapgoogle-maps.wrapped", [])
+angular.module("uiGmapgoogle-maps.extensions", ["uiGmapgoogle-maps.wrapped",'uiGmapgoogle-maps.providers'])
+angular.module("uiGmapgoogle-maps.directives.api.utils", ['uiGmapgoogle-maps.extensions'])
+angular.module("uiGmapgoogle-maps.directives.api.managers", [])
+angular.module("uiGmapgoogle-maps.directives.api.options",[
+  "uiGmapgoogle-maps.directives.api.utils"
 ])
-angular.module("google-maps.directives.api.options.builders".ns(),[])
-angular.module("google-maps.directives.api.models.child".ns(), [
-  "google-maps.directives.api.utils".ns()
-  "google-maps.directives.api.options".ns()
-  "google-maps.directives.api.options.builders".ns()
+angular.module("uiGmapgoogle-maps.directives.api.options.builders",[])
+angular.module("uiGmapgoogle-maps.directives.api.models.child", [
+  "uiGmapgoogle-maps.directives.api.utils"
+  "uiGmapgoogle-maps.directives.api.options"
+  "uiGmapgoogle-maps.directives.api.options.builders"
   ])
-angular.module("google-maps.directives.api.models.parent".ns(), [
-  "google-maps.directives.api.managers".ns()
-  "google-maps.directives.api.models.child".ns()
-  'google-maps.providers'.ns()
+angular.module("uiGmapgoogle-maps.directives.api.models.parent", [
+  "uiGmapgoogle-maps.directives.api.managers"
+  "uiGmapgoogle-maps.directives.api.models.child"
+  'uiGmapgoogle-maps.providers'
 ])
-angular.module("google-maps.directives.api".ns(), [ "google-maps.directives.api.models.parent".ns()])
-angular.module("google-maps".ns(), [ "google-maps.directives.api".ns(), 'google-maps.providers'.ns()])
-.factory "debounce".ns(), ["$timeout", ($timeout) ->
+angular.module("uiGmapgoogle-maps.directives.api", [ "uiGmapgoogle-maps.directives.api.models.parent"])
+angular.module("uiGmapgoogle-maps", [ "uiGmapgoogle-maps.directives.api", 'uiGmapgoogle-maps.providers'])
+.factory "uiGmapdebounce", ["$timeout", ($timeout) ->
   (fn) -> # debounce fn
     nthCall = 0
     -> # intercepting fn

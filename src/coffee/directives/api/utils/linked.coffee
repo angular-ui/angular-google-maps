@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.utils".ns())
-.factory "Linked".ns(), [ "BaseObject".ns(), (BaseObject) ->
+angular.module("uiGmapgoogle-maps.directives.api.utils")
+.factory "uiGmapLinked", [ "uiGmapBaseObject", (BaseObject) ->
   class Linked extends BaseObject
     constructor: (scope, element, attrs, ctrls)->
       @scope = scope
