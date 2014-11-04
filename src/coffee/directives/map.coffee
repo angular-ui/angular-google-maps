@@ -36,5 +36,5 @@ Nick Baugh - https://github.com/niftylettuce
 #globals directives,google
 angular.module("uiGmapgoogle-maps")
 .directive "uiGmapGoogleMap", ["uiGmapMap", (Map) ->
-    new Map()
+  new Map()
 ]
