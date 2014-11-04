@@ -171,9 +171,6 @@ angular.module("uiGmapgoogle-maps.directives.api")
                     s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
                     s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
 
-                    # update zoom
-                    s.zoom = _m.zoom
-
                 if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
                   s.bounds.northeast =
                     latitude: ne.lat()

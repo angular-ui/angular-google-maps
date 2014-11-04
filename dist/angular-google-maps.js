@@ -5541,7 +5541,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       if (s.center.longitude !== c.lng()) {
                         s.center.longitude = c.lng();
                       }
-                      s.zoom = _m.zoom;
                     }
                   }
                   if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
