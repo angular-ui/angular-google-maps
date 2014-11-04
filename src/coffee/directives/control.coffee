@@ -40,7 +40,7 @@ This directive creates a new scope.
 {attribute controller optional}	string controller to be applied to the template
 {attribute index optional}		number index for controlling the order of similarly positioned mapControl elements
 ###
-angular.module("google-maps".ns())
-.directive "MapControl".ns(), ["Control".ns(), (Control) ->
+angular.module("uiGmapgoogle-maps")
+.directive "uiGmapMapControl", ["uiGmapControl", (Control) ->
     new Control()
 ]
