@@ -23,7 +23,6 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               if (newValue != oldValue)
                 @doRebuildAll = newValue
 
-            #watch all the below properties with end up being processed by onWatch below
             @watch 'models', scope, !@isTrue(attrs.modelsbyref)
             @watch 'doCluster', scope
             @watch 'clusterOptions', scope
