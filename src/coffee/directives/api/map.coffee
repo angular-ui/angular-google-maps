@@ -180,6 +180,8 @@ angular.module("uiGmapgoogle-maps.directives.api")
                     latitude: sw.lat()
                     longitude: sw.lng()
 
+                s.zoom = _m.zoom
+
             if angular.isDefined(scope.events) and scope.events isnt null and angular.isObject(scope.events)
               getEventHandler = (eventName) ->
                 -> scope.events[eventName].apply scope, [_m, eventName, arguments]
