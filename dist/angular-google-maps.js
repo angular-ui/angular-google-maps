@@ -3352,8 +3352,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.directives.api.models.parent".ns()).factory("IMarkerParentModel".ns(), [
-    "ModelKey".ns(), "Logger".ns(), function(ModelKey, Logger) {
+  angular.module("uiGmapgoogle-maps.directives.api.models.parent").factory("uiGmapIMarkerParentModel", [
+    "uiGmapModelKey", "uiGmapLogger", function(ModelKey, Logger) {
       var IMarkerParentModel;
       IMarkerParentModel = (function(_super) {
         __extends(IMarkerParentModel, _super);
@@ -3402,14 +3402,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return ret;
         };
 
-        IMarkerParentModel.prototype.watch = function(propNameToWatch, scope) {
+        IMarkerParentModel.prototype.watch = function(propNameToWatch, scope, equalityCheck) {
+          if (equalityCheck == null) {
+            equalityCheck = true;
+          }
           return scope.$watch(propNameToWatch, (function(_this) {
             return function(newValue, oldValue) {
               if (!_.isEqual(newValue, oldValue)) {
                 return _this.onWatch(propNameToWatch, scope, newValue, oldValue);
               }
             };
-          })(this), true);
+          })(this), equalityCheck);
         };
 
         IMarkerParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {};
@@ -3678,10 +3681,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("uiGmapgoogle-maps.directives.api.models.parent").factory("uiGmapMarkersParentModel", [
-    "uiGmapIMarkerParentModel", "uiGmapModelsWatcher", "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async", "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker", "uiGmapPromise", function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise) {
+    "uiGmapIMarkerParentModel", "uiGmapModelsWatcher", "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async", "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker", "uiGmapPromise", "uiGmapGmapUtil", function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise, GmapUtil) {
       var MarkersParentModel;
       MarkersParentModel = (function(_super) {
         __extends(MarkersParentModel, _super);
+
+        MarkersParentModel.include(GmapUtil);
 
         MarkersParentModel.include(ModelsWatcher);
 
@@ -3694,7 +3699,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
           this.validateScope = __bind(this.validateScope, this);
           this.onWatch = __bind(this.onWatch, this);
-          var self, _ref;
+          var self;
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, map);
           self = this;
           this.scope.markerModels = new PropMap();
@@ -3708,15 +3713,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this));
-          scope.modelsInitLen = ((_ref = scope.models) != null ? _ref.length : void 0) || 0;
-          scope.$watch('models', (function(_this) {
-            return function(newValue, oldValue) {
-              if (!_.isEqual(newValue, oldValue) || (newValue.length !== scope.modelsInitLen && (scope.modelsInitLen != null))) {
-                scope.modelsInitLen = void 0;
-                return _this.onWatch('models', scope, newValue, oldValue);
-              }
-            };
-          })(this), true);
+          this.watch('models', scope, !this.isTrue(attrs.modelsbyref));
           this.watch('doCluster', scope);
           this.watch('clusterOptions', scope);
           this.watch('clusterEvents', scope);
@@ -5731,8 +5728,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.directives.api".ns()).factory("Markers".ns(), [
-    "IMarker".ns(), "MarkersParentModel".ns(), "_sync".ns(), function(IMarker, MarkersParentModel, _sync) {
+  angular.module("uiGmapgoogle-maps.directives.api").factory("uiGmapMarkers", [
+    "uiGmapIMarker", "uiGmapMarkersParentModel", "uiGmap_sync", function(IMarker, MarkersParentModel, _sync) {
       var Markers;
       return Markers = (function(_super) {
         __extends(Markers, _super);
@@ -5747,7 +5744,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             models: '=models',
             doCluster: '=docluster',
             clusterOptions: '=clusteroptions',
-            clusterEvents: '=clusterevents'
+            clusterEvents: '=clusterevents',
+            modelsByRef: '=modelsbyref'
           });
           this.$log.info(this);
         }

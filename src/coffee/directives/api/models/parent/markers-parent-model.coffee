@@ -3,11 +3,12 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
   "uiGmapIMarkerParentModel", "uiGmapModelsWatcher",
   "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async",
   "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker",
-  "uiGmapPromise",
+  "uiGmapPromise", "uiGmapGmapUtil",
     (IMarkerParentModel, ModelsWatcher,
       PropMap, MarkerChildModel, _async,
-      ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise) ->
+      ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise, GmapUtil) ->
         class MarkersParentModel extends IMarkerParentModel
+          @include GmapUtil
           @include ModelsWatcher
           constructor: (scope, element, attrs, map) ->
             super(scope, element, attrs, map)
@@ -22,14 +23,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               if (newValue != oldValue)
                 @doRebuildAll = newValue
 
-            #watch all the below properties with end up being processed by onWatch below
-            scope.modelsInitLen = scope.models?.length or 0
-            scope.$watch 'models', (newValue, oldValue) =>
-              if(!_.isEqual(newValue, oldValue) or (newValue.length != scope.modelsInitLen and scope.modelsInitLen?))
-                scope.modelsInitLen = undefined
-                @onWatch 'models', scope, newValue, oldValue
-            , true
-
+            @watch 'models', scope, !@isTrue(attrs.modelsbyref)
             @watch 'doCluster', scope
             @watch 'clusterOptions', scope
             @watch 'clusterEvents', scope

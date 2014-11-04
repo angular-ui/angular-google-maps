@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api".ns())
-.factory "Markers".ns(), ["IMarker".ns(), "MarkersParentModel".ns(),"_sync".ns(), (IMarker, MarkersParentModel,_sync) ->
+angular.module("uiGmapgoogle-maps.directives.api")
+.factory "uiGmapMarkers", ["uiGmapIMarker", "uiGmapMarkersParentModel","uiGmap_sync", (IMarker, MarkersParentModel,_sync) ->
   class Markers extends IMarker
     constructor: ($timeout) ->
       super($timeout)
@@ -11,6 +11,7 @@ angular.module("google-maps.directives.api".ns())
         doCluster: '=docluster'
         clusterOptions: '=clusteroptions'
         clusterEvents: '=clusterevents'
+        modelsByRef: '=modelsbyref'
 
       @$log.info @
 
