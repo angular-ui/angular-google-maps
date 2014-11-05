@@ -2953,7 +2953,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("google-maps.directives.api.models.child".ns()).factory("WindowChildModel".ns(), [
-    "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache", function(BaseObject, GmapUtil, $log, $compile, $http, $templateCache) {
+    "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache", 'uiGmapChromeFixes', function(BaseObject, GmapUtil, $log, $compile, $http, $templateCache, ChromeFixes) {
       var WindowChildModel;
       WindowChildModel = (function(_super) {
         __extends(WindowChildModel, _super);
@@ -3165,10 +3165,23 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.showWindow = function() {
-          var compiled, templateScope;
+          var compiled, show, templateScope;
           if (this.gWin != null) {
+            show = (function(_this) {
+              return function() {
+                return _.defer(function() {
+                  if (!_this.gWin.isOpen()) {
+                    _this.gWin.open(_this.mapCtrl, _this.getGmarker() ? _this.getGmarker() : void 0);
+                    _this.model.show = _this.gWin.isOpen();
+                    return _.defer(function() {
+                      return ChromeFixes.maybeRepaint(_this.gWin.content);
+                    });
+                  }
+                });
+              };
+            })(this);
             if (this.scope.templateUrl) {
-              $http.get(this.scope.templateUrl, {
+              return $http.get(this.scope.templateUrl, {
                 cache: $templateCache
               }).then((function(_this) {
                 return function(content) {
@@ -3178,7 +3191,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     templateScope.parameter = _this.scope.templateParameter;
                   }
                   compiled = $compile(content.data)(templateScope);
-                  return _this.gWin.setContent(compiled[0]);
+                  _this.gWin.setContent(compiled[0]);
+                  return show();
                 };
               })(this));
             } else if (this.scope.template) {
@@ -3188,10 +3202,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
               compiled = $compile(this.scope.template)(templateScope);
               this.gWin.setContent(compiled[0]);
-            }
-            if (!this.gWin.isOpen()) {
-              this.gWin.open(this.mapCtrl, this.getGmarker() ? this.getGmarker() : void 0);
-              return this.model.show = this.gWin.isOpen();
+              return show();
+            } else {
+              return show();
             }
           }
         };
