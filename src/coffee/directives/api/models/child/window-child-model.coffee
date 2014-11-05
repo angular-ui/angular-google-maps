@@ -1,7 +1,7 @@
 angular.module("google-maps.directives.api.models.child".ns())
 .factory "WindowChildModel".ns(),
-  [ "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache",
-    (BaseObject, GmapUtil, $log, $compile, $http, $templateCache) ->
+  [ "BaseObject".ns(), "GmapUtil".ns(), "Logger".ns(), "$compile", "$http", "$templateCache", 'uiGmapChromeFixes',
+    (BaseObject, GmapUtil, $log, $compile, $http, $templateCache, ChromeFixes) ->
       class WindowChildModel extends BaseObject
         @include GmapUtil
         constructor: (@model, @scope, @opts, @isIconVisibleOnClick,
@@ -133,6 +133,14 @@ angular.module("google-maps.directives.api.models.child".ns())
 
         showWindow: =>
           if @gWin?
+            show = =>
+              _.defer =>
+                unless @gWin.isOpen()
+                  @gWin.open(@mapCtrl, if @getGmarker() then @getGmarker() else undefined)
+                  @model.show = @gWin.isOpen()
+                  _.defer =>
+                    ChromeFixes.maybeRepaint @gWin.content
+
             if @scope.templateUrl
               $http.get(@scope.templateUrl, { cache: $templateCache }).then (content) =>
                 templateScope = @scope.$new()
@@ -140,16 +148,17 @@ angular.module("google-maps.directives.api.models.child".ns())
                   templateScope.parameter = @scope.templateParameter
                 compiled = $compile(content.data)(templateScope)
                 @gWin.setContent(compiled[0])
+                show()
+
             else if @scope.template
               templateScope = @scope.$new()
               if angular.isDefined(@scope.templateParameter)
                 templateScope.parameter = @scope.templateParameter
               compiled = $compile(@scope.template)(templateScope)
               @gWin.setContent(compiled[0])
-
-            unless @gWin.isOpen()
-              @gWin.open(@mapCtrl, if @getGmarker() then @getGmarker() else undefined)
-              @model.show = @gWin.isOpen()
+              show()
+            else
+              show()
 
         hideWindow: =>
           @gWin.close() if @gWin? and @gWin.isOpen()
