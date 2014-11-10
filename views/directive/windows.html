@@ -130,7 +130,7 @@
             <td><span class="label label-danger">string</span></td>
             <td>The name of the property in the models array to evaluate when closing the window via a click event</td>
         </tr>
-        <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='InfoWindow';directive='Windows'">
+        <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='InfoWindow';directive='Windows';isStringTypeOnArray=true">
         </tr><tr>
             <td>control</td>
             <td><span class="label label-default">Object</span></td>
@@ -186,7 +186,7 @@
         isIconVisibleOnClick="'{string}'"
         closeClick="'{string}'"
 
-        options='{expression}'
+        options='{string}'
         control='{expression}'
         >
 

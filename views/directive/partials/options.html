@@ -1,10 +1,13 @@
 <td>options</td>
-  <td><span class="label label-info">expression</span></td>
+  <td>
+      <span ng-if="isStringTypeOnArray" class="label label-info">string</span>
+      <span ng-if="!isStringTypeOnArray" class="label label-info">expression</span>
+  </td>
   <td>Additional options to pass to the {{thing}}. See <a href="https://developers.google.com/maps/documentation/javascript/reference#{{thing}}Options" rel="external">{{thing}}Options</a>.
     <p>
-      <div ng-if="hasLabelOptions">
-        <div ng-include="'./views/directive/partials/markerlabeloptions.html'">
-        </div>
+    <p ng-if="isStringTypeOnArray">The name of the property in the models array.</p>
+    <div ng-if="hasLabelOptions">
+        <div ng-include="'./views/directive/partials/markerlabeloptions.html'"></div>
     </div>
     </td>
   
