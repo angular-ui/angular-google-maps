@@ -1,18 +1,18 @@
-angular.module("google-maps.directives.api.models.parent".ns())
-.factory "CircleParentModel".ns(),
-['Logger'.ns(), '$timeout',"GmapUtil".ns(),
-"EventsHelper".ns(), "CircleOptionsBuilder".ns(),
+angular.module('uiGmapgoogle-maps.directives.api.models.parent')
+.factory 'uiGmapCircleParentModel',
+['uiGmapLogger', '$timeout','uiGmapGmapUtil',
+'uiGmapEventsHelper', 'uiGmapCircleOptionsBuilder',
 ($log, $timeout, GmapUtil, EventsHelper, Builder) ->
   class CircleParentModel extends Builder
     @include GmapUtil
     @include EventsHelper
     constructor: (@scope, element, @attrs, @map, @DEFAULTS) ->
       circle =
-        new google.maps.Circle(@buildOpts(GmapUtil.getCoords(scope.center), scope.radius))
+        new google.maps.Circle @buildOpts GmapUtil.getCoords(scope.center), scope.radius
 
       @setMyOptions = (newVals, oldVals) =>
         unless _.isEqual newVals,oldVals
-          circle.setOptions @buildOpts(GmapUtil.getCoords(scope.center), scope.radius)
+          circle.setOptions @buildOpts GmapUtil.getCoords(scope.center), scope.radius
 
       @props = @props.concat [
         {prop: 'center',isColl: true}
@@ -36,8 +36,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             scope.center.latitude = circle.getCenter().lat()
             scope.center.longitude = circle.getCenter().lng()
 
-      # Remove circle on scope $destroy
-      scope.$on "$destroy", =>
+      scope.$on '$destroy', =>
         @removeEvents listeners
         circle.setMap null
 

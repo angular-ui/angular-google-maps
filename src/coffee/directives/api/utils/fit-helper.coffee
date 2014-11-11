@@ -5,7 +5,7 @@ angular.module("google-maps.directives.api.utils".ns())
     class FitHelper extends BaseObject
       fit: (gMarkers, gMap) ->
         if gMap and gMarkers and gMarkers.length > 0
-          bounds = new google.maps.LatLngBounds();
+          bounds = new google.maps.LatLngBounds()
           everSet = false
           _async.each gMarkers, (gMarker) =>
             if gMarker

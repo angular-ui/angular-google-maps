@@ -4,7 +4,7 @@ defaultMap =
     longitude: 47
     latitude: -27
 
-window["Initiator".ns()] =
+window["uiGmapInitiator"] =
   initDirective: (toInit, apiSubjectClassName, thingsToInit = ['initAll'], map = defaultMap)->
 
     injects = ['$compile', '$rootScope', '$timeout', 'Logger'.ns()]

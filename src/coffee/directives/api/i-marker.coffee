@@ -17,7 +17,7 @@ angular.module("google-maps.directives.api".ns())
       options: '=options'
       events: '=events'
       fit: '=fit'
-      idKey: '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
+      idKey: '=idkey'
       control: '=control'
 
     IMarker.keys = _.keys IMarker.scopeKeys

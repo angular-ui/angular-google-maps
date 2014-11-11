@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.utils".ns())
-  .factory "ChromeFixes".ns(), [->
+angular.module("uiGmapgoogle-maps.directives.api.utils")
+  .factory "uiGmapChromeFixes", [->
     maybeRepaint: (el) ->
       if el
         od = el.style.display

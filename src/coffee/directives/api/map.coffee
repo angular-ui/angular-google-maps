@@ -98,7 +98,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
               bounds: scope.bounds
 
             _m = new google.maps.Map(el.find("div")[1], mapOptions)
-            _m['_id'.ns()] = uuid.generate()
+            _m['uiGmap_id'] = uuid.generate()
 
             dragging = false
 
