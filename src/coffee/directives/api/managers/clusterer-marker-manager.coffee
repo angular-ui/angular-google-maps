@@ -1,8 +1,10 @@
 angular.module("google-maps.directives.api.managers".ns())
 .factory "ClustererMarkerManager".ns(), ["Logger".ns(), "FitHelper".ns(), "PropMap".ns(), ($log, FitHelper, PropMap) ->
   class ClustererMarkerManager extends FitHelper
+    @type = 'ClustererMarkerManager'
     constructor: (gMap, opt_markers, opt_options, @opt_events) ->
       super()
+      @type = ClustererMarkerManager.type
       self = @
       @opt_options = opt_options
       if opt_options? and opt_markers == undefined

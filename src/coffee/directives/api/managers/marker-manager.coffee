@@ -2,14 +2,16 @@ angular.module("google-maps.directives.api.managers".ns())
 .factory "MarkerManager".ns(), ["Logger".ns(), "FitHelper".ns(), "PropMap".ns(), (Logger, FitHelper, PropMap) ->
   class MarkerManager extends FitHelper
     @include FitHelper
+    @type = 'MarkerManager'
     constructor: (gMap, opt_markers, opt_options) ->
       super()
+      @type = MarkerManager.type
       @gMap = gMap
       @gMarkers = new PropMap()
       @$log = Logger
       @$log.info(@)
 
-    add: (gMarker, optDraw = true)=>
+    add: (gMarker, optDraw = true) =>
       unless gMarker.key?
         msg = "gMarker.key undefined and it is REQUIRED!!"
         Logger.error msg
@@ -19,11 +21,11 @@ angular.module("google-maps.directives.api.managers".ns())
         @handleOptDraw(gMarker, optDraw, true)
         @gMarkers.put gMarker.key, gMarker
 
-    addMany: (gMarkers)=>
+    addMany: (gMarkers) =>
       gMarkers.forEach (gMarker) =>
         @add(gMarker)
 
-    remove: (gMarker, optDraw = true)=>
+    remove: (gMarker, optDraw = true) =>
       @handleOptDraw gMarker, optDraw, false
       if @gMarkers.get gMarker.key
         @gMarkers.remove gMarker.key
@@ -52,7 +54,7 @@ angular.module("google-maps.directives.api.managers".ns())
       delete @gMarkers
       @gMarkers = new PropMap()
 
-    handleOptDraw: (gMarker, optDraw, doAdd)=>
+    handleOptDraw: (gMarker, optDraw, doAdd) =>
       if optDraw == true
         if doAdd
           gMarker.setMap @gMap
@@ -63,7 +65,7 @@ angular.module("google-maps.directives.api.managers".ns())
         gMarker.isDrawn = false
         gMarker.doAdd = doAdd
 
-    fit: ()=>
+    fit: =>
       super @getGMarkers(), @gMap
 
     getGMarkers: =>

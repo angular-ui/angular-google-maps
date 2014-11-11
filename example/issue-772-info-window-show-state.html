@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+  <script src="../bower_components/angular/angular.js"></script>
+  <script src="../bower_components/angular-route/angular-route.js"></script>
+  <script src="../bower_components/lodash/dist/lodash.js"></script>
+
+  <script src="../dist/angular-google-maps.js"></script>
+  <script src="assets/scripts/controllers/issue-772-info-window-show-state.js"></script>
+</head>
+<body ng-app="appMaps">
+    <div id="map_canvas" ng-controller="mainCtrl">
+      <ui-gmap-google-map center="map.center" zoom="map.zoom"
+      draggable="true" options="options" bounds="map.bounds">
+          
+          <ui-gmap-markers models="randomMarkers" coords="'self'"
+          icon="'icon'" fit='true' click="'onClick'" events="markersEvents" doCluster='true'>
+              
+              <ui-gmap-windows show="'show'">
+                  <div ng-non-bindable>{{text}}</div>
+              </ui-gmap-windows>
+              
+          </ui-gmap-markers>
+
+      </ui-gmap-google-map>
+    </div>
+</body>
+</html>

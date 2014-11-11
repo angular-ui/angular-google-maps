@@ -41,7 +41,7 @@ angular.module("google-maps.directives.api.models.child".ns())
 
     disableMap = =>
       $log.info('disabling map move');
-      @oldOptions = map.getOptions() #dependent on ngmap-map extension
+      @oldOptions = map.getOptions() #dependent on ui-gmap-map directive extension
       @map.setOptions
         draggable: false
         zoomControl: false

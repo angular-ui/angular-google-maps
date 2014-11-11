@@ -63,6 +63,6 @@ class window.PropMap
   removeAll: () =>
     @slice()
 
-angular.module("google-maps.directives.api.utils".ns())
-.factory "PropMap".ns(), ->
+angular.module("uiGmapgoogle-maps.directives.api.utils")
+.factory "uiGmapPropMap", ->
   window.PropMap

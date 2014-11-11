@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="../website_libs/dev_deps.js"></script>
+    <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>
+    <script data-require="angular.js@1.2.x" src="https://code.angularjs.org/1.2.16/angular.js"
+            data-semver="1.2.16"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+    <script src="assets/scripts/controllers/issue-725-polyline-dupes.js"></script>
+    <title>Map</title>
+</head>
+
+<body class="container" ng-controller="TestingCtrl">
+<div class="row">
+    <div class="span6">
+        <div class="well mapContainer">
+
+            <ui-gmap-google-map center="map.centerProperty" zoom="map.zoomProperty" mark-click="true" draggable="true"
+                        dragging="map.dragging" type="terrain" latitude="latitude" longitude="longitude"
+                        events="map.events">
+                <ui-gmap-marker coords="map.waterfall" idkey="1" options="map.waterfall.opts"
+                        events="map.waterfall.events"></ui-gmap-marker>
+                <ui-gmap-marker coords="map.parking" idkey="2" options="map.parking.opts" events="map.parking.events"></ui-gmap-marker>
+                <ui-gmap-polyline path="map.trails.path" stroke="map.trails.stroke" visible="map.trails.visible"
+                          geodesic="map.trails.geodesic" editable="map.trails.editable" idkey="trailID"
+                          draggable="map.trails.draggable"></ui-gmap-polyline>
+            </ui-gmap-google-map>
+
+        </div>
+        <div class="well">
+            <div class="col-lg-2">
+                <button class="btn btn-success" ng-click="drawTrail()" ng-if="!trailExists">Add Trail</button>
+                <button class="btn btn-danger" ng-click="removeTrail()" ng-if="trailExists">Remove Trail</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../website_libs/dev_deps.js"></script>
+</body>
+
+</html>

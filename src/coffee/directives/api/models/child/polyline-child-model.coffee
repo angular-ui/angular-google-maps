@@ -8,16 +8,24 @@ angular.module("google-maps.directives.api".ns())
       @include GmapUtil
       @include EventsHelper
       constructor: (@scope, @attrs, @map, @defaults, @model) ->
+
+        createPolyline = =>
+          pathPoints = @convertPathPoints @scope.path
+          if @polyline?
+            @clean()
+          @polyline = new google.maps.Polyline @buildOpts pathPoints if pathPoints.length > 0
+          if @polyline
+            @extendMapBounds map, pathPoints if @scope.fit
+            arraySync @polyline.getPath(), @scope, "path", (pathPoints) =>
+              @extendMapBounds map, pathPoints if @scope.fit
+            @listeners = if @model then @setEvents @polyline, @scope, @model else @setEvents @polyline, @scope, @scope
+
+        createPolyline() #handle stuff without being dependent on digests (ie using watches for init)
+
         scope.$watch 'path', (newValue, oldValue) =>
           if not _.isEqual(newValue, oldValue) or not @polyline
-            pathPoints = @convertPathPoints scope.path
-            @polyline = new google.maps.Polyline @buildOpts pathPoints if pathPoints.length > 0
-            if @polyline
-              @extendMapBounds map, pathPoints if scope.fit
-              arraySync @polyline.getPath(), scope, "path", (pathPoints) =>
-                @extendMapBounds map, pathPoints if scope.fit
-              @listeners = if @model then @setEvents @polyline, scope, @model else @setEvents @polyline, scope, scope
-
+            createPolyline()
+        #TODO refactor all these sets and watches to be handled functionally as an array
         if !scope.static and angular.isDefined(scope.editable)
           scope.$watch "editable", (newValue, oldValue) =>
             @polyline?.setEditable newValue if newValue != oldValue

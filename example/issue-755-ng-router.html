@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+  <script src="../bower_components/angular/angular.js"></script>
+  <script src="../bower_components/angular-route/angular-route.js"></script>
+  <script src="../bower_components/lodash/dist/lodash.js"></script>
+
+  <script src="../dist/angular-google-maps.js"></script>
+  <script src="assets/scripts/controllers/issue-755-ng-router.js"></script>
+</head>
+<body ng-app="markerCoordsTest">
+  <div class="collapse navbar-collapse">
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#map">Map</a></li>
+      <li><a href="#msgs">Messages</a></li>
+    </ul>
+  </div>
+  <div class="container">
+      <div ng-view></div>
+  </div>
+</body>
+</html>

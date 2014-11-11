@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org/" ng-app="appMaps">
+
+<head>
+    <meta charset="utf-8" />
+    <title>AngularJS Plunker</title>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <script src="../bower_components/lodash/dist/lodash.js"></script>
+    <script src="../bower_components/angular/angular.min.js"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+    <script type='text/javascript' src='assets/scripts/controllers/issue-621-owl-w-window.js'></script>
+</head>
+<body>
+<div data-ng-controller="mainCtrl">
+    <h2>Mash the change markers button and you'll see that not all the markers are removed with the ng-if</h2>
+    <p>It would be ideal to get access to the marker array outside of angular google maps to clear it completely</p>
+    <p>Attempts to use the control attribute on a markers tag have resulted in an empty collection inside the object</p>
+    <button data-ng-click="toggleMarkers = !toggleMarkers">Change Markers</button>
+    <div id="map_canvas">
+        <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+            <div data-ng-if="!toggleMarkers">
+                <ui-gmap-markers models="randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'">
+                    <ui-gmap-windows show="'showWindow'" ng-cloak>
+                        <div ng-non-bindable>
+                            {{ latitude | number:4 }}, {{ longitude | number:4 }}
+                        </div>
+                    </ui-gmap-windows>
+                </ui-gmap-markers>
+            </div>
+            <div data-ng-if="toggleMarkers">
+                <ui-gmap-markers models="pinkRandomMarkers" coords="'self'" icon="'icon'" click="'onClicked'">
+                    <ui-gmap-windows show="'showWindow'" ng-cloak>
+                        <div ng-non-bindable>
+                            {{ latitude | number:4 }}, {{ longitude | number:4 }}
+                        </div>
+                    </ui-gmap-windows>
+                </ui-gmap-markers>
+            </div>
+        </ui-gmap-google-map>
+    </div>
+</div>
+<!--example-->
+
+</body>
+
+</html>

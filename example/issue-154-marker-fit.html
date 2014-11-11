@@ -37,38 +37,40 @@
     </div>
     <div class="row">
         <ui-gmap-google-map class="col-md-12"
-                    center="map.center"
-                    zoom="map.zoom"
-                    dragging="map.dragging"
-                    draggable="true"
-                    control="map.control">
-            <ui-gmap-marker ng-repeat="m in map.dynamicMarkers"  coords='m' icon='m.icon' ng-click='onMarkerClicked(m)' fit="true" idkey='m.id'>
-                <ui-gmap-window show="m.showWindow"  closeClick="'closeClick'" ng-cloak>
+                            center="map.center"
+                            zoom="map.zoom"
+                            dragging="map.dragging"
+                            draggable="true"
+                            control="map.control">
+            <ui-gmap-marker ng-repeat="m in map.dynamicMarkers" coords='m' icon='m.icon' ng-click='onMarkerClicked(m)'
+                            fit="true" idkey='m.id'>
+                <ui-gmap-window show="m.showWindow" closeClick="'closeClick'" ng-cloak>
                     <div ng-controller="InfoController">
                         <a href="javascript:void(0)" ng-click="clickedButtonInWindow()">hit me</a>
+
                         <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
+
                         <p class="muted">My marker will stay open when the window is popped up!</p>
                     </div>
                 </ui-gmap-window>
             </ui-gmap-marker>
 
 
-            <!--<ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>-->
-                <!--<ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>-->
-                    <!--<p>Dynamic Marker created via a delay!</p>-->
+            <!-- <ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
+                <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
+                    <p>Dynamic Marker created via a delay!</p>
 
-                    <!--<p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>-->
+                    <p ng-non-bindable>This is an info window at {{ latitude | number:4 }}, {{ longitude | number:4 }}!</p>
 
-                    <!--<p class="muted">My marker will stay open when the window is popped up!</p>-->
-                <!--</ui-gmap-windows>-->
-            <!--</ui-gmap-markers>-->
+                    <p class="muted">My marker will stay open when the window is popped up!</p>
+                </ui-gmap-windows>
+            </ui-gmap-markers> -->
         </ui-gmap-google-map>
     </div>
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script src="http://maps.googleapis.com/maps/api/js?libraries=weather,visualization&sensor=false&language=en&v=3.13"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+<script src="../website_libs/dev_deps.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
 <script src="../dist/angular-google-maps.js"></script>
 <script src="assets/scripts/mocks/heat-layer.js"></script>

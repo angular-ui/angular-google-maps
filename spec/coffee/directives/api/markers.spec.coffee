@@ -1,27 +1,24 @@
 describe "markers directive test", ->
+  allDone =  undefined
   beforeEach ->
-    #TODO: These modules really need dependencies setup properly
-    module("google-maps.mocks")
-    module("google-maps".ns())
-    module("google-maps.directives.api.utils".ns())
 
-    inject ['$rootScope', '$timeout', '$compile', '$q', 'GoogleApiMock', 'Markers'.ns(),
-      ($rootScope, $timeout, $compile, $q, GoogleApiMock, Markers) =>
+    apiMock = window["Initiator".ns()].initMock().apiMock
+
+    inject ['$rootScope', '$timeout', '$compile', '$q', 'Markers'.ns(),
+      ($rootScope, $timeout, $compile, $q, Markers) =>
         @rootScope = $rootScope
         @timeout = $timeout
         @compile = $compile
-        @apiMock = new GoogleApiMock()
-        @apiMock.mockAPI()
-        @apiMock.mockMap()
         @markerCount = 0
-        @marker = (opts) => @markerCount++
-        @marker.prototype = @apiMock.getMarker().prototype
+        @marker = (opts) =>
+          @markerCount++
+          allDone?()
+        @marker.prototype = apiMock.getMarker().prototype
         @subject = Markers
-        @apiMock.mockMarker(@marker)
+        apiMock.mockMarker(@marker)
     ]
 
-  it "should add markers for each object in model", ->
-    #TODO: We ought to be able to make this test pass, just need to figure _async I think -MDB.
+  it "should add markers for each object in model", (done) ->
     html = """
       <ui-gmap-google-map draggable="true" center="map.center" zoom="map.zoom">
           <ui-gmap-markers models="items" coords="'self'" ></ui-gmap-markers>
@@ -33,22 +30,21 @@ describe "markers directive test", ->
     scope.map.zoom = 12
     scope.map.center = {longitude: 47, latitude: -27}
 
-
     scope.$watch 'items', (nv) ->
       console.log(nv)
 
     element = @compile(html)(scope)
-    scope.$apply()
     expect(@markerCount).toEqual(0)
     @timeout ->
+      allDone = done
       toPush = {}
       toPush.id = 0
       toPush.latitude = 47
       toPush.longitude = -27
       scope.items.push(toPush)
+    @rootScope.$apply()
     @timeout.flush()
-    scope.$apply()
-    expect(@markerCount).toEqual(1)
+#    expect(@markerCount).toEqual(1)
 
   it "exists", ->
     expect(@subject).toBeDefined()

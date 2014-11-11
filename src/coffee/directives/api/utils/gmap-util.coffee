@@ -62,21 +62,6 @@ angular.module("google-maps.directives.api.utils".ns())
     if xPos? && yPos?
       new google.maps.Point(xPos, yPos)
 
-  createMarkerOptions: (coords, icon, defaults, map = undefined) ->
-    defaults = {} unless defaults?
-
-    opts = angular.extend {}, defaults,
-      position: if defaults.position? then defaults.position else getCoords(coords),
-      visible: if defaults.visible? then defaults.visible else validateCoords(coords)
-
-    # Only set icon if there's one to set
-    if defaults.icon? or icon?
-      opts = angular.extend opts,
-        icon: if defaults.icon? then defaults.icon else icon
-
-    opts.map = map if map?
-    opts
-
   createWindowOptions: (gMarker, scope, content, defaults) ->
     if content? and defaults? and $compile?
       options = angular.extend {}, defaults,
@@ -87,7 +72,7 @@ angular.module("google-maps.directives.api.utils".ns())
       if gMarker? and !options?.pixelOffset?
         #if we have a marker, center the window above
         if !options.boxClass?
-          options.pixelOffset = height:-40, width:0
+          # options.pixelOffset = height:-40, width:0 (using anchor)
         else #it is an infoBox center it below
           options.pixelOffset = height:0, width:-2
       options
@@ -103,7 +88,10 @@ angular.module("google-maps.directives.api.utils".ns())
       ret = defaults.content
     else
       if $compile?
-        parsed = $compile(content)(scope)
+        # replace leading/trailing whitespace
+        content = content.replace /^\s+|\s+$/g, ""
+        #avoid jqlite selector error on passing an empty string to $compile
+        parsed = if content == '' then '' else $compile(content)(scope)
         if parsed.length > 0
           ret = parsed[0] #must be one element with children or angular bindings get lost
       else
@@ -246,6 +234,5 @@ angular.module("google-maps.directives.api.utils".ns())
 
   fitMapBounds: (map, bounds) ->
     map.fitBounds bounds
-
   #end Public Methods
 ]

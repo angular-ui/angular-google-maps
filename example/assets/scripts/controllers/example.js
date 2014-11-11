@@ -1,4 +1,4 @@
-//<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.16"></script>
+'use strict';
 angular.module("angular-google-maps-example", ["google-maps".ns()])
 
 .value("rndAddToLatLon", function () {
@@ -8,7 +8,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
 .config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
   GoogleMapApi.configure({
 //    key: 'your api key',
-    v: '3.16',
+    v: '3.17',
     libraries: 'weather,geometry,visualization'
   });
 }])
@@ -31,6 +31,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
   $log.doLog = true
 
   GoogleMapApi.then(function(maps) {
+    $scope.googleVersion = maps.version;
     maps.visualRefresh = true;
     $log.info('$scope.map.rectangle.bounds set');
     $scope.map.rectangle.bounds = new maps.LatLngBounds(
@@ -181,6 +182,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
       Logger.info('CLICK CLICK');
     },
     map: {
+      show: true,
       control: {},
       version: "uknown",
       heatLayerCallback: function (layer) {
@@ -210,9 +212,11 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
           latitude: 45,
           longitude: -74,
           showWindow: false,
-          title: 'Marker 2',
           options: {
-            animation: 1
+            animation: 1,
+            labelContent: 'Markers id 1',
+            labelAnchor: "22 0",
+            labelClass: "marker-labels"
           }
         },
         {
@@ -220,7 +224,6 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
           latitude: 15,
           longitude: 30,
           showWindow: false,
-          title: 'Marker 2'
         },
         {
           id: 3,
@@ -228,7 +231,12 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
           latitude: 37,
           longitude: -122,
           showWindow: false,
-          title: 'Plane'
+          title: 'Plane',
+          options: {
+            labelContent: 'Markers id 3',
+            labelAnchor: "26 0",
+            labelClass: "marker-labels"
+          }
         }
       ],
       markers2: [
@@ -275,17 +283,26 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
         {
           mid: 1,
           latitude: 29.302567,
-          longitude: -106.248779
+          longitude: -106.248779,
+          onClicked: function(gMarker,eventName, model){
+
+          }
         },
         {
           mid: 2,
           latitude: 30.369913,
-          longitude: -109.434814
+          longitude: -109.434814,
+          onClicked: function(gMarker,eventName, model){
+
+          }
         },
         {
           mid: 3,
           latitude: 26.739478,
-          longitude: -108.61084
+          longitude: -108.61084,
+          onClicked: function(gMarker,eventName, model){
+
+          }
         }
       ],
       clickMarkers: [
@@ -303,7 +320,8 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
         imageExtension: 'png', imagePath: 'assets/images/cluster', imageSizes: [72]},
       clickedMarker: {
         id: 0,
-        title: ''
+        options:{
+        }
       },
       events: {
         tilesloaded: function (map, eventName, originalEventArgs) {
@@ -317,7 +335,11 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
             lon = e.latLng.lng();
           $scope.map.clickedMarker = {
             id: 0,
-            title: 'You clicked here ' + 'lat: ' + lat + ' lon: ' + lon,
+            options: {
+              labelContent: 'You clicked here ' + 'lat: ' + lat + ' lon: ' + lon,
+              labelClass: "marker-labels",
+              labelAnchor:"50 0"
+            },
             latitude: lat,
             longitude: lon
           };
@@ -325,16 +347,9 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
           $scope.$apply();
         },
         dragend: function () {
-          self = this;
           $timeout(function () {
-//                        modified = _.map($scope.map.mexiMarkers, function (marker) {
-//                            return {
-//                                latitude: marker.latitude + rndAddToLatLon(),
-//                                longitude: marker.longitude + rndAddToLatLon()
-//                            }
-//                        })
-//                        $scope.map.mexiMarkers = modified;
             var markers = [];
+
             var id = 0;
             if ($scope.map.mexiMarkers !== null && $scope.map.mexiMarkers.length > 0) {
               var maxMarker = _.max($scope.map.mexiMarkers, function (marker) {
@@ -508,12 +523,10 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
     }
 
   });
-  var marker2Dragend = function (marker, eventName, model, args) {
-    model.options.labelContent = "Dragged lat: " + model.latitude + " lon: " + model.longitude;
-//    $scope.map.markers2[marker.key-1] = model;
-  };
   $scope.map.markers2Events = {
-    dragend: marker2Dragend
+    dragend: function (marker, eventName, model, args) {
+      model.options.labelContent = "Dragged lat: " + model.latitude + " lon: " + model.longitude;
+    }
   };
 
   _.each($scope.map.markers, function (marker) {
@@ -526,11 +539,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
     };
   });
 
-  _.each($scope.map.markers2, function (marker) {
-    marker.closeClick = function () {
-      marker.showWindow = false;
-      $scope.$apply();
-    };
+  $scope.map.markers2.forEach( function (marker) {
     marker.onClicked = function () {
       onMarkerClicked(marker);
     };
@@ -543,12 +552,21 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
     $scope.map.dynamicMarkers = [];
     $scope.map.randomMarkers = [];
     $scope.map.mexiMarkers = [];
+    $scope.map.clickMarkers = [];
     $scope.map.polylines = [];
+    $scope.map.polygons = [];
+    $scope.map.polygons2 = [];
+    $scope.map.circles = [];
+    $scope.map.rectangle = null;
     $scope.map.clickedMarker = null;
-    $scope.searchLocationMarker = null;
+    $scope.staticMarker = null;
     $scope.map.infoWindow.show = false;
     $scope.map.templatedInfoWindow.show = false;
-    // $scope.map.infoWindow.coords = null;
+    $scope.map.templatedInfoWindow.coords = null;
+    $scope.map.infoWindowWithCustomClass.show = false
+    $scope.map.infoWindowWithCustomClass.coords = null;
+    $scope.map.infoWindow.show = false
+    $scope.map.infoWindow.coords = null;
   };
   $scope.refreshMap = function () {
     //optional param if you want to refresh you can pass null undefined or false or empty arg
@@ -591,7 +609,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
     genRandomMarkers(numberOfMarkers, $scope);
   };
 
-  $scope.searchLocationMarker = {
+  $scope.staticMarker = {
     id: 0,
     coords: {
       latitude: 40.1451,
@@ -608,14 +626,15 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
   }
   $scope.onMarkerClicked = onMarkerClicked;
 
-  $scope.clackMarker = function ($markerModel) {
+  $scope.clackMarker = function (gMarker,eventName, model) {
+    alert("clackMarker: " + model);
     $log.log("from clackMarker");
-    $log.log($markerModel);
+    $log.log(model);
   };
 
   $timeout(function () {
     $scope.map.infoWindow.show = true;
-    dynamicMarkers = [
+    var dynamicMarkers = [
       {
         id: 1,
         latitude: 46,

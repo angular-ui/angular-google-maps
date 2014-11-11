@@ -13,4 +13,5 @@ angular.module("google-maps.directives.api.utils".ns())
         @::[key] = value
       obj.included?.apply(@)
       this
+
   BaseObject

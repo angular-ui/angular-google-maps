@@ -7,10 +7,10 @@
     <!-- make IE Happy , http://docs.angularjs.org/guide/ie -->
     <!--[if lte IE 9]>
     <script>
-	    window.html5 = {
-            'elements': 'marker window windows markers layer polyline marker-label ng-controller ng-repeat ng-init ng-model ng-hide ng-show'
+        window.html5 = {
+            'elements': 'marker window windows markers layer polyline ng-controller ng-repeat ng-init ng-model ng-hide ng-show'
         };
-	</script>
+    </script>
 
     <script src="https://rawgithub.com/bestiejs/json3/v3.2.5a/lib/json3.min.js"></script>
     <script src="https://rawgithub.com/kriskowal/es5-shim/v2.1.0/es5-shim.min.js"></script>
@@ -18,8 +18,7 @@
     <script src="https://rawgithub.com/aFarkas/html5shiv/3.7.0/src/html5shiv.js"></script>
     <![endif]-->
 
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet"
-          type="text/css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
     <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700'
           rel='stylesheet' type='text/css'>
     <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
@@ -27,19 +26,20 @@
 
 <body ng-controller="ExampleController">
 <!--	You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
-	the latter case, uncomment the style above to make sure the custom elements gets block display	-->
+    the latter case, uncomment the style above to make sure the custom elements gets block display	-->
 
-<div class="container-fluid">
-<div class="row-fluid">
+<div class="container">
+<div class="row">
     <div class="page-title">
-        <h2>angular-google-maps example <span ng-cloak>{{version}}</span></h2>
+        <h2>angular-google-maps: <span ng-cloak>{{version}}</span>, google-maps: <span ng-cloak>{{googleVersion}}</span></h2>
     </div>
     <button class="btn btn-danger" ng-click="removeMarkers()">Clear Map</button>
     <button class="btn btn-success" ng-click="refreshMap()">Refresh Map</button>
     <button class="btn btn-success" ng-click="getMapInstance()">Get Map Instance</button>
+    Show Map: <input type="checkbox" text="Show / Hide Map" ng-model="map.show">
 </div>
-<div class="row-fluid">
-    <ui-gmap-google-map class="span7"
+<div class="row" ng-if="map.show">
+    <ui-gmap-google-map class="col-md-8"
          center="map.center"
          zoom="map.zoom"
          dragging="map.dragging"
@@ -73,7 +73,8 @@
 
 
         <ui-gmap-window show="map.infoWindowWithCustomClass.show" coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
-            I'm a window with a custom class set via options.boxClass. I only work when googles <a href ="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
+            I'm a window with a custom class set via options.boxClass. I only work when googles
+            <a href ="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
         </ui-gmap-window>
 
         <ui-gmap-window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
@@ -82,14 +83,14 @@
                 templateParameter="map.templatedInfoWindow.templateParameter" ng-cloak>
         </ui-gmap-window>
 
-        <ui-gmap-marker coords="searchLocationMarker.coords" options="searchLocationMarker.options" events="searchLocationMarker.events" idKey="searchLocationMarker.id">
+        <ui-gmap-marker coords="staticMarker.coords" options="staticMarker.options" events="staticMarker.events" idKey="staticMarker.id">
         </ui-gmap-marker>
 
         <ui-gmap-markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
                     doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
         </ui-gmap-markers>
 
-        <ui-gmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'" islabel="true" events="map.markers2Events">
+        <ui-gmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'" events="map.markers2Events">
             <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     I should not be attached to a
@@ -104,8 +105,8 @@
             </ui-gmap-windows>
         </ui-gmap-markers>
 
-        <ui-gmap-markers models="map.clickMarkers" coords="'self'" click="clackMarker">
-	    </ui-gmap-markers>
+        <ui-gmap-markers models="map.clickMarkers" coords="'self'" click="clackMarker" >
+        </ui-gmap-markers>
 
         <ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
             <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
@@ -129,10 +130,9 @@
             </ui-gmap-windows>
         </ui-gmap-markers>
 
-        <!--<!-- predefined markers -->-->
-        <!--<!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->-->
+        <!-- predefined markers -->
+        <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
         <ui-gmap-marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id" options="m.options">
-            <ui-gmap-marker-label content="m.title" anchor="22 0" class="marker-labels"/>
             <ui-gmap-window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
                     <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
                     <p class="muted">My marker will stay open when the window is popped up!</p>
@@ -140,10 +140,9 @@
         </ui-gmap-marker>
 
          <!--marker for clicked position can not put google.map.animations.BOUNCE , since it is not initiaized yet-->
-        <!--<!-- DISABLED ANIMATION on MarkerLABEL due to Google SDK V3 bug, see MarkerLabelChildModel.setOption-->-->
+        <!--DISABLED ANIMATION on MarkerLABEL due to Google SDK V3 bug, see MarkerLabelChildModel.setOption -->
         <!--<div ng-init="opts = {animation:1}">-->
-            <ui-gmap-marker coords="map.clickedMarker"  idKey="map.clickedMarker.id">
-                <ui-gmap-marker-label content="map.clickedMarker.title" anchor="24 80" class="marker-labels"/>
+            <ui-gmap-marker coords="map.clickedMarker"  idKey="map.clickedMarker.id" options="map.clickedMarker.options">
                 <ui-gmap-window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
                     <p class="muted">My marker will reappear when you close me.</p>
                 </ui-gmap-window>
@@ -152,17 +151,18 @@
 
         <!-- polyline example -->
         <ui-gmap-polyline ng-repeat="p in map.polylines" path="p.path" stroke="p.stroke" visible='p.visible'
-            geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'></ui-gmap-polyline>
+            geodesic='p.geodesic' fit="false" editable="p.editable" draggable="p.draggable" icons='p.icons'>
+        </ui-gmap-polyline>
 
         <!-- polygon example -->
         <ui-gmap-polygon static="true" ng-repeat="p in map.polygons track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
-            <!-- geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable" events="map.polygonEvents">
+            geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable" events="map.polygonEvents">
         </ui-gmap-polygon>
 
         <ui-gmap-polygon ng-repeat="p in map.polygons2 track by p.id" path="p.path" stroke="p.stroke" visible="p.visible"
                  geodesic="p.geodesic" fill="p.fill" fit="false" editable="p.editable" draggable="p.draggable"
                  events="map.polygonEvents">
-        </ui-gmap-polygon> -->
+        </ui-gmap-polygon>
 
         <!-- circle example -->
         <ui-gmap-circle ng-repeat="c in map.circles track by c.id" center="c.center" stroke="c.stroke" fill="c.fill" radius="c.radius"
@@ -176,7 +176,7 @@
         </ui-gmap-rectangle>
 
 </ui-gmap-google-map>
-<div class="span5">
+<div class="col-md-4">
     <fieldset>
         <table class="table">
             <tbody>
@@ -190,6 +190,37 @@
                     Weather: <input type="checkbox" text="Weather On/Off" ng-model="map.showWeather">
                     Heat: <input type="checkbox" text="Heat On/Off" ng-model="map.showHeat">
                 </td>
+            </tr>
+            <tr>
+                <td>center</td>
+                <td>
+                    <pre ng-cloak>
+                        <span ng-show="map.center.latitude >= 0">&nbsp;
+                        </span>
+                        {{ map.center.latitude | number:4 }} lat
+                        <br>
+                        <span ng-show="map.center.longitude >= 0">&nbsp;
+                        </span>{{ map.center.longitude | number:4 }} lng
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>zoom</td>
+                <td>{{ map.zoom }}</td>
+            </tr>
+            <tr>
+                <td>bounds</td>
+                <td>
+                    <pre ng-cloak>
+                        north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }}
+                        <br>
+                        south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
+                    </pre>
+                </td>
+            </tr>
+            <tr>
+                <td>dragging</td>
+                <td ng-cloak>{{ map.dragging }}</td>
             </tr>
             <tr>
                 <td>Generate Random Markers</td>
@@ -269,47 +300,16 @@
                 </td>
             </tr>
             <tr>
-                <td>center</td>
-                <td>
-					<pre ng-cloak>
-						<span ng-show="map.center.latitude >= 0">&nbsp;
-						</span>
-						{{ map.center.latitude | number:4 }} lat
-						<br>
-						<span ng-show="map.center.longitude >= 0">&nbsp;
-						</span>{{ map.center.longitude | number:4 }} lng
-					</pre>
-                </td>
-            </tr>
-            <tr>
-                <td>zoom</td>
-                <td>{{ map.zoom }}</td>
-            </tr>
-            <tr>
-                <td>bounds</td>
-                <td>
-                    <pre ng-cloak>
-                    	north-east: {{ map.bounds.northeast.latitude | number:4 }},{{ map.bounds.northeast.longitude | number:4 }}
-                    	<br>
-                    	south-west: {{ map.bounds.southwest.latitude | number:4 }},{{ map.bounds.southwest.longitude | number:4 }}
-                	</pre>
-                </td>
-            </tr>
-            <tr>
-                <td>dragging</td>
-                <td ng-cloak>{{ map.dragging }}</td>
-            </tr>
-            <tr>
                 <td>clicked position</td>
                 <td>
-						<pre ng-show="map.clickedMarker.latitude != null && map.clickedMarker.longitude != null" ng-cloak>
-							<span ng-show="map.clickedMarker.latitude >= 0">&nbsp;
-							</span>
-							{{ map.clickedMarker.latitude | number:4 }} lat
-							<br>
-							<span ng-show="map.clickedMarker.longitude >= 0">&nbsp;</span>
-							{{ map.clickedMarker.longitude | number:4 }} lng
-						</pre>
+                        <pre ng-show="map.clickedMarker.latitude != null && map.clickedMarker.longitude != null" ng-cloak>
+                            <span ng-show="map.clickedMarker.latitude >= 0">&nbsp;
+                            </span>
+                            {{ map.clickedMarker.latitude | number:4 }} lat
+                            <br>
+                            <span ng-show="map.clickedMarker.longitude >= 0">&nbsp;</span>
+                            {{ map.clickedMarker.longitude | number:4 }} lng
+                        </pre>
                     <span ng-show="map.clickedMarker.latitude == null || map.clickedMarker.longitude == null">Click the map to see</span>
                 </td>
             </tr>
@@ -322,32 +322,32 @@
                                 <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!">
                                         <span class="{{p.visible}}" ng-click="p.visible = !p.visible">Polyline:</span> {<br/>
-											<span style="padding-left: 5em" class="{{p.visible}}"
+                                            <span style="padding-left: 5em" class="{{p.visible}}"
                                                   ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
-											<span style="padding-left: 5em" class="{{p.editable}}"
+                                            <span style="padding-left: 5em" class="{{p.editable}}"
                                                   ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.draggable}}"
+                                            <span style="padding-left: 5em" class="{{p.draggable}}"
                                                   ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.geodesic}}"
+                                            <span style="padding-left: 5em" class="{{p.geodesic}}"
                                                   ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,
                                         <br/>
                                         <span style="padding-left: 5em">stroke: {</span> <br/>
-											<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
+                                            <span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
                                                   style="padding-left: 10em">weight: {{p.stroke.weight}}</span> <br/>
-											<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
+                                            <span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
                                                   style="padding-left: 10em">color: {{p.stroke.color}}</span> <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
                                         <span style="padding-left: 5em">path: [ </span> <br/>
-											<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
+                                            <span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
                                                   ng-click="p.path.splice($index,1)">
-											{
-											latitude:{{pt.latitude | number:2}},
-											longitude:{{pt.longitude | number:2}}
-										},
-										<br/>
-									</span>
+                                            {
+                                            latitude:{{pt.latitude | number:2}},
+                                            longitude:{{pt.longitude | number:2}}
+                                        },
+                                        <br/>
+                                    </span>
                                         <span style="padding-left: 5em">] </span> <br/>
 
                                         }
@@ -413,58 +413,58 @@
                 </td>
             </tr>
             <tr>
-            	<td>polygons</td>
-            	<td>
-            		<div class="well sidebar-nav">
-            			<ul class="nav nav-list">
-            				<li ng-repeat="p in map.polygons">
-            					<a href="#">
+                <td>polygons</td>
+                <td>
+                    <div class="well sidebar-nav">
+                        <ul class="nav nav-list">
+                            <li ng-repeat="p in map.polygons">
+                                <a href="#">
                                     <i class="i" title="Click me to Show InfoWindow!">
                                         <span class="{{p.visible}}" ng-click="p.visible = !p.visible">Polygon:</span> {<br/>
-											<span style="padding-left: 5em" class="{{p.visible}}"
+                                            <span style="padding-left: 5em" class="{{p.visible}}"
                                                   ng-click="p.visible = !p.visible">visible: {{p.visible}}</span>, <br/>
-											<span style="padding-left: 5em" class="{{p.editable}}"
+                                            <span style="padding-left: 5em" class="{{p.editable}}"
                                                   ng-click="p.editable = !p.editable">editable: {{p.editable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.draggable}}"
+                                            <span style="padding-left: 5em" class="{{p.draggable}}"
                                                   ng-click="p.draggable = !p.draggable">draggable: {{p.draggable}}</span>,
                                         <br/>
-											<span style="padding-left: 5em" class="{{p.geodesic}}"
+                                            <span style="padding-left: 5em" class="{{p.geodesic}}"
                                                   ng-click="p.geodesic = !p.geodesic">geodesic: {{p.geodesic}}</span>,
                                         <br/>
                                         <span style="padding-left: 5em">stroke: {</span> <br/>
-											<span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
+                                            <span ng-click="p.stroke.weight = (p.stroke.weight % 5) +1"
                                                   style="padding-left: 10em">weight: {{p.stroke.weight}}</span> <br/>
-											<span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
+                                            <span ng-click="p.stroke.color = toggleColor(p.stroke.color)"
                                                   style="padding-left: 10em">color: {{p.stroke.color}}</span> <br/>
                                         <span style="padding-left: 5em">},</span> <br/>
                                         <span style="padding-left: 5em">path: [ </span> <br/>
-											<span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
+                                            <span style="padding-left: 10em" class="false" ng-repeat="pt in p.path"
                                                   ng-click="p.path.splice($index,1)">
-											{
-											latitude:{{pt.latitude | number:2}},
-											longitude:{{pt.longitude | number:2}}
-										},
-										<br/>
-									</span>
+                                            {
+                                            latitude:{{pt.latitude | number:2}},
+                                            longitude:{{pt.longitude | number:2}}
+                                        },
+                                        <br/>
+                                    </span>
                                         <span style="padding-left: 5em">] </span> <br/>
 
                                         }
                                     </i>
                                 </a>
-            				</li>
-            			</ul>
-            		</div>
+                            </li>
+                        </ul>
+                    </div>
             </tbody>
         </table>
     </fieldset>
 </div>
 </div>
 </div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
-<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="../website_libs/dev_deps.js"></script>
+
 <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
 <script src="../dist/angular-google-maps.js"></script>
 <script src="assets/scripts/mocks/heat-layer.js"></script>
 <script src="assets/scripts/controllers/example.js"></script>

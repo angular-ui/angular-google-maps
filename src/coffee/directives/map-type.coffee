@@ -38,8 +38,8 @@ This directive creates a new scope.
 
 {attribute show optional}  true (default) shows the trafficlayer otherwise it is hidden
 ###
-angular.module("google-maps".ns())
-.directive "MapType".ns(), ["$timeout", "Logger".ns(), "MapTypeParentModel".ns(),
+angular.module("uiGmapgoogle-maps")
+.directive "uiGmapMapType", ["$timeout", "uiGmapLogger", "uiGmapMapTypeParentModel",
   ($timeout, Logger, MapTypeParentModel) ->
     class MapType
       constructor:  ->

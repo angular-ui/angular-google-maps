@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api".ns())
-.factory "Control".ns(), ["IControl".ns(), "$http", "$templateCache", "$compile", "$controller",'GoogleMapApi'.ns(),
+angular.module("uiGmapgoogle-maps.directives.api")
+.factory "uiGmapControl", ["uiGmapIControl", "$http", "$templateCache", "$compile", "$controller",'uiGmapGoogleMapApi',
   (IControl, $http, $templateCache, $compile, $controller, GoogleMapApi) ->
     class Control extends IControl
       constructor: ->
@@ -36,7 +36,8 @@ angular.module("google-maps.directives.api".ns())
                 templateCtrl = $controller scope.controller, {$scope: templateScope}
                 controlDiv.children().data '$ngControllerController', templateCtrl
 
-              control = $compile(controlDiv.contents())(templateScope)
+              # use children() rather than content() as the former seems to trim the content
+              control = $compile(controlDiv.children())(templateScope)
             .error (error) =>
               @$log.error 'mapControl: template could not be found'
             .then =>

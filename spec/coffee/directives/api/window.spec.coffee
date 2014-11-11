@@ -1,16 +1,6 @@
 describe "directives.api.Window", ->
     beforeEach ->
-        window.google
-        module "google-maps".ns()
-        module "google-maps.mocks"
-        inject (GoogleApiMock) =>
-          @gmap = new GoogleApiMock()
-          @gmap.mockAPI()
-          @gmap.mockLatLng()
-          @gmap.mockMarker()
-          @gmap.mockInfoWindow()
-          @gmap.mockEvent()
-
+        window["Initiator".ns()].initMock()
         @mocks =
             scope:
                 coords:
@@ -26,19 +16,12 @@ describe "directives.api.Window", ->
             attrs: {
                 isiconvisibleonclick:true
             }
-            ctrls: [
-                {
-                  getMap:()->
-                    {}
-                }
-            ]
-
-
-        @timeOutNoW = (fnc,time) =>
-            fnc()
-#        @gMarker = new google.maps.Marker(@commonOpts)
-        inject ['$rootScope','$q', '$compile', '$http', '$templateCache', 'Window'.ns(),
-          (_$rootScope_,$q, $compile, $http, $templateCache, Window) =>
+            ctrls: [{getMap:()->{}}]
+        @gmap = {}
+        inject ['$rootScope','$q', '$compile', '$http',
+          '$templateCache', 'ExtendGWin'.ns(), 'Window'.ns(),
+          (_$rootScope_,$q, $compile, $http, $templateCache, ExtendGWin, Window) =>
+            ExtendGWin.init()
             @$rootScope =  _$rootScope_
             d = $q.defer()
             d.resolve @gmap
@@ -48,8 +31,7 @@ describe "directives.api.Window", ->
                 @$rootScope
             @windowScope = _.extend @$rootScope.$new(), @mocks.scope
 
-
-            @subject = new Window(@timeOutNoW,$compile, $http, $templateCache)
+            @subject = new Window()
             @subject.onChildCreation = (child) =>
                 @childWindow = child
 
@@ -73,7 +55,6 @@ describe "directives.api.Window", ->
         crap = null
         @prom.then ->
             crap = "set"
-        #holy crap $rootScope.$apply() must come after all promises!!!!!
         @$rootScope.$apply() #force $q to resolve
         expect(crap).toBe 'set'
         expect(@childWindow).toBeDefined()

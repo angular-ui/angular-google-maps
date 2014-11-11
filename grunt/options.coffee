@@ -1,5 +1,5 @@
 log = require('util').log
-jasmineSettings = require "./GruntJasmineSettings"
+jasmineSettings = require './jasmine'
 _ = require 'lodash'
 
 module.exports = (grunt) ->
@@ -74,8 +74,10 @@ module.exports = (grunt) ->
           "tmp/spec/js/ng-gmap-module.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"
           "tmp/spec/js/usage/usage.spec.js": "spec/coffee/usage/*.spec.coffee"
           "tmp/spec/js/directives/api/apis.spec.js": "spec/coffee/directives/api/*.spec.coffee"
+          "tmp/spec/js/providers/providers.spec.js": "spec/coffee/providers/*.spec.coffee"
           "tmp/spec/js/directives/api/models/child/children.spec.js": "spec/coffee/directives/api/models/child/*.spec.coffee"
           "tmp/spec/js/directives/api/models/parent/parents.spec.js": "spec/coffee/directives/api/models/parent/*.spec.coffee"
+          "tmp/spec/js/directives/api/options/options.spec.js": "spec/coffee/directives/api/options/**/*.spec.coffee"
           "tmp/spec/js/directives/api/utils/utils.spec.js": "spec/coffee/directives/api/utils/*.spec.coffee"
 
     concat:
@@ -103,6 +105,12 @@ module.exports = (grunt) ->
         files: [
           src: "tmp/output.js"
           dest: "dist/<%= pkg.name %>.js"
+        ]
+      # libraries that are not versioned well, not really on bower, not on a cdn yet
+      poorly_managed_dev__dep_bower_libs:
+        files: [
+          src: ["bower_components/bootstrap-without-jquery/bootstrap3/bootstrap-without-jquery.js"]
+          dest: "website_libs/dev_deps.js"
         ]
 
     uglify:
@@ -175,9 +183,17 @@ module.exports = (grunt) ->
         dest: 'tmp/wrapped_libs.js'
       uuid:
         options:
-          patterns: [match: 'REPLACE_W_LIBS', replacement: '<%= grunt.file.read("bower_components/uuid/dist/uuid.core.js") %>']
+          patterns: [
+            match: 'REPLACE_W_LIBS',
+            replacement: '<%= grunt.file.read("bower_components/uuid/dist/uuid.core.js") %>'
+          ]
         src: 'src/js/wrapped/uuid.core.js'
         dest: 'tmp/wrapped_uuid.js'
+
+    subgrunt:
+      bluebird:
+        projects: {}
+#          'bower_components/bluebird': ["build","--features='core'"]
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

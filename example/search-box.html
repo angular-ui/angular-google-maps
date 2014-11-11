@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" id='ng-app' ng-app="search-box-example">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+
+
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700'
+          rel='stylesheet' type='text/css'>
+    <link href="assets/stylesheets/search-box-example.css" rel="stylesheet" type="text/css">
+    <title>Places search box</title>
+</head>
+<body ng-controller="SearchBoxController">
+
+<div>
+    <div id="searchBoxParent"></div>
+    <div>
+        <ui-gmap-google-map
+                center="map.center"
+                zoom="map.zoom"
+                dragging="map.dragging"
+                bounds="map.bounds"
+                events="map.events"
+                options="map.options"
+                pan="true"
+                control="map.control"
+                >
+            <!--to add as a map control-->
+            <ui-gmap-search-box options="searchbox.options" template="searchbox.template"
+                                events="searchbox.events"></ui-gmap-search-box>
+            <!--to add to a parent div-->
+            <!--<ui-gmap-search-box options="searchbox.options" template="searchbox.template"  events="searchbox.events" parentdiv="searchbox.parentdiv"></ui-gmap-search-box>-->
+
+
+            <ui-gmap-markers idkey="map.idkey" models="map.markers" coords="'self'" icon="'icon'"
+                             click="'onClicked'"></ui-gmap-markers>
+            <ui-gmap-window coords="selected" idkey="selected.place_id" templateurl="selected.templateurl"
+                            templateparameter="selected.templateparameter" options="selected.options"
+                            closeClick='selected.closeClick()' ng-cloak>
+
+            </ui-gmap-window>
+
+
+        </ui-gmap-google-map>
+    </div>
+</div>
+<script src="../website_libs/dev_deps.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
+<script src="../dist/angular-google-maps.js"></script>
+<script src="assets/scripts/controllers/search-box.js"></script>
+</body>
+</html>

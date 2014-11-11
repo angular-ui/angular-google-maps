@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.js"></script>
+
+    <script src="../dist/angular-google-maps.js"></script>
+    <script src="assets/scripts/controllers/issue-753-marker-not-watched.js"></script>
+  </head>
+
+  <body ng-app="markerCoordsTest">
+    <div ng-controller="TestController">
+      <h1>{{map.title}}</h1>
+
+      <ui-gmap-google-map
+        center="map.center"
+        zoom="map.zoom">
+
+        <ui-gmap-marker
+          idKey="marker.id"
+          coords="marker.coords"
+          icon="marker.icon"
+          options="marker.options"
+        >
+          <ui-gmap-window show='true'>
+            <div>
+              {{marker.coords}}
+            </div>
+          </ui-gmap-window>
+        </ui-gmap-marker>
+
+        <!-- <ui-gmap-markers
+          models='markers'
+          idKey="'id'"
+          coords="'coords'"
+          icon="'icon'">
+        </ui-gmap-markers> -->
+
+      </ui-gmap-google-map>
+    </div>
+  </body>
+</html>
