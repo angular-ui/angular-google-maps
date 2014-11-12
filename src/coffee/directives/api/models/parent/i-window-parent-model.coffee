@@ -1,13 +1,10 @@
-###
-	- interface directive for all window(s) to derrive from
-###
-angular.module("google-maps.directives.api.models.parent".ns())
-.factory "IWindowParentModel".ns(), ["ModelKey".ns(), "GmapUtil".ns(), "Logger".ns(), (ModelKey, GmapUtil, Logger) ->
+angular.module("uiGmapgoogle-maps.directives.api.models.parent")
+.factory "uiGmapIWindowParentModel", ["uiGmapModelKey", "uiGmapGmapUtil", "uiGmapLogger", (ModelKey, GmapUtil, Logger) ->
   class IWindowParentModel extends ModelKey
     @include GmapUtil
 
     constructor: (scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache) ->
-      super(scope)
+      super scope
       @$log = Logger
       @$timeout = $timeout
       @$compile = $compile

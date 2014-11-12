@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.managers".ns())
-.factory "MarkerManager".ns(), ["Logger".ns(), "FitHelper".ns(), "PropMap".ns(), (Logger, FitHelper, PropMap) ->
+angular.module("uiGmapgoogle-maps.directives.api.managers")
+.factory "uiGmapMarkerManager", ["uiGmapLogger", "uiGmapFitHelper", "uiGmapPropMap", (Logger, FitHelper, PropMap) ->
   class MarkerManager extends FitHelper
     @include FitHelper
     @type = 'MarkerManager'

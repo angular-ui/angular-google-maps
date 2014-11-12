@@ -1,28 +1,28 @@
-angular.module("google-maps.directives.api".ns())
-.factory "IPolygon".ns(), ["GmapUtil".ns(), "BaseObject".ns(), "Logger".ns(), "CtrlHandle".ns(),
+angular.module('uiGmapgoogle-maps.directives.api')
+.factory 'uiGmapIPolygon', ['uiGmapGmapUtil', 'uiGmapBaseObject', 'uiGmapLogger', 'uiGmapCtrlHandle',
   (GmapUtil, BaseObject, Logger, CtrlHandle) ->
     class IPolygon extends BaseObject
       @include GmapUtil
       @extend CtrlHandle
       constructor: ->
-      restrict: "EMA"
+      restrict: 'EMA'
       replace: true
-      require: '^' + 'GoogleMap'.ns()
+      require: '^' + 'uiGmapGoogleMap'
       scope:
-        path: "=path"
-        stroke: "=stroke"
-        clickable: "="
-        draggable: "="
-        editable: "="
-        geodesic: "="
-        fill: "="
-        icons: "=icons"
-        visible: "="
-        static: "="
-        events: "="
-        zIndex: "=zindex"
-        fit: "="
-        control:"=control"
+        path: '=path'
+        stroke: '=stroke'
+        clickable: '='
+        draggable: '='
+        editable: '='
+        geodesic: '='
+        fill: '='
+        icons: '=icons'
+        visible: '='
+        static: '='
+        events: '='
+        zIndex: '=zindex'
+        fit: '='
+        control:'=control'
 
       DEFAULTS: {}
       $log: Logger

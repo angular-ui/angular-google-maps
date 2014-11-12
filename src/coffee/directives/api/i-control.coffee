@@ -7,14 +7,14 @@
 		- controller
 		- index
 ###
-angular.module("google-maps.directives.api".ns())
-.factory "IControl".ns(), [ "BaseObject".ns(), "Logger".ns(), "CtrlHandle".ns(), (BaseObject, Logger, CtrlHandle) ->
+angular.module("uiGmapgoogle-maps.directives.api")
+.factory "uiGmapIControl", [ "uiGmapBaseObject", "uiGmapLogger", "uiGmapCtrlHandle", (BaseObject, Logger, CtrlHandle) ->
   class IControl extends BaseObject
     @extend CtrlHandle
     constructor: ->
       @restrict = 'EA'
       @replace = true
-      @require = '^' + 'GoogleMap'.ns()
+      @require = '^' + 'uiGmapGoogleMap'
       @scope =
         template: '@template'
         position: '@position'
@@ -22,6 +22,6 @@ angular.module("google-maps.directives.api".ns())
         index: '@index'
       @$log = Logger
 
-    link: (scope, element, attrs, ctrl) =>
-      throw new Exception("Not implemented!!")
+    link: (scope, element, attrs, ctrl) ->
+      throw new Exception "Not implemented!!"
 ]
