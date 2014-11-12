@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2014-11-11
+/*! angular-google-maps 2.1.0-SNAPSHOT 2014-11-12
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -6755,7 +6755,7 @@ This directive creates a new scope.
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   angular.module("google-maps".ns()).directive("SearchBox".ns(), [
-    "GoogleMapApi".ns(), "Logger".ns(), "SearchBoxParentModel".ns(), '$http', '$templateCache', function(GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache) {
+    "GoogleMapApi".ns(), "Logger".ns(), "SearchBoxParentModel".ns(), '$http', '$templateCache', '$compile', function(GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache, $compile) {
       var SearchBox;
       SearchBox = (function() {
         function SearchBox() {
@@ -6789,7 +6789,7 @@ This directive creates a new scope.
                     _this.$log.error('searchBox: invalid position property');
                     return;
                   }
-                  return new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, template);
+                  return new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, $compile(template)(scope));
                 });
               });
             };
@@ -6820,7 +6820,7 @@ angular.module('google-maps.wrapped'.ns()).service('GoogleMapsUtilV3'.ns(), func
   return {
     init: _.once(function () {
       //BEGIN REPLACE
-      /*! angular-google-maps 2.1.0-SNAPSHOT 2014-11-11
+      /*! angular-google-maps 2.1.0-SNAPSHOT 2014-11-12
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */

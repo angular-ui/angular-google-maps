@@ -9,7 +9,7 @@ angular.module("search-box-example", ["google-maps".ns()])
 }])
 
 .run(['$templateCache', function ($templateCache) {
-  $templateCache.put('searchbox.tpl.html', '<input id="pac-input" class="pac-controls" type="text" placeholder="Search Box">');
+  $templateCache.put('searchbox.tpl.html', '<input id="pac-input" class="pac-controls" type="text" placeholder="{{3+5}}">');
   $templateCache.put('window.tpl.html', '<div ng-controller="WindowCtrl" ng-init="showPlaceDetails(parameter)">{{place.name}}</div>');
 }])
 
