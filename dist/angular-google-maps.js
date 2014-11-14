@@ -2779,8 +2779,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module('google-maps.directives.api'.ns()).factory('PolylineChildModel'.ns(), [
-    'PolylineOptionsBuilder'.ns(), 'Logger'.ns(), '$timeout', 'array-sync'.ns(), 'GmapUtil'.ns(), 'EventsHelper'.ns(), function(Builder, $log, $timeout, arraySync, GmapUtil, EventsHelper) {
+  angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapPolylineChildModel', [
+    'uiGmapPolylineOptionsBuilder', 'uiGmapLogger', '$timeout', 'uiGmaparray-sync', 'uiGmapGmapUtil', 'uiGmapEventsHelper', function(Builder, $log, $timeout, arraySync, GmapUtil, EventsHelper) {
       var PolylineChildModel;
       return PolylineChildModel = (function(_super) {
         __extends(PolylineChildModel, _super);
