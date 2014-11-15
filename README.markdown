@@ -3,14 +3,14 @@
 > AngularJS directives for Google Maps
 
 
-[![Dependencies](https://david-dm.org/angular-ui/angular-google-maps.png)](https://david-dm.org/angular-ui/angular-google-maps)&nbsp; 
-[![Dependencies](https://david-dm.org/angular-ui/angular-google-maps/dev-status.png)](https://david-dm.org/angular-ui/angular-google-maps)&nbsp; 
-Master: [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.png?branch=master)](https://travis-ci.org/angular-ui/angular-google-maps)
-Develop: [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.png?branch=develop)](https://travis-ci.org/angular-ui/angular-google-maps)
+[![Dependencies](https://david-dm.org/angular-ui/angular-google-maps.svg)](https://david-dm.org/angular-ui/angular-google-maps)&nbsp; 
+[![Dependencies](https://david-dm.org/angular-ui/angular-google-maps/dev-status.svg)](https://david-dm.org/angular-ui/angular-google-maps)&nbsp; 
+Master: [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.svg?branch=master)](https://travis-ci.org/angular-ui/angular-google-maps)
+Develop: [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.svg?branch=develop)](https://travis-ci.org/angular-ui/angular-google-maps)
 
 task board: [![Stories in Ready](https://badge.waffle.io/angular-ui/angular-google-maps.png?label=ready&title=Ready)](https://waffle.io/angular-ui/angular-google-maps)
 
-[![Gitter chat](https://badges.gitter.im/angular-ui/angular-google-maps.png)](https://gitter.im/angular-ui/angular-google-maps)
+[![Gitter chat](https://badges.gitter.im/angular-ui/angular-google-maps.svg)](https://gitter.im/angular-ui/angular-google-maps)
 
 <img src="http://benschwarz.github.io/bower-badges/badge@2x.png?pkgname=angular-google-maps" width="130" height="30">&nbsp;
 
