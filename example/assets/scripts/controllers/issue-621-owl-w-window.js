@@ -44,7 +44,7 @@ angular.module('appMaps', ['google-maps'.ns()])
     if (!ov.southwest && nv.southwest) {
       var markers = [];
       var pinkRandomMarkers = [];
-      for (var i = 0; i < 250; i++) {
+      for (var i = 0; i < 100; i++) {
         markers.push(createRandomMarker(i, $scope.map.bounds, null, 'http://www.ozmorris.com/images/owl5.png'));
         pinkRandomMarkers.push(createRandomMarker(i + 100, $scope.map.bounds, null, 'http://www.ozmorris.com/images/owl16.png'));
       }

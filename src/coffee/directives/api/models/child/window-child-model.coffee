@@ -1,16 +1,18 @@
 angular.module('uiGmapgoogle-maps.directives.api.models.child')
 .factory 'uiGmapWindowChildModel',
-  ['uiGmapBaseObject', 'uiGmapGmapUtil', 'uiGmapLogger', '$compile', '$http', '$templateCache', 'uiGmapChromeFixes',
-    (BaseObject, GmapUtil, $log, $compile, $http, $templateCache, ChromeFixes) ->
+  ['uiGmapBaseObject', 'uiGmapGmapUtil', 'uiGmapLogger', '$compile', '$http', '$templateCache',
+    'uiGmapChromeFixes', 'uiGmapEventsHelper',
+    (BaseObject, GmapUtil, $log, $compile, $http, $templateCache, ChromeFixes, EventsHelper) ->
       class WindowChildModel extends BaseObject
         @include GmapUtil
-        constructor: (@model, @scope, @opts, @isIconVisibleOnClick,
-          @mapCtrl, @markerScope, @element, @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
+        @include EventsHelper
+        constructor: (@model, @scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerScope, @element,
+          @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
 
           @getGmarker = ->
             @markerScope?.getGMarker() if @markerScope?['getGMarker']?
 
-          @googleMapsHandles = []
+          @listeners = []
           @createGWin()
 
           @getGmarker().setClickable(true) if @getGmarker()?
@@ -23,7 +25,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @scope.$on '$destroy', =>
             @destroy()
           $log.info @
-          #todo: watch model in here, and recreate / clean gWin on change
+        #todo: watch model in here, and recreate / clean gWin on change
 
         doShow: =>
           if @scope.show
@@ -65,7 +67,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @doShow()
 
             # Set visibility of marker back to what it was before opening the window
-            @googleMapsHandles.push google.maps.event.addListener @gWin, 'closeclick', =>
+            @listeners.push google.maps.event.addListener @gWin, 'closeclick', =>
               if @getGmarker()
                 @getGmarker().setAnimation @oldMarkerAnimation
                 if @markerIsVisibleAfterWindowClose
@@ -82,18 +84,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
                 @scope.$apply()
 
         watchCoords: =>
-            scope = if @markerScope? then @markerScope else @scope
-            scope.$watch 'coords', (newValue, oldValue) =>
-              if newValue isnt oldValue
-                unless newValue?
-                  @hideWindow()
-                else if !@validateCoords newValue
-                  $log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
-                  return
-                pos = @getCoords newValue
-                @gWin.setPosition pos
-                @opts.position = pos if @opts
-            , true
+          scope = if @markerScope? then @markerScope else @scope
+          scope.$watch 'coords', (newValue, oldValue) =>
+            if newValue isnt oldValue
+              unless newValue?
+                @hideWindow()
+              else if !@validateCoords newValue
+                $log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
+                return
+              pos = @getCoords newValue
+              @gWin.setPosition pos
+              @opts.position = pos if @opts
+          , true
 
         watchOptions: =>
           #windows and markers options are separate
@@ -127,9 +129,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
               @getGmarker().setVisible @isIconVisibleOnClick
 
           click() if forceClick
-
-          if @getGmarker()
-            @googleMapsHandles.push google.maps.event.addListener @getGmarker(), 'click', click
+          marker = @getGmarker()
+          if marker
+            @listeners = @listeners.concat @setEvents marker, {events: {click: click}}, @model
 
         showWindow: =>
           if @gWin?
@@ -171,17 +173,15 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
         remove: =>
           @hideWindow()
-          _.each @googleMapsHandles, (h) ->
-            google.maps.event.removeListener h
-          @googleMapsHandles.length = 0
+          @removeEvents @listeners
+          @listeners.length = 0
           delete @gWin
           delete @opts
 
         destroy: (manualOverride = false)=>
           @remove()
-          if @scope? and @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
+          if @scope? and not @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
             @scope.$destroy()
-          self = undefined
 
       WindowChildModel
   ]
