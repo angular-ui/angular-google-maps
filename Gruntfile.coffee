@@ -53,6 +53,10 @@ module.exports = (grunt) ->
   grunt.registerTask "coverage", ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist", "copy",
                                   "uglify", "jasmine:coverage"]
 
+  grunt.registerTask 'default-no-specs', ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist", "copy", "uglify"]
+
+  grunt.registerTask 'offline',  ['default-no-specs', 'watch:offline']
+
   # Run the example page by creating a local copy of angular-google-maps.js
   # and running a webserver on port 3100 with livereload. Web page is opened
   # automatically in the default browser.

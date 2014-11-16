@@ -31,6 +31,12 @@ angular.module("uiGmapgoogle-maps.directives.api")
         scope.deferred.resolve()
 
       IMarker.mapPromise(scope, ctrl).then (map) =>
+        mapScope = ctrl.getScope()
+
+        #this is to deal with race conditions in how MarkerClusterer deals with drawing on idle
+        mapScope.$watch 'idleAndZoomChanged', ->
+          _.defer parentModel.gMarkerManager.draw
+
         parentModel = new MarkersParentModel(scope, element, attrs, map)
         parentModel.existingPieces.then ->
           ready()
