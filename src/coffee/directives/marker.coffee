@@ -14,7 +14,7 @@ This directive creates a new scope.
 {attribute icon optional}    string url to image used for marker icon
 {attribute animate optional} if set to false, the marker won't be animated (on by default)
 ###
-angular.module("google-maps".ns())
-.directive "Marker".ns(), ["$timeout", "Marker".ns(), ($timeout, Marker) ->
+angular.module('uiGmapgoogle-maps')
+.directive 'uiGmapMarker', ['$timeout', 'uiGmapMarker', ($timeout, Marker) ->
     new Marker($timeout)
 ]

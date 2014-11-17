@@ -1,6 +1,6 @@
-angular.module("google-maps.directives.api".ns()).factory "Rectangle".ns(),
-["Logger".ns(), "GmapUtil".ns()
-"IRectangle".ns(), "RectangleParentModel".ns(),
+angular.module('uiGmapgoogle-maps.directives.api').factory 'uiGmapRectangle',
+['uiGmapLogger', 'uiGmapGmapUtil'
+'uiGmapIRectangle', 'uiGmapRectangleParentModel',
  ($log, GmapUtil,
   IRectangle, RectangleParentModel) ->
   _.extend IRectangle,

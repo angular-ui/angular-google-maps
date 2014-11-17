@@ -1,11 +1,12 @@
-angular.module("google-maps.directives.api".ns())
-.factory "Polyline".ns(), ["IPolyline".ns(), "$timeout", "array-sync".ns(), "PolylineChildModel".ns(),
+angular.module('uiGmapgoogle-maps.directives.api')
+.factory 'uiGmapPolyline', [
+  'uiGmapIPolyline', '$timeout', 'uiGmaparray-sync', 'uiGmapPolylineChildModel',
   (IPolyline, $timeout, arraySync, PolylineChildModel) ->
     class Polyline extends IPolyline
       link: (scope, element, attrs, mapCtrl) =>
         # Validate required properties
         if angular.isUndefined(scope.path) or scope.path is null or not @validatePath(scope.path)
-          @$log.error "polyline: no valid path attribute found"
+          @$log.error 'polyline: no valid path attribute found'
           return
 
         # Wrap polyline initialization inside a $timeout() call to make sure the map is created already

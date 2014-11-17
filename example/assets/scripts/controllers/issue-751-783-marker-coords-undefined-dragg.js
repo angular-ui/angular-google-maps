@@ -1,5 +1,5 @@
-angular.module('app', ['google-maps'.ns()])
-.controller('ctrl', [ '$scope', 'Logger'.ns(),'$timeout',
+angular.module('app', ['uiGmapgoogle-maps'])
+.controller('ctrl', [ '$scope', 'uiGmapLogger','$timeout',
 function ($scope, $log, $timeout) {
   $log.doLog = true;
   $scope.map = {center: {latitude: 40.1451, longitude: -99.6680 }, zoom: 4 }

@@ -1,6 +1,6 @@
 # The service, that is a promise for a reference to window.google.maps
-angular.module('google-maps.providers'.ns())
-.factory('MapScriptLoader'.ns(), ['$q', 'uuid'.ns(), ($q, uuid) ->
+angular.module('uiGmapgoogle-maps.providers')
+.factory('uiGmapMapScriptLoader', ['$q', 'uiGmapuuid', ($q, uuid) ->
       scriptId = undefined
 
       getScriptUrl = (options)->
@@ -41,7 +41,7 @@ angular.module('google-maps.providers'.ns())
 ])
 #holy hool!!, any time your passing a dependency to a 'provider' you must append the Provider text to the service
 # name.. makes no sense and this is not documented well
-.provider('GoogleMapApi'.ns(), ->
+.provider('uiGmapGoogleMapApi', ->
     # Some nice default options
     @options =
     #    key: 'api-key here',
@@ -57,7 +57,7 @@ angular.module('google-maps.providers'.ns())
       return
 
     # Return an instance of the service
-    @$get = ['MapScriptLoader'.ns() ,(loader) =>
+    @$get = ['uiGmapMapScriptLoader' ,(loader) =>
       loader.load @options
     ]
     @

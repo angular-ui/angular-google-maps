@@ -1,6 +1,6 @@
-angular.module("google-maps.directives.api.options.builders".ns())
-.service "CommonOptionsBuilder".ns(),
-[ "BaseObject".ns(), "Logger".ns(), (BaseObject, $log) ->
+angular.module('uiGmapgoogle-maps.directives.api.options.builders')
+.service 'uiGmapCommonOptionsBuilder',
+[ 'uiGmapBaseObject', 'uiGmapLogger', (BaseObject, $log) ->
   class CommonOptionsBuilder extends BaseObject
     props: [
       'clickable'
@@ -11,10 +11,10 @@ angular.module("google-maps.directives.api.options.builders".ns())
     ]
     buildOpts: (customOpts = {}, forEachOpts = {}) =>
       unless @scope
-        $log.error "this.scope not defined in CommonOptionsBuilder can not buildOpts"
+        $log.error 'this.scope not defined in CommonOptionsBuilder can not buildOpts'
         return
       unless @map
-        $log.error "this.map not defined in CommonOptionsBuilder can not buildOpts"
+        $log.error 'this.map not defined in CommonOptionsBuilder can not buildOpts'
         return
       hasModel = _(@scope).chain().keys().contains('model').value()
       model = if hasModel then @scope.model else @scope #handle plurals

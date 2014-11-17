@@ -1,6 +1,6 @@
 describe "directives.api.control", ->
   beforeEach ->
-    window['Initiator'.ns()].initDirective @, "Control"
+    window['uiGmapInitiator'].initDirective @, "Control"
     inject ($templateCache) ->
       $templateCache.put('mockControl.tpl.html', '<button class="mock">Control</button>')
 
@@ -36,8 +36,7 @@ describe "directives.api.control", ->
         <ui-gmap-google-map center="map.center" zoom="map.zoom">
             <ui-gmap-map-control template="mockControl.tpl.html" position="bad-position">
             </ui-gmap-map-control>
-        </ui-gmap-google-map
-        >"""
+        </ui-gmap-google-map>"""
     element = @compile(html)(@scope)
     @rootScope.$apply()
     expect(@log.error).toHaveBeenCalledWith('mapControl: invalid position property')

@@ -5,7 +5,7 @@ The MIT License
 Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
+of this software and associated documentation files (the 'Software'), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
@@ -14,7 +14,7 @@ furnished to do so, subject to the following conditions:
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -38,22 +38,22 @@ This directive creates a new scope.
 
 {attribute show optional}  true (default) shows the trafficlayer otherwise it is hidden
 ###
-angular.module("uiGmapgoogle-maps")
-.directive "uiGmapLayer", ["$timeout", "uiGmapLogger", "uiGmapLayerParentModel",
+angular.module('uiGmapgoogle-maps')
+.directive 'uiGmapLayer', ['$timeout', 'uiGmapLogger', 'uiGmapLayerParentModel',
   ($timeout, Logger, LayerParentModel) ->
     class Layer
       constructor:  ->
         @$log = Logger
-        @restrict = "EMA"
-        @require = '^' + 'GoogleMap'.ns()
+        @restrict = 'EMA'
+        @require = '^' + 'uiGmapGoogleMap'
         @priority = -1
         @transclude = true
-        @template = '<span class=\"angular-google-map-layer\" ng-transclude></span>'
+        @template = '<span class=\'angular-google-map-layer\' ng-transclude></span>'
         @replace = true
         @scope =
-          show: "=show"
-          type: "=type"
-          namespace: "=namespace"
+          show: '=show'
+          type: '=type'
+          namespace: '=namespace'
           options: '=options'
           onCreated: '&oncreated'
 

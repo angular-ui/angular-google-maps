@@ -1,5 +1,5 @@
-angular.module("google-maps".ns())
-.factory "add-events".ns(), ["$timeout", ($timeout) ->
+angular.module('uiGmapgoogle-maps')
+.factory 'uiGmapadd-events', ['$timeout', ($timeout) ->
   addEvent = (target, eventName, handler) ->
     google.maps.event.addListener target, eventName, ->
       handler.apply this, arguments

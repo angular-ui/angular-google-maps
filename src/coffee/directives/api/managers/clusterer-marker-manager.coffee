@@ -1,5 +1,6 @@
 angular.module('uiGmapgoogle-maps.directives.api.managers')
-.factory 'uiGmapClustererMarkerManager', ['uiGmapLogger', 'uiGmapFitHelper', 'uiGmapPropMap', ($log, FitHelper, PropMap) ->
+.factory 'uiGmapClustererMarkerManager', ['uiGmapLogger',
+'uiGmapFitHelper', 'uiGmapPropMap', ($log, FitHelper, PropMap) ->
   class ClustererMarkerManager extends FitHelper
     @type = 'ClustererMarkerManager'
     constructor: (gMap, opt_markers, opt_options, @opt_events) ->

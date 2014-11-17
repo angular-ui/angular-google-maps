@@ -1,5 +1,6 @@
 angular.module('uiGmapgoogle-maps.directives.api.models.child')
-.factory 'uiGmapMarkerChildModel', [ 'uiGmapModelKey', 'uiGmapGmapUtil',
+.factory 'uiGmapMarkerChildModel', [
+  'uiGmapModelKey', 'uiGmapGmapUtil',
   'uiGmapLogger', 'uiGmapEventsHelper','uiGmapPropertyAction',
   'uiGmapMarkerOptions', 'uiGmapIMarker', 'uiGmapMarkerManager', 'uiGmapPromise',
   (ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker, MarkerManager, uiGmapPromise) ->

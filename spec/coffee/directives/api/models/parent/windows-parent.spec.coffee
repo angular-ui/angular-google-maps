@@ -1,6 +1,6 @@
-describe "WindowsParentModel".ns(), ->
+describe 'uiGmapWindowsParentModel', ->
   beforeEach ->
-    angular.mock.module("google-maps.directives.api.models.parent".ns())
+    angular.mock.module('uiGmapgoogle-maps.directives.api.models.parent')
 
     inject ['$rootScope', '$timeout', '$compile', '$http', '$templateCache', '$interpolate',
     ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate) =>

@@ -1,11 +1,11 @@
 //<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.16"></script>
-angular.module("app", ["google-maps".ns()])
+angular.module("app", ['uiGmapgoogle-maps'])
 
 .value("rndAddToLatLon", function () {
   return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1);
 })
 
-.config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
+.config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
   GoogleMapApi.configure({
     //    key: 'your api key',
     v: '3.16',
@@ -66,8 +66,8 @@ function ($scope, clearMarkersChannel,genMarkersChannel) {
 }])
 
 .controller("mainCtrl",[
-'$scope', '$timeout', 'Logger'.ns(),
-'$http', 'rndAddToLatLon','GoogleMapApi'.ns(),
+'$scope', '$timeout', 'uiGmapLogger',
+'$http', 'rndAddToLatLon','uiGmapGoogleMapApi',
 'clearMarkersChannel','genMarkersChannel', function (
   $scope, $timeout, $log,
   $http, rndAddToLatLon,GoogleMapApi,

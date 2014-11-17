@@ -12,7 +12,7 @@
     return {x: x, y: y};
   }
 
-  var module = angular.module('angular-google-maps-example', ['google-maps'.ns()]);
+  var module = angular.module('angular-google-maps-example', ['uiGmapgoogle-maps']);
   module.controller('maptypeExampleController',
     function ($scope, $http) {
       // Create custom map types

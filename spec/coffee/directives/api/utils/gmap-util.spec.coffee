@@ -1,8 +1,8 @@
-describe "utils.gmap-util", ->
+describe 'utils.gmap-util', ->
   beforeEach ->
-    module "google-maps.directives.api.utils".ns()
-    module "google-maps.mocks"
-    inject [ 'GmapUtil'.ns(), 'GoogleApiMock', (GmapUtil, GoogleApiMock) =>
+    module 'uiGmapgoogle-maps.directives.api.utils'
+    module 'uiGmapgoogle-maps.mocks'
+    inject [ 'uiGmapGmapUtil', 'GoogleApiMock', (GmapUtil, GoogleApiMock) =>
       @subject = GmapUtil
       @gmap = new GoogleApiMock()
       @gmap.mockAPI()
@@ -12,54 +12,54 @@ describe "utils.gmap-util", ->
       @gmap.mockLatLngBounds()
     ]
 
-  describe "should validate the path correctly", ->
-    it "latlong", ->
+  describe 'should validate the path correctly', ->
+    it 'latlong', ->
       latlong = {longitude: 45, latitude: -27}
       expect(@subject.validatePath([latlong, latlong])).toEqual(true)
       expect(@subject.validatePath([latlong])).toEqual(false)
-    it "empty array", ->
+    it 'empty array', ->
       expect(@subject.validatePath([])).toEqual(false)
-    it "array of invalid objects", ->
+    it 'array of invalid objects', ->
       expect(@subject.validatePath([
         {},
         {}
       ])).toEqual(false)
-    it "Polygon", ->
-      expect(@subject.validatePath({type: "Polygon"})).toEqual(false)
-      expect(@subject.validatePath({type: "Polygon", coordinates: [[1, 2] for [1..4]]})).toEqual(true)
-      expect(@subject.validatePath({type: "Polygon", coordinates: [[1, 2] for [1..1]]})).toEqual(false)
-    it "Polygon", ->
-      expect(@subject.validatePath({type: "LineString", coordinates: [1, 2] for [1..2]})).toEqual(true)
-      expect(@subject.validatePath({type: "LineString", coordinates: [1, 2] for [1..1]})).toEqual(false)
-      expect(@subject.validatePath({type: "LineString", coordinates: [] for [1..2]})).toEqual(false)
-    it "foo", ->
-      expect(@subject.validatePath({type: "foo", coordinates: []})).toEqual(false)
+    it 'Polygon', ->
+      expect(@subject.validatePath({type: 'Polygon'})).toEqual(false)
+      expect(@subject.validatePath({type: 'Polygon', coordinates: [[1, 2] for [1..4]]})).toEqual(true)
+      expect(@subject.validatePath({type: 'Polygon', coordinates: [[1, 2] for [1..1]]})).toEqual(false)
+    it 'Polygon', ->
+      expect(@subject.validatePath({type: 'LineString', coordinates: [1, 2] for [1..2]})).toEqual(true)
+      expect(@subject.validatePath({type: 'LineString', coordinates: [1, 2] for [1..1]})).toEqual(false)
+      expect(@subject.validatePath({type: 'LineString', coordinates: [] for [1..2]})).toEqual(false)
+    it 'foo', ->
+      expect(@subject.validatePath({type: 'foo', coordinates: []})).toEqual(false)
 
 
-  describe "should validate coordinates correctly", ->
-    it "basic", ->
+  describe 'should validate coordinates correctly', ->
+    it 'basic', ->
       expect(@subject.validateCoords()).toEqual(false)
       expect(@subject.validateCoords([1, 2])).toEqual(true)
       expect(@subject.validateCoords([])).toEqual(false)
 
-    it "type:Point", ->
-      expect(@subject.validateCoords({type: "Point", coordinates: [1, 2]})).toEqual(true)
-      expect(@subject.validateCoords({type: "Point", coordinates: []})).toEqual(false)
-    it "type:foo, no lat lon", ->
-      expect(@subject.validateCoords({type: "foo", coordinates: []})).toEqual(false)
-    it "type:foo, w lat lon", ->
-      expect(@subject.validateCoords( type: "foo", latitude: 45, longitude:150 )).toEqual true
+    it 'type:Point', ->
+      expect(@subject.validateCoords({type: 'Point', coordinates: [1, 2]})).toEqual(true)
+      expect(@subject.validateCoords({type: 'Point', coordinates: []})).toEqual(false)
+    it 'type:foo, no lat lon', ->
+      expect(@subject.validateCoords({type: 'foo', coordinates: []})).toEqual(false)
+    it 'type:foo, w lat lon', ->
+      expect(@subject.validateCoords( type: 'foo', latitude: 45, longitude:150 )).toEqual true
 
-  it "should evaluate truthiness correctly", ->
+  it 'should evaluate truthiness correctly', ->
     expect(@subject.isTrue(true)).toEqual(true)
-    expect(@subject.isTrue("true")).toEqual(true)
-    expect(@subject.isTrue("1")).toEqual(true)
-    expect(@subject.isTrue("y")).toEqual(true)
+    expect(@subject.isTrue('true')).toEqual(true)
+    expect(@subject.isTrue('1')).toEqual(true)
+    expect(@subject.isTrue('y')).toEqual(true)
 
     expect(@subject.isTrue()).toEqual(false)
     expect(@subject.isTrue(null)).toEqual(false)
 
-  it "should evaluate falsiness correctly", ->
+  it 'should evaluate falsiness correctly', ->
     expect(@subject.isFalse('false')).toEqual(true)
     expect(@subject.isFalse('FALSE')).toEqual(true)
     expect(@subject.isFalse(0)).toEqual(true)
@@ -71,20 +71,20 @@ describe "utils.gmap-util", ->
     # XXX: Is this really true?
     expect(@subject.isFalse(false)).toEqual(false)
 
-  it "should convert path points correctly", ->
+  it 'should convert path points correctly', ->
     latlong = {longitude: 45, latitude: -27}
     expect(@subject.convertPathPoints([]).getLength()).toEqual(0)
     expect(@subject.convertPathPoints([latlong]).getLength()).toEqual(1)
-    expect(@subject.convertPathPoints({type: "Polygon", coordinates: [[1, 2] for [1..4]]}).getLength()).toEqual(4)
-    expect(@subject.convertPathPoints({type: "LineString", coordinates: [1, 2] for [1..4]}).getLength()).toEqual(4)
+    expect(@subject.convertPathPoints({type: 'Polygon', coordinates: [[1, 2] for [1..4]]}).getLength()).toEqual(4)
+    expect(@subject.convertPathPoints({type: 'LineString', coordinates: [1, 2] for [1..4]}).getLength()).toEqual(4)
 
-  it "should increase coverage", ->
+  it 'should increase coverage', ->
     latlong = {longitude: 45, latitude: -27}
     @subject.getCoords(latlong)
-    @subject.getLabelPositionPoint("0 1")
+    @subject.getLabelPositionPoint('0 1')
     @subject.extendMapBounds({fitBounds: (bounds) -> return undefined}, [])
 
-  it "(getLabelPositionPoint) should convert decimal coordinates separated by a space into a map Point object", ->
+  it '(getLabelPositionPoint) should convert decimal coordinates separated by a space into a map Point object', ->
     testCases = [
       { input: '22 0', expected: { x: 22, y: 0 } }
       { input: '1 2', expected: { x: 1, y: 2 } }
@@ -96,7 +96,7 @@ describe "utils.gmap-util", ->
       expect(result.x).toEqual(testCase.expected.x)
       expect(result.y).toEqual(testCase.expected.y)
 
-  it "(getLabelPositionPoint) should ignore coordinate strings not following the format", ->
+  it '(getLabelPositionPoint) should ignore coordinate strings not following the format', ->
     testCases = [
       ' 1 2 '
       'a b'
@@ -105,8 +105,8 @@ describe "utils.gmap-util", ->
     testCases.forEach (testCase)=>
       result = @subject.getLabelPositionPoint(testCase.input)
 
-  it "should correctly fetch object values using dot-notation", ->
-    object = { foo: { sea: "hawks" }}
-    expect(@subject.getPath(object, "foo.sea")).toEqual("hawks")
-    expect(@subject.getPath(object, "foo.sea.birds")).toEqual(undefined)
-    expect(@subject.getPath(object, "boo.hoo")).toEqual(undefined)
+  it 'should correctly fetch object values using dot-notation', ->
+    object = { foo: { sea: 'hawks' }}
+    expect(@subject.getPath(object, 'foo.sea')).toEqual('hawks')
+    expect(@subject.getPath(object, 'foo.sea.birds')).toEqual(undefined)
+    expect(@subject.getPath(object, 'boo.hoo')).toEqual(undefined)

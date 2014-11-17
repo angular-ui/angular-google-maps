@@ -1,4 +1,4 @@
-angular.module('app', ['google-maps'.ns()])
+angular.module('app', ['uiGmapgoogle-maps'])
   .controller('ctrl', ['$scope', function ($scope) {
     $scope.map = {
       center: {

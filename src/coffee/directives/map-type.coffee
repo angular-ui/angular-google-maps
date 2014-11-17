@@ -45,7 +45,7 @@ angular.module("uiGmapgoogle-maps")
       constructor:  ->
         @$log = Logger
         @restrict = "EMA"
-        @require = '^' + 'GoogleMap'.ns()
+        @require = '^' + 'uiGmapGoogleMap'
         @priority = -1
         @transclude = true
         @template = '<span class=\"angular-google-map-layer\" ng-transclude></span>'

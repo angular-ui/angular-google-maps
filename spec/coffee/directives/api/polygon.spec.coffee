@@ -1,6 +1,6 @@
 describe "directives.api.polygon", ->
   beforeEach ->
-    window['Initiator'.ns()].initDirective @, 'Polygon'
+    window['uiGmapInitiator'].initDirective @, 'Polygon'
 
     @html = angular.element """
     <ui-gmap-google-map center="map.center" zoom="map.zoom">

@@ -1,11 +1,11 @@
 'use strict';
-angular.module("angular-google-maps-example", ["google-maps".ns()])
+angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
 
 .value("rndAddToLatLon", function () {
   return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1);
 })
 
-.config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
+.config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
   GoogleMapApi.configure({
 //    key: 'your api key',
     v: '3.17',
@@ -26,7 +26,7 @@ angular.module("angular-google-maps-example", ["google-maps".ns()])
   };
 })
 
-.controller("ExampleController",['$scope', '$timeout', 'Logger'.ns(), '$http', 'rndAddToLatLon','GoogleMapApi'.ns()
+.controller("ExampleController",['$scope', '$timeout', 'uiGmapLogger', '$http', 'rndAddToLatLon','uiGmapGoogleMapApi'
     , function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
   $log.doLog = true
 
