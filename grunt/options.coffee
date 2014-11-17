@@ -37,11 +37,9 @@ module.exports = (grunt) ->
       compile:
         files:
           "tmp/output_coffee.js": [
-            "src/coffee/extensions/string.coffee"
-            "src/coffee/extensions/lodash.coffee"
             "src/coffee/module.coffee"
             "src/coffee/providers/*.coffee"
-            "src/coffee/extensions/google.maps.coffee"
+            "src/coffee/extensions/*.coffee"
             "src/coffee/directives/api/utils/*.coffee"
             "src/coffee/directives/api/managers/*.coffee"
 
@@ -68,7 +66,6 @@ module.exports = (grunt) ->
           ]
 
         #specs
-          "tmp/string.js":"src/coffee/extensions/string.coffee"#to load as a vendor prior to specs to not have ns changes in two spots
           "tmp/spec/js/bootstrap.js": "spec/coffee/bootstrap.coffee"
           "tmp/spec/js/helpers/helpers.js": "spec/coffee/helpers/*.coffee"
           "tmp/spec/js/ng-gmap-module.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"

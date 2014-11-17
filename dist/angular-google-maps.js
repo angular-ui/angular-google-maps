@@ -2,113 +2,6 @@
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
-(function() {
-  String.prototype.contains = function(value, fromIndex) {
-    return this.indexOf(value, fromIndex) !== -1;
-  };
-
-}).call(this);
-
-
-/*
-    Author Nick McCready
-    Intersection of Objects if the arrays have something in common each intersecting object will be returned
-    in an new array.
- */
-
-(function() {
-  _.intersectionObjects = function(array1, array2, comparison) {
-    var res;
-    if (comparison == null) {
-      comparison = void 0;
-    }
-    res = _.map(array1, (function(_this) {
-      return function(obj1) {
-        return _.find(array2, function(obj2) {
-          if (comparison != null) {
-            return comparison(obj1, obj2);
-          } else {
-            return _.isEqual(obj1, obj2);
-          }
-        });
-      };
-    })(this));
-    return _.filter(res, function(o) {
-      return o != null;
-    });
-  };
-
-  _.containsObject = _.includeObject = function(obj, target, comparison) {
-    if (comparison == null) {
-      comparison = void 0;
-    }
-    if (obj === null) {
-      return false;
-    }
-    return _.any(obj, (function(_this) {
-      return function(value) {
-        if (comparison != null) {
-          return comparison(value, target);
-        } else {
-          return _.isEqual(value, target);
-        }
-      };
-    })(this));
-  };
-
-  _.differenceObjects = function(array1, array2, comparison) {
-    if (comparison == null) {
-      comparison = void 0;
-    }
-    return _.filter(array1, function(value) {
-      return !_.containsObject(array2, value, comparison);
-    });
-  };
-
-  _.withoutObjects = _.differenceObjects;
-
-  _.indexOfObject = function(array, item, comparison, isSorted) {
-    var i, length;
-    if (array == null) {
-      return -1;
-    }
-    i = 0;
-    length = array.length;
-    if (isSorted) {
-      if (typeof isSorted === "number") {
-        i = (isSorted < 0 ? Math.max(0, length + isSorted) : isSorted);
-      } else {
-        i = _.sortedIndex(array, item);
-        return (array[i] === item ? i : -1);
-      }
-    }
-    while (i < length) {
-      if (comparison != null) {
-        if (comparison(array[i], item)) {
-          return i;
-        }
-      } else {
-        if (_.isEqual(array[i], item)) {
-          return i;
-        }
-      }
-      i++;
-    }
-    return -1;
-  };
-
-  _["extends"] = function(arrayOfObjectsToCombine) {
-    return _.reduce(arrayOfObjectsToCombine, function(combined, toAdd) {
-      return _.extend(combined, toAdd);
-    }, {});
-  };
-
-  _.isNullOrUndefined = function(thing) {
-    return _.isNull(thing || _.isUndefined(thing));
-  };
-
-}).call(this);
-
 
 /*
 !
@@ -360,6 +253,116 @@ Nicholas McCready - https://twitter.com/nmccready
           };
         }
       })
+    };
+  });
+
+}).call(this);
+
+(function() {
+  angular.module('uiGmapgoogle-maps.extensions').service('uiGmapLodash', function() {
+
+    /*
+        Author Nick McCready
+        Intersection of Objects if the arrays have something in common each intersecting object will be returned
+        in an new array.
+     */
+    this.intersectionObjects = function(array1, array2, comparison) {
+      var res;
+      if (comparison == null) {
+        comparison = void 0;
+      }
+      res = _.map(array1, (function(_this) {
+        return function(obj1) {
+          return _.find(array2, function(obj2) {
+            if (comparison != null) {
+              return comparison(obj1, obj2);
+            } else {
+              return _.isEqual(obj1, obj2);
+            }
+          });
+        };
+      })(this));
+      return _.filter(res, function(o) {
+        return o != null;
+      });
+    };
+    this.containsObject = _.includeObject = function(obj, target, comparison) {
+      if (comparison == null) {
+        comparison = void 0;
+      }
+      if (obj === null) {
+        return false;
+      }
+      return _.any(obj, (function(_this) {
+        return function(value) {
+          if (comparison != null) {
+            return comparison(value, target);
+          } else {
+            return _.isEqual(value, target);
+          }
+        };
+      })(this));
+    };
+    this.differenceObjects = function(array1, array2, comparison) {
+      if (comparison == null) {
+        comparison = void 0;
+      }
+      return _.filter(array1, (function(_this) {
+        return function(value) {
+          return !_this.containsObject(array2, value, comparison);
+        };
+      })(this));
+    };
+    this.withoutObjects = this.differenceObjects;
+    this.indexOfObject = function(array, item, comparison, isSorted) {
+      var i, length;
+      if (array == null) {
+        return -1;
+      }
+      i = 0;
+      length = array.length;
+      if (isSorted) {
+        if (typeof isSorted === "number") {
+          i = (isSorted < 0 ? Math.max(0, length + isSorted) : isSorted);
+        } else {
+          i = _.sortedIndex(array, item);
+          return (array[i] === item ? i : -1);
+        }
+      }
+      while (i < length) {
+        if (comparison != null) {
+          if (comparison(array[i], item)) {
+            return i;
+          }
+        } else {
+          if (_.isEqual(array[i], item)) {
+            return i;
+          }
+        }
+        i++;
+      }
+      return -1;
+    };
+    this["extends"] = function(arrayOfObjectsToCombine) {
+      return _.reduce(arrayOfObjectsToCombine, function(combined, toAdd) {
+        return _.extend(combined, toAdd);
+      }, {});
+    };
+    this.isNullOrUndefined = function(thing) {
+      return _.isNull(thing || _.isUndefined(thing));
+    };
+    return this;
+  });
+
+}).call(this);
+
+(function() {
+  angular.module('uiGmapgoogle-maps.extensions').factory('uiGmapString', function() {
+    return function(str) {
+      this.contains = function(value, fromIndex) {
+        return str.indexOf(value, fromIndex) !== -1;
+      };
+      return this;
     };
   });
 
@@ -4955,7 +4958,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapApiFreeDrawPolygons', [
-    "uiGmapLogger", 'uiGmapBaseObject', "uiGmapCtrlHandle", "uiGmapDrawFreeHandChildModel", function($log, BaseObject, CtrlHandle, DrawFreeHandChildModel) {
+    'uiGmapLogger', 'uiGmapBaseObject', 'uiGmapCtrlHandle', 'uiGmapDrawFreeHandChildModel', 'uiGmapLodash', function($log, BaseObject, CtrlHandle, DrawFreeHandChildModel, uiGmapLodash) {
       var FreeDrawPolygons;
       return FreeDrawPolygons = (function(_super) {
         __extends(FreeDrawPolygons, _super);
@@ -4983,10 +4986,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(map) {
               var freeHand, listener;
               if (!scope.polygons) {
-                return $log.error("No polygons to bind to!");
+                return $log.error('No polygons to bind to!');
               }
               if (!_.isArray(scope.polygons)) {
-                return $log.error("Free Draw Polygons must be of type Array!");
+                return $log.error('Free Draw Polygons must be of type Array!');
               }
               freeHand = new DrawFreeHandChildModel(map, scope.originalMapOpts);
               listener = void 0;
@@ -5003,7 +5006,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       firstTime = false;
                       return;
                     }
-                    removals = _.differenceObjects(oldValue, newValue);
+                    removals = uiGmapLodash.differenceObjects(oldValue, newValue);
                     return removals.forEach(function(p) {
                       return p.setMap(null);
                     });
@@ -5968,8 +5971,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("uiGmapgoogle-maps.directives.api").factory("uiGmapWindow", [
-    "uiGmapIWindow", "uiGmapGmapUtil", "uiGmapWindowChildModel", function(IWindow, GmapUtil, WindowChildModel) {
+  angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapWindow', [
+    'uiGmapIWindow', 'uiGmapGmapUtil', 'uiGmapWindowChildModel', 'uiGmapLodash', function(IWindow, GmapUtil, WindowChildModel, uiGmapLodash) {
       var Window;
       return Window = (function(_super) {
         __extends(Window, _super);
@@ -6019,9 +6022,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (mapCtrl != null) {
             childWindow = new WindowChildModel({}, scope, opts, isIconVisibleOnClick, mapCtrl, markerScope, element);
             this.childWindows.push(childWindow);
-            scope.$on("$destroy", (function(_this) {
+            scope.$on('$destroy', (function(_this) {
               return function() {
-                _this.childWindows = _.withoutObjects(_this.childWindows, [childWindow], function(child1, child2) {
+                _this.childWindows = uiGmapLodash.withoutObjects(_this.childWindows, [childWindow], function(child1, child2) {
                   return child1.scope.$id === child2.scope.$id;
                 });
                 return _this.childWindows.length = 0;
@@ -9910,7 +9913,7 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
  * Created by Petr Bruna ccg1415 and Nick McCready on 7/13/14.
  */
 angular.module('uiGmapgoogle-maps.extensions')
-.service('uiGmapExtendMarkerClusterer', function () {
+.service('uiGmapExtendMarkerClusterer',['uiGmapLodash', function (uiGmapLodash) {
   return {
     init: _.once(function () {
       (function () {
@@ -10002,7 +10005,7 @@ angular.module('uiGmapgoogle-maps.extensions')
            * @return {boolean} True if the marker has already been added.
            */
           NgMapCluster.prototype.isMarkerAlreadyAdded_ = function (marker) {
-            return _.isNullOrUndefined(this.markers_.get(marker.key));
+            return uiGmapLodash.isNullOrUndefined(this.markers_.get(marker.key));
           };
 
 
@@ -10261,4 +10264,4 @@ angular.module('uiGmapgoogle-maps.extensions')
       }).call(this);
     })
   };
-});
+}]);
