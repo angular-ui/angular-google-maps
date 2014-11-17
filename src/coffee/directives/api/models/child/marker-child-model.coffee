@@ -29,25 +29,25 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
         super(scope)
 
-        @setMyScope 'all',@model, undefined, true
         @scope.getGMarker = =>
           @gMarker
-        @createMarker @model
-        firstTime =  true
+
+        @firstTime =  true
         if @trackModel
           @scope.model = @model
           @scope.$watch 'model', (newValue, oldValue) =>
             if (newValue != oldValue)
               changes = @getChanges newValue, oldValue, IMarker.keys
-
-              _.each changes, (v, k) =>
-                @setMyScope k, newValue, oldValue
-                @needRedraw = true
+              if not @firstTime
+                _.each changes, (v, k) =>
+                  @setMyScope k, newValue, oldValue
+                  @needRedraw = true
           , true
         else
           action = new PropertyAction  (calledKey, newVal) =>
             #being in a closure works , direct to setMyScope is not working (but should?)
-            @setMyScope calledKey, scope
+            if not @firstTime
+              @setMyScope calledKey, scope
           , false
 
           _.each @keys, (v, k) ->
@@ -57,7 +57,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @scope.$on '$destroy', =>
           destroy @
 
+        @setMyScope 'all',@model, undefined, true
+        @createMarker @model
         $log.info @
+
 
       destroy: (removeFromManager = true)=>
         @removeFromManager = removeFromManager
@@ -81,10 +84,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
       createMarker: (model, oldModel = undefined, isInit = false)=>
         @maybeSetScopeValue 'options', model, oldModel, @optionsKey, @evalModelHandle, isInit, @setOptions
+        @firstTime = false
 
       maybeSetScopeValue: (scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter = undefined) =>
         if oldModel == undefined
-          @scope[scopePropName] = evaluate model, modelKey
+          toSet = evaluate model, modelKey
+          @scope[scopePropName] = toSet if toSet != @scope[scopePropName]
           gSetter(@scope) if gSetter?
           return
 
@@ -135,9 +140,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         if @gMarker? and (@isLabel @gMarker == @isLabel @opts)
           @gMarker.setOptions @opts
         else
-          if @gMarker?
-            @gMarkerManager.remove @gMarker
-            @gMarker = null
+          if not @firstTime
+            if @gMarker?
+              @gMarkerManager.remove @gMarker
+              @gMarker = null
 
         unless @gMarker
           if @isLabel @opts

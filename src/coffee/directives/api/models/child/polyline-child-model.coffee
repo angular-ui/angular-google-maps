@@ -1,5 +1,5 @@
 angular.module('uiGmapgoogle-maps.directives.api')
-.factory 'ugGmapPolylineChildModel', [
+.factory 'uiGmapPolylineChildModel', [
   'uiGmapPolylineOptionsBuilder', 'uiGmapLogger', '$timeout',
   'uiGmaparray-sync', 'uiGmapGmapUtil', 'uiGmapEventsHelper'
   (Builder, $log, $timeout,

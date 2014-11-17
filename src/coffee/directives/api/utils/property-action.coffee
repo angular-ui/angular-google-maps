@@ -1,10 +1,10 @@
-angular.module("google-maps.directives.api.utils".ns())
-.factory "PropertyAction".ns(), ["Logger".ns(), (Logger) ->
+angular.module("uiGmapgoogle-maps.directives.api.utils")
+.factory "uiGmapPropertyAction", ["uiGmapLogger", (Logger) ->
   PropertyAction = (setterFn, isFirstSet, key) ->
     self = @
     @setIfChange = (newVal, oldVal) ->
       callingKey = @exp #calling function of this
-      if not _.isEqual oldVal, newVal or isFirstSet
+      if not _.isEqual oldVal, newVal
         setterFn(callingKey, newVal)
     #alias to setIfChange
     @sic = @setIfChange
