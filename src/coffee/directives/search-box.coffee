@@ -15,8 +15,8 @@ This directive creates a new scope.
 {attribute options optional} The options that can be set on a SearchBox object (google.maps.places.SearchBoxOptions object specification)
 ###
 angular.module("google-maps".ns())
-.directive "SearchBox".ns(), ["GoogleMapApi".ns(), "Logger".ns(), "SearchBoxParentModel".ns(), '$http', '$templateCache',
-  (GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache) ->
+.directive "SearchBox".ns(), ["GoogleMapApi".ns(), "Logger".ns(), "SearchBoxParentModel".ns(), '$http', '$templateCache', '$compile',
+  (GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache, $compile) ->
     class SearchBox
       constructor:  ->
         @$log = Logger
@@ -34,6 +34,7 @@ angular.module("google-maps".ns())
           parentdiv: '=parentdiv'
 
       link: (scope, element, attrs, mapCtrl) =>
+        
         GoogleMapApi.then (maps) =>
           $http.get(scope.template, { cache: $templateCache })
             .success (template) =>
@@ -42,6 +43,6 @@ angular.module("google-maps".ns())
                 if not maps.ControlPosition[ctrlPosition]
                     @$log.error 'searchBox: invalid position property'
                     return
-                new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, template)
+                new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, $compile(template)(scope))
     new SearchBox()
 ]
