@@ -1,6 +1,6 @@
-angular.module("google-maps.directives.api.utils".ns())
-.factory "FitHelper".ns(), [
-  "BaseObject".ns(), "Logger".ns(), "_async".ns(),
+angular.module('uiGmapgoogle-maps.directives.api.utils')
+.factory 'uiGmapFitHelper', [
+  'uiGmapBaseObject', 'uiGmapLogger', 'uiGmap_async',
   (BaseObject, $log, _async) ->
     class FitHelper extends BaseObject
       fit: (gMarkers, gMap) ->

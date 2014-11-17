@@ -1,10 +1,10 @@
-describe "markers directive test", ->
+describe 'markers directive test', ->
   allDone =  undefined
   beforeEach ->
 
-    apiMock = window["Initiator".ns()].initMock().apiMock
+    apiMock = window['uiGmapInitiator'].initMock().apiMock
 
-    inject ['$rootScope', '$timeout', '$compile', '$q', 'Markers'.ns(),
+    inject ['$rootScope', '$timeout', '$compile', '$q', 'uiGmapMarkers',
       ($rootScope, $timeout, $compile, $q, Markers) =>
         @rootScope = $rootScope
         @timeout = $timeout
@@ -18,7 +18,7 @@ describe "markers directive test", ->
         apiMock.mockMarker(@marker)
     ]
 
-  it "should add markers for each object in model", (done) ->
+  it 'should add markers for each object in model', (done) ->
     html = """
       <ui-gmap-google-map draggable="true" center="map.center" zoom="map.zoom">
           <ui-gmap-markers models="items" coords="'self'" ></ui-gmap-markers>
@@ -46,5 +46,5 @@ describe "markers directive test", ->
     @timeout.flush()
 #    expect(@markerCount).toEqual(1)
 
-  it "exists", ->
+  it 'exists', ->
     expect(@subject).toBeDefined()

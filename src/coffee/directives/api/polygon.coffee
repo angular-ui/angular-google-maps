@@ -1,5 +1,6 @@
-angular.module("google-maps.directives.api".ns())
-.factory "Polygon".ns(), ["IPolygon".ns(), "$timeout", "array-sync".ns(), "PolygonChildModel".ns()
+angular.module('uiGmapgoogle-maps.directives.api')
+.factory 'uiGmapPolygon', [
+  'uiGmapIPolygon', '$timeout', 'uiGmaparray-sync', 'uiGmapPolygonChildModel'
   (IPolygon, $timeout, arraySync, PolygonChild) ->
     class Polygon extends IPolygon
       link: (scope, element, attrs, mapCtrl) =>

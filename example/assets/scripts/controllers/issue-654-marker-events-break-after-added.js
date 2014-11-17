@@ -1,5 +1,5 @@
-var app = angular.module('app', ['google-maps'.ns()]);
-app.controller('TrackingCtrl', ['$rootScope', '$scope', '$timeout', '$log', 'GoogleMapApi'.ns(),
+var app = angular.module('app', ['uiGmapgoogle-maps']);
+app.controller('TrackingCtrl', ['$rootScope', '$scope', '$timeout', '$log', 'uiGmapGoogleMapApi',
   function ($rootScope, $scope, $timeout, $log, GoogleMapApi) {
     $scope.map = {
       center: {
@@ -54,7 +54,7 @@ app.controller('TrackingCtrl', ['$rootScope', '$scope', '$timeout', '$log', 'Goo
     });
 }])
 .
-config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
+config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
   GoogleMapApi.configure({
 //    key: 'your api key',
     v: '3.16',

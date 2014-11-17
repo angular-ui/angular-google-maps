@@ -1,6 +1,6 @@
-angular.module("search-box-example", ["google-maps".ns()])
+angular.module("search-box-example", ['uiGmapgoogle-maps'])
 
-.config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
+.config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
   GoogleMapApi.configure({
 //    key: 'your api key',
     v: '3.16',
@@ -20,12 +20,12 @@ angular.module("search-box-example", ["google-maps".ns()])
   }
 })
 
-.controller("SearchBoxController",['$scope', '$timeout', 'Logger'.ns(), '$http','GoogleMapApi'.ns()
+.controller("SearchBoxController",['$scope', '$timeout', 'uiGmapLogger', '$http','uiGmapGoogleMapApi'
     , function ($scope, $timeout, $log, $http, GoogleMapApi) {
   $log.doLog = true
 
-  
-  
+
+
 
   GoogleMapApi.then(function(maps) {
     maps.visualRefresh = true;
@@ -33,7 +33,7 @@ angular.module("search-box-example", ["google-maps".ns()])
       new google.maps.LatLng(40.82148, -73.66450),
       new google.maps.LatLng(40.66541, -74.31715));
 
-    
+
     $scope.map.bounds = {
       northeast: {
         latitude:$scope.defaultBounds.getNorthEast().lat(),
@@ -52,7 +52,7 @@ angular.module("search-box-example", ["google-maps".ns()])
     selected: {
       options: {
         visible:false
-        
+
       },
       templateurl:'window.tpl.html',
       templateparameter: {}
@@ -82,7 +82,7 @@ angular.module("search-box-example", ["google-maps".ns()])
       template:'searchbox.tpl.html',
       position:'top-left',
       options: {
-        bounds: {} 
+        bounds: {}
       },
       //parentdiv:'searchBoxParent',
       events: {
@@ -109,7 +109,7 @@ angular.module("search-box-example", ["google-maps".ns()])
               templateparameter: place
             };
             newMarkers.push(marker);
-            
+
             bounds.extend(place.geometry.location);
           }
 
@@ -141,11 +141,11 @@ angular.module("search-box-example", ["google-maps".ns()])
         }
       }
 
-      
+
     }
   });
 
 
-  
+
 
 }]);

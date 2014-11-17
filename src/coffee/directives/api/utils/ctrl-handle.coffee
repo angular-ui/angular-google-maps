@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.utils".ns())
-.service "CtrlHandle".ns(), ['$q', ($q) ->
+angular.module('uiGmapgoogle-maps.directives.api.utils')
+.service 'uiGmapCtrlHandle', ['$q', ($q) ->
   CtrlHandle =
     handle: ($scope, $element) ->
       $scope.$on '$destroy', ->

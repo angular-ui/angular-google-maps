@@ -1,5 +1,5 @@
 var myapp = angular.module('app', [
-  'google-maps'.ns()
+  'uiGmapgoogle-maps'
 ])
 
 myapp.controller('TestingCtrl', function ($scope) {

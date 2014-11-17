@@ -1,13 +1,13 @@
-describe "SearchBoxParentModelSpec".ns(), ->
+describe "uiGmapSearchBoxParentModelSpec", ->
   beforeEach ->
-    module("google-maps.mocks")
-    module("google-maps".ns())
-    module("google-maps.directives.api.utils".ns())
+    module("uiGmapgoogle-maps.mocks")
+    module('uiGmapgoogle-maps')
+    module("uiGmapgoogle-maps.directives.api.utils")
 
     inject ($templateCache) ->
       $templateCache.put('searchbox.tpl.html', '<input placeholder="Search Box">')
 
-    inject ['$rootScope', 'GoogleApiMock', '$compile', 'SearchBoxParentModel'.ns(),
+    inject ['$rootScope', 'GoogleApiMock', '$compile', 'uiGmapSearchBoxParentModel',
       ($rootScope, GoogleApiMock, $compile, SearchBoxParentModel) =>
         @rootScope = $rootScope
         @apiMock = new GoogleApiMock()
@@ -17,7 +17,7 @@ describe "SearchBoxParentModelSpec".ns(), ->
         @apiMock.mockPlaces()
         @apiMock.mockSearchBox()
         @subject = SearchBoxParentModel
-        
+
     ]
 
   it "should add a searchbox", ->

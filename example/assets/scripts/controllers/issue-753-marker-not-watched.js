@@ -1,6 +1,6 @@
-angular.module("markerCoordsTest", ["google-maps".ns()])
+angular.module("markerCoordsTest", ['uiGmapgoogle-maps'])
 
-.config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
+.config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
   GoogleMapApi.configure({
     v: '3.17',
     libraries: ''

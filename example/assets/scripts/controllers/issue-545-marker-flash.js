@@ -111,7 +111,7 @@
  * #############################################################################
  */
 (function(window, ng, undefined) {
-  var app = ng.module('app', ['google-maps'.ns()]);
+  var app = ng.module('app', ['uiGmapgoogle-maps']);
   app.controller('TrackingCtrl', ['$rootScope', '$scope', '$timeout', '$log', function($rootScope, $scope, $timeout, $log) {
     $scope.map = {
       center: {

@@ -1,6 +1,6 @@
 #boot strap angular and extend google maps
-angular.module("google-maps.extensions".ns())
-.service('ExtendGWin'.ns(), ->
+angular.module('uiGmapgoogle-maps.extensions')
+.service('uiGmapExtendGWin', ->
   init: _.once ->
     return unless google or google?.maps or google.maps.InfoWindow?
     #Taken from : http://stackoverflow.com/questions/12410062/check-if-infowindow-is-opened-google-maps-v3
@@ -62,14 +62,14 @@ angular.module("google-maps.extensions".ns())
     if window.MarkerLabel_
 
       window.MarkerLabel_::setContent = ->
-        content = @marker_.get("labelContent")
+        content = @marker_.get('labelContent')
         return if !content or _.isEqual @oldContent, content
-        if typeof content?.nodeType is "undefined"
+        if typeof content?.nodeType is 'undefined'
           @labelDiv_.innerHTML = content
           @eventDiv_.innerHTML = @labelDiv_.innerHTML
           @oldContent = content
         else
-          @labelDiv_.innerHTML = "" # Remove current content
+          @labelDiv_.innerHTML = '' # Remove current content
           @labelDiv_.appendChild content
           content = content.cloneNode(true)
           @eventDiv_.appendChild content

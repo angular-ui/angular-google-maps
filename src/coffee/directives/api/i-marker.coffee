@@ -6,29 +6,30 @@
  			- icon
 		- implementation needed on watches
 ###
-angular.module("google-maps.directives.api".ns())
-.factory "IMarker".ns(), [ "Logger".ns(), "BaseObject".ns(), "CtrlHandle".ns(), (Logger, BaseObject, CtrlHandle)->
-  class IMarker extends BaseObject
+angular.module('uiGmapgoogle-maps.directives.api')
+.factory 'uiGmapIMarker', [ 'uiGmapLogger', 'uiGmapBaseObject', 'uiGmapCtrlHandle',
+ (Logger, BaseObject, CtrlHandle)->
+    class IMarker extends BaseObject
 
-    IMarker.scopeKeys =
-      coords: '=coords'
-      icon: '=icon'
-      click: '&click'
-      options: '=options'
-      events: '=events'
-      fit: '=fit'
-      idKey: '=idkey'
-      control: '=control'
+      IMarker.scopeKeys =
+        coords: '=coords'
+        icon: '=icon'
+        click: '&click'
+        options: '=options'
+        events: '=events'
+        fit: '=fit'
+        idKey: '=idkey'
+        control: '=control'
 
-    IMarker.keys = _.keys IMarker.scopeKeys
+      IMarker.keys = _.keys IMarker.scopeKeys
 
-    @extend CtrlHandle
-    constructor: ->
-      @$log = Logger
-      @restrict = 'EMA'
-      @require = '^' + 'GoogleMap'.ns()
-      @priority = -1
-      @transclude = true
-      @replace = true
-      @scope = IMarker.scopeKeys
+      @extend CtrlHandle
+      constructor: ->
+        @$log = Logger
+        @restrict = 'EMA'
+        @require = '^' + 'uiGmapGoogleMap'
+        @priority = -1
+        @transclude = true
+        @replace = true
+        @scope = IMarker.scopeKeys
 ]

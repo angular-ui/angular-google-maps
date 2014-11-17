@@ -1,4 +1,4 @@
-angular.module("angular-google-maps-example", ["google-maps".ns()]).value("rndAddToLatLon",function () {
+angular.module("angular-google-maps-example", ['uiGmapgoogle-maps']).value("rndAddToLatLon",function () {
   return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1);
 }).controller("controller", ['$rootScope', '$scope', '$location', '$http', function ($rootScope, $scope, $location, $http) {
     $scope.map = {
