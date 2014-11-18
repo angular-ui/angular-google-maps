@@ -1,18 +1,18 @@
-describe 'GoogleMapApiProvider'.ns(), ->
+describe 'uiGmapGoogleMapApiProvider', ->
   mapScriptLoader = null;
 
   beforeEach ->
-    angular.module('mockModule', ['google-maps'.ns()]).config(
-      ['GoogleMapApiProvider'.ns(),
+    angular.module('mockModule', ['uiGmapgoogle-maps']).config(
+      ['uiGmapGoogleMapApiProvider',
         (GoogleMapApi) ->
           GoogleMapApi.configure({
             china: true
           })
       ]
     )
-    module('google-maps'.ns(), 'mockModule')
+    module('uiGmapgoogle-maps', 'mockModule')
     inject ($injector) ->
-      mapScriptLoader = $injector.get 'MapScriptLoader'.ns()
+      mapScriptLoader = $injector.get 'uiGmapMapScriptLoader'
 
     window.google = undefined
 

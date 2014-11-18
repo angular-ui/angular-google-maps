@@ -14,17 +14,18 @@ This directive creates a new scope.
 {attribute input required}  HTMLInputElement
 {attribute options optional} The options that can be set on a SearchBox object (google.maps.places.SearchBoxOptions object specification)
 ###
-angular.module("google-maps".ns())
-.directive "SearchBox".ns(), ["GoogleMapApi".ns(), "Logger".ns(), "SearchBoxParentModel".ns(), '$http', '$templateCache', '$compile',
+angular.module('uiGmapgoogle-maps')
+.directive 'uiGmapSearchBox', ['uiGmapGoogleMapApi', 'uiGmapLogger',
+'uiGmapSearchBoxParentModel', '$http', '$templateCache', '$compile',
   (GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache, $compile) ->
     class SearchBox
       constructor:  ->
         @$log = Logger
-        @restrict = "EMA"
-        @require = '^' + 'GoogleMap'.ns()
+        @restrict = 'EMA'
+        @require = '^' + 'uiGmapGoogleMap'
         @priority = -1
         @transclude = true
-        @template = '<span class=\"angular-google-map-search\" ng-transclude></span>'
+        @template = '<span class=\'angular-google-map-search\' ng-transclude></span>'
         @replace = true
         @scope =
           template: '=template'
@@ -34,7 +35,7 @@ angular.module("google-maps".ns())
           parentdiv: '=parentdiv'
 
       link: (scope, element, attrs, mapCtrl) =>
-        
+
         GoogleMapApi.then (maps) =>
           $http.get(scope.template, { cache: $templateCache })
             .success (template) =>

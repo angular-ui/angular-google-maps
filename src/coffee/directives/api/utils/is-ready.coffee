@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.utils".ns())
-.service "IsReady".ns(), ['$q', '$timeout', ($q, $timeout) ->
+angular.module('uiGmapgoogle-maps.directives.api.utils')
+.service 'uiGmapIsReady', ['$q', '$timeout', ($q, $timeout) ->
   ctr = 0
   proms = []
 

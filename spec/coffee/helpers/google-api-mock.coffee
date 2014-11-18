@@ -1,5 +1,5 @@
-angular.module("google-maps.mocks", [])
-.factory("GoogleApiMock", ->
+angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
+.factory('GoogleApiMock', ->
 
   class MockInfoWindow
     constructor: ->
@@ -60,18 +60,18 @@ angular.module("google-maps.mocks", [])
       window.google.maps = {}
 
       # To make debugging easier, mock everything with exceptions
-      unmocked = (api) => () => throw new String("Unmocked API " + api)
-      window.google.maps.Marker = unmocked("Marker")
+      unmocked = (api) => () => throw new String('Unmocked API ' + api)
+      window.google.maps.Marker = unmocked('Marker')
       window.google.maps.event =
-        clearListeners: unmocked("event.clearListeners")
-        addListener: unmocked("event.addListener")
-        removeListener: unmocked("event.removeListener")
-      window.google.maps.OverlayView = unmocked("OverlayView")
-      window.google.maps.InfoWindow = unmocked("InfoWindow")
-      window.google.maps.LatLng = unmocked("LatLng")
-      window.google.maps.MVCArray = unmocked("MVCArray")
-      window.google.maps.Point = unmocked("Point")
-      window.google.maps.LatLngBounds = unmocked("LatLngBounds")
+        clearListeners: unmocked('event.clearListeners')
+        addListener: unmocked('event.addListener')
+        removeListener: unmocked('event.removeListener')
+      window.google.maps.OverlayView = unmocked('OverlayView')
+      window.google.maps.InfoWindow = unmocked('InfoWindow')
+      window.google.maps.LatLng = unmocked('LatLng')
+      window.google.maps.MVCArray = unmocked('MVCArray')
+      window.google.maps.Point = unmocked('Point')
+      window.google.maps.LatLngBounds = unmocked('LatLngBounds')
 
     mockPlaces: ->
       window.google.maps.places = {}
@@ -148,10 +148,10 @@ angular.module("google-maps.mocks", [])
         BOTTOM_RIGHT: 'BOTTOM_RIGHT'
       window.google.maps.ControlPosition = ControlPosition
 
-    mockAnimation: (Animation = {BOUNCE: "bounce"}) ->
+    mockAnimation: (Animation = {BOUNCE: 'bounce'}) ->
       window.google.maps.Animation = Animation
 
-    mockMapTypeId: (MapTypeId = {ROADMAP: "roadmap"}) ->
+    mockMapTypeId: (MapTypeId = {ROADMAP: 'roadmap'}) ->
       window.google.maps.MapTypeId = MapTypeId
 
     mockOverlayView: (OverlayView = class OverlayView
@@ -267,5 +267,3 @@ angular.module("google-maps.mocks", [])
 
   GoogleApiMock
 )
-
-angular.module("google-maps.mocks".ns(),["google-maps".ns(),"google-maps.mocks"])

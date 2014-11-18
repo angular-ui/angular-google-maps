@@ -3,14 +3,14 @@
   - inject the draw function into a controllers scope so that controller can call the directive to draw on demand
   - draw function creates the DrawFreeHandChildModel which manages itself
 ###
-angular.module("google-maps.directives.api".ns())
-.factory 'ApiFreeDrawPolygons'.ns(), ["Logger".ns(), 'BaseObject'.ns(), "CtrlHandle".ns(), "DrawFreeHandChildModel".ns(),
+angular.module('uiGmapgoogle-maps.directives.api')
+.factory 'uiGmapApiFreeDrawPolygons', ["uiGmapLogger", 'uiGmapBaseObject', "uiGmapCtrlHandle", "uiGmapDrawFreeHandChildModel",
   ($log, BaseObject, CtrlHandle, DrawFreeHandChildModel) ->
     class FreeDrawPolygons extends BaseObject
       @include CtrlHandle
       restrict: 'EMA'
       replace: true
-      require: '^' + 'GoogleMap'.ns()
+      require: '^' + 'uiGmapGoogleMap'
       scope:
         polygons: '='
         draw: '='
@@ -19,9 +19,9 @@ angular.module("google-maps.directives.api".ns())
         @mapPromise(scope, ctrl).then (map) =>
           return $log.error "No polygons to bind to!" unless scope.polygons
           return $log.error "Free Draw Polygons must be of type Array!" unless _.isArray scope.polygons
-          freeHand = new DrawFreeHandChildModel(map, scope.originalMapOpts)
+          freeHand = new DrawFreeHandChildModel map, scope.originalMapOpts
           listener = undefined
-          scope.draw = () ->
+          scope.draw = ->
             #clear watch only watch when we are finished drawing/engaging
             listener?()
             freeHand.engage(scope.polygons).then ->

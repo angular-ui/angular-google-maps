@@ -1,6 +1,6 @@
-angular.module("google-maps.directives.api.utils".ns())
-.factory "ModelsWatcher".ns(), [
-  "Logger".ns(), "_async".ns(),
+angular.module('uiGmapgoogle-maps.directives.api.utils')
+.factory 'uiGmapModelsWatcher', [
+  'uiGmapLogger', 'uiGmap_async',
   (Logger,_async) ->
     #putting a payload together in order to not have to flatten twice, and to not
     #have to flatten again later
@@ -22,15 +22,15 @@ angular.module("google-maps.directives.api.utils".ns())
                 model: m
                 child: child
         else
-          Logger.error """ id missing for model #{m.toString()},
-            can not use do comparison/insertion"""
+          Logger.error ''' id missing for model #{m.toString()},
+            can not use do comparison/insertion'''
       .then =>
         _async.each childObjects.values(), (c) ->
           unless c?
-            Logger.error("child undefined in ModelsWatcher.")
+            Logger.error('child undefined in ModelsWatcher.')
             return
           unless c.model?
-            Logger.error("child.model undefined in ModelsWatcher.")
+            Logger.error('child.model undefined in ModelsWatcher.')
             return
           id = c.model[idKey]
           #if we do not have the object we can remove it,

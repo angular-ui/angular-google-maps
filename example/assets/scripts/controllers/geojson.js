@@ -1,5 +1,5 @@
 (function () {
-  var module = angular.module("angular-google-maps-example", ["google-maps".ns()]);
+  var module = angular.module("angular-google-maps-example", ['uiGmapgoogle-maps']);
 }());
 
 var rndAddToLatLon = function () {

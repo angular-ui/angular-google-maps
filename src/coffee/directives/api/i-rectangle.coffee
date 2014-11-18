@@ -1,16 +1,16 @@
-angular.module("google-maps.directives.api".ns()).service "IRectangle".ns(), [ ->
-  "use strict"
+angular.module('uiGmapgoogle-maps.directives.api').service 'uiGmapIRectangle', [ ->
+  'use strict'
   DEFAULTS = {}
-  restrict: "EMA"
-  require: '^' + 'GoogleMap'.ns()
+  restrict: 'EMA'
+  require: '^' + 'uiGmapGoogleMap'
   replace: true
   scope:
-    bounds: "="
-    stroke: "="
-    clickable: "="
-    draggable: "="
-    editable: "="
-    fill: "="
-    visible: "="
-    events: "="
+    bounds: '='
+    stroke: '='
+    clickable: '='
+    draggable: '='
+    editable: '='
+    fill: '='
+    visible: '='
+    events: '='
 ]

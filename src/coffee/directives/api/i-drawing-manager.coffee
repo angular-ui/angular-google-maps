@@ -1,9 +1,9 @@
-angular.module("google-maps.directives.api".ns()).service "IDrawingManager".ns(), [ ->
-  restrict: "EA"
+angular.module('uiGmapgoogle-maps.directives.api').service 'uiGmapIDrawingManager', [ ->
+  restrict: 'EA'
   replace: true
-  require: '^' + 'GoogleMap'.ns()
+  require: '^' + 'uiGmapGoogleMap'
   scope:
-    static: "@"
-    control: "="
-    options: "="
+    static: '@'
+    control: '='
+    options: '='
 ]

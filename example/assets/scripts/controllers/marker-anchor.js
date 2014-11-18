@@ -1,6 +1,6 @@
 // Code goes here
 
-angular.module('app', ['google-maps'.ns()])
+angular.module('app', ['uiGmapgoogle-maps'])
     .controller('mainCtrl', ['$scope', function($scope) {
         $scope.number = 0;
         $scope.map = {

@@ -23,7 +23,13 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               if (newValue != oldValue)
                 @doRebuildAll = newValue
 
-            @watch 'models', scope, !@isTrue(attrs.modelsbyref)
+            @modelsRendered = false if not scope.models? or scope.models.length == 0
+            @scope.$watch 'models', (newValue, oldValue) =>
+              if !_.isEqual(newValue,oldValue) or not @modelsRendered
+                @modelsRendered = true
+                @onWatch('models', scope, newValue, oldValue)
+            , !@isTrue(attrs.modelsbyref)
+
             @watch 'doCluster', scope
             @watch 'clusterOptions', scope
             @watch 'clusterEvents', scope

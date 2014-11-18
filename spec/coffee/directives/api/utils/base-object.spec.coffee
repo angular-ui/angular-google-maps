@@ -1,7 +1,7 @@
-describe "oo.BaseObject", ->
+describe 'oo.BaseObject', ->
     beforeEach ->
-        module "google-maps.directives.api.utils".ns()
-        inject ['BaseObject'.ns(), (BaseObject) =>
+        module 'uiGmapgoogle-maps.directives.api.utils' 
+        inject ['uiGmapBaseObject', (BaseObject) =>
             @subject = BaseObject
             PersonModule =
                 changePersonName: (person, name)->
@@ -11,8 +11,8 @@ describe "oo.BaseObject", ->
                     delete person.name
                     person
             PersonAttributes =
-                p_name: "no_name"
-                state: "no_state"
+                p_name: 'no_name'
+                state: 'no_state'
             @PersonAttributes = PersonAttributes
             class Person extends BaseObject
                 @include PersonModule
@@ -20,31 +20,31 @@ describe "oo.BaseObject", ->
                 constructor: (name, state)->
                     @name = if name? then name else Person.p_name
                     @state = if state? then state else Person.state
-            @name = "nick"
-            @state = "fl"
+            @name = 'nick'
+            @state = 'fl'
             @defaultUsage = new Person()
             @usage = new Person(@name, @state)
         ]
 
-    it "exists ~ you loaded the script!", ->
+    it 'exists ~ you loaded the script!', ->
         expect(@subject?).toEqual(true)
 
-    describe "include specs", ->
-        it "defaults attributes exist", ->
+    describe 'include specs', ->
+        it 'defaults attributes exist', ->
             expect(@defaultUsage.name?).toEqual(true)
             expect(@defaultUsage.name?).toEqual(true)
-        it "defaults attributes are correct", ->
+        it 'defaults attributes are correct', ->
             expect(@defaultUsage.name).toEqual(@PersonAttributes.p_name)
             expect(@defaultUsage.state).toEqual(@PersonAttributes.state)
-        it "subject attributes are correct ", ->
+        it 'subject attributes are correct ', ->
             expect(@usage.name).toEqual(@name)
             expect(@usage.state).toEqual(@state)
-    describe "extend specs", ->
-        it "defaults functions exist", ->
+    describe 'extend specs', ->
+        it 'defaults functions exist', ->
             expect(@defaultUsage.changePersonName?).toEqual(true)
             expect(@defaultUsage.killPersonsName?).toEqual(true)
-        it "subject functions act correctly", ->
-            p =  @defaultUsage.changePersonName(angular.copy(@defaultUsage), "john")
+        it 'subject functions act correctly', ->
+            p =  @defaultUsage.changePersonName(angular.copy(@defaultUsage), 'john')
             p2 = @defaultUsage.killPersonsName(@defaultUsage)
-            expect(p.name).toEqual("john")
+            expect(p.name).toEqual('john')
             expect(p2.name).toEqual(undefined)

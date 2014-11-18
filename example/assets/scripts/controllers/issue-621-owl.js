@@ -1,5 +1,5 @@
-angular.module('appMaps', ['google-maps'.ns()])
-.config(['GoogleMapApiProvider'.ns(), function (GoogleMapApi) {
+angular.module('appMaps', ['uiGmapgoogle-maps'])
+.config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
   GoogleMapApi.configure({
     v: '3.17',
     libraries: ''

@@ -1,11 +1,11 @@
 ###
 	WindowsChildModel generator where there are many ChildModels to a parent.
 ###
-angular.module("google-maps.directives.api.models.parent".ns())
-.factory "WindowsParentModel".ns(),
-  ["IWindowParentModel".ns(), "ModelsWatcher".ns(),
-    "PropMap".ns(), "WindowChildModel".ns(),
-    "Linked".ns(), "_async".ns(), "Logger".ns(),
+angular.module('uiGmapgoogle-maps.directives.api.models.parent')
+.factory 'uiGmapWindowsParentModel',
+  ['uiGmapIWindowParentModel', 'uiGmapModelsWatcher',
+    'uiGmapPropMap', 'uiGmapWindowChildModel',
+    'uiGmapLinked', 'uiGmap_async', 'uiGmapLogger',
     '$timeout', '$compile', '$http', '$templateCache', '$interpolate','uiGmapPromise',
     (IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async, $log,
       $timeout, $compile, $http, $templateCache, $interpolate,uiGmapPromise) ->
@@ -90,7 +90,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 uiGmapPromise.resolve()
 
           watchDestroy: (scope)=>
-            scope.$on "$destroy", =>
+            scope.$on '$destroy', =>
               @firstWatchModels = true
               @firstTime = true
               @rebuildAll(scope, false, true)
@@ -116,7 +116,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             modelsNotDefined = angular.isUndefined @linked.scope.models
 
             if modelsNotDefined and (@markersScope == undefined or (@markersScope?.markerModels == undefined or @markersScope?.models == undefined))
-              @$log.error("No models to create windows from! Need direct models or models derrived from markers!")
+              @$log.error('No models to create windows from! Need direct models or models derrived from markers!')
               return
             if @gMap?
               #at the very least we need a Map, the marker is optional as we can create Windows without markers
@@ -154,7 +154,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             _async.waitOrGo @, =>
               _async.each scope.models, (model) =>
                 gMarker = if hasGMarker then scope[modelsPropToIterate][[model[@idKey]]]?.gMarker else undefined
-#                throw "Unable to get gMarker from scope!!" unless gMarker
+#                throw 'Unable to get gMarker from scope!!' unless gMarker
                 @createWindow(model, gMarker, @gMap)
             .then => #handle done callBack
               @firstTime = false
@@ -175,13 +175,13 @@ angular.module("google-maps.directives.api.models.parent".ns())
                     #add all adds via creating new ChildMarkers which are appended to @markers
                     _async.each payload.adds, (modelToAdd) =>
                       gMarker = scope[modelsPropToIterate][modelToAdd[@idKey]]?.gMarker
-                      throw "Gmarker undefined" unless gMarker
+                      throw 'Gmarker undefined' unless gMarker
                       @createWindow(modelToAdd, gMarker, @gMap)
                     ,doChunk
                 .then =>
                   @existingPieces = undefined
                 .catch (e) =>
-                  $log.error "Error while pieceMealing Windows!"
+                  $log.error 'Error while pieceMealing Windows!'
             else
               @rebuildAll(@scope, true, true)
 
@@ -205,7 +205,7 @@ angular.module("google-maps.directives.api.models.parent".ns())
             child = new WindowChildModel model, childScope, opts, @isIconVisibleOnClick, gMap, @markersScope?.markerModels[model[@idKey]]?.scope, fakeElement, false, true
 
             unless model[@idKey]?
-              @$log.error("Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
+              @$log.error('Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.')
               return
             @windows.put(model[@idKey], child)
             child

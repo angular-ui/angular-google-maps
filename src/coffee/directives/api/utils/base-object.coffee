@@ -1,5 +1,5 @@
-angular.module("google-maps.directives.api.utils".ns())
-.factory "BaseObject".ns(), ->
+angular.module('uiGmapgoogle-maps.directives.api.utils')
+.factory 'uiGmapBaseObject', ->
   baseObjectKeywords = ['extended', 'included']
   class BaseObject
     @extend: (obj) ->

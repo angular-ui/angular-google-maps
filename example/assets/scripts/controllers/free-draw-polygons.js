@@ -1,5 +1,5 @@
 (function (window, ng) {
-  ng.module('app', ['google-maps'.ns()])
+  ng.module('app', ['uiGmapgoogle-maps'])
     .factory('channel', function(){
       return function () {
         var callbacks = [];
@@ -34,7 +34,7 @@
         }
       };
     }])
-    .controller('ctrl', ['$rootScope', '$scope',"Logger".ns(), 'drawChannel','clearChannel',function ($rootScope, $scope, $log,drawChannel, clearChannel) {
+    .controller('ctrl', ['$rootScope', '$scope',"uiGmapLogger", 'drawChannel','clearChannel',function ($rootScope, $scope, $log,drawChannel, clearChannel) {
       $scope.map = {
         center: {
           latitude: 53.406754,

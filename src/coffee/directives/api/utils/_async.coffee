@@ -1,5 +1,5 @@
 angular.module("uiGmapgoogle-maps.directives.api.utils")
-.service("_sync".ns(), [ ->
+.service("uiGmap_sync", [ ->
   fakePromise: ->
     _cb = undefined
     then: (cb) ->

@@ -1,9 +1,9 @@
-angular.module("google-maps.directives.api.utils".ns())
-.factory "ModelKey".ns(), ["BaseObject".ns(), "GmapUtil".ns(), (BaseObject, GmapUtil) ->
+angular.module('uiGmapgoogle-maps.directives.api.utils')
+.factory 'uiGmapModelKey', ['uiGmapBaseObject', 'uiGmapGmapUtil', (BaseObject, GmapUtil) ->
   class ModelKey extends BaseObject
     constructor: (@scope) ->
       super()
-      @defaultIdKey = "id"
+      @defaultIdKey = 'id'
       @idKey = undefined
 
     evalModelHandle: (model, modelKey) ->
@@ -16,7 +16,7 @@ angular.module("google-maps.directives.api.utils".ns())
 
     modelKeyComparison: (model1, model2) =>
       scope = if @scope.coords? then @scope else @parentScope
-      if not scope? then throw "No scope or parentScope set!"
+      if not scope? then throw 'No scope or parentScope set!'
       GmapUtil.equalCoords @evalModelHandle(model1, scope.coords),
         @evalModelHandle(model2, scope.coords)
 

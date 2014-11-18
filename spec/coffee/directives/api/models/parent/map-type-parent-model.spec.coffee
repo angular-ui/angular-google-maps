@@ -1,58 +1,58 @@
-describe "MapTypeParentModelSpec".ns(), ->
-    beforeEach ->
-        module("google-maps.mocks")
-        angular.module('mockModule', ["google-maps".ns()])
-        .value('mapCtrl', {})
-        .value('element', {})
-        .value('attrs', {})
-        .value('model', {})
-        .value('scope', @scope)
+describe 'uiGmapMapTypeParentModelSpec', ->
+  beforeEach ->
 
-        module "mockModule"
-        inject (GoogleApiMock) =>
-          mock = new GoogleApiMock()
-          mock.mockAPI()
-          mock.mockMap()
+    window['uiGmapInitiator'].initMock().apiMock
+    angular.module('mockModule', ['uiGmapgoogle-maps', 'uiGmapgoogle-maps.mocks'])
+    .value('mapCtrl', {})
+    .value('element', {})
+    .value('attrs', {})
+    .value('model', {})
+    .value('scope', @scope)
 
-        @scope =
-            options :
-                blah:true
-                getTileUrl:()->
+    inject ['GoogleApiMock', (GoogleApiMock) =>
+      mock = new GoogleApiMock()
+      mock.mockAPI()
+      mock.mockMap()
+    ]
 
-            $watch:()->
-            $on:()->
-        @attrs =
-            id: "testmaptype"
-            options: "someBoundAttr"
-        self = @
-        @setOpts
-        @tempMaps = google.maps
-        google.maps.ImageMapType = (opts) =>
-            self.setOpts = opts
-            getTileUrl:()->
-        spyOn(google.maps, 'ImageMapType').and.callThrough();
+    @scope =
+      options:
+        blah: true
+        getTileUrl: ()->
 
-        @mapCtrl = new window.google.maps.Map()
+      $watch: ()->
+      $on: ()->
+    @attrs =
+      id: 'testmaptype'
+      options: 'someBoundAttr'
+    self = @
+    @setOpts
+    @tempMaps = google.maps
+    google.maps.ImageMapType = (opts) =>
+      self.setOpts = opts
+      getTileUrl: ()->
+    spyOn(google.maps, 'ImageMapType').and.callThrough();
 
-        @timeout = (fnc,time) =>
-            fnc()
+    @mapCtrl = new window.google.maps.Map()
 
-        inject ['$rootScope','MapTypeParentModel'.ns(), ($rootScope, MapTypeParentModel) =>
-            scope = $rootScope.$new()
-            @constructor = MapTypeParentModel
-            @scope = _.extend @scope, scope
-            @subject = new @constructor(@scope, {}, @attrs, @mapCtrl)
-        ]
+    @timeout = (fnc, time) =>
+      fnc()
 
-    afterEach ->
-        google.maps = @tempMaps
+    inject ['$rootScope', 'uiGmapMapTypeParentModel', ($rootScope, MapTypeParentModel) =>
+      scope = $rootScope.$new()
+      @constructor = MapTypeParentModel
+      @scope = _.extend @scope, scope
+      @subject = new @constructor(@scope, {}, @attrs, @mapCtrl)
+    ]
 
-    it "constructor is defined", ->
-        expect(@constructor).toBeDefined()
-    it "options set", ->
-        expect(@setOpts.blah).toBe(@scope.options.blah)
-    it "subject is defined", ->
-        expect(@subject).toBeDefined()
-    it "maptype is an ImageMapType instance if getTileUrl method is provided", ->
-        expect(google.maps.ImageMapType).toHaveBeenCalled()
+  afterEach ->
+    google.maps = @tempMaps
 
+  it 'constructor is defined', ->
+    expect(@constructor).toBeDefined()
+  it 'options set', ->
+    expect(@setOpts.blah).toBe(@scope.options.blah)
+  it 'subject is defined', ->
+    expect(@subject).toBeDefined()
+  it 'maptype is an ImageMapType instance if getTileUrl method is provided', ->
+    expect(google.maps.ImageMapType).toHaveBeenCalled()

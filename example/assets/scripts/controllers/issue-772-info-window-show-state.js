@@ -1,4 +1,4 @@
-angular.module('appMaps', ['google-maps'.ns()])
+angular.module('appMaps', ['uiGmapgoogle-maps'])
 
 .controller('mainCtrl', function($scope) {
   $scope.map = {

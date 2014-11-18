@@ -51,6 +51,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
           update: '=' # optional
 
         link: (scope, element, attrs) =>
+          scope.idleAndZoomChanged = false
           unless scope.center?
             unbindCenterWatch = scope.$watch 'center', =>
               return unless scope.center
@@ -97,7 +98,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
               bounds: scope.bounds
 
             _m = new google.maps.Map(el.find("div")[1], mapOptions)
-            _m['_id'.ns()] = uuid.generate()
+            _m['uiGmap_id'] = uuid.generate()
 
             dragging = false
 
@@ -179,6 +180,9 @@ angular.module("uiGmapgoogle-maps.directives.api")
                   s.bounds.southwest =
                     latitude: sw.lat()
                     longitude: sw.lng()
+
+                s.zoom = _m.zoom
+                scope.idleAndZoomChanged = !scope.idleAndZoomChanged
 
             if angular.isDefined(scope.events) and scope.events isnt null and angular.isObject(scope.events)
               getEventHandler = (eventName) ->

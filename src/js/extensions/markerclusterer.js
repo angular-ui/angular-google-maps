@@ -3,7 +3,8 @@
  *
  * Created by Petr Bruna ccg1415 and Nick McCready on 7/13/14.
  */
-angular.module('google-maps.extensions'.ns()).service('ExtendMarkerClusterer'.ns(), function () {
+angular.module('uiGmapgoogle-maps.extensions')
+.service('uiGmapExtendMarkerClusterer', function () {
   return {
     init: _.once(function () {
       (function () {
@@ -84,7 +85,7 @@ angular.module('google-maps.extensions'.ns()).service('ExtendMarkerClusterer'.ns
               marker.setMap(null);
             }
 
-//  this.updateIcon_();
+            //this.updateIcon_();
             return true;
           };
 
@@ -188,9 +189,9 @@ angular.module('google-maps.extensions'.ns()).service('ExtendMarkerClusterer'.ns
                * @param {MarkerClusterer} mc The MarkerClusterer whose markers are being clustered.
                * @event
                */
-              google.maps.event.trigger(this, "clusteringbegin", this);
+              google.maps.event.trigger(this, 'clusteringbegin', this);
 
-              if (typeof this.timerRefStatic !== "undefined") {
+              if (typeof this.timerRefStatic !== 'undefined') {
                 clearTimeout(this.timerRefStatic);
                 delete this.timerRefStatic;
               }
@@ -239,7 +240,7 @@ angular.module('google-maps.extensions'.ns()).service('ExtendMarkerClusterer'.ns
                * @param {MarkerClusterer} mc The MarkerClusterer whose markers are being clustered.
                * @event
                */
-              google.maps.event.trigger(this, "clusteringend", this);
+              google.maps.event.trigger(this, 'clusteringend', this);
             }
           };
 
@@ -322,6 +323,30 @@ angular.module('google-maps.extensions'.ns()).service('ExtendMarkerClusterer'.ns
               }
               return this;
             }).apply(obj1, [obj2]);
+          };
+
+          NgMapMarkerClusterer.prototype.onAdd = function() {
+            var cMarkerClusterer = this;
+
+            this.activeMap_ = this.getMap();
+            this.ready_ = true;
+
+            this.repaint();
+
+            // Add the map event listeners
+            this.listeners_ = [
+                google.maps.event.addListener(this.getMap(), 'zoom_changed', function () {
+                    cMarkerClusterer.resetViewport_(false);
+                    // Workaround for this Google bug: when map is at level 0 and '-' of
+                    // zoom slider is clicked, a 'zoom_changed' event is fired even though
+                    // the map doesn't zoom out any further. In this situation, no 'idle'
+                    // event is triggered so the cluster markers that have been removed
+                    // do not get redrawn. Same goes for a zoom in at maxZoom.
+                    if (this.getZoom() === (this.get('minZoom') || 0) || this.getZoom() === this.get('maxZoom')) {
+                        google.maps.event.trigger(this, 'idle');
+                    }
+                })
+            ];
           };
 
           return NgMapMarkerClusterer;
