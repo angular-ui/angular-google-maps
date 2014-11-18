@@ -4367,8 +4367,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("google-maps.directives.api.models.parent".ns()).factory("SearchBoxParentModel".ns(), [
-    "BaseObject".ns(), "Logger".ns(), "EventsHelper".ns(), '$timeout', '$http', '$templateCache', function(BaseObject, Logger, EventsHelper, $timeout, $http, $templateCache) {
+  angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapSearchBoxParentModel', [
+    'uiGmapBaseObject', 'uiGmapLogger', 'uiGmapEventsHelper', '$timeout', '$http', '$templateCache', function(BaseObject, Logger, EventsHelper, $timeout, $http, $templateCache) {
       var SearchBoxParentModel;
       SearchBoxParentModel = (function(_super) {
         __extends(SearchBoxParentModel, _super);
@@ -4391,7 +4391,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.addAsMapControl = __bind(this.addAsMapControl, this);
           this.init = __bind(this.init, this);
           if (this.attrs.template == null) {
-            this.$log.error("template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!");
+            this.$log.error('template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!');
             return;
           }
           controlDiv = angular.element('<div></div>');
@@ -4414,7 +4414,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
           this.listeners = this.setEvents(this.searchBox, this.scope, this.scope);
           this.$log.info(this);
-          this.scope.$watch("options", (function(_this) {
+          this.scope.$watch('options', (function(_this) {
             return function(newValue, oldValue) {
               if (angular.isObject(newValue)) {
                 if (newValue.bounds != null) {
@@ -4423,7 +4423,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this), true);
-          return this.scope.$on("$destroy", (function(_this) {
+          return this.scope.$on('$destroy', (function(_this) {
             return function() {
               return _this.searchBox = null;
             };
@@ -4445,7 +4445,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         SearchBoxParentModel.prototype.setBounds = function(bounds) {
           if (angular.isUndefined(bounds.isEmpty)) {
-            this.$log.error("Error: SearchBoxParentModel setBounds. Bounds not an instance of LatLngBounds.");
+            this.$log.error('Error: SearchBoxParentModel setBounds. Bounds not an instance of LatLngBounds.');
           } else {
             if (bounds.isEmpty() === false) {
               if (this.searchBox != null) {

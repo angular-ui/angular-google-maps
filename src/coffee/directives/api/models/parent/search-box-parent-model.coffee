@@ -1,16 +1,18 @@
-angular.module("google-maps.directives.api.models.parent".ns())
-.factory "SearchBoxParentModel".ns(), ["BaseObject".ns(), "Logger".ns(), "EventsHelper".ns(), '$timeout', '$http', '$templateCache', (BaseObject, Logger, EventsHelper, $timeout, $http, $templateCache) ->
+angular.module('uiGmapgoogle-maps.directives.api.models.parent')
+.factory 'uiGmapSearchBoxParentModel', ['uiGmapBaseObject', 'uiGmapLogger',
+'uiGmapEventsHelper', '$timeout', '$http', '$templateCache',
+(BaseObject, Logger, EventsHelper, $timeout, $http, $templateCache) ->
     class SearchBoxParentModel extends BaseObject
         @include EventsHelper
         constructor: (@scope, @element, @attrs, @gMap, @ctrlPosition, @template, @$log = Logger) ->
             unless @attrs.template?
-                @$log.error "template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!"
+                @$log.error 'template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!'
                 return
 
             controlDiv = angular.element '<div></div>'
             controlDiv.append @template
             @input = controlDiv.find('input')[0]
-          
+
             @init()
 
         init: () =>
@@ -20,20 +22,20 @@ angular.module("google-maps.directives.api.models.parent".ns())
                 @addToParentDiv()
             else
                 @addAsMapControl()
-  
+
             @listener = google.maps.event.addListener @searchBox, 'places_changed', =>
                 @places = @searchBox.getPlaces()
 
             @listeners = @setEvents @searchBox, @scope, @scope
             @$log.info @
 
-            @scope.$watch("options", (newValue, oldValue) =>
+            @scope.$watch('options', (newValue, oldValue) =>
                 if angular.isObject newValue
                     if newValue.bounds?
                         @setBounds(newValue.bounds)
             , true)
 
-            @scope.$on "$destroy", =>
+            @scope.$on '$destroy', =>
                 @searchBox = null
 
         addAsMapControl: () =>
@@ -48,16 +50,16 @@ angular.module("google-maps.directives.api.models.parent".ns())
 
         setBounds: (bounds) =>
             if angular.isUndefined bounds.isEmpty
-              @$log.error "Error: SearchBoxParentModel setBounds. Bounds not an instance of LatLngBounds."
+              @$log.error 'Error: SearchBoxParentModel setBounds. Bounds not an instance of LatLngBounds.'
               return
-            else 
+            else
               if bounds.isEmpty() == false
                   if @searchBox?
                       @searchBox.setBounds(bounds)
 
         getBounds: () =>
             @searchBox.getBounds()
-            
+
 
     SearchBoxParentModel
 ]

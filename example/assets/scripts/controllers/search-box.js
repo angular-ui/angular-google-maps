@@ -70,11 +70,14 @@ angular.module("search-box-example", ["google-maps".ns()])
       idkey: 'place_id',
       events: {
         idle: function (map) {
+                   
+        },
+        dragend: function(map) {
+          //update the search box bounds after dragging the map
           var bounds = map.getBounds();
-          var ne = bounds.getNorthEast(); // LatLng of the north-east corner
-          //console.log("ne bounds " + ne.lat() + ", " + ne.lng());
-          var sw = bounds.getSouthWest(); // LatLng of the south-west corder
-          //console.log("sw bounds " + sw.lat() + ", " + sw.lng());
+          var ne = bounds.getNorthEast();
+          var sw = bounds.getSouthWest(); 
+          $scope.searchbox.options.bounds = new google.maps.LatLngBounds(sw, ne);
         }
       }
     },
