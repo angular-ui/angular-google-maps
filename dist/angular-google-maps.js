@@ -3374,12 +3374,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 
 /*
-	- interface for all markers to derrive from
- 	- to enforce a minimum set of requirements
- 		- attributes
- 			- coords
- 			- icon
-		- implementation needed on watches
+  - interface for all markers to derrive from
+  - to enforce a minimum set of requirements
+    - attributes
+      - coords
+      - icon
+    - implementation needed on watches
  */
 
 (function() {
@@ -4507,7 +4507,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 
 /*
-	WindowsChildModel generator where there are many ChildModels to a parent.
+  WindowsChildModel generator where there are many ChildModels to a parent.
  */
 
 (function() {
@@ -5054,11 +5054,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 /*
  - interface for all controls to derive from
  - to enforce a minimum set of requirements
-	- attributes
-		- template
-		- position
-		- controller
-		- index
+  - attributes
+    - template
+    - position
+    - controller
+    - index
  */
 
 (function() {
@@ -5118,12 +5118,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 
 /*
-	- interface for all markers to derrive from
- 	- to enforce a minimum set of requirements
- 		- attributes
- 			- coords
- 			- icon
-		- implementation needed on watches
+  - interface for all markers to derrive from
+  - to enforce a minimum set of requirements
+    - attributes
+      - coords
+      - icon
+    - implementation needed on watches
  */
 
 (function() {
@@ -6640,10 +6640,10 @@ mapControl directive
 This directive is used to create a custom control element on an existing map.
 This directive creates a new scope.
 
-{attribute template required}  	string url of the template to be used for the control
-{attribute position optional}  	string position of the control of the form top-left or TOP_LEFT defaults to TOP_CENTER
-{attribute controller optional}	string controller to be applied to the template
-{attribute index optional}		number index for controlling the order of similarly positioned mapControl elements
+{attribute template required}   string url of the template to be used for the control
+{attribute position optional}   string position of the control of the form top-left or TOP_LEFT defaults to TOP_CENTER
+{attribute controller optional} string controller to be applied to the template
+{attribute index optional}    number index for controlling the order of similarly positioned mapControl elements
  */
 
 (function() {
