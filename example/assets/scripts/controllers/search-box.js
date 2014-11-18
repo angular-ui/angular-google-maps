@@ -80,6 +80,7 @@ angular.module("search-box-example", ["google-maps".ns()])
     },
     searchbox: {
       template:'searchbox.tpl.html',
+      //position:'top-right',
       position:'top-left',
       options: {
         bounds: {} 
