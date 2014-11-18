@@ -4,8 +4,9 @@
   - draw function creates the DrawFreeHandChildModel which manages itself
 ###
 angular.module('uiGmapgoogle-maps.directives.api')
-.factory 'uiGmapApiFreeDrawPolygons', ["uiGmapLogger", 'uiGmapBaseObject', "uiGmapCtrlHandle", "uiGmapDrawFreeHandChildModel",
-  ($log, BaseObject, CtrlHandle, DrawFreeHandChildModel) ->
+.factory 'uiGmapApiFreeDrawPolygons', [
+  'uiGmapLogger', 'uiGmapBaseObject', 'uiGmapCtrlHandle', 'uiGmapDrawFreeHandChildModel', 'uiGmapLodash',
+  ($log, BaseObject, CtrlHandle, DrawFreeHandChildModel, uiGmapLodash) ->
     class FreeDrawPolygons extends BaseObject
       @include CtrlHandle
       restrict: 'EMA'
@@ -17,8 +18,8 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
       link: (scope, element, attrs, ctrl) =>
         @mapPromise(scope, ctrl).then (map) =>
-          return $log.error "No polygons to bind to!" unless scope.polygons
-          return $log.error "Free Draw Polygons must be of type Array!" unless _.isArray scope.polygons
+          return $log.error 'No polygons to bind to!' unless scope.polygons
+          return $log.error 'Free Draw Polygons must be of type Array!' unless _.isArray scope.polygons
           freeHand = new DrawFreeHandChildModel map, scope.originalMapOpts
           listener = undefined
           scope.draw = ->
@@ -33,7 +34,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
                   if firstTime
                     firstTime = false
                     return
-                  removals = _.differenceObjects oldValue, newValue
+                  removals = uiGmapLodash.differenceObjects oldValue, newValue
                   removals.forEach (p) ->
                     p.setMap null
 ]
