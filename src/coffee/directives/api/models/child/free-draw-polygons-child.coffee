@@ -30,15 +30,24 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
     undefined
 
-  freeHandMgr = (@map) ->
+  freeHandMgr = (@map, defaultOptions) ->
+    unless defaultOptions
+      defaultOptions =
+        draggable: true
+        zoomControl: true
+        scrollwheel: true
+        disableDoubleClickZoom: true
     #freeze map to make drawing easy (need to drag to draw .. instead of moving the map)
     enable = =>
       @deferred?.resolve()
-      @map.setOptions @oldOptions
+      _.defer =>
+        @map.setOptions _.extend @oldOptions, defaultOptions
 
     disableMap = =>
       $log.info 'disabling map move'
       @oldOptions = map.getOptions()
+      @oldOptions.center = map.getCenter()
+
       @map.setOptions
         draggable: false
         zoomControl: false
