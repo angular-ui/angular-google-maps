@@ -15,7 +15,6 @@ module.exports = (config) ->
       "dist/vendor/scripts/jquery.js"
       "dist/vendor/scripts/lodash.compat.js"
       "dist/vendor/scripts/angular.js"
-      "dist/vendor/scripts/bluebird.js"
       "dist/vendor/scripts/*.js"
       "app/scripts/module.js"
       "app/scripts/controllers/*.js"

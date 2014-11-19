@@ -5,7 +5,6 @@ vendor_js =
     '<%= yeoman.dist %>/vendor/scripts/jquery.js'
     '<%= yeoman.dist %>/vendor/scripts/lodash*'
     '<%= yeoman.dist %>/vendor/scripts/angular.js'
-    '<%= yeoman.dist %>/vendor/scripts/bluebird.js'
     '<%= yeoman.dist %>/vendor/scripts/*.js'
     ]
   dest:
