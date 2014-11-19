@@ -1,18 +1,15 @@
 <h2 id="Logger">Logger Service</h2>
-This logger utilizes $log underneath. However unless you pull Logger into your contoller you will not see
-any error or info logs from the ui-gmap api. So if you want to see logs set Logger.doLog = true.  (defaults to false!)
+This logger utilizes $log underneath. However, unless you pull uiGmapLogger into your contoller, you will not see
+any error or info logs from the ui-gmap API. So if you want to see logs, set <code>uiGmapLogger.doLog = true</code> (defaults to <code>false</code>).
 <br>
-        <a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/logger.coffee">source code</a>
+<a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/logger.coffee">source code</a>
 
 <div hljs language="js">
-    //TODO in the future add log levels
-    // 'Logger' = 'uiGmapLogger'
-    .controller("someController",['$scope', 'Logger'.ns(),
-    function ($scope, Logger) {
-        Logger.doLog = true;
-        log.info("hmm");
-        log.debug("huh!");
-        log.warn("uhoh!");
-        log.error("oh crap!");
-    });
+.controller("someController", function(uiGmapLogger) {
+    uiGmapLogger.doLog = true;
+    log.info("hmm");
+    log.debug("huh!");
+    log.warn("uhoh!");
+    log.error("oh crap!");
+});
 </div>
