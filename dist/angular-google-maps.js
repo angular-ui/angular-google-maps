@@ -2278,13 +2278,21 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             if ((_ref = _this.deferred) != null) {
               _ref.resolve();
             }
-            return _this.map.setOptions(_this.oldOptions);
+            return _.defer(function() {
+              return _this.map.setOptions(_.extend(_this.oldOptions, {
+                draggable: true,
+                zoomControl: true,
+                scrollwheel: true,
+                disableDoubleClickZoom: true
+              }));
+            });
           };
         })(this);
         disableMap = (function(_this) {
           return function() {
             $log.info('disabling map move');
             _this.oldOptions = map.getOptions();
+            _this.oldOptions.center = map.getCenter();
             return _this.map.setOptions({
               draggable: false,
               zoomControl: false,
