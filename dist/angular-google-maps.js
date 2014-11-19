@@ -2269,9 +2269,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         });
         return void 0;
       };
-      freeHandMgr = function(map) {
+      freeHandMgr = function(map, defaultOptions) {
         var disableMap, enable;
         this.map = map;
+        if (!defaultOptions) {
+          defaultOptions = {
+            draggable: true,
+            zoomControl: true,
+            scrollwheel: true,
+            disableDoubleClickZoom: true
+          };
+        }
         enable = (function(_this) {
           return function() {
             var _ref;
@@ -2279,12 +2287,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               _ref.resolve();
             }
             return _.defer(function() {
-              return _this.map.setOptions(_.extend(_this.oldOptions, {
-                draggable: true,
-                zoomControl: true,
-                scrollwheel: true,
-                disableDoubleClickZoom: true
-              }));
+              return _this.map.setOptions(_.extend(_this.oldOptions, defaultOptions));
             });
           };
         })(this);
@@ -4986,7 +4989,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         FreeDrawPolygons.prototype.scope = {
           polygons: '=',
-          draw: '='
+          draw: '=',
+          revertmapoptions: '='
         };
 
         FreeDrawPolygons.prototype.link = function(scope, element, attrs, ctrl) {
@@ -4999,7 +5003,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (!_.isArray(scope.polygons)) {
                 return $log.error('Free Draw Polygons must be of type Array!');
               }
-              freeHand = new DrawFreeHandChildModel(map, scope.originalMapOpts);
+              freeHand = new DrawFreeHandChildModel(map, scope.revertmapoptions);
               listener = void 0;
               return scope.draw = function() {
                 if (typeof listener === "function") {
