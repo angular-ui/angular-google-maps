@@ -26,7 +26,7 @@
                 <p>Include the Google Maps API v3, via one of two ways:</p>
                 <ul>
                     <li>
-                        <p><a href="#!/api#GoogleMapsApiLoader">GoogleMapsApi Loader (Async)</a> <span class="badge badge-info">New in v2.0.0</span></p>
+                        <p><a href="#!/api#GoogleMapApi">Google Maps SDK Async Loader</a> <span class="badge badge-info">New in v2.0.0</span></p>
                         <p>This is the <span class="label label-success">RECOMMENDED</span> way, as it tries to guarantee that Google Maps is ready prior to running any Google dependencies.</p>
                     </li>
                     <li>
@@ -41,17 +41,14 @@
             </li>
 
             <li>
-                <p>Make your application module depend on the <code>google-maps</code> module:</p>
-                <div hljs language="js">angular.module('myApplicationModule', ['google-maps'.ns()]);</div>
-                <p class="muted">
-                    Note: <code>ns()</code> (a function added to the global String prototype) prepends "uiGmap" to "google-maps", resulting in the string "uiGmapgoogle-maps".
-                </p>
+                <p>Make your application module depend on the <code>uiGmapgoogle-maps</code> module:</p>
+                <div hljs language="js">angular.module('myApplicationModule', ['uiGmapgoogle-maps']);</div>
             </li>
             <li>
                 <p>Add a <code>map</code> object to your scope like so:</p>
                 <div hljs language="js">$scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };</div>
                 <p class="muted">
-                    Note: this is the very minimal set of properties required for the map to work.
+                    Note: this is the very minimum set of properties required for the map to work.
                     See the <a ui-sref="api">API documentation</a> for the full list of supported properties.
                 </p>
             </li>
