@@ -25,14 +25,14 @@ To utilize this provider you must load it and configure it properly. Please note
 
 <h3> When is Google Maps SDK ready?</h3>
 <div hljs language="js">
-.controller("someController", function($scope, uiGmapGoogleMapApiProvider) {
+.controller("someController", function($scope, uiGmapGoogleMapApi) {
     // Do stuff with your $scope.
     // Note: Some of the directives require at least something to be defined originally!
     // e.g. $scope.markers = []
 
-    // uiGmapGoogleMapApiProvider is a promise.
+    // uiGmapGoogleMapApi is a promise.
     // The "then" callback function provides the google.maps object.
-    uiGmapGoogleMapApiProvider.then(function(maps) {
+    uiGmapGoogleMapApi.then(function(maps) {
 
     });
 });
