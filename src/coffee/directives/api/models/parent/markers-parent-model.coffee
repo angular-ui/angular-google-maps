@@ -104,9 +104,10 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             if(!scope.doRebuild and scope.doRebuild != undefined)
               return
             if @scope.markerModels?.length
-              @onDestroy(scope) #clean @scope.markerModels
-
-            @createMarkersFromScratch(scope)
+              @onDestroy(scope).then =>
+                @createMarkersFromScratch(scope)
+            else
+              @createMarkersFromScratch(scope)
 
           pieceMeal: (scope)=>
             doChunk = if @existingPieces? then false else _async.defaultChunkSize

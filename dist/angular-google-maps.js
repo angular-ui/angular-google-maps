@@ -3863,9 +3863,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           if ((_ref = this.scope.markerModels) != null ? _ref.length : void 0) {
-            this.onDestroy(scope);
+            return this.onDestroy(scope).then((function(_this) {
+              return function() {
+                return _this.createMarkersFromScratch(scope);
+              };
+            })(this));
+          } else {
+            return this.createMarkersFromScratch(scope);
           }
-          return this.createMarkersFromScratch(scope);
         };
 
         MarkersParentModel.prototype.pieceMeal = function(scope) {
