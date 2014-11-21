@@ -151,6 +151,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @gMarker = new MarkerWithLabel @setLabelOptions @opts
           else
             @gMarker = new google.maps.Marker @opts
+          _.extend @gMarker, model: @model
 
         #hook external event handlers for events
         @removeEvents @externalListeners if @externalListeners
