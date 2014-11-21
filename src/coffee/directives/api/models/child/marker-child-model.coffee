@@ -37,7 +37,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         if @trackModel
           @scope.model = @model
           @scope.$watch 'model', (newValue, oldValue) =>
-            if (newValue != oldValue)
+#            if (newValue != oldValue)
               changes = @getChanges newValue, oldValue, IMarker.keys
               if not @firstTime
                 _.each changes, (v, k) =>

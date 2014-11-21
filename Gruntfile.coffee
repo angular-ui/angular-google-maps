@@ -17,7 +17,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks "grunt-conventional-changelog"
   grunt.loadNpmTasks "grunt-bump"
   grunt.loadNpmTasks 'grunt-replace'
-  grunt.loadNpmTasks('grunt-subgrunt')
+  grunt.loadNpmTasks 'grunt-subgrunt'
+  grunt.loadNpmTasks 'grunt-debug-task'
 
   #squishing this file done by moving grunt options out to its own file. This way we can focus on tasks!
   options = require('./grunt/options')(grunt)

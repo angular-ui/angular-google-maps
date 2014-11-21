@@ -20,7 +20,7 @@ spec =
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js'
     ]
-    specs: ['tmp/spec/js/bootstrap.js', 'tmp/spec/js/**/*spec.js']
+    specs: ['tmp/spec/coffee/bootstrap.spec.js', 'tmp/spec/**/*spec.js']
     helpers: ['tmp/spec/js/helpers/helpers.js']
     template: require 'grunt-template-jasmine-requirejs'
     templateOptions:
