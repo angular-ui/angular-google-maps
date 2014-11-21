@@ -2,7 +2,7 @@ log = require('util').log
 jasmineSettings = require './jasmine'
 _ = require 'lodash'
 
-sourceOrder = [
+pipeline = [
   "src/coffee/module"
   "src/coffee/providers/*"
   "src/coffee/extensions/*"
@@ -30,6 +30,48 @@ sourceOrder = [
   "src/coffee/directives/control"
   "src/coffee/directives/*"
 ]
+
+concatDist =
+  options:
+    banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
+    separator: ";"
+  src: pipeline.map( (f) -> "tmp/#{f}.js").concat [
+    "tmp/wrapped_uuid.js"
+    "tmp/wrapped_libs.js"
+    "src/js/**/*.js" #this all will only work if the dependency orders do not matter
+    "src/js/**/**/*.js"
+    "src/js/**/**/**/*.js"
+    "!src/js/wrapped/*.js"
+  ]
+  dest: "dist/<%= pkg.name %>.js"
+
+clone = (obj) ->
+  JSON.parse JSON.stringify obj
+
+concatDistMapped = clone concatDist
+concatDistMapped.options = _.extend clone(concatDist.options),
+  sourceMap: true
+  sourceMapName: "dist/<%= pkg.name %>_dev_mapped.js.map"
+concatDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.js"
+
+uglifyDist=
+  options:
+    banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
+    compress: true
+    report: "gzip"
+  src: "dist/<%= pkg.name %>.js"
+  dest: "dist/<%= pkg.name %>.min.js"
+
+uglifyDistMapped = clone uglifyDist
+uglifyDistMapped.options = _.extend clone(uglifyDistMapped.options),
+  sourceMap: true
+  sourceMapName: "dist/<%= pkg.name %>_dev_mapped.min.js.map"
+uglifyDistMapped.src =  "dist/<%= pkg.name %>_dev_mapped.js"
+uglifyDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.min.js"
+
+# console.log concatDist
+# console.log '////////////////////////////////////////////////'
+# console.log concatDistMapped
 
 module.exports = (grunt) ->
   options =
@@ -66,7 +108,7 @@ module.exports = (grunt) ->
       compile:
         expand: true,
         flatten: false,
-        src: sourceOrder.map (f) -> f + '.coffee'
+        src: pipeline.map (f) -> f + '.coffee'
         dest: 'tmp/'
         ext: '.js'
 
@@ -89,27 +131,11 @@ module.exports = (grunt) ->
         ext: '.spec.js'
 
     concat:
-      options:
-        banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
-        separator: ";"
-        sourceMap: true
-        sourceMapName: "dist/angular-google-map.js.map"
-
-      dist:
-        #all the coffee filess are now in 'tmp/src/coffee/* , use same sourceMap order to map w/ tmp/'
-        src: sourceOrder.map( (f) -> "tmp/#{f}.js").concat [
-          "tmp/wrapped_uuid.js"
-          "tmp/wrapped_libs.js"
-          "src/js/**/*.js" #this all will only work if the dependency orders do not matter
-          "src/js/**/**/*.js"
-          "src/js/**/**/**/*.js"
-          "!src/js/wrapped/*.js"
-        ]
-        dest: "dist/<%= pkg.name %>.js"
+      dist: concatDist
+      distMapped: concatDistMapped
       libs:
         src: ["lib/*.js"]
         dest: "tmp/libs.js"
-
     copy:
       dist:
         files: [
@@ -122,14 +148,8 @@ module.exports = (grunt) ->
         ]
 
     uglify:
-      options:
-        banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
-        compress: true
-        report: "gzip"
-
-      dist:
-        src: "tmp/output.js"
-        dest: "dist/<%= pkg.name %>.min.js"
+      dist: uglifyDist
+      distMapped: uglifyDistMapped
 
     jshint:
       all: ["Gruntfile.js", "temp/spec/js/*.js", "temp/spec/js/**/*.js", "temp/spec/js/**/**/*.js",
