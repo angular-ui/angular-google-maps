@@ -17,10 +17,14 @@ angular.module("uiGmapgoogle-maps.directives.api.managers")
         msg = "gMarker.key undefined and it is REQUIRED!!"
         Logger.error msg
         throw msg
-      exists = (@gMarkers.get gMarker.key)?
+      exists = @gMarkers.get gMarker.key
       if !exists
-        @handleOptDraw(gMarker, optDraw, true)
         @gMarkers.put gMarker.key, gMarker
+        @handleOptDraw(exists or gMarker, optDraw, true)
+
+    update: (gMarker, optDraw = true) =>
+      @remove gMarker, optDraw
+      @add gMarker, optDraw
 
     addMany: (gMarkers) =>
       gMarkers.forEach (gMarker) =>

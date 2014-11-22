@@ -149,7 +149,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
               return
             #set isInit to true to force redraw after all updates are processed
-            child.setMyScope model,child.model, false
+            child.updateModel model
 
           newChildMarker: (model, scope)=>
             unless model[@idKey]?
