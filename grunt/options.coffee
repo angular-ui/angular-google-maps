@@ -46,7 +46,7 @@ concatDist =
   dest: "dist/<%= pkg.name %>.js"
 
 clone = (obj) ->
-  JSON.parse JSON.stringify obj
+  _.extend {}, obj
 
 concatDistMapped = clone concatDist
 concatDistMapped.options = _.extend clone(concatDist.options),
@@ -68,10 +68,6 @@ uglifyDistMapped.options = _.extend clone(uglifyDistMapped.options),
   sourceMapName: "dist/<%= pkg.name %>_dev_mapped.min.js.map"
 uglifyDistMapped.src =  "dist/<%= pkg.name %>_dev_mapped.js"
 uglifyDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.min.js"
-
-# console.log concatDist
-# console.log '////////////////////////////////////////////////'
-# console.log concatDistMapped
 
 module.exports = (grunt) ->
   options =
