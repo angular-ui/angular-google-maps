@@ -48,6 +48,12 @@ To build the library after you made changes, simply run grunt:
 grunt
 ```
 
+### Generating SourceMap(s)
+```shell
+grunt mappAll
+```
+This will generate source maps for development (angular-google-maps_dev_mapped.js) (non minified) and source maps to minified (angular-google-maps_dev_mapped.min.js) files. They each have their own corresponding map files.  To get the coinciding source files you will need to copy the generated `/tmp` directory (currently not under scc).
+
 If you get errors from `jshint`, just add the `--force` argument.
 
 ### Running the example
