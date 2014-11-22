@@ -99,17 +99,19 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 @gMarkerManager.fit() if scope.fit
             .then =>
               @existingPieces = undefined
+            .catch =>
+              @existingPieces = undefined
 
           reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
               return
             if @scope.markerModels?.length
-              @onDestroy(scope).then =>
-                @createMarkersFromScratch(scope)
+              @onDestroy(scope)
             else
               @createMarkersFromScratch(scope)
 
           pieceMeal: (scope)=>
+            #only chunk if we are not super busy
             doChunk = if @existingPieces? then false else _async.defaultChunkSize
             if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
               #find the current state, async operation that calls back
@@ -139,6 +141,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                       @gMarkerManager.draw()
                       scope.markerModels = @scope.markerModels #for other directives like windows
                       @gMarkerManager.fit() if scope.fit #note fit returns a promise
+                .catch =>
+                  @existingPieces = undefined
                 .then =>
                   @existingPieces = undefined
             else
@@ -178,6 +182,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @gMarkerManager.clear() if @gMarkerManager?
               @scope.markerModels = new PropMap()
               uiGmapPromise.resolve()
+            .catch =>
+              @existingPieces = undefined
 
           maybeExecMappedEvent:(cluster, fnName) ->
             if _.isFunction @scope.clusterEvents?[fnName]

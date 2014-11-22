@@ -382,7 +382,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
     }
   ]).service("uiGmap_async", [
-    "$timeout", "uiGmapPromise", function($timeout, uiGmapPromise) {
+    "$timeout", "uiGmapPromise", "uiGmapLogger", function($timeout, uiGmapPromise, $log) {
       var defaultChunkSize, doChunk, each, map, waitOrGo;
       defaultChunkSize = 20;
 
@@ -413,7 +413,7 @@ Nicholas McCready - https://twitter.com/nmccready
         Optional Asynchronous Chunking via promises.
        */
       doChunk = function(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index) {
-        var cnt, e, i;
+        var cnt, e, i, msg;
         try {
           if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
             cnt = chunkSizeOrDontChunk;
@@ -442,11 +442,13 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         } catch (_error) {
           e = _error;
-          return overallD.reject("error within chunking iterator: " + e);
+          msg = "error within chunking iterator: " + e;
+          $log.error(msg);
+          return overallD.reject(msg);
         }
       };
       each = function(array, chunk, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) {
-        var overallD, ret;
+        var error, overallD, ret;
         if (chunkSizeOrDontChunk == null) {
           chunkSizeOrDontChunk = defaultChunkSize;
         }
@@ -460,7 +462,9 @@ Nicholas McCready - https://twitter.com/nmccready
         overallD = uiGmapPromise.defer();
         ret = overallD.promise;
         if (!pauseMilli) {
-          overallD.reject("pause (delay) must be set from _async!");
+          error = 'pause (delay) must be set from _async!';
+          $log.error(error);
+          overallD.reject(error);
           return ret;
         }
         if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
@@ -1428,6 +1432,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.removeMany = __bind(this.removeMany, this);
           this.remove = __bind(this.remove, this);
           this.addMany = __bind(this.addMany, this);
+          this.update = __bind(this.update, this);
           this.add = __bind(this.add, this);
           ClustererMarkerManager.__super__.constructor.call(this);
           this.type = ClustererMarkerManager.type;
@@ -1460,6 +1465,11 @@ Nicholas McCready - https://twitter.com/nmccready
           this.clusterer.addMarker(gMarker, this.noDrawOnSingleAddRemoves);
           this.propMapGMarkers.put(gMarker.key, gMarker);
           return this.checkSync();
+        };
+
+        ClustererMarkerManager.prototype.update = function(gMarker) {
+          this.remove(gMarker);
+          return this.add(gMarker);
         };
 
         ClustererMarkerManager.prototype.addMany = function(gMarkers) {
@@ -1584,6 +1594,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.removeMany = __bind(this.removeMany, this);
           this.remove = __bind(this.remove, this);
           this.addMany = __bind(this.addMany, this);
+          this.update = __bind(this.update, this);
           this.add = __bind(this.add, this);
           MarkerManager.__super__.constructor.call(this);
           this.type = MarkerManager.type;
@@ -1603,11 +1614,19 @@ Nicholas McCready - https://twitter.com/nmccready
             Logger.error(msg);
             throw msg;
           }
-          exists = (this.gMarkers.get(gMarker.key)) != null;
+          exists = this.gMarkers.get(gMarker.key);
           if (!exists) {
-            this.handleOptDraw(gMarker, optDraw, true);
-            return this.gMarkers.put(gMarker.key, gMarker);
+            this.gMarkers.put(gMarker.key, gMarker);
+            return this.handleOptDraw(exists || gMarker, optDraw, true);
           }
+        };
+
+        MarkerManager.prototype.update = function(gMarker, optDraw) {
+          if (optDraw == null) {
+            optDraw = true;
+          }
+          this.remove(gMarker, optDraw);
+          return this.add(gMarker, optDraw);
         };
 
         MarkerManager.prototype.addMany = function(gMarkers) {
@@ -2349,6 +2368,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.maybeSetScopeValue = __bind(this.maybeSetScopeValue, this);
           this.createMarker = __bind(this.createMarker, this);
           this.setMyScope = __bind(this.setMyScope, this);
+          this.updateModel = __bind(this.updateModel, this);
+          this.handleModelChanges = __bind(this.handleModelChanges, this);
           this.destroy = __bind(this.destroy, this);
           this.deferred = uiGmapPromise.defer();
           _.each(this.keys, (function(_this) {
@@ -2371,15 +2392,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.scope.model = this.model;
             this.scope.$watch('model', (function(_this) {
               return function(newValue, oldValue) {
-                var changes;
                 if (newValue !== oldValue) {
-                  changes = _this.getChanges(newValue, oldValue, IMarker.keys);
-                  if (!_this.firstTime) {
-                    return _.each(changes, function(v, k) {
-                      _this.setMyScope(k, newValue, oldValue);
-                      return _this.needRedraw = true;
-                    });
-                  }
+                  return _this.handleModelChanges(newValue, oldValue);
                 }
               };
             })(this), true);
@@ -2413,7 +2427,51 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return this.scope.$destroy();
         };
 
-        MarkerChildModel.prototype.setMyScope = function(thingThatChanged, model, oldModel, isInit) {
+        MarkerChildModel.prototype.handleModelChanges = function(newValue, oldValue) {
+          var changes, ctr, len;
+          changes = this.getChanges(newValue, oldValue, IMarker.keys);
+          if (!this.firstTime) {
+            ctr = 0;
+            len = _.keys(changes).length;
+            return _.each(changes, (function(_this) {
+              return function(v, k) {
+                var doDraw;
+                ctr += 1;
+                doDraw = len === ctr;
+                _this.setMyScope(k, newValue, oldValue, false, true, doDraw);
+                return _this.needRedraw = true;
+              };
+            })(this));
+          }
+        };
+
+        MarkerChildModel.prototype.updateModel = function(model) {
+          return this.handleModelChanges(model, this.model);
+        };
+
+        MarkerChildModel.prototype.renderGMarker = function(doDraw, validCb) {
+          if (doDraw == null) {
+            doDraw = true;
+          }
+          if (this.getProp(this.coordsKey, this.model) != null) {
+            if (!this.validateCoords(this.getProp(this.coordsKey, this.model))) {
+              $log.debug('MarkerChild does not have coords yet. They may be defined later.');
+              return;
+            }
+            if (validCb != null) {
+              validCb();
+            }
+            if (doDraw && this.gMarker) {
+              return this.gMarkerManager.add(this.gMarker);
+            }
+          } else {
+            if (doDraw && this.gMarker) {
+              return this.gMarkerManager.remove(this.gMarker);
+            }
+          }
+        };
+
+        MarkerChildModel.prototype.setMyScope = function(thingThatChanged, model, oldModel, isInit, doDraw) {
           var justCreated;
           if (oldModel == null) {
             oldModel = void 0;
@@ -2421,46 +2479,57 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (isInit == null) {
             isInit = false;
           }
+          if (doDraw == null) {
+            doDraw = true;
+          }
           if (model == null) {
             model = this.model;
+          } else {
+            this.model = model;
           }
           if (!this.gMarker) {
-            this.setOptions(this.scope);
+            this.setOptions(this.scope, doDraw);
             justCreated = true;
           }
           switch (thingThatChanged) {
             case 'all':
               return _.each(this.keys, (function(_this) {
                 return function(v, k) {
-                  return _this.setMyScope(k, model, oldModel, isInit);
+                  return _this.setMyScope(k, model, oldModel, isInit, doDraw);
                 };
               })(this));
             case 'icon':
-              return this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon);
+              return this.maybeSetScopeValue('icon', model, oldModel, this.iconKey, this.evalModelHandle, isInit, this.setIcon, doDraw);
             case 'coords':
-              return this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords);
+              return this.maybeSetScopeValue('coords', model, oldModel, this.coordsKey, this.evalModelHandle, isInit, this.setCoords, doDraw);
             case 'options':
               if (!justCreated) {
-                return this.createMarker(model, oldModel, isInit);
+                return this.createMarker(model, oldModel, isInit, doDraw);
               }
           }
         };
 
-        MarkerChildModel.prototype.createMarker = function(model, oldModel, isInit) {
+        MarkerChildModel.prototype.createMarker = function(model, oldModel, isInit, doDraw) {
           if (oldModel == null) {
             oldModel = void 0;
           }
           if (isInit == null) {
             isInit = false;
           }
-          this.maybeSetScopeValue('options', model, oldModel, this.optionsKey, this.evalModelHandle, isInit, this.setOptions);
+          if (doDraw == null) {
+            doDraw = true;
+          }
+          this.maybeSetScopeValue('options', model, oldModel, this.optionsKey, this.evalModelHandle, isInit, this.setOptions, doDraw);
           return this.firstTime = false;
         };
 
-        MarkerChildModel.prototype.maybeSetScopeValue = function(scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter) {
+        MarkerChildModel.prototype.maybeSetScopeValue = function(scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter, doDraw) {
           var newValue, oldVal, toSet;
           if (gSetter == null) {
             gSetter = void 0;
+          }
+          if (doDraw == null) {
+            doDraw = true;
           }
           if (oldModel === void 0) {
             toSet = evaluate(model, modelKey);
@@ -2468,7 +2537,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               this.scope[scopePropName] = toSet;
             }
             if (gSetter != null) {
-              gSetter(this.scope);
+              gSetter(this.scope, doDraw);
             }
             return;
           }
@@ -2478,9 +2547,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.scope[scopePropName] = newValue;
             if (!isInit) {
               if (gSetter != null) {
-                gSetter(this.scope);
+                gSetter(this.scope, doDraw);
               }
-              if (this.doDrawSelf) {
+              if (this.doDrawSelf && doDraw) {
                 return this.gMarkerManager.draw();
               }
             }
@@ -2497,80 +2566,87 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return hasIdenticalScopes || hasNoGmarker;
         };
 
-        MarkerChildModel.prototype.setCoords = function(scope) {
+        MarkerChildModel.prototype.setCoords = function(scope, doDraw) {
+          if (doDraw == null) {
+            doDraw = true;
+          }
           if (this.isNotValid(scope) || (this.gMarker == null)) {
             return;
           }
-          if (this.getProp(this.coordsKey, this.model) != null) {
-            if (!this.validateCoords(this.getProp(this.coordsKey, this.model))) {
-              $log.debug('MarkerChild does not have coords yet. They may be defined later.');
-              return;
-            }
-            this.gMarker.setPosition(this.getCoords(this.getProp(this.coordsKey, this.model)));
-            this.gMarker.setVisible(this.validateCoords(this.getProp(this.coordsKey, this.model)));
-            return this.gMarkerManager.add(this.gMarker);
-          } else {
-            return this.gMarkerManager.remove(this.gMarker);
-          }
+          return this.renderGMarker(doDraw, (function(_this) {
+            return function() {
+              _this.gMarker.setPosition(_this.getCoords(_this.getProp(_this.coordsKey, _this.model)));
+              return _this.gMarker.setVisible(_this.validateCoords(_this.getProp(_this.coordsKey, _this.model)));
+            };
+          })(this));
         };
 
-        MarkerChildModel.prototype.setIcon = function(scope) {
+        MarkerChildModel.prototype.setIcon = function(scope, doDraw) {
+          if (doDraw == null) {
+            doDraw = true;
+          }
           if (this.isNotValid(scope) || (this.gMarker == null)) {
             return;
           }
-          this.gMarker.setIcon(this.getProp(this.iconKey, this.model));
-          this.gMarkerManager.add(this.gMarker);
-          this.gMarker.setPosition(this.getCoords(this.getProp(this.coordsKey, this.model)));
-          return this.gMarker.setVisible(this.validateCoords(this.getProp(this.coordsKey, this.model)));
+          return this.renderGMarker(doDraw, (function(_this) {
+            return function() {
+              _this.gMarker.setIcon(_this.getProp(_this.iconKey, _this.model));
+              _this.gMarker.setPosition(_this.getCoords(_this.getProp(_this.coordsKey, _this.model)));
+              return _this.gMarker.setVisible(_this.validateCoords(_this.getProp(_this.coordsKey, _this.model)));
+            };
+          })(this));
         };
 
-        MarkerChildModel.prototype.setOptions = function(scope) {
-          var coords, icon, _options;
+        MarkerChildModel.prototype.setOptions = function(scope, doDraw) {
+          if (doDraw == null) {
+            doDraw = true;
+          }
           if (this.isNotValid(scope, false)) {
             return;
           }
-          if (scope.coords == null) {
-            return;
-          }
-          coords = this.getProp(this.coordsKey, this.model);
-          icon = this.getProp(this.iconKey, this.model);
-          _options = this.getProp(this.optionsKey, this.model);
-          this.opts = this.createOptions(coords, icon, _options);
-          if ((this.gMarker != null) && (this.isLabel(this.gMarker === this.isLabel(this.opts)))) {
-            this.gMarker.setOptions(this.opts);
-          } else {
-            if (!this.firstTime) {
-              if (this.gMarker != null) {
-                this.gMarkerManager.remove(this.gMarker);
-                this.gMarker = null;
+          this.renderGMarker(doDraw, (function(_this) {
+            return function() {
+              var coords, icon, _options;
+              coords = _this.getProp(_this.coordsKey, _this.model);
+              icon = _this.getProp(_this.iconKey, _this.model);
+              _options = _this.getProp(_this.optionsKey, _this.model);
+              _this.opts = _this.createOptions(coords, icon, _options);
+              if ((_this.gMarker != null) && (_this.isLabel(_this.gMarker === _this.isLabel(_this.opts)))) {
+                _this.gMarker.setOptions(_this.opts);
+              } else {
+                if (!_this.firstTime) {
+                  if (_this.gMarker != null) {
+                    _this.gMarkerManager.remove(_this.gMarker);
+                    _this.gMarker = null;
+                  }
+                }
               }
-            }
-          }
-          if (!this.gMarker) {
-            if (this.isLabel(this.opts)) {
-              this.gMarker = new MarkerWithLabel(this.setLabelOptions(this.opts));
-            } else {
-              this.gMarker = new google.maps.Marker(this.opts);
-            }
-            _.extend(this.gMarker, {
-              model: this.model
-            });
-          }
-          if (this.externalListeners) {
-            this.removeEvents(this.externalListeners);
-          }
-          if (this.internalListeners) {
-            this.removeEvents(this.internalListeners);
-          }
-          this.externalListeners = this.setEvents(this.gMarker, this.scope, this.model, ['dragend']);
-          this.internalListeners = this.setEvents(this.gMarker, {
-            events: this.internalEvents(),
-            $evalAsync: function() {}
-          }, this.model);
-          if (this.id != null) {
-            this.gMarker.key = this.id;
-          }
-          this.gMarkerManager.add(this.gMarker);
+              if (!_this.gMarker) {
+                if (_this.isLabel(_this.opts)) {
+                  _this.gMarker = new MarkerWithLabel(_this.setLabelOptions(_this.opts));
+                } else {
+                  _this.gMarker = new google.maps.Marker(_this.opts);
+                }
+                _.extend(_this.gMarker, {
+                  model: _this.model
+                });
+              }
+              if (_this.externalListeners) {
+                _this.removeEvents(_this.externalListeners);
+              }
+              if (_this.internalListeners) {
+                _this.removeEvents(_this.internalListeners);
+              }
+              _this.externalListeners = _this.setEvents(_this.gMarker, _this.scope, _this.model, ['dragend']);
+              _this.internalListeners = _this.setEvents(_this.gMarker, {
+                events: _this.internalEvents(),
+                $evalAsync: function() {}
+              }, _this.model);
+              if (_this.id != null) {
+                return _this.gMarker.key = _this.id;
+              }
+            };
+          })(this));
           if (this.gMarker && (this.gMarker.getMap() || this.gMarkerManager.type !== MarkerManager.type)) {
             this.deferred.resolve(this.gMarker);
           } else {
@@ -3815,6 +3891,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _this.existingPieces = void 0;
             };
+          })(this))["catch"]((function(_this) {
+            return function() {
+              return _this.existingPieces = void 0;
+            };
           })(this));
         };
 
@@ -3824,11 +3904,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           if ((_ref = this.scope.markerModels) != null ? _ref.length : void 0) {
-            return this.onDestroy(scope).then((function(_this) {
-              return function() {
-                return _this.createMarkersFromScratch(scope);
-              };
-            })(this));
+            return this.onDestroy(scope);
           } else {
             return this.createMarkersFromScratch(scope);
           }
@@ -3867,6 +3943,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       }
                     }
                   });
+                })["catch"](function() {
+                  return _this.existingPieces = void 0;
                 }).then(function() {
                   return _this.existingPieces = void 0;
                 });
@@ -3882,7 +3960,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
             return;
           }
-          return child.setMyScope(model, child.model, false);
+          return child.updateModel(model);
         };
 
         MarkersParentModel.prototype.newChildMarker = function(model, scope) {
@@ -3917,6 +3995,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
               _this.scope.markerModels = new PropMap();
               return uiGmapPromise.resolve();
+            };
+          })(this))["catch"]((function(_this) {
+            return function() {
+              return _this.existingPieces = void 0;
             };
           })(this));
         };

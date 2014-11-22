@@ -22,6 +22,8 @@ angular.module("uiGmapgoogle-maps.directives.api.managers")
         @gMarkers.put gMarker.key, gMarker
         @handleOptDraw(exists or gMarker, optDraw, true)
 
+    #if you want flashing as in remove and then re-add use this
+    #otherwise leave the marker in the map and just edit its properties (coords, icon etc)
     update: (gMarker, optDraw = true) =>
       @remove gMarker, optDraw
       @add gMarker, optDraw

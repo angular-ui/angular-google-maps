@@ -1,6 +1,7 @@
 angular.module('appMaps', ['uiGmapgoogle-maps'])
 
-.controller("mapCtrl", ["$scope", function($scope) {
+.controller("mapCtrl", ["$scope","uiGmapLogger", function($scope, logger) {
+  logger.doLog = true;
   var lastId = 1;
 
   $scope.map = {
@@ -39,7 +40,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
         lastId++;
       }
     }
-    lastId = 1;//reset
+//    lastId = 1;//reset
     $scope.searchResults.results = markers;
   };
 

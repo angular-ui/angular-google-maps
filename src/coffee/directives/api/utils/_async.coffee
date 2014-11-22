@@ -7,7 +7,7 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
     resolve:() ->
       _cb.apply(undefined,arguments)
 ])
-.service "uiGmap_async", [ "$timeout", "uiGmapPromise", ($timeout,uiGmapPromise) ->
+.service "uiGmap_async", [ "$timeout", "uiGmapPromise", "uiGmapLogger", ($timeout,uiGmapPromise, $log) ->
 
   defaultChunkSize = 20
 
@@ -59,7 +59,9 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
         else
           overallD.resolve()
     catch e
-      overallD.reject("error within chunking iterator: #{e}")
+      msg = "error within chunking iterator: #{e}"
+      $log.error msg
+      overallD.reject msg
 
   each = (array, chunk, pauseCb, chunkSizeOrDontChunk = defaultChunkSize, index = 0, pauseMilli = 1) ->
     ret = undefined
@@ -67,7 +69,9 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
     ret = overallD.promise
 
     unless pauseMilli
-      overallD.reject "pause (delay) must be set from _async!"
+      error = 'pause (delay) must be set from _async!'
+      $log.error error
+      overallD.reject error
       return ret
 
     if array == undefined or array?.length <= 0
