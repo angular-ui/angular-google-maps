@@ -46,9 +46,6 @@ module.exports = (grunt) ->
     "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist",
     "copy", "uglify::dist", "jasmine:spec"]
 
-  grunt.registerTask "fast", [
-    "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist",
-    "copy", "jasmine:spec"]
 
   # run default "grunt" prior to generate _SpecRunner.html
   grunt.registerTask "spec", [
@@ -65,14 +62,11 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'offline',  ['default-no-specs', 'watch:offline']
 
+  dev = ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat", "copy"]
 
-  grunt.registerTask "dev", [
-    "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:distMapped",
-    "copy", "uglify:distMapped", "jasmine:spec"]
+  grunt.registerTask "dev", dev.concat ["uglify:distMapped", "jasmine:spec"]
 
-  grunt.registerTask "fastDev", [
-    "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat",
-    "copy", "jasmine:spec"]
+  grunt.registerTask "fast", dev.concat ["jasmine:spec"]
 
   grunt.registerTask "mappAll", [
     "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat", "uglify"
@@ -90,11 +84,11 @@ module.exports = (grunt) ->
   _(allExamplesOpen).each (v, key) ->
     basicTask = "open:" + key
     #register individual task (runs by itself)
-    grunt.registerTask key, ["fastDev", "clean:example", "connect:server", basicTask, "watch:all"]
+    grunt.registerTask key, ["fast", "clean:example", "connect:server", basicTask, "watch:all"]
     exampleOpenTasks.push basicTask
 
   #  allExamplesTaskToRun = ["clean:example", "connect:server"].concat(['open:free-draw-polygons','open:example']).concat ['watch:all']
-  allExamplesTaskToRun = ["fastDev","clean:example", "connect:server"].concat(exampleOpenTasks).concat ['watch:all']
+  allExamplesTaskToRun = ["fast","clean:example", "connect:server"].concat(exampleOpenTasks).concat ['watch:all']
 
 
   listWithQuotes = (collection, doLog = true) ->

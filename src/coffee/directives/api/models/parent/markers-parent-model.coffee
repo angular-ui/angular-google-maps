@@ -98,19 +98,22 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 @gMarkerManager.draw()
                 @gMarkerManager.fit() if scope.fit
             .then =>
-              @existingPieces = undefined
+              uiGmapPromise.resolve()
+            .catch =>
+              uiGmapPromise.resolve()
 
           reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
               return
             if @scope.markerModels?.length
-              @onDestroy(scope).then =>
-                @createMarkersFromScratch(scope)
+              @onDestroy(scope)
             else
               @createMarkersFromScratch(scope)
 
           pieceMeal: (scope)=>
-            doChunk = if @existingPieces? then false else _async.defaultChunkSize
+            #only chunk if we are not super busy
+            doChunk = _async.defaultChunkSize
+#            doChunk = if @existingPieces? then false else _async.defaultChunkSize
             if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
               #find the current state, async operation that calls back
               @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison, (state) =>
@@ -123,12 +126,12 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                     if child?
                       child.destroy() if child.destroy?
                       @scope.markerModels.remove(child.id)
-                  , doChunk)
+                  , false)
                   .then =>
                       #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
                     _async.each(payload.adds, (modelToAdd) =>
                       @newChildMarker(modelToAdd, scope)
-                    , doChunk)
+                    , false)
                   .then () =>
                     _async.each(payload.updates, (update) =>
                         @updateChild update.child, update.model
@@ -139,8 +142,10 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                       @gMarkerManager.draw()
                       scope.markerModels = @scope.markerModels #for other directives like windows
                       @gMarkerManager.fit() if scope.fit #note fit returns a promise
+                .catch =>
+                  uiGmapPromise.resolve()
                 .then =>
-                  @existingPieces = undefined
+                  uiGmapPromise.resolve()
             else
               @reBuildMarkers(scope)
 
@@ -149,7 +154,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
               return
             #set isInit to true to force redraw after all updates are processed
-            child.setMyScope model,child.model, false
+            child.updateModel model
 
           newChildMarker: (model, scope)=>
             unless model[@idKey]?
@@ -177,6 +182,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               delete @scope.markerModels
               @gMarkerManager.clear() if @gMarkerManager?
               @scope.markerModels = new PropMap()
+              uiGmapPromise.resolve()
+            .catch =>
               uiGmapPromise.resolve()
 
           maybeExecMappedEvent:(cluster, fnName) ->

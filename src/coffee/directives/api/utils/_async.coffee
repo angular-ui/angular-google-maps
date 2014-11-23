@@ -1,23 +1,40 @@
 angular.module("uiGmapgoogle-maps.directives.api.utils")
 .service("uiGmap_sync", [ ->
-  fakePromise: ->
-    _cb = undefined
-    then: (cb) ->
-      _cb = cb
-    resolve:() ->
-      _cb.apply(undefined,arguments)
-])
-.service "uiGmap_async", [ "$timeout", "uiGmapPromise", ($timeout,uiGmapPromise) ->
+    fakePromise: ->
+      _cb = undefined
+      then: (cb) ->
+        _cb = cb
+      resolve: () ->
+        _cb.apply(undefined, arguments)
+  ])
+.service "uiGmap_async", [ "$timeout", "uiGmapPromise", "uiGmapLogger", ($timeout, uiGmapPromise, $log) ->
 
   defaultChunkSize = 20
 
+  errorObject =
+    value: null
+
+  #https://github.com/petkaantonov/bluebird/wiki/Optimization-killers
+  tryCatch = (fn, ctx, args) ->
+    try
+      return fn.apply(ctx, args)
+    catch e
+      errorObject.value = e
+      return errorObject
+
+  logTryCatch = (fn, ctx, deferred, args) ->
+    result = tryCatch(fn, ctx, args)
+    if result == errorObject
+      msg = "error within chunking iterator: #{errorObject.value}"
+      $log.error msg
+      deferred.reject msg
   ###
   utility to reduce code bloat. The whole point is to check if there is existing synchronous work going on.
   If so we wait on it.
 
   Note: This is fully intended to be mutable (ie existingPiecesObj is getting existingPieces prop slapped on)
   ###
-  waitOrGo = (existingPiecesObj,fnPromise) ->
+  waitOrGo = (existingPiecesObj, fnPromise) ->
     unless existingPiecesObj.existingPieces
       existingPiecesObj.existingPieces = fnPromise()
     else
@@ -35,31 +52,29 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
     Optional Asynchronous Chunking via promises.
 ###
   doChunk = (array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index) ->
-    try
-      if chunkSizeOrDontChunk and chunkSizeOrDontChunk < array.length
-        cnt = chunkSizeOrDontChunk
+    if chunkSizeOrDontChunk and chunkSizeOrDontChunk < array.length
+      cnt = chunkSizeOrDontChunk
+    else
+      cnt = array.length
+
+    i = index
+
+    while cnt-- and i < (if array then array.length else i + 1)
+      # process array[index] here
+      logTryCatch chunkCb, undefined, overallD, [array[i], i]
+      ++i
+
+    if array
+      if i < array.length
+        index = i
+        if chunkSizeOrDontChunk
+          if pauseCb? and _.isFunction pauseCb
+            logTryCatch pauseCb, undefined, overallD, []
+          $timeout ->
+            doChunk array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index
+          , pauseMilli, false
       else
-        cnt = array.length
-
-      i = index
-
-      while cnt-- and i < (if array then array.length else i + 1)
-        # process array[index] here
-        chunkCb(array[i], i)
-        ++i
-
-      if array
-        if i < array.length
-          index = i
-          if chunkSizeOrDontChunk
-            pauseCb?()
-            $timeout ->
-              doChunk array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index
-            , pauseMilli, false
-        else
-          overallD.resolve()
-    catch e
-      overallD.reject("error within chunking iterator: #{e}")
+        overallD.resolve()
 
   each = (array, chunk, pauseCb, chunkSizeOrDontChunk = defaultChunkSize, index = 0, pauseMilli = 1) ->
     ret = undefined
@@ -67,14 +82,16 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
     ret = overallD.promise
 
     unless pauseMilli
-      overallD.reject "pause (delay) must be set from _async!"
+      error = 'pause (delay) must be set from _async!'
+      $log.error error
+      overallD.reject error
       return ret
 
     if array == undefined or array?.length <= 0
       overallD.resolve()
       return ret
     # set this to whatever number of items you can process at once
-    doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index)
+    doChunk array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index
 
     return ret
 
