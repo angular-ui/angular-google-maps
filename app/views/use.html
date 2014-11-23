@@ -38,7 +38,7 @@
                         </p>
                     </li>
                 </ul>
-                <strong>Serving Google Maps in China (mainland)</strong>
+                <strong>Serving Google Maps in China</strong>
                 <p>
                     It is a state demand that all online map providers must use an obscured coordinate system called GCJ-02 (aka Coordinates on Mars).
                     GCJ-02 is WSG-84 based, but added offsets to both latitude and longitude.
@@ -52,9 +52,18 @@
                 </p>
                 <p>
                     Google also submits to this regulation. They serve this modified system at maps.google.cn. <br />
-                    Specify a <code>china</code> flag when you load the Google Maps API using the GoogleMapsApi Loader,<br />
-                    or replace <code>//maps.googleapis.com/maps/api/js</code> with
-                        <code>http://maps.google.cn/maps/api/js</code> if you manually load Google Maps API via a script tag.
+                    Specify a <code>china</code> flag when you load the Google Maps API using the GoogleMapsApi Loader like so:<br />
+                <div hljs language="js">
+angular.module('myApplicationModule', ['uiGmapgoogle-maps']).config(
+    ['uiGmapGoogleMapApiProvider', function(GoogleMapApiProviders) {
+        GoogleMapApiProvider.configure({
+            china: true
+        });
+    }]
+);
+                </div>
+                    Alternatively if you manually load the Google Maps API, replace <code>//maps.googleapis.com/maps/api/js</code> with
+                        <code>http://maps.google.cn/maps/api/js</code>.
                 </p>
             </li>
 
