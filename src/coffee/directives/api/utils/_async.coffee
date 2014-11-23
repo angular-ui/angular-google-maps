@@ -23,7 +23,7 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
       return errorObject
 
   logTryCatch = (fn, ctx, deferred, args) ->
-    result = fn.apply(ctx, args)
+    result = tryCatch(fn, ctx, args)
     if result == errorObject
       msg = "error within chunking iterator: #{e}"
       $log.error msg
