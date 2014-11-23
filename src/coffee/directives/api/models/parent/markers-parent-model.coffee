@@ -98,9 +98,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 @gMarkerManager.draw()
                 @gMarkerManager.fit() if scope.fit
             .then =>
-              @existingPieces = undefined
+              uiGmapPromise.resolve()
             .catch =>
-              @existingPieces = undefined
+              uiGmapPromise.resolve()
 
           reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
@@ -112,7 +112,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 
           pieceMeal: (scope)=>
             #only chunk if we are not super busy
-            doChunk = if @existingPieces? then false else _async.defaultChunkSize
+            doChunk = _async.defaultChunkSize
+#            doChunk = if @existingPieces? then false else _async.defaultChunkSize
             if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
               #find the current state, async operation that calls back
               @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison, (state) =>
@@ -125,12 +126,12 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                     if child?
                       child.destroy() if child.destroy?
                       @scope.markerModels.remove(child.id)
-                  , doChunk)
+                  , false)
                   .then =>
                       #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
                     _async.each(payload.adds, (modelToAdd) =>
                       @newChildMarker(modelToAdd, scope)
-                    , doChunk)
+                    , false)
                   .then () =>
                     _async.each(payload.updates, (update) =>
                         @updateChild update.child, update.model
@@ -142,9 +143,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                       scope.markerModels = @scope.markerModels #for other directives like windows
                       @gMarkerManager.fit() if scope.fit #note fit returns a promise
                 .catch =>
-                  @existingPieces = undefined
+                  uiGmapPromise.resolve()
                 .then =>
-                  @existingPieces = undefined
+                  uiGmapPromise.resolve()
             else
               @reBuildMarkers(scope)
 
@@ -183,7 +184,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @scope.markerModels = new PropMap()
               uiGmapPromise.resolve()
             .catch =>
-              @existingPieces = undefined
+              uiGmapPromise.resolve()
 
           maybeExecMappedEvent:(cluster, fnName) ->
             if _.isFunction @scope.clusterEvents?[fnName]

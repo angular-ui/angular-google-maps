@@ -29,7 +29,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
 
     for (i = 0; i < num; i++) {
       var cords = chance.coordinates().split(',');
-      if(markers.length < 100){
+      if(markers.length < num){
         markers.push({
           'coords': {
             'latitude': cords[0],
@@ -40,7 +40,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
         lastId++;
       }
     }
-    lastId = 1;//reset
+//    lastId = 1;//reset
     $scope.searchResults.results = markers;
   };
 

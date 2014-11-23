@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.9 2014-11-22
+/*! angular-google-maps 2.0.9 2014-11-23
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -383,8 +383,30 @@ Nicholas McCready - https://twitter.com/nmccready
     }
   ]).service("uiGmap_async", [
     "$timeout", "uiGmapPromise", "uiGmapLogger", function($timeout, uiGmapPromise, $log) {
-      var defaultChunkSize, doChunk, each, map, waitOrGo;
+      var defaultChunkSize, doChunk, each, errorObject, logTryCatch, map, tryCatch, waitOrGo;
       defaultChunkSize = 20;
+      errorObject = {
+        value: null
+      };
+      tryCatch = function(fn, ctx, args) {
+        var e;
+        try {
+          return fn.apply(ctx, args);
+        } catch (_error) {
+          e = _error;
+          errorObject.value = e;
+          return errorObject;
+        }
+      };
+      logTryCatch = function(fn, ctx, deferred, args) {
+        var msg, result;
+        result = fn.apply(ctx, args);
+        if (result === errorObject) {
+          msg = "error within chunking iterator: " + e;
+          $log.error(msg);
+          return deferred.reject(msg);
+        }
+      };
 
       /*
       utility to reduce code bloat. The whole point is to check if there is existing synchronous work going on.
@@ -413,38 +435,31 @@ Nicholas McCready - https://twitter.com/nmccready
         Optional Asynchronous Chunking via promises.
        */
       doChunk = function(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index) {
-        var cnt, e, i, msg;
-        try {
-          if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
-            cnt = chunkSizeOrDontChunk;
-          } else {
-            cnt = array.length;
-          }
-          i = index;
-          while (cnt-- && i < (array ? array.length : i + 1)) {
-            chunkCb(array[i], i);
-            ++i;
-          }
-          if (array) {
-            if (i < array.length) {
-              index = i;
-              if (chunkSizeOrDontChunk) {
-                if (typeof pauseCb === "function") {
-                  pauseCb();
-                }
-                return $timeout(function() {
-                  return doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index);
-                }, pauseMilli, false);
+        var cnt, i;
+        if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
+          cnt = chunkSizeOrDontChunk;
+        } else {
+          cnt = array.length;
+        }
+        i = index;
+        while (cnt-- && i < (array ? array.length : i + 1)) {
+          chunkCb(array[i], i);
+          ++i;
+        }
+        if (array) {
+          if (i < array.length) {
+            index = i;
+            if (chunkSizeOrDontChunk) {
+              if (typeof pauseCb === "function") {
+                pauseCb();
               }
-            } else {
-              return overallD.resolve();
+              return $timeout(function() {
+                return logTryCatch(doChunk, void 0, overallD, [array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index]);
+              }, pauseMilli, false);
             }
+          } else {
+            return overallD.resolve();
           }
-        } catch (_error) {
-          e = _error;
-          msg = "error within chunking iterator: " + e;
-          $log.error(msg);
-          return overallD.reject(msg);
         }
       };
       each = function(array, chunk, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) {
@@ -471,7 +486,7 @@ Nicholas McCready - https://twitter.com/nmccready
           overallD.resolve();
           return ret;
         }
-        doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index);
+        logTryCatch(doChunk, void 0, overallD, [array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index]);
         return ret;
       };
       map = function(objs, iterator, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) {
@@ -1019,54 +1034,48 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module("uiGmapgoogle-maps.directives.api.utils").service("uiGmapLogger", [
     "$log", function($log) {
-      return {
-        doLog: false,
-        info: function(msg) {
-          if (this.doLog) {
-            if ($log != null) {
-              return $log.info(msg);
-            } else {
-              return console.info(msg);
-            }
-          }
-        },
-        log: function(msg) {
-          if (this.doLog) {
-            if ($log != null) {
-              return $log.log(msg);
-            } else {
-              return console.log(msg);
-            }
-          }
-        },
-        error: function(msg) {
-          if (this.doLog) {
-            if ($log != null) {
-              return $log.error(msg);
-            } else {
-              return console.error(msg);
-            }
-          }
-        },
-        debug: function(msg) {
-          if (this.doLog) {
-            if ($log != null) {
-              return $log.debug(msg);
-            } else {
-              return console.debug(msg);
-            }
-          }
-        },
-        warn: function(msg) {
-          if (this.doLog) {
-            if ($log != null) {
-              return $log.warn(msg);
-            } else {
-              return console.warn(msg);
-            }
-          }
+      var LEVELS, log, logFns, maybeExecLevel;
+      this.doLog = true;
+      LEVELS = {
+        log: 1,
+        info: 2,
+        debug: 3,
+        warn: 4,
+        error: 5,
+        none: 6
+      };
+      maybeExecLevel = function(level, current, fn) {
+        if (level >= current) {
+          return fn();
         }
       };
+      log = function(logLevelFnName, msg) {
+        if ($log != null) {
+          return $log[logLevelFnName](msg);
+        } else {
+          return console[logLevelFnName](msg);
+        }
+      };
+      logFns = {};
+      ['log', 'info', 'debug', 'warn', 'error'].forEach((function(_this) {
+        return function(level) {
+          return logFns[level] = function(msg) {
+            if (_this.doLog) {
+              return maybeExecLevel(LEVELS[level], _this.currentLevel, function() {
+                return log(level, msg);
+              });
+            }
+          };
+        };
+      })(this));
+      this.LEVELS = LEVELS;
+      this.currentLevel = LEVELS.error;
+      this.log = logFns['log'];
+      this.info = logFns['info'];
+      this.debug = logFns['debug'];
+      this.warn = logFns['warn'];
+      this.error = logFns['error'];
+      return this;
     }
   ]);
 
@@ -3889,11 +3898,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this)).then((function(_this) {
             return function() {
-              return _this.existingPieces = void 0;
+              return uiGmapPromise.resolve();
             };
           })(this))["catch"]((function(_this) {
             return function() {
-              return _this.existingPieces = void 0;
+              return uiGmapPromise.resolve();
             };
           })(this));
         };
@@ -3912,7 +3921,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         MarkersParentModel.prototype.pieceMeal = function(scope) {
           var doChunk;
-          doChunk = this.existingPieces != null ? false : _async.defaultChunkSize;
+          doChunk = _async.defaultChunkSize;
           if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.markerModels.length > 0) {
             return this.figureOutState(this.idKey, scope, this.scope.markerModels, this.modelKeyComparison, (function(_this) {
               return function(state) {
@@ -3926,10 +3935,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       }
                       return _this.scope.markerModels.remove(child.id);
                     }
-                  }, doChunk).then(function() {
+                  }, false).then(function() {
                     return _async.each(payload.adds, function(modelToAdd) {
                       return _this.newChildMarker(modelToAdd, scope);
-                    }, doChunk);
+                    }, false);
                   }).then(function() {
                     return _async.each(payload.updates, function(update) {
                       return _this.updateChild(update.child, update.model);
@@ -3944,9 +3953,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                   });
                 })["catch"](function() {
-                  return _this.existingPieces = void 0;
+                  return uiGmapPromise.resolve();
                 }).then(function() {
-                  return _this.existingPieces = void 0;
+                  return uiGmapPromise.resolve();
                 });
               };
             })(this));
@@ -3998,7 +4007,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this))["catch"]((function(_this) {
             return function() {
-              return _this.existingPieces = void 0;
+              return uiGmapPromise.resolve();
             };
           })(this));
         };
