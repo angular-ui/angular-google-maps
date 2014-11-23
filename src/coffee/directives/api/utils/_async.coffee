@@ -25,7 +25,7 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
   logTryCatch = (fn, ctx, deferred, args) ->
     result = tryCatch(fn, ctx, args)
     if result == errorObject
-      msg = "error within chunking iterator: #{e}"
+      msg = "error within chunking iterator: #{errorObject.value}"
       $log.error msg
       deferred.reject msg
   ###
@@ -61,17 +61,17 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
 
     while cnt-- and i < (if array then array.length else i + 1)
       # process array[index] here
-      chunkCb(array[i], i)
+      logTryCatch chunkCb, undefined, overallD, [array[i], i]
       ++i
 
     if array
       if i < array.length
         index = i
         if chunkSizeOrDontChunk
-          pauseCb?()
+          if pauseCb? and _.isFunction pauseCb
+            logTryCatch pauseCb, undefined, overallD, []
           $timeout ->
-            logTryCatch doChunk, undefined, overallD,
-              [array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index]
+            doChunk array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index
           , pauseMilli, false
       else
         overallD.resolve()
@@ -91,7 +91,7 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
       overallD.resolve()
       return ret
     # set this to whatever number of items you can process at once
-    logTryCatch doChunk, undefined, overallD, [array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index]
+    doChunk array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index
 
     return ret
 

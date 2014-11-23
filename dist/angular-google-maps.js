@@ -402,7 +402,7 @@ Nicholas McCready - https://twitter.com/nmccready
         var msg, result;
         result = tryCatch(fn, ctx, args);
         if (result === errorObject) {
-          msg = "error within chunking iterator: " + e;
+          msg = "error within chunking iterator: " + errorObject.value;
           $log.error(msg);
           return deferred.reject(msg);
         }
@@ -443,18 +443,18 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         i = index;
         while (cnt-- && i < (array ? array.length : i + 1)) {
-          chunkCb(array[i], i);
+          logTryCatch(chunkCb, void 0, overallD, [array[i], i]);
           ++i;
         }
         if (array) {
           if (i < array.length) {
             index = i;
             if (chunkSizeOrDontChunk) {
-              if (typeof pauseCb === "function") {
-                pauseCb();
+              if ((pauseCb != null) && _.isFunction(pauseCb)) {
+                logTryCatch(pauseCb, void 0, overallD, []);
               }
               return $timeout(function() {
-                return logTryCatch(doChunk, void 0, overallD, [array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index]);
+                return doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index);
               }, pauseMilli, false);
             }
           } else {
@@ -486,7 +486,7 @@ Nicholas McCready - https://twitter.com/nmccready
           overallD.resolve();
           return ret;
         }
-        logTryCatch(doChunk, void 0, overallD, [array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index]);
+        doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index);
         return ret;
       };
       map = function(objs, iterator, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) {
