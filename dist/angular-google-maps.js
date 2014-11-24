@@ -4134,15 +4134,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(_this.plurals.values(), function(model) {
                 return model.destroy();
-              }).then(function() {
-                if (doDelete) {
-                  delete _this.plurals;
-                }
-                _this.plurals = new PropMap();
-                if (doCreate) {
-                  return _this.createChildScopes();
-                }
               });
+            };
+          })(this)).then((function(_this) {
+            return function() {
+              if (doDelete) {
+                delete _this.plurals;
+              }
+              _this.plurals = new PropMap();
+              if (doCreate) {
+                return _this.createChildScopes();
+              }
             };
           })(this));
         };

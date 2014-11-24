@@ -43,10 +43,10 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
         scope.$watch 'models', (newValue, oldValue) =>
           #check to make sure that the newValue Array is really a set of new objects
           unless _.isEqual(newValue, oldValue)
-              if @doINeedToWipe(newValue)
-                  @rebuildAll(scope, true, true)
-              else
-                  @createChildScopes(false)
+            if @doINeedToWipe(newValue)
+                @rebuildAll(scope, true, true)
+            else
+                @createChildScopes(false)
         , true
 
       doINeedToWipe: (newValue) =>
@@ -57,10 +57,10 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
         _async.waitOrGo @, =>
           _async.each @plurals.values(), (model) =>
             model.destroy()
-          .then => #handle done callBack
-            delete @plurals if doDelete
-            @plurals = new PropMap()
-            @createChildScopes() if doCreate
+        .then => #handle done callBack
+          delete @plurals if doDelete
+          @plurals = new PropMap()
+          @createChildScopes() if doCreate
 
       watchDestroy: (scope)=>
         scope.$on "$destroy", =>
