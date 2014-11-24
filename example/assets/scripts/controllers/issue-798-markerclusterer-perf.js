@@ -16,7 +16,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
       longitude: 0
     },
     zoom: 0
-  };                                                  1
+  };
 
   $scope.searchResults = {
     results: []
