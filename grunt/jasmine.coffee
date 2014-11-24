@@ -11,7 +11,7 @@ requireConfig =
 log('jasmineSettings: past requireConfig')
 
 spec =
-  src: ['dist/angular-google-maps_dev_mapped.js']
+  src: ['dist/angular-google-maps.js']
   options:
     keepRunner: true
     vendor: [
