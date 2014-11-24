@@ -81,13 +81,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
           rebuildAll: (scope, doCreate, doDelete) =>
             _async.waitOrGo @, =>
-              _async.each @windows.values(), (model) =>
+              @windows.each (model) =>
                 model.destroy()
-              .then => #handle done callBack
-                delete @windows if doDelete
-                @windows = new PropMap()
-                @createChildScopesWindows() if doCreate
-                uiGmapPromise.resolve()
+
+              delete @windows if doDelete
+              @windows = new PropMap()
+              @createChildScopesWindows() if doCreate
+              uiGmapPromise.resolve()
 
           watchDestroy: (scope)=>
             scope.$on '$destroy', =>
@@ -156,11 +156,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                 gMarker = if hasGMarker then scope[modelsPropToIterate][[model[@idKey]]]?.gMarker else undefined
 #                throw 'Unable to get gMarker from scope!!' unless gMarker
                 @createWindow(model, gMarker, @gMap)
-            .then => #handle done callBack
+            .then =>
               @firstTime = false
+              uiGmapPromise.resolve()
+            .catch =>
+              @firstTime = false
+              uiGmapPromise.resolve()
 
           pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true)=>
-            doChunk = if @existingPieces? then false else _async.defaultChunkSize
+#            doChunk = if @existingPieces? then false else _async.defaultChunkSize
+            doChunk = _async.defaultChunkSize
             @models = scope.models
             if scope? and scope.models? and scope.models.length > 0 and @windows.length > 0
               @figureOutState @idKey, scope, @windows, @modelKeyComparison, (state) =>
@@ -170,18 +175,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                     if child?
                       @windows.remove(child.id)
                       child.destroy(true) if child.destroy?
-                  ,doChunk
+                  ,false
                   .then =>
                     #add all adds via creating new ChildMarkers which are appended to @markers
                     _async.each payload.adds, (modelToAdd) =>
-                      gMarker = scope[modelsPropToIterate][modelToAdd[@idKey]]?.gMarker
+                      gMarker = scope[modelsPropToIterate].get(modelToAdd[@idKey])?.gMarker
                       throw 'Gmarker undefined' unless gMarker
                       @createWindow(modelToAdd, gMarker, @gMap)
                     ,doChunk
+                .catch =>
+                  uiGmapPromise.resolve()
                 .then =>
-                  @existingPieces = undefined
-                .catch (e) =>
-                  $log.error 'Error while pieceMealing Windows!'
+                  uiGmapPromise.resolve()
             else
               @rebuildAll(@scope, true, true)
 
@@ -202,7 +207,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                 @interpolateContent(@linked.element.html(), model)
             @DEFAULTS = if @markersScope then model[@optionsKey] or {} else @DEFAULTS
             opts = @createWindowOptions gMarker, childScope, fakeElement.html(), @DEFAULTS
-            child = new WindowChildModel model, childScope, opts, @isIconVisibleOnClick, gMap, @markersScope?.markerModels[model[@idKey]]?.scope, fakeElement, false, true
+            child = new WindowChildModel model, childScope, opts, @isIconVisibleOnClick, gMap, @markersScope?.markerModels.get(model[@idKey])?.scope, fakeElement, false, true
 
             unless model[@idKey]?
               @$log.error('Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.')

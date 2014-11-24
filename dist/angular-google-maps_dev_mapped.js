@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.9 2014-11-23
+/*! angular-google-maps 2.0.9 2014-11-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1202,10 +1202,10 @@ Nicholas McCready - https://twitter.com/nmccready
             var child;
             if (m[idKey] != null) {
               mappedScopeModelIds[m[idKey]] = {};
-              if (childObjects[m[idKey]] == null) {
+              if (childObjects.get(m[idKey]) == null) {
                 return adds.push(m);
               } else {
-                child = childObjects[m[idKey]];
+                child = childObjects.get(m[idKey]);
                 if (!comparison(m, child.model)) {
                   return updates.push({
                     model: m,
@@ -1290,19 +1290,20 @@ Nicholas McCready - https://twitter.com/nmccready
       this.stateChanged = __bind(this.stateChanged, this);
       this.get = __bind(this.get, this);
       this.length = 0;
-      this.didValueStateChange = false;
-      this.didKeyStateChange = false;
+      this.dict = {};
+      this.didValsStateChange = false;
+      this.didKeysStateChange = false;
       this.allVals = [];
       this.allKeys = [];
     }
 
     PropMap.prototype.get = function(key) {
-      return this[key];
+      return this.dict[key];
     };
 
     PropMap.prototype.stateChanged = function() {
-      this.didValueStateChange = true;
-      return this.didKeyStateChange = true;
+      this.didValsStateChange = true;
+      return this.didKeysStateChange = true;
     };
 
     PropMap.prototype.put = function(key, value) {
@@ -1310,7 +1311,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.length++;
       }
       this.stateChanged();
-      return this[key] = value;
+      return this.dict[key] = value;
     };
 
     PropMap.prototype.remove = function(key, isSafe) {
@@ -1321,49 +1322,40 @@ Nicholas McCready - https://twitter.com/nmccready
       if (isSafe && !this.get(key)) {
         return void 0;
       }
-      value = this[key];
-      delete this[key];
+      value = this.dict[key];
+      delete this.dict[key];
       this.length--;
       this.stateChanged();
       return value;
     };
 
-    PropMap.prototype.values = function() {
-      var all;
-      if (!this.didValueStateChange) {
-        return this.allVals;
+    PropMap.prototype.valuesOrKeys = function(str) {
+      var keys, vals;
+      if (str == null) {
+        str = 'Keys';
       }
-      all = [];
-      this.keys().forEach((function(_this) {
-        return function(key) {
-          if (_.indexOf(propsToPop, key) === -1) {
-            return all.push(_this[key]);
-          }
-        };
-      })(this));
-      all;
-      this.didValueStateChange = false;
-      this.keys();
-      return this.allVals = all;
+      if (!this["did" + str + "StateChange"]) {
+        return this['all' + str];
+      }
+      vals = [];
+      keys = [];
+      _.each(this.dict, function(v, k) {
+        vals.push(v);
+        return keys.push(k);
+      });
+      this.didKeysStateChange = false;
+      this.didValsStateChange = false;
+      this.allVals = vals;
+      this.allKeys = keys;
+      return this['all' + str];
+    };
+
+    PropMap.prototype.values = function() {
+      return this.valuesOrKeys('Vals');
     };
 
     PropMap.prototype.keys = function() {
-      var all, keys;
-      if (!this.didKeyStateChange) {
-        return this.allKeys;
-      }
-      keys = _.keys(this);
-      all = [];
-      _.each(keys, (function(_this) {
-        return function(prop) {
-          if (_.indexOf(propsToPop, prop) === -1) {
-            return all.push(prop);
-          }
-        };
-      })(this));
-      this.didKeyStateChange = false;
-      this.values();
-      return this.allKeys = all;
+      return this.valuesOrKeys();
     };
 
     PropMap.prototype.push = function(obj, key) {
@@ -1383,6 +1375,18 @@ Nicholas McCready - https://twitter.com/nmccready
 
     PropMap.prototype.removeAll = function() {
       return this.slice();
+    };
+
+    PropMap.prototype.each = function(cb) {
+      return _.each(this.dict, function(v, k) {
+        return cb(v);
+      });
+    };
+
+    PropMap.prototype.map = function(cb) {
+      return _.map(this.dict, function(v, k) {
+        return cb(v);
+      });
     };
 
     return PropMap;
@@ -1565,11 +1569,7 @@ Nicholas McCready - https://twitter.com/nmccready
           return this.clusterer.getMarkers().values();
         };
 
-        ClustererMarkerManager.prototype.checkSync = function() {
-          if (this.getGMarkers().length !== this.propMapGMarkers.length) {
-            throw 'GMarkers out of Sync in MarkerClusterer';
-          }
-        };
+        ClustererMarkerManager.prototype.checkSync = function() {};
 
         return ClustererMarkerManager;
 
@@ -1657,7 +1657,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerManager.prototype.removeMany = function(gMarkers) {
-          return this.gMarkers.values().forEach((function(_this) {
+          return gMarkers.forEach((function(_this) {
             return function(marker) {
               return _this.remove(marker);
             };
@@ -1667,7 +1667,7 @@ Nicholas McCready - https://twitter.com/nmccready
         MarkerManager.prototype.draw = function() {
           var deletes;
           deletes = [];
-          this.gMarkers.values().forEach((function(_this) {
+          this.gMarkers.each((function(_this) {
             return function(gMarker) {
               if (!gMarker.isDrawn) {
                 if (gMarker.doAdd) {
@@ -1688,7 +1688,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerManager.prototype.clear = function() {
-          this.gMarkers.values().forEach(function(gMarker) {
+          this.gMarkers.each(function(gMarker) {
             return gMarker.setMap(null);
           });
           delete this.gMarkers;
@@ -2607,6 +2607,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.setOptions = function(scope, doDraw) {
+          var _ref;
           if (doDraw == null) {
             doDraw = true;
           }
@@ -2662,7 +2663,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             if (!this.gMarker) {
               this.deferred.reject('gMarker is null');
             }
-            if (!(this.gMarker.getMap() && this.gMarkerManager.type === MarkerManager.type)) {
+            if (!(((_ref = this.gMarker) != null ? _ref.getMap() : void 0) && this.gMarkerManager.type === MarkerManager.type)) {
               $log.warn('gMarker has no map yet');
               this.deferred.resolve(this.gMarker);
             }
@@ -3993,7 +3994,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         MarkersParentModel.prototype.onDestroy = function(scope) {
           return _async.waitOrGo(this, (function(_this) {
             return function() {
-              _.each(_this.scope.markerModels.values(), function(model) {
+              _this.scope.markerModels.each(function(model) {
                 if (model != null) {
                   return model.destroy(false);
                 }
@@ -4023,11 +4024,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.mapClusterToMarkerModels = function(cluster) {
-          var gMarkers, mapped;
-          gMarkers = cluster.getMarkers().values();
-          mapped = gMarkers.map((function(_this) {
+          var mapped;
+          mapped = cluster.getMarkers().map((function(_this) {
             return function(g) {
-              return _this.scope.markerModels[g.key].model;
+              return _this.scope.markerModels.get(g.key).model;
             };
           })(this));
           return {
@@ -4100,7 +4100,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (newValue !== oldValue) {
                 _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
                 return _async.waitOrGo(_this, function() {
-                  return _async.each(_.values(_this.plurals), function(model) {
+                  return _async.each(_this.plurals.values(), function(model) {
                     return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
                   });
                 });
@@ -4236,7 +4236,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return _async.waitOrGo(_this, function() {
                   return _async.each(payload.removals, function(id) {
                     var child;
-                    child = _this.plurals[id];
+                    child = _this.plurals.get(id);
                     if (child != null) {
                       child.destroy();
                       return _this.plurals.remove(id);
@@ -4676,18 +4676,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         WindowsParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
           return _async.waitOrGo(this, (function(_this) {
             return function() {
-              return _async.each(_this.windows.values(), function(model) {
+              _this.windows.each(function(model) {
                 return model.destroy();
-              }).then(function() {
-                if (doDelete) {
-                  delete _this.windows;
-                }
-                _this.windows = new PropMap();
-                if (doCreate) {
-                  _this.createChildScopesWindows();
-                }
-                return uiGmapPromise.resolve();
               });
+              if (doDelete) {
+                delete _this.windows;
+              }
+              _this.windows = new PropMap();
+              if (doCreate) {
+                _this.createChildScopesWindows();
+              }
+              return uiGmapPromise.resolve();
             };
           })(this));
         };
@@ -4789,7 +4788,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this)).then((function(_this) {
             return function() {
-              return _this.firstTime = false;
+              _this.firstTime = false;
+              return uiGmapPromise.resolve();
+            };
+          })(this))["catch"]((function(_this) {
+            return function() {
+              _this.firstTime = false;
+              return uiGmapPromise.resolve();
             };
           })(this));
         };
@@ -4802,7 +4807,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (isArray == null) {
             isArray = true;
           }
-          doChunk = this.existingPieces != null ? false : _async.defaultChunkSize;
+          doChunk = _async.defaultChunkSize;
           this.models = scope.models;
           if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.windows.length > 0) {
             return this.figureOutState(this.idKey, scope, this.windows, this.modelKeyComparison, (function(_this) {
@@ -4817,20 +4822,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                         return child.destroy(true);
                       }
                     }
-                  }, doChunk).then(function() {
+                  }, false).then(function() {
                     return _async.each(payload.adds, function(modelToAdd) {
                       var gMarker, _ref;
-                      gMarker = (_ref = scope[modelsPropToIterate][modelToAdd[_this.idKey]]) != null ? _ref.gMarker : void 0;
+                      gMarker = (_ref = scope[modelsPropToIterate].get(modelToAdd[_this.idKey])) != null ? _ref.gMarker : void 0;
                       if (!gMarker) {
                         throw 'Gmarker undefined';
                       }
                       return _this.createWindow(modelToAdd, gMarker, _this.gMap);
                     }, doChunk);
                   });
+                })["catch"](function() {
+                  return uiGmapPromise.resolve();
                 }).then(function() {
-                  return _this.existingPieces = void 0;
-                })["catch"](function(e) {
-                  return $log.error('Error while pieceMealing Windows!');
+                  return uiGmapPromise.resolve();
                 });
               };
             })(this));
@@ -4865,7 +4870,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           };
           this.DEFAULTS = this.markersScope ? model[this.optionsKey] || {} : this.DEFAULTS;
           opts = this.createWindowOptions(gMarker, childScope, fakeElement.html(), this.DEFAULTS);
-          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, (_ref = this.markersScope) != null ? (_ref1 = _ref.markerModels[model[this.idKey]]) != null ? _ref1.scope : void 0 : void 0, fakeElement, false, true);
+          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, (_ref = this.markersScope) != null ? (_ref1 = _ref.markerModels.get(model[this.idKey])) != null ? _ref1.scope : void 0 : void 0, fakeElement, false, true);
           if (model[this.idKey] == null) {
             this.$log.error('Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.');
             return;
@@ -10016,7 +10021,7 @@ angular.module('uiGmapgoogle-maps.extensions')
               }
             } else if (mCount === this.minClusterSize_) {
               // Hide the markers that were showing.
-              this.markers_.values().forEach(function (m) {
+              this.markers_.each(function (m) {
                 m.setMap(null);
               });
             } else {
@@ -10047,10 +10052,9 @@ angular.module('uiGmapgoogle-maps.extensions')
           NgMapCluster.prototype.getBounds = function () {
             var i;
             var bounds = new google.maps.LatLngBounds(this.center_, this.center_);
-            var markers = this.getMarkers().values();
-            for (i = 0; i < markers.length; i++) {
-              bounds.extend(markers[i].getPosition());
-            }
+            this.getMarkers().each(function(m){
+              bounds.extend(m.getPosition());
+            });
             return bounds;
           };
 
@@ -10149,8 +10153,9 @@ angular.module('uiGmapgoogle-maps.extensions')
 
             var iLast = Math.min(iFirst + this.batchSize_, this.markers_.length);
 
+            var _ms = this.markers_.values();
             for (i = iFirst; i < iLast; i++) {
-              marker = this.markers_.values()[i];
+              marker = _ms[i];
               if (!marker.isAdded && this.isMarkerInBounds_(marker, bounds)) {
                 if (!this.ignoreHidden_ || (this.ignoreHidden_ && marker.getVisible())) {
                   this.addToClosestCluster_(marker);
@@ -10163,7 +10168,7 @@ angular.module('uiGmapgoogle-maps.extensions')
                 cMarkerClusterer.createClusters_(iLast);
               }, 0);
             } else {
-              // custom addition by ngmaps
+              // custom addition by ui-gmap
               // update icon for all clusters
               for (i = 0; i < this.clusters_.length; i++) {
                 this.clusters_[i].updateIcon_();
@@ -10236,7 +10241,7 @@ angular.module('uiGmapgoogle-maps.extensions')
             this.clusters_ = [];
 
             // Reset the markers to not be added and to be removed from the map.
-            this.markers_.values().forEach(function (marker) {
+            this.markers_.each(function (marker) {
               marker.isAdded = false;
               if (opt_hide) {
                 marker.setMap(null);

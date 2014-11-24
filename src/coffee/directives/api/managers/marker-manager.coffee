@@ -38,12 +38,12 @@ angular.module("uiGmapgoogle-maps.directives.api.managers")
         @gMarkers.remove gMarker.key
 
     removeMany: (gMarkers)=>
-      @gMarkers.values().forEach (marker) =>
+      gMarkers.forEach (marker) =>
         @remove(marker)
 
     draw: =>
       deletes = []
-      @gMarkers.values().forEach (gMarker) =>
+      @gMarkers.each (gMarker) =>
         unless gMarker.isDrawn
           if gMarker.doAdd
             gMarker.setMap(@gMap)
@@ -56,7 +56,7 @@ angular.module("uiGmapgoogle-maps.directives.api.managers")
         @remove(gMarker, true)
 
     clear: =>
-      @gMarkers.values().forEach (gMarker) ->
+      @gMarkers.each (gMarker) ->
         gMarker.setMap null
       delete @gMarkers
       @gMarkers = new PropMap()

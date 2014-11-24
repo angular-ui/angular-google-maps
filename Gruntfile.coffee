@@ -49,8 +49,8 @@ module.exports = (grunt) ->
 
   # run default "grunt" prior to generate _SpecRunner.html
   grunt.registerTask "spec", [
-    "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist",
-    "copy", "connect:jasmineServer", "open:jasmine", "watch:spec"]
+    "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat",
+    "copy", "connect:jasmineServer", "jasmine:spec", "open:jasmine", "watch:spec"]
 
   grunt.registerTask "coverage", [
     "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist",

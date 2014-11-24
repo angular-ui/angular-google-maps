@@ -12,10 +12,10 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       _async.each scope.models, (m) ->
         if m[idKey]?
           mappedScopeModelIds[m[idKey]] = {}
-          unless childObjects[m[idKey]]?
+          unless childObjects.get(m[idKey])?
             adds.push m
           else
-            child = childObjects[m[idKey]]
+            child = childObjects.get(m[idKey])
             #we're UPDATE in this case
             unless comparison m, child.model
               updates.push
