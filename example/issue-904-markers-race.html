@@ -12,17 +12,21 @@
 </head>
 <body ng-app="appMaps">
 <div ng-controller="mapCtrl">
-    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="map.options">
+    <ui-gmap-google-map center="map.center"
+                        zoom="map.zoom" draggable="true" options="map.options"
+            events="map.events">
         <ui-gmap-markers
                 models="searchResults.results"
                 coords="'coords'"
                 idkey="'key'"
+                doCluster="map.doCluster"
                 ></ui-gmap-markers>
     </ui-gmap-google-map>
     <button ng-click="addMarkers(250)">Add New Marker</button>
     <button ng-click="reset()">Reset</button>
     <p>Max number of results to show: 100<br/>Num of items in results: {{searchResults.results.length}}</p>
-
+    <p>doCluster:{{map.doCluster}}</p>
+    <p>zoom:{{map.zoom}}</p>
     <pre>{{searchResults.results | json}}</pre>
 </div>
 </body>
