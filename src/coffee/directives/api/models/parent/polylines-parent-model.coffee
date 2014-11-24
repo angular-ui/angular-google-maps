@@ -36,7 +36,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
           if (newValue != oldValue)
             @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
             _async.waitOrGo @, =>
-              _async.each _.values(@plurals), (model) =>
+              _async.each @plurals.values(), (model) =>
                 model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
 
       watchModels: (scope) =>
