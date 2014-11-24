@@ -6,10 +6,11 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
   beforeEach ->
     @clusterTest =
       getMarkers: ->
-        values: () -> [
-          {key: 1}
-          {key: 2}
-        ]
+        map = new PropMap()
+        map.push {key: 1}
+        map.push {key: 2}
+        map
+
     @index = 0
     @clicked = false
     self = @

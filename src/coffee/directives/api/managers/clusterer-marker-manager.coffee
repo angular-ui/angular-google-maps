@@ -88,7 +88,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       @clusterer.getMarkers().values()
 
     checkSync: =>
-      throw 'GMarkers out of Sync in MarkerClusterer' if @getGMarkers().length != @propMapGMarkers.length
+#      throw 'GMarkers out of Sync in MarkerClusterer' if @getGMarkers().length != @propMapGMarkers.length
 
   ClustererMarkerManager
 ]

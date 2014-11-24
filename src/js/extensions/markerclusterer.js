@@ -78,7 +78,7 @@ angular.module('uiGmapgoogle-maps.extensions')
               }
             } else if (mCount === this.minClusterSize_) {
               // Hide the markers that were showing.
-              this.markers_.values().forEach(function (m) {
+              this.markers_.each(function (m) {
                 m.setMap(null);
               });
             } else {
@@ -109,10 +109,9 @@ angular.module('uiGmapgoogle-maps.extensions')
           NgMapCluster.prototype.getBounds = function () {
             var i;
             var bounds = new google.maps.LatLngBounds(this.center_, this.center_);
-            var markers = this.getMarkers().values();
-            for (i = 0; i < markers.length; i++) {
-              bounds.extend(markers[i].getPosition());
-            }
+            this.getMarkers().each(function(m){
+              bounds.extend(m.getPosition());
+            });
             return bounds;
           };
 
@@ -211,8 +210,9 @@ angular.module('uiGmapgoogle-maps.extensions')
 
             var iLast = Math.min(iFirst + this.batchSize_, this.markers_.length);
 
+            var _ms = this.markers_.values();
             for (i = iFirst; i < iLast; i++) {
-              marker = this.markers_.values()[i];
+              marker = _ms[i];
               if (!marker.isAdded && this.isMarkerInBounds_(marker, bounds)) {
                 if (!this.ignoreHidden_ || (this.ignoreHidden_ && marker.getVisible())) {
                   this.addToClosestCluster_(marker);
@@ -225,7 +225,7 @@ angular.module('uiGmapgoogle-maps.extensions')
                 cMarkerClusterer.createClusters_(iLast);
               }, 0);
             } else {
-              // custom addition by ngmaps
+              // custom addition by ui-gmap
               // update icon for all clusters
               for (i = 0; i < this.clusters_.length; i++) {
                 this.clusters_[i].updateIcon_();
@@ -298,7 +298,7 @@ angular.module('uiGmapgoogle-maps.extensions')
             this.clusters_ = [];
 
             // Reset the markers to not be added and to be removed from the map.
-            this.markers_.values().forEach(function (marker) {
+            this.markers_.each(function (marker) {
               marker.isAdded = false;
               if (opt_hide) {
                 marker.setMap(null);

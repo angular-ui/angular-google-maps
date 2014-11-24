@@ -177,7 +177,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             #for destroy we have a lookup?
             #this will require another attribute for destroySingle(marker)
             _async.waitOrGo @, =>
-              _.each @scope.markerModels.values(), (model)->
+              @scope.markerModels.each (model)->
                 model.destroy(false) if model?
               delete @scope.markerModels
               @gMarkerManager.clear() if @gMarkerManager?
@@ -192,8 +192,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @origClusterEvents[fnName](pair.cluster,pair.mapped) if @origClusterEvents[fnName]
 
           mapClusterToMarkerModels:(cluster) ->
-            gMarkers = cluster.getMarkers().values()
-            mapped = gMarkers.map (g) =>
+            mapped = cluster.getMarkers().map (g) =>
               @scope.markerModels.get(g.key).model
             cluster: cluster
             mapped: mapped

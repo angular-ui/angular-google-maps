@@ -68,6 +68,10 @@ class window.PropMap
     _.each @dict, (v, k) ->
       cb(v)
 
+  map: (cb) ->
+    _.map @dict, (v, k) ->
+      cb(v)
+
 angular.module("uiGmapgoogle-maps.directives.api.utils")
 .factory "uiGmapPropMap", ->
   window.PropMap

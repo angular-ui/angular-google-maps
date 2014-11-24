@@ -51,3 +51,12 @@ describe 'PropMap tests', ->
       console.log keys
       expected = ['foo', 'baz']
       expect(keys[i]).toEqual(item) for item, i in expected
+
+    it 'map works', ->
+      @propMap.put('foo', 'bar')
+      @propMap.put('biz', 'biz')
+      mapped = @propMap.map (v) ->
+        v + 'BAR'
+      expected = ['barBAR', 'bizBAR']
+      expected.forEach (item, i) ->
+        expect(mapped[i]).toBe(item)
