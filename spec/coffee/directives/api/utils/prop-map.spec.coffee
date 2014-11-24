@@ -30,6 +30,13 @@ describe 'PropMap tests', ->
       expect(@propMap.get('foo')).toEqual(undefined)
       expect(@propMap.length).toEqual(0)
 
+    it 'should remove and tracked length should match real length', ->
+      @propMap.put('foo', 'bar')
+      expect(@propMap.length).toEqual(1)
+      expect(_.values(@propMap.dict).length).toEqual(@propMap.length)
+      @propMap.remove('foo')
+      expect(_.values(@propMap.dict).length).toEqual(@propMap.length)
+
     it 'should return all put values', ->
       @propMap.put('foo', 'bar')
       @propMap.put('baz', 'biz')
@@ -41,5 +48,6 @@ describe 'PropMap tests', ->
       @propMap.put('foo', 'bar')
       @propMap.put('baz', 'biz')
       keys = @propMap.keys()
+      console.log keys
       expected = ['foo', 'baz']
       expect(keys[i]).toEqual(item) for item, i in expected

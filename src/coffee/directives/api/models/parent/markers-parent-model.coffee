@@ -194,7 +194,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
           mapClusterToMarkerModels:(cluster) ->
             gMarkers = cluster.getMarkers().values()
             mapped = gMarkers.map (g) =>
-              @scope.markerModels[g.key].model
+              @scope.markerModels.get(g.key).model
             cluster: cluster
             mapped: mapped
 

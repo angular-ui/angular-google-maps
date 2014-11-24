@@ -77,21 +77,21 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
             @subject.scope.markerModels.put 2, model: 'test2'
             @subject.clusterInternalOptions.click @clusterTest
             expect(_.all(@markerModelsCluster, (entity, i)=>
-              entity == @subject.scope.markerModels[i+1].model
+              entity == @subject.scope.markerModels.get(i+1).model
             )).toBeTruthy()
           it 'mouseout - ', ->
             @subject.scope.markerModels.put 1, model: 'test1'
             @subject.scope.markerModels.put 2, model: 'test2'
             @subject.clusterInternalOptions.mouseout @clusterTest
             expect(_.all(@markerModelsCluster, (entity, i)=>
-              entity == @subject.scope.markerModels[i+1].model
+              entity == @subject.scope.markerModels.get(i+1).model
             )).toBeTruthy()
           it 'mouseover - ', ->
             @subject.scope.markerModels.put 1, model: 'test1'
             @subject.scope.markerModels.put 2, model: 'test2'
             @subject.clusterInternalOptions.mouseover @clusterTest
             expect(_.all(@markerModelsCluster, (entity, i)=>
-              entity == @subject.scope.markerModels[i+1].model
+              entity == @subject.scope.markerModels.get(i+1).model
             )).toBeTruthy()
         describe 'some legacy event', =>
           it 'crap - ', -> #not a real event but shows that any existing function can be fired

@@ -113,7 +113,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             payload = state
             _async.waitOrGo @, =>
               _async.each payload.removals, (id)=>
-                child = @plurals[id]
+                child = @plurals.get(id)
                 if child?
                   child.destroy()
                   @plurals.remove(id)

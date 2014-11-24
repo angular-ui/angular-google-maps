@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.9 2014-11-23
+/*! angular-google-maps 2.0.9 2014-11-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1290,19 +1290,20 @@ Nicholas McCready - https://twitter.com/nmccready
       this.stateChanged = __bind(this.stateChanged, this);
       this.get = __bind(this.get, this);
       this.length = 0;
-      this.didValueStateChange = false;
-      this.didKeyStateChange = false;
+      this.dict = {};
+      this.didValsStateChange = false;
+      this.didKeysStateChange = false;
       this.allVals = [];
       this.allKeys = [];
     }
 
     PropMap.prototype.get = function(key) {
-      return this[key];
+      return this.dict[key];
     };
 
     PropMap.prototype.stateChanged = function() {
-      this.didValueStateChange = true;
-      return this.didKeyStateChange = true;
+      this.didValsStateChange = true;
+      return this.didKeysStateChange = true;
     };
 
     PropMap.prototype.put = function(key, value) {
@@ -1310,7 +1311,7 @@ Nicholas McCready - https://twitter.com/nmccready
         this.length++;
       }
       this.stateChanged();
-      return this[key] = value;
+      return this.dict[key] = value;
     };
 
     PropMap.prototype.remove = function(key, isSafe) {
@@ -1321,49 +1322,40 @@ Nicholas McCready - https://twitter.com/nmccready
       if (isSafe && !this.get(key)) {
         return void 0;
       }
-      value = this[key];
-      delete this[key];
+      value = this.dict[key];
+      delete this.dict[key];
       this.length--;
       this.stateChanged();
       return value;
     };
 
-    PropMap.prototype.values = function() {
-      var all;
-      if (!this.didValueStateChange) {
-        return this.allVals;
+    PropMap.prototype.valuesOrKeys = function(str) {
+      var keys, vals;
+      if (str == null) {
+        str = 'Keys';
       }
-      all = [];
-      this.keys().forEach((function(_this) {
-        return function(key) {
-          if (_.indexOf(propsToPop, key) === -1) {
-            return all.push(_this[key]);
-          }
-        };
-      })(this));
-      all;
-      this.didValueStateChange = false;
-      this.keys();
-      return this.allVals = all;
+      if (!this["did" + str + "StateChange"]) {
+        return this['all' + str];
+      }
+      vals = [];
+      keys = [];
+      _.each(this.dict, function(v, k) {
+        vals.push(v);
+        return keys.push(k);
+      });
+      this.didKeysStateChange = false;
+      this.didValsStateChange = false;
+      this.allVals = vals;
+      this.allKeys = keys;
+      return this['all' + str];
+    };
+
+    PropMap.prototype.values = function() {
+      return this.valuesOrKeys('Vals');
     };
 
     PropMap.prototype.keys = function() {
-      var all, keys;
-      if (!this.didKeyStateChange) {
-        return this.allKeys;
-      }
-      keys = _.keys(this);
-      all = [];
-      _.each(keys, (function(_this) {
-        return function(prop) {
-          if (_.indexOf(propsToPop, prop) === -1) {
-            return all.push(prop);
-          }
-        };
-      })(this));
-      this.didKeyStateChange = false;
-      this.values();
-      return this.allKeys = all;
+      return this.valuesOrKeys();
     };
 
     PropMap.prototype.push = function(obj, key) {
@@ -1383,6 +1375,12 @@ Nicholas McCready - https://twitter.com/nmccready
 
     PropMap.prototype.removeAll = function() {
       return this.slice();
+    };
+
+    PropMap.prototype.each = function(cb) {
+      return _.each(this.dict, function(v, k) {
+        return cb(v);
+      });
     };
 
     return PropMap;
@@ -1657,7 +1655,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerManager.prototype.removeMany = function(gMarkers) {
-          return this.gMarkers.values().forEach((function(_this) {
+          return gMarkers.forEach((function(_this) {
             return function(marker) {
               return _this.remove(marker);
             };
@@ -1667,7 +1665,7 @@ Nicholas McCready - https://twitter.com/nmccready
         MarkerManager.prototype.draw = function() {
           var deletes;
           deletes = [];
-          this.gMarkers.values().forEach((function(_this) {
+          this.gMarkers.each((function(_this) {
             return function(gMarker) {
               if (!gMarker.isDrawn) {
                 if (gMarker.doAdd) {
@@ -1688,7 +1686,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerManager.prototype.clear = function() {
-          this.gMarkers.values().forEach(function(gMarker) {
+          this.gMarkers.each(function(gMarker) {
             return gMarker.setMap(null);
           });
           delete this.gMarkers;
@@ -4027,7 +4025,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           gMarkers = cluster.getMarkers().values();
           mapped = gMarkers.map((function(_this) {
             return function(g) {
-              return _this.scope.markerModels[g.key].model;
+              return _this.scope.markerModels.get(g.key).model;
             };
           })(this));
           return {
@@ -4236,7 +4234,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return _async.waitOrGo(_this, function() {
                   return _async.each(payload.removals, function(id) {
                     var child;
-                    child = _this.plurals[id];
+                    child = _this.plurals.get(id);
                     if (child != null) {
                       child.destroy();
                       return _this.plurals.remove(id);
