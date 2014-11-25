@@ -191,7 +191,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 delete @scope.markerModels
                 @gMarkerManager.clear() if @gMarkerManager?
                 @scope.markerModels = new PropMap()
-                uiGmapPromise.resolve()
+                uiGmapPromise.resolve().then =>
+                  @isClearing = false
 
           maybeExecMappedEvent:(cluster, fnName) ->
             if _.isFunction @scope.clusterEvents?[fnName]

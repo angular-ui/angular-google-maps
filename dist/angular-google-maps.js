@@ -4050,7 +4050,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   _this.gMarkerManager.clear();
                 }
                 _this.scope.markerModels = new PropMap();
-                return uiGmapPromise.resolve();
+                return uiGmapPromise.resolve().then(function() {
+                  return _this.isClearing = false;
+                });
               }));
             };
           })(this));
