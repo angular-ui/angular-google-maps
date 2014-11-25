@@ -4102,8 +4102,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-  angular.module("uiGmapgoogle-maps.directives.api.models.parent").factory("uiGmapPolylinesParentModel", [
-    "$timeout", "uiGmapLogger", "uiGmapModelKey", "uiGmapModelsWatcher", "uiGmapPropMap", "uiGmapPolylineChildModel", "uiGmap_async", function($timeout, Logger, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async) {
+  angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapPolylinesParentModel', [
+    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapPolylineChildModel', 'uiGmap_async', 'uiGmapPromise', function($timeout, Logger, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async, uiGmapPromise) {
       var PolylinesParentModel;
       return PolylinesParentModel = (function(_super) {
         __extends(PolylinesParentModel, _super);
@@ -4126,6 +4126,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.createChildScopes = __bind(this.createChildScopes, this);
           this.watchOurScope = __bind(this.watchOurScope, this);
           this.watchDestroy = __bind(this.watchDestroy, this);
+          this.onDestroy = __bind(this.onDestroy, this);
           this.rebuildAll = __bind(this.rebuildAll, this);
           this.doINeedToWipe = __bind(this.doINeedToWipe, this);
           this.watchModels = __bind(this.watchModels, this);
@@ -4152,11 +4153,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function(newValue, oldValue) {
               if (newValue !== oldValue) {
                 _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
-                return _async.waitOrGo(_this, function() {
+                return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
                   return _async.each(_this.plurals.values(), function(model) {
                     return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
                   });
-                });
+                }));
               }
             };
           })(this));
@@ -4183,18 +4184,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolylinesParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
-          return _async.waitOrGo(this, (function(_this) {
+          return this.onDestroy(doDelete).then((function(_this) {
             return function() {
-              return _async.each(_this.plurals.values(), function(model) {
-                return model.destroy();
-              });
-            };
-          })(this)).then((function(_this) {
-            return function() {
-              if (doDelete) {
-                delete _this.plurals;
-              }
-              _this.plurals = new PropMap();
               if (doCreate) {
                 return _this.createChildScopes();
               }
@@ -4202,8 +4193,27 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
+        PolylinesParentModel.prototype.onDestroy = function(doDelete) {
+          return this.destroyPromise().then((function(_this) {
+            return function() {
+              return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
+                _this.plurals.each(function(model) {
+                  return model.destroy();
+                });
+                return uiGmapPromise.resolve();
+              })).then(function() {
+                if (doDelete) {
+                  delete _this.plurals;
+                }
+                _this.plurals = new PropMap();
+                return _this.isClearing = false;
+              });
+            };
+          })(this));
+        };
+
         PolylinesParentModel.prototype.watchDestroy = function(scope) {
-          return scope.$on("$destroy", (function(_this) {
+          return scope.$on('$destroy', (function(_this) {
             return function() {
               return _this.rebuildAll(scope, false, true);
             };
@@ -4226,7 +4236,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             isCreatingFromScratch = true;
           }
           if (angular.isUndefined(this.scope.models)) {
-            this.$log.error("No models to create polylines from! I Need direct models!");
+            this.$log.error('No models to create polylines from! I Need direct models!');
             return;
           }
           if (this.gMap != null) {
@@ -4262,33 +4272,36 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.watchModels(scope);
             this.watchDestroy(scope);
           }
-          return _async.waitOrGo(this, (function(_this) {
+          return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
             return function() {
               return _async.each(scope.models, function(model) {
                 return _this.createChild(model, _this.gMap);
               });
             };
-          })(this)).then((function(_this) {
+          })(this))).then((function(_this) {
             return function() {
-              _this.firstTime = false;
-              return _this.existingPieces = void 0;
+              return _this.firstTime = false;
             };
           })(this));
         };
 
         PolylinesParentModel.prototype.pieceMeal = function(scope, isArray) {
-          var doChunk;
           if (isArray == null) {
             isArray = true;
           }
-          doChunk = this.existingPieces != null ? false : _async.defaultChunkSize;
+          if (scope.$$destroyed || this.isClearing) {
+            return;
+          }
+          if (this.updateInProgress() && this.plurals.length > 0) {
+            return;
+          }
           this.models = scope.models;
           if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
             return this.figureOutState(this.idKey, scope, this.plurals, this.modelKeyComparison, (function(_this) {
               return function(state) {
                 var payload;
                 payload = state;
-                return _async.waitOrGo(_this, function() {
+                return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
                   return _async.each(payload.removals, function(id) {
                     var child;
                     child = _this.plurals.get(id);
@@ -4300,13 +4313,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     return _async.each(payload.adds, function(modelToAdd) {
                       return _this.createChild(modelToAdd, _this.gMap);
                     });
-                  }).then(function() {
-                    return _this.existingPieces = void 0;
                   });
-                });
+                }));
               };
             })(this));
           } else {
+            this.inProgress = false;
             return this.rebuildAll(this.scope, true, true);
           }
         };
@@ -4325,7 +4337,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           childScope["static"] = this.scope["static"];
           child = new PolylineChildModel(childScope, this.attrs, gMap, this.defaults, model);
           if (model[this.idKey] == null) {
-            this.$log.error("Polyline model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
+            this.$log.error("Polyline model has no id to assign a child to.\nThis is required for performance. Please assign id,\nor redirect id to a different key.");
             return;
           }
           this.plurals.put(model[this.idKey], child);
