@@ -57,15 +57,12 @@
       function ($scope, $log, uiGmapGoogleMapApi, $http) {
         $scope.map = {
           center: {
-            latitude: 45,
-            longitude: -73
+            latitude: 26.153215225012733,
+            longitude: -81.80121597097774
           },
           pan: true,
-          zoom: 4,
+          zoom: 16,
           refresh: false,
-          options: {
-            disableDefaultUI: true
-          },
           events: {},
           bounds: {},
           polys: [],
@@ -78,37 +75,11 @@
         };
         var rawPolys = [];
         uiGmapGoogleMapApi.then(function () {
-          $http.get('assets/json/polylines.json').then(function (data) {
-            rawPolys = data.data;
+          $http.get('assets/json/many_polygons.json').then(function (data) {
+            $scope.map.polys = data.data;
           });
 
         });
-
-        var createPolys = function () {
-          $log.info('polys should be injected');
-          $scope.map.polys = rawPolys;
-        };
-        $scope.$onRootScope("polyButtonClicked", function () {
-          createPolys();
-          var poly = rawPolys[0];
-          var somePolys = _.range(500).map(function (num, i) {
-            var clonedPoly = _.extend({}, poly);
-            var paths = clonedPoly.path.map(function (p) {
-              return {
-                latitude: p.latitude,
-                longitude: p.longitude + i
-              }
-            });
-            clonedPoly.id = i + 1;
-            clonedPoly.path = paths;
-            return clonedPoly;
-          });
-          $scope.map.polys = somePolys;
-        });
-        $scope.$onRootScope("clearButtonClicked", function () {
-          $scope.map.polys = [];
-        });
-        //add beginDraw as a subscriber to be invoked by the channel, allows controller to controller coms
 
       }])
     .run(['$templateCache', 'uiGmapLogger', function ($templateCache, Logger) {

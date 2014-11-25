@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.9 2014-11-24
+/*! angular-google-maps 2.0.9 2014-11-25
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1093,6 +1093,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         function ModelKey(scope) {
           this.scope = scope;
+          this.setChildScope = __bind(this.setChildScope, this);
           this.destroyPromise = __bind(this.destroyPromise, this);
           this.cleanOnResolve = __bind(this.cleanOnResolve, this);
           this.updateInProgress = __bind(this.updateInProgress, this);
@@ -1230,6 +1231,58 @@ Nicholas McCready - https://twitter.com/nmccready
           })(this);
           checkInProgress();
           return promise;
+        };
+
+        ModelKey.prototype.scopeOrModelVal = function(key, scope, model, doWrap) {
+          var maybeWrap, modelKey, modelProp, scopeProp;
+          if (doWrap == null) {
+            doWrap = false;
+          }
+          maybeWrap = function(isScope, ret, doWrap) {
+            if (doWrap == null) {
+              doWrap = false;
+            }
+            if (doWrap) {
+              return {
+                isScope: isScope,
+                value: ret
+              };
+            }
+            return ret;
+          };
+          scopeProp = scope[key];
+          if (_.isFunction(scopeProp)) {
+            return maybeWrap(true, scopeProp(), doWrap);
+          }
+          if (_.isObject(scopeProp)) {
+            return maybeWrap(true, scopeProp, doWrap);
+          }
+          modelKey = scopeProp;
+          if (!modelKey) {
+            modelProp = model[key];
+          } else {
+            modelProp = modelKey === 'self' ? model : model[modelKey];
+          }
+          if (_.isFunction(modelProp)) {
+            return maybeWrap(false, modelProp(), doWrap);
+          }
+          return maybeWrap(false, modelProp, doWrap);
+        };
+
+        ModelKey.prototype.setChildScope = function(keys, childScope, model) {
+          _.each(keys, (function(_this) {
+            return function(name) {
+              var isScopeObj, newValue;
+              isScopeObj = _this.scopeOrModelVal(name, childScope, model, true);
+              if (!isScopeObj.isScope) {
+                newValue = isScopeObj.value;
+                if (newValue !== childScope[name]) {
+                  return childScope[name] = newValue;
+                }
+              }
+            };
+          })(this));
+          return childScope.model = model;
         };
 
         return ModelKey;
@@ -2041,7 +2094,7 @@ Nicholas McCready - https://twitter.com/nmccready
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module('uiGmapgoogle-maps.directives.api.options.builders').service('uiGmapCommonOptionsBuilder', [
-    'uiGmapBaseObject', 'uiGmapLogger', function(BaseObject, $log) {
+    'uiGmapBaseObject', 'uiGmapLogger', 'uiGmapModelKey', function(BaseObject, $log, ModelKey) {
       var CommonOptionsBuilder;
       return CommonOptionsBuilder = (function(_super) {
         __extends(CommonOptionsBuilder, _super);
@@ -2060,7 +2113,7 @@ Nicholas McCready - https://twitter.com/nmccready
         ];
 
         CommonOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
-          var hasModel, model, opts, _ref, _ref1, _ref2;
+          var hasModel, model, opts, stroke;
           if (customOpts == null) {
             customOpts = {};
           }
@@ -2077,11 +2130,12 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           hasModel = _(this.scope).chain().keys().contains('model').value();
           model = hasModel ? this.scope.model : this.scope;
+          stroke = this.scopeOrModelVal('stroke', this.scope, model);
           opts = angular.extend(customOpts, this.DEFAULTS, {
             map: this.map,
-            strokeColor: (_ref = model.stroke) != null ? _ref.color : void 0,
-            strokeOpacity: (_ref1 = model.stroke) != null ? _ref1.opacity : void 0,
-            strokeWeight: (_ref2 = model.stroke) != null ? _ref2.weight : void 0
+            strokeColor: stroke != null ? stroke.color : void 0,
+            strokeOpacity: stroke != null ? stroke.opacity : void 0,
+            strokeWeight: stroke != null ? stroke.weight : void 0
           });
           angular.forEach(angular.extend(forEachOpts, {
             clickable: true,
@@ -2093,7 +2147,9 @@ Nicholas McCready - https://twitter.com/nmccready
             zIndex: 0
           }), (function(_this) {
             return function(defaultValue, key) {
-              if (angular.isUndefined(model[key] || model[key] === null)) {
+              var val;
+              val = _this.scopeOrModelVal(key, _this.scope, model);
+              if (angular.isUndefined(val)) {
                 return opts[key] = defaultValue;
               } else {
                 return opts[key] = model[key];
@@ -2125,7 +2181,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         return CommonOptionsBuilder;
 
-      })(BaseObject);
+      })(ModelKey);
     }
   ]);
 
@@ -4102,6 +4158,263 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+  angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapPolygonsParentModel', [
+    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapPolygonChildModel', 'uiGmap_async', 'uiGmapPromise', function($timeout, Logger, ModelKey, ModelsWatcher, PropMap, PolygonChildModel, _async, uiGmapPromise) {
+      var PolygonsParentModel;
+      return PolygonsParentModel = (function(_super) {
+        __extends(PolygonsParentModel, _super);
+
+        PolygonsParentModel.include(ModelsWatcher);
+
+        function PolygonsParentModel(scope, element, attrs, gMap, defaults) {
+          var self;
+          this.scope = scope;
+          this.element = element;
+          this.attrs = attrs;
+          this.gMap = gMap;
+          this.defaults = defaults;
+          this.modelKeyComparison = __bind(this.modelKeyComparison, this);
+          this.createChild = __bind(this.createChild, this);
+          this.pieceMeal = __bind(this.pieceMeal, this);
+          this.createAllNew = __bind(this.createAllNew, this);
+          this.watchIdKey = __bind(this.watchIdKey, this);
+          this.createChildScopes = __bind(this.createChildScopes, this);
+          this.watchOurScope = __bind(this.watchOurScope, this);
+          this.watchDestroy = __bind(this.watchDestroy, this);
+          this.onDestroy = __bind(this.onDestroy, this);
+          this.rebuildAll = __bind(this.rebuildAll, this);
+          this.doINeedToWipe = __bind(this.doINeedToWipe, this);
+          this.watchModels = __bind(this.watchModels, this);
+          this.watch = __bind(this.watch, this);
+          PolygonsParentModel.__super__.constructor.call(this, scope);
+          self = this;
+          this.$log = Logger;
+          this.plurals = new PropMap();
+          this.scopePropNames = ['path', 'stroke', 'clickable', 'draggable', 'editable', 'geodesic', 'icons', 'visible'];
+          _.each(this.scopePropNames, (function(_this) {
+            return function(name) {
+              return _this[name + 'Key'] = void 0;
+            };
+          })(this));
+          this.models = void 0;
+          this.firstTime = true;
+          this.$log.info(this);
+          this.watchOurScope(scope);
+          this.createChildScopes();
+        }
+
+        PolygonsParentModel.prototype.watch = function(scope, name, nameKey) {
+          return scope.$watch(name, (function(_this) {
+            return function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                _this[nameKey] = typeof newValue === 'function' ? newValue() : newValue;
+                return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
+                  return _async.each(_this.plurals.values(), function(model) {
+                    return model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
+                  });
+                }));
+              }
+            };
+          })(this));
+        };
+
+        PolygonsParentModel.prototype.watchModels = function(scope) {
+          return scope.$watch('models', (function(_this) {
+            return function(newValue, oldValue) {
+              if (!_.isEqual(newValue, oldValue)) {
+                if (_this.doINeedToWipe(newValue)) {
+                  return _this.rebuildAll(scope, true, true);
+                } else {
+                  return _this.createChildScopes(false);
+                }
+              }
+            };
+          })(this), true);
+        };
+
+        PolygonsParentModel.prototype.doINeedToWipe = function(newValue) {
+          var newValueIsEmpty;
+          newValueIsEmpty = newValue != null ? newValue.length === 0 : true;
+          return this.plurals.length > 0 && newValueIsEmpty;
+        };
+
+        PolygonsParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
+          return this.onDestroy(doDelete).then((function(_this) {
+            return function() {
+              if (doCreate) {
+                return _this.createChildScopes();
+              }
+            };
+          })(this));
+        };
+
+        PolygonsParentModel.prototype.onDestroy = function(doDelete) {
+          return this.destroyPromise().then((function(_this) {
+            return function() {
+              return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
+                _this.plurals.each(function(model) {
+                  return model.destroy();
+                });
+                return uiGmapPromise.resolve();
+              })).then(function() {
+                if (doDelete) {
+                  delete _this.plurals;
+                }
+                _this.plurals = new PropMap();
+                return _this.isClearing = false;
+              });
+            };
+          })(this));
+        };
+
+        PolygonsParentModel.prototype.watchDestroy = function(scope) {
+          return scope.$on('$destroy', (function(_this) {
+            return function() {
+              return _this.rebuildAll(scope, false, true);
+            };
+          })(this));
+        };
+
+        PolygonsParentModel.prototype.watchOurScope = function(scope) {
+          return _.each(this.scopePropNames, (function(_this) {
+            return function(name) {
+              var nameKey;
+              nameKey = name + 'Key';
+              _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
+              return _this.watch(scope, name, nameKey);
+            };
+          })(this));
+        };
+
+        PolygonsParentModel.prototype.createChildScopes = function(isCreatingFromScratch) {
+          if (isCreatingFromScratch == null) {
+            isCreatingFromScratch = true;
+          }
+          if (angular.isUndefined(this.scope.models)) {
+            this.$log.error('No models to create Polygons from! I Need direct models!');
+            return;
+          }
+          if (this.gMap != null) {
+            if (this.scope.models != null) {
+              this.watchIdKey(this.scope);
+              if (isCreatingFromScratch) {
+                return this.createAllNew(this.scope, false);
+              } else {
+                return this.pieceMeal(this.scope, false);
+              }
+            }
+          }
+        };
+
+        PolygonsParentModel.prototype.watchIdKey = function(scope) {
+          this.setIdKey(scope);
+          return scope.$watch('idKey', (function(_this) {
+            return function(newValue, oldValue) {
+              if (newValue !== oldValue && (newValue == null)) {
+                _this.idKey = newValue;
+                return _this.rebuildAll(scope, true, true);
+              }
+            };
+          })(this));
+        };
+
+        PolygonsParentModel.prototype.createAllNew = function(scope, isArray) {
+          if (isArray == null) {
+            isArray = false;
+          }
+          this.models = scope.models;
+          if (this.firstTime) {
+            this.watchModels(scope);
+            this.watchDestroy(scope);
+          }
+          return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
+            return function() {
+              return _async.each(scope.models, function(model) {
+                return _this.createChild(model, _this.gMap);
+              });
+            };
+          })(this))).then((function(_this) {
+            return function() {
+              return _this.firstTime = false;
+            };
+          })(this));
+        };
+
+        PolygonsParentModel.prototype.pieceMeal = function(scope, isArray) {
+          if (isArray == null) {
+            isArray = true;
+          }
+          if (scope.$$destroyed || this.isClearing) {
+            return;
+          }
+          if (this.updateInProgress() && this.plurals.length > 0) {
+            return;
+          }
+          this.models = scope.models;
+          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+            return this.figureOutState(this.idKey, scope, this.plurals, this.modelKeyComparison, (function(_this) {
+              return function(state) {
+                var payload;
+                payload = state;
+                return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
+                  return _async.each(payload.removals, function(id) {
+                    var child;
+                    child = _this.plurals.get(id);
+                    if (child != null) {
+                      child.destroy();
+                      return _this.plurals.remove(id);
+                    }
+                  }, false).then(function() {
+                    return _async.each(payload.adds, function(modelToAdd) {
+                      return _this.createChild(modelToAdd, _this.gMap);
+                    }, false);
+                  });
+                }));
+              };
+            })(this));
+          } else {
+            this.inProgress = false;
+            return this.rebuildAll(this.scope, true, true);
+          }
+        };
+
+        PolygonsParentModel.prototype.createChild = function(model, gMap) {
+          var child, childScope;
+          childScope = this.scope.$new(false);
+          this.setChildScope(this.scopePropNames, childScope, model);
+          childScope.$watch('model', (function(_this) {
+            return function(newValue, oldValue) {
+              if (newValue !== oldValue) {
+                return _this.setChildScope(childScope, newValue);
+              }
+            };
+          })(this), true);
+          childScope["static"] = this.scope["static"];
+          child = new PolygonChildModel(childScope, this.attrs, gMap, this.defaults, model);
+          if (model[this.idKey] == null) {
+            this.$log.error("Polygon model has no id to assign a child to.\nThis is required for performance. Please assign id,\nor redirect id to a different key.");
+            return;
+          }
+          this.plurals.put(model[this.idKey], child);
+          return child;
+        };
+
+        PolygonsParentModel.prototype.modelKeyComparison = function(model1, model2) {
+          return _.isEqual(this.evalModelHandle(model1, this.scope.path), this.evalModelHandle(model2, this.scope.path));
+        };
+
+        return PolygonsParentModel;
+
+      })(ModelKey);
+    }
+  ]);
+
+}).call(this);
+;(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapPolylinesParentModel', [
     '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapPolylineChildModel', 'uiGmap_async', 'uiGmapPromise', function($timeout, Logger, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async, uiGmapPromise) {
       var PolylinesParentModel;
@@ -6006,6 +6319,48 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+  angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapPolygons', [
+    'uiGmapIPolygon', '$timeout', 'uiGmaparray-sync', 'uiGmapPolygonsParentModel', function(Interface, $timeout, arraySync, ParentModel) {
+      var Polygons;
+      return Polygons = (function(_super) {
+        __extends(Polygons, _super);
+
+        function Polygons() {
+          this.link = __bind(this.link, this);
+          Polygons.__super__.constructor.call(this);
+          this.scope.idKey = '=idkey';
+          this.scope.models = '=models';
+          this.$log.info(this);
+        }
+
+        Polygons.prototype.link = function(scope, element, attrs, mapCtrl) {
+          if (angular.isUndefined(scope.path) || scope.path === null) {
+            this.$log.error('polygons: no valid path attribute found');
+            return;
+          }
+          if (!scope.models) {
+            this.$log.error('polygons: no models found to create from');
+            return;
+          }
+          return mapCtrl.getScope().deferred.promise.then((function(_this) {
+            return function(map) {
+              return new ParentModel(scope, element, attrs, map, _this.DEFAULTS);
+            };
+          })(this));
+        };
+
+        return Polygons;
+
+      })(Interface);
+    }
+  ]);
+
+}).call(this);
+;(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapPolyline', [
     'uiGmapIPolyline', '$timeout', 'uiGmaparray-sync', 'uiGmapPolylineChildModel', function(IPolyline, $timeout, arraySync, PolylineChildModel) {
       var Polyline;
@@ -6874,6 +7229,48 @@ This directive creates a new scope.
 
       })();
       return new MapType();
+    }
+  ]);
+
+}).call(this);
+;
+/*
+!
+The MIT License
+
+Copyright (c) 2010-2013 Google, Inc. http://angularjs.org
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+angular-google-maps
+https://github.com/nlaplante/angular-google-maps
+
+@authors
+Nicolas Laplante - https://plus.google.com/108189012221374960701
+Nicholas McCready - https://twitter.com/nmccready
+Rick Huizinga - https://plus.google.com/+RickHuizinga
+ */
+
+(function() {
+  angular.module('uiGmapgoogle-maps').directive('uiGmapPolygons', [
+    'uiGmapPolygons', function(Polygons) {
+      return new Polygons();
     }
   ]);
 
