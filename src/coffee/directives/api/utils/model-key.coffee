@@ -1,6 +1,6 @@
 angular.module('uiGmapgoogle-maps.directives.api.utils')
-.factory 'uiGmapModelKey', ['uiGmapBaseObject', 'uiGmapGmapUtil', 'uiGmapPromise',
-  (BaseObject, GmapUtil, uiGmapPromise) ->
+.factory 'uiGmapModelKey', ['uiGmapBaseObject', 'uiGmapGmapUtil', 'uiGmapPromise', '$q', '$timeout',
+  (BaseObject, GmapUtil, uiGmapPromise, $q, $timeout) ->
     class ModelKey extends BaseObject
       constructor: (@scope) ->
         super()
@@ -87,4 +87,17 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         .then =>
           @existingPieces = undefined
           @inProgress = false
+
+
+      destroyPromise: =>
+        @isClearing = true
+        d = $q.defer()
+        promise = d.promise
+        checkInProgress = =>
+          if @inProgress
+            $timeout checkInProgress, 500
+          else
+            d.resolve()
+        checkInProgress()
+        return promise
 ]

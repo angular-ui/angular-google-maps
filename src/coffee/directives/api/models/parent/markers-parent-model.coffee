@@ -3,10 +3,10 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
   "uiGmapIMarkerParentModel", "uiGmapModelsWatcher",
   "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async",
   "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker",
-  "uiGmapPromise", "uiGmapGmapUtil", "$q",
+  "uiGmapPromise", "uiGmapGmapUtil",
     (IMarkerParentModel, ModelsWatcher,
       PropMap, MarkerChildModel, _async,
-      ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise, GmapUtil, $q) ->
+      ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise, GmapUtil) ->
         class MarkersParentModel extends IMarkerParentModel
           @include GmapUtil
           @include ModelsWatcher
@@ -171,21 +171,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             child
 
           onDestroy: (scope)=>
-            @isClearing = true
-            #need to figure out how to handle individual destroys
             #slap index to the external model so that when they pass external back
-            #for destroy we have a lookup?
-            #this will require another attribute for destroySingle(marker)
-            d = $q.defer()
-            busyPromise = d.promise
-
-            checkInProgress = =>
-              if @inProgress
-                $timeout checkInProgress, 500
-              else
-                d.resolve()
-            checkInProgress()
-            busyPromise.then =>
+            @destroyPromise().then =>
               @cleanOnResolve _async.waitOrGo @, =>
                 @scope.markerModels.each (model)->
                   model.destroy(false) if model?
