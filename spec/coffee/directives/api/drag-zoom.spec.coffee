@@ -21,6 +21,11 @@ describe 'uiGmapDragZoom spec', ->
         @enableKeyDragZoom = (opts) ->
         spyOn(@, 'enableKeyDragZoom')
 
+        mockMap = =>
+          map = apiMock.getMap()
+          map.prototype.enableKeyDragZoom = @enableKeyDragZoom
+        mockMap()
+
         @compile = $compile
         @subject = DragZoom
     ]
@@ -44,9 +49,11 @@ describe 'uiGmapDragZoom spec', ->
     element = @compile(html)(scope)
     digest =>
       timeout =>
+        #when it gets here map.prototype.enableKeyDragZoom has been squashed
         expect(scope.spec.enableKeyDragZoom).toHaveBeenCalled()
         done()
       , 300
+      #when map.prototype.enableKeyDragZoom is ok, rootScope apply is calling init which squashes it
 
   it 'exists', ->
     expect(@subject).toBeDefined()
