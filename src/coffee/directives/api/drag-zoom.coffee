@@ -18,6 +18,7 @@ angular.module('uiGmapgoogle-maps.directives.api').service 'uiGmapDragZoom', [
     scope:
       keyboardkey: '='
       options: '='
+      spec: '=' #callback hack for testing, I can't seem to intercept DragZoom creation on map::enableKeyDragZoom
 
     controller: ['$scope', '$element', ($scope, $element) ->
       $scope.ctrlType = 'uiGmapDragZoom'
@@ -26,15 +27,18 @@ angular.module('uiGmapgoogle-maps.directives.api').service 'uiGmapDragZoom', [
 
     link: (scope, element, attrs, ctrl) ->
       CtrlHandle.mapPromise(scope, ctrl).then (map) ->
+        enableKeyDragZoom = (opts) ->
+          map.enableKeyDragZoom(opts)
+          scope.spec.enableKeyDragZoom(opts) if scope.spec
 
         setKeyAction = new PropertyAction (key, newVal) ->
           if newVal
-            map.enableKeyDragZoom key: newVal
+            enableKeyDragZoom key: newVal
           else
-            map.enableKeyDragZoom()
+            enableKeyDragZoom()
 
         setOptionsAction = new PropertyAction (key, newVal) ->
-          map.enableKeyDragZoom newVal if newVal
+          enableKeyDragZoom newVal if newVal
 
         scope.$watch 'keyboardkey', setKeyAction.sic
         setKeyAction.sic scope.keyboardkey

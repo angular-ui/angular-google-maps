@@ -5397,7 +5397,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         require: '^' + 'uiGmapGoogleMap',
         scope: {
           keyboardkey: '=',
-          options: '='
+          options: '=',
+          spec: '='
         },
         controller: [
           '$scope', '$element', function($scope, $element) {
@@ -5407,19 +5408,25 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         ],
         link: function(scope, element, attrs, ctrl) {
           return CtrlHandle.mapPromise(scope, ctrl).then(function(map) {
-            var setKeyAction, setOptionsAction;
+            var enableKeyDragZoom, setKeyAction, setOptionsAction;
+            enableKeyDragZoom = function(opts) {
+              map.enableKeyDragZoom(opts);
+              if (scope.spec) {
+                return scope.spec.enableKeyDragZoom(opts);
+              }
+            };
             setKeyAction = new PropertyAction(function(key, newVal) {
               if (newVal) {
-                return map.enableKeyDragZoom({
+                return enableKeyDragZoom({
                   key: newVal
                 });
               } else {
-                return map.enableKeyDragZoom();
+                return enableKeyDragZoom();
               }
             });
             setOptionsAction = new PropertyAction(function(key, newVal) {
               if (newVal) {
-                return map.enableKeyDragZoom(newVal);
+                return enableKeyDragZoom(newVal);
               }
             });
             scope.$watch('keyboardkey', setKeyAction.sic);
