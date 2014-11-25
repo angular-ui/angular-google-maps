@@ -27,7 +27,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
               $scope.searchResults.results = [];
             }
           }
-          $scope.addMarkers(500);
+          $scope.addMarkers(1000);
         }
       },
       center: {
