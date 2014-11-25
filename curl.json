@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "gmap-util-keydragzoom": "http://google-maps-utility-library-v3.googlecode.com/svn/tags/keydragzoom/2.0.9/src/keydragzoom.js",
+    "gmap-util-infobox": "http://google-maps-utility-library-v3.googlecode.com/svn/tags/infobox/1.1.12/src/infobox.js",
+    "gmap-util-markerclustererplus": "http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.1.1/src/markerclusterer.js",
+    "gmap-util-markerwithlabel": "http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/src/markerwithlabel.js"
+  }
+}
