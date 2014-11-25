@@ -10,8 +10,7 @@
     "build": "grunt",
     "example": "grunt example",
     "test": "grunt",
-    "postinstall": "bower install",
-    "install": "node ./node_modules/svn-npm-crutch/lib/svn-npm-crutch.js"
+    "postinstall": "bower install && grunt curl"
   },
   "keywords": [
     "angularjs",
