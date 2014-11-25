@@ -10,7 +10,7 @@
     "build": "grunt",
     "example": "grunt example",
     "test": "grunt",
-    "postinstall": "bower install"
+    "postinstall": "bower install && grunt curl"
   },
   "keywords": [
     "angularjs",
@@ -36,6 +36,7 @@
     "grunt-contrib-uglify": "~0.6.0",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-conventional-changelog": "~1.1.0",
+    "grunt-curl": "^2.0.3",
     "grunt-debug-task": "^0.1.5",
     "grunt-mkdir": "~0.1.2",
     "grunt-open": "~0.2.3",
@@ -44,6 +45,7 @@
     "grunt-template-jasmine-istanbul": "~0.3.0",
     "grunt-template-jasmine-requirejs": "~0.2.0",
     "grunt-wrap": "^0.3.0",
+    "jsonfile": "^2.0.0",
     "lodash": "~2.4.1",
     "mocha": "~1.21.4",
     "should": "~4.0.4"

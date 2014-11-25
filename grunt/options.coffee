@@ -130,7 +130,7 @@ module.exports = (grunt) ->
       dist: concatDist
       distMapped: concatDistMapped
       libs:
-        src: ["lib/*.js"]
+        src: ["curl_components/**/*.js"]
         dest: "tmp/libs.js"
     copy:
       dist:
@@ -230,6 +230,8 @@ module.exports = (grunt) ->
       bluebird:
         projects: {}
   #          'bower_components/bluebird': ["build","--features='core'"]
+
+    curl: require './curl-deps'
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

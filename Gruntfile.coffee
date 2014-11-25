@@ -19,6 +19,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-replace'
   grunt.loadNpmTasks 'grunt-subgrunt'
   grunt.loadNpmTasks 'grunt-debug-task'
+  grunt.loadNpmTasks 'grunt-curl'
 
   #squishing this file done by moving grunt options out to its own file. This way we can focus on tasks!
   options = require('./grunt/options')(grunt)
@@ -60,7 +61,7 @@ module.exports = (grunt) ->
     "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist",
     "copy", "uglify:dist"]
 
-  grunt.registerTask 'offline',  ['default-no-specs', 'watch:offline']
+  grunt.registerTask 'offline', ['default-no-specs', 'watch:offline']
 
   dev = ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat", "copy"]
 
@@ -88,7 +89,7 @@ module.exports = (grunt) ->
     exampleOpenTasks.push basicTask
 
   #  allExamplesTaskToRun = ["clean:example", "connect:server"].concat(['open:free-draw-polygons','open:example']).concat ['watch:all']
-  allExamplesTaskToRun = ["fast","clean:example", "connect:server"].concat(exampleOpenTasks).concat ['watch:all']
+  allExamplesTaskToRun = ["fast", "clean:example", "connect:server"].concat(exampleOpenTasks).concat ['watch:all']
 
 
   listWithQuotes = (collection, doLog = true) ->
