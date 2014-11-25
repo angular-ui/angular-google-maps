@@ -26,6 +26,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             @modelsRendered = false if not scope.models? or scope.models.length == 0
             @scope.$watch 'models', (newValue, oldValue) =>
               if !_.isEqual(newValue,oldValue) or not @modelsRendered
+                return if newValue.length == 0 and oldValue.length == 0
                 @modelsRendered = true
                 @onWatch('models', scope, newValue, oldValue)
             , !@isTrue(attrs.modelsbyref)
