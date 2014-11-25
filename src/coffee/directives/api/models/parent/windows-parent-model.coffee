@@ -34,31 +34,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
           go: (scope) =>
             @watchOurScope(scope)
-#            @watchModels @markersScope if @markersScope?
             @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
             scope.$watch 'doRebuildAll', (newValue, oldValue) =>
               if (newValue != oldValue)
                 @doRebuildAll = newValue
 
             @createChildScopesWindows()
-          #watch this scope(Parent to all WindowModels), these updates reflect expression / Key changes
-          #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
-#          watch: (scope, name, nameKey) =>
-#            scope.$watch name, (newValue, oldValue) =>
-##              if (newValue != oldValue)
-#              return unless newValue
-#              @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
-#              _async.waitOrGo @, =>
-#                _async.each @windows.values(), (m) =>
-#                  model = if @markersScope? then m.model else m
-#                  if _.isString newValue
-#                    val = if @[nameKey] == 'self' then model else model?[@[nameKey]]
-#                  else
-#                    val = newValue #object or function
-#                  m.scope[name] = val
-#                ,false
-##              .then =>
-##                @existingPieces = undefined
 
           watchModels: (scope) =>
             scope.$watch 'models', (newValue, oldValue) =>
@@ -80,14 +61,19 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             @windows.length > 0 and newValueIsEmpty
 
           rebuildAll: (scope, doCreate, doDelete) =>
-            _async.waitOrGo @, =>
-              @windows.each (model) =>
-                model.destroy()
+              @onDestroy(doDelete).then =>
+                @createChildScopesWindows() if doCreate
 
-              delete @windows if doDelete
-              @windows = new PropMap()
-              @createChildScopesWindows() if doCreate
-              uiGmapPromise.resolve()
+          onDestroy:(doDelete) =>
+            @destroyPromise().then =>
+              @cleanOnResolve _async.waitOrGo @, =>
+                @windows.each (model) =>
+                  model.destroy()
+                uiGmapPromise.resolve()
+              .then =>
+                delete @windows if doDelete
+                @windows = new PropMap()
+                @isClearing = false
 
           watchDestroy: (scope)=>
             scope.$on '$destroy', =>
@@ -99,7 +85,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             _.each @scopePropNames, (name) =>
               nameKey = name + 'Key'
               @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
-#              @watch(scope, name, nameKey)
 
           createChildScopesWindows: (isCreatingFromScratch = true) =>
             ###
@@ -151,26 +136,24 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @watchDestroy scope
             @setContentKeys(scope.models) #only setting content keys once per model array
 
-            _async.waitOrGo @, =>
+            @cleanOnResolve _async.waitOrGo @, =>
               _async.each scope.models, (model) =>
                 gMarker = if hasGMarker then scope[modelsPropToIterate][[model[@idKey]]]?.gMarker else undefined
 #                throw 'Unable to get gMarker from scope!!' unless gMarker
                 @createWindow(model, gMarker, @gMap)
             .then =>
               @firstTime = false
-              uiGmapPromise.resolve()
-            .catch =>
-              @firstTime = false
-              uiGmapPromise.resolve()
 
           pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true)=>
+            return if scope.$$destroyed or @isClearing
+            return if @updateInProgress()
 #            doChunk = if @existingPieces? then false else _async.defaultChunkSize
             doChunk = _async.defaultChunkSize
             @models = scope.models
             if scope? and scope.models? and scope.models.length > 0 and @windows.length > 0
               @figureOutState @idKey, scope, @windows, @modelKeyComparison, (state) =>
                 payload = state
-                _async.waitOrGo @, =>
+                @cleanOnResolve _async.waitOrGo @, =>
                   _async.each payload.removals, (child)=>
                     if child?
                       @windows.remove(child.id)
@@ -182,11 +165,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                       gMarker = scope[modelsPropToIterate].get(modelToAdd[@idKey])?.gMarker
                       throw 'Gmarker undefined' unless gMarker
                       @createWindow(modelToAdd, gMarker, @gMap)
-                    ,doChunk
-                .catch =>
-                  uiGmapPromise.resolve()
-                .then =>
-                  uiGmapPromise.resolve()
+                    ,false
             else
               @rebuildAll(@scope, true, true)
 
