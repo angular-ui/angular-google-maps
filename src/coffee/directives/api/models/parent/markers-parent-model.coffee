@@ -57,7 +57,6 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             super(scope) or modelsNotDefined
 
           createMarkersFromScratch: (scope) =>
-#            return if @updateInProgress()
             if scope.doCluster
               if scope.clusterEvents
                 @clusterInternalOptions = do _.once =>

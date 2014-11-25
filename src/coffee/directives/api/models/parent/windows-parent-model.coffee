@@ -34,31 +34,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
           go: (scope) =>
             @watchOurScope(scope)
-#            @watchModels @markersScope if @markersScope?
             @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
             scope.$watch 'doRebuildAll', (newValue, oldValue) =>
               if (newValue != oldValue)
                 @doRebuildAll = newValue
 
             @createChildScopesWindows()
-          #watch this scope(Parent to all WindowModels), these updates reflect expression / Key changes
-          #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
-#          watch: (scope, name, nameKey) =>
-#            scope.$watch name, (newValue, oldValue) =>
-##              if (newValue != oldValue)
-#              return unless newValue
-#              @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
-#              _async.waitOrGo @, =>
-#                _async.each @windows.values(), (m) =>
-#                  model = if @markersScope? then m.model else m
-#                  if _.isString newValue
-#                    val = if @[nameKey] == 'self' then model else model?[@[nameKey]]
-#                  else
-#                    val = newValue #object or function
-#                  m.scope[name] = val
-#                ,false
-##              .then =>
-##                @existingPieces = undefined
 
           watchModels: (scope) =>
             scope.$watch 'models', (newValue, oldValue) =>
@@ -104,7 +85,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             _.each @scopePropNames, (name) =>
               nameKey = name + 'Key'
               @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
-#              @watch(scope, name, nameKey)
 
           createChildScopesWindows: (isCreatingFromScratch = true) =>
             ###
