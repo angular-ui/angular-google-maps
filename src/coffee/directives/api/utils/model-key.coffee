@@ -100,4 +100,45 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
             d.resolve()
         checkInProgress()
         return promise
+
+      # evaluate scope to scope.$parent (as long as isolate is false) with preference over models
+      # this will allow for expressions and strings evals
+      # returns
+      #   doWrap: false
+      #     a value evaluated as a function or object
+      #   doWrap: true
+      #     a object indicating where the value comes (isScope)
+      #     isScope: true is from scope, false from model
+      #     value: return value from doWrap false
+      scopeOrModelVal: (key, scope, model, doWrap = false) ->
+        maybeWrap = (isScope, ret, doWrap = false) ->
+          if doWrap
+            return {isScope: isScope, value: ret}
+          ret
+        scopeProp = scope[key]
+
+        if _.isFunction scopeProp
+          return maybeWrap true, scopeProp(), doWrap
+        if _.isObject scopeProp
+          return maybeWrap true, scopeProp, doWrap
+
+        modelKey = scopeProp #this should be the key pointing to what we need
+        unless modelKey
+          modelProp = model[key]
+        else
+          modelProp = if modelKey == 'self' then model else model[modelKey]
+        if _.isFunction modelProp
+          return maybeWrap false, modelProp(), doWrap
+        maybeWrap false, modelProp, doWrap
+
+
+      setChildScope: (keys, childScope, model) =>
+        _.each keys, (name) =>
+          isScopeObj = @scopeOrModelVal name, childScope, model, true
+          unless isScopeObj.isScope
+            newValue = isScopeObj.value
+            if(newValue != childScope[name])
+              childScope[name] = newValue
+        childScope.model = model
+
 ]
