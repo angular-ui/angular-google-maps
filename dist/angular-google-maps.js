@@ -1506,9 +1506,7 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module("uiGmapgoogle-maps.directives.api.utils").factory("uiGmapPropertyAction", [
     "uiGmapLogger", function(Logger) {
       var PropertyAction;
-      PropertyAction = function(setterFn, isFirstSet, key) {
-        var self;
-        self = this;
+      PropertyAction = function(setterFn) {
         this.setIfChange = function(newVal, oldVal) {
           var callingKey;
           callingKey = this.exp;
@@ -5388,6 +5386,61 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 ;(function() {
+  angular.module('uiGmapgoogle-maps.directives.api').service('uiGmapDragZoom', [
+    'uiGmapCtrlHandle', 'uiGmapPropertyAction', function(CtrlHandle, PropertyAction) {
+      return {
+        restrict: 'EMA',
+        transclude: true,
+        replace: false,
+        template: '<div class="angular-google-map-dragzoom" ng-transclude style="display: none"></div>',
+        replace: true,
+        require: '^' + 'uiGmapGoogleMap',
+        scope: {
+          keyboardkey: '=',
+          options: '=',
+          spec: '='
+        },
+        controller: [
+          '$scope', '$element', function($scope, $element) {
+            $scope.ctrlType = 'uiGmapDragZoom';
+            return _.extend(this, CtrlHandle.handle($scope, $element));
+          }
+        ],
+        link: function(scope, element, attrs, ctrl) {
+          return CtrlHandle.mapPromise(scope, ctrl).then(function(map) {
+            var enableKeyDragZoom, setKeyAction, setOptionsAction;
+            enableKeyDragZoom = function(opts) {
+              map.enableKeyDragZoom(opts);
+              if (scope.spec) {
+                return scope.spec.enableKeyDragZoom(opts);
+              }
+            };
+            setKeyAction = new PropertyAction(function(key, newVal) {
+              if (newVal) {
+                return enableKeyDragZoom({
+                  key: newVal
+                });
+              } else {
+                return enableKeyDragZoom();
+              }
+            });
+            setOptionsAction = new PropertyAction(function(key, newVal) {
+              if (newVal) {
+                return enableKeyDragZoom(newVal);
+              }
+            });
+            scope.$watch('keyboardkey', setKeyAction.sic);
+            setKeyAction.sic(scope.keyboardkey);
+            scope.$watch('options', setOptionsAction.sic);
+            return setOptionsAction.sic(scope.options);
+          });
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+;(function() {
   angular.module("uiGmapgoogle-maps.directives.api").factory("uiGmapDrawingManager", [
     "uiGmapIDrawingManager", "uiGmapDrawingManagerParentModel", function(IDrawingManager, DrawingManagerParentModel) {
       return _.extend(IDrawingManager, {
@@ -6915,6 +6968,20 @@ This directive creates a new scope.
   angular.module("uiGmapgoogle-maps").directive("uiGmapMapControl", [
     "uiGmapControl", function(Control) {
       return new Control();
+    }
+  ]);
+
+}).call(this);
+;
+/*
+@authors
+Nicholas McCready - https://twitter.com/nmccready
+ */
+
+(function() {
+  angular.module('uiGmapgoogle-maps').directive('uiGmapDragZoom', [
+    'uiGmapDragZoom', function(DragZoom) {
+      return DragZoom;
     }
   ]);
 

@@ -22,15 +22,43 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
   getMarker = ->
     map = undefined
     Marker = (opts) -> return
-    Marker.prototype.setMap = (_map) ->
+    Marker::.setMap = (_map) ->
       map = _map
-    Marker.prototype.getMap =  ->
+    Marker::.getMap =  ->
       map
-    Marker.prototype.setPosition = (position) ->
-    Marker.prototype.setIcon = (icon) ->
-    Marker.prototype.setVisible = (isVisible) ->
-    Marker.prototype.setOptions = (options) ->
+    Marker::.setPosition = (position) ->
+    Marker::.setIcon = (icon) ->
+    Marker::setVisible = (isVisible) ->
+    Marker::setOptions = (options) ->
     return Marker
+
+  getMap = ->
+    Map = (opts) -> return
+    Map::center =
+      lat: -> 0
+      lng: -> 0
+    Map::controls = {
+      TOP_CENTER: [],
+      TOP_LEFT: [],
+      TOP_RIGHT: [],
+      LEFT_TOP: [],
+      RIGHT_TOP: [],
+      LEFT_CENTER: [],
+      RIGHT_CENTER: [],
+      LEFT_BOTTOM: [],
+      RIGHT_BOTTOM: [],
+      BOTTOM_CENTER: [],
+      BOTTOM_LEFT: [],
+      BOTTOM_RIGHT: []
+    }
+    Map::overlayMapTypes = new window.google.maps.MVCArray()
+    Map::getControls = -> return @controls
+    Map::setOpts = -> return
+    Map::setOptions = -> return
+    Map::setZoom = -> return
+    Map::setCenter = -> return
+    Map::getCoords = -> return {latitude: 47, longitude: -27} unless Map.getCoords?
+    return Map
 
   class GoogleApiMock
     constructor: ->
@@ -101,35 +129,12 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
     #   Map.getCoords = -> return {latitude: 47, longitude: -27} unless Map.getCoords?
     #   window.google.maps.Map = Map
     mockMap: =>
-      Map = () ->
-        @center =
-          lat: -> 0
-          lng: -> 0
-        @controls = {
-          TOP_CENTER: [],
-          TOP_LEFT: [],
-          TOP_RIGHT: [],
-          LEFT_TOP: [],
-          RIGHT_TOP: [],
-          LEFT_CENTER: [],
-          RIGHT_CENTER: [],
-          LEFT_BOTTOM: [],
-          RIGHT_BOTTOM: [],
-          BOTTOM_CENTER: [],
-          BOTTOM_LEFT: [],
-          BOTTOM_RIGHT: []
-        }
-        @overlayMapTypes = new window.google.maps.MVCArray()
-        @getControls = -> return @controls
-        @setZoom = -> return
-        @setCenter = -> return
-        @getCoords = -> return {latitude: 47, longitude: -27} unless Map.getCoords?
-        return @
       @mockMapTypeId()
       @mockLatLng()
       @mockOverlayView()
       @mockEvent()
       @mockMVCArray()
+      Map = getMap()
       window.google.maps.Map = Map
 
     mockControlPosition: ->
@@ -264,6 +269,6 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         @
 
     getMarker: getMarker
-
+    getMap: getMap
   GoogleApiMock
 )
