@@ -6384,16 +6384,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         }
 
         Polygons.prototype.link = function(scope, element, attrs, mapCtrl) {
-          if (angular.isUndefined(scope.path) || scope.path === null) {
-            this.$log.error('polygons: no valid path attribute found');
-            return;
-          }
-          if (!scope.models) {
-            this.$log.error('polygons: no models found to create from');
-            return;
-          }
           return mapCtrl.getScope().deferred.promise.then((function(_this) {
             return function(map) {
+              if (angular.isUndefined(scope.path) || scope.path === null) {
+                _this.$log.warn('polygons: no valid path attribute found');
+              }
+              if (!scope.models) {
+                _this.$log.warn('polygons: no models found to create from');
+              }
               return new ParentModel(scope, element, attrs, map, _this.DEFAULTS);
             };
           })(this));
@@ -6423,12 +6421,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         }
 
         Polyline.prototype.link = function(scope, element, attrs, mapCtrl) {
-          if (angular.isUndefined(scope.path) || scope.path === null || !this.validatePath(scope.path)) {
-            this.$log.error('polyline: no valid path attribute found');
-            return;
-          }
           return IPolyline.mapPromise(scope, mapCtrl).then((function(_this) {
             return function(map) {
+              if (angular.isUndefined(scope.path) || scope.path === null || !_this.validatePath(scope.path)) {
+                _this.$log.warn('polyline: no valid path attribute found');
+              }
               return new PolylineChildModel(scope, attrs, map, _this.DEFAULTS);
             };
           })(this));
@@ -6461,16 +6458,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         }
 
         Polylines.prototype.link = function(scope, element, attrs, mapCtrl) {
-          if (angular.isUndefined(scope.path) || scope.path === null) {
-            this.$log.error('polylines: no valid path attribute found');
-            return;
-          }
-          if (!scope.models) {
-            this.$log.error('polylines: no models found to create from');
-            return;
-          }
           return mapCtrl.getScope().deferred.promise.then((function(_this) {
             return function(map) {
+              if (angular.isUndefined(scope.path) || scope.path === null) {
+                _this.$log.warn('polylines: no valid path attribute found');
+              }
+              if (!scope.models) {
+                _this.$log.warn('polylines: no models found to create from');
+              }
               return new PolylinesParentModel(scope, element, attrs, map, _this.DEFAULTS);
             };
           })(this));

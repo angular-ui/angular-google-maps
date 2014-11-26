@@ -11,16 +11,14 @@ angular.module('uiGmapgoogle-maps.directives.api')
         @$log.info @
 
       link: (scope, element, attrs, mapCtrl) =>
-        # Validate required properties
-        if angular.isUndefined(scope.path) or scope.path is null
-          @$log.error 'polygons: no valid path attribute found'
-          return
-
-        unless scope.models
-          @$log.error 'polygons: no models found to create from'
-          return
-
         # Wrap polyline initialization inside a $timeout() call to make sure the map is created already
         mapCtrl.getScope().deferred.promise.then (map) =>
+            # Validate required properties
+          if angular.isUndefined(scope.path) or scope.path is null
+            @$log.warn 'polygons: no valid path attribute found'
+
+          unless scope.models
+            @$log.warn 'polygons: no models found to create from'
+
           new ParentModel scope, element, attrs, map, @DEFAULTS
 ]
