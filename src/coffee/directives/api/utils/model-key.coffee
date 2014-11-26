@@ -141,4 +141,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
               childScope[name] = newValue
         childScope.model = model
 
+
+      destroy: (manualOverride = false)=>
+        if @scope? and not @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
+          @scope.$destroy()
 ]

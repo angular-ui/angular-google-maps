@@ -1095,6 +1095,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         function ModelKey(scope) {
           this.scope = scope;
+          this.destroy = __bind(this.destroy, this);
           this.setChildScope = __bind(this.setChildScope, this);
           this.destroyPromise = __bind(this.destroyPromise, this);
           this.cleanOnResolve = __bind(this.cleanOnResolve, this);
@@ -1285,6 +1286,16 @@ Nicholas McCready - https://twitter.com/nmccready
             };
           })(this));
           return childScope.model = model;
+        };
+
+        ModelKey.prototype.destroy = function(manualOverride) {
+          var _ref;
+          if (manualOverride == null) {
+            manualOverride = false;
+          }
+          if ((this.scope != null) && !((_ref = this.scope) != null ? _ref.$$destroyed : void 0) && (this.needToManualDestroy || manualOverride)) {
+            return this.scope.$destroy();
+          }
         };
 
         return ModelKey;
@@ -2946,7 +2957,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               _this.removeEvents(_this.listeners);
               if (arraySyncer) {
                 arraySyncer();
-                return arraySyncer = null;
+                arraySyncer = null;
+                return _this.scope.$destroy();
               }
             };
           })(this));
@@ -4249,8 +4261,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return this.destroyPromise().then((function(_this) {
             return function() {
               return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
-                _this.plurals.each(function(model) {
-                  return model.destroy();
+                _this.plurals.each(function(child) {
+                  return child.destroy();
                 });
                 return uiGmapPromise.resolve();
               })).then(function() {
@@ -4507,8 +4519,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return this.destroyPromise().then((function(_this) {
             return function() {
               return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
-                _this.plurals.each(function(model) {
-                  return model.destroy();
+                _this.plurals.each(function(child) {
+                  return child.destroy();
                 });
                 return uiGmapPromise.resolve();
               })).then(function() {
@@ -5065,8 +5077,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return this.destroyPromise().then((function(_this) {
             return function() {
               return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
-                _this.windows.each(function(model) {
-                  return model.destroy();
+                _this.windows.each(function(child) {
+                  return child.destroy();
                 });
                 return uiGmapPromise.resolve();
               })).then(function() {
