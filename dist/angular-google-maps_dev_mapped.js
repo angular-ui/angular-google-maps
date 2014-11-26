@@ -2361,7 +2361,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
       var drawFreeHand, freeHandMgr;
       drawFreeHand = function(map, polys, enable) {
         var move, poly;
-        this.polys = polys;
         poly = new google.maps.Polyline({
           map: map,
           clickable: false
