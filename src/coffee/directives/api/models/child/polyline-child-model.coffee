@@ -16,7 +16,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
           dragstart: =>
             @isDragging = true
 
-        createPolyline = =>
+        create = =>
           return if @isDragging #avoid unnecessary creation (be nice if we knew we were editing too)
           pathPoints = @convertPathPoints @scope.path
           if @polyline?
@@ -29,11 +29,11 @@ angular.module('uiGmapgoogle-maps.directives.api')
             @listeners = if @model then @setEvents @polyline, @scope, @model else @setEvents @polyline, @scope, @scope
             @internalListeners = if @model then @setEvents @polyline, events: @internalEvents, @model else @setEvents @polyline, events: @internalEvents, @scope
 
-        createPolyline() #handle stuff without being dependent on digests (ie using watches for init)
+        create() #handle stuff without being dependent on digests (ie using watches for init)
 
         scope.$watch 'path', (newValue, oldValue) =>
           if not _.isEqual(newValue, oldValue) or not @polyline
-            createPolyline()
+            create()
         , true
         #TODO refactor all these sets and watches to be handled functionally as an array
         #Begin Booleans
@@ -92,10 +92,4 @@ angular.module('uiGmapgoogle-maps.directives.api')
 #        @removeEvents @internalPathListeners
         @polyline?.setMap null
         @polyline = null
-        if arraySyncer
-          arraySyncer()
-          arraySyncer = null
-
-      destroy: () ->
-        @scope.$destroy()
 ]

@@ -2831,7 +2831,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 ;(function() {
-  var __hasProp = {}.hasOwnProperty,
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapPolygonChildModel', [
@@ -2845,82 +2846,162 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         PolygonChildModel.include(EventsHelper);
 
         function PolygonChildModel(scope, attrs, map, defaults, model) {
-          var arraySyncer, pathPoints, polygon;
+          var create;
           this.scope = scope;
           this.attrs = attrs;
           this.map = map;
           this.defaults = defaults;
           this.model = model;
-          this.listeners = void 0;
-          if (angular.isUndefined(scope.path) || scope.path === null || !this.validatePath(scope.path)) {
-            $log.error('polygon: no valid path attribute found');
-            return;
-          }
-          pathPoints = this.convertPathPoints(scope.path);
-          polygon = new google.maps.Polygon(this.buildOpts(pathPoints));
-          if (scope.fit) {
-            this.extendMapBounds(this.map, pathPoints);
-          }
-          if (!scope["static"] && angular.isDefined(scope.editable)) {
-            scope.$watch('editable', function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                return polygon.setEditable(newValue);
+          this.clean = __bind(this.clean, this);
+          this.isDragging = false;
+          this.internalEvents = {
+            dragend: (function(_this) {
+              return function() {
+                return _.defer(function() {
+                  return _this.isDragging = false;
+                });
+              };
+            })(this),
+            dragstart: (function(_this) {
+              return function() {
+                return _this.isDragging = true;
+              };
+            })(this)
+          };
+          create = (function(_this) {
+            return function() {
+              var pathPoints;
+              if (_this.isDragging) {
+                return;
               }
-            });
+              pathPoints = _this.convertPathPoints(_this.scope.path);
+              if (_this.polygon != null) {
+                _this.clean();
+              }
+              if (pathPoints.length > 0) {
+                _this.polygon = new google.maps.Polygon(_this.buildOpts(pathPoints));
+              }
+              if (_this.polygon) {
+                if (_this.scope.fit) {
+                  _this.extendMapBounds(map, pathPoints);
+                }
+                arraySync(_this.polygon.getPath(), _this.scope, 'path', function(pathPoints) {
+                  if (_this.scope.fit) {
+                    return _this.extendMapBounds(map, pathPoints);
+                  }
+                });
+                _this.listeners = _this.model ? _this.setEvents(_this.polygon, _this.scope, _this.model) : _this.setEvents(_this.polygon, _this.scope, _this.scope);
+                return _this.internalListeners = _this.model ? _this.setEvents(_this.polygon, {
+                  events: _this.internalEvents
+                }, _this.model) : _this.setEvents(_this.polygon, {
+                  events: _this.internalEvents
+                }, _this.scope);
+              }
+            };
+          })(this);
+          create();
+          scope.$watch('path', (function(_this) {
+            return function(newValue, oldValue) {
+              if (!_.isEqual(newValue, oldValue) || !_this.polygon) {
+                return create();
+              }
+            };
+          })(this), true);
+          if (!scope["static"] && angular.isDefined(scope.editable)) {
+            scope.$watch('editable', (function(_this) {
+              return function(newValue, oldValue) {
+                var _ref;
+                if (newValue !== oldValue) {
+                  newValue = !_this.isFalse(newValue);
+                  return (_ref = _this.polygon) != null ? _ref.setEditable(newValue) : void 0;
+                }
+              };
+            })(this), true);
           }
           if (angular.isDefined(scope.draggable)) {
-            scope.$watch('draggable', function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                return polygon.setDraggable(newValue);
-              }
-            });
+            scope.$watch('draggable', (function(_this) {
+              return function(newValue, oldValue) {
+                var _ref;
+                if (newValue !== oldValue) {
+                  newValue = !_this.isFalse(newValue);
+                  return (_ref = _this.polygon) != null ? _ref.setDraggable(newValue) : void 0;
+                }
+              };
+            })(this), true);
           }
           if (angular.isDefined(scope.visible)) {
-            scope.$watch('visible', function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                return polygon.setVisible(newValue);
-              }
-            });
+            scope.$watch('visible', (function(_this) {
+              return function(newValue, oldValue) {
+                var _ref;
+                if (newValue !== oldValue) {
+                  newValue = !_this.isFalse(newValue);
+                }
+                return (_ref = _this.polygon) != null ? _ref.setVisible(newValue) : void 0;
+              };
+            })(this), true);
           }
           if (angular.isDefined(scope.geodesic)) {
             scope.$watch('geodesic', (function(_this) {
               return function(newValue, oldValue) {
+                var _ref;
                 if (newValue !== oldValue) {
-                  return polygon.setOptions(_this.buildOpts(polygon.getPath()));
+                  newValue = !_this.isFalse(newValue);
+                  return (_ref = _this.polygon) != null ? _ref.setOptions(_this.buildOpts(_this.polygon.getPath())) : void 0;
                 }
               };
-            })(this));
-          }
-          if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.opacity)) {
-            scope.$watch('stroke.opacity', (function(_this) {
-              return function(newValue, oldValue) {
-                return polygon.setOptions(_this.buildOpts(polygon.getPath()));
-              };
-            })(this));
+            })(this), true);
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
             scope.$watch('stroke.weight', (function(_this) {
               return function(newValue, oldValue) {
+                var _ref;
                 if (newValue !== oldValue) {
-                  return polygon.setOptions(_this.buildOpts(polygon.getPath()));
+                  return (_ref = _this.polygon) != null ? _ref.setOptions(_this.buildOpts(_this.polygon.getPath())) : void 0;
                 }
               };
-            })(this));
+            })(this), true);
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
             scope.$watch('stroke.color', (function(_this) {
               return function(newValue, oldValue) {
+                var _ref;
                 if (newValue !== oldValue) {
-                  return polygon.setOptions(_this.buildOpts(polygon.getPath()));
+                  return (_ref = _this.polygon) != null ? _ref.setOptions(_this.buildOpts(_this.polygon.getPath())) : void 0;
                 }
               };
-            })(this));
+            })(this), true);
           }
+          if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.opacity)) {
+            scope.$watch('stroke.opacity', (function(_this) {
+              return function(newValue, oldValue) {
+                var _ref;
+                if (newValue !== oldValue) {
+                  return (_ref = _this.polygon) != null ? _ref.setOptions(_this.buildOpts(_this.polygon.getPath())) : void 0;
+                }
+              };
+            })(this), true);
+          }
+          if (angular.isDefined(scope.icons)) {
+            scope.$watch('icons', (function(_this) {
+              return function(newValue, oldValue) {
+                var _ref;
+                if (newValue !== oldValue) {
+                  return (_ref = _this.polygon) != null ? _ref.setOptions(_this.buildOpts(_this.polygon.getPath())) : void 0;
+                }
+              };
+            })(this), true);
+          }
+          scope.$on('$destroy', (function(_this) {
+            return function() {
+              _this.clean();
+              return _this.scope = null;
+            };
+          })(this));
           if (angular.isDefined(scope.fill) && angular.isDefined(scope.fill.color)) {
             scope.$watch('fill.color', (function(_this) {
               return function(newValue, oldValue) {
                 if (newValue !== oldValue) {
-                  return polygon.setOptions(_this.buildOpts(polygon.getPath()));
+                  return _this.polygon.setOptions(_this.buildOpts(_this.polygon.getPath()));
                 }
               };
             })(this));
@@ -2929,7 +3010,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             scope.$watch('fill.opacity', (function(_this) {
               return function(newValue, oldValue) {
                 if (newValue !== oldValue) {
-                  return polygon.setOptions(_this.buildOpts(polygon.getPath()));
+                  return _this.polygon.setOptions(_this.buildOpts(_this.polygon.getPath()));
                 }
               };
             })(this));
@@ -2938,33 +3019,25 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             scope.$watch('zIndex', (function(_this) {
               return function(newValue, oldValue) {
                 if (newValue !== oldValue) {
-                  return polygon.setOptions(_this.buildOpts(polygon.getPath()));
+                  return _this.polygon.setOptions(_this.buildOpts(_this.polygon.getPath()));
                 }
               };
             })(this));
           }
           if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
-            this.listeners = EventsHelper.setEvents(polygon, scope, scope);
+            this.listeners = EventsHelper.setEvents(this.polygon, scope, scope);
           }
-          arraySyncer = arraySync(polygon.getPath(), scope, 'path', (function(_this) {
-            return function(pathPoints) {
-              if (scope.fit) {
-                return _this.extendMapBounds(_this.map, pathPoints);
-              }
-            };
-          })(this));
-          scope.$on('$destroy', (function(_this) {
-            return function() {
-              polygon.setMap(null);
-              _this.removeEvents(_this.listeners);
-              if (arraySyncer) {
-                arraySyncer();
-                arraySyncer = null;
-                return _this.scope.$destroy();
-              }
-            };
-          })(this));
         }
+
+        PolygonChildModel.prototype.clean = function() {
+          var _ref;
+          this.removeEvents(this.listeners);
+          this.removeEvents(this.internalListeners);
+          if ((_ref = this.polygon) != null) {
+            _ref.setMap(null);
+          }
+          return this.polygon = null;
+        };
 
         return PolygonChildModel;
 
@@ -2989,7 +3062,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         PolylineChildModel.include(EventsHelper);
 
         function PolylineChildModel(scope, attrs, map, defaults, model) {
-          var createPolyline;
+          var create;
           this.scope = scope;
           this.attrs = attrs;
           this.map = map;
@@ -3011,7 +3084,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               };
             })(this)
           };
-          createPolyline = (function(_this) {
+          create = (function(_this) {
             return function() {
               var pathPoints;
               if (_this.isDragging) {
@@ -3042,11 +3115,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this);
-          createPolyline();
+          create();
           scope.$watch('path', (function(_this) {
             return function(newValue, oldValue) {
               if (!_.isEqual(newValue, oldValue) || !_this.polyline) {
-                return createPolyline();
+                return create();
               }
             };
           })(this), true);
@@ -3144,21 +3217,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         }
 
         PolylineChildModel.prototype.clean = function() {
-          var arraySyncer, _ref;
+          var _ref;
           this.removeEvents(this.listeners);
           this.removeEvents(this.internalListeners);
           if ((_ref = this.polyline) != null) {
             _ref.setMap(null);
           }
-          this.polyline = null;
-          if (arraySyncer) {
-            arraySyncer();
-            return arraySyncer = null;
-          }
-        };
-
-        PolylineChildModel.prototype.destroy = function() {
-          return this.scope.$destroy();
+          return this.polyline = null;
         };
 
         return PolylineChildModel;

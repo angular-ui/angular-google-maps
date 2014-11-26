@@ -117,9 +117,11 @@
           $scope.map.polys = createPolys();
         });
         $scope.$onRootScope("addClicked", function () {
+          if (!$scope.map.polys || !$scope.map.polys.length > 0)
+            return;
           var last = JSON.parse(JSON.stringify(_.last($scope.map.polys)));
-          last.id +=1;
-          last.path = last.path.map(function(p){
+          last.id += 1;
+          last.path = last.path.map(function (p) {
             p.longitude += 2;
             return p;
           });
@@ -136,7 +138,7 @@
           '<div>' +
           '<button class="btn btn-lg btn-primary pull-left"  ng-click="clear.controlClick()">{{clear.controlText}}</button>' +
           '<button class="btn btn-lg btn-primary pull-left"  ng-click="make.controlClick()">{{make.controlText}}</button>' +
-            '<button class="btn btn-lg btn-primary pull-left"  ng-click="add.controlClick()">{{add.controlText}}</button>' +
+          '<button class="btn btn-lg btn-primary pull-left"  ng-click="add.controlClick()">{{add.controlText}}</button>' +
           '</div>');
     }]);
 })(window, angular);
