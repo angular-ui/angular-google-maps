@@ -72,4 +72,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
           if arraySyncer
             arraySyncer()
             arraySyncer = null
+
+            @scope.$destroy()
+
 ]

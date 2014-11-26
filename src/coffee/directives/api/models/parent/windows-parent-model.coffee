@@ -67,8 +67,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           onDestroy:(doDelete) =>
             @destroyPromise().then =>
               @cleanOnResolve _async.waitOrGo @, =>
-                @windows.each (model) =>
-                  model.destroy()
+                @windows.each (child) =>
+                  child.destroy()
                 uiGmapPromise.resolve()
               .then =>
                 delete @windows if doDelete
