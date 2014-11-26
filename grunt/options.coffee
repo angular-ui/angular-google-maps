@@ -33,8 +33,17 @@ pipeline = [
 
 concatDist =
   options:
-    banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
+    banner: """
+    /*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>
+     *  <%= pkg.description %>
+     *  <%= pkg.repository.type %>: <%= pkg.repository.url %>
+     */
+    ;
+    (function( window, angular, undefined ){
+      'use strict';
+    """
     separator: ";"
+    footer: "}( window,angular));"
   src: pipeline.map( (f) -> "tmp/#{f}.js").concat [
     "tmp/wrapped_uuid.js"
     "tmp/wrapped_libs.js"
