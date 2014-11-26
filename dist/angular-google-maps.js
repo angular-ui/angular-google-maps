@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.10 2014-11-25
+/*! angular-google-maps 2.1.0-SNAPSHOT 2014-11-26
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4867,6 +4867,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.ctrlPosition = ctrlPosition;
           this.template = template;
           this.$log = $log != null ? $log : Logger;
+          this.setVisibility = __bind(this.setVisibility, this);
           this.getBounds = __bind(this.getBounds, this);
           this.setBounds = __bind(this.setBounds, this);
           this.createSearchBox = __bind(this.createSearchBox, this);
@@ -4877,6 +4878,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.$log.error('template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!');
             return;
           }
+          if (angular.isUndefined(this.scope.options)) {
+            this.scope.options = {};
+            this.scope.options.visible = true;
+          }
+          if (angular.isUndefined(this.scope.options.visible)) {
+            this.scope.options.visible = true;
+          }
+          this.visible = scope.options.visible;
           controlDiv = angular.element('<div></div>');
           controlDiv.append(this.template);
           this.input = controlDiv.find('input')[0];
@@ -4885,6 +4894,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         SearchBoxParentModel.prototype.init = function() {
           this.createSearchBox();
+          this.scope.$watch('options', (function(_this) {
+            return function(newValue, oldValue) {
+              if (angular.isObject(newValue)) {
+                if (newValue.bounds != null) {
+                  _this.setBounds(newValue.bounds);
+                }
+                if (newValue.visible != null) {
+                  if (_this.visible !== newValue.visible) {
+                    return _this.setVisibility(newValue.visible);
+                  }
+                }
+              }
+            };
+          })(this), true);
           if (this.attrs.parentdiv != null) {
             this.addToParentDiv();
           } else {
@@ -4897,15 +4920,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
           this.listeners = this.setEvents(this.searchBox, this.scope, this.scope);
           this.$log.info(this);
-          this.scope.$watch('options', (function(_this) {
-            return function(newValue, oldValue) {
-              if (angular.isObject(newValue)) {
-                if (newValue.bounds != null) {
-                  return _this.setBounds(newValue.bounds);
-                }
-              }
-            };
-          })(this), true);
           return this.scope.$on('$destroy', (function(_this) {
             return function() {
               return _this.searchBox = null;
@@ -4940,6 +4954,23 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         SearchBoxParentModel.prototype.getBounds = function() {
           return this.searchBox.getBounds();
+        };
+
+        SearchBoxParentModel.prototype.setVisibility = function(val) {
+          if (this.attrs.parentdiv != null) {
+            if (val === false) {
+              this.parentDiv.addClass("ng-hide");
+            } else {
+              this.parentDiv.removeClass("ng-hide");
+            }
+          } else {
+            if (val === false) {
+              this.gMap.controls[google.maps.ControlPosition[this.ctrlPosition]].clear();
+            } else {
+              this.gMap.controls[google.maps.ControlPosition[this.ctrlPosition]].push(this.input);
+            }
+          }
+          return this.visible = val;
         };
 
         return SearchBoxParentModel;
