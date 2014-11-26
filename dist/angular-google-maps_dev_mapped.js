@@ -28,7 +28,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 angular-google-maps
-https://github.com/nlaplante/angular-google-maps
+https://github.com/angular-ui/angular-google-maps
 
 @authors
 Nicolas Laplante - https://plus.google.com/108189012221374960701
@@ -2336,9 +2336,6 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;
 /*
-angular-google-maps
-https://github.com/nlaplante/angular-google-maps
-
 @authors
 Nicholas McCready - https://twitter.com/nmccready
 Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawing-freehand  , &

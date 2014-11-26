@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 angular-google-maps
-https://github.com/nlaplante/angular-google-maps
+https://github.com/angular-ui/angular-google-maps
 
 @authors
 Nicolas Laplante - https://plus.google.com/108189012221374960701
