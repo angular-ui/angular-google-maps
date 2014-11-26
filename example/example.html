@@ -56,6 +56,7 @@
         <ui-gmap-layer type="BicyclingLayer" show="map.showBicycling"></ui-gmap-layer>
         <ui-gmap-layer namespace="weather" type="WeatherLayer" show="map.showWeather"></ui-gmap-layer>
         <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="map.showHeat" onCreated="map.heatLayerCallback"></ui-gmap-layer>
+        <ui-gmap-drag-zoom keyboardkey="'alt'"></ui-gmap-drag-zoom>
 
         <!--WINDOWS without markers-->
         <!--NOTICE THEY MUST BE PRIOR TO ANY MARKERS OR THEY WILL ATTACH THEMSELVES walking up the dom tree-->
