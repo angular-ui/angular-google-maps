@@ -35,6 +35,13 @@
           }
         };
       }])
+    .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
+      GoogleMapApi.configure({
+        //    key: 'your api key',
+        v: '3.17',
+        libraries: 'geometry'
+      });
+    }])
     .controller('ctrl', ['$rootScope', '$scope', "uiGmapLogger", 'polyChannel', 'clearChannel',
       function ($rootScope, $scope, $log, polyChannel, clearChannel) {
         $scope.map = {

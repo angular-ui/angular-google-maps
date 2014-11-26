@@ -2,9 +2,76 @@ log = require('util').log
 jasmineSettings = require './jasmine'
 _ = require 'lodash'
 
+pipeline = [
+  "src/coffee/module"
+  "src/coffee/providers/*"
+  "src/coffee/extensions/*"
+  "src/coffee/directives/api/utils/*"
+  "src/coffee/directives/api/managers/*"
+
+  "src/coffee/controllers/polyline-display"
+  "src/coffee/utils/*"
+
+  "src/coffee/directives/api/options/**/*"
+  "src/coffee/directives/api/models/child/*"
+  "src/coffee/directives/api/models/parent/*"
+  "src/coffee/directives/api/*"
+  "src/coffee/directives/map"
+  "src/coffee/directives/marker"
+  "src/coffee/directives/markers"
+  "src/coffee/directives/label"
+  "src/coffee/directives/polygon"
+  "src/coffee/directives/circle"
+  "src/coffee/directives/polyline*"
+  "src/coffee/directives/rectangle"
+  "src/coffee/directives/window"
+  "src/coffee/directives/windows"
+  "src/coffee/directives/layer"
+  "src/coffee/directives/control"
+  "src/coffee/directives/*"
+]
+
+concatDist =
+  options:
+    banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
+    separator: ";"
+  src: pipeline.map( (f) -> "tmp/#{f}.js").concat [
+    "tmp/wrapped_uuid.js"
+    "tmp/wrapped_libs.js"
+    "src/js/**/*.js" #this all will only work if the dependency orders do not matter
+    "src/js/**/**/*.js"
+    "src/js/**/**/**/*.js"
+    "!src/js/wrapped/*.js"
+  ]
+  dest: "dist/<%= pkg.name %>.js"
+
+clone = (obj) ->
+  _.extend {}, obj
+
+concatDistMapped = clone concatDist
+concatDistMapped.options = _.extend clone(concatDist.options),
+  sourceMap: true
+  sourceMapName: "dist/<%= pkg.name %>_dev_mapped.js.map"
+concatDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.js"
+
+uglifyDist=
+  options:
+    banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
+    compress: true
+    report: "gzip"
+  src: "dist/<%= pkg.name %>.js"
+  dest: "dist/<%= pkg.name %>.min.js"
+
+uglifyDistMapped = clone uglifyDist
+uglifyDistMapped.options = _.extend clone(uglifyDistMapped.options),
+  sourceMap: true
+  sourceMapName: "dist/<%= pkg.name %>_dev_mapped.min.js.map"
+uglifyDistMapped.src =  "dist/<%= pkg.name %>_dev_mapped.js"
+uglifyDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.min.js"
+
 module.exports = (grunt) ->
   options =
-    # Project configuration.
+  # Project configuration.
     bump:
       options:
         files: ['package.json', 'bower.json']
@@ -35,78 +102,41 @@ module.exports = (grunt) ->
 
     coffee:
       compile:
-        files:
-          "tmp/output_coffee.js": [
-            "src/coffee/extensions/string.coffee"
-            "src/coffee/extensions/lodash.coffee"
-            "src/coffee/module.coffee"
-            "src/coffee/providers/*.coffee"
-            "src/coffee/extensions/google.maps.coffee"
-            "src/coffee/directives/api/utils/*.coffee"
-            "src/coffee/directives/api/managers/*.coffee"
+        expand: true,
+        flatten: false,
+        src: pipeline.map (f) -> f + '.coffee'
+        dest: 'tmp/'
+        ext: '.js'
 
-            "src/coffee/controllers/polyline-display.js"
-            "src/coffee/utils/*.coffee"
-
-            "src/coffee/directives/api/options/**/*.coffee"
-            "src/coffee/directives/api/models/child/*.coffee"
-            "src/coffee/directives/api/models/parent/*.coffee"
-            "src/coffee/directives/api/*.coffee"
-            "src/coffee/directives/map.coffee"
-            "src/coffee/directives/marker.coffee"
-            "src/coffee/directives/markers.coffee"
-            "src/coffee/directives/label.coffee"
-            "src/coffee/directives/polygon.coffee"
-            "src/coffee/directives/circle.coffee"
-            "src/coffee/directives/polyline*.coffee"
-            "src/coffee/directives/rectangle.coffee"
-            "src/coffee/directives/window.coffee"
-            "src/coffee/directives/windows.coffee"
-            "src/coffee/directives/layer.coffee"
-            "src/coffee/directives/control.coffee"
-            "src/coffee/directives/*.coffee"
-          ]
-
+      specs:
+        expand: true,
+        flatten: false,
+        src: [
         #specs
-          "tmp/string.js":"src/coffee/extensions/string.coffee"#to load as a vendor prior to specs to not have ns changes in two spots
-          "tmp/spec/js/bootstrap.js": "spec/coffee/bootstrap.coffee"
-          "tmp/spec/js/helpers/helpers.js": "spec/coffee/helpers/*.coffee"
-          "tmp/spec/js/ng-gmap-module.spec.js": "spec/coffee/ng-gmap-module.spec.coffee"
-          "tmp/spec/js/usage/usage.spec.js": "spec/coffee/usage/*.spec.coffee"
-          "tmp/spec/js/directives/api/apis.spec.js": "spec/coffee/directives/api/*.spec.coffee"
-          "tmp/spec/js/providers/providers.spec.js": "spec/coffee/providers/*.spec.coffee"
-          "tmp/spec/js/directives/api/models/child/children.spec.js": "spec/coffee/directives/api/models/child/*.spec.coffee"
-          "tmp/spec/js/directives/api/models/parent/parents.spec.js": "spec/coffee/directives/api/models/parent/*.spec.coffee"
-          "tmp/spec/js/directives/api/options/options.spec.js": "spec/coffee/directives/api/options/**/*.spec.coffee"
-          "tmp/spec/js/directives/api/utils/utils.spec.js": "spec/coffee/directives/api/utils/*.spec.coffee"
+          "spec/coffee/bootstrap.coffee"
+          "spec/coffee/helpers/*.coffee"
+          "spec/coffee/usage/*.coffee"
+          "spec/coffee/directives/api/*.coffee"
+          "spec/coffee/providers/*.coffee"
+          "spec/coffee/directives/api/models/child/*.coffee"
+          "spec/coffee/directives/api/models/parent/*.coffee"
+          "spec/coffee/directives/api/options/**/*.coffee"
+          "spec/coffee/directives/api/utils/*.coffee"
+        ]
+        dest: "tmp/"
+        ext: '.spec.js'
 
     concat:
-      options:
-        banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
-        separator: ";"
-
-      dist:
-        src: [
-          "tmp/output_coffee.js"
-          "tmp/wrapped_uuid.js"
-          "tmp/wrapped_libs.js"
-          "src/js/**/*.js" #this all will only work if the dependency orders do not matter
-          "src/js/**/**/*.js"
-          "src/js/**/**/**/*.js"
-          "!src/js/wrapped/*.js"
-        ]
-        dest: "tmp/output.js"
+      dist: concatDist
+      distMapped: concatDistMapped
       libs:
-        src  : ["lib/*.js"]
-        dest : "tmp/libs.js"
-
+        src: ["curl_components/**/*.js"]
+        dest: "tmp/libs.js"
     copy:
       dist:
         files: [
-          src: "tmp/output.js"
-          dest: "dist/<%= pkg.name %>.js"
         ]
-      # libraries that are not versioned well, not really on bower, not on a cdn yet
+    # libraries that are not versioned well, not really on bower, not on a cdn yet
       poorly_managed_dev__dep_bower_libs:
         files: [
           src: ["bower_components/bootstrap-without-jquery/bootstrap3/bootstrap-without-jquery.js"]
@@ -114,18 +144,12 @@ module.exports = (grunt) ->
         ]
 
     uglify:
-      options:
-        banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
-        compress: true
-        report: "gzip"
-
-      dist:
-        src: "tmp/output.js"
-        dest: "dist/<%= pkg.name %>.min.js"
+      dist: uglifyDist
+      distMapped: uglifyDistMapped
 
     jshint:
       all: ["Gruntfile.js", "temp/spec/js/*.js", "temp/spec/js/**/*.js", "temp/spec/js/**/**/*.js",
-            "src/js/**/*.js", "src/js/**/**/*.js", "src/js/**/**/**/*.js", "!src/js/wrapped/*.js"
+        "src/js/**/*.js", "src/js/**/**/*.js", "src/js/**/**/**/*.js", "!src/js/wrapped/*.js"
       ]
 
     test: {}
@@ -155,7 +179,7 @@ module.exports = (grunt) ->
           livereload: true
 
         files: ["src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee", "spec/**/*.spec.coffee",
-                "spec/coffee/helpers/**"]
+          "spec/coffee/helpers/**"]
         tasks: ["fast"]
 
     open:
@@ -188,7 +212,9 @@ module.exports = (grunt) ->
     replace:
       utils:
         options:
-          patterns: [ match: 'REPLACE_W_LIBS', replacement: '<%= grunt.file.read("tmp/libs.js") %>']
+          patterns: [
+            match: 'REPLACE_W_LIBS', replacement: '<%= grunt.file.read("tmp/libs.js") %>'
+          ]
         src: 'src/js/wrapped/google-maps-util-v3.js'
         dest: 'tmp/wrapped_libs.js'
       uuid:
@@ -203,7 +229,9 @@ module.exports = (grunt) ->
     subgrunt:
       bluebird:
         projects: {}
-#          'bower_components/bluebird': ["build","--features='core'"]
+  #          'bower_components/bluebird': ["build","--features='core'"]
+
+    curl: require './curl-deps'
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

@@ -26,6 +26,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             @modelsRendered = false if not scope.models? or scope.models.length == 0
             @scope.$watch 'models', (newValue, oldValue) =>
               if !_.isEqual(newValue,oldValue) or not @modelsRendered
+                return if newValue.length == 0 and oldValue.length == 0
                 @modelsRendered = true
                 @onWatch('models', scope, newValue, oldValue)
             , !@isTrue(attrs.modelsbyref)
@@ -90,26 +91,29 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             else
               @gMarkerManager = new MarkerManager @map
 
-            _async.waitOrGo @, =>
+            @cleanOnResolve _async.waitOrGo @, =>
               _async.each scope.models, (model) =>
                 @newChildMarker(model, scope)
               , false
               .then =>
                 @gMarkerManager.draw()
                 @gMarkerManager.fit() if scope.fit
-            .then =>
-              @existingPieces = undefined
 
           reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
               return
             if @scope.markerModels?.length
-              @onDestroy(scope) #clean @scope.markerModels
+              @onDestroy(scope).then =>
+                @createMarkersFromScratch(scope)
+            else
+              @createMarkersFromScratch(scope)
 
-            @createMarkersFromScratch(scope)
-
-          pieceMeal: (scope)=>
-            doChunk = if @existingPieces? then false else _async.defaultChunkSize
+          pieceMeal: (scope) =>
+            return if scope.$$destroyed or @isClearing
+            return if @updateInProgress()
+            #only chunk if we are not super busy
+            doChunk = _async.defaultChunkSize
+#            doChunk = if @existingPieces? then false else _async.defaultChunkSize
             if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
               #find the current state, async operation that calls back
               @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison, (state) =>
@@ -117,7 +121,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 #payload contains added, removals and flattened (existing models with their gProp appended)
                 #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @scope.markerModels
 
-                _async.waitOrGo @, =>
+                @cleanOnResolve _async.waitOrGo @, =>
                   _async.each(payload.removals, (child) =>
                     if child?
                       child.destroy() if child.destroy?
@@ -138,9 +142,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                       @gMarkerManager.draw()
                       scope.markerModels = @scope.markerModels #for other directives like windows
                       @gMarkerManager.fit() if scope.fit #note fit returns a promise
-                .then =>
-                  @existingPieces = undefined
+
             else
+              @inProgress = false
               @reBuildMarkers(scope)
 
           updateChild:(child, model) =>
@@ -148,7 +152,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
               return
             #set isInit to true to force redraw after all updates are processed
-            child.setMyScope model,child.model, false
+            child.updateModel model
 
           newChildMarker: (model, scope)=>
             unless model[@idKey]?
@@ -166,17 +170,16 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             child
 
           onDestroy: (scope)=>
-            #need to figure out how to handle individual destroys
             #slap index to the external model so that when they pass external back
-            #for destroy we have a lookup?
-            #this will require another attribute for destroySingle(marker)
-            _async.waitOrGo @, =>
-              _.each @scope.markerModels.values(), (model)->
-                model.destroy(false) if model?
-              delete @scope.markerModels
-              @gMarkerManager.clear() if @gMarkerManager?
-              @scope.markerModels = new PropMap()
-              uiGmapPromise.resolve()
+            @destroyPromise().then =>
+              @cleanOnResolve _async.waitOrGo @, =>
+                @scope.markerModels.each (model)->
+                  model.destroy(false) if model?
+                delete @scope.markerModels
+                @gMarkerManager.clear() if @gMarkerManager?
+                @scope.markerModels = new PropMap()
+                uiGmapPromise.resolve().then =>
+                  @isClearing = false
 
           maybeExecMappedEvent:(cluster, fnName) ->
             if _.isFunction @scope.clusterEvents?[fnName]
@@ -184,9 +187,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @origClusterEvents[fnName](pair.cluster,pair.mapped) if @origClusterEvents[fnName]
 
           mapClusterToMarkerModels:(cluster) ->
-            gMarkers = cluster.getMarkers().values()
-            mapped = gMarkers.map (g) =>
-              @scope.markerModels[g.key].model
+            mapped = cluster.getMarkers().map (g) =>
+              @scope.markerModels.get(g.key).model
             cluster: cluster
             mapped: mapped
 
