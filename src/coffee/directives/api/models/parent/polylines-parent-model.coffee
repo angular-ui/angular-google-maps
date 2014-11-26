@@ -62,7 +62,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         @destroyPromise().then =>
           @cleanOnResolve _async.waitOrGo @, =>
             @plurals.each (child) =>
-              child.destroy()
+              child.destroy(true)
             uiGmapPromise.resolve()
           .then =>
             delete @plurals if doDelete

@@ -1260,6 +1260,9 @@ Nicholas McCready - https://twitter.com/nmccready
           if (_.isObject(scopeProp)) {
             return maybeWrap(true, scopeProp, doWrap);
           }
+          if (!_.isString(scopeProp)) {
+            return maybeWrap(true, scopeProp, doWrap);
+          }
           modelKey = scopeProp;
           if (!modelKey) {
             modelProp = model[key];
@@ -2993,9 +2996,27 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.defaults = defaults;
           this.model = model;
           this.clean = __bind(this.clean, this);
+          this.isDragging = false;
+          this.internalEvents = {
+            dragend: (function(_this) {
+              return function() {
+                return _.defer(function() {
+                  return _this.isDragging = false;
+                });
+              };
+            })(this),
+            dragstart: (function(_this) {
+              return function() {
+                return _this.isDragging = true;
+              };
+            })(this)
+          };
           createPolyline = (function(_this) {
             return function() {
               var pathPoints;
+              if (_this.isDragging) {
+                return;
+              }
               pathPoints = _this.convertPathPoints(_this.scope.path);
               if (_this.polyline != null) {
                 _this.clean();
@@ -3012,7 +3033,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     return _this.extendMapBounds(map, pathPoints);
                   }
                 });
-                return _this.listeners = _this.model ? _this.setEvents(_this.polyline, _this.scope, _this.model) : _this.setEvents(_this.polyline, _this.scope, _this.scope);
+                _this.listeners = _this.model ? _this.setEvents(_this.polyline, _this.scope, _this.model) : _this.setEvents(_this.polyline, _this.scope, _this.scope);
+                return _this.internalListeners = _this.model ? _this.setEvents(_this.polyline, {
+                  events: _this.internalEvents
+                }, _this.model) : _this.setEvents(_this.polyline, {
+                  events: _this.internalEvents
+                }, _this.scope);
               }
             };
           })(this);
@@ -3023,46 +3049,50 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return createPolyline();
               }
             };
-          })(this));
+          })(this), true);
           if (!scope["static"] && angular.isDefined(scope.editable)) {
             scope.$watch('editable', (function(_this) {
               return function(newValue, oldValue) {
                 var _ref;
                 if (newValue !== oldValue) {
+                  newValue = !_this.isFalse(newValue);
                   return (_ref = _this.polyline) != null ? _ref.setEditable(newValue) : void 0;
                 }
               };
-            })(this));
+            })(this), true);
           }
           if (angular.isDefined(scope.draggable)) {
             scope.$watch('draggable', (function(_this) {
               return function(newValue, oldValue) {
                 var _ref;
                 if (newValue !== oldValue) {
+                  newValue = !_this.isFalse(newValue);
                   return (_ref = _this.polyline) != null ? _ref.setDraggable(newValue) : void 0;
                 }
               };
-            })(this));
+            })(this), true);
           }
           if (angular.isDefined(scope.visible)) {
             scope.$watch('visible', (function(_this) {
               return function(newValue, oldValue) {
                 var _ref;
                 if (newValue !== oldValue) {
-                  return (_ref = _this.polyline) != null ? _ref.setVisible(newValue) : void 0;
+                  newValue = !_this.isFalse(newValue);
                 }
+                return (_ref = _this.polyline) != null ? _ref.setVisible(newValue) : void 0;
               };
-            })(this));
+            })(this), true);
           }
           if (angular.isDefined(scope.geodesic)) {
             scope.$watch('geodesic', (function(_this) {
               return function(newValue, oldValue) {
                 var _ref;
                 if (newValue !== oldValue) {
+                  newValue = !_this.isFalse(newValue);
                   return (_ref = _this.polyline) != null ? _ref.setOptions(_this.buildOpts(_this.polyline.getPath())) : void 0;
                 }
               };
-            })(this));
+            })(this), true);
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.weight)) {
             scope.$watch('stroke.weight', (function(_this) {
@@ -3072,7 +3102,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return (_ref = _this.polyline) != null ? _ref.setOptions(_this.buildOpts(_this.polyline.getPath())) : void 0;
                 }
               };
-            })(this));
+            })(this), true);
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.color)) {
             scope.$watch('stroke.color', (function(_this) {
@@ -3082,7 +3112,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return (_ref = _this.polyline) != null ? _ref.setOptions(_this.buildOpts(_this.polyline.getPath())) : void 0;
                 }
               };
-            })(this));
+            })(this), true);
           }
           if (angular.isDefined(scope.stroke) && angular.isDefined(scope.stroke.opacity)) {
             scope.$watch('stroke.opacity', (function(_this) {
@@ -3092,7 +3122,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return (_ref = _this.polyline) != null ? _ref.setOptions(_this.buildOpts(_this.polyline.getPath())) : void 0;
                 }
               };
-            })(this));
+            })(this), true);
           }
           if (angular.isDefined(scope.icons)) {
             scope.$watch('icons', (function(_this) {
@@ -3102,7 +3132,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return (_ref = _this.polyline) != null ? _ref.setOptions(_this.buildOpts(_this.polyline.getPath())) : void 0;
                 }
               };
-            })(this));
+            })(this), true);
           }
           scope.$on('$destroy', (function(_this) {
             return function() {
@@ -3116,6 +3146,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         PolylineChildModel.prototype.clean = function() {
           var arraySyncer, _ref;
           this.removeEvents(this.listeners);
+          this.removeEvents(this.internalListeners);
           if ((_ref = this.polyline) != null) {
             _ref.setMap(null);
           }
@@ -4261,7 +4292,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
                 _this.plurals.each(function(child) {
-                  return child.destroy();
+                  return child.destroy(true);
                 });
                 return uiGmapPromise.resolve();
               })).then(function() {
@@ -4519,7 +4550,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
                 _this.plurals.each(function(child) {
-                  return child.destroy();
+                  return child.destroy(true);
                 });
                 return uiGmapPromise.resolve();
               })).then(function() {

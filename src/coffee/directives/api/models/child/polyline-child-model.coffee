@@ -2,14 +2,22 @@ angular.module('uiGmapgoogle-maps.directives.api')
 .factory 'uiGmapPolylineChildModel', [
   'uiGmapPolylineOptionsBuilder', 'uiGmapLogger', '$timeout',
   'uiGmaparray-sync', 'uiGmapGmapUtil', 'uiGmapEventsHelper'
-  (Builder, $log, $timeout,
-  arraySync, GmapUtil,EventsHelper) ->
+  (Builder, $log, $timeout, arraySync, GmapUtil, EventsHelper) ->
     class PolylineChildModel extends Builder
       @include GmapUtil
       @include EventsHelper
       constructor: (@scope, @attrs, @map, @defaults, @model) ->
+        @isDragging = false
+        @internalEvents =
+          dragend: =>
+            # allow the lock of dragging to overrun slightly to make sure nothing is created unnecessarily
+            _.defer =>
+              @isDragging = false
+          dragstart: =>
+            @isDragging = true
 
         createPolyline = =>
+          return if @isDragging #avoid unnecessary creation (be nice if we knew we were editing too)
           pathPoints = @convertPathPoints @scope.path
           if @polyline?
             @clean()
@@ -19,45 +27,58 @@ angular.module('uiGmapgoogle-maps.directives.api')
             arraySync @polyline.getPath(), @scope, 'path', (pathPoints) =>
               @extendMapBounds map, pathPoints if @scope.fit
             @listeners = if @model then @setEvents @polyline, @scope, @model else @setEvents @polyline, @scope, @scope
+            @internalListeners = if @model then @setEvents @polyline, events: @internalEvents, @model else @setEvents @polyline, events: @internalEvents, @scope
 
         createPolyline() #handle stuff without being dependent on digests (ie using watches for init)
 
         scope.$watch 'path', (newValue, oldValue) =>
           if not _.isEqual(newValue, oldValue) or not @polyline
             createPolyline()
+        , true
         #TODO refactor all these sets and watches to be handled functionally as an array
+        #Begin Booleans
         if !scope.static and angular.isDefined(scope.editable)
           scope.$watch 'editable', (newValue, oldValue) =>
-            @polyline?.setEditable newValue if newValue isnt oldValue
-
+            if newValue isnt oldValue
+              newValue = not @isFalse newValue
+              @polyline?.setEditable newValue
+          , true
         if angular.isDefined scope.draggable
           scope.$watch 'draggable', (newValue, oldValue) =>
-            @polyline?.setDraggable newValue if newValue isnt oldValue
-
+            if newValue isnt oldValue
+              newValue = not @isFalse newValue
+              @polyline?.setDraggable newValue
+          , true
         if angular.isDefined scope.visible
           scope.$watch 'visible', (newValue, oldValue) =>
-            @polyline?.setVisible newValue if newValue isnt oldValue
-
+            if newValue isnt oldValue
+              newValue = not @isFalse newValue
+            @polyline?.setVisible newValue
+          , true
         if angular.isDefined scope.geodesic
           scope.$watch 'geodesic', (newValue, oldValue) =>
-            @polyline?.setOptions @buildOpts(@polyline.getPath()) if newValue isnt oldValue
+            if newValue isnt oldValue
+              newValue = not @isFalse newValue
+              @polyline?.setOptions @buildOpts(@polyline.getPath())
+          , true
+        #End Booleans
 
         if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.weight)
           scope.$watch 'stroke.weight', (newValue, oldValue) =>
             @polyline?.setOptions @buildOpts(@polyline.getPath()) if newValue isnt oldValue
-
+          , true
         if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.color)
           scope.$watch 'stroke.color', (newValue, oldValue) =>
             @polyline?.setOptions @buildOpts(@polyline.getPath()) if newValue isnt oldValue
-
+          , true
         if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.opacity)
           scope.$watch 'stroke.opacity', (newValue, oldValue) =>
             @polyline?.setOptions @buildOpts(@polyline.getPath()) if newValue isnt oldValue
-
+          , true
         if angular.isDefined(scope.icons)
           scope.$watch 'icons', (newValue, oldValue) =>
             @polyline?.setOptions @buildOpts(@polyline.getPath()) if newValue isnt oldValue
-
+          , true
         # Remove @polyline on scope $destroy
         scope.$on '$destroy', =>
           @clean()
@@ -67,6 +88,8 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
       clean: =>
         @removeEvents @listeners
+        @removeEvents @internalListeners
+#        @removeEvents @internalPathListeners
         @polyline?.setMap null
         @polyline = null
         if arraySyncer
