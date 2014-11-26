@@ -1,8 +1,10 @@
-/*! angular-google-maps 2.0.10 2014-11-25
+/*! angular-google-maps 2.0.10 2014-11-26
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
-
+;
+(function( window, angular, undefined ){
+  'use strict';
 /*
 !
 The MIT License
@@ -5388,9 +5390,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
       return {
         restrict: 'EMA',
         transclude: true,
-        replace: false,
         template: '<div class="angular-google-map-dragzoom" ng-transclude style="display: none"></div>',
-        replace: true,
         require: '^' + 'uiGmapGoogleMap',
         scope: {
           keyboardkey: '=',
@@ -11425,3 +11425,4 @@ angular.module('uiGmapgoogle-maps.extensions')
     })
   };
 }]);
+}( window,angular));

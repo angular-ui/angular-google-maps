@@ -11,9 +11,7 @@ angular.module('uiGmapgoogle-maps.directives.api').service 'uiGmapDragZoom', [
   'uiGmapCtrlHandle', 'uiGmapPropertyAction', (CtrlHandle, PropertyAction) ->
     restrict: 'EMA'
     transclude: true
-    replace: false
     template: '<div class="angular-google-map-dragzoom" ng-transclude style="display: none"></div>'
-    replace: true
     require: '^' + 'uiGmapGoogleMap'
     scope:
       keyboardkey: '='
