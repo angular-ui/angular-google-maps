@@ -121,6 +121,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           return maybeWrap true, scopeProp(), doWrap
         if _.isObject scopeProp
           return maybeWrap true, scopeProp, doWrap
+        unless _.isString scopeProp
+          return maybeWrap true, scopeProp, doWrap
 
         modelKey = scopeProp #this should be the key pointing to what we need
         unless modelKey

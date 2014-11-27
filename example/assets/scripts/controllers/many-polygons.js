@@ -81,6 +81,10 @@
 
         });
 
+        $scope.$onRootScope("clearButtonClicked", function () {
+          $scope.map.polys = [];
+        });
+
       }])
     .run(['$templateCache', 'uiGmapLogger', function ($templateCache, Logger) {
       Logger.doLog = true;
