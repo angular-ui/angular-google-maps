@@ -6,7 +6,7 @@
     <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script data-require="angular.js@1.2.x" src="https://code.angularjs.org/1.2.26/angular.js" data-semver="1.2.26"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
-    <script src="../dist/angular-google-maps.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
     <script src="assets/scripts/controllers/issue-538-window-plus1.js"></script>
     <title>Map</title>
 </head>
@@ -16,7 +16,7 @@
 <div id="map_canvas" >
     <ui-gmap-google-map center="map.center" zoom="map.zoom">
         <ui-gmap-marker coords="map.marker.coords" idkey="map.marker.id">
-            <ui-gmap-ui-gmap-window>
+            <ui-gmap-window options="{forceClick:true}">
                 <div>
                     {{ number }}
                 </div>

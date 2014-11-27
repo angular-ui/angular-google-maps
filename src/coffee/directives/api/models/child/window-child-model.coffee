@@ -75,13 +75,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
                     @getGmarker().setVisible false
                     @getGmarker().setVisible @markerIsVisibleAfterWindowClose
                   , 250
-              @gWin.isOpen false
+              @gWin.close()
               @model.show = false
               if @scope.closeClick?
-                @scope.$apply @scope.closeClick()
+                @scope.$evalAsync @scope.closeClick()
               else
                 #update models state change since it is out of angular scope (closeClick)
-                @scope.$apply()
+                @scope.$evalAsync()
 
         watchCoords: =>
           scope = if @markerScope? then @markerScope else @scope
@@ -117,12 +117,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           # Show the window and hide the marker on click
           click = =>
             @createGWin() unless @gWin?
-            pos = if @scope.coords? then @gWin?.getPosition() else @getGmarker()?.getPosition()
-            return unless pos
-            if @gWin?
-              @gWin.setPosition pos
-              @opts.position = pos if @opts
-              @showWindow()
+            @showWindow()
             if @getGmarker()?
               @initialMarkerVisibility = @getGmarker().getVisible()
               @oldMarkerAnimation = @getGmarker().getAnimation()
@@ -136,10 +131,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         showWindow: =>
           if @gWin?
             show = =>
-              _.defer =>
+              @scope.$evalAsync =>
                 unless @gWin.isOpen()
-                  @gWin.open @mapCtrl, if @getGmarker() then @getGmarker() else undefined
-                  @model.show = @gWin.isOpen()
+                  maybeMarker = @getGmarker()
+                  pos = @gWin.getPosition() if @gWin? and @gWin.getPosition?
+                  pos = maybeMarker.getPosition() if maybeMarker
+                  maybeAnchor = @getGmarker()
+                  return unless pos
+                  @gWin.open @mapCtrl, maybeAnchor
+                  isOpen = @gWin.isOpen()
+                  @model.show = isOpen if @model.show != isOpen
                   _.defer =>
                     ChromeFixes.maybeRepaint @gWin.content
 

@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.11 2014-11-26
+/*! angular-google-maps 2.0.11 2014-11-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3227,12 +3227,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }, 250);
                   }
                 }
-                _this.gWin.isOpen(false);
+                _this.gWin.close();
                 _this.model.show = false;
                 if (_this.scope.closeClick != null) {
-                  return _this.scope.$apply(_this.scope.closeClick());
+                  return _this.scope.$evalAsync(_this.scope.closeClick());
                 } else {
-                  return _this.scope.$apply();
+                  return _this.scope.$evalAsync();
                 }
               };
             })(this)));
@@ -3287,21 +3287,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           click = (function(_this) {
             return function() {
-              var pos, _ref, _ref1;
               if (_this.gWin == null) {
                 _this.createGWin();
               }
-              pos = _this.scope.coords != null ? (_ref = _this.gWin) != null ? _ref.getPosition() : void 0 : (_ref1 = _this.getGmarker()) != null ? _ref1.getPosition() : void 0;
-              if (!pos) {
-                return;
-              }
-              if (_this.gWin != null) {
-                _this.gWin.setPosition(pos);
-                if (_this.opts) {
-                  _this.opts.position = pos;
-                }
-                _this.showWindow();
-              }
+              _this.showWindow();
               if (_this.getGmarker() != null) {
                 _this.initialMarkerVisibility = _this.getGmarker().getVisible();
                 _this.oldMarkerAnimation = _this.getGmarker().getAnimation();
@@ -3327,10 +3316,25 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (this.gWin != null) {
             show = (function(_this) {
               return function() {
-                return _.defer(function() {
+                return _this.scope.$evalAsync(function() {
+                  var isOpen, maybeAnchor, maybeMarker, pos;
                   if (!_this.gWin.isOpen()) {
-                    _this.gWin.open(_this.mapCtrl, _this.getGmarker() ? _this.getGmarker() : void 0);
-                    _this.model.show = _this.gWin.isOpen();
+                    maybeMarker = _this.getGmarker();
+                    if ((_this.gWin != null) && (_this.gWin.getPosition != null)) {
+                      pos = _this.gWin.getPosition();
+                    }
+                    if (maybeMarker) {
+                      pos = maybeMarker.getPosition();
+                    }
+                    maybeAnchor = _this.getGmarker();
+                    if (!pos) {
+                      return;
+                    }
+                    _this.gWin.open(_this.mapCtrl, maybeAnchor);
+                    isOpen = _this.gWin.isOpen();
+                    if (_this.model.show !== isOpen) {
+                      _this.model.show = isOpen;
+                    }
                     return _.defer(function() {
                       return ChromeFixes.maybeRepaint(_this.gWin.content);
                     });
@@ -3615,7 +3619,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
   angular.module("uiGmapgoogle-maps.directives.api.models.parent").factory("uiGmapIWindowParentModel", [
     "uiGmapModelKey", "uiGmapGmapUtil", "uiGmapLogger", function(ModelKey, GmapUtil, Logger) {
       var IWindowParentModel;
-      IWindowParentModel = (function(_super) {
+      return IWindowParentModel = (function(_super) {
         __extends(IWindowParentModel, _super);
 
         IWindowParentModel.include(GmapUtil);
@@ -3633,10 +3637,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
         }
 
+        IWindowParentModel.prototype.getItem = function(scope, modelsPropToIterate, index) {
+          if (modelsPropToIterate === 'models') {
+            return scope[modelsPropToIterate][index];
+          }
+          return scope[modelsPropToIterate].get(index);
+        };
+
         return IWindowParentModel;
 
       })(ModelKey);
-      return IWindowParentModel;
     }
   ]);
 
@@ -4112,6 +4122,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             cluster: cluster,
             mapped: mapped
           };
+        };
+
+        MarkersParentModel.prototype.getItem = function(scope, modelsPropToIterate, index) {
+          if (modelsPropToIterate === 'models') {
+            return scope[modelsPropToIterate][index];
+          }
+          return scope[modelsPropToIterate].get(index);
         };
 
         return MarkersParentModel;
@@ -4943,7 +4960,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         WindowsParentModel.include(ModelsWatcher);
 
         function WindowsParentModel(scope, element, attrs, ctrls, gMap, markersScope) {
-          var self;
           this.gMap = gMap;
           this.markersScope = markersScope;
           this.interpolateContent = __bind(this.interpolateContent, this);
@@ -4962,7 +4978,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchModels = __bind(this.watchModels, this);
           this.go = __bind(this.go, this);
           WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache);
-          self = this;
           this.windows = new PropMap();
           this.scopePropNames = ['coords', 'template', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick', 'options', 'show'];
           _.each(this.scopePropNames, (function(_this) {
@@ -5143,7 +5158,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(scope.models, function(model) {
                 var gMarker, _ref;
-                gMarker = hasGMarker ? (_ref = scope[modelsPropToIterate][[model[_this.idKey]]]) != null ? _ref.gMarker : void 0 : void 0;
+                gMarker = hasGMarker ? (_ref = _this.getItem(scope, modelsPropToIterate, model[_this.idKey])) != null ? _ref.gMarker : void 0 : void 0;
                 return _this.createWindow(model, gMarker, _this.gMap);
               });
             };
@@ -5186,7 +5201,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }, false).then(function() {
                     return _async.each(payload.adds, function(modelToAdd) {
                       var gMarker, _ref;
-                      gMarker = (_ref = scope[modelsPropToIterate].get(modelToAdd[_this.idKey])) != null ? _ref.gMarker : void 0;
+                      gMarker = (_ref = _this.getItem(scope, modelsPropToIterate, modelToAdd[_this.idKey])) != null ? _ref.gMarker : void 0;
                       if (!gMarker) {
                         throw 'Gmarker undefined';
                       }
@@ -5225,7 +5240,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               };
             })(this)
           };
-          this.DEFAULTS = this.markersScope ? model[this.optionsKey] || {} : this.DEFAULTS;
+          this.DEFAULTS = this.scopeOrModelVal(this.optionsKey, this.scope, model) || {};
           opts = this.createWindowOptions(gMarker, childScope, fakeElement.html(), this.DEFAULTS);
           child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, (_ref = this.markersScope) != null ? (_ref1 = _ref.markerModels.get(model[this.idKey])) != null ? _ref1.scope : void 0 : void 0, fakeElement, false, true);
           if (model[this.idKey] == null) {
