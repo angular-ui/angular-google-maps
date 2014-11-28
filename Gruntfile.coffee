@@ -63,11 +63,9 @@ module.exports = (grunt) ->
     'concurrent:dist'
     'autoprefixer'
     'copy:vendor_fonts'
-    'git_log_json'
     'copy:dist'
     'cdnify'
     'ngmin'
-    'git_log_json'
   ]
 
   grunt.registerTask 'prod_build', [
