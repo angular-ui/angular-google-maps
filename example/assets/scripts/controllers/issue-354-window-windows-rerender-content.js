@@ -28,10 +28,15 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
       disableAutoPan : true
     };
     $scope.windows = [{
+        id: 1,
         latitude: 51.229053,
         longitude: 4.404418,
-        show:true
-      }]
+        show:true,
+        options: {
+          boxClass:"custom-info-window",
+          disableAutoPan : true
+        }
+      }];
 
     GoogleMapApi.then(function(maps) {
 

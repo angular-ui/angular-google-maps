@@ -13,7 +13,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @include ModelsWatcher
           constructor: (scope, element, attrs, ctrls, @gMap, @markersScope) ->
             super(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache)
-            self = @
+
             @windows = new PropMap()
 
             @scopePropNames = ['coords', 'template', 'templateUrl', 'templateParameter',
@@ -138,7 +138,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
             @cleanOnResolve _async.waitOrGo @, =>
               _async.each scope.models, (model) =>
-                gMarker = if hasGMarker then scope[modelsPropToIterate][[model[@idKey]]]?.gMarker else undefined
+                gMarker = if hasGMarker then @getItem(scope, modelsPropToIterate, model[@idKey])?.gMarker else undefined
 #                throw 'Unable to get gMarker from scope!!' unless gMarker
                 @createWindow(model, gMarker, @gMap)
             .then =>
@@ -162,7 +162,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                   .then =>
                     #add all adds via creating new ChildMarkers which are appended to @markers
                     _async.each payload.adds, (modelToAdd) =>
-                      gMarker = scope[modelsPropToIterate].get(modelToAdd[@idKey])?.gMarker
+                      gMarker = @getItem(scope, modelsPropToIterate, modelToAdd[@idKey])?.gMarker
                       throw 'Gmarker undefined' unless gMarker
                       @createWindow(modelToAdd, gMarker, @gMap)
                     ,false
@@ -184,7 +184,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             fakeElement =
               html: =>
                 @interpolateContent(@linked.element.html(), model)
-            @DEFAULTS = if @markersScope then model[@optionsKey] or {} else @DEFAULTS
+            @DEFAULTS = @scopeOrModelVal(@optionsKey, @scope, model) or {}
             opts = @createWindowOptions gMarker, childScope, fakeElement.html(), @DEFAULTS
             child = new WindowChildModel model, childScope, opts, @isIconVisibleOnClick, gMap, @markersScope?.markerModels.get(model[@idKey])?.scope, fakeElement, false, true
 
