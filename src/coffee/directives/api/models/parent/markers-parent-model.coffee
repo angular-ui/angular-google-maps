@@ -192,5 +192,10 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             cluster: cluster
             mapped: mapped
 
+          getItem: (scope, modelsPropToIterate, index) ->
+            if modelsPropToIterate == 'models'
+              return scope[modelsPropToIterate][index]
+            scope[modelsPropToIterate].get index #otherwise it is a propMap
+
         return MarkersParentModel
 ]
