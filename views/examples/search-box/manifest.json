@@ -1,0 +1,4 @@
+{
+    "name": "search-box",
+    "files": ["index.html", "script.js", "../base/plnkr.html"]
+}
