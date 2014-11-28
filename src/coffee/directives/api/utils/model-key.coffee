@@ -118,7 +118,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         scopeProp = scope[key]
 
         if _.isFunction scopeProp
-          return maybeWrap true, scopeProp(), doWrap
+          return maybeWrap true, scopeProp(model), doWrap
         if _.isObject scopeProp
           return maybeWrap true, scopeProp, doWrap
         unless _.isString scopeProp
