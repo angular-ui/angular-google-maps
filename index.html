@@ -20,11 +20,16 @@
 
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <link rel="stylesheet" href="styles/fe326593.vendor.css">
+    <!-- build:css styles/vendor.css -->
+    <link rel="stylesheet" href="styles/vendor.css">
+    <!-- endbuild -->
 
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/yeti/bootstrap.min.css">
 
-    <link rel="stylesheet" href="styles/7d29d664.main.css">
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <!-- endbuild -->
 
     <link href="//fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic" rel="stylesheet">
     <link rel="help" href="/api">
@@ -102,8 +107,30 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 
-<script src="scripts/5cad3a4d.vendor.js"></script>
+<!-- build:js scripts/vendor.js -->
+<script src="scripts/vendor.js"></script>
+<!-- endbuild -->
 
-<script src="scripts/8f003f36.scripts.js"></script>
+<!-- build:js({.tmp,app}) scripts/scripts.js -->
+<script src="scripts/module.js"></script>
+<script src="scripts/controllers/main.js"></script>
+<script src="scripts/controllers/use.js"></script>
+<script src="scripts/controllers/faq.js"></script>
+<script src="scripts/controllers/api.js"></script>
+<script src="scripts/controllers/demo.js"></script>
+<script src="scripts/controllers/headlines.js"></script>
+<script src="scripts/controllers/footer.js"></script>
+<script src="scripts/controllers/not-found.js"></script>
+<script src="scripts/controllers/changelog.js"></script>
+<script src="scripts/services/github.js"></script>
+<script src="scripts/services/ga.js"></script>
+<script src="scripts/services/plnkr.js"></script>
+<script src="scripts/app.js"></script>
+<script src="scripts/directives/rel.js"></script>
+<script src="scripts/directives/share.js"></script>
+<script src="scripts/directives/affix.js"></script>
+<script src="scripts/directives/google-api-ref.js"></script>
+<script src="scripts/directives/example.js"></script>
+<!-- endbuild -->
 </body>
 </html>
