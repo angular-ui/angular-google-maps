@@ -11,8 +11,10 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
   (CommonOptionsBuilder) ->
     class ShapeOptionsBuilder extends CommonOptionsBuilder
       buildOpts: (customOpts,forEachOpts) ->
+        fill = @scopeOrModelVal 'fill', @scope, model
         customOpts = angular.extend customOpts,
-          {fillColor: @scope.fill?.color, fillOpacity: @scope.fill?.opacity}
+          fillColor: fill?.color
+          fillOpacity: fill?.opacity
         super customOpts, forEachOpts
 ])
 .factory('uiGmapPolygonOptionsBuilder', [

@@ -2118,7 +2118,7 @@ Nicholas McCready - https://twitter.com/nmccready
         function CommonOptionsBuilder() {
           this.watchProps = __bind(this.watchProps, this);
           this.buildOpts = __bind(this.buildOpts, this);
-          return CommonOptionsBuilder.__super__.constructor.apply(this, arguments);
+          this.hasModel = _(this.scope).chain().keys().contains('model').value();
         }
 
         CommonOptionsBuilder.prototype.props = [
@@ -2129,7 +2129,7 @@ Nicholas McCready - https://twitter.com/nmccready
         ];
 
         CommonOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
-          var hasModel, model, opts, stroke;
+          var model, opts, stroke;
           if (customOpts == null) {
             customOpts = {};
           }
@@ -2144,8 +2144,7 @@ Nicholas McCready - https://twitter.com/nmccready
             $log.error('this.map not defined in CommonOptionsBuilder can not buildOpts');
             return;
           }
-          hasModel = _(this.scope).chain().keys().contains('model').value();
-          model = hasModel ? this.scope.model : this.scope;
+          model = this.hasModel ? this.scope.model : this.scope;
           stroke = this.scopeOrModelVal('stroke', this.scope, model);
           opts = angular.extend(customOpts, this.DEFAULTS, {
             map: this.map,
@@ -2239,10 +2238,11 @@ Nicholas McCready - https://twitter.com/nmccready
         }
 
         ShapeOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
-          var _ref, _ref1;
+          var fill;
+          fill = this.scopeOrModelVal('fill', this.scope, model);
           customOpts = angular.extend(customOpts, {
-            fillColor: (_ref = this.scope.fill) != null ? _ref.color : void 0,
-            fillOpacity: (_ref1 = this.scope.fill) != null ? _ref1.opacity : void 0
+            fillColor: fill != null ? fill.color : void 0,
+            fillOpacity: fill != null ? fill.opacity : void 0
           });
           return ShapeOptionsBuilder.__super__.buildOpts.call(this, customOpts, forEachOpts);
         };
