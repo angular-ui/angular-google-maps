@@ -2238,7 +2238,8 @@ Nicholas McCready - https://twitter.com/nmccready
         }
 
         ShapeOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
-          var fill;
+          var fill, model;
+          model = this.hasModel ? this.scope.model : this.scope;
           fill = this.scopeOrModelVal('fill', this.scope, model);
           customOpts = angular.extend(customOpts, {
             fillColor: fill != null ? fill.color : void 0,
