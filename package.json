@@ -3,11 +3,10 @@
   "name": "angular-google-maps",
   "description": "Website for angular-google-maps",
   "version": "0.0.0",
-  "dependencies": {
-    "grunt-git-log-json": "0.0.3"
-  },
   "repository": "https://github.com/angular-ui/angular-google-maps",
   "devDependencies": {
+    "bower": "^1.3.12",
+    "grunt-git-log-json": "0.0.3",
     "connect-livereload": "~0.4.0",
     "grunt": "~0.4.5",
     "grunt-autoprefixer": "~1.0.1",
