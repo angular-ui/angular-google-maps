@@ -33,6 +33,9 @@
         <ui-gmap-polylines models="map.polys" path="'path'" stroke="'stroke'" visible="'visible'"
                           geodesic="'geodesic'" editable="'editable'" draggable="'draggable'" static="true" >
         </ui-gmap-polylines>
+        <!-- <ui-gmap-polyline ng-repeat="p in map.polys" path="p.path" stroke="p.stroke" visible="p.visible"
+        geodesic="p.geodesic" editable="p.editable" draggable="p.draggable" static="true" >
+        </ui-gmap-polyline> -->
     </ui-gmap-google-map>
     <ul>
         <li ng-repeat="p in map.polys">

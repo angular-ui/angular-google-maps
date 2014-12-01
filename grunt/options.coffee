@@ -217,6 +217,7 @@ module.exports = (grunt) ->
 
     jasmine:
       spec: jasmineSettings.spec
+      consoleSpec: jasmineSettings.consoleSpec
 
     replace:
       utils:
@@ -241,6 +242,11 @@ module.exports = (grunt) ->
   #          'bower_components/bluebird': ["build","--features='core'"]
 
     curl: require './curl-deps'
+    verbosity:
+      quiet:
+        options: mode: 'dot'
+        tasks: ['coffee', 'clean', 'cleam:dist', 'copy', 'concat', 'jasmineSettings',
+          'mkdir:all', 'jshint', 'uglify', 'replace', 'concat:dist', 'concat:libs']
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options
