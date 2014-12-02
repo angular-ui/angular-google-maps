@@ -284,25 +284,17 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
           mid: 1,
           latitude: 29.302567,
           longitude: -106.248779,
-          onClicked: function(gMarker,eventName, model){
 
-          }
         },
         {
           mid: 2,
           latitude: 30.369913,
           longitude: -109.434814,
-          onClicked: function(gMarker,eventName, model){
-
-          }
         },
         {
           mid: 3,
           latitude: 26.739478,
           longitude: -108.61084,
-          onClicked: function(gMarker,eventName, model){
-
-          }
         }
       ],
       clickMarkers: [

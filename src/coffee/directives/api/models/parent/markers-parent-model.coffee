@@ -159,7 +159,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
               return
             @$log.info('child', child, 'markers', @scope.markerModels)
-            childScope = scope.$new(true)
+            childScope = scope.$new(false)
             childScope.events = scope.events
             keys = {}
             _.each IMarker.scopeKeys, (v,k) ->

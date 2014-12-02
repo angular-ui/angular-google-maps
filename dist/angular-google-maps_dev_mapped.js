@@ -1150,8 +1150,8 @@ Nicholas McCready - https://twitter.com/nmccready
           return model;
         };
 
-        ModelKey.prototype.getProp = function(propName, model) {
-          return this.modelOrKey(model, propName);
+        ModelKey.prototype.getProp = function(propName, scope, model) {
+          return this.scopeOrModelVal(propName, scope, model);
         };
 
 
@@ -2800,8 +2800,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (doDraw == null) {
             doDraw = true;
           }
-          if (this.getProp(this.coordsKey, this.model) != null) {
-            if (!this.validateCoords(this.getProp(this.coordsKey, this.model))) {
+          if (this.getProp('coords', this.scope, this.model) != null) {
+            if (!this.validateCoords(this.getProp('coords', this.scope, this.model))) {
               $log.debug('MarkerChild does not have coords yet. They may be defined later.');
               return;
             }
@@ -2871,35 +2871,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.maybeSetScopeValue = function(scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter, doDraw) {
-          var newValue, oldVal, toSet;
           if (gSetter == null) {
             gSetter = void 0;
           }
           if (doDraw == null) {
             doDraw = true;
           }
-          if (oldModel === void 0) {
-            toSet = evaluate(model, modelKey);
-            if (toSet !== this.scope[scopePropName]) {
-              this.scope[scopePropName] = toSet;
-            }
-            if (gSetter != null) {
-              gSetter(this.scope, doDraw);
-            }
-            return;
+          if (gSetter != null) {
+            gSetter(this.scope, doDraw);
           }
-          oldVal = evaluate(oldModel, modelKey);
-          newValue = evaluate(model, modelKey);
-          if (newValue !== oldVal) {
-            this.scope[scopePropName] = newValue;
-            if (!isInit) {
-              if (gSetter != null) {
-                gSetter(this.scope, doDraw);
-              }
-              if (this.doDrawSelf && doDraw) {
-                return this.gMarkerManager.draw();
-              }
-            }
+          if (this.doDrawSelf && doDraw) {
+            return this.gMarkerManager.draw();
           }
         };
 
@@ -2922,8 +2904,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return this.renderGMarker(doDraw, (function(_this) {
             return function() {
-              _this.gMarker.setPosition(_this.getCoords(_this.getProp(_this.coordsKey, _this.model)));
-              return _this.gMarker.setVisible(_this.validateCoords(_this.getProp(_this.coordsKey, _this.model)));
+              _this.gMarker.setPosition(_this.getCoords(_this.getProp('coords', scope, _this.model)));
+              return _this.gMarker.setVisible(_this.validateCoords(_this.getProp('coords', scope, _this.model)));
             };
           })(this));
         };
@@ -2937,9 +2919,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return this.renderGMarker(doDraw, (function(_this) {
             return function() {
-              _this.gMarker.setIcon(_this.getProp(_this.iconKey, _this.model));
-              _this.gMarker.setPosition(_this.getCoords(_this.getProp(_this.coordsKey, _this.model)));
-              return _this.gMarker.setVisible(_this.validateCoords(_this.getProp(_this.coordsKey, _this.model)));
+              var coords;
+              _this.gMarker.setIcon(_this.getProp('icon', scope, _this.model));
+              coords = _this.getProp('coords', scope, _this.model);
+              _this.gMarker.setPosition(_this.getCoords(coords));
+              return _this.gMarker.setVisible(_this.validateCoords(coords));
             };
           })(this));
         };
@@ -2955,9 +2939,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.renderGMarker(doDraw, (function(_this) {
             return function() {
               var coords, icon, _options;
-              coords = _this.getProp(_this.coordsKey, _this.model);
-              icon = _this.getProp(_this.iconKey, _this.model);
-              _options = _this.getProp(_this.optionsKey, _this.model);
+              coords = _this.getProp('coords', scope, _this.model);
+              icon = _this.getProp('icon', scope, _this.model);
+              _options = _this.getProp('options', scope, _this.model);
               _this.opts = _this.createOptions(coords, icon, _options);
               if ((_this.gMarker != null) && (_this.isLabel(_this.gMarker === _this.isLabel(_this.opts)))) {
                 _this.gMarker.setOptions(_this.opts);
@@ -3034,7 +3018,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             click: (function(_this) {
               return function(marker, eventName, model, mousearg) {
                 var click;
-                click = _.isFunction(_this.clickKey) ? _this.clickKey : _this.getProp(_this.clickKey, _this.model);
+                click = _this.getProp('click', _this.scope, _this.model);
                 if (_this.doClick && (click != null)) {
                   return _this.scope.$evalAsync(click(marker, eventName, _this.model, mousearg));
                 }
@@ -4071,7 +4055,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           this.$log.info('child', child, 'markers', this.scope.markerModels);
-          childScope = scope.$new(true);
+          childScope = scope.$new(false);
           childScope.events = scope.events;
           keys = {};
           _.each(IMarker.scopeKeys, function(v, k) {
