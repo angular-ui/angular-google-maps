@@ -2,4 +2,5 @@
 beforeEach ->
   @googleTemp = window.google
 afterEach ->
-  window.google = @googleTemp
+  if @googleTemp?
+    window.google = @googleTemp
