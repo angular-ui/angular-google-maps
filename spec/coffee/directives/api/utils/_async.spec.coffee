@@ -5,8 +5,8 @@ describe "_async", ->
   digest = (fn, times = 1) =>
     fn()
     _.range(times).forEach -> # i would like to say that it sucks that I have to do this.. (angular)
-      timeout.flush()
-    rootScope.$apply()
+      timeout?.flush()
+    rootScope?.$apply()
 
   beforeEach ->
     module "uiGmapgoogle-maps"

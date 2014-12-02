@@ -73,6 +73,10 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         if window?.google?.maps?.event?
           window.google.maps.event.fireAllListeners 'creation', @
 
+      setOptions: (o)=>
+        super(o)
+        if o?.position?
+          @position = o.position
       setAnimation:(obj) =>
         @animation = obj
       getAnimation: =>
