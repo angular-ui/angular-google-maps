@@ -73,27 +73,27 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         if window?.google?.maps?.event?
           window.google.maps.event.fireAllListeners 'creation', @
 
-      setAnimation:(obj) ->
+      setAnimation:(obj) =>
         @animation = obj
       getAnimation: =>
         @animation
-      setIcon: (icon) ->
+      setIcon: (icon) =>
         @icon
       getIcon: =>
         @icon
-      setClickable: (bool) ->
+      setClickable: (bool) =>
         @clickable = bool
       getClickable: =>
         @clickable
-      setZIndex:(z) ->
+      setZIndex:(z) =>
         @zIndex = z
       getZIndex: =>
         @zIndex
-      setTitle: (str) ->
+      setTitle: (str) =>
         @title = str
       getTitle: =>
         @title
-      setOpacity: (num) ->
+      setOpacity: (num) =>
         @opacity = num
       getOpacity: =>
         @opacity
