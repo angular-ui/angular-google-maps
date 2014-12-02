@@ -128,13 +128,19 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       setCoords: (scope, doDraw = true) =>
         return if @isNotValid(scope) or !@gMarker?
         @renderGMarker doDraw, =>
-          @gMarker.setPosition @getCoords(@getProp('coords', scope, @model))
-          @gMarker.setVisible @validateCoords(@getProp('coords', scope, @model))
+          newValue = @getCoords @getProp('coords', scope, @model)
+          oldValue = @gMarker.getPosition()
+          return if newValue.lng() == oldValue.lng() and newValue.lat() == oldValue.lat()
+          @gMarker.setPosition newVal
+          @gMarker.setVisible @validateCoords(newValue)
 
       setIcon: (scope, doDraw = true) =>
         return if @isNotValid(scope) or !@gMarker?
         @renderGMarker doDraw, =>
-          @gMarker.setIcon @getProp 'icon', scope, @model
+          oldValue = @gMarker.getIcon()
+          newValue = @getProp 'icon', scope, @model
+          return if  oldValue == newValue
+          @gMarker.setIcon newValue
           coords = @getProp 'coords', scope, @model
           @gMarker.setPosition @getCoords coords
           @gMarker.setVisible @validateCoords coords
@@ -147,7 +153,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           _options = @getProp 'options', scope, @model
           @opts = @createOptions coords, icon, _options
 
-          if @gMarker? and (@isLabel @gMarker == @isLabel @opts)
+          #update existing options if it is the same type
+          if @gMarker? and (@isLabel(@gMarker) == @isLabel(@opts))
             @gMarker.setOptions @opts
           else
             if not @firstTime

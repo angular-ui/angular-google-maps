@@ -43,11 +43,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             return unless @element or @html
             if @html isnt @element.html() and @gWin
               @opts?.content = undefined
+              wasOpen = @gWin.isOpen()
               @remove()
-              @createGWin()
+              @createGWin(wasOpen)
 
-        createGWin: =>
-          if !@gWin?
+        createGWin: (isOpen = false) =>
+          unless @gWin?
             defaults = {}
             if @opts?
               #being double careful for race condition on @opts.position via watch coords (if element and coords change at same time)
@@ -63,7 +64,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
               @gWin = new window.InfoBox @opts
             else
               @gWin = new google.maps.InfoWindow @opts
-            @handleClick(@scope?.options?.forceClick)
+            @handleClick(@scope?.options?.forceClick or isOpen)
             @doShow()
 
             # Set visibility of marker back to what it was before opening the window
@@ -115,16 +116,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         handleClick: (forceClick) =>
           return unless @gWin?
           # Show the window and hide the marker on click
+          marker = @getGmarker()
           click = =>
             @createGWin() unless @gWin?
             @showWindow()
-            if @getGmarker()?
-              @initialMarkerVisibility = @getGmarker().getVisible()
-              @oldMarkerAnimation = @getGmarker().getAnimation()
-              @getGmarker().setVisible @isIconVisibleOnClick
+            if marker?
+              @initialMarkerVisibility = marker.getVisible()
+              @oldMarkerAnimation = marker.getAnimation()
+              marker.setVisible @isIconVisibleOnClick
 
           click() if forceClick
-          marker = @getGmarker()
           if marker
             @listeners = @listeners.concat @setEvents marker, {events: {click: click}}, @model
 

@@ -55,10 +55,14 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
   getMarker = ->
     class Marker extends MapObject
       _.extend @::, PositionObject::, DraggableObject::, VisibleObject::
-
       @instances = 0
       @resetInstances = =>
         @instances = 0
+      @creationSubscribe = (obj, cb) ->
+        window.google.maps.event.addListener(obj, 'creation', cb)
+      @creationUnSubscribe = (listener) ->
+        window.google.maps.event.removeListener listener
+
       constructor: (opts) ->
         super()
         if opts?
@@ -66,6 +70,9 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
           'map','visible', 'position'].forEach (o) =>
             @[o] = opts[o]
         Marker.instances += 1
+        if window?.google?.maps?.event?
+          window.google.maps.event.fireAllListeners 'creation', @
+
       setAnimation:(obj) ->
         @animation = obj
       getAnimation: =>
@@ -254,13 +261,6 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
 
       window.google.maps.LatLngBounds = LatLngBounds
 
-    # mockMap:(Map = () -> return) ->
-    #   @mockMapTypeId()
-    #   @mockLatLng()
-    #   @mockOverlayView()
-    #   @mockEvent()
-    #   Map.getCoords = -> return {latitude: 47, longitude: -27} unless Map.getCoords?
-    #   window.google.maps.Map = Map
     mockMap: =>
       @mockMapTypeId()
       @mockLatLng()
@@ -330,8 +330,13 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         event.fireListener = (thing, eventName) =>
           found = _.find listeners, (obj)->
             obj.obj == thing
-          found.events[eventName](found.obj) if found?
+          found.events[eventName](found.obj) if found? and found?.events[eventName]?
 
+      unless event.fireAllListeners
+        event.fireAllListeners = (eventName, state) =>
+          listeners.forEach (obj)->
+            if obj.events[eventName]?
+              obj.events[eventName](state)
 
       window.google.maps.event = event
       return listeners

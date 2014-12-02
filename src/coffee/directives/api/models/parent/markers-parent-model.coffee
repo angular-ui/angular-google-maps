@@ -92,12 +92,14 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @gMarkerManager = new MarkerManager @map
 
             @cleanOnResolve _async.waitOrGo @, =>
-              _async.each scope.models, (model) =>
+              promise = _async.each scope.models, (model) =>
                 @newChildMarker(model, scope)
               , false
-              .then =>
+              promise.then =>
+                @modelsRendered = true
                 @gMarkerManager.draw()
                 @gMarkerManager.fit() if scope.fit
+              promise
 
           reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
