@@ -1121,12 +1121,10 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         ModelKey.prototype.modelKeyComparison = function(model1, model2) {
-          var scope;
-          scope = this.scope.coords != null ? this.scope : this.parentScope;
-          if (scope == null) {
-            throw 'No scope or parentScope set!';
+          if (this.scope.coords == null) {
+            throw 'No coords to compare!';
           }
-          return GmapUtil.equalCoords(this.evalModelHandle(model1, scope.coords), this.evalModelHandle(model2, scope.coords));
+          return GmapUtil.equalCoords(this.scopeOrModelVal('coords', this.scope, model1), this.scopeOrModelVal('coords', this.scope, model2));
         };
 
         ModelKey.prototype.setIdKey = function(scope) {
@@ -2793,7 +2791,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.updateModel = function(model) {
-          return this.handleModelChanges(model, this.model);
+          return this.setMyScope('all', _.clone(model, true), this.model);
         };
 
         MarkerChildModel.prototype.renderGMarker = function(doDraw, validCb) {
@@ -2910,7 +2908,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (newValue.lng() === oldValue.lng() && newValue.lat() === oldValue.lat()) {
                 return;
               }
-              _this.gMarker.setPosition(newVal);
+              _this.gMarker.setPosition(newValue);
               return _this.gMarker.setVisible(_this.validateCoords(newValue));
             };
           })(this));
@@ -4080,7 +4078,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           _.each(IMarker.scopeKeys, function(v, k) {
             return keys[k] = scope[k];
           });
-          child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gMarkerManager, doDrawSelf = false);
+          child = new MarkerChildModel(childScope, _.clone(model, true), keys, this.map, this.DEFAULTS, this.doClick, this.gMarkerManager, doDrawSelf = false);
           this.scope.markerModels.put(model[this.idKey], child);
           return child;
         };

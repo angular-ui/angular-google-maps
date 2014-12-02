@@ -75,7 +75,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @needRedraw = true
 
       updateModel: (model) =>
-        @handleModelChanges model, @model
+        @setMyScope 'all', _.clone(model,true), @model
 
       renderGMarker: (doDraw = true, validCb) ->
         #doDraw is to only update the marker on the map when it is really ready
@@ -131,7 +131,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           newValue = @getCoords @getProp('coords', scope, @model)
           oldValue = @gMarker.getPosition()
           return if newValue.lng() == oldValue.lng() and newValue.lat() == oldValue.lat()
-          @gMarker.setPosition newVal
+          @gMarker.setPosition newValue
           @gMarker.setVisible @validateCoords(newValue)
 
       setIcon: (scope, doDraw = true) =>
