@@ -19,7 +19,7 @@
     <div id="map_canvas">
         <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
             <div data-ng-if="!toggleMarkers">
-                <ui-gmap-markers models="randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'">
+                <ui-gmap-markers models="randomMarkers" coords="'self'" icon="'icon'" forceClick="true">
                     <ui-gmap-windows show="'showWindow'" ng-cloak>
                         <div ng-non-bindable>
                             {{ latitude | number:4 }}, {{ longitude | number:4 }}
@@ -28,9 +28,9 @@
                 </ui-gmap-markers>
             </div>
             <div data-ng-if="toggleMarkers">
-                <ui-gmap-markers models="pinkRandomMarkers" coords="'self'" icon="'icon'" click="'onClicked'">
+                <ui-gmap-markers models="pinkRandomMarkers" coords="'self'" icon="'icon'" forceClick="true">
                     <ui-gmap-windows show="'showWindow'" ng-cloak>
-                        <div ng-non-bindable>
+                        <div ng-non-bindable>1
                             {{ latitude | number:4 }}, {{ longitude | number:4 }}
                         </div>
                     </ui-gmap-windows>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="../website_libs/dev_deps.js"></script>
+    <script src="https://code.angularjs.org/1.3.3/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-946-markers-update.js"></script>
+    <title>Map</title>
+</head>
+
+<body>
+  <div id="map_canvas" ng-controller="mainCtrl">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+      <ui-gmap-markers models="randomMarkers" coords="'self'" icon="'icon'">
+      </ui-gmap-markers>
+    </ui-gmap-google-map>
+    <button class="move" ng-click="move()">Move a marker</button>
+    <button class="move" ng-click="clear()">Clear</button>
+  </div>
+</body>
+
+</html>
