@@ -70,16 +70,21 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
       idkey: 'place_id',
       events: {
         idle: function (map) {
+                   
+        },
+        dragend: function(map) {
+          //update the search box bounds after dragging the map
           var bounds = map.getBounds();
-          var ne = bounds.getNorthEast(); // LatLng of the north-east corner
-          //console.log("ne bounds " + ne.lat() + ", " + ne.lng());
-          var sw = bounds.getSouthWest(); // LatLng of the south-west corder
-          //console.log("sw bounds " + sw.lat() + ", " + sw.lng());
+          var ne = bounds.getNorthEast();
+          var sw = bounds.getSouthWest(); 
+          $scope.searchbox.options.bounds = new google.maps.LatLngBounds(sw, ne);
+          //$scope.searchbox.options.visible = true;
         }
       }
     },
     searchbox: {
       template:'searchbox.tpl.html',
+      //position:'top-right',
       position:'top-left',
       options: {
         bounds: {}
@@ -126,18 +131,19 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
 
           _.each(newMarkers, function(marker) {
             marker.closeClick = function() {
-              $scope.selected.options.visible = false
+              $scope.selected.options.visible = false;
               marker.options.visble = false;
               return $scope.$apply();
             };
             marker.onClicked = function() {
               $scope.selected.options.visible = false;
               $scope.selected = marker;
-              $scope.selected.options.visible = true
+              $scope.selected.options.visible = true;
             };
           });
 
-          $scope.map.markers = newMarkers
+          $scope.map.markers = newMarkers;
+          //$scope.searchbox.options.visible = false;
         }
       }
 

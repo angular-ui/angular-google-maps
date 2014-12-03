@@ -5,7 +5,7 @@ doCover = false #clean cheap way to disable coverage so you can debug the darn c
 
 requireConfig =
     paths:
-      'lodash': 'bower_components/lodash/dist/lodash.underscore'
+      'lodash': 'bower_components/lodash/dist/lodash'
     deps: ['lodash']
 
 # log('jasmineSettings: past requireConfig')

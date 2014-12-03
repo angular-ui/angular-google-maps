@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.11 2014-12-01
+/*! angular-google-maps 2.0.11 2014-12-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -2762,7 +2762,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this));
           this.setMyScope('all', this.model, void 0, true);
-          this.createMarker(this.model);
           $log.info(this);
         }
 
@@ -2793,7 +2792,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.updateModel = function(model) {
-          return this.handleModelChanges(model, this.model);
+          return this.setMyScope('all', _.clone(model, true), this.model);
         };
 
         MarkerChildModel.prototype.renderGMarker = function(doDraw, validCb) {
@@ -2871,35 +2870,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.maybeSetScopeValue = function(scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter, doDraw) {
-          var newValue, oldVal, toSet;
           if (gSetter == null) {
             gSetter = void 0;
           }
           if (doDraw == null) {
             doDraw = true;
           }
-          if (oldModel === void 0) {
-            toSet = evaluate(model, modelKey);
-            if (toSet !== this.scope[scopePropName]) {
-              this.scope[scopePropName] = toSet;
-            }
-            if (gSetter != null) {
-              gSetter(this.scope, doDraw);
-            }
-            return;
+          if (gSetter != null) {
+            gSetter(this.scope, doDraw);
           }
-          oldVal = evaluate(oldModel, modelKey);
-          newValue = evaluate(model, modelKey);
-          if (newValue !== oldVal) {
-            this.scope[scopePropName] = newValue;
-            if (!isInit) {
-              if (gSetter != null) {
-                gSetter(this.scope, doDraw);
-              }
-              if (this.doDrawSelf && doDraw) {
-                return this.gMarkerManager.draw();
-              }
-            }
+          if (this.doDrawSelf && doDraw) {
+            return this.gMarkerManager.draw();
           }
         };
 
@@ -2922,8 +2903,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return this.renderGMarker(doDraw, (function(_this) {
             return function() {
-              _this.gMarker.setPosition(_this.getCoords(_this.getProp(_this.coordsKey, _this.model)));
-              return _this.gMarker.setVisible(_this.validateCoords(_this.getProp(_this.coordsKey, _this.model)));
+              var newValue, oldValue;
+              newValue = _this.getCoords(_this.getProp('coords', _this.model));
+              oldValue = _this.gMarker.getPosition();
+              if ((oldValue != null) && (newValue != null)) {
+                if (newValue.lng() === oldValue.lng() && newValue.lat() === oldValue.lat()) {
+                  return;
+                }
+              }
+              _this.gMarker.setPosition(newValue);
+              return _this.gMarker.setVisible(_this.validateCoords(newValue));
             };
           })(this));
         };
@@ -2937,9 +2926,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return this.renderGMarker(doDraw, (function(_this) {
             return function() {
-              _this.gMarker.setIcon(_this.getProp(_this.iconKey, _this.model));
-              _this.gMarker.setPosition(_this.getCoords(_this.getProp(_this.coordsKey, _this.model)));
-              return _this.gMarker.setVisible(_this.validateCoords(_this.getProp(_this.coordsKey, _this.model)));
+              var coords, newValue, oldValue;
+              oldValue = _this.gMarker.getIcon();
+              newValue = _this.getProp('icon', _this.model);
+              if (oldValue === newValue) {
+                return;
+              }
+              _this.gMarker.setIcon(newValue);
+              coords = _this.getProp('coords', _this.model);
+              _this.gMarker.setPosition(_this.getCoords(coords));
+              return _this.gMarker.setVisible(_this.validateCoords(coords));
             };
           })(this));
         };
@@ -3180,7 +3176,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         WindowChildModel.prototype.watchElement = function() {
           return this.scope.$watch((function(_this) {
             return function() {
-              var _ref;
+              var wasOpen, _ref;
               if (!(_this.element || _this.html)) {
                 return;
               }
@@ -3188,15 +3184,19 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if ((_ref = _this.opts) != null) {
                   _ref.content = void 0;
                 }
+                wasOpen = _this.gWin.isOpen();
                 _this.remove();
-                return _this.createGWin();
+                return _this.createGWin(wasOpen);
               }
             };
           })(this));
         };
 
-        WindowChildModel.prototype.createGWin = function() {
+        WindowChildModel.prototype.createGWin = function(isOpen) {
           var defaults, _opts, _ref, _ref1;
+          if (isOpen == null) {
+            isOpen = false;
+          }
           if (this.gWin == null) {
             defaults = {};
             if (this.opts != null) {
@@ -3217,7 +3217,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             } else {
               this.gWin = new google.maps.InfoWindow(this.opts);
             }
-            this.handleClick((_ref = this.scope) != null ? (_ref1 = _ref.options) != null ? _ref1.forceClick : void 0 : void 0);
+            this.handleClick(((_ref = this.scope) != null ? (_ref1 = _ref.options) != null ? _ref1.forceClick : void 0 : void 0) || isOpen);
             this.doShow();
             return this.listeners.push(google.maps.event.addListener(this.gWin, 'closeclick', (function(_this) {
               return function() {
@@ -3288,23 +3288,23 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (this.gWin == null) {
             return;
           }
+          marker = this.getGmarker();
           click = (function(_this) {
             return function() {
               if (_this.gWin == null) {
                 _this.createGWin();
               }
               _this.showWindow();
-              if (_this.getGmarker() != null) {
-                _this.initialMarkerVisibility = _this.getGmarker().getVisible();
-                _this.oldMarkerAnimation = _this.getGmarker().getAnimation();
-                return _this.getGmarker().setVisible(_this.isIconVisibleOnClick);
+              if (marker != null) {
+                _this.initialMarkerVisibility = marker.getVisible();
+                _this.oldMarkerAnimation = marker.getAnimation();
+                return marker.setVisible(_this.isIconVisibleOnClick);
               }
             };
           })(this);
           if (forceClick) {
             click();
           }
-          marker = this.getGmarker();
           if (marker) {
             return this.listeners = this.listeners.concat(this.setEvents(marker, {
               events: {
@@ -3980,14 +3980,18 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
             return function() {
-              return _async.each(scope.models, function(model) {
+              var promise;
+              promise = _async.each(scope.models, function(model) {
                 return _this.newChildMarker(model, scope);
-              }, false).then(function() {
+              }, false);
+              promise.then(function() {
+                _this.modelsRendered = true;
                 _this.gMarkerManager.draw();
                 if (scope.fit) {
                   return _this.gMarkerManager.fit();
                 }
               });
+              return promise;
             };
           })(this)));
         };
@@ -4077,7 +4081,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           _.each(IMarker.scopeKeys, function(v, k) {
             return keys[k] = scope[k];
           });
-          child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gMarkerManager, doDrawSelf = false);
+          child = new MarkerChildModel(childScope, _.clone(model, true), keys, this.map, this.DEFAULTS, this.doClick, this.gMarkerManager, doDrawSelf = false);
           this.scope.markerModels.put(model[this.idKey], child);
           return child;
         };
@@ -4861,6 +4865,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.ctrlPosition = ctrlPosition;
           this.template = template;
           this.$log = $log != null ? $log : Logger;
+          this.setVisibility = __bind(this.setVisibility, this);
           this.getBounds = __bind(this.getBounds, this);
           this.setBounds = __bind(this.setBounds, this);
           this.createSearchBox = __bind(this.createSearchBox, this);
@@ -4871,6 +4876,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.$log.error('template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!');
             return;
           }
+          if (angular.isUndefined(this.scope.options)) {
+            this.scope.options = {};
+            this.scope.options.visible = true;
+          }
+          if (angular.isUndefined(this.scope.options.visible)) {
+            this.scope.options.visible = true;
+          }
+          this.visible = scope.options.visible;
           controlDiv = angular.element('<div></div>');
           controlDiv.append(this.template);
           this.input = controlDiv.find('input')[0];
@@ -4879,6 +4892,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         SearchBoxParentModel.prototype.init = function() {
           this.createSearchBox();
+          this.scope.$watch('options', (function(_this) {
+            return function(newValue, oldValue) {
+              if (angular.isObject(newValue)) {
+                if (newValue.bounds != null) {
+                  _this.setBounds(newValue.bounds);
+                }
+                if (newValue.visible != null) {
+                  if (_this.visible !== newValue.visible) {
+                    return _this.setVisibility(newValue.visible);
+                  }
+                }
+              }
+            };
+          })(this), true);
           if (this.attrs.parentdiv != null) {
             this.addToParentDiv();
           } else {
@@ -4891,15 +4918,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
           this.listeners = this.setEvents(this.searchBox, this.scope, this.scope);
           this.$log.info(this);
-          this.scope.$watch('options', (function(_this) {
-            return function(newValue, oldValue) {
-              if (angular.isObject(newValue)) {
-                if (newValue.bounds != null) {
-                  return _this.setBounds(newValue.bounds);
-                }
-              }
-            };
-          })(this), true);
           return this.scope.$on('$destroy', (function(_this) {
             return function() {
               return _this.searchBox = null;
@@ -4934,6 +4952,23 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         SearchBoxParentModel.prototype.getBounds = function() {
           return this.searchBox.getBounds();
+        };
+
+        SearchBoxParentModel.prototype.setVisibility = function(val) {
+          if (this.attrs.parentdiv != null) {
+            if (val === false) {
+              this.parentDiv.addClass("ng-hide");
+            } else {
+              this.parentDiv.removeClass("ng-hide");
+            }
+          } else {
+            if (val === false) {
+              this.gMap.controls[google.maps.ControlPosition[this.ctrlPosition]].clear();
+            } else {
+              this.gMap.controls[google.maps.ControlPosition[this.ctrlPosition]].push(this.input);
+            }
+          }
+          return this.visible = val;
         };
 
         return SearchBoxParentModel;

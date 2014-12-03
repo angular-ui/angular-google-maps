@@ -54,7 +54,7 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
         ExtendMarkerClusterer.init()
         scope = $rootScope.$new()
 
-        @scope = _.extend @scope, scope
+        @scope = _.extend scope, @scope
         @scope.options =
           animation: google.maps.Animation.BOUNCE
         @testCtor = MarkersParentModel
