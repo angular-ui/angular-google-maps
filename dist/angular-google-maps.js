@@ -3355,30 +3355,25 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (this.gWin != null) {
             show = (function(_this) {
               return function() {
-                return _this.scope.$evalAsync(function() {
-                  var isOpen, maybeAnchor, maybeMarker, pos;
-                  if (!_this.gWin.isOpen()) {
-                    maybeMarker = _this.getGmarker();
-                    if ((_this.gWin != null) && (_this.gWin.getPosition != null)) {
-                      pos = _this.gWin.getPosition();
-                    }
-                    if (maybeMarker) {
-                      pos = maybeMarker.getPosition();
-                    }
-                    maybeAnchor = _this.getGmarker();
-                    if (!pos) {
-                      return;
-                    }
-                    _this.gWin.open(_this.mapCtrl, maybeAnchor);
-                    isOpen = _this.gWin.isOpen();
-                    _this.scope.$evalAsync(function() {
-                      return ChromeFixes.maybeRepaint(_this.gWin.content);
-                    });
-                    if (_this.model.show !== isOpen) {
-                      return _this.model.show = isOpen;
-                    }
+                var isOpen, maybeAnchor, maybeMarker, pos;
+                if (!_this.gWin.isOpen()) {
+                  maybeMarker = _this.getGmarker();
+                  if ((_this.gWin != null) && (_this.gWin.getPosition != null)) {
+                    pos = _this.gWin.getPosition();
                   }
-                });
+                  if (maybeMarker) {
+                    pos = maybeMarker.getPosition();
+                  }
+                  maybeAnchor = _this.getGmarker();
+                  if (!pos) {
+                    return;
+                  }
+                  _this.gWin.open(_this.mapCtrl, maybeAnchor);
+                  isOpen = _this.gWin.isOpen();
+                  if (_this.model.show !== isOpen) {
+                    return _this.model.show = isOpen;
+                  }
+                }
               };
             })(this);
             if (this.scope.templateUrl) {

@@ -132,18 +132,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         showWindow: =>
           if @gWin?
             show = =>
-              @scope.$evalAsync =>
-                unless @gWin.isOpen()
-                  maybeMarker = @getGmarker()
-                  pos = @gWin.getPosition() if @gWin? and @gWin.getPosition?
-                  pos = maybeMarker.getPosition() if maybeMarker
-                  maybeAnchor = @getGmarker()
-                  return unless pos
-                  @gWin.open @mapCtrl, maybeAnchor
-                  isOpen = @gWin.isOpen()
-                  @scope.$evalAsync =>
-                    ChromeFixes.maybeRepaint @gWin.content
-                  @model.show = isOpen if @model.show != isOpen
+              # @scope.$evalAsync =>
+              unless @gWin.isOpen()
+                maybeMarker = @getGmarker()
+                pos = @gWin.getPosition() if @gWin? and @gWin.getPosition?
+                pos = maybeMarker.getPosition() if maybeMarker
+                maybeAnchor = @getGmarker()
+                return unless pos
+                @gWin.open @mapCtrl, maybeAnchor
+                isOpen = @gWin.isOpen()
+                # @scope.$evalAsync =>
+                #   ChromeFixes.maybeRepaint @gWin.content
+                @model.show = isOpen if @model.show != isOpen
 
             if @scope.templateUrl
               $http.get(@scope.templateUrl, { cache: $templateCache }).then (content) =>
