@@ -141,6 +141,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
                   return unless pos
                   @gWin.open @mapCtrl, maybeAnchor
                   isOpen = @gWin.isOpen()
+                  @scope.$evalAsync =>
+                    ChromeFixes.maybeRepaint @gWin.content
                   @model.show = isOpen if @model.show != isOpen
 
             if @scope.templateUrl
