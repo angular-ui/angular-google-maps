@@ -92,12 +92,14 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @gMarkerManager = new MarkerManager @map
 
             @cleanOnResolve _async.waitOrGo @, =>
-              _async.each scope.models, (model) =>
+              promise = _async.each scope.models, (model) =>
                 @newChildMarker(model, scope)
               , false
-              .then =>
+              promise.then =>
+                @modelsRendered = true
                 @gMarkerManager.draw()
                 @gMarkerManager.fit() if scope.fit
+              promise
 
           reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
@@ -159,12 +161,12 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
               return
             @$log.info('child', child, 'markers', @scope.markerModels)
-            childScope = scope.$new(true)
+            childScope = scope.$new(false)
             childScope.events = scope.events
             keys = {}
             _.each IMarker.scopeKeys, (v,k) ->
               keys[k] = scope[k]
-            child = new MarkerChildModel(childScope, model, keys, @map, @DEFAULTS,
+            child = new MarkerChildModel(childScope, _.clone(model,true), keys, @map, @DEFAULTS,
               @doClick, @gMarkerManager, doDrawSelf = false) #this is managed so child is not drawing itself
             @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
             child
