@@ -61,8 +61,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       onDestroy: (doDelete) =>
         @destroyPromise().then =>
           @cleanOnResolve _async.waitOrGo @, =>
-            @plurals.each (model) =>
-              model.destroy()
+            @plurals.each (child) =>
+              child.destroy(true)
             uiGmapPromise.resolve()
           .then =>
             delete @plurals if doDelete

@@ -19,13 +19,19 @@
       }
     ])
     .controller('mapWidgetCtrl', ['$scope', '$rootScope', function ($scope, $rootScope) {
-      $scope.polyButton = {
+      $scope.make = {
         controlText: 'make polys',
         controlClick: function () {
           $rootScope.$emit("polyButtonClicked");
         }
       };
-      $scope.clearWidget = {
+      $scope.add = {
+        controlText: 'add',
+        controlClick: function () {
+          $rootScope.$emit("addClicked");
+        }
+      };
+      $scope.clear = {
         controlText: 'clear',
         controlClick: function () {
           $rootScope.$emit("clearButtonClicked");
@@ -62,34 +68,64 @@
           },
           draw: undefined
         };
-        var rawPolys = [];
         uiGmapGoogleMapApi.then(function () {
-          $http.get('assets/json/polylines.json').then(function (data) {
-            rawPolys = data.data;
-          });
-
         });
 
         var createPolys = function () {
-          $log.info('polys should be injected');
-          $scope.map.polys = rawPolys;
+          return  [
+            {
+              id: 1,
+              path: [
+                {
+                  latitude: 45,
+                  longitude: -74
+                },
+                {
+                  latitude: 30,
+                  longitude: -89
+                },
+                {
+                  latitude: 37,
+                  longitude: -122
+                },
+                {
+                  latitude: 60,
+                  longitude: -95
+                }
+              ],
+              stroke: {
+                color: '#ff6262',
+                weight: 5
+              },
+              editable: true,
+              draggable: true,
+              geodesic: true,
+              visible: true,
+              icons: [
+                {
+                  icon: {
+                    path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW
+                  },
+                  offset: '25px',
+                  repeat: '50px'
+                }
+              ]
+            }
+          ];
         };
         $scope.$onRootScope("polyButtonClicked", function () {
-          createPolys();
-          var poly = rawPolys[0];
-          var somePolys = _.range(500).map(function (num, i) {
-            var clonedPoly = _.extend({}, poly);
-            var paths = clonedPoly.path.map(function (p) {
-              return {
-                latitude: p.latitude,
-                longitude: p.longitude + i
-              }
-            });
-            clonedPoly.id = i + 1;
-            clonedPoly.path = paths;
-            return clonedPoly;
+          $scope.map.polys = createPolys();
+        });
+        $scope.$onRootScope("addClicked", function () {
+          if (!$scope.map.polys || !$scope.map.polys.length > 0)
+            return;
+          var last = JSON.parse(JSON.stringify(_.last($scope.map.polys)));
+          last.id += 1;
+          last.path = last.path.map(function (p) {
+            p.longitude += 2;
+            return p;
           });
-          $scope.map.polys = somePolys;
+          $scope.map.polys.push(last);
         });
         $scope.$onRootScope("clearButtonClicked", function () {
           $scope.map.polys = [];
@@ -98,11 +134,11 @@
 
       }])
     .run(['$templateCache', 'uiGmapLogger', function ($templateCache, Logger) {
-      Logger.doLog = true;
-      Logger.info('polyButton.tpl.html should be in cache');
-      $templateCache.put('polyButton.tpl.html',
-        '<button class="btn btn-lg btn-primary"  ng-click="polyButton.controlClick()">{{polyButton.controlText}}</button>');
-      $templateCache.put('clear.tpl.html',
-        '<button class="btn btn-lg btn-primary"  ng-click="clearWidget.controlClick()">{{clearWidget.controlText}}</button>');
+      $templateCache.put('widgets.tpl.html',
+          '<div>' +
+          '<button class="btn btn-lg btn-primary pull-left"  ng-click="clear.controlClick()">{{clear.controlText}}</button>' +
+          '<button class="btn btn-lg btn-primary pull-left"  ng-click="make.controlClick()">{{make.controlText}}</button>' +
+          '<button class="btn btn-lg btn-primary pull-left"  ng-click="add.controlClick()">{{add.controlText}}</button>' +
+          '</div>');
     }]);
 })(window, angular);

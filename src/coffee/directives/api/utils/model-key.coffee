@@ -58,7 +58,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
               changes[prop] = now[prop]
             else if _.isObject(now[prop])
               # Recursion alert
-              c = @getChanges(now[prop], prev[prop])
+              c = @getChanges(now[prop], prev[prop]) unless _.isEmpty(prev[prop])
               changes[prop] = c  unless _.isEmpty(c)
             else
               changes[prop] = now[prop]
@@ -118,8 +118,10 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         scopeProp = scope[key]
 
         if _.isFunction scopeProp
-          return maybeWrap true, scopeProp(), doWrap
+          return maybeWrap true, scopeProp(model), doWrap
         if _.isObject scopeProp
+          return maybeWrap true, scopeProp, doWrap
+        unless _.isString scopeProp
           return maybeWrap true, scopeProp, doWrap
 
         modelKey = scopeProp #this should be the key pointing to what we need
@@ -141,4 +143,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
               childScope[name] = newValue
         childScope.model = model
 
+
+      destroy: (manualOverride = false)=>
+        if @scope? and not @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
+          @scope.$destroy()
 ]

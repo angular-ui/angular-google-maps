@@ -33,8 +33,17 @@ pipeline = [
 
 concatDist =
   options:
-    banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
+    banner: """
+    /*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>
+     *  <%= pkg.description %>
+     *  <%= pkg.repository.type %>: <%= pkg.repository.url %>
+     */
+    ;
+    (function( window, angular, undefined ){
+      'use strict';
+    """
     separator: ";"
+    footer: "}( window,angular));"
   src: pipeline.map( (f) -> "tmp/#{f}.js").concat [
     "tmp/wrapped_uuid.js"
     "tmp/wrapped_libs.js"
@@ -208,6 +217,7 @@ module.exports = (grunt) ->
 
     jasmine:
       spec: jasmineSettings.spec
+      consoleSpec: jasmineSettings.consoleSpec
 
     replace:
       utils:
@@ -232,6 +242,11 @@ module.exports = (grunt) ->
   #          'bower_components/bluebird': ["build","--features='core'"]
 
     curl: require './curl-deps'
+    verbosity:
+      quiet:
+        options: mode: 'dot'
+        tasks: ['coffee', 'clean', 'cleam:dist', 'copy', 'concat', 'jasmineSettings',
+          'mkdir:all', 'jshint', 'uglify', 'replace', 'concat:dist', 'concat:libs']
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

@@ -1,5 +1,8 @@
 describe 'uiGmapWindowChildModel', ->
     beforeEach ->
+
+        mock = window['uiGmapInitiator'].initMock()
+
         if window.InfoBox
             @infoBoxRealTemp = window.InfoBox
         else
@@ -20,36 +23,19 @@ describe 'uiGmapWindowChildModel', ->
         @windowOpts = _.extend(@commonOpts, content: 'content')
         @gMarker = new google.maps.Marker(@commonOpts)
         #define / inject values into the item we are testing... not a controller but it allows us to inject
-        angular.module('mockModule', ['uiGmapgoogle-maps'])
-        .value('isIconVisibleOnClick', true)
-        .value('model', @scope)
-        .value('mapCtrl', document.gMap)
-        .value('gMarker', @gMarker)
-        .value('opts', @windowOpts)
-        .value('element', '<span>hi</span>')
-        .value('needToManualDestroy', false)
-        .value('markerIsVisibleAfterWindowClose', true)
-        .controller 'childModel', ['uiGmapWindowChildModel',(WindowChildModel) ->
-          WindowChildModel
-        ]
+        #constructor: (@model, @scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerScope,
+        #@element, @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
 
-        angular.mock.module('mockModule')
-        window['uiGmapInitiator'].initMock()
+        inject ($rootScope, uiGmapWindowChildModel) =>
+          scope = $rootScope.$new()
+          isIconVisibleOnClick = true
+          model = _.extend @scope, scope
+          mapCtrl = document.gMap
+          @gMarker
+
+          @subject =
+            new uiGmapWindowChildModel model, scope, @windowOpts, isIconVisibleOnClick, mapCtrl, undefined, '<span>hi</span>'
 
     it 'can be created', ->
-        inject(($http, $rootScope, $templateCache, $compile, $controller) =>
-            scope = $rootScope.$new()
-            _.extend(@scope, scope)
-            @subject = $controller('childModel', scope: scope)
-        )
-        expect(@subject != undefined).toEqual(true)
-        expect(@subject.index).toEqual(@index)
-
-    it 'can be created with the infoBoxplugin', ->
-        inject(($http, $rootScope, $templateCache, $compile, $controller) =>
-            scope = $rootScope.$new()
-            _.extend(@scope, scope)
-            @subject = $controller('childModel', scope: scope)
-        )
-        expect(@subject != undefined).toEqual(true)
+        expect(@subject).toBeDefined()
         expect(@subject.index).toEqual(@index)
