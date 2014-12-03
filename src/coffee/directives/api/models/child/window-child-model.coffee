@@ -142,8 +142,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
                   @gWin.open @mapCtrl, maybeAnchor
                   isOpen = @gWin.isOpen()
                   @model.show = isOpen if @model.show != isOpen
-                  _.defer =>
-                    ChromeFixes.maybeRepaint @gWin.content
 
             if @scope.templateUrl
               $http.get(@scope.templateUrl, { cache: $templateCache }).then (content) =>
