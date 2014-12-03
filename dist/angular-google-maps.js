@@ -1192,15 +1192,13 @@ Nicholas McCready - https://twitter.com/nmccready
           var delta, now;
           now = new Date();
           delta = now - this.lastUpdate;
-          if (delta <= 250) {
+          if (delta <= 250 || this.inProgress) {
             return true;
+          } else {
+            this.inProgress = true;
+            this.lastUpdate = now;
+            return false;
           }
-          if (this.inProgress) {
-            return true;
-          }
-          this.inProgress = true;
-          this.lastUpdate = now;
-          return false;
         };
 
         ModelKey.prototype.cleanOnResolve = function(promise) {
@@ -1310,7 +1308,47 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').factory('uiGmapModelsWatcher', [
-    'uiGmapLogger', 'uiGmap_async', function(Logger, _async) {
+    'uiGmapLogger', 'uiGmap_async', '$q', function(Logger, _async, $q) {
+      var cancelable, onlyTheLast;
+      cancelable = function(promise) {
+        var cancelDeferred, combined, wrapped;
+        cancelDeferred = $q.defer();
+        combined = $q.all([promise, cancelDeferred.promise]);
+        wrapped = $q.defer();
+        promise.then(function(result) {
+          return cancelDeferred.resolve();
+        });
+        combined.then(function(results) {
+          return wrapped.resolve(results[0]);
+        }, wrapped.reject);
+        wrapped.promise.cancel = function(reason) {
+          reason = reason || 'canceled';
+          return cancelDeferred.reject(reason);
+        };
+        return wrapped.promise;
+      };
+      onlyTheLast = (function() {
+        var promises;
+        promises = [];
+        return function(p, cb) {
+          var promise;
+          promise = cancelable(p);
+          promises.push(promise);
+          return promise.then(function(value) {
+            if (promise === _.last(promises)) {
+              if (promises.length >= 2) {
+                promises.forEach(function(promise, i) {
+                  if (i < promises.length - 1) {
+                    return promise.cancel();
+                  }
+                });
+              }
+              cb(value);
+              return promises = [];
+            }
+          });
+        };
+      })();
       return {
         figureOutState: function(idKey, scope, childObjects, comparison, callBack) {
           var adds, mappedScopeModelIds, removals, updates;
@@ -1318,7 +1356,7 @@ Nicholas McCready - https://twitter.com/nmccready
           mappedScopeModelIds = {};
           removals = [];
           updates = [];
-          return _async.each(scope.models, function(m) {
+          return onlyTheLast(_async.each(scope.models, function(m) {
             var child;
             if (m[idKey] != null) {
               mappedScopeModelIds[m[idKey]] = {};
@@ -1352,17 +1390,15 @@ Nicholas McCready - https://twitter.com/nmccready
                 if (mappedScopeModelIds[id] == null) {
                   return removals.push(c);
                 }
+              }).then(function() {
+                return {
+                  adds: adds,
+                  removals: removals,
+                  updates: updates
+                };
               });
             };
-          })(this)).then((function(_this) {
-            return function() {
-              return callBack({
-                adds: adds,
-                removals: removals,
-                updates: updates
-              });
-            };
-          })(this));
+          })(this)), callBack);
         }
       };
     }
@@ -3331,12 +3367,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                     _this.gWin.open(_this.mapCtrl, maybeAnchor);
                     isOpen = _this.gWin.isOpen();
-                    if (_this.model.show !== isOpen) {
-                      _this.model.show = isOpen;
-                    }
-                    return _.defer(function() {
+                    _this.scope.$evalAsync(function() {
                       return ChromeFixes.maybeRepaint(_this.gWin.content);
                     });
+                    if (_this.model.show !== isOpen) {
+                      return _this.model.show = isOpen;
+                    }
                   }
                 });
               };
@@ -3974,6 +4010,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           } else {
             this.gMarkerManager = new MarkerManager(this.map);
           }
+          if (scope.models.length === 0) {
+            this.existingPieces = uiGmapPromise.resolve();
+            return;
+          }
           return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
             return function() {
               var promise;
@@ -4011,9 +4051,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         MarkersParentModel.prototype.pieceMeal = function(scope) {
           var doChunk;
           if (scope.$$destroyed || this.isClearing) {
-            return;
-          }
-          if (this.updateInProgress()) {
             return;
           }
           doChunk = _async.defaultChunkSize;
@@ -4316,6 +4353,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.watchModels(scope);
             this.watchDestroy(scope);
           }
+          if (scope.models.length === 0) {
+            this.existingPieces = uiGmapPromise.resolve();
+            return;
+          }
           return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
             return function() {
               return _async.each(scope.models, function(model) {
@@ -4573,6 +4614,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (this.firstTime) {
             this.watchModels(scope);
             this.watchDestroy(scope);
+          }
+          if (scope.models.length === 0) {
+            this.existingPieces = uiGmapPromise.resolve();
+            return;
           }
           return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
             return function() {
@@ -5188,6 +5233,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.watchDestroy(scope);
           }
           this.setContentKeys(scope.models);
+          if (scope.models.length === 0) {
+            this.existingPieces = uiGmapPromise.resolve();
+            return;
+          }
           return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
             return function() {
               return _async.each(scope.models, function(model) {

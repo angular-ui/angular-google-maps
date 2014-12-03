@@ -70,13 +70,12 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         now = new Date()
         # two map updates can happen at least 250ms apart
         delta = now - @lastUpdate
-        if delta <= 250
+        if delta <= 250 or @inProgress
           return true
-        if @inProgress
-          return true
-        @inProgress = true
-        @lastUpdate = now
-        return false
+        else
+          @inProgress = true
+          @lastUpdate = now
+          return false
 
       cleanOnResolve: (promise) =>
         promise.catch =>

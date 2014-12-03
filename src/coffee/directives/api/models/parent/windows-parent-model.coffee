@@ -136,6 +136,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @watchDestroy scope
             @setContentKeys(scope.models) #only setting content keys once per model array
 
+            if scope.models.length == 0
+              @existingPieces = uiGmapPromise.resolve()
+              return
+
             @cleanOnResolve _async.waitOrGo @, =>
               _async.each scope.models, (model) =>
                 gMarker = if hasGMarker then @getItem(scope, modelsPropToIterate, model[@idKey])?.gMarker else undefined
