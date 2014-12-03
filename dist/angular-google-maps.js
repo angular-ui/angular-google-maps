@@ -2797,7 +2797,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return destroy(_this);
             };
           })(this));
-          this.setMyScope('all', this.model, void 0, true);
+          this.createMarker(this.model);
           $log.info(this);
         }
 
@@ -3371,9 +3371,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                     _this.gWin.open(_this.mapCtrl, maybeAnchor);
                     isOpen = _this.gWin.isOpen();
-                    _.defer(function() {
-                      return ChromeFixes.maybeRepaint(_this.gWin.content);
-                    });
                     if (_this.model.show !== isOpen) {
                       return _this.model.show = isOpen;
                     }
