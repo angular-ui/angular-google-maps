@@ -1194,15 +1194,13 @@ Nicholas McCready - https://twitter.com/nmccready
           var delta, now;
           now = new Date();
           delta = now - this.lastUpdate;
-          if (delta <= 250) {
+          if (delta <= 250 || this.inProgress) {
             return true;
+          } else {
+            this.inProgress = true;
+            this.lastUpdate = now;
+            return false;
           }
-          if (this.inProgress) {
-            return true;
-          }
-          this.inProgress = true;
-          this.lastUpdate = now;
-          return false;
         };
 
         ModelKey.prototype.cleanOnResolve = function(promise) {
