@@ -54,7 +54,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @scope.$on '$destroy', =>
           destroy @
 
-        @setMyScope 'all', @model, undefined, true
+# avoid double creation, but this might be needed for <marker>
+#        @setMyScope 'all', @model, undefined, true
+        @createMarker @model
         $log.info @
 
 
