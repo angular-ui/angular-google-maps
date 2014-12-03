@@ -3371,12 +3371,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                     _this.gWin.open(_this.mapCtrl, maybeAnchor);
                     isOpen = _this.gWin.isOpen();
-                    if (_this.model.show !== isOpen) {
-                      _this.model.show = isOpen;
-                    }
-                    return _.defer(function() {
+                    _this.scope.$evalAsync(function() {
                       return ChromeFixes.maybeRepaint(_this.gWin.content);
                     });
+                    if (_this.model.show !== isOpen) {
+                      return _this.model.show = isOpen;
+                    }
                   }
                 });
               };
