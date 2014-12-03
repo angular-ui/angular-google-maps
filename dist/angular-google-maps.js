@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-02
+/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -2760,7 +2760,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this));
           this.setMyScope('all', this.model, void 0, true);
-          this.createMarker(this.model);
           $log.info(this);
         }
 
