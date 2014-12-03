@@ -2761,7 +2761,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return destroy(_this);
             };
           })(this));
-          this.setMyScope('all', this.model, void 0, true);
+          this.createMarker(this.model);
           $log.info(this);
         }
 
