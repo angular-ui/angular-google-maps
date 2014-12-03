@@ -1310,7 +1310,47 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').factory('uiGmapModelsWatcher', [
-    'uiGmapLogger', 'uiGmap_async', function(Logger, _async) {
+    'uiGmapLogger', 'uiGmap_async', '$q', function(Logger, _async, $q) {
+      var cancelable, onlyTheLast;
+      cancelable = function(promise) {
+        var cancelDeferred, combined, wrapped;
+        cancelDeferred = $q.defer();
+        combined = $q.all([promise, cancelDeferred.promise]);
+        wrapped = $q.defer();
+        promise.then(function(result) {
+          return cancelDeferred.resolve();
+        });
+        combined.then(function(results) {
+          return wrapped.resolve(results[0]);
+        }, wrapped.reject);
+        wrapped.promise.cancel = function(reason) {
+          reason = reason || 'canceled';
+          return cancelDeferred.reject(reason);
+        };
+        return wrapped.promise;
+      };
+      onlyTheLast = (function() {
+        var promises;
+        promises = [];
+        return function(p, cb) {
+          var promise;
+          promise = cancelable(p);
+          promises.push(promise);
+          return promise.then(function(value) {
+            if (promise === _.last(promises)) {
+              if (promises.length >= 2) {
+                promises.forEach(function(promise, i) {
+                  if (i < promises.length - 1) {
+                    return promise.cancel();
+                  }
+                });
+              }
+              cb(value);
+              return promises = [];
+            }
+          });
+        };
+      })();
       return {
         figureOutState: function(idKey, scope, childObjects, comparison, callBack) {
           var adds, mappedScopeModelIds, removals, updates;
@@ -1318,7 +1358,7 @@ Nicholas McCready - https://twitter.com/nmccready
           mappedScopeModelIds = {};
           removals = [];
           updates = [];
-          return _async.each(scope.models, function(m) {
+          return onlyTheLast(_async.each(scope.models, function(m) {
             var child;
             if (m[idKey] != null) {
               mappedScopeModelIds[m[idKey]] = {};
@@ -1352,17 +1392,15 @@ Nicholas McCready - https://twitter.com/nmccready
                 if (mappedScopeModelIds[id] == null) {
                   return removals.push(c);
                 }
+              }).then(function() {
+                return {
+                  adds: adds,
+                  removals: removals,
+                  updates: updates
+                };
               });
             };
-          })(this)).then((function(_this) {
-            return function() {
-              return callBack({
-                adds: adds,
-                removals: removals,
-                updates: updates
-              });
-            };
-          })(this));
+          })(this)), callBack);
         }
       };
     }
@@ -4013,9 +4051,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         MarkersParentModel.prototype.pieceMeal = function(scope) {
           var doChunk;
           if (scope.$$destroyed || this.isClearing) {
-            return;
-          }
-          if (this.updateInProgress()) {
             return;
           }
           doChunk = _async.defaultChunkSize;

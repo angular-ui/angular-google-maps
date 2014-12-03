@@ -112,7 +112,6 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 
           pieceMeal: (scope) =>
             return if scope.$$destroyed or @isClearing
-            return if @updateInProgress()
             #only chunk if we are not super busy
             doChunk = _async.defaultChunkSize
 #            doChunk = if @existingPieces? then false else _async.defaultChunkSize
