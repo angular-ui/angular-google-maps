@@ -4014,6 +4014,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           } else {
             this.gMarkerManager = new MarkerManager(this.map);
           }
+          if (scope.models.length === 0) {
+            this.existingPieces = uiGmapPromise.resolve();
+            return;
+          }
           return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
             return function() {
               var promise;
@@ -4353,6 +4357,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.watchModels(scope);
             this.watchDestroy(scope);
           }
+          if (scope.models.length === 0) {
+            this.existingPieces = uiGmapPromise.resolve();
+            return;
+          }
           return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
             return function() {
               return _async.each(scope.models, function(model) {
@@ -4610,6 +4618,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (this.firstTime) {
             this.watchModels(scope);
             this.watchDestroy(scope);
+          }
+          if (scope.models.length === 0) {
+            this.existingPieces = uiGmapPromise.resolve();
+            return;
           }
           return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
             return function() {
@@ -5225,6 +5237,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.watchDestroy(scope);
           }
           this.setContentKeys(scope.models);
+          if (scope.models.length === 0) {
+            this.existingPieces = uiGmapPromise.resolve();
+            return;
+          }
           return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
             return function() {
               return _async.each(scope.models, function(model) {

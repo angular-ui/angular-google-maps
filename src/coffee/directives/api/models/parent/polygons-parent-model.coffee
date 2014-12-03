@@ -105,6 +105,11 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         if @firstTime
           @watchModels scope
           @watchDestroy scope
+
+        if scope.models.length == 0
+          @existingPieces = uiGmapPromise.resolve()
+          return
+
         @cleanOnResolve _async.waitOrGo @, =>
           _async.each scope.models, (model) =>
             @createChild(model, @gMap)

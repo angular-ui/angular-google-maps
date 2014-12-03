@@ -91,6 +91,10 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             else
               @gMarkerManager = new MarkerManager @map
 
+            if scope.models.length == 0
+              @existingPieces = uiGmapPromise.resolve()
+              return
+
             @cleanOnResolve _async.waitOrGo @, =>
               promise = _async.each scope.models, (model) =>
                 @newChildMarker(model, scope)
