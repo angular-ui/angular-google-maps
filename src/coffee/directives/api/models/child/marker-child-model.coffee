@@ -55,7 +55,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           destroy @
 
         @setMyScope 'all', @model, undefined, true
-        @createMarker @model
         $log.info @
 
 
