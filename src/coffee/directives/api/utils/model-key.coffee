@@ -15,10 +15,12 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         else #modelKey may use dot-notation
           GmapUtil.getPath(model, modelKey)
 
-      modelKeyComparison: (model1, model2) =>
-        if not @scope.coords? then throw 'No coords to compare!'
-        GmapUtil.equalCoords @scopeOrModelVal('coords',@scope, model1),
-          @scopeOrModelVal('coords',@scope, model2)
+      modelKeyComparison: (model1, model2, scope) =>
+        #passing scope as an argument allows for alternate scopes to be evaluates
+        #like windows uses markerScope if it has a marker directive as a parent
+        if not scope?.coords? then throw 'No coords to compare!'
+        GmapUtil.equalCoords @scopeOrModelVal('coords', scope, model1),
+          @scopeOrModelVal('coords', scope, model2)
 
       setIdKey: (scope) =>
         @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
