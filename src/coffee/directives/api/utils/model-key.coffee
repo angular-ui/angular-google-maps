@@ -16,10 +16,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           GmapUtil.getPath(model, modelKey)
 
       modelKeyComparison: (model1, model2) =>
-        scope = if @scope.coords? then @scope else @parentScope
-        if not scope? then throw 'No scope or parentScope set!'
-        GmapUtil.equalCoords @evalModelHandle(model1, scope.coords),
-          @evalModelHandle(model2, scope.coords)
+        if not @scope.coords? then throw 'No coords to compare!'
+        GmapUtil.equalCoords @scopeOrModelVal('coords',@scope, model1),
+          @scopeOrModelVal('coords',@scope, model2)
 
       setIdKey: (scope) =>
         @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
@@ -35,8 +34,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           return model[key]
         model
 
-      getProp: (propName, model) =>
-        @modelOrKey(model, propName)
+      getProp: (propName, scope, model) =>
+        @scopeOrModelVal(propName, scope, model)
 
       ###
       For the cases were watching a large object we only want to know the list of props

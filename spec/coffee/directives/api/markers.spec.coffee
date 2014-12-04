@@ -4,12 +4,10 @@ describe 'uiGmapMarkers (directive creation)', ->
   timeout = null
   GMarker = null
   digest = null
-  modelClicked = false
 
   afterEach ->
     digest = null
     GMarker.resetInstances()
-    modelClicked = false
 
   beforeEach ->
     digest = (fn) =>
@@ -19,7 +17,7 @@ describe 'uiGmapMarkers (directive creation)', ->
      
     @html = """
       <ui-gmap-google-map draggable="true" center="map.center" zoom="map.zoom">
-          <ui-gmap-markers models="items" coords="'self'" click="'onClick'" ></ui-gmap-markers>
+          <ui-gmap-markers models="items" coords="'self'" click='onClick' ></ui-gmap-markers>
       </ui-gmap-google-map>
     """
     @map =
@@ -127,25 +125,23 @@ describe 'uiGmapMarkers (directive creation)', ->
           model.latitude = update.latitude
           model.longitude = update.longitude
 
-  describe 'can eval key function', ->
-    it 'handles click function in model', (done) ->
+  describe 'can eval expressions', ->
+    it 'handles click expression to function', (done) ->
       scope = rootScope.$new()
-#      spyOn scope.items[1], 'onClick'
+      scope.onClick = ->
+      spyOn scope, 'onClick'
       _.extend scope, map: @map
 
-      toPush = {
-        id: 0,
-        latitude:47,
-        longitude: -27,
-        onClick: ->
-          modelClicked = true
-      }
+      toPush = {}
+      toPush.id = 0
+      toPush.latitude = 47
+      toPush.longitude = -27
       scope.items = [toPush]
 
       listener = GMarker.creationSubscribe @, (gMarker) ->
         _.delay ->
           window.google.maps.event.fireListener(gMarker,'click')
-          expect(modelClicked).toBeTruthy()
+          expect(scope.onClick).toHaveBeenCalled()
           done()
         , 250
 

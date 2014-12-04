@@ -18,7 +18,7 @@ describe 'ModelKey Tests', ->
     model1 = {coords: {latitude: 41, longitude: -27}}
     model2 = {coords: {latitude: 40, longitude: -27}}
     model3 = {coords: { type: 'Point', coordinates: [ -27, 40 ] }}
-    expect(@subject.modelKeyComparison).toThrow('No scope or parentScope set!')
+    expect(@subject.modelKeyComparison).toThrow('No coords to compare!')
     @scope.coords = 'coords'
     expect(@subject.modelKeyComparison(model1, model1)).toEqual(true)
     expect(@subject.modelKeyComparison(model1, model2)).toEqual(false)
