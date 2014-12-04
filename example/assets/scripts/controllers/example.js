@@ -604,6 +604,7 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
 
   $scope.staticMarker = {
     id: 0,
+    icon: 'assets/images/plane.png',
     coords: {
       latitude: 40.1451,
       longitude: -99.6680
