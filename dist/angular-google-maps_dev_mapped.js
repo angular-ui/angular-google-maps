@@ -1120,11 +1120,11 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         };
 
-        ModelKey.prototype.modelKeyComparison = function(model1, model2) {
-          if (this.scope.coords == null) {
+        ModelKey.prototype.modelKeyComparison = function(model1, model2, scope) {
+          if ((scope != null ? scope.coords : void 0) == null) {
             throw 'No coords to compare!';
           }
-          return GmapUtil.equalCoords(this.scopeOrModelVal('coords', this.scope, model1), this.scopeOrModelVal('coords', this.scope, model2));
+          return GmapUtil.equalCoords(this.scopeOrModelVal('coords', scope, model1), this.scopeOrModelVal('coords', scope, model2));
         };
 
         ModelKey.prototype.setIdKey = function(scope) {
@@ -1363,7 +1363,7 @@ Nicholas McCready - https://twitter.com/nmccready
                 return adds.push(m);
               } else {
                 child = childObjects.get(m[idKey]);
-                if (!comparison(m, child.clonedModel)) {
+                if (!comparison(m, child.clonedModel, scope)) {
                   return updates.push({
                     model: m,
                     child: child
