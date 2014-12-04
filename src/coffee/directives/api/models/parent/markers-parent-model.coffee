@@ -14,6 +14,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             super(scope, element, attrs, map)
             self = @
             @scope.markerModels = new PropMap()
+            @scope.markerModelsUpdate =
+              updateCtr: 0
 
             @$log.info @
             #assume do rebuild all is false and were lookging for a modelKey prop of id
@@ -103,6 +105,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 @modelsRendered = true
                 @gMarkerManager.draw()
                 @gMarkerManager.fit() if scope.fit
+                @scope.markerModelsUpdate.updateCtr += 1
               promise
 
           reBuildMarkers: (scope) =>
@@ -147,6 +150,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                       @gMarkerManager.draw()
                       scope.markerModels = @scope.markerModels #for other directives like windows
                       @gMarkerManager.fit() if scope.fit #note fit returns a promise
+                    @scope.markerModelsUpdate.updateCtr += 1
 
             else
               @inProgress = false
@@ -183,6 +187,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 delete @scope.markerModels
                 @gMarkerManager.clear() if @gMarkerManager?
                 @scope.markerModels = new PropMap()
+                @scope.markerModelsUpdate.updateCtr += 1
                 uiGmapPromise.resolve().then =>
                   @isClearing = false
 

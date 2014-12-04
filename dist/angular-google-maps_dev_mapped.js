@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.11 2014-12-03
+/*! angular-google-maps 2.0.11 2014-12-04
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1196,11 +1196,10 @@ Nicholas McCready - https://twitter.com/nmccready
           delta = now - this.lastUpdate;
           if (delta <= 250 || this.inProgress) {
             return true;
-          } else {
-            this.inProgress = true;
-            this.lastUpdate = now;
-            return false;
           }
+          this.inProgress = true;
+          this.lastUpdate = now;
+          return false;
         };
 
         ModelKey.prototype.cleanOnResolve = function(promise) {
@@ -3922,6 +3921,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, map);
           self = this;
           this.scope.markerModels = new PropMap();
+          this.scope.markerModelsUpdate = {
+            updateCtr: 0
+          };
           this.$log.info(this);
           this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : false;
           this.setIdKey(scope);
@@ -4031,8 +4033,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 _this.modelsRendered = true;
                 _this.gMarkerManager.draw();
                 if (scope.fit) {
-                  return _this.gMarkerManager.fit();
+                  _this.gMarkerManager.fit();
                 }
+                return _this.scope.markerModelsUpdate.updateCtr += 1;
               });
               return promise;
             };
@@ -4087,9 +4090,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       _this.gMarkerManager.draw();
                       scope.markerModels = _this.scope.markerModels;
                       if (scope.fit) {
-                        return _this.gMarkerManager.fit();
+                        _this.gMarkerManager.fit();
                       }
                     }
+                    return _this.scope.markerModelsUpdate.updateCtr += 1;
                   });
                 }));
               };
@@ -4140,6 +4144,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   _this.gMarkerManager.clear();
                 }
                 _this.scope.markerModels = new PropMap();
+                _this.scope.markerModelsUpdate.updateCtr += 1;
                 return uiGmapPromise.resolve().then(function() {
                   return _this.isClearing = false;
                 });
@@ -5096,12 +5101,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.watchModels = function(scope) {
-          return scope.$watch('models', (function(_this) {
+          var itemToWatch;
+          itemToWatch = this.markersScope != null ? 'markerModelsUpdate' : 'models';
+          return scope.$watch(itemToWatch, (function(_this) {
             return function(newValue, oldValue) {
               var doScratch;
               if (!_.isEqual(newValue, oldValue) || _this.firstWatchModels) {
                 _this.firstWatchModels = false;
-                if (_this.doRebuildAll || _this.doINeedToWipe(newValue)) {
+                if (_this.doRebuildAll || _this.doINeedToWipe(scope.models)) {
                   return _this.rebuildAll(scope, true, true);
                 } else {
                   doScratch = _this.windows.length === 0;
@@ -5192,7 +5199,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           modelsNotDefined = angular.isUndefined(this.linked.scope.models);
           if (modelsNotDefined && (this.markersScope === void 0 || (((_ref = this.markersScope) != null ? _ref.markerModels : void 0) === void 0 || ((_ref1 = this.markersScope) != null ? _ref1.models : void 0) === void 0))) {
-            this.$log.error('No models to create windows from! Need direct models or models derrived from markers!');
+            this.$log.error('No models to create windows from! Need direct models or models derived from markers!');
             return;
           }
           if (this.gMap != null) {
@@ -5249,6 +5256,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return _async.each(scope.models, function(model) {
                 var gMarker, _ref;
                 gMarker = hasGMarker ? (_ref = _this.getItem(scope, modelsPropToIterate, model[_this.idKey])) != null ? _ref.gMarker : void 0 : void 0;
+                if (!gMarker && _this.markersScope) {
+                  $log.error('Unable to get gMarker from markersScope!');
+                }
                 return _this.createWindow(model, gMarker, _this.gMap);
               });
             };
@@ -5302,6 +5312,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               };
             })(this));
           } else {
+            $log.debug('pieceMealWindows: rebuildAll');
             return this.rebuildAll(this.scope, true, true);
           }
         };
@@ -5332,7 +5343,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           };
           this.DEFAULTS = this.scopeOrModelVal(this.optionsKey, this.scope, model) || {};
           opts = this.createWindowOptions(gMarker, childScope, fakeElement.html(), this.DEFAULTS);
-          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, (_ref = this.markersScope) != null ? (_ref1 = _ref.markerModels.get(model[this.idKey])) != null ? _ref1.scope : void 0 : void 0, fakeElement, false, true, true);
+          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, (_ref = this.markersScope) != null ? (_ref1 = _ref.markerModels.get(model[this.idKey])) != null ? _ref1.scope : void 0 : void 0, fakeElement, false, true);
           if (model[this.idKey] == null) {
             this.$log.error('Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.');
             return;
