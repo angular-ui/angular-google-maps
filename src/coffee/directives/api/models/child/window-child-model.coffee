@@ -9,13 +9,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         constructor: (@model, @scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerScope, @element,
           @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
 
+          #where @model is a reference to model in the controller scope
+          #clonedModel is a copy for comparison
+          @clonedModel = _.clone @model, true
+
           @getGmarker = ->
             @markerScope?.getGMarker() if @markerScope?['getGMarker']?
 
           @listeners = []
           @createGWin()
 
-          @getGmarker().setClickable(true) if @getGmarker()?
+          maybeMarker = @getGmarker()
+          maybeMarker.setClickable(true) if maybeMarker?
 
           @watchElement()
           @watchOptions()
@@ -48,6 +53,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
               @createGWin(wasOpen)
 
         createGWin: (isOpen = false) =>
+          maybeMarker = @getGmarker()
           unless @gWin?
             defaults = {}
             if @opts?
@@ -57,7 +63,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             if @element
               @html = if _.isObject(@element) then @element.html() else @element
             _opts = if @scope.options then @scope.options else defaults
-            @opts = @createWindowOptions @getGmarker(), @markerScope or @scope, @html, _opts
+            @opts = @createWindowOptions maybeMarker, @markerScope or @scope, @html, _opts
 
           if @opts? and !@gWin
             if @opts.boxClass and (window.InfoBox and typeof window.InfoBox is 'function')
@@ -69,12 +75,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
             # Set visibility of marker back to what it was before opening the window
             @listeners.push google.maps.event.addListener @gWin, 'closeclick', =>
-              if @getGmarker()
-                @getGmarker().setAnimation @oldMarkerAnimation
+              if maybeMarker
+                maybeMarker.setAnimation @oldMarkerAnimation
                 if @markerIsVisibleAfterWindowClose
                   _.delay => #appears to help animation chrome bug
-                    @getGmarker().setVisible false
-                    @getGmarker().setVisible @markerIsVisibleAfterWindowClose
+                    maybeMarker.setVisible false
+                    maybeMarker.setVisible @markerIsVisibleAfterWindowClose
                   , 250
               @gWin.close()
               @model.show = false
@@ -116,34 +122,33 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         handleClick: (forceClick) =>
           return unless @gWin?
           # Show the window and hide the marker on click
-          marker = @getGmarker()
+          maybeMarker = @getGmarker()
           click = =>
             @createGWin() unless @gWin?
             @showWindow()
-            if marker?
-              @initialMarkerVisibility = marker.getVisible()
-              @oldMarkerAnimation = marker.getAnimation()
-              marker.setVisible @isIconVisibleOnClick
+            if maybeMarker?
+              @initialMarkerVisibility = maybeMarker.getVisible()
+              @oldMarkerAnimation = maybeMarker.getAnimation()
+              maybeMarker.setVisible @isIconVisibleOnClick
 
           click() if forceClick
-          if marker
-            @listeners = @listeners.concat @setEvents marker, {events: {click: click}}, @model
+          if maybeMarker
+            @listeners = @listeners.concat @setEvents maybeMarker, {events: {click: click}}, @model
 
         showWindow: =>
           if @gWin?
             show = =>
-              @scope.$evalAsync =>
-                unless @gWin.isOpen()
-                  maybeMarker = @getGmarker()
-                  pos = @gWin.getPosition() if @gWin? and @gWin.getPosition?
-                  pos = maybeMarker.getPosition() if maybeMarker
-                  maybeAnchor = @getGmarker()
-                  return unless pos
-                  @gWin.open @mapCtrl, maybeAnchor
-                  isOpen = @gWin.isOpen()
-                  @scope.$evalAsync =>
-                    ChromeFixes.maybeRepaint @gWin.content
-                  @model.show = isOpen if @model.show != isOpen
+              # @scope.$evalAsync =>
+              unless @gWin.isOpen()
+                maybeMarker = @getGmarker()
+                pos = @gWin.getPosition() if @gWin? and @gWin.getPosition?
+                pos = maybeMarker.getPosition() if maybeMarker
+                return unless pos
+                @gWin.open @mapCtrl, maybeMarker
+                isOpen = @gWin.isOpen()
+                # @scope.$evalAsync =>
+                #   ChromeFixes.maybeRepaint @gWin.content
+                @model.show = isOpen if @model.show != isOpen
 
             if @scope.templateUrl
               $http.get(@scope.templateUrl, { cache: $templateCache }).then (content) =>
@@ -168,8 +173,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @gWin.close() if @gWin? and @gWin.isOpen()
 
         getLatestPosition: (overridePos) =>
-          if @gWin? and @getGmarker()? and not overridePos
-            @gWin.setPosition @getGmarker().getPosition()
+          maybeMarker = @getGmarker()
+          if @gWin? and maybeMarker? and not overridePos
+            @gWin.setPosition maybeMarker.getPosition()
           else
             @gWin.setPosition overridePos if overridePos
 

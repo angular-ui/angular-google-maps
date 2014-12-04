@@ -73,10 +73,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         delta = now - @lastUpdate
         if delta <= 250 or @inProgress
           return true
-        else
-          @inProgress = true
-          @lastUpdate = now
-          return false
+        @inProgress = true
+        @lastUpdate = now
+        return false
 
       cleanOnResolve: (promise) =>
         promise.catch =>

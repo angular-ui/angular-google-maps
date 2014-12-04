@@ -28,7 +28,8 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
 
 .controller("ExampleController",['$scope', '$timeout', 'uiGmapLogger', '$http', 'rndAddToLatLon','uiGmapGoogleMapApi'
     , function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
-  $log.doLog = true
+  $log.doLog = true;
+//  $log.currentLevel = $log.LEVELS.debug;
 
   GoogleMapApi.then(function(maps) {
     $scope.googleVersion = maps.version;
