@@ -84,8 +84,10 @@
                     templateParameter="map.templatedInfoWindow.templateParameter" ng-cloak>
     </ui-gmap-window>
 
-    <ui-gmap-marker coords="staticMarker.coords" options="staticMarker.options" events="staticMarker.events" idKey="staticMarker.id">
-    </ui-gmap-marker>
+        <ui-gmap-marker
+          icon="staticMarker.icon"
+          coords="staticMarker.coords" options="staticMarker.options" events="staticMarker.events" idKey="staticMarker.id">
+        </ui-gmap-marker>
 
     <ui-gmap-markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="onMarkerClicked"
                 doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">

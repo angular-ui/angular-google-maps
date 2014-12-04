@@ -2120,15 +2120,13 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;(function() {
   angular.module("uiGmapgoogle-maps.directives.api.utils").factory("uiGmapChromeFixes", [
-    function() {
+    '$timeout', function($timeout) {
       return {
         maybeRepaint: function(el) {
-          var od;
           if (el) {
-            od = el.style.display;
-            el.style.display = 'none';
-            return _.defer(function() {
-              return el.style.display = od;
+            el.style.opacity = 0.9;
+            return $timeout(function() {
+              return el.style.opacity = 1;
             });
           }
         }
@@ -3257,6 +3255,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             }
             this.handleClick(((_ref = this.scope) != null ? (_ref1 = _ref.options) != null ? _ref1.forceClick : void 0 : void 0) || isOpen);
             this.doShow();
+            this.listeners.push(google.maps.event.addListener(this.gWin, 'domready', function() {
+              return ChromeFixes.maybeRepaint(this.content);
+            }));
             return this.listeners.push(google.maps.event.addListener(this.gWin, 'closeclick', (function(_this) {
               return function() {
                 if (maybeMarker) {
