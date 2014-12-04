@@ -7,10 +7,11 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @include GmapUtil
         @include EventsHelper
         constructor: (@model, @scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerScope, @element,
+          @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
+
           #where @model is a reference to model in the controller scope
           #clonedModel is a copy for comparison
           @clonedModel = _.clone @model, true
-          @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true, @trackModel = false) ->
 
           @getGmarker = ->
             @markerScope?.getGMarker() if @markerScope?['getGMarker']?

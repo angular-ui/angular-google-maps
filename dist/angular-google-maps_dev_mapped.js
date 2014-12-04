@@ -3151,7 +3151,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         WindowChildModel.include(EventsHelper);
 
-        function WindowChildModel(model, scope, opts, isIconVisibleOnClick, mapCtrl, markerScope, element, clonedModel, needToManualDestroy, markerIsVisibleAfterWindowClose, trackModel) {
+        function WindowChildModel(model, scope, opts, isIconVisibleOnClick, mapCtrl, markerScope, element, needToManualDestroy, markerIsVisibleAfterWindowClose) {
           this.model = model;
           this.scope = scope;
           this.opts = opts;
@@ -3159,10 +3159,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.mapCtrl = mapCtrl;
           this.markerScope = markerScope;
           this.element = element;
-          this.clonedModel = clonedModel != null ? clonedModel : _.clone(this.model, true);
           this.needToManualDestroy = needToManualDestroy != null ? needToManualDestroy : false;
           this.markerIsVisibleAfterWindowClose = markerIsVisibleAfterWindowClose != null ? markerIsVisibleAfterWindowClose : true;
-          this.trackModel = trackModel != null ? trackModel : false;
           this.destroy = __bind(this.destroy, this);
           this.remove = __bind(this.remove, this);
           this.getLatestPosition = __bind(this.getLatestPosition, this);
@@ -3175,6 +3173,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchElement = __bind(this.watchElement, this);
           this.watchAndDoShow = __bind(this.watchAndDoShow, this);
           this.doShow = __bind(this.doShow, this);
+          this.clonedModel = _.clone(this.model, true);
           this.getGmarker = function() {
             var _ref, _ref1;
             if (((_ref = this.markerScope) != null ? _ref['getGMarker'] : void 0) != null) {
