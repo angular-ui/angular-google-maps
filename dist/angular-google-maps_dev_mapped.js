@@ -3152,6 +3152,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         WindowChildModel.include(EventsHelper);
 
         function WindowChildModel(model, scope, opts, isIconVisibleOnClick, mapCtrl, markerScope, element, needToManualDestroy, markerIsVisibleAfterWindowClose) {
+          var maybeMarker;
           this.model = model;
           this.scope = scope;
           this.opts = opts;
@@ -3182,8 +3183,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           };
           this.listeners = [];
           this.createGWin();
-          if (this.getGmarker() != null) {
-            this.getGmarker().setClickable(true);
+          maybeMarker = this.getGmarker();
+          if (maybeMarker != null) {
+            maybeMarker.setClickable(true);
           }
           this.watchElement();
           this.watchOptions();
@@ -3233,10 +3235,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.createGWin = function(isOpen) {
-          var defaults, _opts, _ref, _ref1;
+          var defaults, maybeMarker, _opts, _ref, _ref1;
           if (isOpen == null) {
             isOpen = false;
           }
+          maybeMarker = this.getGmarker();
           if (this.gWin == null) {
             defaults = {};
             if (this.opts != null) {
@@ -3249,7 +3252,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               this.html = _.isObject(this.element) ? this.element.html() : this.element;
             }
             _opts = this.scope.options ? this.scope.options : defaults;
-            this.opts = this.createWindowOptions(this.getGmarker(), this.markerScope || this.scope, this.html, _opts);
+            this.opts = this.createWindowOptions(maybeMarker, this.markerScope || this.scope, this.html, _opts);
           }
           if ((this.opts != null) && !this.gWin) {
             if (this.opts.boxClass && (window.InfoBox && typeof window.InfoBox === 'function')) {
@@ -3261,12 +3264,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.doShow();
             return this.listeners.push(google.maps.event.addListener(this.gWin, 'closeclick', (function(_this) {
               return function() {
-                if (_this.getGmarker()) {
-                  _this.getGmarker().setAnimation(_this.oldMarkerAnimation);
+                if (maybeMarker) {
+                  maybeMarker.setAnimation(_this.oldMarkerAnimation);
                   if (_this.markerIsVisibleAfterWindowClose) {
                     _.delay(function() {
-                      _this.getGmarker().setVisible(false);
-                      return _this.getGmarker().setVisible(_this.markerIsVisibleAfterWindowClose);
+                      maybeMarker.setVisible(false);
+                      return maybeMarker.setVisible(_this.markerIsVisibleAfterWindowClose);
                     }, 250);
                   }
                 }
@@ -3324,29 +3327,29 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.handleClick = function(forceClick) {
-          var click, marker;
+          var click, maybeMarker;
           if (this.gWin == null) {
             return;
           }
-          marker = this.getGmarker();
+          maybeMarker = this.getGmarker();
           click = (function(_this) {
             return function() {
               if (_this.gWin == null) {
                 _this.createGWin();
               }
               _this.showWindow();
-              if (marker != null) {
-                _this.initialMarkerVisibility = marker.getVisible();
-                _this.oldMarkerAnimation = marker.getAnimation();
-                return marker.setVisible(_this.isIconVisibleOnClick);
+              if (maybeMarker != null) {
+                _this.initialMarkerVisibility = maybeMarker.getVisible();
+                _this.oldMarkerAnimation = maybeMarker.getAnimation();
+                return maybeMarker.setVisible(_this.isIconVisibleOnClick);
               }
             };
           })(this);
           if (forceClick) {
             click();
           }
-          if (marker) {
-            return this.listeners = this.listeners.concat(this.setEvents(marker, {
+          if (maybeMarker) {
+            return this.listeners = this.listeners.concat(this.setEvents(maybeMarker, {
               events: {
                 click: click
               }
@@ -3359,7 +3362,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (this.gWin != null) {
             show = (function(_this) {
               return function() {
-                var isOpen, maybeAnchor, maybeMarker, pos;
+                var isOpen, maybeMarker, pos;
                 if (!_this.gWin.isOpen()) {
                   maybeMarker = _this.getGmarker();
                   if ((_this.gWin != null) && (_this.gWin.getPosition != null)) {
@@ -3368,11 +3371,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   if (maybeMarker) {
                     pos = maybeMarker.getPosition();
                   }
-                  maybeAnchor = _this.getGmarker();
                   if (!pos) {
                     return;
                   }
-                  _this.gWin.open(_this.mapCtrl, maybeAnchor);
+                  _this.gWin.open(_this.mapCtrl, maybeMarker);
                   isOpen = _this.gWin.isOpen();
                   if (_this.model.show !== isOpen) {
                     return _this.model.show = isOpen;
@@ -3416,8 +3418,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.getLatestPosition = function(overridePos) {
-          if ((this.gWin != null) && (this.getGmarker() != null) && !overridePos) {
-            return this.gWin.setPosition(this.getGmarker().getPosition());
+          var maybeMarker;
+          maybeMarker = this.getGmarker();
+          if ((this.gWin != null) && (maybeMarker != null) && !overridePos) {
+            return this.gWin.setPosition(maybeMarker.getPosition());
           } else {
             if (overridePos) {
               return this.gWin.setPosition(overridePos);
