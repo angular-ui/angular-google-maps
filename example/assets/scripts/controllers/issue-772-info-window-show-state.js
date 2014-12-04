@@ -6,7 +6,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
     zoom: 4,
     bounds: {}
   };
-  $scope.options = {scrollwheel: false};
+  $scope.options = {scrollwheel: false, draggable: true};
   var createRandomMarker = function (i, bounds, idKey) {
     var lat_min = bounds.southwest.latitude,
     lat_range = bounds.northeast.latitude - lat_min,
@@ -52,8 +52,16 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
 
   $scope.markersEvents = {
     mouseover: function (gMarker, eventName, model) {
+      console.debug('mouseover');
       model.show = true;
-      $scope.$apply();
+//      $scope.$apply();
     }
   };
+
+  $scope.shownMarkers = function(){
+    return _.filter($scope.randomMarkers, function(m){
+      return m.show;
+    }).length;
+  };
+
 });

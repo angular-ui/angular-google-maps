@@ -22,7 +22,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
       wrapped.promise
 
-    onlyTheLast = (->
+    onlyTheLast = do ->
       promises = []
       (p, cb) ->
         promise = cancelable p
@@ -35,7 +35,6 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
                   promise.cancel()
             cb value
             promises = []
-    )()
 
     figureOutState: (idKey, scope, childObjects, comparison, callBack)->
       adds = [] #models to add or update
@@ -51,7 +50,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
             else
               child = childObjects.get(m[idKey])
               #we're UPDATE in this case
-              unless comparison m, child.model
+              unless comparison m, child.clonedModel
                 updates.push
                   model: m
                   child: child

@@ -21,7 +21,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
       constructor: (scope, @model, @keys, @gMap, @defaults, @doClick, @gMarkerManager, @doDrawSelf = true,
         @trackModel = true, @needRedraw = false) ->
-
+        #where @model is a reference to model in the controller scope
+        #clonedModel is a copy for comparison
+        @clonedModel = _.clone @model,true
         @deferred = uiGmapPromise.defer()
         _.each @keys, (v, k) =>
           @[k + 'Key'] = if _.isFunction @keys[k] then @keys[k]() else @keys[k]
@@ -76,7 +78,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @needRedraw = true
 
       updateModel: (model) =>
-        @setMyScope 'all', _.clone(model,true), @model
+        @cloneModel = _.clone(model,true)
+        @setMyScope 'all', model, @model
 
       renderGMarker: (doDraw = true, validCb) ->
         #doDraw is to only update the marker on the map when it is really ready
