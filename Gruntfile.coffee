@@ -22,6 +22,7 @@ module.exports = (grunt) ->
     'grunt-debug-task'
     'grunt-curl'
     'grunt-verbosity'
+    'grunt-release'
     ].forEach (gruntLib) ->
       grunt.loadNpmTasks gruntLib
 
@@ -81,9 +82,9 @@ module.exports = (grunt) ->
   # and running a webserver on port 3100 with livereload. Web page is opened
   # automatically in the default browser.
 
-  grunt.registerTask 'bump-@', ['bump-only', 'mappAll', 'bump-commit']
-  grunt.registerTask 'bump-@-minor', ['bump-only:minor', 'mappAll', 'bump-commit']
-  grunt.registerTask 'bump-@-major', ['bump-only:major', 'mappAll', 'bump-commit']
+  grunt.registerTask 'bump-@', ['bump-only', 'mappAll', 'bump-commit', 'release']
+  grunt.registerTask 'bump-@-minor', ['bump-only:minor', 'mappAll', 'bump-commit', 'release']
+  grunt.registerTask 'bump-@-major', ['bump-only:major', 'mappAll', 'bump-commit', 'release']
 
   exampleOpenTasks = []
   _(allExamplesOpen).each (v, key) ->
