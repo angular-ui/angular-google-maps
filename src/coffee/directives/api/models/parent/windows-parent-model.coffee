@@ -190,7 +190,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                 @interpolateContent(@linked.element.html(), model)
             @DEFAULTS = @scopeOrModelVal(@optionsKey, @scope, model) or {}
             opts = @createWindowOptions gMarker, childScope, fakeElement.html(), @DEFAULTS
-            child = new WindowChildModel model, childScope, opts, @isIconVisibleOnClick, gMap, @markersScope?.markerModels.get(model[@idKey])?.scope, fakeElement, false, true
+            child = new WindowChildModel model, childScope, opts, @isIconVisibleOnClick, gMap, @markersScope?.markerModels.get(model[@idKey])?.scope, fakeElement, false, true, true
 
             unless model[@idKey]?
               @$log.error('Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.')

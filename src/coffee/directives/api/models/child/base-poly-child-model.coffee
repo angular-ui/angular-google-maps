@@ -7,6 +7,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
         @include GmapUtil
         @include EventsHelper
         constructor: (@scope, @attrs, @map, @defaults, @model) ->
+          #where @model is a reference to model in the controller scope
+          #clonedModel is a copy for comparison
+          @clonedModel = _.clone @model, true
+
           @isDragging = false
           @internalEvents =
             dragend: =>

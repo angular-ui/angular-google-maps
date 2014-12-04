@@ -169,7 +169,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             keys = {}
             _.each IMarker.scopeKeys, (v,k) ->
               keys[k] = scope[k]
-            child = new MarkerChildModel(childScope, _.clone(model,true), keys, @map, @DEFAULTS,
+            child = new MarkerChildModel(childScope, model, keys, @map, @DEFAULTS,
               @doClick, @gMarkerManager, doDrawSelf = false) #this is managed so child is not drawing itself
             @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
             child

@@ -51,7 +51,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
             else
               child = childObjects.get(m[idKey])
               #we're UPDATE in this case
-              unless comparison m, child.model
+              unless comparison m, child.clonedModel
                 updates.push
                   model: m
                   child: child

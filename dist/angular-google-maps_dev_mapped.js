@@ -1366,7 +1366,7 @@ Nicholas McCready - https://twitter.com/nmccready
                 return adds.push(m);
               } else {
                 child = childObjects.get(m[idKey]);
-                if (!comparison(m, child.model)) {
+                if (!comparison(m, child.clonedModel)) {
                   return updates.push({
                     model: m,
                     child: child
@@ -2413,6 +2413,7 @@ Nicholas McCready - https://twitter.com/nmccready
             this.defaults = defaults;
             this.model = model;
             this.clean = __bind(this.clean, this);
+            this.clonedModel = _.clone(this.model, true);
             this.isDragging = false;
             this.internalEvents = {
               dragend: (function(_this) {
@@ -2754,6 +2755,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.updateModel = __bind(this.updateModel, this);
           this.handleModelChanges = __bind(this.handleModelChanges, this);
           this.destroy = __bind(this.destroy, this);
+          this.clonedModel = _.clone(this.model, true);
           this.deferred = uiGmapPromise.defer();
           _.each(this.keys, (function(_this) {
             return function(v, k) {
@@ -2828,7 +2830,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.updateModel = function(model) {
-          return this.setMyScope('all', _.clone(model, true), this.model);
+          this.cloneModel = _.clone(model, true);
+          return this.setMyScope('all', model, this.model);
         };
 
         MarkerChildModel.prototype.renderGMarker = function(doDraw, validCb) {
@@ -3148,7 +3151,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         WindowChildModel.include(EventsHelper);
 
-        function WindowChildModel(model, scope, opts, isIconVisibleOnClick, mapCtrl, markerScope, element, needToManualDestroy, markerIsVisibleAfterWindowClose) {
+        function WindowChildModel(model, scope, opts, isIconVisibleOnClick, mapCtrl, markerScope, element, clonedModel, needToManualDestroy, markerIsVisibleAfterWindowClose, trackModel) {
           this.model = model;
           this.scope = scope;
           this.opts = opts;
@@ -3156,8 +3159,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.mapCtrl = mapCtrl;
           this.markerScope = markerScope;
           this.element = element;
+          this.clonedModel = clonedModel != null ? clonedModel : _.clone(this.model, true);
           this.needToManualDestroy = needToManualDestroy != null ? needToManualDestroy : false;
           this.markerIsVisibleAfterWindowClose = markerIsVisibleAfterWindowClose != null ? markerIsVisibleAfterWindowClose : true;
+          this.trackModel = trackModel != null ? trackModel : false;
           this.destroy = __bind(this.destroy, this);
           this.remove = __bind(this.remove, this);
           this.getLatestPosition = __bind(this.getLatestPosition, this);
@@ -4113,7 +4118,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           _.each(IMarker.scopeKeys, function(v, k) {
             return keys[k] = scope[k];
           });
-          child = new MarkerChildModel(childScope, _.clone(model, true), keys, this.map, this.DEFAULTS, this.doClick, this.gMarkerManager, doDrawSelf = false);
+          child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gMarkerManager, doDrawSelf = false);
           this.scope.markerModels.put(model[this.idKey], child);
           return child;
         };
@@ -5324,7 +5329,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           };
           this.DEFAULTS = this.scopeOrModelVal(this.optionsKey, this.scope, model) || {};
           opts = this.createWindowOptions(gMarker, childScope, fakeElement.html(), this.DEFAULTS);
-          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, (_ref = this.markersScope) != null ? (_ref1 = _ref.markerModels.get(model[this.idKey])) != null ? _ref1.scope : void 0 : void 0, fakeElement, false, true);
+          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, (_ref = this.markersScope) != null ? (_ref1 = _ref.markerModels.get(model[this.idKey])) != null ? _ref1.scope : void 0 : void 0, fakeElement, false, true, true);
           if (model[this.idKey] == null) {
             this.$log.error('Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.');
             return;
