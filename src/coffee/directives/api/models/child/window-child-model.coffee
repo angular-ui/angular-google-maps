@@ -74,6 +74,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @doShow()
 
             # Set visibility of marker back to what it was before opening the window
+            @listeners.push google.maps.event.addListener @gWin, 'domready', ->
+              ChromeFixes.maybeRepaint @content
+
             @listeners.push google.maps.event.addListener @gWin, 'closeclick', =>
               if maybeMarker
                 maybeMarker.setAnimation @oldMarkerAnimation
@@ -138,7 +141,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         showWindow: =>
           if @gWin?
             show = =>
-              # @scope.$evalAsync =>
               unless @gWin.isOpen()
                 maybeMarker = @getGmarker()
                 pos = @gWin.getPosition() if @gWin? and @gWin.getPosition?
@@ -146,8 +148,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
                 return unless pos
                 @gWin.open @mapCtrl, maybeMarker
                 isOpen = @gWin.isOpen()
-                # @scope.$evalAsync =>
-                #   ChromeFixes.maybeRepaint @gWin.content
                 @model.show = isOpen if @model.show != isOpen
 
             if @scope.templateUrl
