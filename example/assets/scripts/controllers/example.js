@@ -317,6 +317,9 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
         }
       },
       events: {
+//This turns of events and hits against scope from gMap events this does speed things up
+// adding a blacklist for watching your controller scope should even be better
+//        blacklist: ['drag', 'dragend','dragstart','zoom_changed', 'center_changed'],
         tilesloaded: function (map, eventName, originalEventArgs) {
         },
         click: function (mapModel, eventName, originalEventArgs) {
