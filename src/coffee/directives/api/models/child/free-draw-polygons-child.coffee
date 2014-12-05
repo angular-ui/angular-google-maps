@@ -1,7 +1,4 @@
 ###
-angular-google-maps
-https://github.com/nlaplante/angular-google-maps
-
 @authors
 Nicholas McCready - https://twitter.com/nmccready
 Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawing-freehand  , &
@@ -9,7 +6,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 ###
 angular.module('uiGmapgoogle-maps.directives.api.models.child')
 .factory 'uiGmapDrawFreeHandChildModel', ['uiGmapLogger', '$q', ($log, $q) ->
-  drawFreeHand = (map, @polys, enable) ->
+  drawFreeHand = (map, polys, enable) ->
     poly = new google.maps.Polyline
       map: map
       clickable: false
@@ -30,15 +27,24 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
     undefined
 
-  freeHandMgr = (@map) ->
+  freeHandMgr = (@map, defaultOptions) ->
+    unless defaultOptions
+      defaultOptions =
+        draggable: true
+        zoomControl: true
+        scrollwheel: true
+        disableDoubleClickZoom: true
     #freeze map to make drawing easy (need to drag to draw .. instead of moving the map)
     enable = =>
       @deferred?.resolve()
-      @map.setOptions @oldOptions
+      _.defer =>
+        @map.setOptions _.extend @oldOptions, defaultOptions
 
     disableMap = =>
       $log.info 'disabling map move'
       @oldOptions = map.getOptions()
+      @oldOptions.center = map.getCenter()
+
       @map.setOptions
         draggable: false
         zoomControl: false

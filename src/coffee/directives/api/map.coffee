@@ -1,14 +1,14 @@
-angular.module("uiGmapgoogle-maps.directives.api")
-.factory "uiGmapMap", [
-  "$timeout", '$q',"uiGmapLogger", "uiGmapGmapUtil", "uiGmapBaseObject",
-  "uiGmapCtrlHandle", 'uiGmapIsReady', "uiGmapuuid",
-  "uiGmapExtendGWin", "uiGmapExtendMarkerClusterer",
-  "uiGmapGoogleMapsUtilV3",'uiGmapGoogleMapApi',
+angular.module('uiGmapgoogle-maps.directives.api')
+.factory 'uiGmapMap', [
+  '$timeout', '$q','uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapBaseObject',
+  'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid',
+  'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer',
+  'uiGmapGoogleMapsUtilV3','uiGmapGoogleMapApi',
   ($timeout,$q, $log, GmapUtil, BaseObject,
     CtrlHandle, IsReady, uuid,
     ExtendGWin, ExtendMarkerClusterer,
     GoogleMapsUtilV3,GoogleMapApi) ->
-      "use strict"
+      'use strict'
       DEFAULTS = undefined
 
       initializeItems = [GoogleMapsUtilV3, ExtendGWin, ExtendMarkerClusterer]
@@ -30,24 +30,24 @@ angular.module("uiGmapgoogle-maps.directives.api")
               $scope.map
             retCtrl = _.extend @, ctrlObj
             retCtrl
-          @controller = ["$scope", ctrlFn ]
+          @controller = ['$scope', ctrlFn ]
           self = @
-        restrict: "EMA"
+        restrict: 'EMA'
         transclude: true
         replace: false
         #priority: 100,
         template: '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>'
 
         scope:
-          center: "=" # required
-          zoom: "=" # required
-          dragging: "=" # optional
-          control: "=" # optional
-          options: "=" # optional
-          events: "=" # optional
-          eventOpts: "=" # optional
-          styles: "=" # optional
-          bounds: "="
+          center: '=' # required
+          zoom: '=' # required
+          dragging: '=' # optional
+          control: '=' # optional
+          options: '=' # optional
+          events: '=' # optional
+          eventOpts: '=' # optional
+          styles: '=' # optional
+          bounds: '='
           update: '=' # optional
 
         link: (scope, element, attrs) =>
@@ -70,13 +70,13 @@ angular.module("uiGmapgoogle-maps.directives.api")
             # Center property must be specified and provide lat &
             # lng properties
             if not @validateCoords(scope.center)
-              $log.error "angular-google-maps: could not find a valid center property"
+              $log.error 'angular-google-maps: could not find a valid center property'
               return
             unless angular.isDefined(scope.zoom)
-              $log.error "angular-google-maps: map zoom property not set"
+              $log.error 'angular-google-maps: map zoom property not set'
               return
             el = angular.element(element)
-            el.addClass "angular-google-map"
+            el.addClass 'angular-google-map'
 
             # Parse options
             opts =
@@ -97,7 +97,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
               zoom: scope.zoom
               bounds: scope.bounds
 
-            _m = new google.maps.Map(el.find("div")[1], mapOptions)
+            _m = new google.maps.Map(el.find('div')[1], mapOptions)
             _m['uiGmap_id'] = uuid.generate()
 
             dragging = false
@@ -106,83 +106,93 @@ angular.module("uiGmapgoogle-maps.directives.api")
               scope.deferred.resolve _m
               resolveSpawned()
 
-            google.maps.event.addListener _m, "dragstart", =>
-              unless scope.update?.lazy
-                dragging = true
-                scope.$evalAsync (s) ->
-                  s.dragging = dragging if s.dragging?
+            disabledEvents =
+              if attrs.events and scope.events?.blacklist?
+                scope.events.blacklist
+              else []
+            if  _.isString disabledEvents
+              disabledEvents = [disabledEvents]
 
-            google.maps.event.addListener _m, "dragend", =>
-              unless scope.update?.lazy
-                dragging = false
-                scope.$evalAsync (s) ->
-                  s.dragging = dragging if s.dragging?
+            unless _.contains disabledEvents, 'all'
+              unless _.contains disabledEvents, 'dragstart'
+                google.maps.event.addListener _m, 'dragstart', =>
+                  unless scope.update?.lazy
+                    dragging = true
+                    scope.$evalAsync (s) ->
+                      s.dragging = dragging if s.dragging?
+              unless _.contains disabledEvents,'dragend'
+                google.maps.event.addListener _m, 'dragend', =>
+                  unless scope.update?.lazy
+                    dragging = false
+                    scope.$evalAsync (s) ->
+                      s.dragging = dragging if s.dragging?
 
+              unless _.contains disabledEvents, 'drag'
+                google.maps.event.addListener _m, 'drag', =>
+                  unless scope.update?.lazy
+                    c = _m.center
+                    $timeout  ->
+                      s = scope
+                      if angular.isDefined(s.center.type)
+                        s.center.coordinates[1] = c.lat()
+                        s.center.coordinates[0] = c.lng()
+                      else
+                        s.center.latitude = c.lat()
+                        s.center.longitude = c.lng()
+                    , scope.eventOpts?.debounce?.debounce?.dragMs
 
-            google.maps.event.addListener _m, "drag", =>
-              unless scope.update?.lazy
-                c = _m.center
-                $timeout  ->
-                  s = scope
-                  if angular.isDefined(s.center.type)
-                    s.center.coordinates[1] = c.lat()
-                    s.center.coordinates[0] = c.lng()
-                  else
-                    s.center.latitude = c.lat()
-                    s.center.longitude = c.lng()
-                , scope.eventOpts?.debounce?.debounce?.dragMs
+              unless _.contains disabledEvents, 'zoom_changed'
+                google.maps.event.addListener _m, 'zoom_changed', =>
+                  unless scope.update?.lazy
+                    if scope.zoom isnt _m.zoom
+                      $timeout ->
+                        scope.zoom = _m.zoom
+                      , scope.eventOpts?.debounce?.zoomMs
 
+              unless _.contains disabledEvents, 'center_changed'
+                settingCenterFromScope = false
+                google.maps.event.addListener _m, 'center_changed', =>
+                  unless scope.update?.lazy
+                    c = _m.center
+                    return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
+                    $timeout ->
+                      s = scope
+                      unless _m.dragging
+                        if angular.isDefined(s.center.type)
+                          s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
+                          s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
+                        else
+                          s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
+                          s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
+                    , scope.eventOpts?.debounce?.centerMs
 
-            google.maps.event.addListener _m, "zoom_changed", =>
-              unless scope.update?.lazy
-                if scope.zoom isnt _m.zoom
-                  $timeout ->
-                    scope.zoom = _m.zoom
-                  , scope.eventOpts?.debounce?.zoomMs
+              unless _.contains disabledEvents, 'idle'
+                google.maps.event.addListener _m, 'idle', =>
+                  b = _m.getBounds()
+                  ne = b.getNorthEast()
+                  sw = b.getSouthWest()
+                  scope.$evalAsync (s)  ->
+                    if s.update?.lazy
+                      # update center
+                      c = _m.center
+                      if angular.isDefined(s.center.type)
+                        s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
+                        s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
+                      else
+                        s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
+                        s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
 
-            settingCenterFromScope = false
-            google.maps.event.addListener _m, "center_changed", =>
-              unless scope.update?.lazy
-                c = _m.center
-                return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
-                $timeout ->
-                  s = scope
-                  unless _m.dragging
-                    if angular.isDefined(s.center.type)
-                      s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
-                      s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
-                    else
-                      s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
-                      s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
-                , scope.eventOpts?.debounce?.centerMs
+                    if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
+                      s.bounds.northeast =
+                        latitude: ne.lat()
+                        longitude: ne.lng()
 
+                      s.bounds.southwest =
+                        latitude: sw.lat()
+                        longitude: sw.lng()
 
-            google.maps.event.addListener _m, "idle", =>
-              b = _m.getBounds()
-              ne = b.getNorthEast()
-              sw = b.getSouthWest()
-              scope.$evalAsync (s)  ->
-                if s.update?.lazy
-                  # update center
-                  c = _m.center
-                  if angular.isDefined(s.center.type)
-                    s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
-                    s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
-                  else
-                    s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
-                    s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
-
-                if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined
-                  s.bounds.northeast =
-                    latitude: ne.lat()
-                    longitude: ne.lng()
-
-                  s.bounds.southwest =
-                    latitude: sw.lat()
-                    longitude: sw.lng()
-
-                s.zoom = _m.zoom
-                scope.idleAndZoomChanged = !scope.idleAndZoomChanged
+                    s.zoom = _m.zoom
+                    scope.idleAndZoomChanged = !scope.idleAndZoomChanged
 
             if angular.isDefined(scope.events) and scope.events isnt null and angular.isObject(scope.events)
               getEventHandler = (eventName) ->
@@ -204,7 +214,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
             if attrs.control? and scope.control?
               scope.control.refresh = (maybeCoords) =>
                 return unless _m?
-                google.maps.event.trigger _m, "resize" #actually refresh
+                google.maps.event.trigger _m, 'resize' #actually refresh
                 if maybeCoords?.latitude? and maybeCoords?.latitude?
                   coords = @getCoords(maybeCoords)
                   if @isTrue(attrs.pan)
@@ -218,7 +228,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
                 mapOptions
 
             # Update map when center coordinates change
-            scope.$watch "center", ((newValue, oldValue) =>
+            scope.$watch 'center', ((newValue, oldValue) =>
               coords = @getCoords newValue
               return  if coords.lat() is _m.center.lat() and coords.lng() is _m.center.lng()
               settingCenterFromScope = true
@@ -233,13 +243,13 @@ angular.module("uiGmapgoogle-maps.directives.api")
               settingCenterFromScope = false
             ), true
 
-            scope.$watch "zoom", (newValue, oldValue) =>
+            scope.$watch 'zoom', (newValue, oldValue) =>
               return  if _.isEqual(newValue,oldValue)
               $timeout  ->
                 _m.setZoom newValue
               , 0, false # use $timeout as a simple wrapper for setTimeout without calling $apply
 
-            scope.$watch "bounds", (newValue, oldValue) ->
+            scope.$watch 'bounds', (newValue, oldValue) ->
               return  if newValue is oldValue
               if !newValue.northeast.latitude? or !newValue.northeast.longitude? or !newValue.southwest.latitude? or !newValue.southwest.longitude?
                 $log.error "Invalid map bounds for new value: #{JSON.stringify newValue}"

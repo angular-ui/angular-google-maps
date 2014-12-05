@@ -13,5 +13,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
       @DEFAULTS = {}
       if scope.options?
         @DEFAULTS = scope.options
-  IWindowParentModel
+
+    getItem: (scope, modelsPropToIterate, index) ->
+      if modelsPropToIterate == 'models'
+        return scope[modelsPropToIterate][index]
+      scope[modelsPropToIterate].get index #otherwise it is a propMap
 ]

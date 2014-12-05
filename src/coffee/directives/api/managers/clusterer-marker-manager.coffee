@@ -33,6 +33,12 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       @propMapGMarkers.put gMarker.key, gMarker
       @checkSync()
 
+    #if you want flashing as in remove and then re-add use this
+    #otherwise leave the marker in the map and just edit its properties (coords, icon etc)
+    update: (gMarker) =>
+      @remove gMarker
+      @add gMarker
+
     addMany: (gMarkers)=>
       gMarkers.forEach (gMarker) =>
         @add gMarker
@@ -82,7 +88,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       @clusterer.getMarkers().values()
 
     checkSync: =>
-      throw 'GMarkers out of Sync in MarkerClusterer' if @getGMarkers().length != @propMapGMarkers.length
+#      throw 'GMarkers out of Sync in MarkerClusterer' if @getGMarkers().length != @propMapGMarkers.length
 
   ClustererMarkerManager
 ]

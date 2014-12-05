@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="../website_libs/dev_deps.js"></script>
+    <script src="https://code.angularjs.org/1.3.3/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/many-polylines.js"></script>
+    <title>Map</title>
+</head>
+
+<body>
+<div data-ng-controller="ctrl">
+    <ui-gmap-google-map id="map"
+                       center="map.center"
+                       pan="map.pan"
+                       zoom="map.zoom"
+                       draggable="true"
+                       refresh="map.refresh"
+                       options="map.options"
+                       events="map.events"
+                       bounds="map.bounds">
+
+        <ui-gmap-map-control template="polyButton.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl">
+        </ui-gmap-map-control>
+
+        <ui-gmap-map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl">
+        </ui-gmap-map-control>
+
+        <ui-gmap-polylines models="map.polys" path="'path'" stroke="'stroke'" visible="'visible'"
+                          geodesic="'geodesic'" editable="'editable'" draggable="'draggable'" static="true" >
+        </ui-gmap-polylines>
+        <!-- <ui-gmap-polyline ng-repeat="p in map.polys" path="p.path" stroke="p.stroke" visible="p.visible"
+        geodesic="p.geodesic" editable="p.editable" draggable="p.draggable" static="true" >
+        </ui-gmap-polyline> -->
+    </ui-gmap-google-map>
+    <ul>
+        <li ng-repeat="p in map.polys">
+            <div>{{p.id}}</div>
+            <div>{{p.path}}</div>
+        </li>
+    </ul>
+</div>
+</body>
+
+</html>

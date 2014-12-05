@@ -14,5 +14,6 @@ _SpecRunner.html
 /spec/coverage
 *.iml
 /bower_components
+/curl_components
 .tmp
 /app

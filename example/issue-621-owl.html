@@ -8,7 +8,7 @@
 
     <script src="../bower_components/lodash/dist/lodash.js"></script>
     <script src="../bower_components/angular/angular.min.js"></script>
-    <script src="../dist/angular-google-maps.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
     <script type='text/javascript' src='assets/scripts/controllers/issue-621-owl.js'></script>
 </head>
 <body>
@@ -20,21 +20,11 @@
     <div id="map_canvas">
         <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
             <div data-ng-if="!toggleMarkers">
-                <ui-gmap-markers models="randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'">
-                    <!-- <ui-gmap-windows show="'showWindow'" ng-cloak>
-                        <div ng-non-bindable>
-                            {{ latitude | number:4 }}, {{ longitude | number:4 }}
-                        </div>
-                    </ui-gmap-windows> -->
+                <ui-gmap-markers models="randomMarkers" coords="'self'" icon="'icon'" >
                 </ui-gmap-markers>
             </div>
             <div data-ng-if="toggleMarkers">
-                <ui-gmap-markers models="pinkRandomMarkers" coords="'self'" icon="'icon'" click="'onClicked'">
-                    <!-- <ui-gmap-windows show="'showWindow'" ng-cloak>
-                        <div ng-non-bindable>
-                            {{ latitude | number:4 }}, {{ longitude | number:4 }}
-                        </div>
-                    </ui-gmap-windows> -->
+                <ui-gmap-markers models="pinkRandomMarkers" coords="'self'" icon="'icon'" >
                 </ui-gmap-markers>
             </div>
         </ui-gmap-google-map>

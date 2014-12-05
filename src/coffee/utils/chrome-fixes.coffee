@@ -1,10 +1,8 @@
 angular.module("uiGmapgoogle-maps.directives.api.utils")
-  .factory "uiGmapChromeFixes", [->
+  .factory "uiGmapChromeFixes", ['$timeout', ($timeout) ->
     maybeRepaint: (el) ->
       if el
-        od = el.style.display
-        el.style.display = 'none'
-        _.defer ->
-          el.style.display = od
-
+        el.style.opacity = 0.9
+        $timeout ->
+          el.style.opacity = 1
   ]

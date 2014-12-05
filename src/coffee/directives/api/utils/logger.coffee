@@ -1,34 +1,39 @@
 angular.module("uiGmapgoogle-maps.directives.api.utils")
-.service "uiGmapLogger", [ "$log", ($log)->
-  doLog: false
-  info: (msg) ->
-    if(@doLog)
-      if $log?
-        $log.info(msg)
-      else
-        console.info(msg)
-  log: (msg) ->
-    if(@doLog)
-      if $log?
-        $log.log(msg)
-      else
-        console.log(msg)
-  error: (msg) ->
-    if(@doLog)
-      if $log?
-        $log.error(msg)
-      else
-        console.error(msg)
-  debug: (msg) ->
-    if(@doLog)
-      if $log?
-        $log.debug(msg)
-      else
-        console.debug(msg)
-  warn: (msg) ->
-    if(@doLog)
-      if $log?
-        $log.warn(msg)
-      else
-        console.warn(msg)
+.service "uiGmapLogger", [ "$log", ($log) ->
+  #defaulting logging to be on with error only (better for perf and less mysterious errors)
+  @doLog = true
+
+  LEVELS =
+    log: 1
+    info: 2
+    debug: 3
+    warn: 4
+    error: 5
+    none: 6
+
+  maybeExecLevel = (level, current, fn) ->
+    fn() if level >= current
+
+  log = (logLevelFnName, msg) ->
+    if $log?
+      $log[logLevelFnName] msg
+    else
+      console[logLevelFnName] msg
+
+  logFns = {}
+  ['log', 'info', 'debug', 'warn', 'error'].forEach (level) =>
+    logFns[level] = (msg) =>
+      if @doLog
+        maybeExecLevel LEVELS[level], @currentLevel, ->
+          log level, msg
+
+  @LEVELS = LEVELS
+  @currentLevel =
+    LEVELS.error
+  @log = logFns['log']
+  @info = logFns['info']
+  @debug = logFns['debug']
+  @warn = logFns['warn']
+  @error = logFns['error']
+  @
 ]
