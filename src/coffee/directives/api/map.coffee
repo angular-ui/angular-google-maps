@@ -209,7 +209,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
                 -> scope.events[eventName].apply scope, [_gMap, eventName, arguments]
 
               customListeners = []
-              _.each scope.events, (v,eventName) ->
+              for eventName of scope.events
                 if scope.events.hasOwnProperty(eventName) and angular.isFunction(scope.events[eventName])
                   customListeners.push google.maps.event.addListener _gMap, eventName, getEventHandler(eventName)
               listeners.concat customListeners

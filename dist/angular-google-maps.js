@@ -6011,7 +6011,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
-              var customListeners, disabledEvents, dragging, el, getEventHandler, mapOptions, maybeHookToEvent, opts, resolveSpawned, settingCenterFromDirective, settingCenterFromScope, settingZoomFromDirective, settingZoomFromScope, spawned, type, _gMap, _ref;
+              var customListeners, disabledEvents, dragging, el, eventName, getEventHandler, mapOptions, maybeHookToEvent, opts, resolveSpawned, settingCenterFromDirective, settingCenterFromScope, settingZoomFromDirective, settingZoomFromScope, spawned, type, _gMap, _ref;
               DEFAULTS = {
                 mapTypeId: maps.MapTypeId.ROADMAP
               };
@@ -6202,11 +6202,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   };
                 };
                 customListeners = [];
-                _.each(scope.events, function(v, eventName) {
+                for (eventName in scope.events) {
                   if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-                    return customListeners.push(google.maps.event.addListener(_gMap, eventName, getEventHandler(eventName)));
+                    customListeners.push(google.maps.event.addListener(_gMap, eventName, getEventHandler(eventName)));
                   }
-                });
+                }
                 listeners.concat(customListeners);
               }
               _gMap.getOptions = function() {
