@@ -89,7 +89,7 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
       options: {
         bounds: {}
       },
-      //parentdiv:'searchBoxParent',
+      parentdiv:'searchBoxParent',
       events: {
         places_changed: function (searchBox) {
           places = searchBox.getPlaces()
@@ -143,7 +143,8 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
           });
 
           $scope.map.markers = newMarkers;
-          //$scope.searchbox.options.visible = false;
+          //$scope.map.control.getGMap().streetView.setVisible(false);
+          
         }
       }
 
