@@ -143,7 +143,8 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
           });
 
           $scope.map.markers = newMarkers;
-          //$scope.searchbox.options.visible = false;
+          //$scope.map.control.getGMap().streetView.setVisible(false);
+          
         }
       }
 
