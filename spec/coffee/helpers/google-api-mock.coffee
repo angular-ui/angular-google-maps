@@ -331,13 +331,23 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
             listeners.splice(index)
 
       unless event.fireListener
-        event.fireListener = (thing, eventName) =>
+        event.fireListener = (thing, eventName) ->
           found = _.find listeners, (obj)->
             obj.obj == thing
           found.events[eventName](found.obj) if found? and found?.events[eventName]?
 
+      unless event.normalizedEvents
+        event.normalizedEvents = ->
+          ret = _ listeners.map (obj) ->
+            _.keys(obj.events)
+          .chain()
+          .flatten()
+          .uniq()
+          .value()
+          ret
+
       unless event.fireAllListeners
-        event.fireAllListeners = (eventName, state) =>
+        event.fireAllListeners = (eventName, state) ->
           listeners.forEach (obj)->
             if obj.events[eventName]?
               obj.events[eventName](state)
