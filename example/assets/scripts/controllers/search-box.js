@@ -89,7 +89,7 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
       options: {
         bounds: {}
       },
-      parentdiv:'searchBoxParent',
+      //parentdiv:'searchBoxParent',
       events: {
         places_changed: function (searchBox) {
           places = searchBox.getPlaces()
