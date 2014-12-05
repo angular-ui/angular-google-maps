@@ -51,7 +51,6 @@ angular.module('uiGmapgoogle-maps.directives.api')
           update: '=' # optional
 
         link: (scope, element, attrs) =>
-          settingZoomFromDirective = false
           listeners = []
           scope.$on '$destroy', ->
             EventsHelper.removeEvents listeners
@@ -148,18 +147,25 @@ angular.module('uiGmapgoogle-maps.directives.api')
                     s.center.longitude = c.lng()
                 , scope.eventOpts?.debounce?.debounce?.dragMs
 
-                maybeHookToEvent 'zoom_changed', ->
-                  if scope.zoom isnt _gMap.zoom
-                    $timeout ->
-                      settingZoomFromDirective = true
-                      scope.zoom = _gMap.zoom
-                      settingZoomFromDirective = false
-                    , scope.eventOpts?.debounce?.zoomMs
+              #zoom locks from scope and from directive.. sucks if we stop watching.. we don't need it
+              settingZoomFromScope = false
+              settingZoomFromDirective = false
+              maybeHookToEvent 'zoom_changed', ->
+                return if settingZoomFromScope
+                if scope.zoom isnt _gMap.zoom
+                  settingZoomFromDirective = true
+                  $timeout ->
+                    scope.zoom = _gMap.zoom
+                    settingZoomFromDirective = false
+                  , scope.eventOpts?.debounce?.zoomMs
 
+              #center locks from scope and from directive.. sucks if we stop watching.. we don't need it
               settingCenterFromScope = false
+              settingCenterFromDirective = false
               maybeHookToEvent 'center_changed', ->
                 c = _gMap.center
                 return  if settingCenterFromScope #if the scope notified this change then there is no reason to update scope otherwise infinite loop
+                settingCenterFromDirective = true
                 $timeout ->
                   s = scope
                   unless _gMap.dragging
@@ -169,6 +175,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
                     else
                       s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
                       s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
+                  settingCenterFromDirective = false
                 , scope.eventOpts?.debounce?.centerMs
 
               maybeHookToEvent 'idle', ->
@@ -244,7 +251,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
             #TODO: These watches could potentially be removed infavor of using control only
             # Update map when center coordinates change
             scope.$watch 'center', (newValue, oldValue) =>
-              return if newValue == oldValue
+              return if newValue == oldValue or settingCenterFromDirective
               coords = @getCoords scope.center #get scope.center to make sure that newValue is not behind
               return  if coords.lat() is _gMap.center.lat() and coords.lng() is _gMap.center.lng()
               settingCenterFromScope = true
@@ -263,8 +270,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
               return  if _.isEqual(newValue,oldValue) or _gMap.getZoom() == scope.zoom
               #make this time out longer than zoom_changes because zoom_changed should be done first
               #being done first should make scopes equal
+              settingZoomFromScope = true
               $timeout  ->
                 _m.setZoom newValue
+                settingZoomFromScope false
               , scope.eventOpts?.debounce?.zoomMs + 20, false # use $timeout as a simple wrapper for setTimeout without calling $apply
 
             scope.$watch 'bounds', (newValue, oldValue) ->

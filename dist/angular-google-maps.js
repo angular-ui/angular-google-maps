@@ -5991,8 +5991,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         Map.prototype.link = function(scope, element, attrs) {
-          var listeners, settingZoomFromDirective, unbindCenterWatch;
-          settingZoomFromDirective = false;
+          var listeners, unbindCenterWatch;
           listeners = [];
           scope.$on('$destroy', function() {
             return EventsHelper.removeEvents(listeners);
@@ -6012,7 +6011,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
-              var customListeners, disabledEvents, dragging, el, getEventHandler, mapOptions, maybeHookToEvent, opts, resolveSpawned, settingCenterFromScope, spawned, type, _gMap, _ref;
+              var customListeners, disabledEvents, dragging, el, getEventHandler, mapOptions, maybeHookToEvent, opts, resolveSpawned, settingCenterFromDirective, settingCenterFromScope, settingZoomFromDirective, settingZoomFromScope, spawned, type, _gMap, _ref;
               DEFAULTS = {
                 mapTypeId: maps.MapTypeId.ROADMAP
               };
@@ -6099,7 +6098,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 maybeHookToEvent('drag', function() {
                   var c, _ref1, _ref2, _ref3;
                   c = _gMap.center;
-                  $timeout(function() {
+                  return $timeout(function() {
                     var s;
                     s = scope;
                     if (angular.isDefined(s.center.type)) {
@@ -6110,24 +6109,31 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       return s.center.longitude = c.lng();
                     }
                   }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? (_ref3 = _ref2.debounce) != null ? _ref3.dragMs : void 0 : void 0 : void 0);
-                  return maybeHookToEvent('zoom_changed', function() {
-                    var _ref4, _ref5;
-                    if (scope.zoom !== _gMap.zoom) {
-                      return $timeout(function() {
-                        settingZoomFromDirective = true;
-                        scope.zoom = _gMap.zoom;
-                        return settingZoomFromDirective = false;
-                      }, (_ref4 = scope.eventOpts) != null ? (_ref5 = _ref4.debounce) != null ? _ref5.zoomMs : void 0 : void 0);
-                    }
-                  });
+                });
+                settingZoomFromScope = false;
+                settingZoomFromDirective = false;
+                maybeHookToEvent('zoom_changed', function() {
+                  var _ref1, _ref2;
+                  if (settingZoomFromScope) {
+                    return;
+                  }
+                  if (scope.zoom !== _gMap.zoom) {
+                    settingZoomFromDirective = true;
+                    return $timeout(function() {
+                      scope.zoom = _gMap.zoom;
+                      return settingZoomFromDirective = false;
+                    }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0);
+                  }
                 });
                 settingCenterFromScope = false;
+                settingCenterFromDirective = false;
                 maybeHookToEvent('center_changed', function() {
                   var c, _ref1, _ref2;
                   c = _gMap.center;
                   if (settingCenterFromScope) {
                     return;
                   }
+                  settingCenterFromDirective = true;
                   return $timeout(function() {
                     var s;
                     s = scope;
@@ -6137,17 +6143,18 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                           s.center.coordinates[1] = c.lat();
                         }
                         if (s.center.coordinates[0] !== c.lng()) {
-                          return s.center.coordinates[0] = c.lng();
+                          s.center.coordinates[0] = c.lng();
                         }
                       } else {
                         if (s.center.latitude !== c.lat()) {
                           s.center.latitude = c.lat();
                         }
                         if (s.center.longitude !== c.lng()) {
-                          return s.center.longitude = c.lng();
+                          s.center.longitude = c.lng();
                         }
                       }
                     }
+                    return settingCenterFromDirective = false;
                   }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.centerMs : void 0 : void 0);
                 });
                 maybeHookToEvent('idle', function() {
@@ -6237,7 +6244,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
               scope.$watch('center', function(newValue, oldValue) {
                 var coords;
-                if (newValue === oldValue) {
+                if (newValue === oldValue || settingCenterFromDirective) {
                   return;
                 }
                 coords = _this.getCoords(scope.center);
@@ -6262,8 +6269,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (_.isEqual(newValue, oldValue) || _gMap.getZoom() === scope.zoom) {
                   return;
                 }
+                settingZoomFromScope = true;
                 return $timeout(function() {
-                  return _m.setZoom(newValue);
+                  _m.setZoom(newValue);
+                  return settingZoomFromScope(false);
                 }, ((_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0) + 20, false);
               });
               scope.$watch('bounds', function(newValue, oldValue) {
