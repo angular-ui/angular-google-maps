@@ -54,3 +54,57 @@ describe "directives.api.map", ->
           'zoom_changed', 'center_changed',
       expect(_.isEmpty eventsBeyondDefaults).toBeTruthy()
 
+    it '(dragstart) blocks only itself', ->
+      @scope.map.events =
+        blacklist: 'dragstart'
+      @digest =>
+      events = google.maps.event.normalizedEvents()
+      eventsBeyondDefaults =
+        _.without events,
+          'idle', 'dragend', 'drag',
+          'zoom_changed', 'center_changed',
+          expect(_.isEmpty eventsBeyondDefaults).toBeTruthy()
+
+    it '(dragend) blocks only itself', ->
+      @scope.map.events =
+        blacklist: 'dragstart'
+      @digest =>
+      events = google.maps.event.normalizedEvents()
+      eventsBeyondDefaults =
+        _.without events,
+          'idle', 'dragstart', 'drag',
+          'zoom_changed', 'center_changed',
+          expect(_.isEmpty eventsBeyondDefaults).toBeTruthy()
+
+    it '(drag) blocks only itself', ->
+      @scope.map.events =
+        blacklist: 'dragstart'
+      @digest =>
+      events = google.maps.event.normalizedEvents()
+      eventsBeyondDefaults =
+        _.without events,
+          'idle', 'dragstart', 'dragend',
+          'zoom_changed', 'center_changed',
+          expect(_.isEmpty eventsBeyondDefaults).toBeTruthy()
+
+    it '(zoom_changed) blocks only itself', ->
+      @scope.map.events =
+        blacklist: 'dragstart'
+      @digest =>
+      events = google.maps.event.normalizedEvents()
+      eventsBeyondDefaults =
+        _.without events,
+          'idle', 'dragstart', 'dragend',
+          'drag', 'center_changed',
+          expect(_.isEmpty eventsBeyondDefaults).toBeTruthy()
+
+    it '(center_changed) blocks only itself', ->
+      @scope.map.events =
+        blacklist: 'dragstart'
+      @digest =>
+      events = google.maps.event.normalizedEvents()
+      eventsBeyondDefaults =
+        _.without events,
+          'idle', 'dragstart', 'dragend',
+          'drag', 'zoom_changed',
+          expect(_.isEmpty eventsBeyondDefaults).toBeTruthy()
