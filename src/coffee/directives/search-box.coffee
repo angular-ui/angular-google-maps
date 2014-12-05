@@ -28,17 +28,20 @@ angular.module('uiGmapgoogle-maps')
         @template = '<span class=\'angular-google-map-search\' ng-transclude></span>'
         @replace = true
         @scope =
-          template: '=template'
-          position: '=position'
-          options: '=options'
-          events: '=events'
-          parentdiv: '=parentdiv'
+          template: '=template' #required
+          events: '=events' #required
+          position: '=?position' #optional
+          options: '=?options' #optional
+          parentdiv: '=?parentdiv' #optional
 
       link: (scope, element, attrs, mapCtrl) =>
 
         GoogleMapApi.then (maps) =>
           $http.get(scope.template, { cache: $templateCache })
             .success (template) =>
+              if angular.isUndefined scope.events
+                @$log.error 'searchBox: the events property is required'
+                return
               mapCtrl.getScope().deferred.promise.then (map) =>
                 ctrlPosition = if angular.isDefined scope.position then scope.position.toUpperCase().replace /-/g, '_' else 'TOP_LEFT'
                 if not maps.ControlPosition[ctrlPosition]

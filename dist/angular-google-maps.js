@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.11 2014-12-04
+/*! angular-google-maps 2.0.11 2014-12-05
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -7211,10 +7211,10 @@ This directive creates a new scope.
           this.replace = true;
           this.scope = {
             template: '=template',
-            position: '=position',
-            options: '=options',
             events: '=events',
-            parentdiv: '=parentdiv'
+            position: '=?position',
+            options: '=?options',
+            parentdiv: '=?parentdiv'
           };
         }
 
@@ -7224,6 +7224,10 @@ This directive creates a new scope.
               return $http.get(scope.template, {
                 cache: $templateCache
               }).success(function(template) {
+                if (angular.isUndefined(scope.events)) {
+                  _this.$log.error('searchBox: the events property is required');
+                  return;
+                }
                 return mapCtrl.getScope().deferred.promise.then(function(map) {
                   var ctrlPosition;
                   ctrlPosition = angular.isDefined(scope.position) ? scope.position.toUpperCase().replace(/-/g, '_') : 'TOP_LEFT';
