@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.11 2014-12-05
+/*! angular-google-maps 2.0.11 2014-12-06
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -5446,16 +5446,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   var templateCtrl, templateScope;
                   templateScope = scope.$new();
                   controlDiv.append(template);
-                  if (index) {
-                    controlDiv[0].index = index;
-                  }
                   if (angular.isDefined(scope.controller)) {
                     templateCtrl = $controller(scope.controller, {
                       $scope: templateScope
                     });
                     controlDiv.children().data('$ngControllerController', templateCtrl);
                   }
-                  return control = $compile(controlDiv.children())(templateScope);
+                  control = $compile(controlDiv.children())(templateScope);
+                  if (index) {
+                    return control[0].index = index;
+                  }
                 }).error(function(error) {
                   return _this.$log.error('mapControl: template could not be found');
                 }).then(function() {
