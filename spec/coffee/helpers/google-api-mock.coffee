@@ -128,6 +128,12 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
     Map::setZoom = -> return
     Map::setCenter = -> return
     Map::getCoords = -> return {latitude: 47, longitude: -27} unless Map.getCoords?
+    Map::getBounds = ->
+      unless Map.getBounds?
+        getNorthEast: ->
+          google.maps.LatLng(47,27)
+        getSouthWest: ->
+          google.maps.LatLng(89,100)
     return Map
 
 
