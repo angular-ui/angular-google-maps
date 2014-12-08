@@ -41,24 +41,26 @@
     }])
     .controller('ctrl', ['$scope', "uiGmapLogger", "uiGmapGoogleMapApi", "$http", "$timeout",
       function ($scope, $log, uiGmapGoogleMapApi, $http, $timeout) {
+        $log.currentLevel = $log.LEVELS.debug;
+
         var getPolys = function(){
           $http.get('assets/json/many_polygons.json')
           .then(function (data) {
             $scope.map.polys = data.data;
+//            $scope.map.polyControl.updateModels(data.data);
           });
         };
         $scope.map = {
+          polyControl:{},
           center: {
             latitude: 26.153215225012733,
             longitude: -81.80121597097774
           },
           events:{
             idle:function(){
-              $timeout(function() {
-                if ($scope.map.zoom < 14)
-                  return $scope.map.polys.length = 0;
-                getPolys();
-              });
+              if ($scope.map.zoom < 14)
+                return $scope.map.polys = [];
+              getPolys();
             }
           },
           zoom: 15,
@@ -77,7 +79,8 @@
           getPolys();
         });
         $scope.$onRootScope("clearButtonClicked", function () {
-          $scope.map.polys.length = 0;
+          $scope.map.polys = [];
+//          $scope.map.polyControl.clean();
         });
 
       }])

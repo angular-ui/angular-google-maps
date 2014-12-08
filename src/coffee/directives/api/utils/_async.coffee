@@ -1,5 +1,5 @@
-angular.module("uiGmapgoogle-maps.directives.api.utils")
-.service("uiGmap_sync", [ ->
+angular.module('uiGmapgoogle-maps.directives.api.utils')
+.service('uiGmap_sync', [ ->
     fakePromise: ->
       _cb = undefined
       then: (cb) ->
@@ -7,7 +7,22 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
       resolve: () ->
         _cb.apply(undefined, arguments)
   ])
-.service "uiGmap_async", [ "$timeout", "uiGmapPromise", "uiGmapLogger", ($timeout, uiGmapPromise, $log) ->
+.service 'uiGmap_async', [ '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q', ($timeout, uiGmapPromise, $log, $q) ->
+  promiseTypes =
+    create : 'create'
+    update : 'update'
+    delete : 'delete'
+
+  promiseStatus = (status) ->
+    switch status
+      when 0
+        'in-progress'
+      when 1
+        'resolved'
+      when 2
+        'rejected'
+      else
+        'done w error'
 
   defaultChunkSize = 20
 
@@ -28,6 +43,42 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
       msg = "error within chunking iterator: #{errorObject.value}"
       $log.error msg
       deferred.reject msg
+
+  #putting a payload together in order to not have to flatten twice, and to not
+  #have to flatten again later
+  cancelable = (promise) ->
+    cancelDeferred = $q.defer()
+    combined = $q.all [promise, cancelDeferred.promise]
+    wrapped = $q.defer()
+
+    promise.then  (result) ->
+      cancelDeferred.resolve()
+
+    combined.then (results) ->
+      wrapped.resolve results[0]
+    , wrapped.reject
+
+    wrapped.promise.cancel = (reason) ->
+      reason = reason or 'canceled'
+      cancelDeferred.reject reason
+
+    if promise.promiseType?
+      wrapped.promise.promiseType = promise.promiseType
+    wrapped.promise
+
+  onlyTheLast = do ->
+    promises = []
+    (p, cb) ->
+      promise = cancelable p
+      promises.push promise
+      promise.then (value) ->
+        if promise is _.last promises
+          if promises.length >= 2
+            promises.forEach (promise, i) ->
+              if i < promises.length - 1
+                promise.cancel()
+          cb value
+          promises = []
   ###
   utility to reduce code bloat. The whole point is to check if there is existing synchronous work going on.
   If so we wait on it.
@@ -35,11 +86,21 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
   Note: This is fully intended to be mutable (ie existingPiecesObj is getting existingPieces prop slapped on)
   ###
   waitOrGo = (existingPiecesObj, fnPromise) ->
+    logPromise = () ->
+      promise = fnPromise()
+      if promise.hasOwnProperty('promiseType')
+        $log.debug "promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
+        promise.then =>
+          $log.debug "old promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
+      promise
+
     unless existingPiecesObj.existingPieces
-      existingPiecesObj.existingPieces = fnPromise()
+      existingPiecesObj.existingPieces = []
+      existingPiecesObj.existingPieces.push logPromise()
     else
-      existingPiecesObj.existingPieces = existingPiecesObj.existingPieces.then ->
-        fnPromise()
+      lastPromise = _.last existingPiecesObj.existingPieces
+      existingPiecesObj.existingPieces.push lastPromise.then ->
+        logPromise()
 
   ###
     Author: Nicholas McCready & jfriend00
@@ -107,9 +168,11 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
     .then ->
       results
 
+
   each: each
   map: map
   waitOrGo: waitOrGo
   defaultChunkSize: defaultChunkSize
-
+  promiseTypes: promiseTypes
+  cancelablePromise: cancelable
 ]

@@ -124,33 +124,32 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 #            doChunk = if @existingPieces? then false else _async.defaultChunkSize
             if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
               #find the current state, async operation that calls back
-              @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison, (state) =>
-                payload = state
-                #payload contains added, removals and flattened (existing models with their gProp appended)
-                #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @scope.markerModels
+              payload = @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison
+              #payload contains added, removals and flattened (existing models with their gProp appended)
+              #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @scope.markerModels
 
-                @cleanOnResolve _async.waitOrGo @, =>
-                  _async.each(payload.removals, (child) =>
-                    if child?
-                      child.destroy() if child.destroy?
-                      @scope.markerModels.remove(child.id)
+              @cleanOnResolve _async.waitOrGo @, =>
+                _async.each(payload.removals, (child) =>
+                  if child?
+                    child.destroy() if child.destroy?
+                    @scope.markerModels.remove(child.id)
+                , doChunk)
+                .then =>
+                    #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
+                  _async.each(payload.adds, (modelToAdd) =>
+                    @newChildMarker(modelToAdd, scope)
                   , doChunk)
-                  .then =>
-                      #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
-                    _async.each(payload.adds, (modelToAdd) =>
-                      @newChildMarker(modelToAdd, scope)
-                    , doChunk)
-                  .then () =>
-                    _async.each(payload.updates, (update) =>
-                        @updateChild update.child, update.model
-                    ,doChunk)
-                  .then =>
-                    #finally redraw if something has changed
-                    if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
-                      @gMarkerManager.draw()
-                      scope.markerModels = @scope.markerModels #for other directives like windows
-                      @gMarkerManager.fit() if scope.fit #note fit returns a promise
-                    @scope.markerModelsUpdate.updateCtr += 1
+                .then () =>
+                  _async.each(payload.updates, (update) =>
+                      @updateChild update.child, update.model
+                  ,doChunk)
+                .then =>
+                  #finally redraw if something has changed
+                  if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
+                    @gMarkerManager.draw()
+                    scope.markerModels = @scope.markerModels #for other directives like windows
+                    @gMarkerManager.fit() if scope.fit #note fit returns a promise
+                  @scope.markerModelsUpdate.updateCtr += 1
 
             else
               @inProgress = false

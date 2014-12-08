@@ -122,18 +122,17 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
         @models = scope.models
         if scope? and scope.models? and scope.models.length > 0 and @plurals.length > 0
-          @figureOutState @idKey, scope, @plurals, @modelKeyComparison, (state) =>
-            payload = state
-            @cleanOnResolve _async.waitOrGo @, =>
-              _async.each payload.removals, (id)=>
-                child = @plurals.get(id)
-                if child?
-                  child.destroy()
-                  @plurals.remove(id)
-              .then =>
-                #add all adds via creating new ChildMarkers which are appended to @markers
-                _async.each payload.adds, (modelToAdd) =>
-                  @createChild(modelToAdd, @gMap)
+          payload = @figureOutState @idKey, scope, @plurals, @modelKeyComparison
+          @cleanOnResolve _async.waitOrGo @, =>
+            _async.each payload.removals, (id)=>
+              child = @plurals.get(id)
+              if child?
+                child.destroy()
+                @plurals.remove(id)
+            .then =>
+              #add all adds via creating new ChildMarkers which are appended to @markers
+              _async.each payload.adds, (modelToAdd) =>
+                @createChild(modelToAdd, @gMap)
         else
           @inProgress = false
           @rebuildAll(@scope, true, true)

@@ -32,42 +32,49 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       #watch this scope(Parent to all Models), these updates reflect expression / Key changes
       #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
       watch: (scope, name, nameKey) =>
-        scope.$watch name, (newValue, oldValue) =>
-          if (newValue != oldValue)
-            @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
-            @cleanOnResolve _async.waitOrGo @, =>
-              _async.each @plurals.values(), (model) =>
-                model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
+#        scope.$watch name, (newValue, oldValue) =>
+#          if (newValue != oldValue)
+#            @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
+#            _async.waitOrGo @, =>
+#              promise =
+#                _async.each @plurals.values(), (model) =>
+#                  model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
+#                , false
+#              promise.promiseType = _async.promiseTypes.update
+#              promise
 
 
       watchModels: (scope) =>
-        scope.$watch 'models', (newValue, oldValue) =>
+        scope.$watchCollection 'models', (newValue, oldValue) =>
           #check to make sure that the newValue Array is really a set of new objects
-          unless _.isEqual(newValue, oldValue)
+          unless _.isEqual(newValue, oldValue) and (@lastNewValue != newValue or @lastOldValue != oldValue)
+            @lastNewValue = newValue
+            @lastOldValue = oldValue
             if @doINeedToWipe(newValue)
               @rebuildAll(scope, true, true)
             else
               @createChildScopes(false)
-        , true
 
       doINeedToWipe: (newValue) =>
         newValueIsEmpty = if newValue? then newValue.length == 0 else true
         @plurals.length > 0 and newValueIsEmpty
 
-      rebuildAll: (scope, doCreate, doDelete) =>
+       rebuildAll: (scope, doCreate, doDelete) =>
         @onDestroy(doDelete).then =>
           @createChildScopes() if doCreate
 
       onDestroy: (doDelete) =>
         @destroyPromise().then =>
-          @cleanOnResolve _async.waitOrGo @, =>
-            @plurals.each (child) =>
-              child.destroy(true)
-            uiGmapPromise.resolve()
-          .then =>
-            delete @plurals if doDelete
-            @plurals = new PropMap()
-            @isClearing = false
+          _async.waitOrGo @, =>
+            promise = _async.each @plurals.values(), (child) =>
+              child.destroy false
+            , false
+            .then =>
+              delete @plurals if doDelete
+              @plurals = new PropMap()
+              @isClearing = false
+            promise.promiseType =  _async.promiseTypes.delete
+            promise
 
       watchDestroy: (scope)=>
         scope.$on '$destroy', =>
@@ -106,36 +113,36 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @watchModels scope
           @watchDestroy scope
 
-        if scope.models.length == 0
-          @existingPieces = uiGmapPromise.resolve()
-          return
-
-        @cleanOnResolve _async.waitOrGo @, =>
-          _async.each scope.models, (model) =>
-            @createChild(model, @gMap)
-        .then => #handle done callBack
-          @firstTime = false
+        _async.waitOrGo @, =>
+          promise =
+            _async.each scope.models, (model) =>
+              @createChild(model, @gMap)
+            .then => #handle done callBack
+              @firstTime = false
+          promise.promiseType = _async.promiseTypes.create
+          promise
 
       pieceMeal: (scope, isArray = true)=>
         return if scope.$$destroyed or @isClearing
-        return if @updateInProgress() and @plurals.length > 0
+#        return if @updateInProgress() and @plurals.length > 0
 
         @models = scope.models
         if scope? and scope.models? and scope.models.length > 0 and @plurals.length > 0
-          @figureOutState @idKey, scope, @plurals, @modelKeyComparison, (state) =>
-            payload = state
-            @cleanOnResolve _async.waitOrGo @, =>
-              _async.each payload.removals, (id)=>
+          _async.waitOrGo @, =>
+            payload = @figureOutState @idKey, scope, @plurals, @modelKeyComparison
+            promise = _async.each payload.removals, (id)=>
                 child = @plurals.get(id)
                 if child?
                   child.destroy()
                   @plurals.remove(id)
+            , false
+            .then =>
+              #add all adds via creating new ChildMarkers which are appended to @markers
+              _async.each payload.adds, (modelToAdd) =>
+                @createChild(modelToAdd, @gMap)
               , false
-              .then =>
-                #add all adds via creating new ChildMarkers which are appended to @markers
-                _async.each payload.adds, (modelToAdd) =>
-                  @createChild(modelToAdd, @gMap)
-                , false
+            promise.promiseType = _async.promiseTypes.update
+            promise
         else
           @inProgress = false
           @rebuildAll(@scope, true, true)

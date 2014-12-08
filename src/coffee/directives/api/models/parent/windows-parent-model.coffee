@@ -162,25 +162,24 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             @models = scope.models
             if scope? and scope.models? and scope.models.length > 0 and @windows.length > 0
 #              $log.debug('pieceMealWindows: waiting to make windows')
-              @figureOutState @idKey, scope, @windows, @modelKeyComparison, (state) =>
-                payload = state
-#                $log.debug("pieceMealWindows: state: (removals: #{state.removals.length}, adds: #{state.adds.length}, updates: #{state.updates.length})")
-                @cleanOnResolve _async.waitOrGo @, =>
-                  _async.each payload.removals, (child)=>
+              payload = @figureOutState @idKey, scope, @windows, @modelKeyComparison
+#             $log.debug("pieceMealWindows: state: (removals: #{state.removals.length}, adds: #{state.adds.length}, updates: #{state.updates.length})")
+              @cleanOnResolve _async.waitOrGo @, =>
+                _async.each payload.removals, (child)=>
 #                    $log.debug('pieceMealWindows: remove')
-                    if child?
-                      @windows.remove(child.id)
-                      child.destroy(true) if child.destroy?
-                  ,false
-                  .then =>
+                  if child?
+                    @windows.remove(child.id)
+                    child.destroy(true) if child.destroy?
+                ,false
+                .then =>
 #                    $log.debug('pieceMealWindows: removals done')
-                    #add all adds via creating new ChildMarkers which are appended to @markers
-                    _async.each payload.adds, (modelToAdd) =>
+                  #add all adds via creating new ChildMarkers which are appended to @markers
+                  _async.each payload.adds, (modelToAdd) =>
 #                      $log.debug('pieceMealWindows: add')
-                      gMarker = @getItem(scope, modelsPropToIterate, modelToAdd[@idKey])?.gMarker
-                      throw 'Gmarker undefined' unless gMarker
-                      @createWindow(modelToAdd, gMarker, @gMap)
-                    ,false
+                    gMarker = @getItem(scope, modelsPropToIterate, modelToAdd[@idKey])?.gMarker
+                    throw 'Gmarker undefined' unless gMarker
+                    @createWindow(modelToAdd, gMarker, @gMap)
+                  ,false
             else
               $log.debug('pieceMealWindows: rebuildAll')
               @rebuildAll(@scope, true, true)
