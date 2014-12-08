@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-05
+/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-08
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -5442,16 +5442,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   var templateCtrl, templateScope;
                   templateScope = scope.$new();
                   controlDiv.append(template);
-                  if (index) {
-                    controlDiv[0].index = index;
-                  }
                   if (angular.isDefined(scope.controller)) {
                     templateCtrl = $controller(scope.controller, {
                       $scope: templateScope
                     });
                     controlDiv.children().data('$ngControllerController', templateCtrl);
                   }
-                  return control = $compile(controlDiv.children())(templateScope);
+                  control = $compile(controlDiv.children())(templateScope);
+                  if (index) {
+                    return control[0].index = index;
+                  }
                 }).error(function(error) {
                   return _this.$log.error('mapControl: template could not be found');
                 }).then(function() {
@@ -6267,7 +6267,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
                 settingZoomFromScope = true;
                 return $timeout(function() {
-                  _m.setZoom(newValue);
+                  _gMap.setZoom(newValue);
                   return settingZoomFromScope(false);
                 }, ((_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0) + 20, false);
               });
@@ -7222,10 +7222,10 @@ This directive creates a new scope.
           this.replace = true;
           this.scope = {
             template: '=template',
-            position: '=position',
-            options: '=options',
             events: '=events',
-            parentdiv: '=parentdiv'
+            position: '=?position',
+            options: '=?options',
+            parentdiv: '=?parentdiv'
           };
         }
 
@@ -7235,6 +7235,10 @@ This directive creates a new scope.
               return $http.get(scope.template, {
                 cache: $templateCache
               }).success(function(template) {
+                if (angular.isUndefined(scope.events)) {
+                  _this.$log.error('searchBox: the events property is required');
+                  return;
+                }
                 return mapCtrl.getScope().deferred.promise.then(function(map) {
                   var ctrlPosition;
                   ctrlPosition = angular.isDefined(scope.position) ? scope.position.toUpperCase().replace(/-/g, '_') : 'TOP_LEFT';
