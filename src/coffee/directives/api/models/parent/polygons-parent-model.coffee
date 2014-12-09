@@ -122,12 +122,14 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @watchModels scope
           @watchDestroy scope
         #allows graceful fallout of _async.each
-        notified = undefined
+        maybeCanceled = null
         _async.waitOrGo @,
           _async.preExecPromise =>
             promise = _async.each scope.models, (model) =>
               @createChild(model, @gMap)
-              notified
+              if maybeCanceled
+                $log.debug 'createNew should fall through safely'
+              maybeCanceled
             .then =>
               #handle done callBack
               @firstTime = false
@@ -136,12 +138,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           , _async.promiseTypes.create
         , (canceledMsg) ->
           $log.debug "createAllNew: #{canceledMsg}"
-          notified = canceledMsg
+          maybeCanceled= canceledMsg
 
       pieceMeal: (scope, isArray = true)=>
         return if scope.$$destroyed or @isClearing
         #allows graceful fallout of _async.each
-        notified = null
+        maybeCanceled = null
         @models = scope.models
         if scope? and scope.models? and scope.models.length > 0 and @plurals.length > 0
           _async.waitOrGo @,
@@ -152,18 +154,20 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                 if child?
                   child.destroy()
                   @plurals.remove(id)
-                  notified
+                  maybeCanceled
               .then =>
                 #add all adds via creating new ChildMarkers which are appended to @markers
                 _async.each payload.adds, (modelToAdd) =>
+                  if maybeCanceled
+                    $log.debug 'pieceMeal should fall through safely'
                   @createChild(modelToAdd, @gMap)
-                  notified
+                  maybeCanceled
               promise.promiseType = _async.promiseTypes.update
               promise
             , _async.promiseTypes.update
           , (canceledMsg) ->
             $log.debug "pieceMeal: #{canceledMsg}"
-            notified = canceledMsg
+            maybeCanceled = canceledMsg
         else
           @inProgress = false
           @rebuildAll(@scope, true, true)

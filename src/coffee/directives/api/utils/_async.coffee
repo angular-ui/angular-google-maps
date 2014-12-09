@@ -9,6 +9,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   ])
 .service 'uiGmap_async', [ '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q','uiGmapDataStructures',
 ($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures) ->
+
   promiseTypes =
     create : 'create'
     update : 'update'
@@ -19,16 +20,24 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     RESOLVED: 1
     REJECTED: 2
 
+  strPromiseStatuses = do ->
+    obj = {}
+    obj["#{promiseStatuses.IN_PROGRESS}"] = 'in-progress'
+    obj["#{promiseStatuses.RESOLVED}"] = 'resolved'
+    obj["#{promiseStatuses.REJECTED}"] = 'rejected'
+    obj
+
+  isInProgress = (promise) ->
+    promise.$$state.status == promiseStatuses.IN_PROGRESS
+
+  isResolved = (promise) ->
+    promise.$$state.status == promiseStatuses.RESOLVED
+
   promiseStatus = (status) ->
-    switch status
-      when promiseStatuses.IN_PROGRESS
-        'in-progress'
-      when promiseStatuses.RESOLVED
-        'resolved'
-      when promiseStatuses.REJECTED
-        'rejected'
-      else
-        'done w error'
+    if strPromiseStatuses.hasOwnProperty(status)
+      strPromiseStatuses[status]
+    else
+      'done w error'
 
   #putting a payload together in order to not have to flatten twice, and to not
   #have to flatten again later
@@ -82,18 +91,40 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     promiseType: promiseType
 
   ###
-  utility to reduce code bloat. The whole point is to check if there is existing synchronous work going on.
+  The whole point is to check if there is existing async work going on.
   If so we wait on it.
 
-  Note: This is fully intended to be mutable (ie existingPiecesObj is getting existingPieces prop slapped on)
+  arguments:
+  - existingPiecesObj =  Queue<Promises>
+  - preExecPromise = object wrapper holding a function to a pending (function) promise (promise: fnPromise)
+  with its intended type.
+  - cancelCb = callback which accepts a string, this string is intended to be returned at the end of _async.each iterator
+
+    Where the cancelCb passed msg is 'cancel safe' _async.each will drop out and fall through. Thus canceling the promise
+    gracefully without messing up state.
+
+  Synopsis:
+
+   - Promises have been broken down to 3 states create, update, and delete. (Helps boil down problems in ordering)
+
+   - Every Promise that comes is is enqueue and linked to the last promise in the queue.
+
+   - A promise can be skipped or canceled to save cycles.
+
+  Saved Cycles:
+    - Skipped - This will only happen if async work comes in out of order. Where a pending create promise (un-executed) comes in
+      after a delete promise.
+    - Canceled - Where an incoming promise (un-executed promise) is of type delete and the any lastPromise is not a delete type.
+
+
+  NOTE: You should not much with existingPieces as its state is dependent in this functional loop.
   ###
   waitOrGo = (existingPiecesObj, preExecPromise, cancelCb) ->
     logPromise = ->
       promise = preExecPromise.promise()
-#      unless promise.hasOwnProperty('cancel')
-#        $log.error "waitOrGo: can only process wrapped promises"
       if promise.hasOwnProperty('promiseType')
         $log.debug "promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
+# uncomment to see promises wrapping themselves up
 #        promise.then =>
 #          $log.debug "old promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
       promise.cancelCb = cancelCb
@@ -105,12 +136,13 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       existingPiecesObj.existingPieces.enqueue logPromise()
     else
       lastPromise = _.last existingPiecesObj.existingPieces._content
+      # note this skipp could be specific to polys (but it works for that)
       if preExecPromise.promiseType == promiseTypes.create and lastPromise.promiseType != promiseTypes.delete
         $log.debug "promiseType: #{preExecPromise.promiseType}, SKIPPED MUST COME AFTER DELETE ONLY"
         return
       if preExecPromise.promiseType == promiseTypes.delete and lastPromise.promiseType != promiseTypes.delete
-        if lastPromise.cancelCb? and _.isFunction lastPromise.cancelCb
-          $log.debug "promiseType: #{preExecPromise.promiseType}, CANCELING LAST PROMISE"
+        if lastPromise.cancelCb? and _.isFunction(lastPromise.cancelCb) and isInProgress(lastPromise)
+          $log.debug "promiseType: #{preExecPromise.promiseType}, CANCELING LAST PROMISE type: #{lastPromise.promiseType}"
           lastPromise.cancelCb('cancel safe')
 
       newPromise = cancelable lastPromise.finally ->
@@ -144,7 +176,11 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       $log.error msg
       deferred.reject msg
     if result == 'cancel safe'
-      deferred.reject 'cancel safe'
+      # THIS IS MAD IMPORTANT AS THIS IS OUR FALLTHOUGH TO ALLOW
+      # _async.each iterator to drop out at a safe point (IE the end of its iterator callback)
+      return false
+    true
+
 
   ###
     Author: Nicholas McCready & jfriend00
@@ -163,14 +199,14 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       cnt = array.length
 
     i = index
-
-    while cnt-- and i < (if array then array.length else i + 1)
+    keepGoing = true
+    while keepGoing and cnt-- and i < (if array then array.length else i + 1)
       # process array[index] here
-      logTryCatch chunkCb, undefined, overallD, [array[i], i]
+      keepGoing = logTryCatch chunkCb, undefined, overallD, [array[i], i]
       ++i
 
     if array
-      if i < array.length
+      if keepGoing and i < array.length
         index = i
         if chunkSizeOrDontChunk
           if pauseCb? and _.isFunction pauseCb
