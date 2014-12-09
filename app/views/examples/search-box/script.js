@@ -7,4 +7,4 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
         }
         $scope.searchbox = { template:'searchbox.tpl.html', events:events};
     });
-    
+
