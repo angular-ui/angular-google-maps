@@ -126,9 +126,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       promise = preExecPromise.promise()
       if promise.hasOwnProperty('promiseType')
         $log.debug "promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
-# uncomment to see promises wrapping themselves up
-#        promise.then =>
-#          $log.debug "old promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
+        # uncomment to see promises wrapping themselves up
+        #promise.then =>
+        #  $log.debug "old promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
       promise.cancelCb = cancelCb
       promise
 
@@ -148,17 +148,22 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         if lastPromise.cancelCb? and _.isFunction(lastPromise.cancelCb) and isInProgress(lastPromise)
           $log.debug "promiseType: #{preExecPromise.promiseType}, CANCELING LAST PROMISE type: #{lastPromise.promiseType}"
           lastPromise.cancelCb('cancel safe')
+          #see if we can cancel anything else
+          first = existingPiecesObj.existingPieces.peek()
+          if isInProgress(first)
+            $log.debug "promiseType: #{first.promiseType}, CANCELING FIRST PROMISE type: #{first.promiseType}"
+            first.cancelCb('cancel safe')
 
       newPromise = cancelable lastPromise.finally ->
        logPromise()
       newPromise.cancelCb = cancelCb
       newPromise.promiseType = preExecPromise.promiseType
       existingPiecesObj.existingPieces.enqueue newPromise
-      lastPromise.then ->
+      # finally is important as we don't care how something is canceled
+      #we just want the key to be shrunk when something is done
+      lastPromise.finally ->
         existingPiecesObj.existingPieces.dequeue()
-      #important to come after hooking to old Promise
-#      if existingPiecesObj.existingPieces.peek().$$state.status != promiseStatuses.IN_PROGRESS
-#        existingPiecesObj.existingPieces.dequeue()
+
 
   defaultChunkSize = 20
 

@@ -511,7 +511,7 @@ Nicholas McCready - https://twitter.com/nmccready
       NOTE: You should not much with existingPieces as its state is dependent in this functional loop.
        */
       waitOrGo = function(existingPiecesObj, preExecPromise, cancelCb) {
-        var lastPromise, logPromise, newPromise;
+        var first, lastPromise, logPromise, newPromise;
         logPromise = function() {
           var promise;
           promise = preExecPromise.promise();
@@ -534,6 +534,11 @@ Nicholas McCready - https://twitter.com/nmccready
             if ((lastPromise.cancelCb != null) && _.isFunction(lastPromise.cancelCb) && isInProgress(lastPromise)) {
               $log.debug("promiseType: " + preExecPromise.promiseType + ", CANCELING LAST PROMISE type: " + lastPromise.promiseType);
               lastPromise.cancelCb('cancel safe');
+              first = existingPiecesObj.existingPieces.peek();
+              if (isInProgress(first)) {
+                $log.debug("promiseType: " + first.promiseType + ", CANCELING FIRST PROMISE type: " + first.promiseType);
+                first.cancelCb('cancel safe');
+              }
             }
           }
           newPromise = cancelable(lastPromise["finally"](function() {
@@ -542,7 +547,7 @@ Nicholas McCready - https://twitter.com/nmccready
           newPromise.cancelCb = cancelCb;
           newPromise.promiseType = preExecPromise.promiseType;
           existingPiecesObj.existingPieces.enqueue(newPromise);
-          return lastPromise.then(function() {
+          return lastPromise["finally"](function() {
             return existingPiecesObj.existingPieces.dequeue();
           });
         }
