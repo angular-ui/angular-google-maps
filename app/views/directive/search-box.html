@@ -37,6 +37,11 @@ or HTML <br>
       <td>Template to be used for the search box's input field.</td>
     </tr>
     <tr>
+      <td>events</td>
+      <td><span class="label label-danger">expression</span>
+      <td><p>Object containing event handlers for this Search Box. The keys are the event names and the values are the handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#SearchBoxOptions" rel="external">SearchBox documentation</a> (under Events section). There is only one event, places_changed.</p></td>
+    </tr>
+    <tr>
       <td>position</td>
       <td><span class="label label-info">string</span></td>
       <td>String representing the position of the control within the map UI. Should be of the form <code>"top-left"</code> or <code>"TOP_LEFT"</code>. Defaults to <code>"TOP_LEFT"</code>. See <a href="https://developers.google.com/maps/documentation/javascript/controls#ControlPositioning" rel="external">Control Positioning</a> for position options and behaviour.</td>
@@ -47,11 +52,7 @@ or HTML <br>
       <td>The id of another div on the page to which the the Search Box field should be appended. If this property is set the Search Box will not be added as a control on the map and the position parameter is not required.</td>
     </tr>
     <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='SearchBox';directive='search-box'">
-    <tr>
-      <td>events</td>
-      <td><span class="label label-info">expression</span>
-      <td><p>Object containing event handlers for this Search Box. The keys are the event names and the values are the handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#SearchBoxOptions" rel="external">SearchBox documentation</a> (under Events section). There is only one event, places_changed.</p></td>
-    </tr>
+    
   </tbody>
 </table>
 
@@ -61,9 +62,9 @@ or HTML <br>
 <script type="text/ng-template" id="controlTemplate">
 <ui-gmap-search-box
   template='{expression}'
+  events='{expression}'
   position="'{string}'"
   parentdiv="'{string}'"
-  options='{expression}'
-  events='{expression}'>
+  options='{expression}'>
 </ui-gmap-search-box>
 </script>
