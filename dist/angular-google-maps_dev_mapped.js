@@ -389,7 +389,8 @@ Nicholas McCready - https://twitter.com/nmccready
       promiseTypes = {
         create: 'create',
         update: 'update',
-        "delete": 'delete'
+        "delete": 'delete',
+        init: 'init'
       };
       promiseStatuses = {
         IN_PROGRESS: 0,
@@ -494,7 +495,8 @@ Nicholas McCready - https://twitter.com/nmccready
       
       Synopsis:
       
-       - Promises have been broken down to 3 states create, update, and delete. (Helps boil down problems in ordering)
+       - Promises have been broken down to 4 states create, update,delete (3 main) and init. (Helps boil down problems in ordering)
+        where (init) is special to indicate that it is one of the first or to allow a create promise to work beyond being after a delete
       
        - Every Promise that comes is is enqueue and linked to the last promise in the queue.
       
@@ -524,7 +526,7 @@ Nicholas McCready - https://twitter.com/nmccready
           return existingPiecesObj.existingPieces.enqueue(logPromise());
         } else {
           lastPromise = _.last(existingPiecesObj.existingPieces._content);
-          if (preExecPromise.promiseType === promiseTypes.create && lastPromise.promiseType !== promiseTypes["delete"]) {
+          if (preExecPromise.promiseType === promiseTypes.create && lastPromise.promiseType !== promiseTypes["delete"] && lastPromise.promiseType !== promiseTypes.init) {
             $log.debug("promiseType: " + preExecPromise.promiseType + ", SKIPPED MUST COME AFTER DELETE ONLY");
             return;
           }
@@ -3992,7 +3994,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module("uiGmapgoogle-maps.directives.api.models.parent").factory("uiGmapMarkersParentModel", [
-    "uiGmapIMarkerParentModel", "uiGmapModelsWatcher", "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async", "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker", "uiGmapPromise", "uiGmapGmapUtil", function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise, GmapUtil) {
+    "uiGmapIMarkerParentModel", "uiGmapModelsWatcher", "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async", "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker", "uiGmapPromise", "uiGmapGmapUtil", "uiGmapLogger", function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise, GmapUtil, $log) {
       var MarkersParentModel;
       MarkersParentModel = (function(_super) {
         __extends(MarkersParentModel, _super);
@@ -4071,6 +4073,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.createMarkersFromScratch = function(scope) {
+          var maybeCanceled;
           if (scope.doCluster) {
             if (scope.clusterEvents) {
               this.clusterInternalOptions = _.once((function(_this) {
@@ -4113,16 +4116,24 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.gMarkerManager = new MarkerManager(this.map);
           }
           if (scope.models.length === 0) {
-            this.existingPieces = uiGmapPromise.resolve();
+            _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+              return function() {
+                var promise;
+                promise = uiGmapPromise.resolve();
+                promise.promiseType = _async.promiseTypes.init;
+                return promise;
+              };
+            })(this)));
             return;
           }
-          return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
+          maybeCanceled = null;
+          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
             return function() {
               var promise;
               promise = _async.each(scope.models, function(model) {
-                return _this.newChildMarker(model, scope);
-              }, false);
-              promise.then(function() {
+                _this.newChildMarker(model, scope);
+                return maybeCanceled;
+              }).then(function() {
                 _this.modelsRendered = true;
                 _this.gMarkerManager.draw();
                 if (scope.fit) {
@@ -4130,9 +4141,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
                 return _this.scope.markerModelsUpdate.updateCtr += 1;
               });
+              promise.promiseType = _async.promiseTypes.create;
               return promise;
             };
-          })(this)));
+          })(this), _async.promiseTypes.create), function(canceledMsg) {
+            $log.debug("createAllNew: " + canceledMsg);
+            return maybeCanceled = canceledMsg;
+          });
         };
 
         MarkersParentModel.prototype.reBuildMarkers = function(scope) {
@@ -4152,30 +4167,34 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.pieceMeal = function(scope) {
-          var doChunk, payload;
+          var maybeCanceled, payload;
           if (scope.$$destroyed || this.isClearing) {
             return;
           }
-          doChunk = _async.defaultChunkSize;
+          maybeCanceled = null;
           if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.markerModels.length > 0) {
             payload = this.figureOutState(this.idKey, scope, this.scope.markerModels, this.modelKeyComparison);
-            return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
+            return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
               return function() {
-                return _async.each(payload.removals, function(child) {
+                var promise;
+                promise = _async.each(payload.removals, function(child) {
                   if (child != null) {
                     if (child.destroy != null) {
                       child.destroy();
                     }
-                    return _this.scope.markerModels.remove(child.id);
+                    _this.scope.markerModels.remove(child.id);
+                    return maybeCanceled;
                   }
-                }, doChunk).then(function() {
+                }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
-                    return _this.newChildMarker(modelToAdd, scope);
-                  }, doChunk);
+                    _this.newChildMarker(modelToAdd, scope);
+                    return maybeCanceled;
+                  });
                 }).then(function() {
                   return _async.each(payload.updates, function(update) {
-                    return _this.updateChild(update.child, update.model);
-                  }, doChunk);
+                    _this.updateChild(update.child, update.model);
+                    return maybeCanceled;
+                  });
                 }).then(function() {
                   if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
                     _this.gMarkerManager.draw();
@@ -4186,8 +4205,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }
                   return _this.scope.markerModelsUpdate.updateCtr += 1;
                 });
+                promise.promiseType = _async.promiseTypes.update;
+                return promise;
               };
-            })(this)));
+            })(this), _async.promiseTypes.update), function(canceledMsg) {
+              $log.debug("pieceMeal: " + canceledMsg);
+              return maybeCanceled = canceledMsg;
+            });
           } else {
             this.inProgress = false;
             return this.reBuildMarkers(scope);
@@ -4223,22 +4247,24 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         MarkersParentModel.prototype.onDestroy = function(scope) {
           return this.destroyPromise().then((function(_this) {
             return function() {
-              return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
-                _this.scope.markerModels.each(function(model) {
+              return _async.waitOrGo(_this, _async.preExecPromise(function() {
+                var promise;
+                promise = _async.each(_this.scope.markerModels.values(), function(model) {
                   if (model != null) {
                     return model.destroy(false);
                   }
-                });
-                delete _this.scope.markerModels;
-                if (_this.gMarkerManager != null) {
-                  _this.gMarkerManager.clear();
-                }
-                _this.scope.markerModels = new PropMap();
-                _this.scope.markerModelsUpdate.updateCtr += 1;
-                return uiGmapPromise.resolve().then(function() {
+                }).then(function() {
+                  delete _this.scope.markerModels;
+                  if (_this.gMarkerManager != null) {
+                    _this.gMarkerManager.clear();
+                  }
+                  _this.scope.markerModels = new PropMap();
+                  _this.scope.markerModelsUpdate.updateCtr += 1;
                   return _this.isClearing = false;
                 });
-              }));
+                promise.promiseType = _async.promiseTypes["delete"];
+                return promise;
+              }, _async.promiseTypes["delete"]));
             };
           })(this));
         };
@@ -6571,7 +6597,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return _.defer(parentModel.gMarkerManager.draw);
               });
               parentModel = new MarkersParentModel(scope, element, attrs, map);
-              return parentModel.existingPieces.then(function() {
+              return _.last(parentModel.existingPieces._content).then(function() {
                 return ready();
               });
             };

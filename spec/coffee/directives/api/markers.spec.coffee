@@ -71,7 +71,7 @@ describe 'uiGmapMarkers (directive creation)', ->
         timeout =>
           expect(GMarker.instances).toEqual(1)
           done()
-        , 350
+        , 500
 
     describe 'update an existing marker should modify an existing gMarker', =>
       beforeEach ->

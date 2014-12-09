@@ -14,6 +14,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     create : 'create'
     update : 'update'
     delete : 'delete'
+    init: 'init'
 
   promiseStatuses =
     IN_PROGRESS: 0
@@ -105,7 +106,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
   Synopsis:
 
-   - Promises have been broken down to 3 states create, update, and delete. (Helps boil down problems in ordering)
+   - Promises have been broken down to 4 states create, update,delete (3 main) and init. (Helps boil down problems in ordering)
+    where (init) is special to indicate that it is one of the first or to allow a create promise to work beyond being after a delete
 
    - Every Promise that comes is is enqueue and linked to the last promise in the queue.
 
@@ -137,9 +139,11 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     else
       lastPromise = _.last existingPiecesObj.existingPieces._content
       # note this skipp could be specific to polys (but it works for that)
-      if preExecPromise.promiseType == promiseTypes.create and lastPromise.promiseType != promiseTypes.delete
-        $log.debug "promiseType: #{preExecPromise.promiseType}, SKIPPED MUST COME AFTER DELETE ONLY"
-        return
+      if preExecPromise.promiseType == promiseTypes.create and
+        lastPromise.promiseType != promiseTypes.delete and
+        lastPromise.promiseType != promiseTypes.init
+          $log.debug "promiseType: #{preExecPromise.promiseType}, SKIPPED MUST COME AFTER DELETE ONLY"
+          return
       if preExecPromise.promiseType == promiseTypes.delete and lastPromise.promiseType != promiseTypes.delete
         if lastPromise.cancelCb? and _.isFunction(lastPromise.cancelCb) and isInProgress(lastPromise)
           $log.debug "promiseType: #{preExecPromise.promiseType}, CANCELING LAST PROMISE type: #{lastPromise.promiseType}"
