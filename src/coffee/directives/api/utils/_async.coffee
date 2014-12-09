@@ -7,22 +7,122 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       resolve: () ->
         _cb.apply(undefined, arguments)
   ])
-.service 'uiGmap_async', [ '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q', ($timeout, uiGmapPromise, $log, $q) ->
+.service 'uiGmap_async', [ '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q','uiGmapDataStructures',
+($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures) ->
   promiseTypes =
     create : 'create'
     update : 'update'
     delete : 'delete'
 
+  promiseStatuses =
+    IN_PROGRESS: 0
+    RESOLVED: 1
+    REJECTED: 2
+
   promiseStatus = (status) ->
     switch status
-      when 0
+      when promiseStatuses.IN_PROGRESS
         'in-progress'
-      when 1
+      when promiseStatuses.RESOLVED
         'resolved'
-      when 2
+      when promiseStatuses.REJECTED
         'rejected'
       else
         'done w error'
+
+  #putting a payload together in order to not have to flatten twice, and to not
+  #have to flatten again later
+  cancelable = (promise) ->
+    cancelDeferred = $q.defer()
+    combined = $q.all [promise, cancelDeferred.promise]
+    wrapped = $q.defer()
+
+    promise.then cancelDeferred.resolve, (->), (notify)  ->
+      cancelDeferred.notify notify
+      wrapped.notify notify
+
+    #if we completion from combined then we pass on the correct msh from its index
+    combined.then (successes) ->
+      wrapped.resolve successes[0] or successes[1]
+    , (error) ->
+      wrapped.reject error
+#    , (notifies) -> #this is not handled in angular yet.. it should be
+#      wrapped.notify notifies[0] or notifies[1]
+
+    wrapped.promise.cancel = (reason = 'canceled') ->
+      cancelDeferred.reject reason
+
+    wrapped.promise.notify = (msg = 'cancel safe') ->
+      wrapped.notify msg
+      #if originating promise is a cancelable type (we can send it a message as well)
+      promise.notify msg if promise.hasOwnProperty('notify')
+#      else #possible hack, I dont think you supposed to go through the api this way
+#        promise.$$state.pending.forEach (p) ->
+#          p[0].notify msg if p.length >= 1
+
+    if promise.promiseType?
+      wrapped.promise.promiseType = promise.promiseType
+    wrapped.promise
+
+  onlyTheLast = do ->
+    promises = []
+    (p) ->
+      promise = cancelable p
+      promises.push promise
+      promise.then (value) ->
+        if promise is _.last promises
+          if promises.length >= 2
+            promises.forEach (promise, i) ->
+              if i < promises.length - 1
+                promise.cancel()
+          promises = []
+
+  preExecPromise = (fnPromise, promiseType) ->
+    promise: fnPromise
+    promiseType: promiseType
+
+  ###
+  utility to reduce code bloat. The whole point is to check if there is existing synchronous work going on.
+  If so we wait on it.
+
+  Note: This is fully intended to be mutable (ie existingPiecesObj is getting existingPieces prop slapped on)
+  ###
+  waitOrGo = (existingPiecesObj, preExecPromise, cancelCb) ->
+    logPromise = ->
+      promise = preExecPromise.promise()
+#      unless promise.hasOwnProperty('cancel')
+#        $log.error "waitOrGo: can only process wrapped promises"
+      if promise.hasOwnProperty('promiseType')
+        $log.debug "promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
+#        promise.then =>
+#          $log.debug "old promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
+      promise.cancelCb = cancelCb
+      promise
+
+    unless existingPiecesObj.existingPieces
+      existingPiecesObj.existingPieces = new uiGmapDataStructures.Queue()
+      #expecting incoming promise to be cancelable
+      existingPiecesObj.existingPieces.enqueue logPromise()
+    else
+      lastPromise = _.last existingPiecesObj.existingPieces._content
+      if preExecPromise.promiseType == promiseTypes.create and lastPromise.promiseType != promiseTypes.delete
+        $log.debug "promiseType: #{preExecPromise.promiseType}, SKIPPED MUST COME AFTER DELETE ONLY"
+        return
+      if preExecPromise.promiseType == promiseTypes.delete and lastPromise.promiseType != promiseTypes.delete
+        if lastPromise.cancelCb? and _.isFunction lastPromise.cancelCb
+          $log.debug "promiseType: #{preExecPromise.promiseType}, CANCELING LAST PROMISE"
+          lastPromise.cancelCb('cancel safe')
+
+      newPromise = cancelable lastPromise.finally ->
+       logPromise()
+      newPromise.cancelCb = cancelCb
+      newPromise.promiseType = preExecPromise.promiseType
+      existingPiecesObj.existingPieces.enqueue newPromise
+      lastPromise.then ->
+        existingPiecesObj.existingPieces.dequeue()
+      #important to come after hooking to old Promise
+#      if existingPiecesObj.existingPieces.peek().$$state.status != promiseStatuses.IN_PROGRESS
+#        existingPiecesObj.existingPieces.dequeue()
 
   defaultChunkSize = 20
 
@@ -43,64 +143,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       msg = "error within chunking iterator: #{errorObject.value}"
       $log.error msg
       deferred.reject msg
-
-  #putting a payload together in order to not have to flatten twice, and to not
-  #have to flatten again later
-  cancelable = (promise) ->
-    cancelDeferred = $q.defer()
-    combined = $q.all [promise, cancelDeferred.promise]
-    wrapped = $q.defer()
-
-    promise.then  (result) ->
-      cancelDeferred.resolve()
-
-    combined.then (results) ->
-      wrapped.resolve results[0]
-    , wrapped.reject
-
-    wrapped.promise.cancel = (reason) ->
-      reason = reason or 'canceled'
-      cancelDeferred.reject reason
-
-    if promise.promiseType?
-      wrapped.promise.promiseType = promise.promiseType
-    wrapped.promise
-
-  onlyTheLast = do ->
-    promises = []
-    (p, cb) ->
-      promise = cancelable p
-      promises.push promise
-      promise.then (value) ->
-        if promise is _.last promises
-          if promises.length >= 2
-            promises.forEach (promise, i) ->
-              if i < promises.length - 1
-                promise.cancel()
-          cb value
-          promises = []
-  ###
-  utility to reduce code bloat. The whole point is to check if there is existing synchronous work going on.
-  If so we wait on it.
-
-  Note: This is fully intended to be mutable (ie existingPiecesObj is getting existingPieces prop slapped on)
-  ###
-  waitOrGo = (existingPiecesObj, fnPromise) ->
-    logPromise = () ->
-      promise = fnPromise()
-      if promise.hasOwnProperty('promiseType')
-        $log.debug "promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
-        promise.then =>
-          $log.debug "old promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
-      promise
-
-    unless existingPiecesObj.existingPieces
-      existingPiecesObj.existingPieces = []
-      existingPiecesObj.existingPieces.push logPromise()
-    else
-      lastPromise = _.last existingPiecesObj.existingPieces
-      existingPiecesObj.existingPieces.push lastPromise.then ->
-        logPromise()
+    if result == 'cancel safe'
+      deferred.reject 'cancel safe'
 
   ###
     Author: Nicholas McCready & jfriend00
@@ -175,4 +219,5 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   defaultChunkSize: defaultChunkSize
   promiseTypes: promiseTypes
   cancelablePromise: cancelable
+  preExecPromise: preExecPromise
 ]

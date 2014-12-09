@@ -272,7 +272,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
               #being done first should make scopes equal
               settingZoomFromScope = true
               $timeout  ->
-                _m.setZoom newValue
+                _gMap.setZoom newValue
                 settingZoomFromScope false
               , scope.eventOpts?.debounce?.zoomMs + 20, false # use $timeout as a simple wrapper for setTimeout without calling $apply
 

@@ -2,13 +2,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 .factory 'uiGmapPolygonsParentModel', ['$timeout', 'uiGmapLogger',
   'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap',
   'uiGmapPolygonChildModel', 'uiGmap_async', 'uiGmapPromise',
-  ($timeout, Logger, ModelKey, ModelsWatcher, PropMap, PolygonChildModel, _async, uiGmapPromise) ->
+  ($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolygonChildModel, _async, uiGmapPromise) ->
     class PolygonsParentModel extends ModelKey
       @include ModelsWatcher
       constructor: (@scope, @element, @attrs, @gMap, @defaults) ->
         super(scope)
         self = @
-        @$log = Logger
+        @$log = $log
         @plurals = new PropMap()
         @scopePropNames = [
           'path'
@@ -32,16 +32,23 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       #watch this scope(Parent to all Models), these updates reflect expression / Key changes
       #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
       watch: (scope, name, nameKey) =>
-#        scope.$watch name, (newValue, oldValue) =>
-#          if (newValue != oldValue)
-#            @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
-#            _async.waitOrGo @, =>
-#              promise =
-#                _async.each @plurals.values(), (model) =>
-#                  model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
-#                , false
-#              promise.promiseType = _async.promiseTypes.update
-#              promise
+        scope.$watch name, (newValue, oldValue) =>
+          if (newValue != oldValue)
+            maybeCancel =  null
+            @[nameKey] = if _.isFunction newValue then newValue() else newValue
+            _async.waitOrGo @,
+              _async.preExecPromise =>
+                promise =
+                  _async.each @plurals.values(), (model) =>
+                    model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
+                    maybeCancel
+                  , false
+                promise.promiseType = _async.promiseTypes.update
+                promise
+              , _async.promiseTypes.update
+            , (canceledMsg) ->
+              $log.debug "createAllNew: #{canceledMsg}"
+              maybeCancel = canceledMsg
 
 
       watchModels: (scope) =>
@@ -65,16 +72,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       onDestroy: (doDelete) =>
         @destroyPromise().then =>
-          _async.waitOrGo @, =>
-            promise = _async.each @plurals.values(), (child) =>
-              child.destroy false
-            , false
-            .then =>
-              delete @plurals if doDelete
-              @plurals = new PropMap()
-              @isClearing = false
-            promise.promiseType =  _async.promiseTypes.delete
-            promise
+          _async.waitOrGo @,
+            _async.preExecPromise =>
+              promise = _async.each @plurals.values(), (child) =>
+                child.destroy false
+              , false
+              .then =>
+                delete @plurals if doDelete
+                @plurals = new PropMap()
+                @isClearing = false
+              promise.promiseType =  _async.promiseTypes.delete
+              promise
+            , _async.promiseTypes.delete
 
       watchDestroy: (scope)=>
         scope.$on '$destroy', =>
@@ -112,37 +121,49 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         if @firstTime
           @watchModels scope
           @watchDestroy scope
-
-        _async.waitOrGo @, =>
-          promise =
-            _async.each scope.models, (model) =>
+        #allows graceful fallout of _async.each
+        notified = undefined
+        _async.waitOrGo @,
+          _async.preExecPromise =>
+            promise = _async.each scope.models, (model) =>
               @createChild(model, @gMap)
-            .then => #handle done callBack
+              notified
+            .then =>
+              #handle done callBack
               @firstTime = false
-          promise.promiseType = _async.promiseTypes.create
-          promise
+            promise.promiseType = _async.promiseTypes.create
+            promise
+          , _async.promiseTypes.create
+        , (canceledMsg) ->
+          $log.debug "createAllNew: #{canceledMsg}"
+          notified = canceledMsg
 
       pieceMeal: (scope, isArray = true)=>
         return if scope.$$destroyed or @isClearing
-#        return if @updateInProgress() and @plurals.length > 0
-
+        #allows graceful fallout of _async.each
+        notified = null
         @models = scope.models
         if scope? and scope.models? and scope.models.length > 0 and @plurals.length > 0
-          _async.waitOrGo @, =>
-            payload = @figureOutState @idKey, scope, @plurals, @modelKeyComparison
-            promise = _async.each payload.removals, (id)=>
+          _async.waitOrGo @,
+            _async.preExecPromise =>
+              payload = @figureOutState @idKey, scope, @plurals, @modelKeyComparison
+              promise = promise = _async.each payload.removals, (id) =>
                 child = @plurals.get(id)
                 if child?
                   child.destroy()
                   @plurals.remove(id)
-            , false
-            .then =>
-              #add all adds via creating new ChildMarkers which are appended to @markers
-              _async.each payload.adds, (modelToAdd) =>
-                @createChild(modelToAdd, @gMap)
-              , false
-            promise.promiseType = _async.promiseTypes.update
-            promise
+                  notified
+              .then =>
+                #add all adds via creating new ChildMarkers which are appended to @markers
+                _async.each payload.adds, (modelToAdd) =>
+                  @createChild(modelToAdd, @gMap)
+                  notified
+              promise.promiseType = _async.promiseTypes.update
+              promise
+            , _async.promiseTypes.update
+          , (canceledMsg) ->
+            $log.debug "pieceMeal: #{canceledMsg}"
+            notified = canceledMsg
         else
           @inProgress = false
           @rebuildAll(@scope, true, true)
