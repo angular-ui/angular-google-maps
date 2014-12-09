@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.11 2014-12-08
+/*! angular-google-maps 2.0.11 2014-12-09
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1176,9 +1176,7 @@ Nicholas McCready - https://twitter.com/nmccready
               if (_.isArray(now[prop])) {
                 changes[prop] = now[prop];
               } else if (_.isObject(now[prop])) {
-                if (!_.isEmpty(prev[prop])) {
-                  c = this.getChanges(now[prop], prev[prop]);
-                }
+                c = this.getChanges(now[prop], (prev ? prev[prop] : null));
                 if (!_.isEmpty(c)) {
                   changes[prop] = c;
                 }
