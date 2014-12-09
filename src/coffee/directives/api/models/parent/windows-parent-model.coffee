@@ -54,7 +54,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                 else
                   doScratch = @windows.length == 0
                   if @existingPieces?
-                    @existingPieces.then => @createChildScopesWindows doScratch
+                    _.last(@existingPieces._content).then => @createChildScopesWindows doScratch
                   else
                     @createChildScopesWindows doScratch
             , true
@@ -69,15 +69,17 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
           onDestroy:(doDelete) =>
             @destroyPromise().then =>
-              @cleanOnResolve _async.waitOrGo @, =>
-#                $log.debug('onDestroy: clearing all children')
-                @windows.each (child) =>
-                  child.destroy()
-                uiGmapPromise.resolve()
-              .then =>
-                delete @windows if doDelete
-                @windows = new PropMap()
-                @isClearing = false
+              _async.waitOrGo @,
+                _async.preExecPromise =>
+                  promise = _async.each @windows.values(), (child) =>
+                    child.destroy()
+                  .then =>
+                    delete @windows if doDelete
+                    @windows = new PropMap()
+                    @isClearing = false
+                  promise.promiseType =  _async.promiseTypes.delete
+                  promise
+                , _async.promiseTypes.delete
 
           watchDestroy: (scope)=>
             scope.$on '$destroy', =>
@@ -141,45 +143,59 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             @setContentKeys(scope.models) #only setting content keys once per model array
 
             if scope.models.length == 0
-              @existingPieces = uiGmapPromise.resolve()
+              _async.waitOrGo @,
+                _async.preExecPromise =>
+                  promise = uiGmapPromise.resolve()
+                  promise.promiseType = _async.promiseTypes.init
+                  promise
               return
 
-#            $log.debug('createAllNewWindows: waiting to make windows')
-            @cleanOnResolve _async.waitOrGo @, =>
-              _async.each scope.models, (model) =>
-                gMarker = if hasGMarker then @getItem(scope, modelsPropToIterate, model[@idKey])?.gMarker else undefined
-                $log.error 'Unable to get gMarker from markersScope!' if not gMarker and @markersScope
-#                $log.debug "creating window with model :#{JSON.stringify(model)}"
-                @createWindow(model, gMarker, @gMap)
-            .then =>
-              @firstTime = false
+            maybeCanceled = null
+            _async.waitOrGo @,
+              _async.preExecPromise =>
+                promise =_async.each scope.models, (model) =>
+                  gMarker = if hasGMarker then @getItem(scope, modelsPropToIterate, model[@idKey])?.gMarker else undefined
+                  unless maybeCanceled
+                    $log.error 'Unable to get gMarker from markersScope!' if not gMarker and @markersScope
+                    @createWindow(model, gMarker, @gMap)
+                  maybeCanceled
+                .then =>
+                  @firstTime = false
+                promise.promiseType = _async.promiseTypes.create
+                promise
+              , _async.promiseTypes.create
+            , (canceledMsg) ->
+              $log.debug "createAllNew: #{canceledMsg}"
+              maybeCanceled= canceledMsg
 
           pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true)=>
             return if scope.$$destroyed or @isClearing
-            return if @updateInProgress()
-#            doChunk = if @existingPieces? then false else _async.defaultChunkSize
-            doChunk = _async.defaultChunkSize
+            maybeCanceled = null
             @models = scope.models
             if scope? and scope.models? and scope.models.length > 0 and @windows.length > 0
-#              $log.debug('pieceMealWindows: waiting to make windows')
               payload = @figureOutState @idKey, scope, @windows, @modelKeyComparison
-#             $log.debug("pieceMealWindows: state: (removals: #{state.removals.length}, adds: #{state.adds.length}, updates: #{state.updates.length})")
-              @cleanOnResolve _async.waitOrGo @, =>
-                _async.each payload.removals, (child)=>
-#                    $log.debug('pieceMealWindows: remove')
-                  if child?
-                    @windows.remove(child.id)
-                    child.destroy(true) if child.destroy?
-                ,false
-                .then =>
-#                    $log.debug('pieceMealWindows: removals done')
-                  #add all adds via creating new ChildMarkers which are appended to @markers
-                  _async.each payload.adds, (modelToAdd) =>
-#                      $log.debug('pieceMealWindows: add')
-                    gMarker = @getItem(scope, modelsPropToIterate, modelToAdd[@idKey])?.gMarker
-                    throw 'Gmarker undefined' unless gMarker
-                    @createWindow(modelToAdd, gMarker, @gMap)
+              _async.waitOrGo @,
+                _async.preExecPromise =>
+                  promise = _async.each payload.removals, (child)=>
+                    if child?
+                      @windows.remove(child.id)
+                      child.destroy(true) if child.destroy?
+                      maybeCanceled
                   ,false
+                  .then =>
+                    #add all adds via creating new ChildMarkers which are appended to @markers
+                    _async.each payload.adds, (modelToAdd) =>
+                      gMarker = @getItem(scope, modelsPropToIterate, modelToAdd[@idKey])?.gMarker
+                      throw 'Gmarker undefined' unless gMarker
+                      @createWindow(modelToAdd, gMarker, @gMap)
+                      maybeCanceled
+                    ,false
+                  promise.promiseType = _async.promiseTypes.update
+                  promise
+                , _async.promiseTypes.update
+              , (canceledMsg) ->
+                $log.debug "pieceMeal: #{canceledMsg}"
+                maybeCanceled = canceledMsg
             else
               $log.debug('pieceMealWindows: rebuildAll')
               @rebuildAll(@scope, true, true)

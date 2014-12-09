@@ -3133,7 +3133,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               this.deferred.reject('gMarker is null');
             }
             if (!(((_ref = this.gMarker) != null ? _ref.getMap() : void 0) && this.gMarkerManager.type === MarkerManager.type)) {
-              $log.warn('gMarker has no map yet');
+              $log.debug('gMarker has no map yet');
               this.deferred.resolve(this.gMarker);
             }
           }
@@ -5286,7 +5286,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 } else {
                   doScratch = _this.windows.length === 0;
                   if (_this.existingPieces != null) {
-                    return _this.existingPieces.then(function() {
+                    return _.last(_this.existingPieces._content).then(function() {
                       return _this.createChildScopesWindows(doScratch);
                     });
                   } else {
@@ -5317,18 +5317,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         WindowsParentModel.prototype.onDestroy = function(doDelete) {
           return this.destroyPromise().then((function(_this) {
             return function() {
-              return _this.cleanOnResolve(_async.waitOrGo(_this, function() {
-                _this.windows.each(function(child) {
+              return _async.waitOrGo(_this, _async.preExecPromise(function() {
+                var promise;
+                promise = _async.each(_this.windows.values(), function(child) {
                   return child.destroy();
+                }).then(function() {
+                  if (doDelete) {
+                    delete _this.windows;
+                  }
+                  _this.windows = new PropMap();
+                  return _this.isClearing = false;
                 });
-                return uiGmapPromise.resolve();
-              })).then(function() {
-                if (doDelete) {
-                  delete _this.windows;
-                }
-                _this.windows = new PropMap();
-                return _this.isClearing = false;
-              });
+                promise.promiseType = _async.promiseTypes["delete"];
+                return promise;
+              }, _async.promiseTypes["delete"]));
             };
           })(this));
         };
@@ -5408,6 +5410,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.createAllNewWindows = function(scope, hasGMarker, modelsPropToIterate, isArray) {
+          var maybeCanceled;
           if (modelsPropToIterate == null) {
             modelsPropToIterate = 'models';
           }
@@ -5421,29 +5424,44 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           this.setContentKeys(scope.models);
           if (scope.models.length === 0) {
-            this.existingPieces = uiGmapPromise.resolve();
+            _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+              return function() {
+                var promise;
+                promise = uiGmapPromise.resolve();
+                promise.promiseType = _async.promiseTypes.init;
+                return promise;
+              };
+            })(this)));
             return;
           }
-          return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
+          maybeCanceled = null;
+          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
             return function() {
-              return _async.each(scope.models, function(model) {
+              var promise;
+              promise = _async.each(scope.models, function(model) {
                 var gMarker, _ref;
                 gMarker = hasGMarker ? (_ref = _this.getItem(scope, modelsPropToIterate, model[_this.idKey])) != null ? _ref.gMarker : void 0 : void 0;
-                if (!gMarker && _this.markersScope) {
-                  $log.error('Unable to get gMarker from markersScope!');
+                if (!maybeCanceled) {
+                  if (!gMarker && _this.markersScope) {
+                    $log.error('Unable to get gMarker from markersScope!');
+                  }
+                  _this.createWindow(model, gMarker, _this.gMap);
                 }
-                return _this.createWindow(model, gMarker, _this.gMap);
+                return maybeCanceled;
+              }).then(function() {
+                return _this.firstTime = false;
               });
+              promise.promiseType = _async.promiseTypes.create;
+              return promise;
             };
-          })(this))).then((function(_this) {
-            return function() {
-              return _this.firstTime = false;
-            };
-          })(this));
+          })(this), _async.promiseTypes.create), function(canceledMsg) {
+            $log.debug("createAllNew: " + canceledMsg);
+            return maybeCanceled = canceledMsg;
+          });
         };
 
         WindowsParentModel.prototype.pieceMealWindows = function(scope, hasGMarker, modelsPropToIterate, isArray) {
-          var doChunk, payload;
+          var maybeCanceled, payload;
           if (modelsPropToIterate == null) {
             modelsPropToIterate = 'models';
           }
@@ -5453,21 +5471,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (scope.$$destroyed || this.isClearing) {
             return;
           }
-          if (this.updateInProgress()) {
-            return;
-          }
-          doChunk = _async.defaultChunkSize;
+          maybeCanceled = null;
           this.models = scope.models;
           if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.windows.length > 0) {
             payload = this.figureOutState(this.idKey, scope, this.windows, this.modelKeyComparison);
-            return this.cleanOnResolve(_async.waitOrGo(this, (function(_this) {
+            return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
               return function() {
-                return _async.each(payload.removals, function(child) {
+                var promise;
+                promise = _async.each(payload.removals, function(child) {
                   if (child != null) {
                     _this.windows.remove(child.id);
                     if (child.destroy != null) {
-                      return child.destroy(true);
+                      child.destroy(true);
                     }
+                    return maybeCanceled;
                   }
                 }, false).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
@@ -5476,11 +5493,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     if (!gMarker) {
                       throw 'Gmarker undefined';
                     }
-                    return _this.createWindow(modelToAdd, gMarker, _this.gMap);
+                    _this.createWindow(modelToAdd, gMarker, _this.gMap);
+                    return maybeCanceled;
                   }, false);
                 });
+                promise.promiseType = _async.promiseTypes.update;
+                return promise;
               };
-            })(this)));
+            })(this), _async.promiseTypes.update), function(canceledMsg) {
+              $log.debug("pieceMeal: " + canceledMsg);
+              return maybeCanceled = canceledMsg;
+            });
           } else {
             $log.debug('pieceMealWindows: rebuildAll');
             return this.rebuildAll(this.scope, true, true);
