@@ -1,0 +1,39 @@
+<h2 id="GoogleMapApi">GoogleMapApi <span class="badge badge-info">New in v2.0.0</span></h2>
+AKA: <strong>(Google Maps SDK Async Loader)</strong><br><br>
+This provider is was created for a few reasons:
+<ul>
+    <li>
+        <a href="https://developers.google.com/maps/documentation/javascript/tutorial#asynch">Google recommends loading the SDK this way.</a>
+    </li>
+    <li>
+        It guarantees that angular-google-maps does not begin processing any directives until all of the Google Maps SDK is fully ready!
+    </li>
+</ul>
+To utilize this provider you must load it and configure it properly. Please note the
+<a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/providers/map-loader.coffee#L31-L50">defaults</a>!
+
+<h3> Configure</h3>
+<div hljs language="js">
+.config(function(uiGmapGoogleMapApiProvider) {
+    uiGmapGoogleMapApiProvider.configure({
+        //    key: 'your api key',
+        v: '3.17',
+        libraries: 'weather,geometry,visualization'
+    });
+})
+</div>
+
+<h3> When is Google Maps SDK ready?</h3>
+<div hljs language="js">
+.controller("someController", function($scope, uiGmapGoogleMapApi) {
+    // Do stuff with your $scope.
+    // Note: Some of the directives require at least something to be defined originally!
+    // e.g. $scope.markers = []
+
+    // uiGmapGoogleMapApi is a promise.
+    // The "then" callback function provides the google.maps object.
+    uiGmapGoogleMapApi.then(function(maps) {
+
+    });
+});
+</div>

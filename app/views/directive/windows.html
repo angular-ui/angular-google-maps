@@ -132,14 +132,7 @@
             <td><span class="label label-danger">string</span></td>
             <td>The name of the property in the models array to evaluate when closing the window via a click event</td>
         </tr>
-        <tr>
-            <td>options</td>
-            <td><span class="label label-info">expression</span></td>
-            <td>object containing <a google-api="InfoWindowOptions">InfoWindowOptions</a> to apply to all windows
-                created by
-                the directive.
-            </td>
-        </tr>
+        <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='InfoWindow';directive='Windows';isStringTypeOnArray=true">
         <tr>
             <td>control</td>
             <td><span class="label label-default">Object</span></td>
@@ -183,7 +176,7 @@
     <runnable-example example="'windows'"></runnable-example>
 
 <script type="text/ng-template" id="windowsTemplate">
-<windows
+<ui-gmap-windows
         idKey="{expression}"
         doRebuildAll="{string or object}"
         models="{expression}"
@@ -195,10 +188,10 @@
         isIconVisibleOnClick="'{string}'"
         closeClick="'{string}'"
 
-        options='{expression}'
+        options='{string}'
         control='{expression}'
         >
 
-</windows>
+</ui-gmap-windows>
 </script>
 </div>

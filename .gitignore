@@ -17,3 +17,6 @@ dist
 .tmp
 .sass-cache
 app/bower_components
+/bower_components
+app/scripts/vendor.js
+app/styles/vendor.css

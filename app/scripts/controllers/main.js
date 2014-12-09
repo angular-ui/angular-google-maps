@@ -1,15 +1,15 @@
 'use strict';
 
 angular.module('angularGoogleMapsApp')
-  .controller('MainCtrl', function ($scope, $github, $log, analytics) {
+  .controller('MainCtrl',['$scope', '$github', '$log', 'analytics', function ($scope, $github, $log, analytics) {
 
-    var DOWNLOAD_URL_TEMPLATE = 'https://raw.github.com/angular-ui/angular-google-maps/%REF%/dist/angular-google-maps.min.js',
+    var DOWNLOAD_URL_TEMPLATE = 'https://rawgit.com/angular-ui/angular-google-maps/%REF%/dist/angular-google-maps.min.js',
       FALLBACK_BRANCH = 'master';
 
     $scope.map = {
       center: {
-        latitude: 40.7081,	// NYC
-        longitude: -74.0041	// NYC
+        latitude: 40.7081,  // NYC
+        longitude: -74.0041 // NYC
       },
       zoom: 13,
       options: {
@@ -20,9 +20,13 @@ angular.module('angularGoogleMapsApp')
     };
 
     $scope.marker = {
+      id:0,
       coords: {
-        latitude: 40.47,
-        longitude: -74.50
+        latitude: 40.7081,  // NYC
+        longitude: -74.0041 // NYC
+      },
+      options:{
+        animation:1
       }
     };
 
@@ -45,4 +49,4 @@ angular.module('angularGoogleMapsApp')
       $scope.latestTag = { name: FALLBACK_BRANCH };
       $scope.downloadUrl = DOWNLOAD_URL_TEMPLATE.replace('%REF%', FALLBACK_BRANCH);
     });
-  });
+  }]);

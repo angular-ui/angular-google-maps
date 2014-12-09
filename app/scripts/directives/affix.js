@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('angularGoogleMapsApp')
-  .directive('affix', function ($log) {
+  .directive('affix',['$log', function ($log) {
     return {
       restrict: 'A',
       link: function postLink(scope, element, attrs) {      
@@ -23,4 +23,4 @@ angular.module('angularGoogleMapsApp')
       	angular.element(element).affix(opts);
       }
     };
-  });
+  }]);

@@ -1,131 +1,144 @@
 <!doctype html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-  <head>
-  
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=9">
-    <meta name="description" content="This is a set of directives to integrate Google Maps into your AngularJS applications.">
+    <meta name="description"
+          content="This is a set of directives to integrate Google Maps into your AngularJS applications.">
     <meta name="google-site-verification" content="W3Am2dk5QB9UWUZmNikXN_k9cmkqMDkWbQ83a9IUIfE">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="fragment" content="!">
-    
-    <title>Google Maps for AngularJS</title>
-    
+
+    <title>Angular Google Maps</title>
+
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-    <link href="//netdna.bootstrapcdn.com/bootswatch/3.0.3/yeti/bootstrap.min.css" rel="stylesheet">
-	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-	<link href="//fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic" rel="stylesheet">
-    <link href="bower_components/highlightjs/styles/monokai.css" rel="stylesheet">
+    <!-- build:css styles/vendor.css -->
+    <link rel="stylesheet" href="styles/vendor.css">
+    <!-- endbuild -->
 
-    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/yeti/bootstrap.min.css">
+
+    <!-- build:css styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="styles/animations.css">
     <!-- endbuild -->
-    
+
+    <link href="//fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic" rel="stylesheet">
     <link rel="help" href="/api">
-    
+
 </head>
-  <body ng-app="angularGoogleMapsApp">
-    <!--[if lte IE 8]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]-->
+<body ng-app="angularGoogleMapsApp">
+<!--[if lte IE 8]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
 
-    <!--[if lt IE 9]>
-      <script src="bower_components/es5-shim/es5-shim.js"></script>
-      <script src="bower_components/json3/lib/json3.min.js"></script>
-    <![endif]-->
+<!--[if lt IE 9]>
+<script src="bower_components/es5-shim/es5-shim.js"></script>
+<script src="bower_components/json3/lib/json3.min.js"></script>
+<![endif]-->
 
-    <nav class="navbar navbar-default " role="navigation">
-    	<div class="navbar-header">
-    		<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
-		      <span class="sr-only">Toggle navigation</span>
-		      <span class="icon-bar"></span>
-		      <span class="icon-bar"></span>
-		      <span class="icon-bar"></span>
-		    </button>
-    	</div>
-    	<div class="container">
-			<div class="collapse navbar-collapse" id="navbar-collapse">
-				<ul class="nav navbar-nav">
-					<li ui-sref-active="active"><a ui-sref="home" rel="start">Home</a></li>
-					<li ui-sref-active="active"><a ui-sref="use" rel="use">Quickstart</a></li>
-					<li ui-sref-active="active"><a ui-sref="api" rel="api">API documentation</a></li>
-		            <li ui-sref-active="active"><a ui-sref="faq" rel="faq">FAQ</a></li>
-		            <li ui-sref-active="active"><a ui-sref="changelog" rel="changelog">Changelog</a></li>
-					<li ui-sref-active="active"><a ui-sref="demo" rel="demo">Demo</a></li>
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Developer resources <b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li><a href="https://github.com/angular-ui/angular-google-maps" rel="external"><i class="icon-github-alt"></i> Code</a></li>
-							<li><a href="https://github.com/angular-ui/angular-google-maps/issues?state=open" rel="external"><i class="icon-github-alt"></i> Issue tracker <span class="badge badge-important">{{ github.issuesCount }}</span></a></li>
-							<li><a href="https://plus.google.com/communities/101653511105172739950?utm_source=websiten&utm_medium=link" rel="external"><i class="icon-google-plus"></i> Google+ community</a></li>
-							<li><a href="https://developers.google.com/maps/documentation/javascript/" rel="external"><i class="icon-question-sign"></i> Google Maps Javascript API v3</a></li>		
-							<li><a href="https://trello.com/b/WwTRrkfh/angular-google-maps" rel="external"><i class="icon-trello"></i> Trello project management board</a></li>
-						</ul>
-					</li>
-				</ul>
-			</div>
-    	</div>
-    </nav>
+<nav class="navbar navbar-default " role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    <div class="container">
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li ui-sref-active="active"><a ui-sref="home" rel="start">Home</a></li>
+                <li ui-sref-active="active"><a ui-sref="use" rel="use">Quickstart</a></li>
+                <li ui-sref-active="active"><a ui-sref="api" rel="api">API documentation</a></li>
+                <li ui-sref-active="active"><a ui-sref="faq" rel="faq">FAQ</a></li>
+                <li ui-sref-active="active"><a ui-sref="changelog" rel="changelog">Changelog</a></li>
+                <li ui-sref-active="active"><a ui-sref="demo" rel="demo">Demo</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Developer resources <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="https://github.com/angular-ui/angular-google-maps" rel="external"><i
+                                class="icon-github-alt"></i> Code</a></li>
+                        <li><a href="https://github.com/angular-ui/angular-google-maps/issues?state=open"
+                               rel="external"><i
+                                class="icon-github-alt"></i> Issue tracker <span class="badge badge-important">{{ github.issuesCount }}</span></a>
+                        </li>
+                        <li>
+                            <a href="https://plus.google.com/communities/101653511105172739950?utm_source=websiten&utm_medium=link"
+                               rel="external"><i class="icon-google-plus"></i> Google+ community</a></li>
+                        <li><a href="https://developers.google.com/maps/documentation/javascript/" rel="external"><i
+                                class="icon-question-sign"></i> Google Maps Javascript API v3</a></li>
+                        <li><a href="https://trello.com/b/WwTRrkfh/angular-google-maps" rel="external"><i
+                                class="icon-trello"></i> Trello project management board</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-    <div class="container" itemscope itemtype="http://schema.org/SoftwareApplication">
-	    <div ui-view class="view-animate"></div>
-	</div>
+<div class="container" itemscope itemtype="http://schema.org/SoftwareApplication">
+    <div ui-view class="view-animate"></div>
+</div>
 
-	<a href="https://github.com/angular-ui/angular-google-maps" rel="external" class="hidden-xs">
-		<img style="position: fixed; top: 0; right: 0; border: 0; z-index: 10000" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
-	</a>
-	
-	<ng-include src="'views/footer.html'"></ng-include>
+<a href="https://github.com/angular-ui/angular-google-maps" rel="external" class="hidden-xs">
+    <img style="position: fixed; top: 0; right: 0; border: 0; z-index: 10000"
+         src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub">
+</a>
 
-    <script>
-       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    </script>
-	
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.js"></script>
-	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<ng-include src="'views/footer.html'"></ng-include>
 
-    <!-- build:js scripts/modules.js -->
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-animate/angular-animate.js"></script>
-    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-    <script src="bower_components/share-button/build/share.min.js"></script>
-    <script src="bower_components/angular-google-maps/dist/angular-google-maps.min.js"></script>
-    <script src="bower_components/highlightjs/highlight.pack.js"></script>
-    <script src="bower_components/angular-highlightjs/angular-highlightjs.min.js"></script>
-    <script src="bower_components/angular-semver-sort/angular-semver-sort.js"></script>
-    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <!-- endbuild -->
+        <script>
+           (function (i, s, o, g, r, a, m) {
+               i['GoogleAnalyticsObject'] = r;
+               i[r] = i[r] || function () {
+                   (i[r].q = i[r].q || []).push(arguments)
+               }, i[r].l = 1 * new Date();
+               a = s.createElement(o),
+                       m = s.getElementsByTagName(o)[0];
+               a.async = 1;
+               a.src = g;
+               m.parentNode.insertBefore(a, m)
+           })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        </script>
 
-    <!-- build:js({.tmp,app}) scripts/scripts.js -->
-    <script src="scripts/module.js"></script>
-    <script src="scripts/controllers/main.js"></script>
-    <script src="scripts/controllers/use.js"></script>
-    <script src="scripts/controllers/faq.js"></script>
-    <script src="scripts/controllers/api.js"></script>
-    <script src="scripts/controllers/demo.js"></script>
-    <script src="scripts/controllers/headlines.js"></script>    
-    <script src="scripts/controllers/footer.js"></script>
-    <script src="scripts/controllers/not-found.js"></script>
-    <script src="scripts/controllers/changelog.js"></script>
-    <script src="scripts/services/github.js"></script>
-    <script src="scripts/services/ga.js"></script>
-    <script src="scripts/services/plnkr.js"></script>
-    <script src="scripts/app.js"></script>
-    <script src="scripts/directives/rel.js"></script>
-    <script src="scripts/directives/share.js"></script>
-    <script src="scripts/directives/affix.js"></script>
-    <script src="scripts/directives/google-api-ref.js"></script>
-    <script src="scripts/directives/example.js"></script>
-    <!-- endbuild -->
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+<!-- build:js scripts/vendor.js -->
+<script src="scripts/vendor.js"></script>
+<!-- endbuild -->
+
+<!-- build:js({.tmp,app}) scripts/scripts.js -->
+<script src="scripts/module.js"></script>
+<script src="scripts/controllers/main.js"></script>
+<script src="scripts/controllers/use.js"></script>
+<script src="scripts/controllers/faq.js"></script>
+<script src="scripts/controllers/api.js"></script>
+<script src="scripts/controllers/demo.js"></script>
+<script src="scripts/controllers/headlines.js"></script>
+<script src="scripts/controllers/footer.js"></script>
+<script src="scripts/controllers/not-found.js"></script>
+<script src="scripts/controllers/changelog.js"></script>
+<script src="scripts/services/github.js"></script>
+<script src="scripts/services/ga.js"></script>
+<script src="scripts/services/plnkr.js"></script>
+<script src="scripts/app.js"></script>
+<script src="scripts/directives/rel.js"></script>
+<script src="scripts/directives/share.js"></script>
+<script src="scripts/directives/affix.js"></script>
+<script src="scripts/directives/google-api-ref.js"></script>
+<script src="scripts/directives/example.js"></script>
+<!-- endbuild -->
 </body>
 </html>

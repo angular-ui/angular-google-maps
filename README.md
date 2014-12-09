@@ -19,3 +19,19 @@ $ npm install
 $ bower install
 $ grunt server
 ```
+
+Deployment
+===
+`grunt gh-pages`
+
+Basic Build
+===
+`grunt build`
+
+Prod Build (minifies and all that jaz)
+===
+`grunt prod_build`
+
+Serve the Files
+===
+`grunt s` or `grunt server`

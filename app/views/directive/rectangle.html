@@ -1,6 +1,7 @@
+<new-scope>
 <p>The <code>rectangle</code> directive is used to draw a rectangular overlay connected to various points on the map.
 See <a google-api="Rectangle">Rectangle API</a>.</p>
-	
+
 <div class="alert">This directive is currently only available in the <em>develop</em> branch. It will be generally
 available in the next release.</div>
 
@@ -29,9 +30,9 @@ available in the next release.</div>
 		<tr>
 			<td>fill</td>
 			<td><span class="label label-danger">expression</span></td>
-			<td>Object to configure the rectangle fill type. Valid properties are <code>color</code> (CSS hex notation) 
+			<td>Object to configure the rectangle fill type. Valid properties are <code>color</code> (CSS hex notation)
 			and <code>opacity</code> (between 0.0 and 1.0)</td>
-		</tr>			
+		</tr>
 		<tr>
 			<td>stroke</td>
 			<td><span class="label label-info">expression</span></td>
@@ -58,6 +59,8 @@ available in the next release.</div>
 			<td><span class="label label-info">expression</span></td>
 			<td>boolean property which shows or hides the polyline</td>
 		</tr>
+		<tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Rectangle'">
+		</tr>
 	</tbody>
 </table>
 
@@ -66,14 +69,15 @@ available in the next release.</div>
 
 
 <script type="text/ng-template" id="rectangleTemplate">
-<rectangle bounds='{expression}'
+<ui-gmap-rectangle bounds='{expression}'
 	fill='{expression}'
 	stroke='{expression}'
 	clickable='{expression}'
 	draggable='{expression}'
 	editable='{expression}'
-	visible='{expression}'>
-	...
-</rectangle>
+	visible='{expression}'
+	events='{expression}'
+>
+</ui-gmap-rectangle>
 </script>
-
+</new-scope>

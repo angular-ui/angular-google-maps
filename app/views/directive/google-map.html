@@ -80,11 +80,7 @@
 			<td>Expression which, if it evaluates to <code>true</code>, will trigger a map refresh. Useful when the map is
 				initially hidden.</td>
 		</tr>
-		<tr>
-			<td>options</td>
-			<td><span class="label label-default">expression</span></td>
-			<td>Additional options to pass to the google.maps.Map constructor. See <a href="https://developers.google.com/maps/documentation/javascript/reference#MapOptions" rel="extrnal">all map options</a></td>
-		</tr>
+		<tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='Map';directive='google-map'">
 		<tr>
 			<td>events</td>
 			<td><span class="label label-default">expression</span></td>
@@ -109,7 +105,7 @@
 <runnable-example example="'google-map'"></runnable-example>
 
 <script type="text/ng-template" id="googleMapTemplate">
-<google-map center='{expression}' 
+<ui-gmap-google-map center='{expression}'
 	zoom='{expression}'
 	draggable='{string}'
 	dragging='{expression}'
@@ -117,10 +113,10 @@
 	options='{expression}'
 	events='{expression}'
 	bounds='{expression}'
-    pan='{string or boolean}'>
-	
-	<!-- other directives here -->
-	
-</google-map>	
-</script>
+    pan='{string or boolean}'
+>
 
+	<!-- other ui-gmap-directives here -->
+
+</ui-gmap-google-map>
+</script>

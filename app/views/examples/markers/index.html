@@ -1,9 +1,6 @@
 <div id="map_canvas" ng-controller="mainCtrl">
-    <google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
-      <markers models="randomMarkers" coords="'self'" click="'onClicked'" options="'options'" events="markersEvents">
-      </markers>
-
-      <markers models="randomMarkersWithLabel" coords="'self'" click="'onClicked'" options="'options'" events="markersEvents" isLabel='true'>
-      </markers>
-    </google-map>
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+        <ui-gmap-markers models="randomMarkers" coords="'self'" icon="'icon'">
+        </ui-gmap-markers>
+    </ui-gmap-google-map>
 </div>

@@ -2,29 +2,28 @@
 
 
 <div class="panel-group" id="accordion">
-	<div class="panel panel-default" ng-repeat="tag in changelog | semverReverseSort:'tag'">
-		<div class="panel-heading">
-			<h4 class="panel-title">
-				<a href='' data-toggle="collapse" data-target="#tag{{ $index }}">
-					{{ tag.tag }}
-				</a>
-			</h4>
-		</div>
-		<div id="tag{{ $index }}" class="panel-collapse collapse" ng-class="{in: $first}">
-			<div class="panel-body">
-				<dl>
-					<dd ng-repeat="(author, commits) in tag.commits">
-						<h5>{{ author }}</h5>
-						<ul class="list-unstyled">
-							<li ng-repeat="commit in commits">
-								<a ng-href="https://github.com/angular-ui/angular-google-maps/commit/{{ commit.sha }}" rel="external">{{ commit.sha }}</a> - {{ commit.date | date }}<br>
-								<blockquote>{{ commit.message }}</blockquote>
-							</li>
-						<ul>
-					</dd>
-				<dl>
-			</div>
-		</div>
-	</div>
+    <div class="panel panel-default" ng-repeat="tag in changelog | semverReverseSort:'tag'">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a href='' data-toggle="collapse" data-target="#tag{{ $index }}">
+                    {{ tag.tag }}
+                </a>
+            </h4>
+        </div>
+        <div id="tag{{ $index }}" class="panel-collapse collapse" ng-class="{in: $first}">
+            <div class="panel-body">
+                <dl>
+                    <dd ng-repeat="(author, commits) in tag.commits">
+                        <h5>{{ author }}</h5>
+                        <ul class="list-unstyled">
+                            <li ng-repeat="commit in commits">
+                                <a ng-href="https://github.com/angular-ui/angular-google-maps/commit/{{ commit.sha }}" rel="external">{{ commit.sha }}</a> - {{ commit.date | date }}<br>
+                                <blockquote>{{ commit.message }}</blockquote>
+                            </li>
+                        <ul>
+                    </dd>
+                <dl>
+            </div>
+        </div>
+    </div>
 </div>
-

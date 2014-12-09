@@ -1,6 +1,6 @@
 'use strict';
 
 angular.module('angularGoogleMapsApp')
-  .controller('NotFoundCtrl', function ($scope, $log, $location, $route) {
-	$scope.requestedUrl = $location.search().url;
-  });
+  .controller(['$scope', '$log', '$location', 'NotFoundCtrl', function ($scope, $log, $location) {
+    $scope.requestedUrl = $location.search().url;
+  }]);

@@ -1,0 +1,29 @@
+<h2 id="IsReady">IsReady Service</h2>
+This service lets you know when ui-gmap is ready. As uiGmapIsReady passes a promise callback of maps.
+Beyond that, the instances passed back to you come back with the following info:
+<ul>
+    <li>
+        <strong>instance:</strong> map instance number (internal counter for ui-gmap on which map)
+    </li>
+    <li>
+        <strong>map:</strong>
+         The actual gMap (google map sdk instance of the google.maps.Map).
+        <br>
+        <strong>map._id:</strong>
+         A unique UUID that gets assigned to the gMap via ui-gamp api.
+    </li>
+</ul>
+
+<a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/is-ready.coffee">source code</a>
+
+<div hljs language="js">
+.controller("someController", function(uiGmapIsReady) {
+    uiGmapIsReady.promise(2).then(function(instances) {
+        instances.forEach(function(inst) {
+            var map = int.map;
+            var uuid = map._id;
+            var mapInstanceNumber = inst.instance; // Starts at 1.
+        });
+    });
+});
+</div>

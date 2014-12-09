@@ -1,53 +1,93 @@
 <h1 class="page-header">Quickstart</h1>
 
 <div class="row">
-	<div class="col-md-12">
-		<p>To start using Google Maps for AngularJS, follow these simple steps to get started. Once you're up and running,
-			visit the <a href="/api">API documentation</a> to learn how to get the most out of it.</p>
+    <div class="col-md-12">
+        <p>
+            To start using Google Maps for AngularJS, follow these simple steps to get started.
+            Once you're up and running, visit the <a ui-sref="api">API documentation</a> to learn how to get the most out of it.
+        </p>
 
-		<ol class="steps">
-			<li>
-				<a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.js">Download angular-google-maps.js</a>
-                (<a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.min.js">minified version</a>)
-				and put it with your other scripts. Alternatively, you can use bower to install it automatically:
+        <ol class="steps">
+            <li>
+                <p>
+                    Download <a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.js">angular-google-maps.js</a>
+                    (<a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.min.js">minified version</a>) and put it with your other scripts.
+                    Alternatively, you can use Bower to install it automatically:
+                </p>
+                <div hljs language="bash">bower install angular-google-maps</div>
+                <p>If not using Bower, you'll also need to fetch <a href="http://lodash.com/" rel="external">lodash.js</a> yourself.</p>
+            </li>
+            <li>
+                <p>Load lodash.js and angular-google.maps.js into your HTML page:</p>
+                <div hljs language="html" source="'<script src=\'/path/to/lodash[.min].js\'></script>\n<script src=\'/path/to/angular-google-maps[.min].js\'></script>'">
+                </div>
+            </li>
+            <li>
+                <p>Include the Google Maps API v3, via one of two ways:</p>
+                <ul>
+                    <li>
+                        <p><a href="#!/api#GoogleMapApi">Google Maps SDK Async Loader</a> <span class="badge badge-info">New in v2.0.0</span></p>
+                        <p>This is the <span class="label label-success">RECOMMENDED</span> way, as it tries to guarantee that Google Maps is ready prior to running any Google dependencies.</p>
+                    </li>
+                    <li>
+                        <p>Directly load into your HTML page. Example:</p>
+                        <div hljs language="html" source="'<script src=\'//maps.googleapis.com/maps/api/js?sensor=false\'></script>'">
+                        </div>
+                        <p class="muted">
+                            Note: If you go down this route, ensure that it is loaded prior to angular-google-maps.js!
+                        </p>
+                    </li>
+                </ul>
+                <strong>Serving Google Maps in China</strong>
+                <p>
+                    It is a state demand that all online map providers must use an obscured coordinate system called GCJ-02 (aka Coordinates on Mars).
+                    GCJ-02 is WSG-84 based, but added offsets to both latitude and longitude.
+                </p>
+                <p>
+                    If you display a marker from GCJ-02 coordinates on a GCJ-02 map, the place will be marked correctly.<br />
+                    However the offsets can result in a less-than-100 up to 700 meter error from the actual location if you place a GCJ-02 marker on a WSG-84 map and vice versa.
+                </p>
+                <p>
+                    There is an <a href="https://github.com/googollee/eviltransform" target="_blank">open-source project</a> that can provide approximate translation between GCJ-02 and WSG-84.
+                </p>
+                <p>
+                    Google also submits to this regulation. They serve this modified system at maps.google.cn. <br />
+                    Specify a <code>china</code> flag when you load the Google Maps API using the GoogleMapsApi Loader like so:<br />
+                <div hljs language="js">
+angular.module('myApplicationModule', ['uiGmapgoogle-maps']).config(
+    ['uiGmapGoogleMapApiProvider', function(GoogleMapApiProviders) {
+        GoogleMapApiProvider.configure({
+            china: true
+        });
+    }]
+);
+                </div>
+                    Alternatively if you manually load the Google Maps API, replace <code>//maps.googleapis.com/maps/api/js</code> with
+                        <code>http://maps.google.cn/maps/api/js</code>.
+                </p>
+            </li>
 
-				<div hljs language="bash">bower install angular-google-maps</div>
-				
-				If you're not using bower, you'll need to fetch <a href="http://lodash.com/" rel="external">lodash.js</a> (underscore build) and save it
-				alongside your other scripts.
-			</li>
-			<li>
-				Include the Google Maps API v3, lodash and angular-google.maps.js in your index.html or layout template:
-				<div hljs source="'<script src=\'//maps.googleapis.com/maps/api/js?sensor=false\'></script>
-<script src=\'/path/to/lodash.underscore[.min].js\'></script>
-<script src=\'/path/to/angular-google-maps[.min].js\'></script>'"></div>
-			</li>
-			<li>
-				Make your application module depend on the <code>google-maps</code> module:
-				<div hljs>angular.module('myApplicationModule', ['google-maps']);</div>
-			</li>
-			<li>
-				Add a <code>map</code> object in your scope like this:
-				<div hljs language="javascript">
-$scope.map = {
-	center: {
-		latitude: 45,
-		longitude: -73
-	},
-	zoom: 8
-};</div>
-				<p class="muted">Note: this is the very minimal set of properties required for the map to work.
-					See the <a href="/api">API documentation</a> for the full list of supported properties.</p>
-			</li>
-			<li>
-				Add a <code>&lt;google-map&gt;</code> element in your template like this:
-				<div hljs><google-map center='map.center' zoom='map.zoom'></google-map></div>
-			</li>
-			<li>
-				Specify an height via CSS for the map container:
-				<div hljs>.angular-google-map-container { height: 400px; }</div>
-			</li>
-		</ol>
-	</div>
+            <li>
+                <p>Make your application module depend on the <code>uiGmapgoogle-maps</code> module:</p>
+                <div hljs language="js">angular.module('myApplicationModule', ['uiGmapgoogle-maps']);</div>
+            </li>
+            <li>
+                <p>Add a <code>map</code> object to your scope like so:</p>
+                <div hljs language="js">$scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };</div>
+                <p class="muted">
+                    Note: this is the very minimum set of properties required for the map to work.
+                    See the <a ui-sref="api">API documentation</a> for the full list of supported properties.
+                </p>
+            </li>
+            <li>
+                <p>Add a <code>&lt;ui-gmap-google-map&gt;</code> element in your template like so:</p>
+                <div hljs language="html" source="'<ui-gmap-google-map center=\'map.center\' zoom=\'map.zoom\'></ui-gmap-google-map>'">
+                </div>
+            </li>
+            <li>
+                <p>Specify an height via CSS for the map container:</p>
+                <div hljs language="css">.angular-google-map-container { height: 400px; }</div>
+            </li>
+        </ol>
+    </div>
 </div>
-

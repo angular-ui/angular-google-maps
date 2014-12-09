@@ -1,4 +1,4 @@
-var app = angular.module("appMaps", ['google-maps'])
+var app = angular.module("appMaps", ['uiGmapgoogle-maps'])
     .config(function($controllerProvider) {
         // Override the normal controller process so controllers can be late loaded.
         var chainableRegister = function(name, constructor) {

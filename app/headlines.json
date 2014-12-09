@@ -1,6 +1,21 @@
 {
   "items": [
     {
+      "title": "Like writing Specs?",
+      "date": "Nov 30 2014",
+      "content": "<p>Do you like picking libraries apart? Then we need you! We really need better coverage against our directives, factories, and services. This would help catch regression errors. This would go a long way beyond plunkrs and examples.</p>"
+    },
+    {
+      "title": "Polylines and Polygons",
+      "date": "Nov 30 2014",
+      "content": "<p>These plural directives currently allow for both expressions and key (model) evaluations. We will be trying to upgrade the other plural directives to include these features as well. This functionality is currently on master and will be in the 2.0.12 release.</p>"
+    },
+    {
+      "title": "2.0.11 Documentation Added",
+      "date": "Nov 30 2014",
+      "content": "<p>All of the documentation has been updated to the 2.0.X API. We are still behind on documenting many updates and changes. As a community feel free to pull request (PR) changes to keep this websit up to date.</p>"
+    },
+    {
       "title": "1.1.0 Documentation Added",
       "date": "May 17 2014",
       "content": "<p>Many undocumented directives/features are now.. documented :). Documentation now reflects 1.1.0 (was develop branch)!!</p>"

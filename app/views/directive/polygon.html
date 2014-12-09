@@ -1,6 +1,7 @@
+<new-scope>
 <p>The <code>polygon</code> directive is used to draw polygon shape layers on the map.
 See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon" rel="external">Polygon API</a>.</p>
-	
+
 <h4>Usage</h4>
 
 <div hljs language="html" include="'polygonTemplate'"></div>
@@ -30,9 +31,9 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 		<tr>
 			<td>fill</td>
 			<td><span class="label label-danger">expression</span></td>
-			<td>Object to configure the polygon fill type. Valid properties are <code>color</code> (CSS hex notation) 
+			<td>Object to configure the polygon fill type. Valid properties are <code>color</code> (CSS hex notation)
 			and <code>opacity</code> (between 0.0 and 1.0)</td>
-		</tr>		
+		</tr>
 		<tr>
 			<td>stroke</td>
 			<td><span class="label label-danger">expression</span></td>
@@ -109,19 +110,7 @@ icons = [{
 </pre>
             </td>
         </tr>
-		<tr>
-			<td>events</td>
-			<td><span class="label label-info">expression</span></td>
-			<td>
-			  <p><span class="badge badge-info">New in v1.1</span> Custom events to apply to the polygon. This is an associative array, where keys are event names and values are handler functions. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">polygon events</a>.</p>
-			  <span>The handler function takes three parameters:</span>
-			  <ol>
-  			  <li>polygon: the GoogleMaps Polygon object</li>
-  			  <li>eventName: the name of the event</li>
-  			  <li>arguments: the arguments provided by Google Maps for this event type. See <a href="https://developers.google.com/maps/documentation/javascript/reference#Polygon">the Polygon docs</a></li>
-			    
-			  </ol>
-		  </td>
+		<tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Polygon'">
 		</tr>
 	</tbody>
 </table>
@@ -130,7 +119,7 @@ icons = [{
 <runnable-example example="'polygon'"></runnable-example>
 
 <script type="text/ng-template" id="polygonTemplate">
-<polygon path='{expression}'
+<ui-gmap-polygon path='{expression}'
 	fill='{expression}'
 	stroke='{expression}'
 	clickable='{expression}'
@@ -142,8 +131,8 @@ icons = [{
 	zindex='{expression}'
 	static='{expression}'
 	events='{expression}'
-    icons='{expression}'
+  icons='{expression}'
 >
-</polygon>
+</ui-gmap-polygon>
 </script>
-
+</new-scope>

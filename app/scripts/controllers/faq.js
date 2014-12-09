@@ -1,5 +1,5 @@
 'use strict';
 
 angular.module('angularGoogleMapsApp')
-  .controller('FAQCtrl', function ($scope) {
-  });
+  .controller('FAQCtrl', [ '$scope', function ($scope) {
+  }]);

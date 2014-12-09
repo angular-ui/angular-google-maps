@@ -1,84 +1,94 @@
-<h1 class="page-header" itemprop="name">Google Maps for AngularJS</h1>
+<h1 class="page-header" itemprop="name">Angular Google Maps</h1>
 
 <div class="row">
-	<div class="col-md-4">
-	
-		<div class="well">
-			<p class="lead">
-				<a href="http://www.angularjs.org/" rel="external"><span itemprop="requirements">AngularJS</span></a> directives to integrate <a href="http://maps.google.com/" rel="external">Google Maps</a> 
-				into your applications.
-			</p>
-			
-			<a class="btn btn-success btn-sm" rel="external" ng-href="{{ downloadUrl }}" ng-click="dlClick()">
-				<i class="icon-download"></i>
-				Download (<span itemprop="softwareVersion">{{ latestTag.name }}</span>)
-			</a>
-			
-			<a class="btn btn-default btn-sm" href="https://github.com/angular-ui/angular-google-maps">
-				<i class="icon-github"></i> View on GitHub
-			</a>
-			
-			<hr>
-			
-			<share flyout="bottom center" text="Checkout Google Maps directives for AngularJS"></share>
-		</div>
-		
-		
-	</div>
-	
-	<div class="col-md-8">
-		<google-map center="map.center" zoom="map.zoom" draggable="true" class="main" options="map.options">
-			<marker coords="marker.coords"></marker>
-		</google-map>
-	</div>
+    <div class="col-md-4">
+
+        <div class="well">
+            <p class="lead">
+                <a href="http://www.angularjs.org/" rel="external"><span itemprop="requirements">AngularJS</span></a>
+                directives to integrate <a href="http://maps.google.com/" rel="external">Google Maps</a>
+                into your applications.
+            </p>
+
+            <a class="btn btn-success btn-sm" rel="external" ng-href="{{ downloadUrl }}" ng-click="dlClick()">
+                <i class="icon-download"></i>
+                Download (<span itemprop="softwareVersion">{{ latestTag.name }}</span>)
+            </a>
+
+            <a class="btn btn-default btn-sm" href="https://github.com/angular-ui/angular-google-maps">
+                <i class="icon-github"></i> View on GitHub
+            </a>
+
+            <hr>
+
+            <share flyout="bottom center" text="Checkout Google Maps directives for AngularJS"></share>
+        </div>
+
+
+    </div>
+
+    <div class="col-md-8">
+        <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" class="main" options="map.options">
+            <ui-gmap-marker coords="marker.coords" idKey="marker.id" ></ui-gmap-marker>
+        </ui-gmap-google-map>
+    </div>
 </div>
-		
+
 <div class="row">
-	<div class="col-md-6">
-		<h2>About</h2>
-		
-		<p>Google Maps for AngularJs is a set of directives written in CoffeeScript which integrate Google Maps in <span itemprop="applicationCategory">AngularJS applications</span>.</p>
-		<p>It is based on the <a href="" rel="external">Google Maps Javascript API version 3</a>.</p>
-		
-		<h2>Features</h2>
+    <div class="col-md-6">
+        <h2>About</h2>
 
-		<p>There are directives for most of the widely-used Google Maps objects, including markers, windows, lines and 
-		shapes. We're currently working on integrating more layer objects, including the HeatMap and such.</p>
-		
-		<h2>Contributing</h2>
-		
-		<p>The code is hosted on <a href="http://github.com/" rel="external">GitHub</a>. 
-		If you need a feature which isn't implemented yet, please use our
-		<a href="https://github.com/angular-ui/angular-google-maps/issues?state=open">issue tracker</a> to open a feature request,
-		or fork our repository, implement the feature and issue a pull request. Contributions are more than welcome!</p>
-		
-		<h3>Branching model</h3>
-		
-		<p>We chose <strong>git flow</strong> as our branching model. The main development is done in the
-		<a href="https://github.com/angular-ui/angular-google-maps/tree/develop" rel="external">develop branch</a>.
-		The <a href="https://github.com/angular-ui/angular-google-maps/tree/master" rel="external">master branch</a> almost
-		always reflects the latest tagged version, but sometimes some quick fixes can land into it.</p>
-		
-		<p>If you are interested in contributing, we encourage you to 
-		<a href="https://github.com/nvie/gitflow" rel="external">learn about <strong>git flow</strong></a>.</p>
-	</div>
-	<div class="col-md-5 col-md-offset-1">
-		<section ng-controller="HeadlinesCtrl">
-			<h2>News</h2>
+        <p>Angular Google Maps is a set of directives (part of <a href="http://angular-ui.github.io/">angular-ui</a>)
+            written in CoffeeScript and Javascript which integrate Google Maps in an <span
+                itemprop="applicationCategory">AngularJS applications</span>.</p>
 
-			<div class="headlines-body">
-				<article ng-repeat="headline in displayed() track by headline.title" class="headline">
-					<h4><small class="label label-default pull-right">{{ headline.date }}</small> {{ headline.title }}</h4>
-					<section ng-bind-html="headline.content"></section>
-				</article>		
-			</div>
-	
-			<button class="btn btn-sm" ng-click="loadMore()" ng-if="displayed().length < count">Show older headlines</button>			
-		</section>
+        <p>It is based on the <a href="" rel="external">Google Maps Javascript API version 3</a>.</p>
 
-	</div>
+        <h2>Features</h2>
+
+        <p>There are directives for most of the widely-used Google Maps objects, including markers, windows, lines and
+            shapes. We're currently working on integrating more layer objects, including the HeatMap and such.</p>
+
+        <h2>Contributing</h2>
+
+        <p>The code is hosted on <a href="http://github.com/" rel="external">GitHub</a>.
+            If you need a feature which isn't implemented yet, please use our
+            <a href="https://github.com/angular-ui/angular-google-maps/issues?state=open">issue tracker</a> to open a
+            feature request,
+            or fork our repository, implement the feature and issue a pull request. Contributions are more than welcome!
+        </p>
+
+        <h3>Branching model</h3>
+
+        <p>We chose <strong>git flow</strong> as our branching model. The main development is done in the
+            <a href="https://github.com/angular-ui/angular-google-maps/tree/develop" rel="external">develop branch</a>.
+            The <a href="https://github.com/angular-ui/angular-google-maps/tree/master" rel="external">master branch</a>
+            almost
+            always reflects the latest tagged version, but sometimes some quick fixes can land into it.</p>
+
+        <p>If you are interested in contributing, we encourage you to
+            <a href="https://github.com/nvie/gitflow" rel="external">learn about <strong>git flow</strong></a>.</p>
+    </div>
+    <div class="col-md-5 col-md-offset-1">
+        <section ng-controller="HeadlinesCtrl">
+            <h2>News</h2>
+
+            <div class="headlines-body">
+                <article ng-repeat="headline in displayed() track by headline.title" class="headline">
+                    <h4>
+                        <small class="label label-default pull-right">{{ headline.date }}</small>
+                        {{ headline.title }}
+                    </h4>
+                    <section ng-bind-html="headline.content"></section>
+                </article>
+            </div>
+
+            <button class="btn btn-sm" ng-click="loadMore()" ng-if="displayed().length < count">Show older headlines
+            </button>
+        </section>
+
+    </div>
 </div>
-		
 
 
 

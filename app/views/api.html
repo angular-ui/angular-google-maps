@@ -1,32 +1,33 @@
 <h1 class="page-header">API documentation</h1>
-
 <div class="row">
-	<div class="col-md-3">
-		<div affix offset-top="200" offset-bottom="650">
-			<div class="well">
+    <div class="col-md-3">
+        <div affix offset-top="200" offset-bottom="650">
+            <div class="well">
 
-				<input type="search" class="form-control" ng-model="query" placeholder="Search directive">
-			
-				<ul class="nav nav-list" id="docs-api-menu">
-					<li class="delimiter"></li>
-					<li class="nav-header">Directives</li>
-					<li ng-repeat='d in directives | filter:query' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d }}</a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
+                <input type="search" class="form-control" ng-model="query" placeholder="Search directive">
 
-	<div class="col-md-9">
-		<p>This is the API documentation. All information needed to use the various directives is present on this page.
-			Choose the directive you're interested in in the left panel to begin.</p>
+                <ul class="nav nav-list" id="docs-api-menu">
+                    <li class="delimiter"></li>
+                    <li class="nav-header">Providers</li>
+                    <li ng-repeat='d in providers | filter:query' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
+                        }}</a></li>
+                    <li class="nav-header">Services</li>
+                    <li ng-repeat='d in services | filter:query' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
+                        }}</a></li>
+                    <li class="nav-header">Directives</li>
+                    <li ng-repeat='d in directives | filter:query' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
+                        }}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-		<h2>Directives</h2>
-
-		<div class="panel-group" id="directivesAccordion">
+    <div class="col-md-9">
+        <div class="panel-group" id="directivesAccordion">
             <div class="panel panel-default animate-repeat">
                 <div class="panel-heading">
                     <div class="panel-title">
-                        <a href='' data-toggle="collapse"  data-target="#content{{ current }}">
+                        <a href='' data-toggle="collapse" data-target="#content{{ current }}">
                             {{ current }}
                         </a>
                     </div>
@@ -37,20 +38,6 @@
                     </div>
                 </div>
             </div>
-            <!--<div class="panel panel-default animate-repeat" ng-repeat='d in directives | filter:query' id='{{ d }}'>
-                <div class="panel-heading">
-                    <div class="panel-title">
-                        <a href='' data-toggle="collapse"  data-target="#content{{ d }}">
-                            {{ d }}
-                        </a>
-                    </div>
-                </div>
-                <div id="content{{ d }}" class="panel-collapse collapse" ng-class="{'in': $first}">
-                    <div class="panel-body">
-                        <ng-include src="viewUrl(d)"></ng-include>
-                    </div>
-                </div>
-            </div>-->
-		</div>
-	</div>
+        </div>
+    </div>
 </div>

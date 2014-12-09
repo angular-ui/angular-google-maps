@@ -1,4 +1,4 @@
-angular.module('appMaps', ['google-maps'])
+angular.module('appMaps', ['uiGmapgoogle-maps'])
     .controller('mainCtrl', function($scope) {
         $scope.map = {center: {latitude: 40, longitude: -99 }, zoom: 12 }
         $scope.options = {scrollwheel: false};

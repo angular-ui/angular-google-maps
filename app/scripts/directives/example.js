@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('angularGoogleMapsApp')
-    .directive('runnableExample', function (openPlnkr) {
+    .directive('runnableExample',['openPlnkr', function (openPlnkr) {
         return {
             restrict: 'E',
             template: '<div>' +
@@ -53,4 +53,4 @@ angular.module('angularGoogleMapsApp')
                 iframe.attr("src", prefix + "base/base.html?example=" + $scope.example);
             }]
         };
-    });
+    }]);
