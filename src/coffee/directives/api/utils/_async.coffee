@@ -110,8 +110,6 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       $log.debug "#{msg}: #{canceledMsg}"
       cancelCb(canceledMsg)
 
-  promiseLock = managePromiseQueue
-
   defaultChunkSize = 20
 
   errorObject =
@@ -208,6 +206,6 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   each: each
   map: map
   managePromiseQueue: managePromiseQueue
-  promiseLock: promiseLock
+  promiseLock: managePromiseQueue
   defaultChunkSize: defaultChunkSize
 ]

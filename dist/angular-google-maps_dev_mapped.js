@@ -385,7 +385,7 @@ Nicholas McCready - https://twitter.com/nmccready
     }
   ]).service('uiGmap_async', [
     '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q', 'uiGmapDataStructures', function($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures) {
-      var ExposedPromise, PromiseQueueManager, SniffedPromise, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseLock, promiseStatus, promiseTypes, tryCatch;
+      var ExposedPromise, PromiseQueueManager, SniffedPromise, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch;
       promiseTypes = uiGmapPromise.promiseTypes;
       isInProgress = uiGmapPromise.isInProgress;
       promiseStatus = uiGmapPromise.promiseStatus;
@@ -493,7 +493,6 @@ Nicholas McCready - https://twitter.com/nmccready
           return cancelCb(canceledMsg);
         });
       };
-      promiseLock = managePromiseQueue;
       defaultChunkSize = 20;
       errorObject = {
         value: null
@@ -604,7 +603,7 @@ Nicholas McCready - https://twitter.com/nmccready
         each: each,
         map: map,
         managePromiseQueue: managePromiseQueue,
-        promiseLock: promiseLock,
+        promiseLock: managePromiseQueue,
         defaultChunkSize: defaultChunkSize
       };
     }
