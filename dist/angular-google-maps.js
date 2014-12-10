@@ -458,7 +458,7 @@ Nicholas McCready - https://twitter.com/nmccready
       
       
       NOTE:
-      - You should not much with existingPieces as its state is dependent in this functional loop.
+      - You should not muck with existingPieces as its state is dependent on this functional loop.
       - PromiseQueueManager should not be thought of as a class that has a life expectancy (it has none). It's sole
       purpose is to link, skip, and kill promises. It also manages the promise queue existingPieces.
        */
