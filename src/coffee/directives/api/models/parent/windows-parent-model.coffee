@@ -68,16 +68,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                 @createChildScopesWindows() if doCreate
 
           onDestroy:(doDelete) =>
-            _async.waitOrGo @,
-              _async.preExecPromise =>
-                promise = _async.each @windows.values(), (child) =>
-                  child.destroy()
-                .then =>
-                  delete @windows if doDelete
-                  @windows = new PropMap()
-                promise.promiseType =  _async.promiseTypes.delete
-                promise
-              , _async.promiseTypes.delete
+            _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
+              _async.each @windows.values(), (child) =>
+                child.destroy()
+              .then =>
+                delete @windows if doDelete
+                @windows = new PropMap()
 
           watchDestroy: (scope)=>
             scope.$on '$destroy', =>
@@ -143,9 +139,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             return if @didQueueInitPromise(@,scope)
 
             maybeCanceled = null
-            _async.waitOrGo @,
-              _async.preExecPromise =>
-                promise =_async.each scope.models, (model) =>
+            _async.promiseLock @, uiGmapPromise.promiseTypes.create, 'createAllNewWindows',
+              ((canceledMsg) -> maybeCanceled = canceledMsg), =>
+                _async.each scope.models, (model) =>
                   gMarker = if hasGMarker then @getItem(scope, modelsPropToIterate, model[@idKey])?.gMarker else undefined
                   unless maybeCanceled
                     $log.error 'Unable to get gMarker from markersScope!' if not gMarker and @markersScope
@@ -153,42 +149,32 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                   maybeCanceled
                 .then =>
                   @firstTime = false
-                promise.promiseType = _async.promiseTypes.create
-                promise
-              , _async.promiseTypes.create
-            , (canceledMsg) ->
-              $log.debug "createAllNew: #{canceledMsg}"
-              maybeCanceled= canceledMsg
 
           pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true)=>
             return if scope.$$destroyed
             maybeCanceled = null
             payload = null
             @models = scope.models
+
             if scope? and scope.models? and scope.models.length > 0 and @windows.length > 0
-              _async.waitOrGo @,
-                _async.preExecPromise =>
-                  promise = uiGmapPromise.promise(@figureOutState @idKey, scope, @windows, @modelKeyComparison)
-                  .then (state) =>
-                    payload = state
-                    _async.each payload.removals, (child)=>
-                      if child?
-                        @windows.remove(child.id)
-                        child.destroy(true) if child.destroy?
-                        maybeCanceled
-                  .then =>
-                    #add all adds via creating new ChildMarkers which are appended to @markers
-                    _async.each payload.adds, (modelToAdd) =>
-                      gMarker = @getItem(scope, modelsPropToIterate, modelToAdd[@idKey])?.gMarker
-                      throw 'Gmarker undefined' unless gMarker
-                      @createWindow(modelToAdd, gMarker, @gMap)
+
+              _async.promiseLock @, uiGmapPromise.promiseTypes.update, 'pieceMeal', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
+                uiGmapPromise.promise((=> @figureOutState @idKey, scope, @windows, @modelKeyComparison))
+                .then (state) =>
+                  payload = state
+                  _async.each payload.removals, (child)=>
+                    if child?
+                      @windows.remove(child.id)
+                      child.destroy(true) if child.destroy?
                       maybeCanceled
-                  promise.promiseType = _async.promiseTypes.update
-                  promise
-                , _async.promiseTypes.update
-              , (canceledMsg) ->
-                $log.debug "pieceMeal: #{canceledMsg}"
-                maybeCanceled = canceledMsg
+                .then =>
+                  #add all adds via creating new ChildMarkers which are appended to @markers
+                  _async.each payload.adds, (modelToAdd) =>
+                    gMarker = @getItem(scope, modelsPropToIterate, modelToAdd[@idKey])?.gMarker
+                    throw 'Gmarker undefined' unless gMarker
+                    @createWindow(modelToAdd, gMarker, @gMap)
+                    maybeCanceled
+
             else
               $log.debug('pieceMealWindows: rebuildAll')
               @rebuildAll(@scope, true, true)

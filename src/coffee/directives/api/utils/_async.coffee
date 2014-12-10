@@ -9,95 +9,55 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   ])
 .service 'uiGmap_async', [ '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q','uiGmapDataStructures',
 ($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures) ->
+  promiseTypes = uiGmapPromise.promiseTypes
+  isInProgress = uiGmapPromise.isInProgress
+  promiseStatus = uiGmapPromise.promiseStatus
+  ExposedPromise =  uiGmapPromise.ExposedPromise
+  SniffedPromise = uiGmapPromise.SniffedPromise
 
-  promiseTypes =
-    create : 'create'
-    update : 'update'
-    delete : 'delete'
-    init: 'init'
+  kickPromise = (sniffedPromise, cancelCb) ->
+    #kick a promise off and log some info on it
+    promise = sniffedPromise.promise()
+    promise.promiseType = sniffedPromise.promiseType
+    $log.debug "promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
+    promise.cancelCb = cancelCb
+    promise
 
-  promiseStatuses =
-    IN_PROGRESS: 0
-    RESOLVED: 1
-    REJECTED: 2
+  doSkippPromise = (sniffedPromise,lastPromise) ->
+    # note this skipp could be specific to polys (but it works for that)
+    if sniffedPromise.promiseType == promiseTypes.create and
+      lastPromise.promiseType != promiseTypes.delete and lastPromise.promiseType != promiseTypes.init
+        $log.debug "lastPromise.promiseType #{lastPromise.promiseType}, newPromiseType: #{sniffedPromise.promiseType}, SKIPPED MUST COME AFTER DELETE ONLY"
+        return true
+    false
 
-  strPromiseStatuses = do ->
-    obj = {}
-    obj["#{promiseStatuses.IN_PROGRESS}"] = 'in-progress'
-    obj["#{promiseStatuses.RESOLVED}"] = 'resolved'
-    obj["#{promiseStatuses.REJECTED}"] = 'rejected'
-    obj
-
-  isInProgress = (promise) ->
-    promise.$$state.status == promiseStatuses.IN_PROGRESS
-
-  isResolved = (promise) ->
-    promise.$$state.status == promiseStatuses.RESOLVED
-
-  promiseStatus = (status) ->
-    if strPromiseStatuses.hasOwnProperty(status)
-      strPromiseStatuses[status]
-    else
-      'done w error'
-
-  #putting a payload together in order to not have to flatten twice, and to not
-  #have to flatten again later
-  cancelable = (promise) ->
-    cancelDeferred = $q.defer()
-    combined = $q.all [promise, cancelDeferred.promise]
-    wrapped = $q.defer()
-
-    promise.then cancelDeferred.resolve, (->), (notify)  ->
-      cancelDeferred.notify notify
-      wrapped.notify notify
-
-    #if we completion from combined then we pass on the correct msh from its index
-    combined.then (successes) ->
-      wrapped.resolve successes[0] or successes[1]
-    , (error) ->
-      wrapped.reject error
-#    , (notifies) -> #this is not handled in angular yet.. it should be
-#      wrapped.notify notifies[0] or notifies[1]
-
-    wrapped.promise.cancel = (reason = 'canceled') ->
-      cancelDeferred.reject reason
-
-    wrapped.promise.notify = (msg = 'cancel safe') ->
-      wrapped.notify msg
-      #if originating promise is a cancelable type (we can send it a message as well)
-      promise.notify msg if promise.hasOwnProperty('notify')
-#      else #possible hack, I dont think you supposed to go through the api this way
-#        promise.$$state.pending.forEach (p) ->
-#          p[0].notify msg if p.length >= 1
-
-    if promise.promiseType?
-      wrapped.promise.promiseType = promise.promiseType
-    wrapped.promise
-
-  onlyTheLast = do ->
-    promises = []
-    (p) ->
-      promise = cancelable p
-      promises.push promise
-      promise.then (value) ->
-        if promise is _.last promises
-          if promises.length >= 2
-            promises.forEach (promise, i) ->
-              if i < promises.length - 1
-                promise.cancel()
-          promises = []
-
-  preExecPromise = (fnPromise, promiseType) ->
-    promise: fnPromise
-    promiseType: promiseType
+  maybeCancelPromises = (queue, sniffedPromise,lastPromise) ->
+#    $log.warn "sniff: promiseType: #{sniffedPromise.promiseType}, lastPromiseType: #{lastPromise.promiseType}"
+#    $log.warn "lastPromise.cancelCb #{lastPromise.cancelCb}"
+    if sniffedPromise.promiseType == promiseTypes.delete and lastPromise.promiseType != promiseTypes.delete
+      if lastPromise.cancelCb? and _.isFunction(lastPromise.cancelCb) and isInProgress(lastPromise)
+        $log.debug "promiseType: #{sniffedPromise.promiseType}, CANCELING LAST PROMISE type: #{lastPromise.promiseType}"
+        lastPromise.cancelCb('cancel safe')
+        #see if we can cancel anything else
+        first = queue.peek()
+        if first? and isInProgress(first)# and first.promiseType != promiseTypes.delete
+          if first.hasOwnProperty("cancelCb")
+            $log.debug "promiseType: #{first.promiseType}, CANCELING FIRST PROMISE type: #{first.promiseType}"
+            first.cancelCb('cancel safe')
+          else
+            $log.warn 'first promise was not cancelable'
 
   ###
-  The whole point is to check if there is existing async work going on.
-  If so we wait on it.
+  From a High Level:
+    This is a SniffedPromiseQueueManager (looking to rename) where the queue is existingPiecesObj.existingPieces.
+    This is a function and should not be considered a class.
+    So it is run to manage the state (cancel, skip, link) as needed.
+  Purpose:
+  The whole point is to check if there is existing async work going on. If so we wait on it.
 
   arguments:
   - existingPiecesObj =  Queue<Promises>
-  - preExecPromise = object wrapper holding a function to a pending (function) promise (promise: fnPromise)
+  - sniffedPromise = object wrapper holding a function to a pending (function) promise (promise: fnPromise)
   with its intended type.
   - cancelCb = callback which accepts a string, this string is intended to be returned at the end of _async.each iterator
 
@@ -119,54 +79,38 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     - Canceled - Where an incoming promise (un-executed promise) is of type delete and the any lastPromise is not a delete type.
 
 
-  NOTE: You should not much with existingPieces as its state is dependent in this functional loop.
+  NOTE:
+  - You should not much with existingPieces as its state is dependent in this functional loop.
+  - PromiseQueueManager should not be thought of as a class that has a life expectancy (it has none). It's sole
+  purpose is to link, skip, and kill promises. It also manages the promise queue existingPieces.
   ###
-  waitOrGo = (existingPiecesObj, preExecPromise, cancelCb) ->
-    logPromise = ->
-      promise = preExecPromise.promise()
-      if promise.hasOwnProperty('promiseType')
-        $log.debug "promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
-        # uncomment to see promises wrapping themselves up
-        #promise.then =>
-        #  $log.debug "old promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
-      promise.cancelCb = cancelCb
-      promise
-
+  PromiseQueueManager = (existingPiecesObj, sniffedPromise, cancelCb) ->
     unless existingPiecesObj.existingPieces
+      #TODO: rename existingPieces to some kind of queue
       existingPiecesObj.existingPieces = new uiGmapDataStructures.Queue()
-      #expecting incoming promise to be cancelable
-      existingPiecesObj.existingPieces.enqueue logPromise()
+      existingPiecesObj.existingPieces.enqueue kickPromise(sniffedPromise, cancelCb)
     else
       lastPromise = _.last existingPiecesObj.existingPieces._content
-      # note this skipp could be specific to polys (but it works for that)
-      if preExecPromise.promiseType == promiseTypes.create and
-        lastPromise.promiseType != promiseTypes.delete and
-        lastPromise.promiseType != promiseTypes.init
-          $log.debug "lastPromise.promiseType #{lastPromise.promiseType}, newPromiseType: #{preExecPromise.promiseType}, SKIPPED MUST COME AFTER DELETE ONLY"
-          return
-      if preExecPromise.promiseType == promiseTypes.delete and lastPromise.promiseType != promiseTypes.delete
-        if lastPromise.cancelCb? and _.isFunction(lastPromise.cancelCb) and isInProgress(lastPromise)
-          $log.debug "promiseType: #{preExecPromise.promiseType}, CANCELING LAST PROMISE type: #{lastPromise.promiseType}"
-          lastPromise.cancelCb('cancel safe')
-          #see if we can cancel anything else
-          first = existingPiecesObj.existingPieces.peek()
-          if first? and isInProgress(first)
-            if first.hasOwnProperty("cancelCb")
-              $log.debug "promiseType: #{first.promiseType}, CANCELING FIRST PROMISE type: #{first.promiseType}"
-              first.cancelCb('cancel safe')
-            else
-              $log.warn 'first promise was not cancelable'
 
-      newPromise = cancelable lastPromise.finally ->
-       logPromise()
+      return if doSkippPromise(sniffedPromise, lastPromise)
+      maybeCancelPromises(existingPiecesObj.existingPieces, sniffedPromise, lastPromise)
+
+      newPromise = ExposedPromise lastPromise.finally ->
+       kickPromise(sniffedPromise, cancelCb)
       newPromise.cancelCb = cancelCb
-      newPromise.promiseType = preExecPromise.promiseType
+      newPromise.promiseType = sniffedPromise.promiseType
       existingPiecesObj.existingPieces.enqueue newPromise
       # finally is important as we don't care how something is canceled
-      #we just want the key to be shrunk when something is done
       lastPromise.finally ->
+        # keep the queue tight
         existingPiecesObj.existingPieces.dequeue()
 
+  managePromiseQueue = (objectToLock, promiseType, msg = '', cancelCb, fnPromise) ->
+    PromiseQueueManager objectToLock, SniffedPromise(fnPromise, promiseType), (canceledMsg) ->
+      $log.debug "#{msg}: #{canceledMsg}"
+      cancelCb(canceledMsg)
+
+  promiseLock = managePromiseQueue
 
   defaultChunkSize = 20
 
@@ -263,9 +207,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
   each: each
   map: map
-  waitOrGo: waitOrGo
+  managePromiseQueue: managePromiseQueue
+  promiseLock: promiseLock
   defaultChunkSize: defaultChunkSize
-  promiseTypes: promiseTypes
-  cancelablePromise: cancelable
-  preExecPromise: preExecPromise
 ]

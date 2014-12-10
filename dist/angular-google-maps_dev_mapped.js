@@ -385,108 +385,57 @@ Nicholas McCready - https://twitter.com/nmccready
     }
   ]).service('uiGmap_async', [
     '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q', 'uiGmapDataStructures', function($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures) {
-      var cancelable, defaultChunkSize, doChunk, each, errorObject, isInProgress, isResolved, logTryCatch, map, onlyTheLast, preExecPromise, promiseStatus, promiseStatuses, promiseTypes, strPromiseStatuses, tryCatch, waitOrGo;
-      promiseTypes = {
-        create: 'create',
-        update: 'update',
-        "delete": 'delete',
-        init: 'init'
+      var ExposedPromise, PromiseQueueManager, SniffedPromise, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseLock, promiseStatus, promiseTypes, tryCatch;
+      promiseTypes = uiGmapPromise.promiseTypes;
+      isInProgress = uiGmapPromise.isInProgress;
+      promiseStatus = uiGmapPromise.promiseStatus;
+      ExposedPromise = uiGmapPromise.ExposedPromise;
+      SniffedPromise = uiGmapPromise.SniffedPromise;
+      kickPromise = function(sniffedPromise, cancelCb) {
+        var promise;
+        promise = sniffedPromise.promise();
+        promise.promiseType = sniffedPromise.promiseType;
+        $log.debug("promiseType: " + promise.promiseType + ", state: " + (promiseStatus(promise.$$state.status)));
+        promise.cancelCb = cancelCb;
+        return promise;
       };
-      promiseStatuses = {
-        IN_PROGRESS: 0,
-        RESOLVED: 1,
-        REJECTED: 2
-      };
-      strPromiseStatuses = (function() {
-        var obj;
-        obj = {};
-        obj["" + promiseStatuses.IN_PROGRESS] = 'in-progress';
-        obj["" + promiseStatuses.RESOLVED] = 'resolved';
-        obj["" + promiseStatuses.REJECTED] = 'rejected';
-        return obj;
-      })();
-      isInProgress = function(promise) {
-        return promise.$$state.status === promiseStatuses.IN_PROGRESS;
-      };
-      isResolved = function(promise) {
-        return promise.$$state.status === promiseStatuses.RESOLVED;
-      };
-      promiseStatus = function(status) {
-        if (strPromiseStatuses.hasOwnProperty(status)) {
-          return strPromiseStatuses[status];
-        } else {
-          return 'done w error';
+      doSkippPromise = function(sniffedPromise, lastPromise) {
+        if (sniffedPromise.promiseType === promiseTypes.create && lastPromise.promiseType !== promiseTypes["delete"] && lastPromise.promiseType !== promiseTypes.init) {
+          $log.debug("lastPromise.promiseType " + lastPromise.promiseType + ", newPromiseType: " + sniffedPromise.promiseType + ", SKIPPED MUST COME AFTER DELETE ONLY");
+          return true;
         }
+        return false;
       };
-      cancelable = function(promise) {
-        var cancelDeferred, combined, wrapped;
-        cancelDeferred = $q.defer();
-        combined = $q.all([promise, cancelDeferred.promise]);
-        wrapped = $q.defer();
-        promise.then(cancelDeferred.resolve, (function() {}), function(notify) {
-          cancelDeferred.notify(notify);
-          return wrapped.notify(notify);
-        });
-        combined.then(function(successes) {
-          return wrapped.resolve(successes[0] || successes[1]);
-        }, function(error) {
-          return wrapped.reject(error);
-        });
-        wrapped.promise.cancel = function(reason) {
-          if (reason == null) {
-            reason = 'canceled';
-          }
-          return cancelDeferred.reject(reason);
-        };
-        wrapped.promise.notify = function(msg) {
-          if (msg == null) {
-            msg = 'cancel safe';
-          }
-          wrapped.notify(msg);
-          if (promise.hasOwnProperty('notify')) {
-            return promise.notify(msg);
-          }
-        };
-        if (promise.promiseType != null) {
-          wrapped.promise.promiseType = promise.promiseType;
-        }
-        return wrapped.promise;
-      };
-      onlyTheLast = (function() {
-        var promises;
-        promises = [];
-        return function(p) {
-          var promise;
-          promise = cancelable(p);
-          promises.push(promise);
-          return promise.then(function(value) {
-            if (promise === _.last(promises)) {
-              if (promises.length >= 2) {
-                promises.forEach(function(promise, i) {
-                  if (i < promises.length - 1) {
-                    return promise.cancel();
-                  }
-                });
+      maybeCancelPromises = function(queue, sniffedPromise, lastPromise) {
+        var first;
+        if (sniffedPromise.promiseType === promiseTypes["delete"] && lastPromise.promiseType !== promiseTypes["delete"]) {
+          if ((lastPromise.cancelCb != null) && _.isFunction(lastPromise.cancelCb) && isInProgress(lastPromise)) {
+            $log.debug("promiseType: " + sniffedPromise.promiseType + ", CANCELING LAST PROMISE type: " + lastPromise.promiseType);
+            lastPromise.cancelCb('cancel safe');
+            first = queue.peek();
+            if ((first != null) && isInProgress(first)) {
+              if (first.hasOwnProperty("cancelCb")) {
+                $log.debug("promiseType: " + first.promiseType + ", CANCELING FIRST PROMISE type: " + first.promiseType);
+                return first.cancelCb('cancel safe');
+              } else {
+                return $log.warn('first promise was not cancelable');
               }
-              return promises = [];
             }
-          });
-        };
-      })();
-      preExecPromise = function(fnPromise, promiseType) {
-        return {
-          promise: fnPromise,
-          promiseType: promiseType
-        };
+          }
+        }
       };
 
       /*
-      The whole point is to check if there is existing async work going on.
-      If so we wait on it.
+      From a High Level:
+        This is a SniffedPromiseQueueManager (looking to rename) where the queue is existingPiecesObj.existingPieces.
+        This is a function and should not be considered a class.
+        So it is run to manage the state (cancel, skip, link) as needed.
+      Purpose:
+      The whole point is to check if there is existing async work going on. If so we wait on it.
       
       arguments:
       - existingPiecesObj =  Queue<Promises>
-      - preExecPromise = object wrapper holding a function to a pending (function) promise (promise: fnPromise)
+      - sniffedPromise = object wrapper holding a function to a pending (function) promise (promise: fnPromise)
       with its intended type.
       - cancelCb = callback which accepts a string, this string is intended to be returned at the end of _async.each iterator
       
@@ -508,54 +457,43 @@ Nicholas McCready - https://twitter.com/nmccready
         - Canceled - Where an incoming promise (un-executed promise) is of type delete and the any lastPromise is not a delete type.
       
       
-      NOTE: You should not much with existingPieces as its state is dependent in this functional loop.
+      NOTE:
+      - You should not much with existingPieces as its state is dependent in this functional loop.
+      - PromiseQueueManager should not be thought of as a class that has a life expectancy (it has none). It's sole
+      purpose is to link, skip, and kill promises. It also manages the promise queue existingPieces.
        */
-      waitOrGo = function(existingPiecesObj, preExecPromise, cancelCb) {
-        var first, lastPromise, logPromise, newPromise;
-        logPromise = function() {
-          var promise;
-          promise = preExecPromise.promise();
-          if (promise.hasOwnProperty('promiseType')) {
-            $log.debug("promiseType: " + promise.promiseType + ", state: " + (promiseStatus(promise.$$state.status)));
-          }
-          promise.cancelCb = cancelCb;
-          return promise;
-        };
+      PromiseQueueManager = function(existingPiecesObj, sniffedPromise, cancelCb) {
+        var lastPromise, newPromise;
         if (!existingPiecesObj.existingPieces) {
           existingPiecesObj.existingPieces = new uiGmapDataStructures.Queue();
-          return existingPiecesObj.existingPieces.enqueue(logPromise());
+          return existingPiecesObj.existingPieces.enqueue(kickPromise(sniffedPromise, cancelCb));
         } else {
           lastPromise = _.last(existingPiecesObj.existingPieces._content);
-          if (preExecPromise.promiseType === promiseTypes.create && lastPromise.promiseType !== promiseTypes["delete"] && lastPromise.promiseType !== promiseTypes.init) {
-            $log.debug("lastPromise.promiseType " + lastPromise.promiseType + ", newPromiseType: " + preExecPromise.promiseType + ", SKIPPED MUST COME AFTER DELETE ONLY");
+          if (doSkippPromise(sniffedPromise, lastPromise)) {
             return;
           }
-          if (preExecPromise.promiseType === promiseTypes["delete"] && lastPromise.promiseType !== promiseTypes["delete"]) {
-            if ((lastPromise.cancelCb != null) && _.isFunction(lastPromise.cancelCb) && isInProgress(lastPromise)) {
-              $log.debug("promiseType: " + preExecPromise.promiseType + ", CANCELING LAST PROMISE type: " + lastPromise.promiseType);
-              lastPromise.cancelCb('cancel safe');
-              first = existingPiecesObj.existingPieces.peek();
-              if ((first != null) && isInProgress(first)) {
-                if (first.hasOwnProperty("cancelCb")) {
-                  $log.debug("promiseType: " + first.promiseType + ", CANCELING FIRST PROMISE type: " + first.promiseType);
-                  first.cancelCb('cancel safe');
-                } else {
-                  $log.warn('first promise was not cancelable');
-                }
-              }
-            }
-          }
-          newPromise = cancelable(lastPromise["finally"](function() {
-            return logPromise();
+          maybeCancelPromises(existingPiecesObj.existingPieces, sniffedPromise, lastPromise);
+          newPromise = ExposedPromise(lastPromise["finally"](function() {
+            return kickPromise(sniffedPromise, cancelCb);
           }));
           newPromise.cancelCb = cancelCb;
-          newPromise.promiseType = preExecPromise.promiseType;
+          newPromise.promiseType = sniffedPromise.promiseType;
           existingPiecesObj.existingPieces.enqueue(newPromise);
           return lastPromise["finally"](function() {
             return existingPiecesObj.existingPieces.dequeue();
           });
         }
       };
+      managePromiseQueue = function(objectToLock, promiseType, msg, cancelCb, fnPromise) {
+        if (msg == null) {
+          msg = '';
+        }
+        return PromiseQueueManager(objectToLock, SniffedPromise(fnPromise, promiseType), function(canceledMsg) {
+          $log.debug("" + msg + ": " + canceledMsg);
+          return cancelCb(canceledMsg);
+        });
+      };
+      promiseLock = managePromiseQueue;
       defaultChunkSize = 20;
       errorObject = {
         value: null
@@ -665,11 +603,9 @@ Nicholas McCready - https://twitter.com/nmccready
       return {
         each: each,
         map: map,
-        waitOrGo: waitOrGo,
-        defaultChunkSize: defaultChunkSize,
-        promiseTypes: promiseTypes,
-        cancelablePromise: cancelable,
-        preExecPromise: preExecPromise
+        managePromiseQueue: managePromiseQueue,
+        promiseLock: promiseLock,
+        defaultChunkSize: defaultChunkSize
       };
     }
   ]);
@@ -1442,12 +1378,11 @@ Nicholas McCready - https://twitter.com/nmccready
         })(this),
         didQueueInitPromise: function(existingPiecesObj, scope) {
           if (scope.models.length === 0) {
-            _async.waitOrGo(existingPiecesObj, _async.preExecPromise(function() {
-              var promise;
-              promise = uiGmapPromise.resolve();
-              promise.promiseType = _async.promiseTypes.init;
-              return promise;
-            }, _async.promiseTypes.init));
+            _async.promiseLock(existingPiecesObj, uiGmapPromise.promiseTypes.init, null, null, (function(_this) {
+              return function() {
+                return uiGmapPromise.resolve();
+              };
+            })(this));
             return true;
           }
           return false;
@@ -1507,26 +1442,104 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapPromise', [
     '$q', '$timeout', function($q, $timeout) {
-      return {
-        defer: function() {
-          return $q.defer();
-        },
-        resolve: function() {
-          var d;
-          d = $q.defer();
-          d.resolve.apply(void 0, arguments);
-          return d.promise;
-        },
-        promise: function(fnToWrap) {
-          var d;
-          d = $q.defer();
-          $timeout(function() {
-            var result;
-            result = fnToWrap;
-            return d.resolve(result);
-          });
-          return d.promise;
+      var ExposedPromise, SniffedPromise, defer, isInProgress, isResolved, promise, promiseStatus, promiseStatuses, promiseTypes, resolve, strPromiseStatuses;
+      promiseTypes = {
+        create: 'create',
+        update: 'update',
+        "delete": 'delete',
+        init: 'init'
+      };
+      promiseStatuses = {
+        IN_PROGRESS: 0,
+        RESOLVED: 1,
+        REJECTED: 2
+      };
+      strPromiseStatuses = (function() {
+        var obj;
+        obj = {};
+        obj["" + promiseStatuses.IN_PROGRESS] = 'in-progress';
+        obj["" + promiseStatuses.RESOLVED] = 'resolved';
+        obj["" + promiseStatuses.REJECTED] = 'rejected';
+        return obj;
+      })();
+      isInProgress = function(promise) {
+        return promise.$$state.status === promiseStatuses.IN_PROGRESS;
+      };
+      isResolved = function(promise) {
+        return promise.$$state.status === promiseStatuses.RESOLVED;
+      };
+      promiseStatus = function(status) {
+        return strPromiseStatuses[status] || 'done w error';
+      };
+      ExposedPromise = function(promise) {
+        var cancelDeferred, combined, wrapped;
+        cancelDeferred = $q.defer();
+        combined = $q.all([promise, cancelDeferred.promise]);
+        wrapped = $q.defer();
+        promise.then(cancelDeferred.resolve, (function() {}), function(notify) {
+          cancelDeferred.notify(notify);
+          return wrapped.notify(notify);
+        });
+        combined.then(function(successes) {
+          return wrapped.resolve(successes[0] || successes[1]);
+        }, function(error) {
+          return wrapped.reject(error);
+        });
+        wrapped.promise.cancel = function(reason) {
+          if (reason == null) {
+            reason = 'canceled';
+          }
+          return cancelDeferred.reject(reason);
+        };
+        wrapped.promise.notify = function(msg) {
+          if (msg == null) {
+            msg = 'cancel safe';
+          }
+          wrapped.notify(msg);
+          if (promise.hasOwnProperty('notify')) {
+            return promise.notify(msg);
+          }
+        };
+        if (promise.promiseType != null) {
+          wrapped.promise.promiseType = promise.promiseType;
         }
+        return wrapped.promise;
+      };
+      SniffedPromise = function(fnPromise, promiseType) {
+        return {
+          promise: fnPromise,
+          promiseType: promiseType
+        };
+      };
+      defer = function() {
+        return $q.defer();
+      };
+      resolve = function() {
+        var d;
+        d = $q.defer();
+        d.resolve.apply(void 0, arguments);
+        return d.promise;
+      };
+      promise = function(fnToWrap) {
+        var d;
+        d = $q.defer();
+        $timeout(function() {
+          var result;
+          result = fnToWrap();
+          return d.resolve(result);
+        });
+        return d.promise;
+      };
+      return {
+        defer: defer,
+        promise: promise,
+        resolve: resolve,
+        promiseTypes: promiseTypes,
+        isInProgress: isInProgress,
+        isResolved: isResolved,
+        promiseStatus: promiseStatus,
+        ExposedPromise: ExposedPromise,
+        SniffedPromise: SniffedPromise
       };
     }
   ]);
@@ -4133,10 +4146,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           maybeCanceled = null;
-          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+          return _async.promiseLock(this, uiGmapPromise.promiseTypes.create, 'createAllNew', (function(canceledMsg) {
+            return maybeCanceled = canceledMsg;
+          }), (function(_this) {
             return function() {
-              var promise;
-              promise = _async.each(scope.models, function(model) {
+              return _async.each(scope.models, function(model) {
                 _this.newChildMarker(model, scope);
                 return maybeCanceled;
               }).then(function() {
@@ -4147,13 +4161,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
                 return _this.scope.markerModelsUpdate.updateCtr += 1;
               });
-              promise.promiseType = _async.promiseTypes.create;
-              return promise;
             };
-          })(this), _async.promiseTypes.create), function(canceledMsg) {
-            $log.debug("createAllNew: " + canceledMsg);
-            return maybeCanceled = canceledMsg;
-          });
+          })(this));
         };
 
         MarkersParentModel.prototype.reBuildMarkers = function(scope) {
@@ -4180,10 +4189,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.markerModels.length > 0) {
-            return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+            return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
+              return maybeCanceled = canceledMsg;
+            }), (function(_this) {
               return function() {
-                var promise;
-                promise = uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.scope.markerModels, _this.modelKeyComparison)).then(function(state) {
+                return uiGmapPromise.promise((function() {
+                  return _this.figureOutState(_this.idKey, scope, _this.scope.markerModels, _this.modelKeyComparison);
+                })).then(function(state) {
                   payload = state;
                   return _async.each(payload.removals, function(child) {
                     if (child != null) {
@@ -4214,13 +4226,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }
                   return _this.scope.markerModelsUpdate.updateCtr += 1;
                 });
-                promise.promiseType = _async.promiseTypes.update;
-                return promise;
               };
-            })(this), _async.promiseTypes.update), function(canceledMsg) {
-              $log.debug("pieceMeal: " + canceledMsg);
-              return maybeCanceled = canceledMsg;
-            });
+            })(this));
           } else {
             this.inProgress = false;
             return this.reBuildMarkers(scope);
@@ -4254,10 +4261,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.onDestroy = function(scope) {
-          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+          return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
-              var promise;
-              promise = _async.each(_this.scope.markerModels.values(), function(model) {
+              return _async.each(_this.scope.markerModels.values(), function(model) {
                 if (model != null) {
                   return model.destroy(false);
                 }
@@ -4269,10 +4275,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 _this.scope.markerModels = new PropMap();
                 return _this.scope.markerModelsUpdate.updateCtr += 1;
               });
-              promise.promiseType = _async.promiseTypes["delete"];
-              return promise;
             };
-          })(this), _async.promiseTypes["delete"]));
+          })(this));
         };
 
         MarkersParentModel.prototype.maybeExecMappedEvent = function(cluster, fnName) {
@@ -4366,21 +4370,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         PolygonsParentModel.prototype.watch = function(scope, name, nameKey) {
           return scope.$watch(name, (function(_this) {
             return function(newValue, oldValue) {
-              var maybeCancel;
+              var maybeCanceled;
               if (newValue !== oldValue) {
-                maybeCancel = null;
+                maybeCanceled = null;
                 _this[nameKey] = _.isFunction(newValue) ? newValue() : newValue;
-                return _async.waitOrGo(_this, _async.preExecPromise(function() {
-                  var promise;
-                  promise = _async.each(_this.plurals.values(), function(model) {
+                return _async.promiseLock(_this, uiGmapPromise.promiseTypes.update, "watch " + name + " " + nameKey, (function(canceledMsg) {
+                  return maybeCanceled = canceledMsg;
+                }), function() {
+                  return _async.each(_this.plurals.values(), function(model) {
                     model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                    return maybeCancel;
+                    return maybeCanceled;
                   }, false);
-                  promise.promiseType = _async.promiseTypes.update;
-                  return promise;
-                }, _async.promiseTypes.update), function(canceledMsg) {
-                  $log.debug("createAllNew: " + canceledMsg);
-                  return maybeCancel = canceledMsg;
                 });
               }
             };
@@ -4420,10 +4420,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolygonsParentModel.prototype.onDestroy = function(doDelete) {
-          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+          return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
-              var promise;
-              promise = _async.each(_this.plurals.values(), function(child) {
+              return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(false);
               }, false).then(function() {
                 if (doDelete) {
@@ -4431,10 +4430,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
                 return _this.plurals = new PropMap();
               });
-              promise.promiseType = _async.promiseTypes["delete"];
-              return promise;
             };
-          })(this), _async.promiseTypes["delete"]));
+          })(this));
         };
 
         PolygonsParentModel.prototype.watchDestroy = function(scope) {
@@ -4502,10 +4499,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           maybeCanceled = null;
-          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+          return _async.promiseLock(this, uiGmapPromise.promiseTypes.create, 'createAllNew', (function(canceledMsg) {
+            return maybeCanceled = canceledMsg;
+          }), (function(_this) {
             return function() {
-              var promise;
-              promise = _async.each(scope.models, function(model) {
+              return _async.each(scope.models, function(model) {
                 _this.createChild(model, _this.gMap);
                 if (maybeCanceled) {
                   $log.debug('createNew should fall through safely');
@@ -4514,13 +4512,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }).then(function() {
                 return _this.firstTime = false;
               });
-              promise.promiseType = _async.promiseTypes.create;
-              return promise;
             };
-          })(this), _async.promiseTypes.create), function(canceledMsg) {
-            $log.debug("createAllNew: " + canceledMsg);
-            return maybeCanceled = canceledMsg;
-          });
+          })(this));
         };
 
         PolygonsParentModel.prototype.pieceMeal = function(scope, isArray) {
@@ -4535,10 +4528,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           payload = null;
           this.models = scope.models;
           if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
-            return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+            return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
+              return maybeCanceled = canceledMsg;
+            }), (function(_this) {
               return function() {
-                var promise;
-                promise = uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison)).then(function(state) {
+                return uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison)).then(function(state) {
                   payload = state;
                   return _async.each(payload.removals, function(id) {
                     var child;
@@ -4558,13 +4552,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     return maybeCanceled;
                   });
                 });
-                promise.promiseType = _async.promiseTypes.update;
-                return promise;
               };
-            })(this), _async.promiseTypes.update), function(canceledMsg) {
-              $log.debug("pieceMeal: " + canceledMsg);
-              return maybeCanceled = canceledMsg;
-            });
+            })(this));
           } else {
             this.inProgress = false;
             return this.rebuildAll(this.scope, true, true);
@@ -4657,21 +4646,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         PolylinesParentModel.prototype.watch = function(scope, name, nameKey) {
           return scope.$watch(name, (function(_this) {
             return function(newValue, oldValue) {
-              var maybeCancel;
+              var maybeCanceled;
               if (newValue !== oldValue) {
-                maybeCancel = null;
+                maybeCanceled = null;
                 _this[nameKey] = _.isFunction(newValue) ? newValue() : newValue;
-                return _async.waitOrGo(_this, _async.preExecPromise(function() {
-                  var promise;
-                  promise = _async.each(_this.plurals.values(), function(model) {
+                return _async.promiseLock(_this, uiGmapPromise.promiseTypes.update, "watch " + name + " " + nameKey, (function(canceledMsg) {
+                  return maybeCanceled = canceledMsg;
+                }), function() {
+                  return _async.each(_this.plurals.values(), function(model) {
                     model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                    return maybeCancel;
+                    return maybeCanceled;
                   }, false);
-                  promise.promiseType = _async.promiseTypes.update;
-                  return promise;
-                }, _async.promiseTypes.update), function(canceledMsg) {
-                  $log.debug("createAllNew: " + canceledMsg);
-                  return maybeCancel = canceledMsg;
                 });
               }
             };
@@ -4711,10 +4696,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolylinesParentModel.prototype.onDestroy = function(doDelete) {
-          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+          return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
-              var promise;
-              promise = _async.each(_this.plurals.values(), function(child) {
+              return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(false);
               }, false).then(function() {
                 if (doDelete) {
@@ -4722,10 +4706,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
                 return _this.plurals = new PropMap();
               });
-              promise.promiseType = _async.promiseTypes["delete"];
-              return promise;
             };
-          })(this), _async.promiseTypes["delete"]));
+          })(this));
         };
 
         PolylinesParentModel.prototype.watchDestroy = function(scope) {
@@ -4793,10 +4775,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           maybeCanceled = null;
-          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+          return _async.promiseLock(this, uiGmapPromise.promiseTypes.create, 'createAllNew', (function(canceledMsg) {
+            return maybeCanceled = canceledMsg;
+          }), (function(_this) {
             return function() {
-              var promise;
-              promise = _async.each(scope.models, function(model) {
+              return _async.each(scope.models, function(model) {
                 _this.createChild(model, _this.gMap);
                 if (maybeCanceled) {
                   $log.debug('createNew should fall through safely');
@@ -4805,13 +4788,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }).then(function() {
                 return _this.firstTime = false;
               });
-              promise.promiseType = _async.promiseTypes.create;
-              return promise;
             };
-          })(this), _async.promiseTypes.create), function(canceledMsg) {
-            $log.debug("createAllNew: " + canceledMsg);
-            return maybeCanceled = canceledMsg;
-          });
+          })(this));
         };
 
         PolylinesParentModel.prototype.pieceMeal = function(scope, isArray) {
@@ -4826,10 +4804,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           payload = null;
           this.models = scope.models;
           if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
-            return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+            return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
+              return maybeCanceled = canceledMsg;
+            }), (function(_this) {
               return function() {
-                var promise;
-                promise = uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison)).then(function(state) {
+                return uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison)).then(function(state) {
                   payload = state;
                   return _async.each(payload.removals, function(id) {
                     var child;
@@ -4849,13 +4828,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     return maybeCanceled;
                   });
                 });
-                promise.promiseType = _async.promiseTypes.update;
-                return promise;
               };
-            })(this), _async.promiseTypes.update), function(canceledMsg) {
-              $log.debug("pieceMeal: " + canceledMsg);
-              return maybeCanceled = canceledMsg;
-            });
+            })(this));
           } else {
             this.inProgress = false;
             return this.rebuildAll(this.scope, true, true);
@@ -5322,10 +5296,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.onDestroy = function(doDelete) {
-          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+          return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
-              var promise;
-              promise = _async.each(_this.windows.values(), function(child) {
+              return _async.each(_this.windows.values(), function(child) {
                 return child.destroy();
               }).then(function() {
                 if (doDelete) {
@@ -5333,10 +5306,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
                 return _this.windows = new PropMap();
               });
-              promise.promiseType = _async.promiseTypes["delete"];
-              return promise;
             };
-          })(this), _async.promiseTypes["delete"]));
+          })(this));
         };
 
         WindowsParentModel.prototype.watchDestroy = function(scope) {
@@ -5431,10 +5402,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           maybeCanceled = null;
-          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+          return _async.promiseLock(this, uiGmapPromise.promiseTypes.create, 'createAllNewWindows', (function(canceledMsg) {
+            return maybeCanceled = canceledMsg;
+          }), (function(_this) {
             return function() {
-              var promise;
-              promise = _async.each(scope.models, function(model) {
+              return _async.each(scope.models, function(model) {
                 var gMarker, _ref;
                 gMarker = hasGMarker ? (_ref = _this.getItem(scope, modelsPropToIterate, model[_this.idKey])) != null ? _ref.gMarker : void 0 : void 0;
                 if (!maybeCanceled) {
@@ -5447,13 +5419,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }).then(function() {
                 return _this.firstTime = false;
               });
-              promise.promiseType = _async.promiseTypes.create;
-              return promise;
             };
-          })(this), _async.promiseTypes.create), function(canceledMsg) {
-            $log.debug("createAllNew: " + canceledMsg);
-            return maybeCanceled = canceledMsg;
-          });
+          })(this));
         };
 
         WindowsParentModel.prototype.pieceMealWindows = function(scope, hasGMarker, modelsPropToIterate, isArray) {
@@ -5471,10 +5438,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           payload = null;
           this.models = scope.models;
           if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.windows.length > 0) {
-            return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
+            return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
+              return maybeCanceled = canceledMsg;
+            }), (function(_this) {
               return function() {
-                var promise;
-                promise = uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.windows, _this.modelKeyComparison)).then(function(state) {
+                return uiGmapPromise.promise((function() {
+                  return _this.figureOutState(_this.idKey, scope, _this.windows, _this.modelKeyComparison);
+                })).then(function(state) {
                   payload = state;
                   return _async.each(payload.removals, function(child) {
                     if (child != null) {
@@ -5496,13 +5466,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     return maybeCanceled;
                   });
                 });
-                promise.promiseType = _async.promiseTypes.update;
-                return promise;
               };
-            })(this), _async.promiseTypes.update), function(canceledMsg) {
-              $log.debug("pieceMeal: " + canceledMsg);
-              return maybeCanceled = canceledMsg;
-            });
+            })(this));
           } else {
             $log.debug('pieceMealWindows: rebuildAll');
             return this.rebuildAll(this.scope, true, true);

@@ -97,22 +97,18 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 
             #allows graceful fallout of _async.each
             maybeCanceled = null
-            _async.waitOrGo @,
-              _async.preExecPromise =>
-                promise = _async.each scope.models, (model) =>
-                  @newChildMarker(model, scope)
-                  maybeCanceled
-                .then =>
-                  @modelsRendered = true
-                  @gMarkerManager.draw()
-                  @gMarkerManager.fit() if scope.fit
-                  @scope.markerModelsUpdate.updateCtr += 1
-                promise.promiseType = _async.promiseTypes.create
-                promise
-              , _async.promiseTypes.create
-            , (canceledMsg) ->
-              $log.debug "createAllNew: #{canceledMsg}"
-              maybeCanceled= canceledMsg
+
+            _async.promiseLock @, uiGmapPromise.promiseTypes.create, 'createAllNew'
+            , ((canceledMsg) -> maybeCanceled= canceledMsg)
+            , =>
+              _async.each scope.models, (model) =>
+                @newChildMarker(model, scope)
+                maybeCanceled
+              .then =>
+                @modelsRendered = true
+                @gMarkerManager.draw()
+                @gMarkerManager.fit() if scope.fit
+                @scope.markerModelsUpdate.updateCtr += 1
 
           reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
@@ -129,38 +125,32 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             maybeCanceled = null
             payload = null
             if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
-              _async.waitOrGo @,
-                _async.preExecPromise =>
-                  promise = uiGmapPromise.promise(@figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison)
-                  .then (state) =>
-                    payload = state
-                    _async.each payload.removals, (child) =>
-                      if child?
-                        child.destroy() if child.destroy?
-                        @scope.markerModels.remove(child.id)
-                        maybeCanceled
-                  .then =>
-                      #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
-                    _async.each payload.adds, (modelToAdd) =>
-                      @newChildMarker(modelToAdd, scope)
+
+              _async.promiseLock @, uiGmapPromise.promiseTypes.update, 'pieceMeal', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
+                uiGmapPromise.promise((=> @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison))
+                .then (state) =>
+                  payload = state
+                  _async.each payload.removals, (child) =>
+                    if child?
+                      child.destroy() if child.destroy?
+                      @scope.markerModels.remove(child.id)
                       maybeCanceled
-                  .then () =>
-                    _async.each payload.updates, (update) =>
-                      @updateChild update.child, update.model
-                      maybeCanceled
-                  .then =>
-                    #finally redraw if something has changed
-                    if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
-                      @gMarkerManager.draw()
-                      scope.markerModels = @scope.markerModels #for other directives like windows
-                      @gMarkerManager.fit() if scope.fit #note fit returns a promise
-                    @scope.markerModelsUpdate.updateCtr += 1
-                  promise.promiseType = _async.promiseTypes.update
-                  promise
-                , _async.promiseTypes.update
-              , (canceledMsg) ->
-                $log.debug "pieceMeal: #{canceledMsg}"
-                maybeCanceled = canceledMsg
+                .then =>
+                    #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
+                  _async.each payload.adds, (modelToAdd) =>
+                    @newChildMarker(modelToAdd, scope)
+                    maybeCanceled
+                .then () =>
+                  _async.each payload.updates, (update) =>
+                    @updateChild update.child, update.model
+                    maybeCanceled
+                .then =>
+                  #finally redraw if something has changed
+                  if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
+                    @gMarkerManager.draw()
+                    scope.markerModels = @scope.markerModels #for other directives like windows
+                    @gMarkerManager.fit() if scope.fit #note fit returns a promise
+                  @scope.markerModelsUpdate.updateCtr += 1
 
             else
               @inProgress = false
@@ -189,19 +179,14 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             child
 
           onDestroy: (scope)=>
-            #slap index to the external model so that when they pass external back
-            _async.waitOrGo @,
-              _async.preExecPromise =>
-                promise = _async.each @scope.markerModels.values(), (model) =>
-                  model.destroy(false) if model?
-                .then =>
-                  delete @scope.markerModels
-                  @gMarkerManager.clear() if @gMarkerManager?
-                  @scope.markerModels = new PropMap()
-                  @scope.markerModelsUpdate.updateCtr += 1
-                promise.promiseType =  _async.promiseTypes.delete
-                promise
-              , _async.promiseTypes.delete
+            _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
+              _async.each @scope.markerModels.values(), (model) =>
+                model.destroy(false) if model?
+              .then =>
+                delete @scope.markerModels
+                @gMarkerManager.clear() if @gMarkerManager?
+                @scope.markerModels = new PropMap()
+                @scope.markerModelsUpdate.updateCtr += 1
 
           maybeExecMappedEvent:(cluster, fnName) ->
             if _.isFunction @scope.clusterEvents?[fnName]

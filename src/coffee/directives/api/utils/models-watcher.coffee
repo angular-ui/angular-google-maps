@@ -16,15 +16,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
     didQueueInitPromise:(existingPiecesObj, scope) ->
       if scope.models.length == 0
-        _async.waitOrGo existingPiecesObj,
-          _async.preExecPromise(->
-            promise = uiGmapPromise.resolve()
-            promise.promiseType = _async.promiseTypes.init
-            promise
-          , _async.promiseTypes.init)
+        _async.promiseLock existingPiecesObj, uiGmapPromise.promiseTypes.init, null , null, => uiGmapPromise.resolve()
         return true
       false
-
 
     figureOutState: (idKey, scope, childObjects, comparison, callBack)->
       adds = [] #models to add or update

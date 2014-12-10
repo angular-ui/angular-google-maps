@@ -34,21 +34,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       watch: (scope, name, nameKey) =>
         scope.$watch name, (newValue, oldValue) =>
           if (newValue != oldValue)
-            maybeCancel =  null
+            maybeCanceled =  null
             @[nameKey] = if _.isFunction newValue then newValue() else newValue
-            _async.waitOrGo @,
-              _async.preExecPromise =>
-                promise =
-                  _async.each @plurals.values(), (model) =>
-                    model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
-                    maybeCancel
-                  , false
-                promise.promiseType = _async.promiseTypes.update
-                promise
-              , _async.promiseTypes.update
-            , (canceledMsg) ->
-              $log.debug "createAllNew: #{canceledMsg}"
-              maybeCancel = canceledMsg
+
+            _async.promiseLock @, uiGmapPromise.promiseTypes.update, "watch #{name} #{nameKey}"
+            , ((canceledMsg) -> maybeCanceled = canceledMsg)
+            , =>
+              _async.each @plurals.values(), (model) =>
+                model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
+                maybeCanceled
+              , false
 
 
       watchModels: (scope) =>
@@ -71,17 +66,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @createChildScopes() if doCreate
 
       onDestroy: (doDelete) =>
-        _async.waitOrGo @,
-          _async.preExecPromise =>
-            promise = _async.each @plurals.values(), (child) =>
-              child.destroy false
-            , false
-            .then =>
-              delete @plurals if doDelete
-              @plurals = new PropMap()
-            promise.promiseType =  _async.promiseTypes.delete
-            promise
-          , _async.promiseTypes.delete
+        _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
+          _async.each @plurals.values(), (child) =>
+            child.destroy false
+          , false
+          .then =>
+            delete @plurals if doDelete
+            @plurals = new PropMap()
 
       watchDestroy: (scope)=>
         scope.$on '$destroy', =>
@@ -124,22 +115,15 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
         #allows graceful fallout of _async.each
         maybeCanceled = null
-        _async.waitOrGo @,
-          _async.preExecPromise =>
-            promise = _async.each scope.models, (model) =>
-              @createChild(model, @gMap)
-              if maybeCanceled
-                $log.debug 'createNew should fall through safely'
-              maybeCanceled
-            .then =>
-              #handle done callBack
-              @firstTime = false
-            promise.promiseType = _async.promiseTypes.create
-            promise
-          , _async.promiseTypes.create
-        , (canceledMsg) ->
-          $log.debug "createAllNew: #{canceledMsg}"
-          maybeCanceled= canceledMsg
+        _async.promiseLock @, uiGmapPromise.promiseTypes.create, 'createAllNew', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
+          _async.each scope.models, (model) =>
+            @createChild(model, @gMap)
+            if maybeCanceled
+              $log.debug 'createNew should fall through safely'
+            maybeCanceled
+          .then =>
+            #handle done callBack
+            @firstTime = false
 
       pieceMeal: (scope, isArray = true)=>
         return if scope.$$destroyed
@@ -148,30 +132,23 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         payload = null
         @models = scope.models
         if scope? and scope.models? and scope.models.length > 0 and @plurals.length > 0
-          _async.waitOrGo @,
-            _async.preExecPromise =>
-              promise = uiGmapPromise.promise(@figureOutState @idKey, scope, @plurals, @modelKeyComparison)
-              .then (state) =>
-                payload = state
-                _async.each payload.removals, (id) =>
-                  child = @plurals.get(id)
-                  if child?
-                    child.destroy()
-                    @plurals.remove(id)
-                    maybeCanceled
-              .then =>
-                #add all adds via creating new ChildMarkers which are appended to @markers
-                _async.each payload.adds, (modelToAdd) =>
-                  if maybeCanceled
-                    $log.debug 'pieceMeal should fall through safely'
-                  @createChild(modelToAdd, @gMap)
+          _async.promiseLock @, uiGmapPromise.promiseTypes.update, 'pieceMeal', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
+            uiGmapPromise.promise(@figureOutState @idKey, scope, @plurals, @modelKeyComparison)
+            .then (state) =>
+              payload = state
+              _async.each payload.removals, (id) =>
+                child = @plurals.get(id)
+                if child?
+                  child.destroy()
+                  @plurals.remove(id)
                   maybeCanceled
-              promise.promiseType = _async.promiseTypes.update
-              promise
-            , _async.promiseTypes.update
-          , (canceledMsg) ->
-            $log.debug "pieceMeal: #{canceledMsg}"
-            maybeCanceled = canceledMsg
+            .then =>
+              #add all adds via creating new ChildMarkers which are appended to @markers
+              _async.each payload.adds, (modelToAdd) =>
+                if maybeCanceled
+                  $log.debug 'pieceMeal should fall through safely'
+                @createChild(modelToAdd, @gMap)
+                maybeCanceled
         else
           @inProgress = false
           @rebuildAll(@scope, true, true)
