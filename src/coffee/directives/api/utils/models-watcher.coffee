@@ -14,17 +14,17 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       @lastUpdate = now
       return false
 
-    destroyPromise: =>
-      @isClearing = true
-      d = $q.defer()
-      promise = d.promise
-      checkInProgress = =>
-        if @inProgress
-          $timeout checkInProgress, 500
-        else
-          d.resolve()
-      checkInProgress()
-      return promise
+    didQueueInitPromise:(existingPiecesObj, scope) ->
+      if scope.models.length == 0
+        _async.waitOrGo existingPiecesObj,
+          _async.preExecPromise(->
+            promise = uiGmapPromise.resolve()
+            promise.promiseType = _async.promiseTypes.init
+            promise
+          , _async.promiseTypes.init)
+        return true
+      false
+
 
     figureOutState: (idKey, scope, childObjects, comparison, callBack)->
       adds = [] #models to add or update

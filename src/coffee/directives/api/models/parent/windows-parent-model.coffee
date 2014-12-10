@@ -140,14 +140,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @watchDestroy scope
             @setContentKeys(scope.models) #only setting content keys once per model array
 
-            if scope.models.length == 0
-              _async.waitOrGo @,
-                _async.preExecPromise(=>
-                  promise = uiGmapPromise.resolve()
-                  promise.promiseType = _async.promiseTypes.init
-                  promise
-                , _async.promiseTypes.init)
-              return
+            return if @didQueueInitPromise(@,scope)
 
             maybeCanceled = null
             _async.waitOrGo @,

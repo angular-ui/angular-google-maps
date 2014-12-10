@@ -119,6 +119,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         if @firstTime
           @watchModels scope
           @watchDestroy scope
+
+        return if @didQueueInitPromise(@,scope)
+
         #allows graceful fallout of _async.each
         maybeCanceled = null
         _async.waitOrGo @,

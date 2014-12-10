@@ -1440,23 +1440,18 @@ Nicholas McCready - https://twitter.com/nmccready
             return false;
           };
         })(this),
-        destroyPromise: (function(_this) {
-          return function() {
-            var checkInProgress, d, promise;
-            _this.isClearing = true;
-            d = $q.defer();
-            promise = d.promise;
-            checkInProgress = function() {
-              if (_this.inProgress) {
-                return $timeout(checkInProgress, 500);
-              } else {
-                return d.resolve();
-              }
-            };
-            checkInProgress();
-            return promise;
-          };
-        })(this),
+        didQueueInitPromise: function(existingPiecesObj, scope) {
+          if (scope.models.length === 0) {
+            _async.waitOrGo(existingPiecesObj, _async.preExecPromise(function() {
+              var promise;
+              promise = uiGmapPromise.resolve();
+              promise.promiseType = _async.promiseTypes.init;
+              return promise;
+            }, _async.promiseTypes.init));
+            return true;
+          }
+          return false;
+        },
         figureOutState: function(idKey, scope, childObjects, comparison, callBack) {
           var adds, children, mappedScopeModelIds, removals, updates;
           adds = [];
@@ -4134,15 +4129,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           } else {
             this.gMarkerManager = new MarkerManager(this.map);
           }
-          if (scope.models.length === 0) {
-            _async.waitOrGo(this, _async.preExecPromise((function(_this) {
-              return function() {
-                var promise;
-                promise = uiGmapPromise.resolve();
-                promise.promiseType = _async.promiseTypes.init;
-                return promise;
-              };
-            })(this), _async.promiseTypes.init));
+          if (this.didQueueInitPromise(this, scope)) {
             return;
           }
           maybeCanceled = null;
@@ -4511,6 +4498,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.watchModels(scope);
             this.watchDestroy(scope);
           }
+          if (this.didQueueInitPromise(this, scope)) {
+            return;
+          }
           maybeCanceled = null;
           return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
             return function() {
@@ -4798,6 +4788,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (this.firstTime) {
             this.watchModels(scope);
             this.watchDestroy(scope);
+          }
+          if (this.didQueueInitPromise(this, scope)) {
+            return;
           }
           maybeCanceled = null;
           return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
@@ -5434,15 +5427,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.watchDestroy(scope);
           }
           this.setContentKeys(scope.models);
-          if (scope.models.length === 0) {
-            _async.waitOrGo(this, _async.preExecPromise((function(_this) {
-              return function() {
-                var promise;
-                promise = uiGmapPromise.resolve();
-                promise.promiseType = _async.promiseTypes.init;
-                return promise;
-              };
-            })(this), _async.promiseTypes.init));
+          if (this.didQueueInitPromise(this, scope)) {
             return;
           }
           maybeCanceled = null;

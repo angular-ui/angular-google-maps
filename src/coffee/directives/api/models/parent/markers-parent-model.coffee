@@ -93,14 +93,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             else
               @gMarkerManager = new MarkerManager @map
 
-            if scope.models.length == 0
-              _async.waitOrGo @,
-                _async.preExecPromise(=>
-                  promise = uiGmapPromise.resolve()
-                  promise.promiseType = _async.promiseTypes.init
-                  promise
-                , _async.promiseTypes.init)
-              return
+            return if @didQueueInitPromise(@,scope)
 
             #allows graceful fallout of _async.each
             maybeCanceled = null
