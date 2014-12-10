@@ -59,7 +59,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
               changes[prop] = now[prop]
             else if _.isObject(now[prop])
               # Recursion alert
-              c = @getChanges(now[prop], prev[prop]) unless _.isEmpty(prev[prop])
+              c = @getChanges(now[prop], (if prev then prev[prop] else null))
               changes[prop] = c  unless _.isEmpty(c)
             else
               changes[prop] = now[prop]
