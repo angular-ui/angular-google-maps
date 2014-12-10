@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-08
+/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-09
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1174,9 +1174,7 @@ Nicholas McCready - https://twitter.com/nmccready
               if (_.isArray(now[prop])) {
                 changes[prop] = now[prop];
               } else if (_.isObject(now[prop])) {
-                if (!_.isEmpty(prev[prop])) {
-                  c = this.getChanges(now[prop], prev[prop]);
-                }
+                c = this.getChanges(now[prop], (prev ? prev[prop] : null));
                 if (!_.isEmpty(c)) {
                   changes[prop] = c;
                 }
@@ -6268,7 +6266,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 settingZoomFromScope = true;
                 return $timeout(function() {
                   _gMap.setZoom(newValue);
-                  return settingZoomFromScope(false);
+                  return settingZoomFromScope = false;
                 }, ((_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0) + 20, false);
               });
               scope.$watch('bounds', function(newValue, oldValue) {
