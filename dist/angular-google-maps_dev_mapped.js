@@ -6270,7 +6270,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 settingZoomFromScope = true;
                 return $timeout(function() {
                   _gMap.setZoom(newValue);
-                  return settingZoomFromScope(false);
+                  return settingZoomFromScope = false;
                 }, ((_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0) + 20, false);
               });
               scope.$watch('bounds', function(newValue, oldValue) {
