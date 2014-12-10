@@ -150,9 +150,12 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           lastPromise.cancelCb('cancel safe')
           #see if we can cancel anything else
           first = existingPiecesObj.existingPieces.peek()
-          if isInProgress(first)
-            $log.debug "promiseType: #{first.promiseType}, CANCELING FIRST PROMISE type: #{first.promiseType}"
-            first.cancelCb('cancel safe')
+          if first? and isInProgress(first)
+            if first.hasOwnProperty("cancelCb")
+              $log.debug "promiseType: #{first.promiseType}, CANCELING FIRST PROMISE type: #{first.promiseType}"
+              first.cancelCb('cancel safe')
+            else
+              $log.warn 'first promise was not cancelable'
 
       newPromise = cancelable lastPromise.finally ->
        logPromise()

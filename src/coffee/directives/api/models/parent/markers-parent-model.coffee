@@ -131,7 +131,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @createMarkersFromScratch(scope)
 
           pieceMeal: (scope) =>
-            return if scope.$$destroyed or @isClearing
+            return if scope.$$destroyed
             #allows graceful fallout of _async.each
             maybeCanceled = null
             payload = null
@@ -197,20 +197,18 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 
           onDestroy: (scope)=>
             #slap index to the external model so that when they pass external back
-            @destroyPromise().then =>
-              _async.waitOrGo @,
-                _async.preExecPromise =>
-                  promise = _async.each @scope.markerModels.values(), (model) =>
-                    model.destroy(false) if model?
-                  .then =>
-                    delete @scope.markerModels
-                    @gMarkerManager.clear() if @gMarkerManager?
-                    @scope.markerModels = new PropMap()
-                    @scope.markerModelsUpdate.updateCtr += 1
-                    @isClearing = false
-                  promise.promiseType =  _async.promiseTypes.delete
-                  promise
-                , _async.promiseTypes.delete
+            _async.waitOrGo @,
+              _async.preExecPromise =>
+                promise = _async.each @scope.markerModels.values(), (model) =>
+                  model.destroy(false) if model?
+                .then =>
+                  delete @scope.markerModels
+                  @gMarkerManager.clear() if @gMarkerManager?
+                  @scope.markerModels = new PropMap()
+                  @scope.markerModelsUpdate.updateCtr += 1
+                promise.promiseType =  _async.promiseTypes.delete
+                promise
+              , _async.promiseTypes.delete
 
           maybeExecMappedEvent:(cluster, fnName) ->
             if _.isFunction @scope.clusterEvents?[fnName]

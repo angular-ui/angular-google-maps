@@ -66,24 +66,22 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         newValueIsEmpty = if newValue? then newValue.length == 0 else true
         @plurals.length > 0 and newValueIsEmpty
 
-       rebuildAll: (scope, doCreate, doDelete) =>
+      rebuildAll: (scope, doCreate, doDelete) =>
         @onDestroy(doDelete).then =>
           @createChildScopes() if doCreate
 
       onDestroy: (doDelete) =>
-        @destroyPromise().then =>
-          _async.waitOrGo @,
-            _async.preExecPromise =>
-              promise = _async.each @plurals.values(), (child) =>
-                child.destroy false
-              , false
-              .then =>
-                delete @plurals if doDelete
-                @plurals = new PropMap()
-                @isClearing = false
-              promise.promiseType =  _async.promiseTypes.delete
-              promise
-            , _async.promiseTypes.delete
+        _async.waitOrGo @,
+          _async.preExecPromise =>
+            promise = _async.each @plurals.values(), (child) =>
+              child.destroy false
+            , false
+            .then =>
+              delete @plurals if doDelete
+              @plurals = new PropMap()
+            promise.promiseType =  _async.promiseTypes.delete
+            promise
+          , _async.promiseTypes.delete
 
       watchDestroy: (scope)=>
         scope.$on '$destroy', =>
@@ -141,7 +139,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           maybeCanceled= canceledMsg
 
       pieceMeal: (scope, isArray = true)=>
-        return if scope.$$destroyed or @isClearing
+        return if scope.$$destroyed
         #allows graceful fallout of _async.each
         maybeCanceled = null
         payload = null

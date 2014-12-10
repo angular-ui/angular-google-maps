@@ -71,19 +71,17 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @createChildScopes() if doCreate
 
       onDestroy: (doDelete) =>
-        @destroyPromise().then =>
-          _async.waitOrGo @,
-            _async.preExecPromise =>
-              promise = _async.each @plurals.values(), (child) =>
-                child.destroy false
-              , false
-              .then =>
-                delete @plurals if doDelete
-                @plurals = new PropMap()
-                @isClearing = false
-              promise.promiseType =  _async.promiseTypes.delete
-              promise
-            , _async.promiseTypes.delete
+        _async.waitOrGo @,
+          _async.preExecPromise =>
+            promise = _async.each @plurals.values(), (child) =>
+              child.destroy false
+            , false
+            .then =>
+              delete @plurals if doDelete
+              @plurals = new PropMap()
+            promise.promiseType =  _async.promiseTypes.delete
+            promise
+          , _async.promiseTypes.delete
 
       watchDestroy: (scope)=>
         scope.$on '$destroy', =>
@@ -141,7 +139,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           maybeCanceled= canceledMsg
 
       pieceMeal: (scope, isArray = true)=>
-        return if scope.$$destroyed or @isClearing
+        return if scope.$$destroyed
         #allows graceful fallout of _async.each
         maybeCanceled = null
         payload = null
@@ -151,7 +149,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             _async.preExecPromise =>
               promise = uiGmapPromise.promise(@figureOutState @idKey, scope, @plurals, @modelKeyComparison)
               .then (state) =>
-                payload = payload
+                payload = state
                 _async.each payload.removals, (id) =>
                   child = @plurals.get(id)
                   if child?

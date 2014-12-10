@@ -68,18 +68,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                 @createChildScopesWindows() if doCreate
 
           onDestroy:(doDelete) =>
-            @destroyPromise().then =>
-              _async.waitOrGo @,
-                _async.preExecPromise =>
-                  promise = _async.each @windows.values(), (child) =>
-                    child.destroy()
-                  .then =>
-                    delete @windows if doDelete
-                    @windows = new PropMap()
-                    @isClearing = false
-                  promise.promiseType =  _async.promiseTypes.delete
-                  promise
-                , _async.promiseTypes.delete
+            _async.waitOrGo @,
+              _async.preExecPromise =>
+                promise = _async.each @windows.values(), (child) =>
+                  child.destroy()
+                .then =>
+                  delete @windows if doDelete
+                  @windows = new PropMap()
+                promise.promiseType =  _async.promiseTypes.delete
+                promise
+              , _async.promiseTypes.delete
 
           watchDestroy: (scope)=>
             scope.$on '$destroy', =>
@@ -170,7 +168,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               maybeCanceled= canceledMsg
 
           pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true)=>
-            return if scope.$$destroyed or @isClearing
+            return if scope.$$destroyed
             maybeCanceled = null
             payload = null
             @models = scope.models

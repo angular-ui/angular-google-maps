@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.11 2014-12-09
+/*! angular-google-maps 2.0.11 2014-12-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -535,9 +535,13 @@ Nicholas McCready - https://twitter.com/nmccready
               $log.debug("promiseType: " + preExecPromise.promiseType + ", CANCELING LAST PROMISE type: " + lastPromise.promiseType);
               lastPromise.cancelCb('cancel safe');
               first = existingPiecesObj.existingPieces.peek();
-              if (isInProgress(first)) {
-                $log.debug("promiseType: " + first.promiseType + ", CANCELING FIRST PROMISE type: " + first.promiseType);
-                first.cancelCb('cancel safe');
+              if ((first != null) && isInProgress(first)) {
+                if (first.hasOwnProperty("cancelCb")) {
+                  $log.debug("promiseType: " + first.promiseType + ", CANCELING FIRST PROMISE type: " + first.promiseType);
+                  first.cancelCb('cancel safe');
+                } else {
+                  $log.warn('first promise was not cancelable');
+                }
               }
             }
           }
@@ -4183,7 +4187,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         MarkersParentModel.prototype.pieceMeal = function(scope) {
           var maybeCanceled, payload;
-          if (scope.$$destroyed || this.isClearing) {
+          if (scope.$$destroyed) {
             return;
           }
           maybeCanceled = null;
@@ -4263,28 +4267,25 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.onDestroy = function(scope) {
-          return this.destroyPromise().then((function(_this) {
+          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
             return function() {
-              return _async.waitOrGo(_this, _async.preExecPromise(function() {
-                var promise;
-                promise = _async.each(_this.scope.markerModels.values(), function(model) {
-                  if (model != null) {
-                    return model.destroy(false);
-                  }
-                }).then(function() {
-                  delete _this.scope.markerModels;
-                  if (_this.gMarkerManager != null) {
-                    _this.gMarkerManager.clear();
-                  }
-                  _this.scope.markerModels = new PropMap();
-                  _this.scope.markerModelsUpdate.updateCtr += 1;
-                  return _this.isClearing = false;
-                });
-                promise.promiseType = _async.promiseTypes["delete"];
-                return promise;
-              }, _async.promiseTypes["delete"]));
+              var promise;
+              promise = _async.each(_this.scope.markerModels.values(), function(model) {
+                if (model != null) {
+                  return model.destroy(false);
+                }
+              }).then(function() {
+                delete _this.scope.markerModels;
+                if (_this.gMarkerManager != null) {
+                  _this.gMarkerManager.clear();
+                }
+                _this.scope.markerModels = new PropMap();
+                return _this.scope.markerModelsUpdate.updateCtr += 1;
+              });
+              promise.promiseType = _async.promiseTypes["delete"];
+              return promise;
             };
-          })(this));
+          })(this), _async.promiseTypes["delete"]));
         };
 
         MarkersParentModel.prototype.maybeExecMappedEvent = function(cluster, fnName) {
@@ -4432,24 +4433,21 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolygonsParentModel.prototype.onDestroy = function(doDelete) {
-          return this.destroyPromise().then((function(_this) {
+          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
             return function() {
-              return _async.waitOrGo(_this, _async.preExecPromise(function() {
-                var promise;
-                promise = _async.each(_this.plurals.values(), function(child) {
-                  return child.destroy(false);
-                }, false).then(function() {
-                  if (doDelete) {
-                    delete _this.plurals;
-                  }
-                  _this.plurals = new PropMap();
-                  return _this.isClearing = false;
-                });
-                promise.promiseType = _async.promiseTypes["delete"];
-                return promise;
-              }, _async.promiseTypes["delete"]));
+              var promise;
+              promise = _async.each(_this.plurals.values(), function(child) {
+                return child.destroy(false);
+              }, false).then(function() {
+                if (doDelete) {
+                  delete _this.plurals;
+                }
+                return _this.plurals = new PropMap();
+              });
+              promise.promiseType = _async.promiseTypes["delete"];
+              return promise;
             };
-          })(this));
+          })(this), _async.promiseTypes["delete"]));
         };
 
         PolygonsParentModel.prototype.watchDestroy = function(scope) {
@@ -4540,7 +4538,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (isArray == null) {
             isArray = true;
           }
-          if (scope.$$destroyed || this.isClearing) {
+          if (scope.$$destroyed) {
             return;
           }
           maybeCanceled = null;
@@ -4723,24 +4721,21 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolylinesParentModel.prototype.onDestroy = function(doDelete) {
-          return this.destroyPromise().then((function(_this) {
+          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
             return function() {
-              return _async.waitOrGo(_this, _async.preExecPromise(function() {
-                var promise;
-                promise = _async.each(_this.plurals.values(), function(child) {
-                  return child.destroy(false);
-                }, false).then(function() {
-                  if (doDelete) {
-                    delete _this.plurals;
-                  }
-                  _this.plurals = new PropMap();
-                  return _this.isClearing = false;
-                });
-                promise.promiseType = _async.promiseTypes["delete"];
-                return promise;
-              }, _async.promiseTypes["delete"]));
+              var promise;
+              promise = _async.each(_this.plurals.values(), function(child) {
+                return child.destroy(false);
+              }, false).then(function() {
+                if (doDelete) {
+                  delete _this.plurals;
+                }
+                return _this.plurals = new PropMap();
+              });
+              promise.promiseType = _async.promiseTypes["delete"];
+              return promise;
             };
-          })(this));
+          })(this), _async.promiseTypes["delete"]));
         };
 
         PolylinesParentModel.prototype.watchDestroy = function(scope) {
@@ -4831,7 +4826,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (isArray == null) {
             isArray = true;
           }
-          if (scope.$$destroyed || this.isClearing) {
+          if (scope.$$destroyed) {
             return;
           }
           maybeCanceled = null;
@@ -4842,7 +4837,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return function() {
                 var promise;
                 promise = uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison)).then(function(state) {
-                  payload = payload;
+                  payload = state;
                   return _async.each(payload.removals, function(id) {
                     var child;
                     child = _this.plurals.get(id);
@@ -5334,24 +5329,21 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.onDestroy = function(doDelete) {
-          return this.destroyPromise().then((function(_this) {
+          return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
             return function() {
-              return _async.waitOrGo(_this, _async.preExecPromise(function() {
-                var promise;
-                promise = _async.each(_this.windows.values(), function(child) {
-                  return child.destroy();
-                }).then(function() {
-                  if (doDelete) {
-                    delete _this.windows;
-                  }
-                  _this.windows = new PropMap();
-                  return _this.isClearing = false;
-                });
-                promise.promiseType = _async.promiseTypes["delete"];
-                return promise;
-              }, _async.promiseTypes["delete"]));
+              var promise;
+              promise = _async.each(_this.windows.values(), function(child) {
+                return child.destroy();
+              }).then(function() {
+                if (doDelete) {
+                  delete _this.windows;
+                }
+                return _this.windows = new PropMap();
+              });
+              promise.promiseType = _async.promiseTypes["delete"];
+              return promise;
             };
-          })(this));
+          })(this), _async.promiseTypes["delete"]));
         };
 
         WindowsParentModel.prototype.watchDestroy = function(scope) {
@@ -5487,7 +5479,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (isArray == null) {
             isArray = true;
           }
-          if (scope.$$destroyed || this.isClearing) {
+          if (scope.$$destroyed) {
             return;
           }
           maybeCanceled = null;
