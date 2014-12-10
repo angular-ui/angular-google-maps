@@ -38,7 +38,8 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
           static: false
           fit: false
           visible: true
-          zIndex: 0
+          zIndex: 0,
+          icons: []
       ), (defaultValue, key) =>
         val = @scopeOrModelVal key, @scope, model
         if angular.isUndefined val
