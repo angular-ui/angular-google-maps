@@ -1,6 +1,6 @@
 # wrapper to be 'like' bluebirds interface
 angular.module('uiGmapgoogle-maps.directives.api.utils')
-.service 'uiGmapPromise', [ '$q', '$timeout', ($q, $timeout) ->
+.service 'uiGmapPromise', [ '$q', '$timeout', 'uiGmapLogger', ($q, $timeout, $log) ->
 
   promiseTypes =
     create : 'create'
@@ -75,6 +75,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
   #create a promise around a callback that has not executed
   promise= (fnToWrap) ->
+    unless _.isFunction fnToWrap
+      $log.error "uiGmapPromise.promise() only accepts functions"
+      return
     d = $q.defer()
     $timeout ->
       result = fnToWrap()

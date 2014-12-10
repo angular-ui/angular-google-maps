@@ -41,7 +41,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         #see if we can cancel anything else
         first = queue.peek()
         if first? and isInProgress(first)# and first.promiseType != promiseTypes.delete
-          if first.hasOwnProperty("cancelCb")
+          if first.hasOwnProperty("cancelCb") and _.isFunction first.cancelCb
             $log.debug "promiseType: #{first.promiseType}, CANCELING FIRST PROMISE type: #{first.promiseType}"
             first.cancelCb('cancel safe')
           else
@@ -106,9 +106,11 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         existingPiecesObj.existingPieces.dequeue()
 
   managePromiseQueue = (objectToLock, promiseType, msg = '', cancelCb, fnPromise) ->
-    PromiseQueueManager objectToLock, SniffedPromise(fnPromise, promiseType), (canceledMsg) ->
-      $log.debug "#{msg}: #{canceledMsg}"
-      cancelCb(canceledMsg)
+    cancelLogger = (msg) ->
+      $log.debug "#{msg}: #{msg}"
+      cancelCb(msg)
+    PromiseQueueManager objectToLock, SniffedPromise(fnPromise, promiseType), cancelLogger
+
 
   defaultChunkSize = 20
 

@@ -2,21 +2,10 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 .factory 'uiGmapModelsWatcher', [
   'uiGmapLogger', 'uiGmap_async', '$q', 'uiGmapPromise',
   (Logger,_async, $q, uiGmapPromise) ->
-    # make sure that we don't trigger map updates too often. some events
-    # can be triggered a lot which could stall whole app
-    updateInProgress: () =>
-      now = new Date()
-      # two map updates can happen at least 250ms apart
-      delta = now - @lastUpdate
-      if delta <= 250 or @inProgress
-        return true
-      @inProgress = true
-      @lastUpdate = now
-      return false
 
     didQueueInitPromise:(existingPiecesObj, scope) ->
       if scope.models.length == 0
-        _async.promiseLock existingPiecesObj, uiGmapPromise.promiseTypes.init, null , null, => uiGmapPromise.resolve()
+        _async.promiseLock existingPiecesObj, uiGmapPromise.promiseTypes.init, null , null, (=> uiGmapPromise.resolve())
         return true
       false
 

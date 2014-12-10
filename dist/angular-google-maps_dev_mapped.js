@@ -414,7 +414,7 @@ Nicholas McCready - https://twitter.com/nmccready
             lastPromise.cancelCb('cancel safe');
             first = queue.peek();
             if ((first != null) && isInProgress(first)) {
-              if (first.hasOwnProperty("cancelCb")) {
+              if (first.hasOwnProperty("cancelCb") && _.isFunction(first.cancelCb)) {
                 $log.debug("promiseType: " + first.promiseType + ", CANCELING FIRST PROMISE type: " + first.promiseType);
                 return first.cancelCb('cancel safe');
               } else {
@@ -485,13 +485,15 @@ Nicholas McCready - https://twitter.com/nmccready
         }
       };
       managePromiseQueue = function(objectToLock, promiseType, msg, cancelCb, fnPromise) {
+        var cancelLogger;
         if (msg == null) {
           msg = '';
         }
-        return PromiseQueueManager(objectToLock, SniffedPromise(fnPromise, promiseType), function(canceledMsg) {
-          $log.debug("" + msg + ": " + canceledMsg);
-          return cancelCb(canceledMsg);
-        });
+        cancelLogger = function(msg) {
+          $log.debug("" + msg + ": " + msg);
+          return cancelCb(msg);
+        };
+        return PromiseQueueManager(objectToLock, SniffedPromise(fnPromise, promiseType), cancelLogger);
       };
       defaultChunkSize = 20;
       errorObject = {
@@ -1362,26 +1364,13 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module('uiGmapgoogle-maps.directives.api.utils').factory('uiGmapModelsWatcher', [
     'uiGmapLogger', 'uiGmap_async', '$q', 'uiGmapPromise', function(Logger, _async, $q, uiGmapPromise) {
       return {
-        updateInProgress: (function(_this) {
-          return function() {
-            var delta, now;
-            now = new Date();
-            delta = now - _this.lastUpdate;
-            if (delta <= 250 || _this.inProgress) {
-              return true;
-            }
-            _this.inProgress = true;
-            _this.lastUpdate = now;
-            return false;
-          };
-        })(this),
         didQueueInitPromise: function(existingPiecesObj, scope) {
           if (scope.models.length === 0) {
-            _async.promiseLock(existingPiecesObj, uiGmapPromise.promiseTypes.init, null, null, (function(_this) {
+            _async.promiseLock(existingPiecesObj, uiGmapPromise.promiseTypes.init, null, null, ((function(_this) {
               return function() {
                 return uiGmapPromise.resolve();
               };
-            })(this));
+            })(this)));
             return true;
           }
           return false;
@@ -1440,7 +1429,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapPromise', [
-    '$q', '$timeout', function($q, $timeout) {
+    '$q', '$timeout', 'uiGmapLogger', function($q, $timeout, $log) {
       var ExposedPromise, SniffedPromise, defer, isInProgress, isResolved, promise, promiseStatus, promiseStatuses, promiseTypes, resolve, strPromiseStatuses;
       promiseTypes = {
         create: 'create',
@@ -1521,6 +1510,10 @@ Nicholas McCready - https://twitter.com/nmccready
       };
       promise = function(fnToWrap) {
         var d;
+        if (!_.isFunction(fnToWrap)) {
+          $log.error("uiGmapPromise.promise() only accepts functions");
+          return;
+        }
         d = $q.defer();
         $timeout(function() {
           var result;
@@ -4531,7 +4524,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
               return function() {
-                return uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison)).then(function(state) {
+                return uiGmapPromise.promise(function() {
+                  return _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
+                }).then(function(state) {
                   payload = state;
                   return _async.each(payload.removals, function(id) {
                     var child;
@@ -4807,7 +4802,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
               return function() {
-                return uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison)).then(function(state) {
+                return uiGmapPromise.promise(function() {
+                  return _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
+                }).then(function(state) {
                   payload = state;
                   return _async.each(payload.removals, function(id) {
                     var child;
