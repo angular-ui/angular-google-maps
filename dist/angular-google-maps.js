@@ -527,7 +527,7 @@ Nicholas McCready - https://twitter.com/nmccready
         } else {
           lastPromise = _.last(existingPiecesObj.existingPieces._content);
           if (preExecPromise.promiseType === promiseTypes.create && lastPromise.promiseType !== promiseTypes["delete"] && lastPromise.promiseType !== promiseTypes.init) {
-            $log.debug("promiseType: " + preExecPromise.promiseType + ", SKIPPED MUST COME AFTER DELETE ONLY");
+            $log.debug("lastPromise.promiseType " + lastPromise.promiseType + ", newPromiseType: " + preExecPromise.promiseType + ", SKIPPED MUST COME AFTER DELETE ONLY");
             return;
           }
           if (preExecPromise.promiseType === promiseTypes["delete"] && lastPromise.promiseType !== promiseTypes["delete"]) {
@@ -1507,7 +1507,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapPromise', [
-    '$q', function($q) {
+    '$q', '$timeout', function($q, $timeout) {
       return {
         defer: function() {
           return $q.defer();
@@ -1516,6 +1516,16 @@ Nicholas McCready - https://twitter.com/nmccready
           var d;
           d = $q.defer();
           d.resolve.apply(void 0, arguments);
+          return d.promise;
+        },
+        promise: function(fnToWrap) {
+          var d;
+          d = $q.defer();
+          $timeout(function() {
+            var result;
+            result = fnToWrap;
+            return d.resolve(result);
+          });
           return d.promise;
         }
       };
@@ -4128,7 +4138,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 promise.promiseType = _async.promiseTypes.init;
                 return promise;
               };
-            })(this)));
+            })(this), _async.promiseTypes.init));
             return;
           }
           maybeCanceled = null;
@@ -4177,19 +4187,22 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           maybeCanceled = null;
+          payload = null;
           if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.markerModels.length > 0) {
-            payload = this.figureOutState(this.idKey, scope, this.scope.markerModels, this.modelKeyComparison);
             return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
               return function() {
                 var promise;
-                promise = _async.each(payload.removals, function(child) {
-                  if (child != null) {
-                    if (child.destroy != null) {
-                      child.destroy();
+                promise = uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.scope.markerModels, _this.modelKeyComparison)).then(function(state) {
+                  payload = state;
+                  return _async.each(payload.removals, function(child) {
+                    if (child != null) {
+                      if (child.destroy != null) {
+                        child.destroy();
+                      }
+                      _this.scope.markerModels.remove(child.id);
+                      return maybeCanceled;
                     }
-                    _this.scope.markerModels.remove(child.id);
-                    return maybeCanceled;
-                  }
+                  });
                 }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     _this.newChildMarker(modelToAdd, scope);
@@ -4523,7 +4536,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolygonsParentModel.prototype.pieceMeal = function(scope, isArray) {
-          var maybeCanceled;
+          var maybeCanceled, payload;
           if (isArray == null) {
             isArray = true;
           }
@@ -4531,20 +4544,23 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           maybeCanceled = null;
+          payload = null;
           this.models = scope.models;
           if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
             return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
               return function() {
-                var payload, promise;
-                payload = _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
-                promise = promise = _async.each(payload.removals, function(id) {
-                  var child;
-                  child = _this.plurals.get(id);
-                  if (child != null) {
-                    child.destroy();
-                    _this.plurals.remove(id);
-                    return maybeCanceled;
-                  }
+                var promise;
+                promise = uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison)).then(function(state) {
+                  payload = state;
+                  return _async.each(payload.removals, function(id) {
+                    var child;
+                    child = _this.plurals.get(id);
+                    if (child != null) {
+                      child.destroy();
+                      _this.plurals.remove(id);
+                      return maybeCanceled;
+                    }
+                  });
                 }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     if (maybeCanceled) {
@@ -4811,7 +4827,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolylinesParentModel.prototype.pieceMeal = function(scope, isArray) {
-          var maybeCanceled;
+          var maybeCanceled, payload;
           if (isArray == null) {
             isArray = true;
           }
@@ -4819,20 +4835,23 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           maybeCanceled = null;
+          payload = null;
           this.models = scope.models;
           if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
             return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
               return function() {
-                var payload, promise;
-                payload = _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
-                promise = promise = _async.each(payload.removals, function(id) {
-                  var child;
-                  child = _this.plurals.get(id);
-                  if (child != null) {
-                    child.destroy();
-                    _this.plurals.remove(id);
-                    return maybeCanceled;
-                  }
+                var promise;
+                promise = uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison)).then(function(state) {
+                  payload = payload;
+                  return _async.each(payload.removals, function(id) {
+                    var child;
+                    child = _this.plurals.get(id);
+                    if (child != null) {
+                      child.destroy();
+                      _this.plurals.remove(id);
+                      return maybeCanceled;
+                    }
+                  });
                 }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     if (maybeCanceled) {
@@ -5431,7 +5450,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 promise.promiseType = _async.promiseTypes.init;
                 return promise;
               };
-            })(this)));
+            })(this), _async.promiseTypes.init));
             return;
           }
           maybeCanceled = null;
@@ -5472,21 +5491,24 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           maybeCanceled = null;
+          payload = null;
           this.models = scope.models;
           if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.windows.length > 0) {
-            payload = this.figureOutState(this.idKey, scope, this.windows, this.modelKeyComparison);
             return _async.waitOrGo(this, _async.preExecPromise((function(_this) {
               return function() {
                 var promise;
-                promise = _async.each(payload.removals, function(child) {
-                  if (child != null) {
-                    _this.windows.remove(child.id);
-                    if (child.destroy != null) {
-                      child.destroy(true);
+                promise = uiGmapPromise.promise(_this.figureOutState(_this.idKey, scope, _this.windows, _this.modelKeyComparison)).then(function(state) {
+                  payload = state;
+                  return _async.each(payload.removals, function(child) {
+                    if (child != null) {
+                      _this.windows.remove(child.id);
+                      if (child.destroy != null) {
+                        child.destroy(true);
+                      }
+                      return maybeCanceled;
                     }
-                    return maybeCanceled;
-                  }
-                }, false).then(function() {
+                  });
+                }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     var gMarker, _ref;
                     gMarker = (_ref = _this.getItem(scope, modelsPropToIterate, modelToAdd[_this.idKey])) != null ? _ref.gMarker : void 0;
@@ -5495,7 +5517,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                     _this.createWindow(modelToAdd, gMarker, _this.gMap);
                     return maybeCanceled;
-                  }, false);
+                  });
                 });
                 promise.promiseType = _async.promiseTypes.update;
                 return promise;

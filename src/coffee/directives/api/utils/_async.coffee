@@ -142,7 +142,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       if preExecPromise.promiseType == promiseTypes.create and
         lastPromise.promiseType != promiseTypes.delete and
         lastPromise.promiseType != promiseTypes.init
-          $log.debug "promiseType: #{preExecPromise.promiseType}, SKIPPED MUST COME AFTER DELETE ONLY"
+          $log.debug "lastPromise.promiseType #{lastPromise.promiseType}, newPromiseType: #{preExecPromise.promiseType}, SKIPPED MUST COME AFTER DELETE ONLY"
           return
       if preExecPromise.promiseType == promiseTypes.delete and lastPromise.promiseType != promiseTypes.delete
         if lastPromise.cancelCb? and _.isFunction(lastPromise.cancelCb) and isInProgress(lastPromise)

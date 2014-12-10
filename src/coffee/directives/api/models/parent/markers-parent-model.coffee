@@ -95,10 +95,11 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 
             if scope.models.length == 0
               _async.waitOrGo @,
-                _async.preExecPromise =>
+                _async.preExecPromise(=>
                   promise = uiGmapPromise.resolve()
                   promise.promiseType = _async.promiseTypes.init
                   promise
+                , _async.promiseTypes.init)
               return
 
             #allows graceful fallout of _async.each
@@ -133,19 +134,18 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             return if scope.$$destroyed or @isClearing
             #allows graceful fallout of _async.each
             maybeCanceled = null
+            payload = null
             if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
-              #find the current state, async operation that calls back
-              payload = @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison
-              #payload contains added, removals and flattened (existing models with their gProp appended)
-              #remove all removals clean up scope (destroy removes itself from markerManger), finally remove from @scope.markerModels
-
               _async.waitOrGo @,
                 _async.preExecPromise =>
-                  promise = _async.each payload.removals, (child) =>
-                    if child?
-                      child.destroy() if child.destroy?
-                      @scope.markerModels.remove(child.id)
-                      maybeCanceled
+                  promise = uiGmapPromise.promise(@figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison)
+                  .then (state) =>
+                    payload = state
+                    _async.each payload.removals, (child) =>
+                      if child?
+                        child.destroy() if child.destroy?
+                        @scope.markerModels.remove(child.id)
+                        maybeCanceled
                   .then =>
                       #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
                     _async.each payload.adds, (modelToAdd) =>

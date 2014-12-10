@@ -144,17 +144,20 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         return if scope.$$destroyed or @isClearing
         #allows graceful fallout of _async.each
         maybeCanceled = null
+        payload = null
         @models = scope.models
         if scope? and scope.models? and scope.models.length > 0 and @plurals.length > 0
           _async.waitOrGo @,
             _async.preExecPromise =>
-              payload = @figureOutState @idKey, scope, @plurals, @modelKeyComparison
-              promise = promise = _async.each payload.removals, (id) =>
-                child = @plurals.get(id)
-                if child?
-                  child.destroy()
-                  @plurals.remove(id)
-                  maybeCanceled
+              promise = uiGmapPromise.promise(@figureOutState @idKey, scope, @plurals, @modelKeyComparison)
+              .then (state) =>
+                payload = payload
+                _async.each payload.removals, (id) =>
+                  child = @plurals.get(id)
+                  if child?
+                    child.destroy()
+                    @plurals.remove(id)
+                    maybeCanceled
               .then =>
                 #add all adds via creating new ChildMarkers which are appended to @markers
                 _async.each payload.adds, (modelToAdd) =>

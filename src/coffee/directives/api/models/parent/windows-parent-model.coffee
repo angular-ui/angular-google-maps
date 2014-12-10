@@ -144,10 +144,11 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
             if scope.models.length == 0
               _async.waitOrGo @,
-                _async.preExecPromise =>
+                _async.preExecPromise(=>
                   promise = uiGmapPromise.resolve()
                   promise.promiseType = _async.promiseTypes.init
                   promise
+                , _async.promiseTypes.init)
               return
 
             maybeCanceled = null
@@ -171,17 +172,19 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           pieceMealWindows: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = true)=>
             return if scope.$$destroyed or @isClearing
             maybeCanceled = null
+            payload = null
             @models = scope.models
             if scope? and scope.models? and scope.models.length > 0 and @windows.length > 0
-              payload = @figureOutState @idKey, scope, @windows, @modelKeyComparison
               _async.waitOrGo @,
                 _async.preExecPromise =>
-                  promise = _async.each payload.removals, (child)=>
-                    if child?
-                      @windows.remove(child.id)
-                      child.destroy(true) if child.destroy?
-                      maybeCanceled
-                  ,false
+                  promise = uiGmapPromise.promise(@figureOutState @idKey, scope, @windows, @modelKeyComparison)
+                  .then (state) =>
+                    payload = state
+                    _async.each payload.removals, (child)=>
+                      if child?
+                        @windows.remove(child.id)
+                        child.destroy(true) if child.destroy?
+                        maybeCanceled
                   .then =>
                     #add all adds via creating new ChildMarkers which are appended to @markers
                     _async.each payload.adds, (modelToAdd) =>
@@ -189,7 +192,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                       throw 'Gmarker undefined' unless gMarker
                       @createWindow(modelToAdd, gMarker, @gMap)
                       maybeCanceled
-                    ,false
                   promise.promiseType = _async.promiseTypes.update
                   promise
                 , _async.promiseTypes.update
