@@ -2864,7 +2864,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.deferred = uiGmapPromise.defer();
           _.each(this.keys, (function(_this) {
             return function(v, k) {
-              return _this[k + 'Key'] = _.isFunction(_this.keys[k]) ? _this.keys[k]() : _this.keys[k];
+              var keyValue;
+              keyValue = _this.keys[k];
+              if ((keyValue != null) && !_.isFunction(keyValue) && _.isString(keyValue)) {
+                return _this[k + 'Key'] = keyValue;
+              }
             };
           })(this));
           this.idKey = this.idKeyKey || 'id';
