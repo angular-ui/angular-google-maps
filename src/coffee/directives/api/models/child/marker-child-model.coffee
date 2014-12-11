@@ -26,7 +26,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @clonedModel = _.clone @model,true
         @deferred = uiGmapPromise.defer()
         _.each @keys, (v, k) =>
-          @[k + 'Key'] = if _.isFunction @keys[k] then @keys[k]() else @keys[k]
+          keyValue = @keys[k]
+          if keyValue? and not _.isFunction(keyValue)  and _.isString(keyValue)
+            @[k + 'Key'] = keyValue
         @idKey = @idKeyKey or 'id'
         @id = @model[@idKey] if @model[@idKey]?
 
