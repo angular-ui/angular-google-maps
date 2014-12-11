@@ -2,13 +2,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 .factory 'uiGmapPolylinesParentModel', ['$timeout', 'uiGmapLogger',
   'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap',
   'uiGmapPolylineChildModel', 'uiGmap_async', 'uiGmapPromise',
-  ($timeout, Logger, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async, uiGmapPromise) ->
+  ($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async, uiGmapPromise) ->
     class PolylinesParentModel extends ModelKey
       @include ModelsWatcher
       constructor: (@scope, @element, @attrs, @gMap, @defaults) ->
         super(scope)
         self = @
-        @$log = Logger
+        @$log = $log
         @plurals = new PropMap()
         @scopePropNames = [
           'path'
@@ -34,21 +34,28 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       watch: (scope, name, nameKey) =>
         scope.$watch name, (newValue, oldValue) =>
           if (newValue != oldValue)
-            @[nameKey] = if typeof newValue == 'function' then newValue() else newValue
-            @cleanOnResolve _async.waitOrGo @, =>
+            maybeCanceled =  null
+            @[nameKey] = if _.isFunction newValue then newValue() else newValue
+
+            _async.promiseLock @, uiGmapPromise.promiseTypes.update, "watch #{name} #{nameKey}"
+            , ((canceledMsg) -> maybeCanceled = canceledMsg)
+            , =>
               _async.each @plurals.values(), (model) =>
                 model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
+                maybeCanceled
+              , false
 
 
       watchModels: (scope) =>
-        scope.$watch 'models', (newValue, oldValue) =>
+        scope.$watchCollection 'models', (newValue, oldValue) =>
           #check to make sure that the newValue Array is really a set of new objects
-          unless _.isEqual(newValue, oldValue)
+          unless _.isEqual(newValue, oldValue) and (@lastNewValue != newValue or @lastOldValue != oldValue)
+            @lastNewValue = newValue
+            @lastOldValue = oldValue
             if @doINeedToWipe(newValue)
               @rebuildAll(scope, true, true)
             else
               @createChildScopes(false)
-        , true
 
       doINeedToWipe: (newValue) =>
         newValueIsEmpty = if newValue? then newValue.length == 0 else true
@@ -59,15 +66,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @createChildScopes() if doCreate
 
       onDestroy: (doDelete) =>
-        @destroyPromise().then =>
-          @cleanOnResolve _async.waitOrGo @, =>
-            @plurals.each (child) =>
-              child.destroy(true)
-            uiGmapPromise.resolve()
+        _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
+          _async.each @plurals.values(), (child) =>
+            child.destroy false
+          , false
           .then =>
             delete @plurals if doDelete
             @plurals = new PropMap()
-            @isClearing = false
 
       watchDestroy: (scope)=>
         scope.$on '$destroy', =>
@@ -81,7 +86,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       createChildScopes: (isCreatingFromScratch = true) =>
         if angular.isUndefined(@scope.models)
-          @$log.error('No models to create polylines from! I Need direct models!')
+          @$log.error('No models to create Polylines from! I Need direct models!')
           return
 
         if @gMap?
@@ -106,34 +111,44 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @watchModels scope
           @watchDestroy scope
 
-        if scope.models.length == 0
-          @existingPieces = uiGmapPromise.resolve()
-          return
+        return if @didQueueInitPromise(@,scope)
 
-        @cleanOnResolve _async.waitOrGo @, =>
+        #allows graceful fallout of _async.each
+        maybeCanceled = null
+        _async.promiseLock @, uiGmapPromise.promiseTypes.create, 'createAllNew', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
           _async.each scope.models, (model) =>
             @createChild(model, @gMap)
-        .then => #handle done callBack
-          @firstTime = false
+            if maybeCanceled
+              $log.debug 'createNew should fall through safely'
+            maybeCanceled
+          .then =>
+            #handle done callBack
+            @firstTime = false
 
       pieceMeal: (scope, isArray = true)=>
-        return if scope.$$destroyed or @isClearing
-        return if @updateInProgress() and @plurals.length > 0
-
+        return if scope.$$destroyed
+        #allows graceful fallout of _async.each
+        maybeCanceled = null
+        payload = null
         @models = scope.models
         if scope? and scope.models? and scope.models.length > 0 and @plurals.length > 0
-          @figureOutState @idKey, scope, @plurals, @modelKeyComparison, (state) =>
-            payload = state
-            @cleanOnResolve _async.waitOrGo @, =>
-              _async.each payload.removals, (id)=>
+          _async.promiseLock @, uiGmapPromise.promiseTypes.update, 'pieceMeal', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
+            uiGmapPromise.promise( => @figureOutState @idKey, scope, @plurals, @modelKeyComparison)
+            .then (state) =>
+              payload = state
+              _async.each payload.removals, (id) =>
                 child = @plurals.get(id)
                 if child?
                   child.destroy()
                   @plurals.remove(id)
-              .then =>
-                #add all adds via creating new ChildMarkers which are appended to @markers
-                _async.each payload.adds, (modelToAdd) =>
-                  @createChild(modelToAdd, @gMap)
+                  maybeCanceled
+            .then =>
+              #add all adds via creating new ChildMarkers which are appended to @markers
+              _async.each payload.adds, (modelToAdd) =>
+                if maybeCanceled
+                  $log.debug 'pieceMeal should fall through safely'
+                @createChild(modelToAdd, @gMap)
+                maybeCanceled
         else
           @inProgress = false
           @rebuildAll(@scope, true, true)

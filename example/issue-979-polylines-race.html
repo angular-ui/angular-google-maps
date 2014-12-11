@@ -8,7 +8,7 @@
     <script src="https://code.angularjs.org/1.3.3/angular.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
     <script src="../dist/angular-google-maps_dev_mapped.js"></script>
-    <script src="assets/scripts/controllers/issue-979-polygons-race.js"></script>
+    <script src="assets/scripts/controllers/issue-979-polylines-race.js"></script>
     <title>Map</title>
 </head>
 
@@ -34,11 +34,11 @@
                          <!--stroke="{ color: '#2c8aa7', weight: 3, opacity: '1.0' }" visible="true" geodesic="true" fit="false"-->
                          <!--editable="false" static="true" ng-cloak=""></ui-gmap-polygon>-->
 
-        <ui-gmap-polygons control="map.polyControl" models="map.polys" path='"geom"' fill="{ color: '#2c8aa7', opacity: '0.3' }"
+        <ui-gmap-polylines control="map.polyControl" models="map.polys" path='"geom"' fill="{ color: '#2c8aa7', opacity: '0.3' }"
                          stroke="{ color: '#2c8aa7', weight: 3, opacity: '1.0' }" visible="true" geodesic="true" fit="false"
                          editable="false" static="true" ng-cloak="">
 
-        </ui-gmap-polygons>
+        </ui-gmap-polylines>
 
     </ui-gmap-google-map>
     <div>

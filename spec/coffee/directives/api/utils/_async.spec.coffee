@@ -1,16 +1,19 @@
 describe "_async", ->
   rootScope = null
   timeout = null
+  q = null
 
   digest = (fn, times = 1) =>
     fn()
-    _.range(times).forEach -> # i would like to say that it sucks that I have to do this.. (angular)
-      timeout?.flush()
+    if times
+      _.range(times).forEach -> # i would like to say that it sucks that I have to do this.. (angular)
+        timeout?.flush()
     rootScope?.$apply()
 
   beforeEach ->
     module "uiGmapgoogle-maps"
-    inject (_$rootScope_, $timeout, uiGmap_async) =>
+    inject (_$rootScope_, $timeout, uiGmap_async, $q) =>
+      q = $q
       rootScope = _$rootScope_
       timeout = $timeout
       @subject = uiGmap_async
@@ -112,12 +115,12 @@ describe "_async", ->
         known = _.range(101)
         test = []
         pauses = 0
-        @subject.each known, (num) ->
+        @subject.each(known, (num) ->
           test.push(num)
         , ->
           pauses++
         , chunking = false
-        .then ->
+        ).then ->
           expect(pauses).toEqual(0) #it should not be hit
           expect(test.length).toEqual(known.length)
           expect(test).toEqual(known)
