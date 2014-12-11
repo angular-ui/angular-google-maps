@@ -6,7 +6,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 ###
 angular.module('uiGmapgoogle-maps.directives.api.models.child')
 .factory 'uiGmapDrawFreeHandChildModel', ['uiGmapLogger', '$q', ($log, $q) ->
-  drawFreeHand = (map, polys, enable) ->
+  drawFreeHand = (map, polys, done) ->
     poly = new google.maps.Polyline
       map: map
       clickable: false
@@ -23,40 +23,40 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         path: path
       poly = null
       google.maps.event.clearListeners map.getDiv(), 'mousedown'
-      enable()
+      done()
 
     undefined
 
-  freeHandMgr = (@map, defaultOptions) ->
-    unless defaultOptions
-      defaultOptions =
-        draggable: true
-        zoomControl: true
-        scrollwheel: true
-        disableDoubleClickZoom: true
-    #freeze map to make drawing easy (need to drag to draw .. instead of moving the map)
-    enable = =>
-      @deferred?.resolve()
-      _.defer =>
-        @map.setOptions _.extend @oldOptions, defaultOptions
-
+  freeHandMgr = (@map, scope) ->
     disableMap = =>
-      $log.info 'disabling map move'
-      @oldOptions = map.getOptions()
-      @oldOptions.center = map.getCenter()
-
-      @map.setOptions
+      # Whilst drawing, freeze the map (so that mouse "drag" action draws and doesn't move the map).
+      mapOptions =
         draggable: false
-        zoomControl: false
+        disableDefaultUI: true
         scrollwheel: false
         disableDoubleClickZoom: false
+
+      $log.info 'disabling map move'
+      @map.setOptions mapOptions
+
+    enableMap = =>
+      # After drawing, un-freeze the map.
+      mapOptions =
+        draggable: true
+        disableDefaultUI: false
+        scrollwheel: true
+        disableDoubleClickZoom: true
+
+      @deferred?.resolve()
+      _.defer =>
+        @map.setOptions _.extend mapOptions, scope.options
 
     @engage = (@polys) =>
       @deferred = $q.defer()
       disableMap()
       $log.info 'DrawFreeHandChildModel is engaged (drawing).'
       google.maps.event.addDomListener @map.getDiv(), 'mousedown', (e) =>
-        drawFreeHand @map, @polys, enable
+        drawFreeHand @map, @polys, enableMap
       @deferred.promise
 
     this
