@@ -20,7 +20,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
         @mapPromise(scope, ctrl).then (map) =>
           return $log.error 'No polygons to bind to!' unless scope.polygons
           return $log.error 'Free Draw Polygons must be of type Array!' unless _.isArray scope.polygons
-          freeHand = new DrawFreeHandChildModel map
+          freeHand = new DrawFreeHandChildModel map, ctrl.getScope()
           listener = undefined
           scope.draw = ->
             #clear watch only watch when we are finished drawing/engaging
