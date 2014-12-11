@@ -66,40 +66,6 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         changes
 
 
-      # make sure that we don't trigger map updates too often. some events
-      # can be triggered a lot which could stall whole app
-      updateInProgress: () =>
-        now = new Date()
-        # two map updates can happen at least 250ms apart
-        delta = now - @lastUpdate
-        if delta <= 250 or @inProgress
-          return true
-        @inProgress = true
-        @lastUpdate = now
-        return false
-
-      cleanOnResolve: (promise) =>
-        promise.catch =>
-          @existingPieces = undefined
-          @inProgress = false
-          uiGmapPromise.resolve()
-        .then =>
-          @existingPieces = undefined
-          @inProgress = false
-
-
-      destroyPromise: =>
-        @isClearing = true
-        d = $q.defer()
-        promise = d.promise
-        checkInProgress = =>
-          if @inProgress
-            $timeout checkInProgress, 500
-          else
-            d.resolve()
-        checkInProgress()
-        return promise
-
       # evaluate scope to scope.$parent (as long as isolate is false) with preference over models
       # this will allow for expressions and strings evals
       # returns
@@ -143,7 +109,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         childScope.model = model
 
 
-      destroy: (manualOverride = false)=>
+      destroy: (manualOverride = false) =>
         if @scope? and not @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
           @scope.$destroy()
+        else
+          @clean()
 ]

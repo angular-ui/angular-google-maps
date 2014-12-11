@@ -47,9 +47,11 @@ concatDist =
   src: pipeline.map( (f) -> "tmp/#{f}.js").concat [
     "tmp/wrapped_uuid.js"
     "tmp/wrapped_libs.js"
+    "tmp/webpack.dataStructures.js"
     "src/js/**/*.js" #this all will only work if the dependency orders do not matter
     "src/js/**/**/*.js"
     "src/js/**/**/**/*.js"
+    "!src/js/wrapped/webpack/*.js"
     "!src/js/wrapped/*.js"
   ]
   dest: "dist/<%= pkg.name %>.js"
@@ -255,6 +257,16 @@ module.exports = (grunt) ->
         options: mode: 'dot'
         tasks: ['coffee', 'clean', 'cleam:dist', 'copy', 'concat', 'jasmineSettings',
           'mkdir:all', 'jshint', 'uglify', 'replace', 'concat:dist', 'concat:libs']
+
+    # for  commonjs libraries that need to be rolled in
+    webpack:
+      commonjsDeps:
+        entry:
+          dataStructures: "./src/js/wrapped/webpack/data-structures.js",
+        output:
+          #Make sure to use [name] or [id] in output.filename
+          path: "tmp/"
+          filename: "webpack.[name].js",
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

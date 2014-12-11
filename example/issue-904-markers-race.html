@@ -15,11 +15,12 @@
     <ui-gmap-google-map center="map.center"
                         zoom="map.zoom" draggable="true" options="map.options"
             events="map.events">
+        <!--doCluster="map.doCluster"-->
         <ui-gmap-markers
                 models="searchResults.results"
                 coords="'coords'"
                 idkey="'key'"
-                doCluster="map.doCluster"
+
                 ></ui-gmap-markers>
     </ui-gmap-google-map>
     <button ng-click="addMarkers(1000)">Add New Marker</button>
