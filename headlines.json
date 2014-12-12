@@ -1,6 +1,11 @@
 {
   "items": [
     {
+      "title": "2.1.X or 3.0.X",
+      "date": "Dec 12 2014",
+      "content": "<p>Things are changing for the good, and we want your input. Please read the <a href="https://github.com/angular-ui/angular-google-maps/blob/master/README.markdown">README.md<a/> and vote at the <a href="http://goo.gl/4YDSao">Poll<a/>.</p>"
+    },
+    {
       "title": "Like writing Specs?",
       "date": "Nov 30 2014",
       "content": "<p>Do you like picking libraries apart? Then we need you! We really need better coverage against our directives, factories, and services. This would help catch regression errors. This would go a long way beyond plunkrs and examples.</p>"
