@@ -96,7 +96,7 @@ Filing issues:
 - Search open/**closed** issues, src examples (./examples), gitter, and then google plus community! **Again please search!**
 - issues w/ plnkrs get attention quicker
 
-Pull requests more than welcome! If you're adding new features, it would be appreciated if you would provide some docs about the feature. This can be done either by adding a card to our [Trello board](https://trello.com/b/WwTRrkfh/angular-google-maps), forking the website branch and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
+Pull requests more than welcome! If you're adding new features, it would be appreciated if you would provide some docs about the feature. This can be done either by adding a card to our [Waffle.io board](https://waffle.io/angular-ui/angular-google-maps), forking the website branch and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
 
 [Branching Model w Git Flow](http://nvie.com/posts/a-successful-git-branching-model/)
 We are trying to follow the git flow branching model where all bugs that are considered urgent / patches will be pull
