@@ -14,15 +14,6 @@ task board: [![Stories in Ready](https://badge.waffle.io/angular-ui/angular-goog
 
 <img src="http://benschwarz.github.io/bower-badges/badge@2x.png?pkgname=angular-google-maps" width="130" height="30">&nbsp;
 
-##Post 1.2.X:
-
-With the minor release of 1.2.0 (which is why it is a minor) there are a few breaking changes:
-
-- all directives are now restricted to ```EA``` see [here](https://docs.angularjs.org/guide/directive) and search for 'restrict'
-- marker directive now requires the attribute ```idkey``` to be defined and it is not optional like markers or windows. This is to prevent unnecessary redraws.
-
-If I have forgotten anything then it can be added here or to the website branch which is responsible for... the website. Feel free to contribute and make pull requests to either.
-
 ## 2.0.X:
 2.0.0 will introduced major changes:
 - **ui-gmap** namespace which will be appended to all directives, services, and factories.
@@ -32,6 +23,36 @@ If I have forgotten anything then it can be added here or to the website branch 
 ## 2.0.7+:
 - Bluebird & JQuery have been removed as dependencies, :clap:
 
+## Things to Come:
+_______________________
+## 2.0.12 maybe 2.0.13
+
+These will probably be close to the last 2.0.X releases. Depending on the severity of the bugs other 2.0.X releases may be necessary.
+
+We are tying to figure out if we should just cut the coord and go full bore into 3.0 or ease in via 2.1.X . They both have some commonality in terms of Plural Directives and API clean up. This is why we are asking for [**votes**](http://goo.gl/4YDSao).
+
+## What to vote on!
+_________________________
+
+## 2.1.X (develop)
+This release is going to be much stricter in terms of when it will be released and allowed features. It will require more specs and will be focusing on bad bugs, unifying the API. 
+
+Things to expect:
+- **transclusion**: Only the map will be transcluded (no more window or windows in markers). This will de-complicate the api tremendously. This will also make it much easier to have one PluralParentModel for the rest of the parents to use. This *may* be held off for 3.0.X. 
+
+- **watches**:All directives to be moved to using shallow watches (no equality) and or $watchCollection.
+ 
+## 3.0.X
+This is currently being discussed internally and will become a public discussion in the next coming weeks.
+However here are a few items known:
+
+- **drop singular layer directives**: Singular directives while being 'angular', are pretty useless for production and performance unless your size is small. To bring focus to the API our goal for layers (shapes, markers, windows) is to make all of the directives plural.
+
+- **remove many watches**, from pural directives. We may be de-angularizing somethings to aide in speed. This main change will have to do with watches on models itself. Watchers are a pain, not only are they a performance hit, but it also makes the internals of the api less explicit (where watchers guess and figure out what is going on). We are considering using the control to allow models to be explicitly updated, destroyed, and created. See [Polygons](https://github.com/angular-ui/angular-google-maps/blob/master/src/coffee/directives/api/polygons.coffee#L24-L29).
+
+Overall we are thinking making this a more aggressive follow up to 2.1.X on watches where we just abort using many them. This [read](http://gehrcke.de/2014/11/sharing-state-in-angularjs-be-aware-of-watch-issues-and-race-conditions-during-app-initialization/), summarizes it best.
+
+__________________
 ## Getting started
 This is a directive for AngularJS `~1.0.7+, ~1.2.2+`.
 
@@ -75,7 +96,7 @@ Filing issues:
 - Search open/**closed** issues, src examples (./examples), gitter, and then google plus community! **Again please search!**
 - issues w/ plnkrs get attention quicker
 
-Pull requests more than welcome! If you're adding new features, it would be appreciated if you would provide some docs about the feature. This can be done either by adding a card to our [Trello board](https://trello.com/b/WwTRrkfh/angular-google-maps), forking the website branch and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
+Pull requests more than welcome! If you're adding new features, it would be appreciated if you would provide some docs about the feature. This can be done either by adding a card to our [Waffle.io board](https://waffle.io/angular-ui/angular-google-maps), forking the website branch and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
 
 [Branching Model w Git Flow](http://nvie.com/posts/a-successful-git-branching-model/)
 We are trying to follow the git flow branching model where all bugs that are considered urgent / patches will be pull
