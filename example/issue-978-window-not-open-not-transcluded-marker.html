@@ -14,13 +14,13 @@
 <body ng-controller="mainCtrl">
 <div id="map_canvas" >
     <ui-gmap-google-map center="map.center" zoom="map.zoom">
-        <ui-gmap-markers models="map.markerModels" coords="'coords'" options="'options'" click="'clicked'"></ui-gmap-markers>
+        <ui-gmap-markers models="map.markerModels" coords="'coords'" options="'options'" click="map.clickedMarker"></ui-gmap-markers>
         <ui-gmap-window coords="map.windowModel.coords" idkey="map.windowModel.id" show="map.windowModel.show">
             {{map.windowModel}}
         </ui-gmap-window>
     </ui-gmap-google-map>
 </div>
-{{number}}
+{{map.windowModel}}
 </body>
 
 </html>

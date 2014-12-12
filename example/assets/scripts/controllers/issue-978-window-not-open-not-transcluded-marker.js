@@ -29,36 +29,12 @@ angular.module('app', ['uiGmapgoogle-maps'])
           options: {}
         }
       ]
-      //windowModel:{}
     };
-    $scope.map.markerModels.forEach(function (m) {
-      m.clicked = function (gMarker, eventName, markerModel) {
-        if($scope.map.windowModel) {
-          $scope.map.windowModel.show = false;
-        }
-        markerModel.show = true;
-        $scope.map.windowModel = markerModel;
+    $scope.map.clickedMarker = function (gMarker, eventName, markerModel) {
+      if ($scope.map.windowModel) {
+        $scope.map.windowModel.show = false;
       }
-    });
-
-    //$timeout(function(){
-    //  $scope.map.markerModels = [
-    //    {
-    //      id: 0,
-    //      coords: {
-    //        latitude: 35.027469,
-    //        longitude: -111.022753
-    //      },
-    //      options: {}
-    //    },
-    //    {
-    //      id: 1,
-    //      coords: {
-    //        latitude: 38.027469,
-    //        longitude: -120.022753
-    //      },
-    //      options: {}
-    //    }
-    //  ]
-    //});
+      markerModel.show = true;
+      $scope.map.windowModel = markerModel;
+    };
   });
