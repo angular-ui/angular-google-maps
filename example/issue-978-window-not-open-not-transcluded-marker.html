@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-978-window-not-open-not-transcluded-marker.js"></script>
+    <title>Map</title>
+</head>
+
+<body ng-controller="mainCtrl">
+<div id="map_canvas" >
+    <ui-gmap-google-map center="map.center" zoom="map.zoom">
+        <ui-gmap-markers models="map.markerModels" coords="'coords'" options="'options'" click="'clicked'"></ui-gmap-markers>
+        <ui-gmap-window coords="map.windowModel.coords" idkey="map.windowModel.id" show="map.windowModel.show">
+            {{map.windowModel}}
+        </ui-gmap-window>
+    </ui-gmap-google-map>
+</div>
+{{number}}
+</body>
+
+</html>

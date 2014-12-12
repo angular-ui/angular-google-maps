@@ -186,7 +186,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         if @gMarker and (@gMarker.getMap() or @gMarkerManager.type != MarkerManager.type)
           @deferred.resolve @gMarker
         else
-          @deferred.reject 'gMarker is null' unless @gMarker
+          return @deferred.reject 'gMarker is null' unless @gMarker
           unless @gMarker?.getMap() and @gMarkerManager.type == MarkerManager.type
             $log.debug 'gMarker has no map yet'
             @deferred.resolve @gMarker
