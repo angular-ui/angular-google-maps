@@ -5744,9 +5744,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return freeHand.engage(scope.polygons).then(function() {
                   var firstTime;
                   firstTime = true;
-                  return listener = scope.$watch('polygons', function(newValue, oldValue) {
+                  return listener = scope.$watchCollection('polygons', function(newValue, oldValue) {
                     var removals;
-                    if (firstTime) {
+                    if (firstTime || newValue === oldValue) {
                       firstTime = false;
                       return;
                     }
