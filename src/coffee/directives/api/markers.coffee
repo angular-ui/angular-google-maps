@@ -38,7 +38,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
           _.defer parentModel.gMarkerManager.draw
 
         parentModel = new MarkersParentModel(scope, element, attrs, map)
-        parentModel.existingPieces.then ->
+        _.last(parentModel.existingPieces._content).then ->
           ready()
 
 ]

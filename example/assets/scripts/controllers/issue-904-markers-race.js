@@ -2,6 +2,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
 
   .controller("mapCtrl", ["$scope", "uiGmapLogger", function ($scope, logger) {
     logger.doLog = true;
+    logger.currentLevel = logger.LEVELS.debug;
     var lastId = 1;
     var clusterThresh = 6;
 

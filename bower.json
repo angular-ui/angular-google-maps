@@ -10,6 +10,7 @@
     "angular-mocks": ">=1.2.x",
     "uuid": "http://github.com/LiosK/UUID.js/archive/v3.2.tar.gz",
     "angular-route": "~1.3.0",
-    "bootstrap-without-jquery": "git://github.com/tagawa/bootstrap-without-jquery.git"
+    "bootstrap-without-jquery": "git://github.com/tagawa/bootstrap-without-jquery.git",
+    "data-structures": "~1.4.2"
   }
 }

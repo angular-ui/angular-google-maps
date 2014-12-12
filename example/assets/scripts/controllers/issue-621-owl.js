@@ -6,7 +6,9 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
   });
 }])
 
-.controller('mainCtrl', function ($scope, $timeout) {
+.controller('mainCtrl', function ($scope, $timeout, uiGmapLogger) {
+  var $log = uiGmapLogger;
+  $log.currentLevel = $log.LEVELS.debug;
   $scope.map = {center: {latitude: 40.1451, longitude: -99.6680 }, zoom: 4, bounds: {}};
   $scope.options = {scrollwheel: false};
   $scope.showPinkMarkers = true;
