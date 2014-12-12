@@ -1,9 +1,9 @@
 {
   "items": [
     {
-      "title": "2.1.X or 3.0.X",
+      "title": "What is next, 2.1.X or 3.0.X?",
       "date": "Dec 12 2014",
-      "content": "<p>Things are changing for the good, and we want your input. Please read the <a href="https://github.com/angular-ui/angular-google-maps/blob/master/README.markdown">README.md<a/> and vote at the <a href="http://goo.gl/4YDSao">Poll<a/>.</p>"
+      "content": "<p>Things are changing for the good, and we want your input. Please read the <a href='https://github.com/angular-ui/angular-google-maps/blob/master/README.markdown'>README.md<a/> and vote at the <a href='http://goo.gl/4YDSao'>Poll.<a/> <br/> Voting will end Dec 20th!.</p>"
     },
     {
       "title": "Like writing Specs?",
