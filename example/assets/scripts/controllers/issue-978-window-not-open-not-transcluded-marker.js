@@ -18,23 +18,34 @@ angular.module('app', ['uiGmapgoogle-maps'])
             latitude: 35.027469,
             longitude: -111.022753
           },
-          options: {}
+          lState: 'success'
         },
         {
           id: 1,
           coords: {
-            latitude: 38.027469,
-            longitude: -120.022753
+            latitude: 35.127469,
+            longitude: -111.122753
           },
-          options: {}
+          lState: 'info'
         }
-      ]
-    };
-    $scope.map.clickedMarker = function (gMarker, eventName, markerModel) {
-      if ($scope.map.windowModel) {
-        $scope.map.windowModel.show = false;
+      ],
+      getMarkerOptions: function (markerModel) {
+        if (!markerModel)
+          return;
+        var opts =  {
+          icon: ' ',
+          labelContent: '<h4><span class="label label-' + markerModel.lState +'">' + markerModel.id + '</span></h4>',
+          labelAnchor: "20 10",
+          zIndex: -1 * markerModel.id //inverse to put first on top
+        };
+        return opts;
+      },
+      clickedMarker: function (gMarker, eventName, markerModel) {
+        if ($scope.map.windowModel) {
+          $scope.map.windowModel.show = false;
+        }
+        markerModel.show = true;
+        $scope.map.windowModel = markerModel;
       }
-      markerModel.show = true;
-      $scope.map.windowModel = markerModel;
     };
   });

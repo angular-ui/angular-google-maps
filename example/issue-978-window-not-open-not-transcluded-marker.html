@@ -2,6 +2,7 @@
 <html ng-app="app">
 
 <head>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet"/>
     <link rel="stylesheet" href="assets/stylesheets/example.css">
     <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script src="../bower_components/angular/angular.js"></script>
@@ -14,10 +15,13 @@
 <body ng-controller="mainCtrl">
 <div id="map_canvas" >
     <ui-gmap-google-map center="map.center" zoom="map.zoom">
-        <ui-gmap-markers models="map.markerModels" coords="'coords'" options="'options'" click="map.clickedMarker"></ui-gmap-markers>
+        <ui-gmap-markers models="map.markerModels" coords="'coords'" options="map.getMarkerOptions" click="map.clickedMarker">
+        </ui-gmap-markers>
+
         <ui-gmap-window coords="map.windowModel.coords" idkey="map.windowModel.id" show="map.windowModel.show">
             {{map.windowModel}}
         </ui-gmap-window>
+
     </ui-gmap-google-map>
 </div>
 {{map.windowModel}}
