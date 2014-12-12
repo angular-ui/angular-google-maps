@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-11
+/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-12
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3141,7 +3141,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.deferred.resolve(this.gMarker);
           } else {
             if (!this.gMarker) {
-              this.deferred.reject('gMarker is null');
+              return this.deferred.reject('gMarker is null');
             }
             if (!(((_ref = this.gMarker) != null ? _ref.getMap() : void 0) && this.gMarkerManager.type === MarkerManager.type)) {
               $log.debug('gMarker has no map yet');
