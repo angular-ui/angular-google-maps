@@ -46,9 +46,9 @@ Things to expect:
 This is currently being discussed internally and will become a public discussion in the next coming weeks.
 However here are a few items known:
 
-- **drop singular layer directives**: Singular directives while being (angular) are pretty useless for production and performance unless your size is small. To bring focus to the API our goal for layers (shapes, markers, windows) is to make all of the directives plural.
+- **drop singular layer directives**: Singular directives while being 'angular', are pretty useless for production and performance unless your size is small. To bring focus to the API our goal for layers (shapes, markers, windows) is to make all of the directives plural.
 
-- **removeing many watches**: from pural directives. We may be de-angularizing somethings to aide in speed. This main change will have to do with watches on models itself. Watchers are a pain, not only are they a performance hit, but it also makes the internals of the api less explicit (where watchers guess and figure out what is going on). We are considering using the control to allow models to be explicitly updated, destroyed, and created. See [Polygons](https://github.com/angular-ui/angular-google-maps/blob/master/src/coffee/directives/api/polygons.coffee#L24-L29).
+- **remove many watches**, from pural directives. We may be de-angularizing somethings to aide in speed. This main change will have to do with watches on models itself. Watchers are a pain, not only are they a performance hit, but it also makes the internals of the api less explicit (where watchers guess and figure out what is going on). We are considering using the control to allow models to be explicitly updated, destroyed, and created. See [Polygons](https://github.com/angular-ui/angular-google-maps/blob/master/src/coffee/directives/api/polygons.coffee#L24-L29).
 
 Overall we are thinking making this a more aggressive follow up to 2.1.X on watches where we just abort using many them. This [read](http://gehrcke.de/2014/11/sharing-state-in-angularjs-be-aware-of-watch-issues-and-race-conditions-during-app-initialization/), summarizes it best.
 
@@ -96,7 +96,7 @@ Filing issues:
 - Search open/**closed** issues, src examples (./examples), gitter, and then google plus community! **Again please search!**
 - issues w/ plnkrs get attention quicker
 
-Pull requests more than welcome! If you're adding new features, it would be appreciated if you would provide some docs about the feature. This can be done either by adding a card to our [Trello board](https://trello.com/b/WwTRrkfh/angular-google-maps), forking the website branch and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
+Pull requests more than welcome! If you're adding new features, it would be appreciated if you would provide some docs about the feature. This can be done either by adding a card to our [Waffle.io board](https://waffle.io/angular-ui/angular-google-maps), forking the website branch and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
 
 [Branching Model w Git Flow](http://nvie.com/posts/a-successful-git-branching-model/)
 We are trying to follow the git flow branching model where all bugs that are considered urgent / patches will be pull
