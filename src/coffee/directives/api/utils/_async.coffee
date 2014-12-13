@@ -19,7 +19,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     #kick a promise off and log some info on it
     promise = sniffedPromise.promise()
     promise.promiseType = sniffedPromise.promiseType
-    $log.debug "promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}"
+    $log.debug "promiseType: #{promise.promiseType}, state: #{promiseStatus promise.$$state.status}" if promise.$$state
     promise.cancelCb = cancelCb
     promise
 
