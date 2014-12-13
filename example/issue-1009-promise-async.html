@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" id='ng-app' ng-app="app">
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+
+
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,600,300,700'
+          rel='stylesheet' type='text/css'>
+    <link href="assets/stylesheets/example.css" rel="stylesheet" type="text/css">
+    <title>Promise Async Fixes Break Compat with 1.2.X angular</title>
+</head>
+
+<body ng-controller="controller">
+<!--  You can use either a div having class 'google-map' or the '<ui-gmap-google-map>' element; in
+  the latter case, uncomment the style above to make sure the custom elements gets block display  -->
+<div class="page-title ">
+    <h2 ng-cloak>issue 1009 promise async {{version}}</h2>
+</div>
+<div class="container">
+    <div class="row">
+        <button class="col-md-2 btn btn-success" ng-click="map.refresh()">Refresh Map</button>
+    </div>
+    <div class="row">
+        <button ng-click="addMarkers(250)">Add Markers</button>
+        <button ng-click="reset()">Reset</button>
+        <p>Max number of results to show: 100<br/>Num of items in results: {{searchResults.results.length}}</p>
+    </div>
+    <div class="row">
+        <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true">
+        <ui-gmap-markers
+                  models="searchResults.results"
+                  coords="'coords'"
+                  idkey="'key'"
+                  fit="true"
+            ></ui-gmap-markers>
+      </ui-gmap-google-map>
+    </div>
+    </div>
+</div>
+<script src="../website_libs/dev_deps.js"></script>
+<!--<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.4/angular.min.js"></script>-->
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js" type="text/javascript"></script>
+<script src="../dist/angular-google-maps.js"></script>
+<script data-require="chance@*" data-semver="0.5.3" src="http://chancejs.com/chance.min.js"></script>
+<script src="assets/scripts/controllers/issue-1009-promise-async.js"></script>
+</body>
+
+</html>

@@ -21,10 +21,13 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     obj
 
   isInProgress = (promise) ->
-    promise.$$state.status == promiseStatuses.IN_PROGRESS
+    return promise.$$state.status == promiseStatuses.IN_PROGRESS if promise.$$state
+    true unless promise.hasOwnProperty("$$v")
+
 
   isResolved = (promise) ->
-    promise.$$state.status == promiseStatuses.RESOLVED
+    return promise.$$state.status == promiseStatuses.RESOLVED if promise.$$state
+    true if promise.hasOwnProperty("$$v")
 
   promiseStatus = (status) ->
     strPromiseStatuses[status] or 'done w error'

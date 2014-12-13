@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.11 2014-12-12
+/*! angular-google-maps 2.0.11 2014-12-13
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -395,7 +395,9 @@ Nicholas McCready - https://twitter.com/nmccready
         var promise;
         promise = sniffedPromise.promise();
         promise.promiseType = sniffedPromise.promiseType;
-        $log.debug("promiseType: " + promise.promiseType + ", state: " + (promiseStatus(promise.$$state.status)));
+        if (promise.$$state) {
+          $log.debug("promiseType: " + promise.promiseType + ", state: " + (promiseStatus(promise.$$state.status)));
+        }
         promise.cancelCb = cancelCb;
         return promise;
       };
@@ -1449,10 +1451,20 @@ Nicholas McCready - https://twitter.com/nmccready
         return obj;
       })();
       isInProgress = function(promise) {
-        return promise.$$state.status === promiseStatuses.IN_PROGRESS;
+        if (promise.$$state) {
+          return promise.$$state.status === promiseStatuses.IN_PROGRESS;
+        }
+        if (!promise.hasOwnProperty("$$v")) {
+          return true;
+        }
       };
       isResolved = function(promise) {
-        return promise.$$state.status === promiseStatuses.RESOLVED;
+        if (promise.$$state) {
+          return promise.$$state.status === promiseStatuses.RESOLVED;
+        }
+        if (promise.hasOwnProperty("$$v")) {
+          return true;
+        }
       };
       promiseStatus = function(status) {
         return strPromiseStatuses[status] || 'done w error';
