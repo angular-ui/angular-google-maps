@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.11 2014-12-12
+/*! angular-google-maps 2.0.11 2014-12-13
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1452,7 +1452,7 @@ Nicholas McCready - https://twitter.com/nmccready
       })();
       isInProgress = function(promise) {
         if (promise.$$state) {
-          promise.$$state.status === promiseStatuses.IN_PROGRESS;
+          return promise.$$state.status === promiseStatuses.IN_PROGRESS;
         }
         if (!promise.hasOwnProperty("$$v")) {
           return true;
@@ -1460,7 +1460,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
       isResolved = function(promise) {
         if (promise.$$state) {
-          promise.$$state.status === promiseStatuses.RESOLVED;
+          return promise.$$state.status === promiseStatuses.RESOLVED;
         }
         if (promise.hasOwnProperty("$$v")) {
           return true;
