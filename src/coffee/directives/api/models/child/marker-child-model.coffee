@@ -85,14 +85,14 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
       renderGMarker: (doDraw = true, validCb) ->
         #doDraw is to only update the marker on the map when it is really ready
-        if @getProp('coords', @scope, @model)?
-          if !@validateCoords @getProp('coords', @scope, @model)
+        coords = @getProp('coords', @scope, @model)
+        if coords?
+          if !@validateCoords coords
             $log.debug 'MarkerChild does not have coords yet. They may be defined later.'
             return
 
           validCb() if validCb?
           @gMarkerManager.add @gMarker if doDraw and @gMarker
-
         else
           @gMarkerManager.remove @gMarker if doDraw and @gMarker
 
@@ -133,11 +133,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       setCoords: (scope, doDraw = true) =>
         return if @isNotValid(scope) or !@gMarker?
         @renderGMarker doDraw, =>
-          newValue = @getCoords @getProp('coords', scope, @model)
-          oldValue = @gMarker.getPosition()
-          return if newValue.lng() == oldValue.lng() and newValue.lat() == oldValue.lat()
-          @gMarker.setPosition newValue
-          @gMarker.setVisible @validateCoords(newValue)
+          newModelVal = @getProp 'coords', scope, @model
+          newGValue = @getCoords newModelVal
+          oldGValue = @gMarker.getPosition()
+          if oldGValue? and newGValue?
+            return if newGValue.lng() == oldGValue.lng() and newGValue.lat() == oldGValue.lat()
+          @gMarker.setPosition newGValue
+          @gMarker.setVisible @validateCoords newModelVal
 
       setIcon: (scope, doDraw = true) =>
         return if @isNotValid(scope) or !@gMarker?
