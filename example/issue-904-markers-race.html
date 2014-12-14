@@ -17,10 +17,10 @@
             events="map.events">
         <!--doCluster="map.doCluster"-->
         <ui-gmap-markers
+                doCluster="map.doCluster"
                 models="searchResults.results"
                 coords="'coords'"
                 idkey="'key'"
-
                 ></ui-gmap-markers>
     </ui-gmap-google-map>
     <button ng-click="addMarkers(1000)">Add New Marker</button>

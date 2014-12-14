@@ -3,17 +3,12 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
 'uiGmapFitHelper', 'uiGmapPropMap', ($log, FitHelper, PropMap) ->
   class ClustererMarkerManager extends FitHelper
     @type = 'ClustererMarkerManager'
-    constructor: (gMap, opt_markers, opt_options, @opt_events) ->
+    constructor: (gMap, opt_markers={}, @opt_options = {}, @opt_events) ->
       super()
       @type = ClustererMarkerManager.type
-      self = @
-      @opt_options = opt_options
-      if opt_options? and opt_markers == undefined
-        @clusterer = new NgMapMarkerClusterer gMap, undefined, opt_options
-      else if opt_options? and opt_markers?
-        @clusterer = new NgMapMarkerClusterer gMap, opt_markers, opt_options
-      else
-        @clusterer = new NgMapMarkerClusterer gMap
+
+      @clusterer = new NgMapMarkerClusterer gMap, opt_markers, @opt_options
+
       @propMapGMarkers = new PropMap() #keep in sync with cluster.markers_
 
       @attachEvents @opt_events, 'opt_events'
