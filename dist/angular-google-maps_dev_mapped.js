@@ -1710,7 +1710,10 @@ Nicholas McCready - https://twitter.com/nmccready
         ClustererMarkerManager.type = 'ClustererMarkerManager';
 
         function ClustererMarkerManager(gMap, opt_markers, opt_options, opt_events) {
-          var self;
+          if (opt_markers == null) {
+            opt_markers = {};
+          }
+          this.opt_options = opt_options != null ? opt_options : {};
           this.opt_events = opt_events;
           this.checkSync = __bind(this.checkSync, this);
           this.getGMarkers = __bind(this.getGMarkers, this);
@@ -1725,15 +1728,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.add = __bind(this.add, this);
           ClustererMarkerManager.__super__.constructor.call(this);
           this.type = ClustererMarkerManager.type;
-          self = this;
-          this.opt_options = opt_options;
-          if ((opt_options != null) && opt_markers === void 0) {
-            this.clusterer = new NgMapMarkerClusterer(gMap, void 0, opt_options);
-          } else if ((opt_options != null) && (opt_markers != null)) {
-            this.clusterer = new NgMapMarkerClusterer(gMap, opt_markers, opt_options);
-          } else {
-            this.clusterer = new NgMapMarkerClusterer(gMap);
-          }
+          this.clusterer = new NgMapMarkerClusterer(gMap, opt_markers, this.opt_options);
           this.propMapGMarkers = new PropMap();
           this.attachEvents(this.opt_events, 'opt_events');
           this.clusterer.setIgnoreHidden(true);
@@ -3118,15 +3113,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               icon = _this.getProp('icon', scope, _this.model);
               _options = _this.getProp('options', scope, _this.model);
               _this.opts = _this.createOptions(coords, icon, _options);
-              if ((_this.gMarker != null) && (_this.isLabel(_this.gMarker) === _this.isLabel(_this.opts))) {
+              if (_this.gMarker != null) {
                 _this.gMarker.setOptions(_this.opts);
-              } else {
-                if (!_this.firstTime) {
-                  if (_this.gMarker != null) {
-                    _this.gMarkerManager.remove(_this.gMarker);
-                    _this.gMarker = null;
-                  }
-                }
               }
               if (!_this.gMarker) {
                 if (_this.isLabel(_this.opts)) {
@@ -4134,20 +4122,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 };
               })(this))();
             }
-            if (scope.clusterOptions || scope.clusterEvents) {
-              if (this.gMarkerManager === void 0) {
-                this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, this.clusterInternalOptions);
-              } else {
-                if (this.gMarkerManager.opt_options !== scope.clusterOptions) {
-                  this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, this.clusterInternalOptions);
-                }
-              }
-            } else {
-              this.gMarkerManager = new ClustererMarkerManager(this.map);
+            if (!this.gMarkerManager) {
+              this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, this.clusterInternalOptions);
             }
-          } else {
+          }
+          if (!this.gMarkerManager) {
             this.gMarkerManager = new MarkerManager(this.map);
           }
+          this.gMarkerManager.clear();
           if (this.didQueueInitPromise(this, scope)) {
             return;
           }

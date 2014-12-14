@@ -76,22 +76,12 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                       mouseover:(cluster) ->
                         self.maybeExecMappedEvent cluster, 'mouseover'
 
-              if scope.clusterOptions or scope.clusterEvents
-                if @gMarkerManager == undefined
-                  @gMarkerManager = new ClustererMarkerManager @map,
-                    undefined,
-                    scope.clusterOptions,
-                    @clusterInternalOptions
-                else
-                  if @gMarkerManager.opt_options != scope.clusterOptions
-                    @gMarkerManager = new ClustererMarkerManager @map,
-                      undefined,
-                      scope.clusterOptions,
-                      @clusterInternalOptions
-              else
-                @gMarkerManager = new ClustererMarkerManager @map
-            else
+              unless @gMarkerManager
+                @gMarkerManager = new ClustererMarkerManager @map, undefined, scope.clusterOptions, @clusterInternalOptions
+            unless @gMarkerManager
               @gMarkerManager = new MarkerManager @map
+
+            @gMarkerManager.clear()
 
             return if @didQueueInitPromise(@,scope)
 

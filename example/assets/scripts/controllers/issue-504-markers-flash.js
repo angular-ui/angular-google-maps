@@ -15,13 +15,11 @@ angular.module('testApp', ['uiGmapgoogle-maps']).controller('TestController', ['
     {coords: {longitude: 25, latitude: 25}, site_id: 1, icon: ICONS['test']},
     {coords: {longitude: -25, latitude: -25}, site_id: 2, icon: ICONS['test']},
     {coords: {longitude: -25, latitude: 25}, site_id: 3, icon: ICONS['test']}
-  ].map(function (site) {
-        site.click = function () {
-          site.icon = ICONS['test1'];
-          $scope.$apply();
-        };
-        return site;
-      });
+  ];
 
+  $scope.clickMarker = function (gMarker, eventName, model) {
+    model.icon = ICONS['test1'];
+    $scope.$apply();
+  };
 
 }]);
