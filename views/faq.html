@@ -28,13 +28,13 @@
     <div id="faq-map-instance-tab-script" class="tab-pane">
         <div hljs>
             $scope.map = {
-            events: {
-            tilesloaded: function (map) {
-            $scope.$apply(function () {
-            $log.info('this is the map instance', map);
-            });
-            }
-            }
+              events: {
+                tilesloaded: function (map) {
+                  $scope.$apply(function () {
+                    $log.info('this is the map instance', map);
+                  });
+                }
+              }
             }
         </div>
     </div>
@@ -62,8 +62,8 @@
 
         <div hljs>
             $scope.$on('$viewContentLoaded', function () {
-            var mapHeight = 500; // or any other calculated value
-            $("#my-map .angular-google-map-container").height(mapHeight);
+              var mapHeight = 500; // or any other calculated value
+              $("#my-map .angular-google-map-container").height(mapHeight);
             });
         </div>
     </div>
@@ -84,20 +84,20 @@
             */
 
             body, html {
-            height: 100%;
-            width: 100%;
+              height: 100%;
+              width: 100%;
             }
             .angular-google-map-container {
-            height: 100%;
-            width: 50%;
-            position: absolute;
+              height: 100%;
+              width: 50%;
+              position: absolute;
             }
 
             .middle {
-            display: table;
-            width: 50%;
-            margin-left: auto;
-            margin-right: auto;
+              display: table;
+              width: 50%;
+              margin-left: auto;
+              margin-right: auto;
             }
 
             /*
@@ -105,9 +105,9 @@
             psuedo element with clearfix and display: table; , all after (which is why I know .middle works above)
             */
             .container{
-            width: 50%;
-            padding-left: 0;
-            padding-right: 0;
+              width: 50%;
+              padding-left: 0;
+              padding-right: 0;
             }
         </div>
     </div>
@@ -122,13 +122,13 @@
 
 <div hljs>
     $scope.map = {
-    events: {
-    tilesloaded: function (map) {
-    $scope.$apply(function () {
-    $scope.mapInstance = map;
-    });
-    }
-    }
+      events: {
+        tilesloaded: function (map) {
+          $scope.$apply(function () {
+            $scope.mapInstance = map;
+          });
+        }
+      }
     }
 </div>
 
