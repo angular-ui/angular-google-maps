@@ -1,15 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:ng="http://angularjs.org/" ng-app="appMaps">
+
 <head>
-    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
-    <script src="../bower_components/angular/angular.js"></script>
-    <script src="../bower_components/lodash/dist/lodash.min.js"></script>
+    <meta charset="utf-8" />
+    <title>AngularJS Plunker</title>
+    <script src="../bower_components/angular/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.js"></script>
     <script src="../dist/angular-google-maps_dev_mapped.js"></script>
-    <script src="assets/scripts/controllers/issue-992-marker-disappear.js"></script>
+    <script type='text/javascript' src='assets/scripts/controllers/issue-992-marker-disappear.js'></script>
+    <!--script-->
+    <!--css-->
+    <style type="text/css">
+        html,
+        body,
+            /*     #map_canvas {
+              height: 100%;
+              width: 100%;
+              margin: 0px;
+            }
+            #map_canvas {
+              position: relative;
+            } */
+        .angular-google-map-container {
+            width: 100%;
+            height: 600px;
+        }
+        .testbtn {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width:100px;
+            height:100px;
+            background-color:#cc0000;
+            z-index: 2;
+        }
+    </style>
 </head>
 
-<body ng-app="appMaps" ng-controller="mainCtrl">
-<div>
+<body>
+<div id="map_canvas" ng-controller="mainCtrl">
     <button class="testbtn" ng-click="updateMarkerLocation()">
         update marker position
 
@@ -25,6 +54,7 @@
         </ul>
     </div>
 </div>
+<!--example-->
 </body>
 
 </html>
