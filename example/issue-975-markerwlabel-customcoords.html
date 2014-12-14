@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-975.markerwlabel-customcoords.js"></script>
+</head>
+
+<body ng-app="app">
+
+<div data-ng-controller="ctrl">
+    <div>
+        markersLabelOK: {{markersLabelOK}}
+        markersLabelNotOK: {{markersLabelNotOK}}
+        markersOK: {{markersOK}}
+    </div>
+    <ui-gmap-google-map
+            center="map.center"
+            zoom="map.zoom">
+
+        <ui-gmap-markers
+                models='markersLabelOK'
+                idKey="'id'"
+                coords="'coords'"
+                icon="'icon'"
+                options="'options'">
+        </ui-gmap-markers>
+
+        <ui-gmap-markers
+                models='markersLabelNotOK'
+                idKey="'id'"
+                coords="'xcoords'"
+                icon="'icon'"
+                options="'options'">
+        </ui-gmap-markers>
+
+        <ui-gmap-markers
+                models='markersOK'
+                idKey="'id'"
+                coords="'xcoords'"
+                icon="'icon'"
+                options="'options'">
+        </ui-gmap-markers>
+
+    </ui-gmap-google-map>
+</div>
+</div>
+</body>
+
+</html>
