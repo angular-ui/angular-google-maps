@@ -2956,11 +2956,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.renderGMarker = function(doDraw, validCb) {
+          var coords;
           if (doDraw == null) {
             doDraw = true;
           }
-          if (this.getProp(this.coordsKey, this.model) != null) {
-            if (!this.validateCoords(this.getProp(this.coordsKey, this.model))) {
+          coords = this.getProp(this.coordsKey, this.model);
+          if (coords != null) {
+            if (!this.validateCoords(coords)) {
               $log.debug('MarkerChild does not have coords yet. They may be defined later.');
               return;
             }
@@ -3064,7 +3066,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return this.renderGMarker(doDraw, (function(_this) {
             return function() {
               var newValue, oldValue;
-              newValue = _this.getCoords(_this.getProp('coords', _this.model));
+              newValue = _this.getCoords(_this.getProp(_this.coordsKey, _this.model));
               oldValue = _this.gMarker.getPosition();
               if ((oldValue != null) && (newValue != null)) {
                 if (newValue.lng() === oldValue.lng() && newValue.lat() === oldValue.lat()) {

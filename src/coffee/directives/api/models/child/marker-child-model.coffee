@@ -56,8 +56,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @scope.$on '$destroy', =>
           destroy @
 
-# avoid double creation, but this might be needed for <marker>
-#        @setMyScope 'all', @model, undefined, true
+        # avoid double creation, but this might be needed for <marker>
+        # @setMyScope 'all', @model, undefined, true
         @createMarker @model
         $log.info @
 
@@ -83,17 +83,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
       renderGMarker: (doDraw = true, validCb) ->
         #doDraw is to only update the marker on the map when it is really ready
-        if @getProp(@coordsKey, @model)?
-          if !@validateCoords @getProp @coordsKey, @model
+        coords = @getProp(@coordsKey, @model)
+        if coords?
+          if !@validateCoords coords
             $log.debug 'MarkerChild does not have coords yet. They may be defined later.'
             return
 
           validCb() if validCb?
           @gMarkerManager.add @gMarker if doDraw and @gMarker
-
         else
           @gMarkerManager.remove @gMarker if doDraw and @gMarker
-
 
       setMyScope: (thingThatChanged, model, oldModel = undefined, isInit = false, doDraw = true) =>
         if not model?
@@ -132,7 +131,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       setCoords: (scope, doDraw = true) =>
         return if @isNotValid(scope) or !@gMarker?
         @renderGMarker doDraw, =>
-          newValue = @getCoords @getProp('coords', @model)
+          newValue = @getCoords @getProp(@coordsKey, @model)
           oldValue = @gMarker.getPosition()
           if oldValue? and newValue?
             return if newValue.lng() == oldValue.lng() and newValue.lat() == oldValue.lat()
