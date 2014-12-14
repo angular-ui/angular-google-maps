@@ -3065,16 +3065,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return this.renderGMarker(doDraw, (function(_this) {
             return function() {
-              var newValue, oldValue;
-              newValue = _this.getCoords(_this.getProp(_this.coordsKey, _this.model));
-              oldValue = _this.gMarker.getPosition();
-              if ((oldValue != null) && (newValue != null)) {
-                if (newValue.lng() === oldValue.lng() && newValue.lat() === oldValue.lat()) {
+              var newGValue, newModelVal, oldGValue;
+              newModelVal = _this.getProp(_this.coordsKey, _this.model);
+              newGValue = _this.getCoords(newModelVal);
+              oldGValue = _this.gMarker.getPosition();
+              if ((oldGValue != null) && (newGValue != null)) {
+                if (newGValue.lng() === oldGValue.lng() && newGValue.lat() === oldGValue.lat()) {
                   return;
                 }
               }
-              _this.gMarker.setPosition(newValue);
-              return _this.gMarker.setVisible(_this.validateCoords(newValue));
+              _this.gMarker.setPosition(newGValue);
+              return _this.gMarker.setVisible(_this.validateCoords(newModelVal));
             };
           })(this));
         };
@@ -6504,30 +6505,29 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         ];
 
         Marker.prototype.link = function(scope, element, attrs, ctrl) {
-          this.mapPromise = IMarker.mapPromise(scope, ctrl);
-          this.mapPromise.then((function(_this) {
+          var mapPromise;
+          mapPromise = IMarker.mapPromise(scope, ctrl);
+          mapPromise.then((function(_this) {
             return function(map) {
-              var doClick, doDrawSelf, keys, m, trackModel;
-              if (!_this.gMarkerManager) {
-                _this.gMarkerManager = new MarkerManager(map);
-              }
+              var doClick, doDrawSelf, gMarkerManager, keys, m, trackModel;
+              gMarkerManager = new MarkerManager(map);
               keys = _.object(IMarker.keys, IMarker.keys);
-              m = new MarkerChildModel(scope, scope, keys, map, {}, doClick = true, _this.gMarkerManager, doDrawSelf = false, trackModel = false);
+              m = new MarkerChildModel(scope, scope, keys, map, {}, doClick = true, gMarkerManager, doDrawSelf = false, trackModel = false);
               m.deferred.promise.then(function(gMarker) {
                 return scope.deferred.resolve(gMarker);
               });
               if (scope.control != null) {
-                return scope.control.getGMarkers = _this.gMarkerManager.getGMarkers;
+                return scope.control.getGMarkers = gMarkerManager.getGMarkers;
               }
             };
           })(this));
           return scope.$on('$destroy', (function(_this) {
             return function() {
-              var _ref;
-              if ((_ref = _this.gMarkerManager) != null) {
-                _ref.clear();
+              var gMarkerManager;
+              if (typeof gMarkerManager !== "undefined" && gMarkerManager !== null) {
+                gMarkerManager.clear();
               }
-              return _this.gMarkerManager = null;
+              return gMarkerManager = null;
             };
           })(this));
         };

@@ -131,12 +131,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       setCoords: (scope, doDraw = true) =>
         return if @isNotValid(scope) or !@gMarker?
         @renderGMarker doDraw, =>
-          newValue = @getCoords @getProp(@coordsKey, @model)
-          oldValue = @gMarker.getPosition()
-          if oldValue? and newValue?
-            return if newValue.lng() == oldValue.lng() and newValue.lat() == oldValue.lat()
-          @gMarker.setPosition newValue
-          @gMarker.setVisible @validateCoords(newValue)
+          newModelVal = @getProp @coordsKey, @model
+          newGValue = @getCoords newModelVal
+          oldGValue = @gMarker.getPosition()
+          if oldGValue? and newGValue?
+            return if newGValue.lng() == oldGValue.lng() and newGValue.lat() == oldGValue.lat()
+          @gMarker.setPosition newGValue
+          @gMarker.setVisible @validateCoords newModelVal
 
       setIcon: (scope, doDraw = true) =>
         return if @isNotValid(scope) or !@gMarker?

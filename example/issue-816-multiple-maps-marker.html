@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/many-maps.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/lodash/dist/lodash.min.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-816-multiple-maps-marker.js"></script>
+</head>
+
+<body ng-app="appMaps" ng-controller="mainCtrl">
+<div id="map1">
+    <ui-gmap-google-map center="map1.center" zoom="map1.zoom">
+        <ui-gmap-marker coords="map1.center" idKey="1">
+        </ui-gmap-marker>
+    </ui-gmap-google-map>
+</div>
+<div id="map2">
+    <ui-gmap-google-map center="map2.center" zoom="map2.zoom">
+        <ui-gmap-marker coords="map2.center" idKey="2">
+        </ui-gmap-marker>
+    </ui-gmap-google-map>
+</div>
+<div id="map3">
+    <ui-gmap-google-map center="map3.center" zoom="map3.zoom">
+        <ui-gmap-marker coords="map3.center" idkey="3">
+        </ui-gmap-marker>
+    </ui-gmap-google-map>
+</div>
+</body>
+
+</html>
