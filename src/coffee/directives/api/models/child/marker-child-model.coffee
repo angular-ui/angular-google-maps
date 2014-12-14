@@ -159,13 +159,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @opts = @createOptions coords, icon, _options
 
           #update existing options if it is the same type
-          if @gMarker? and (@isLabel @gMarker == @isLabel @opts)
+          if @gMarker? #and (@isLabel @gMarker == @isLabel @opts)
             @gMarker.setOptions @opts
-          else
-            if not @firstTime
-              if @gMarker?
-                @gMarkerManager.remove @gMarker
-                @gMarker = null
+#          else
+#            if not @firstTime
+#              if @gMarker?
+#                @gMarkerManager.remove @gMarker
+#                @gMarker = null
 
           unless @gMarker
             if @isLabel @opts
