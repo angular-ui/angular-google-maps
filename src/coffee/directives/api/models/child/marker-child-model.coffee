@@ -58,8 +58,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @scope.$on '$destroy', =>
           destroy @
 
-# avoid double creation, but this might be needed for <marker>
-#        @setMyScope 'all', @model, undefined, true
+        # avoid double creation, but this might be needed for <marker>
+        # @setMyScope 'all', @model, undefined, true
         @createMarker @model
         $log.info @
 
@@ -95,7 +95,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
         else
           @gMarkerManager.remove @gMarker if doDraw and @gMarker
-
 
       setMyScope: (thingThatChanged, model, oldModel = undefined, isInit = false, doDraw = true) =>
         if not model?
