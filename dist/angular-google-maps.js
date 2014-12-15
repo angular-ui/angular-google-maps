@@ -497,7 +497,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
         return PromiseQueueManager(objectToLock, SniffedPromise(fnPromise, promiseType), cancelLogger);
       };
-      defaultChunkSize = 20;
+      defaultChunkSize = 80;
       errorObject = {
         value: null
       };

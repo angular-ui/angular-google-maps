@@ -112,7 +112,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     PromiseQueueManager objectToLock, SniffedPromise(fnPromise, promiseType), cancelLogger
 
 
-  defaultChunkSize = 20
+  defaultChunkSize = 80
   errorObject =
     value: null
 
