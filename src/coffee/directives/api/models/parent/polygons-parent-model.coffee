@@ -67,13 +67,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       onDestroy: (doDelete) =>
         _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
-          toClean = @plurals.values()
-          $log.debug "onDestroy: plurals:" + @plurals.length
-          $log.debug "onDestroy: toClean:" + toClean.length
-          _async.each toClean, (child) =>
-#            $log.debug "clean: " + child.model.id
-            if not child or not child.shape
-              $log.debug "clean: shape" + child.shape
+          _async.each @plurals.values(), (child) =>
             child.destroy true #to make sure it is really dead, otherwise watchers can kick off (artifacts in path create)
           , false
           .then =>
@@ -126,7 +120,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             child = @createChild(model, @gMap)
             if maybeCanceled
               $log.debug 'createNew should fall through safely'
-              $log.debug "last create: " + @plurals.length
               child.isEnabled = false
             maybeCanceled
           , _async.chunkSizeFrom scope.chunk

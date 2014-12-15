@@ -46,7 +46,7 @@
         var getPolys = function(){
           $http.get('assets/json/many_polygons.json')
           .then(function (data) {
-            $scope.map.polys = _.uniq(data.data, function(d){ return d.id});
+            $scope.map.polys = data.data;
 //            $scope.map.polyControl.updateModels(data.data);
           });
         };

@@ -4421,14 +4421,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         PolygonsParentModel.prototype.onDestroy = function(doDelete) {
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
-              var toClean;
-              toClean = _this.plurals.values();
-              $log.debug("onDestroy: plurals:" + _this.plurals.length);
-              $log.debug("onDestroy: toClean:" + toClean.length);
-              return _async.each(toClean, function(child) {
-                if (!child || !child.shape) {
-                  $log.debug("clean: shape" + child.shape);
-                }
+              return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
               }, false).then(function() {
                 if (doDelete) {
@@ -4514,7 +4507,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 child = _this.createChild(model, _this.gMap);
                 if (maybeCanceled) {
                   $log.debug('createNew should fall through safely');
-                  $log.debug("last create: " + _this.plurals.length);
                   child.isEnabled = false;
                 }
                 return maybeCanceled;
