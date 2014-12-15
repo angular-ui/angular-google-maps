@@ -1,12 +1,12 @@
 angular.module("uiGmapgoogle-maps.directives.api")
 .factory "uiGmapMarker", [
-  "uiGmapIMarker", "uiGmapMarkerChildModel", "uiGmapMarkerManager"
-  (IMarker, MarkerChildModel, MarkerManager) ->
+  "uiGmapIMarker", "uiGmapMarkerChildModel", "uiGmapMarkerManager", "uiGmapLogger",
+  (IMarker, MarkerChildModel, MarkerManager, $log) ->
     class Marker extends IMarker
       constructor: ->
         super()
         @template = '<span class="angular-google-map-marker" ng-transclude></span>'
-        @$log.info @
+        $log.info @
 
       controller: ['$scope', '$element', ($scope, $element)  ->
         $scope.ctrlType = 'Marker'

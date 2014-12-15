@@ -94,11 +94,13 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               _async.each scope.models, (model) =>
                 @newChildMarker(model, scope)
                 maybeCanceled
+              , _async.chunkSizeFrom scope.chunk
               .then =>
                 @modelsRendered = true
                 @gMarkerManager.draw()
                 @gMarkerManager.fit() if scope.fit
                 @scope.markerModelsUpdate.updateCtr += 1
+              , _async.chunkSizeFrom scope.chunk
 
           reBuildMarkers: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
@@ -125,15 +127,18 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                       child.destroy() if child.destroy?
                       @scope.markerModels.remove(child.id)
                       maybeCanceled
+                  , _async.chunkSizeFrom scope.chunk
                 .then =>
                     #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
                   _async.each payload.adds, (modelToAdd) =>
                     @newChildMarker(modelToAdd, scope)
                     maybeCanceled
+                  , _async.chunkSizeFrom scope.chunk
                 .then () =>
                   _async.each payload.updates, (update) =>
                     @updateChild update.child, update.model
                     maybeCanceled
+                  , _async.chunkSizeFrom scope.chunk
                 .then =>
                   #finally redraw if something has changed
                   if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
@@ -172,6 +177,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
               _async.each @scope.markerModels.values(), (model) =>
                 model.destroy(false) if model?
+              , false
               .then =>
                 delete @scope.markerModels
                 @gMarkerManager.clear() if @gMarkerManager?

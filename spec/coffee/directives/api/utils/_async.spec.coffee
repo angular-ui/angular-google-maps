@@ -30,9 +30,9 @@ describe "_async", ->
 
       @subject.each known, (num) ->
         test.push(num)
+      , 100
       , ->
         pauses++
-      , 100
       .then ->
         expect(pauses).toEqual(2)
         expect(test.length).toEqual(known.length)
@@ -58,9 +58,9 @@ describe "_async", ->
 
       @subject.each known, (num) ->
         test.push(num)
+      , 100
       , ->
         pauses++
-      , 100
       .then ->
         expect(pauses).toEqual(2)
         expect(test.length).toEqual(known.length)
@@ -74,9 +74,9 @@ describe "_async", ->
       pauses = 1
       @subject.each known, (num) ->
         test.push(num)
+      , 100
       , ->
         pauses++
-      , 100
       .then ->
         expect(test.length).toEqual(known.length)
         expect(test).toEqual(known)
@@ -89,13 +89,12 @@ describe "_async", ->
       known = _.range(1000)
       test = []
       pauses = 1
-      ret = @subject.map(known, (num) ->
+      @subject.map known, (num) ->
         num += 1
         "$#{num.toString()}"
+      , 100
       , ->
         pauses++
-      , 100)
-      ret
       .then (mapped) ->
         test = mapped
         expect(test[999]).toEqual("$1000")
@@ -117,11 +116,37 @@ describe "_async", ->
         pauses = 0
         @subject.each(known, (num) ->
           test.push(num)
+        , chunking = false
         , ->
           pauses++
-        , chunking = false
         ).then ->
           expect(pauses).toEqual(0) #it should not be hit
           expect(test.length).toEqual(known.length)
           expect(test).toEqual(known)
           done()
+
+  describe 'chunkSizeFrom', ->
+    it 'undefined returns undefined', ->
+      expect(@subject.chunkSizeFrom(undefined)).toBeFalsy()
+      expect(@subject.chunkSizeFrom(undefined) == undefined).toBeTruthy()
+
+    it 'false returns false', ->
+      expect(@subject.chunkSizeFrom(false)).toBeFalsy()
+      expect(@subject.chunkSizeFrom(false) == false).toBeTruthy()
+
+    it 'NO returns false', ->
+      expect(@subject.chunkSizeFrom('NO')).toBeFalsy()
+      expect(@subject.chunkSizeFrom('NO') == false).toBeTruthy()
+
+    it 'FALSE returns false', ->
+      expect(@subject.chunkSizeFrom('FALSE')).toBeFalsy()
+      expect(@subject.chunkSizeFrom('FALSE') == false).toBeTruthy()
+
+    it 'number returns number', ->
+      expect(@subject.chunkSizeFrom(300)).toBe(300)
+
+    it 'string number returns undefined', ->
+      expect(@subject.chunkSizeFrom('300')).toBeUndefined()
+
+    it 'non number returns undefined', ->
+      expect(@subject.chunkSizeFrom('3-00')).toBeUndefined()

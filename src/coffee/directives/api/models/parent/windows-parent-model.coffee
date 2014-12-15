@@ -71,6 +71,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
               _async.each @windows.values(), (child) =>
                 child.destroy()
+              , false
               .then =>
                 delete @windows if doDelete
                 @windows = new PropMap()
@@ -147,6 +148,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                     $log.error 'Unable to get gMarker from markersScope!' if not gMarker and @markersScope
                     @createWindow(model, gMarker, @gMap)
                   maybeCanceled
+                , _async.chunkSizeFrom scope.chunk
                 .then =>
                   @firstTime = false
 
@@ -167,6 +169,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                       @windows.remove(child.id)
                       child.destroy(true) if child.destroy?
                       maybeCanceled
+                  , _async.chunkSizeFrom scope.chunk
                 .then =>
                   #add all adds via creating new ChildMarkers which are appended to @markers
                   _async.each payload.adds, (modelToAdd) =>
