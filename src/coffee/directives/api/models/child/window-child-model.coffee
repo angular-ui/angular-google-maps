@@ -103,6 +103,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
                 $log.error "WindowChildMarker cannot render marker as scope.coords as no position on marker: #{JSON.stringify @model}"
                 return
               pos = @getCoords newValue
+              @doShow()
               @gWin.setPosition pos
               @opts.position = pos if @opts
           , true

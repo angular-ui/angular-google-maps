@@ -3425,6 +3425,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return;
                 }
                 pos = _this.getCoords(newValue);
+                _this.doShow();
                 _this.gWin.setPosition(pos);
                 if (_this.opts) {
                   return _this.opts.position = pos;
