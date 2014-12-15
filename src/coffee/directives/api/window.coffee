@@ -1,13 +1,13 @@
 angular.module('uiGmapgoogle-maps.directives.api')
-.factory 'uiGmapWindow', [ 'uiGmapIWindow', 'uiGmapGmapUtil', 'uiGmapWindowChildModel','uiGmapLodash',
-  (IWindow, GmapUtil, WindowChildModel, uiGmapLodash) ->
+.factory 'uiGmapWindow', [ 'uiGmapIWindow', 'uiGmapGmapUtil', 'uiGmapWindowChildModel','uiGmapLodash', 'uiGmapLogger',
+  (IWindow, GmapUtil, WindowChildModel, uiGmapLodash, $log) ->
     class Window extends IWindow
       @include GmapUtil
       constructor:  ->
         super()
         @require = ['^' + 'uiGmapGoogleMap', '^?' + 'uiGmapMarker']
         @template = '<span class="angular-google-maps-window" ng-transclude></span>'
-        @$log.info @
+        $log.debug @
         @childWindows = []
 
       link: (scope, element, attrs, ctrls) =>

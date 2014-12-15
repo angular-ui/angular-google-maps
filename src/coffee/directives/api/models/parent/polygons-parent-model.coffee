@@ -43,7 +43,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               _async.each @plurals.values(), (model) =>
                 model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
                 maybeCanceled
-              , false
+              , _async.chunkSizeFrom scope.chunk
 
 
       watchModels: (scope) =>
@@ -67,8 +67,14 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       onDestroy: (doDelete) =>
         _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
-          _async.each @plurals.values(), (child) =>
-            child.destroy false
+          toClean = @plurals.values()
+          $log.debug "onDestroy: plurals:" + @plurals.length
+          $log.debug "onDestroy: toClean:" + toClean.length
+          _async.each toClean, (child) =>
+#            $log.debug "clean: " + child.model.id
+            if not child or not child.shape
+              $log.debug "clean: shape" + child.shape
+            child.destroy true #to make sure it is really dead, otherwise watchers can kick off (artifacts in path create)
           , false
           .then =>
             delete @plurals if doDelete
@@ -117,10 +123,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         maybeCanceled = null
         _async.promiseLock @, uiGmapPromise.promiseTypes.create, 'createAllNew', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
           _async.each scope.models, (model) =>
-            @createChild(model, @gMap)
+            child = @createChild(model, @gMap)
             if maybeCanceled
               $log.debug 'createNew should fall through safely'
+              $log.debug "last create: " + @plurals.length
+              child.isEnabled = false
             maybeCanceled
+          , _async.chunkSizeFrom scope.chunk
           .then =>
             #handle done callBack
             @firstTime = false
@@ -143,6 +152,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                   child.destroy()
                   @plurals.remove(id)
                   maybeCanceled
+              , _async.chunkSizeFrom scope.chunk
             .then =>
               #add all adds via creating new ChildMarkers which are appended to @markers
               _async.each payload.adds, (modelToAdd) =>
@@ -150,6 +160,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                   $log.debug 'pieceMeal should fall through safely'
                 @createChild(modelToAdd, @gMap)
                 maybeCanceled
+              , _async.chunkSizeFrom scope.chunk
         else
           @inProgress = false
           @rebuildAll(@scope, true, true)
@@ -174,6 +185,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           """
           return
         @plurals.put(model[@idKey], child)
+#        $log.debug "create: " + @plurals.length
         child
 
       modelKeyComparison: (model1, model2) =>
