@@ -1,7 +1,7 @@
-angular.module("uiGmapgoogle-maps.directives.api")
-.factory "uiGmapWindows", [
-  "uiGmapIWindow", "uiGmapWindowsParentModel", "uiGmapPromise",
-  (IWindow, WindowsParentModel, uiGmapPromise) ->
+angular.module('uiGmapgoogle-maps.directives.api')
+.factory 'uiGmapWindows', [
+  'uiGmapIWindow', 'uiGmapPlural', 'uiGmapWindowsParentModel', 'uiGmapPromise', 'uiGmapLogger',
+  (IWindow, Plural, WindowsParentModel, uiGmapPromise, $log) ->
     ###
     Windows directive where many windows map to the models property
     ###
@@ -10,11 +10,9 @@ angular.module("uiGmapgoogle-maps.directives.api")
         super()
         @require = ['^' + 'uiGmapGoogleMap', '^?' + 'uiGmapMarkers']
         @template = '<span class="angular-google-maps-windows" ng-transclude></span>'
-        @scope.idKey = '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers
-        @scope.doRebuildAll = '=dorebuildall' #root level directive attribute not a model level
-        @scope.models = '=models' #if undefined it will try get a markers models
+        Plural.extend @
 
-        @$log.debug @
+        $log.debug @
 
 
       link: (scope, element, attrs, ctrls) =>

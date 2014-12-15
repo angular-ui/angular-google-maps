@@ -7,8 +7,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       resolve: () ->
         _cb.apply(undefined, arguments)
   ])
-.service 'uiGmap_async', [ '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q','uiGmapDataStructures',
-($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures) ->
+.service 'uiGmap_async', [ '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q','uiGmapDataStructures', 'uiGmapGmapUtil',
+($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures, uiGmapGmapUtil) ->
   promiseTypes = uiGmapPromise.promiseTypes
   isInProgress = uiGmapPromise.isInProgress
   promiseStatus = uiGmapPromise.promiseStatus
@@ -112,8 +112,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     PromiseQueueManager objectToLock, SniffedPromise(fnPromise, promiseType), cancelLogger
 
 
-  defaultChunkSize = 20
-
+  defaultChunkSize = 80
   errorObject =
     value: null
 
@@ -173,7 +172,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       else
         overallD.resolve()
 
-  each = (array, chunk, pauseCb, chunkSizeOrDontChunk = defaultChunkSize, index = 0, pauseMilli = 1) ->
+  each = (array, chunk, chunkSizeOrDontChunk = defaultChunkSize, pauseCb, index = 0, pauseMilli = 1) ->
     ret = undefined
     overallD = uiGmapPromise.defer()
     ret = overallD.promise
@@ -193,14 +192,14 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     return ret
 
   #copied from underscore but w/ async each above
-  map = (objs, iterator, pauseCb, chunkSizeOrDontChunk, index, pauseMilli) ->
+  map = (objs, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli) ->
 
     results = []
     return uiGmapPromise.resolve(results)  unless objs? and objs?.length > 0
 
     each(objs, (o) ->
       results.push iterator o
-    , pauseCb, chunkSizeOrDontChunk, index, pauseMilli)
+    , chunkSizeOrDontChunk, pauseCb, index, pauseMilli)
     .then ->
       results
 
@@ -210,4 +209,11 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   managePromiseQueue: managePromiseQueue
   promiseLock: managePromiseQueue
   defaultChunkSize: defaultChunkSize
+  chunkSizeFrom:(fromSize) ->
+    ret = undefined
+    if _.isNumber fromSize
+      ret = fromSize
+    if uiGmapGmapUtil.isFalse(fromSize) or fromSize == false
+      ret = false
+    ret
 ]
