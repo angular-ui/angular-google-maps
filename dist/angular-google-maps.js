@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-15
+/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-16
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3654,17 +3654,25 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 ;(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapDrawingManagerParentModel', [
-    'uiGmapLogger', '$timeout', function($log, $timeout) {
+    'uiGmapLogger', '$timeout', 'uiGmapBaseObject', 'uiGmapEventsHelper', function($log, $timeout, BaseObject, EventsHelper) {
       var DrawingManagerParentModel;
-      return DrawingManagerParentModel = (function() {
+      return DrawingManagerParentModel = (function(_super) {
+        __extends(DrawingManagerParentModel, _super);
+
+        DrawingManagerParentModel.include(EventsHelper);
+
         function DrawingManagerParentModel(scope, element, attrs, map) {
-          var drawingManager;
+          var drawingManager, listeners;
           this.scope = scope;
           this.attrs = attrs;
           this.map = map;
           drawingManager = new google.maps.drawing.DrawingManager(this.scope.options);
           drawingManager.setMap(this.map);
+          listeners = void 0;
           if (this.scope.control != null) {
             this.scope.control.getDrawingManager = function() {
               return drawingManager;
@@ -3675,15 +3683,33 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return drawingManager != null ? drawingManager.setOptions(newValue) : void 0;
             }, true);
           }
-          scope.$on('$destroy', function() {
-            drawingManager.setMap(null);
-            return drawingManager = null;
-          });
+          if (this.scope.events != null) {
+            listeners = this.setEvents(drawingManager, this.scope, this.scope);
+            scope.$watch('events', (function(_this) {
+              return function(newValue, oldValue) {
+                if (!_.isEqual(newValue, oldValue)) {
+                  if (listeners != null) {
+                    _this.removeEvents(listeners);
+                  }
+                  return listeners = _this.setEvents(drawingManager, _this.scope, _this.scope);
+                }
+              };
+            })(this));
+          }
+          scope.$on('$destroy', (function(_this) {
+            return function() {
+              if (listeners != null) {
+                _this.removeEvents(listeners);
+              }
+              drawingManager.setMap(null);
+              return drawingManager = null;
+            };
+          })(this));
         }
 
         return DrawingManagerParentModel;
 
-      })();
+      })(BaseObject);
     }
   ]);
 
@@ -5864,7 +5890,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         scope: {
           "static": '@',
           control: '=',
-          options: '='
+          options: '=',
+          events: '='
         }
       };
     }
