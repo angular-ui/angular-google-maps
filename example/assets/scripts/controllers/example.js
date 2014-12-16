@@ -377,7 +377,8 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
           longitude: -44.296875
         },
         options: {
-          boxClass: 'custom-info-window'
+          boxClass: 'custom-info-window',
+          closeBoxDiv: '<div" class="pull-right" style="position: relative; cursor: pointer; margin: -20px -15px;">X</div>'
         },
         show: true
       },

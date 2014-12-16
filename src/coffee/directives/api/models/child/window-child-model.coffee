@@ -66,8 +66,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @opts = @createWindowOptions maybeMarker, @markerScope or @scope, @html, _opts
 
           if @opts? and !@gWin
-            if @opts.boxClass and (window.InfoBox and typeof window.InfoBox is 'function')
-              @gWin = new window.InfoBox @opts
+            if @opts.boxClass and (window.uiGmapInfoBox and typeof window.uiGmapInfoBox is 'function')
+              @gWin = new window.uiGmapInfoBox @opts
             else
               @gWin = new google.maps.InfoWindow @opts
             @handleClick(@scope?.options?.forceClick or isOpen)
