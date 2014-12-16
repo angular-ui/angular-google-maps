@@ -89,11 +89,11 @@
           coords="staticMarker.coords" options="staticMarker.options" events="staticMarker.events" idKey="staticMarker.id">
         </ui-gmap-marker>
 
-        <ui-gmap-markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
+        <ui-gmap-markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="onMarkerClicked"
                     doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
         </ui-gmap-markers>
 
-        <ui-gmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'" events="map.markers2Events">
+        <ui-gmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="onMarkerClicked" options="'options'" events="map.markers2Events">
             <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     I should not be attached to a
@@ -111,7 +111,7 @@
         <ui-gmap-markers models="map.clickMarkers" coords="'self'" click="clackMarker" >
         </ui-gmap-markers>
 
-        <ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="'onClicked'" fit='true'>
+        <ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="onMarkerClicked" fit='true'>
             <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p>Dynamic Marker created via a delay!</p>
@@ -123,7 +123,7 @@
             </ui-gmap-windows>
         </ui-gmap-markers>
 
-        <ui-gmap-markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="'onClicked'" >
+        <ui-gmap-markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="onMarkerClicked" >
             <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p>Mexi!</p>
