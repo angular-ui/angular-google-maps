@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-15
+/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-16
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -13486,6 +13486,7 @@ angular.module('uiGmapgoogle-maps.extensions')
             this.listeners_ = [
                 google.maps.event.addListener(this.getMap(), 'zoom_changed', function () {
                     cMarkerClusterer.resetViewport_(false);
+                    cMarkerClusterer.redraw_();
                     // Workaround for this Google bug: when map is at level 0 and '-' of
                     // zoom slider is clicked, a 'zoom_changed' event is fired even though
                     // the map doesn't zoom out any further. In this situation, no 'idle'
