@@ -24,6 +24,14 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
         zIndex: 1
       }
     };
+    $scope.eventHandler = {
+      overlaycomplete: function (dm, name, scope, objs) {
+        console.log("You successfully placed a %s", dm.drawingMode);
+      },
+      polylinecomplete: function (dm, name, scope, objs) {
+        console.log("You finished drawing polyline to [%s]", objs[0].getPath().getArray().join(","));
+      }
+    };
     $scope.markersAndCircleFlag = true;
     $scope.drawingManagerControl = {};
     $scope.$watch('markersAndCircleFlag', function() {

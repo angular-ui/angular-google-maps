@@ -6,4 +6,5 @@ angular.module('uiGmapgoogle-maps.directives.api').service 'uiGmapIDrawingManage
     static: '@'
     control: '='
     options: '='
+    events: '='
 ]
