@@ -147,9 +147,14 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 ;(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   angular.module('uiGmapgoogle-maps.extensions').service('uiGmapExtendGWin', function() {
     return {
       init: _.once(function() {
+        var uiGmapInfoBox;
         if (!(google || (typeof google !== "undefined" && google !== null ? google.maps : void 0) || (google.maps.InfoWindow != null))) {
           return;
         }
@@ -207,6 +212,51 @@ Nicholas McCready - https://twitter.com/nmccready
               return this._isOpen = val;
             }
           };
+          uiGmapInfoBox = (function(_super) {
+            __extends(uiGmapInfoBox, _super);
+
+            function uiGmapInfoBox(opts) {
+              this.getOrigCloseBoxImg_ = __bind(this.getOrigCloseBoxImg_, this);
+              this.getCloseBoxDiv_ = __bind(this.getCloseBoxDiv_, this);
+              var box;
+              box = new window.InfoBox(opts);
+              _.extend(this, box);
+              if (opts.closeBoxDiv != null) {
+                this.closeBoxDiv_ = opts.closeBoxDiv;
+              }
+            }
+
+            uiGmapInfoBox.prototype.getCloseBoxDiv_ = function() {
+              return this.closeBoxDiv_;
+            };
+
+            uiGmapInfoBox.prototype.getCloseBoxImg_ = function() {
+              var div, img;
+              div = this.getCloseBoxDiv_();
+              img = this.getOrigCloseBoxImg_();
+              return div || img;
+            };
+
+            uiGmapInfoBox.prototype.getOrigCloseBoxImg_ = function() {
+              var img;
+              img = "";
+              if (this.closeBoxURL_ !== "") {
+                img = "<img";
+                img += " src='" + this.closeBoxURL_ + "'";
+                img += " align=right";
+                img += " style='";
+                img += " position: relative;";
+                img += " cursor: pointer;";
+                img += " margin: " + this.closeBoxMargin_ + ";";
+                img += "'>";
+              }
+              return img;
+            };
+
+            return uiGmapInfoBox;
+
+          })(window.InfoBox);
+          window.uiGmapInfoBox = uiGmapInfoBox;
         }
         if (window.MarkerLabel_) {
           window.MarkerLabel_.prototype.setContent = function() {
@@ -3378,8 +3428,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.opts = this.createWindowOptions(maybeMarker, this.markerScope || this.scope, this.html, _opts);
           }
           if ((this.opts != null) && !this.gWin) {
-            if (this.opts.boxClass && (window.InfoBox && typeof window.InfoBox === 'function')) {
-              this.gWin = new window.InfoBox(this.opts);
+            if (this.opts.boxClass && (window.uiGmapInfoBox && typeof window.uiGmapInfoBox === 'function')) {
+              this.gWin = new window.uiGmapInfoBox(this.opts);
             } else {
               this.gWin = new google.maps.InfoWindow(this.opts);
             }
@@ -3425,6 +3475,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return;
                 }
                 pos = _this.getCoords(newValue);
+                _this.doShow();
                 _this.gWin.setPosition(pos);
                 if (_this.opts) {
                   return _this.opts.position = pos;
