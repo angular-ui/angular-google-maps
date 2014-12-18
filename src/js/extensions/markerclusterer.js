@@ -325,30 +325,6 @@ angular.module('uiGmapgoogle-maps.extensions')
             }).apply(obj1, [obj2]);
           };
 
-          NgMapMarkerClusterer.prototype.onAdd = function() {
-            var cMarkerClusterer = this;
-
-            this.activeMap_ = this.getMap();
-            this.ready_ = true;
-
-            this.repaint();
-
-            // Add the map event listeners
-            this.listeners_ = [
-                google.maps.event.addListener(this.getMap(), 'zoom_changed', function () {
-                    cMarkerClusterer.resetViewport_(false);
-                    // Workaround for this Google bug: when map is at level 0 and '-' of
-                    // zoom slider is clicked, a 'zoom_changed' event is fired even though
-                    // the map doesn't zoom out any further. In this situation, no 'idle'
-                    // event is triggered so the cluster markers that have been removed
-                    // do not get redrawn. Same goes for a zoom in at maxZoom.
-                    if (this.getZoom() === (this.get('minZoom') || 0) || this.getZoom() === this.get('maxZoom')) {
-                        google.maps.event.trigger(this, 'idle');
-                    }
-                })
-            ];
-          };
-
           return NgMapMarkerClusterer;
 
         })(MarkerClusterer);
