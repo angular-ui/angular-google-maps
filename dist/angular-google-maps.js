@@ -1146,10 +1146,9 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 ;(function() {
-  angular.module("uiGmapgoogle-maps.directives.api.utils").service("uiGmapLogger", [
-    "$log", function($log) {
-      var LEVELS, log, logFns, maybeExecLevel;
-      this.doLog = true;
+  angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapLogger', [
+    '$log', function($log) {
+      var LEVELS, Logger, log, maybeExecLevel;
       LEVELS = {
         log: 1,
         info: 2,
@@ -1170,26 +1169,43 @@ Nicholas McCready - https://twitter.com/nmccready
           return console[logLevelFnName](msg);
         }
       };
-      logFns = {};
-      ['log', 'info', 'debug', 'warn', 'error'].forEach((function(_this) {
-        return function(level) {
-          return logFns[level] = function(msg) {
-            if (_this.doLog) {
-              return maybeExecLevel(LEVELS[level], _this.currentLevel, function() {
-                return log(level, msg);
-              });
-            }
-          };
+      Logger = (function() {
+        function Logger() {
+          var logFns;
+          this.doLog = true;
+          logFns = {};
+          ['log', 'info', 'debug', 'warn', 'error'].forEach((function(_this) {
+            return function(level) {
+              return logFns[level] = function(msg) {
+                if (_this.doLog) {
+                  return maybeExecLevel(LEVELS[level], _this.currentLevel, function() {
+                    return log(level, msg);
+                  });
+                }
+              };
+            };
+          })(this));
+          this.LEVELS = LEVELS;
+          this.currentLevel = LEVELS.error;
+          this.log = logFns['log'];
+          this.info = logFns['info'];
+          this.debug = logFns['debug'];
+          this.warn = logFns['warn'];
+          this.error = logFns['error'];
+        }
+
+        Logger.prototype.spawn = function() {
+          return new Logger();
         };
-      })(this));
-      this.LEVELS = LEVELS;
-      this.currentLevel = LEVELS.error;
-      this.log = logFns['log'];
-      this.info = logFns['info'];
-      this.debug = logFns['debug'];
-      this.warn = logFns['warn'];
-      this.error = logFns['error'];
-      return this;
+
+        Logger.prototype.setLog = function(someLogger) {
+          return $log = someLogger;
+        };
+
+        return Logger;
+
+      })();
+      return new Logger();
     }
   ]);
 

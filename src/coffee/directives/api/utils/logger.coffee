@@ -1,8 +1,6 @@
-angular.module("uiGmapgoogle-maps.directives.api.utils")
-.service "uiGmapLogger", [ "$log", ($log) ->
+angular.module('uiGmapgoogle-maps.directives.api.utils')
+.service 'uiGmapLogger', [ '$log', ($log) ->
   #defaulting logging to be on with error only (better for perf and less mysterious errors)
-  @doLog = true
-
   LEVELS =
     log: 1
     info: 2
@@ -20,20 +18,30 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
     else
       console[logLevelFnName] msg
 
-  logFns = {}
-  ['log', 'info', 'debug', 'warn', 'error'].forEach (level) =>
-    logFns[level] = (msg) =>
-      if @doLog
-        maybeExecLevel LEVELS[level], @currentLevel, ->
-          log level, msg
+  class Logger
+    constructor: ->
+      @doLog = true
+      logFns = {}
+      ['log', 'info', 'debug', 'warn', 'error'].forEach (level) =>
+        logFns[level] = (msg) =>
+          if @doLog
+            maybeExecLevel LEVELS[level], @currentLevel, ->
+              log level, msg
 
-  @LEVELS = LEVELS
-  @currentLevel =
-    LEVELS.error
-  @log = logFns['log']
-  @info = logFns['info']
-  @debug = logFns['debug']
-  @warn = logFns['warn']
-  @error = logFns['error']
-  @
+      @LEVELS = LEVELS
+      @currentLevel = LEVELS.error
+      @log = logFns['log']
+      @info = logFns['info']
+      @debug = logFns['debug']
+      @warn = logFns['warn']
+      @error = logFns['error']
+
+    spawn: ->
+      new Logger()
+
+    #This is mainly for testing let me know if there is a better way
+    setLog: (someLogger) ->
+      $log = someLogger
+
+  new Logger()
 ]
