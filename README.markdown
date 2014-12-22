@@ -31,7 +31,7 @@ These will probably be close to the last 2.0.X releases. Depending on the severi
 
 We are tying to figure out if we should just cut the coord and go full bore into 3.0 vs 2.1.X. Voting results:
 
-
+![](https://lh3.googleusercontent.com/-YPPGRRhEVEg/VJhH8lC_YQI/AAAAAAAAbP8/ys3CzWTKTpU/w870-h362-no/Screen%2BShot%2B2014-12-22%2Bat%2B10.36.19%2BAM.png)
  
 ## 3.0.X
 This release is going to be much stricter in terms of when it will be released and allowed features. It will require more specs and will be focusing on bad bugs, unifying the API. There are more items being discussed internally as well and they will become public discussion soon.
