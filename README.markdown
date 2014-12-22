@@ -29,7 +29,7 @@ _______________________
 
 These will probably be close to the last 2.0.X releases. Depending on the severity of the bugs other 2.0.X releases may be necessary.
 
-We are tying to figure out if we should just cut the coord and go full bore into 3.0 vs 2.1.X. Voting results:
+## 3.0 vs 2.1.X Voting results:
 
 ![](https://lh3.googleusercontent.com/-YPPGRRhEVEg/VJhH8lC_YQI/AAAAAAAAbP8/ys3CzWTKTpU/w870-h362-no/Screen%2BShot%2B2014-12-22%2Bat%2B10.36.19%2BAM.png)
  
