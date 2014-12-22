@@ -38,13 +38,13 @@ _________________________
 This release is going to be much stricter in terms of when it will be released and allowed features. It will require more specs and will be focusing on bad bugs, unifying the API. 
 
 Things to expect:
-- **transclusion**: Only the map will be transcluded (no more window or windows in markers). This will de-complicate the api tremendously. This will also make it much easier to have one PluralParentModel for the rest of the parents to use. This *may* be held off for 3.0.X. 
 
-- **watches**:All directives to be moved to using shallow watches (no equality) and or $watchCollection.
  
 ## 3.0.X
 This is currently being discussed internally and will become a public discussion in the next coming weeks.
 However here are a few items known:
+- **transclusion**: Only the map will be transcluded (no more window or windows in markers). This will de-complicate the api tremendously. This will also make it much easier to have one PluralParentModel for the rest of the parents to use. This *may* be held off for 3.0.X. 
+- **watches**:All directives to be moved to using shallow watches (no equality) and or $watchCollection.
 
 - **drop singular layer directives**: Singular directives while being 'angular', are pretty useless for production and performance unless your size is small. To bring focus to the API our goal for layers (shapes, markers, windows) is to make all of the directives plural.
 
