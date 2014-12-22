@@ -29,20 +29,14 @@ _______________________
 
 These will probably be close to the last 2.0.X releases. Depending on the severity of the bugs other 2.0.X releases may be necessary.
 
-We are tying to figure out if we should just cut the coord and go full bore into 3.0 or ease in via 2.1.X . They both have some commonality in terms of Plural Directives and API clean up. This is why we are asking for [**votes**](http://goo.gl/4YDSao).
+We are tying to figure out if we should just cut the coord and go full bore into 3.0 vs 2.1.X. Voting results:
 
-## What to vote on!
-_________________________
-
-## 2.1.X (develop)
-This release is going to be much stricter in terms of when it will be released and allowed features. It will require more specs and will be focusing on bad bugs, unifying the API. 
-
-Things to expect:
 
  
 ## 3.0.X
-This is currently being discussed internally and will become a public discussion in the next coming weeks.
-However here are a few items known:
+This release is going to be much stricter in terms of when it will be released and allowed features. It will require more specs and will be focusing on bad bugs, unifying the API. There are more items being discussed internally as well and they will become public discussion soon.
+
+Few items known:
 - **transclusion**: Only the map will be transcluded (no more window or windows in markers). This will de-complicate the api tremendously. This will also make it much easier to have one PluralParentModel for the rest of the parents to use. This *may* be held off for 3.0.X. 
 - **watches**:All directives to be moved to using shallow watches (no equality) and or $watchCollection.
 
