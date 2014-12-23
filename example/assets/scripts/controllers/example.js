@@ -376,7 +376,8 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
           longitude: -44.296875
         },
         options: {
-          boxClass: 'custom-info-window'
+          boxClass: 'custom-info-window',
+          disableAutoPan: true
         },
         show: true
       },
