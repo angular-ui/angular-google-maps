@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-16
+/*! angular-google-maps 2.1.0-SNAPSHOT 2014-12-23
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1196,10 +1196,9 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 ;(function() {
-  angular.module("uiGmapgoogle-maps.directives.api.utils").service("uiGmapLogger", [
-    "$log", function($log) {
-      var LEVELS, log, logFns, maybeExecLevel;
-      this.doLog = true;
+  angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapLogger', [
+    '$log', function($log) {
+      var LEVELS, Logger, log, maybeExecLevel;
       LEVELS = {
         log: 1,
         info: 2,
@@ -1220,26 +1219,43 @@ Nicholas McCready - https://twitter.com/nmccready
           return console[logLevelFnName](msg);
         }
       };
-      logFns = {};
-      ['log', 'info', 'debug', 'warn', 'error'].forEach((function(_this) {
-        return function(level) {
-          return logFns[level] = function(msg) {
-            if (_this.doLog) {
-              return maybeExecLevel(LEVELS[level], _this.currentLevel, function() {
-                return log(level, msg);
-              });
-            }
-          };
+      Logger = (function() {
+        function Logger() {
+          var logFns;
+          this.doLog = true;
+          logFns = {};
+          ['log', 'info', 'debug', 'warn', 'error'].forEach((function(_this) {
+            return function(level) {
+              return logFns[level] = function(msg) {
+                if (_this.doLog) {
+                  return maybeExecLevel(LEVELS[level], _this.currentLevel, function() {
+                    return log(level, msg);
+                  });
+                }
+              };
+            };
+          })(this));
+          this.LEVELS = LEVELS;
+          this.currentLevel = LEVELS.error;
+          this.log = logFns['log'];
+          this.info = logFns['info'];
+          this.debug = logFns['debug'];
+          this.warn = logFns['warn'];
+          this.error = logFns['error'];
+        }
+
+        Logger.prototype.spawn = function() {
+          return new Logger();
         };
-      })(this));
-      this.LEVELS = LEVELS;
-      this.currentLevel = LEVELS.error;
-      this.log = logFns['log'];
-      this.info = logFns['info'];
-      this.debug = logFns['debug'];
-      this.warn = logFns['warn'];
-      this.error = logFns['error'];
-      return this;
+
+        Logger.prototype.setLog = function(someLogger) {
+          return $log = someLogger;
+        };
+
+        return Logger;
+
+      })();
+      return new Logger();
     }
   ]);
 
@@ -13550,30 +13566,6 @@ angular.module('uiGmapgoogle-maps.extensions')
               }
               return this;
             }).apply(obj1, [obj2]);
-          };
-
-          NgMapMarkerClusterer.prototype.onAdd = function() {
-            var cMarkerClusterer = this;
-
-            this.activeMap_ = this.getMap();
-            this.ready_ = true;
-
-            this.repaint();
-
-            // Add the map event listeners
-            this.listeners_ = [
-                google.maps.event.addListener(this.getMap(), 'zoom_changed', function () {
-                    cMarkerClusterer.resetViewport_(false);
-                    // Workaround for this Google bug: when map is at level 0 and '-' of
-                    // zoom slider is clicked, a 'zoom_changed' event is fired even though
-                    // the map doesn't zoom out any further. In this situation, no 'idle'
-                    // event is triggered so the cluster markers that have been removed
-                    // do not get redrawn. Same goes for a zoom in at maxZoom.
-                    if (this.getZoom() === (this.get('minZoom') || 0) || this.getZoom() === this.get('maxZoom')) {
-                        google.maps.event.trigger(this, 'idle');
-                    }
-                })
-            ];
           };
 
           return NgMapMarkerClusterer;
