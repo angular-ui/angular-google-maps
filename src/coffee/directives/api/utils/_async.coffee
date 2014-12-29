@@ -209,8 +209,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   managePromiseQueue: managePromiseQueue
   promiseLock: managePromiseQueue
   defaultChunkSize: defaultChunkSize
-  chunkSizeFrom:(fromSize) ->
-    ret = undefined
+  chunkSizeFrom:(fromSize, ret = undefined) ->
     if _.isNumber fromSize
       ret = fromSize
     if uiGmapGmapUtil.isFalse(fromSize) or fromSize == false

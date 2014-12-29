@@ -177,7 +177,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
               _async.each @scope.markerModels.values(), (model) =>
                 model.destroy(false) if model?
-              , false
+              , _async.chunkSizeFrom(scope.cleanchunk, false)
               .then =>
                 delete @scope.markerModels
                 @gMarkerManager.clear() if @gMarkerManager?
