@@ -71,7 +71,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
               _async.each @windows.values(), (child) =>
                 child.destroy()
-              , _async.chunkSizeFrom(scope.cleanchunk, false)
+              , _async.chunkSizeFrom(@scope.cleanchunk, false)
               .then =>
                 delete @windows if doDelete
                 @windows = new PropMap()

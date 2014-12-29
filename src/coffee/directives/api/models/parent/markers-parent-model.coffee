@@ -173,11 +173,11 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
             child
 
-          onDestroy: (scope)=>
+          onDestroy: (scope) =>
             _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
               _async.each @scope.markerModels.values(), (model) =>
                 model.destroy(false) if model?
-              , _async.chunkSizeFrom(scope.cleanchunk, false)
+              , _async.chunkSizeFrom(@scope.cleanchunk, false)
               .then =>
                 delete @scope.markerModels
                 @gMarkerManager.clear() if @gMarkerManager?

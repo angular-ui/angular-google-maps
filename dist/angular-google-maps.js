@@ -4309,7 +4309,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (model != null) {
                   return model.destroy(false);
                 }
-              }, _async.chunkSizeFrom(scope.cleanchunk, false)).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 delete _this.scope.markerModels;
                 if (_this.gMarkerManager != null) {
                   _this.gMarkerManager.clear();
@@ -4466,7 +4466,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
-              }, _async.chunkSizeFrom(scope.cleanchunk, false)).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (doDelete) {
                   delete _this.plurals;
                 }
@@ -4746,7 +4746,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
-              }, _async.chunkSizeFrom(scope.cleanchunk, false)).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (doDelete) {
                   delete _this.plurals;
                 }
@@ -5348,7 +5348,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(_this.windows.values(), function(child) {
                 return child.destroy();
-              }, _async.chunkSizeFrom(scope.cleanchunk, false)).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (doDelete) {
                   delete _this.windows;
                 }
