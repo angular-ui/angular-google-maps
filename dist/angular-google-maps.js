@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /*! angular-google-maps 2.0.12 2014-12-29
+=======
+/*! angular-google-maps 2.0.12 2014-12-23
+>>>>>>> master
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4131,7 +4135,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (propNameToWatch === "idKey" && newValue !== oldValue) {
             this.idKey = newValue;
           }
-          if (this.doRebuildAll) {
+          if (this.doRebuildAll || propNameToWatch === 'doCluster') {
             return this.reBuildMarkers(scope);
           } else {
             return this.pieceMeal(scope);
@@ -4149,6 +4153,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         MarkersParentModel.prototype.createMarkersFromScratch = function(scope) {
           var maybeCanceled;
+          if (this.gMarkerManager != null) {
+            this.gMarkerManager.clear();
+            delete this.gMarkerManager;
+          }
           if (scope.doCluster) {
             if (scope.clusterEvents) {
               this.clusterInternalOptions = _.once((function(_this) {
@@ -4176,14 +4184,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 };
               })(this))();
             }
-            if (!this.gMarkerManager) {
-              this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, this.clusterInternalOptions);
-            }
-          }
-          if (!this.gMarkerManager) {
+            this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, this.clusterInternalOptions);
+          } else {
             this.gMarkerManager = new MarkerManager(this.map);
           }
-          this.gMarkerManager.clear();
           if (this.didQueueInitPromise(this, scope)) {
             return;
           }
@@ -4396,7 +4400,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           self = this;
           this.$log = $log;
           this.plurals = new PropMap();
-          this.scopePropNames = ['path', 'stroke', 'clickable', 'draggable', 'editable', 'geodesic', 'icons', 'visible'];
+          this.scopePropNames = ['path', 'stroke', 'fill', 'clickable', 'draggable', 'editable', 'geodesic', 'icons', 'visible'];
           _.each(this.scopePropNames, (function(_this) {
             return function(name) {
               return _this[name + 'Key'] = void 0;
