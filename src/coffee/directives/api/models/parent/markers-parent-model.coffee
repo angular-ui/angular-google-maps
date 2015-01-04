@@ -46,7 +46,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
           onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             if propNameToWatch == "idKey" and newValue != oldValue
               @idKey = newValue
-            if @doRebuildAll
+            if @doRebuildAll or propNameToWatch == 'doCluster'
               @reBuildMarkers(scope)
             else
               @pieceMeal(scope)
@@ -59,6 +59,10 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             super(scope) or modelsNotDefined
 
           createMarkersFromScratch: (scope) =>
+            if @gMarkerManager?
+              @gMarkerManager.clear()
+              delete @gMarkerManager
+
             if scope.doCluster
               if scope.clusterEvents
                 @clusterInternalOptions = do _.once =>
@@ -76,12 +80,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                       mouseover:(cluster) ->
                         self.maybeExecMappedEvent cluster, 'mouseover'
 
-              unless @gMarkerManager
-                @gMarkerManager = new ClustererMarkerManager @map, undefined, scope.clusterOptions, @clusterInternalOptions
-            unless @gMarkerManager
+              @gMarkerManager = new ClustererMarkerManager @map, undefined, scope.clusterOptions, @clusterInternalOptions
+            else
               @gMarkerManager = new MarkerManager @map
-
-            @gMarkerManager.clear()
 
             return if @didQueueInitPromise(@,scope)
 
@@ -173,11 +174,11 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
             child
 
-          onDestroy: (scope)=>
+          onDestroy: (scope) =>
             _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
               _async.each @scope.markerModels.values(), (model) =>
                 model.destroy(false) if model?
-              , false
+              , _async.chunkSizeFrom(@scope.cleanchunk, false)
               .then =>
                 delete @scope.markerModels
                 @gMarkerManager.clear() if @gMarkerManager?

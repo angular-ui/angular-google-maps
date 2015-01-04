@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2014-12-23
+/*! angular-google-maps 2.0.12 2015-01-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -609,9 +609,10 @@ Nicholas McCready - https://twitter.com/nmccready
         managePromiseQueue: managePromiseQueue,
         promiseLock: managePromiseQueue,
         defaultChunkSize: defaultChunkSize,
-        chunkSizeFrom: function(fromSize) {
-          var ret;
-          ret = void 0;
+        chunkSizeFrom: function(fromSize, ret) {
+          if (ret == null) {
+            ret = void 0;
+          }
           if (_.isNumber(fromSize)) {
             ret = fromSize;
           }
@@ -4130,7 +4131,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (propNameToWatch === "idKey" && newValue !== oldValue) {
             this.idKey = newValue;
           }
-          if (this.doRebuildAll) {
+          if (this.doRebuildAll || propNameToWatch === 'doCluster') {
             return this.reBuildMarkers(scope);
           } else {
             return this.pieceMeal(scope);
@@ -4148,6 +4149,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         MarkersParentModel.prototype.createMarkersFromScratch = function(scope) {
           var maybeCanceled;
+          if (this.gMarkerManager != null) {
+            this.gMarkerManager.clear();
+            delete this.gMarkerManager;
+          }
           if (scope.doCluster) {
             if (scope.clusterEvents) {
               this.clusterInternalOptions = _.once((function(_this) {
@@ -4175,14 +4180,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 };
               })(this))();
             }
-            if (!this.gMarkerManager) {
-              this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, this.clusterInternalOptions);
-            }
-          }
-          if (!this.gMarkerManager) {
+            this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, this.clusterInternalOptions);
+          } else {
             this.gMarkerManager = new MarkerManager(this.map);
           }
-          this.gMarkerManager.clear();
           if (this.didQueueInitPromise(this, scope)) {
             return;
           }
@@ -4308,7 +4309,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (model != null) {
                   return model.destroy(false);
                 }
-              }, false).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 delete _this.scope.markerModels;
                 if (_this.gMarkerManager != null) {
                   _this.gMarkerManager.clear();
@@ -4465,7 +4466,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
-              }, false).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (doDelete) {
                   delete _this.plurals;
                 }
@@ -4745,7 +4746,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
-              }, false).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (doDelete) {
                   delete _this.plurals;
                 }
@@ -5347,7 +5348,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(_this.windows.values(), function(child) {
                 return child.destroy();
-              }, false).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (doDelete) {
                   delete _this.windows;
                 }
@@ -6203,7 +6204,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
-              var customListeners, disabledEvents, dragging, el, eventName, getEventHandler, mapOptions, maybeHookToEvent, opts, resolveSpawned, settingFromDirective, spawned, type, updateCenter, _gMap, _ref;
+              var customListeners, disabledEvents, dragging, el, eventName, getEventHandler, mapOptions, maybeHookToEvent, opts, resolveSpawned, settingCenterFromDirective, settingCenterFromScope, settingZoomFromDirective, settingZoomFromScope, spawned, type, _gMap, _ref;
               DEFAULTS = {
                 mapTypeId: maps.MapTypeId.ROADMAP
               };
@@ -6287,42 +6288,92 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                   });
                 });
-                updateCenter = function(c, s) {
-                  if (c == null) {
-                    c = _gMap.center;
-                  }
-                  if (s == null) {
+                maybeHookToEvent('drag', function() {
+                  var c, _ref1, _ref2, _ref3;
+                  c = _gMap.center;
+                  return $timeout(function() {
+                    var s;
                     s = scope;
-                  }
-                  if (_.contains(disabledEvents, 'center')) {
-                    return;
-                  }
-                  if (angular.isDefined(s.center.type)) {
-                    if (s.center.coordinates[1] !== c.lat()) {
+                    if (angular.isDefined(s.center.type)) {
                       s.center.coordinates[1] = c.lat();
-                    }
-                    if (s.center.coordinates[0] !== c.lng()) {
                       return s.center.coordinates[0] = c.lng();
-                    }
-                  } else {
-                    if (s.center.latitude !== c.lat()) {
+                    } else {
                       s.center.latitude = c.lat();
-                    }
-                    if (s.center.longitude !== c.lng()) {
                       return s.center.longitude = c.lng();
                     }
+                  }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? (_ref3 = _ref2.debounce) != null ? _ref3.dragMs : void 0 : void 0 : void 0);
+                });
+                settingZoomFromScope = false;
+                settingZoomFromDirective = false;
+                maybeHookToEvent('zoom_changed', function() {
+                  var _ref1, _ref2;
+                  if (settingZoomFromScope) {
+                    return;
                   }
-                };
-                settingFromDirective = false;
+                  if (scope.zoom !== _gMap.zoom) {
+                    settingZoomFromDirective = true;
+                    return $timeout(function() {
+                      scope.zoom = _gMap.zoom;
+                      return settingZoomFromDirective = false;
+                    }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0);
+                  }
+                });
+                settingCenterFromScope = false;
+                settingCenterFromDirective = false;
+                maybeHookToEvent('center_changed', function() {
+                  var c, _ref1, _ref2;
+                  c = _gMap.center;
+                  if (settingCenterFromScope) {
+                    return;
+                  }
+                  settingCenterFromDirective = true;
+                  return $timeout(function() {
+                    var s;
+                    s = scope;
+                    if (!_gMap.dragging) {
+                      if (angular.isDefined(s.center.type)) {
+                        if (s.center.coordinates[1] !== c.lat()) {
+                          s.center.coordinates[1] = c.lat();
+                        }
+                        if (s.center.coordinates[0] !== c.lng()) {
+                          s.center.coordinates[0] = c.lng();
+                        }
+                      } else {
+                        if (s.center.latitude !== c.lat()) {
+                          s.center.latitude = c.lat();
+                        }
+                        if (s.center.longitude !== c.lng()) {
+                          s.center.longitude = c.lng();
+                        }
+                      }
+                    }
+                    return settingCenterFromDirective = false;
+                  }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.centerMs : void 0 : void 0);
+                });
                 maybeHookToEvent('idle', function() {
                   var b, ne, sw;
                   b = _gMap.getBounds();
                   ne = b.getNorthEast();
                   sw = b.getSouthWest();
-                  settingFromDirective = true;
                   return scope.$evalAsync(function(s) {
-                    updateCenter();
-                    if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0 && !_.contains(disabledEvents, 'bounds')) {
+                    var c;
+                    c = _gMap.center;
+                    if (angular.isDefined(s.center.type)) {
+                      if (s.center.coordinates[1] !== c.lat()) {
+                        s.center.coordinates[1] = c.lat();
+                      }
+                      if (s.center.coordinates[0] !== c.lng()) {
+                        s.center.coordinates[0] = c.lng();
+                      }
+                    } else {
+                      if (s.center.latitude !== c.lat()) {
+                        s.center.latitude = c.lat();
+                      }
+                      if (s.center.longitude !== c.lng()) {
+                        s.center.longitude = c.lng();
+                      }
+                    }
+                    if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
                       s.bounds.northeast = {
                         latitude: ne.lat(),
                         longitude: ne.lng()
@@ -6331,12 +6382,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                         latitude: sw.lat(),
                         longitude: sw.lng()
                       };
-                    }
-                    if (!_.contains(disabledEvents, 'zoom')) {
                       s.zoom = _gMap.zoom;
-                      scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
+                      return scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
                     }
-                    return settingFromDirective = false;
                   });
                 });
               }
@@ -6388,8 +6436,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 };
               }
               scope.$watch('center', function(newValue, oldValue) {
-                var coords, settingCenterFromScope;
-                if (newValue === oldValue || settingFromDirective) {
+                var coords;
+                if (newValue === oldValue || settingCenterFromDirective) {
                   return;
                 }
                 coords = _this.getCoords(scope.center);
@@ -6410,8 +6458,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return settingCenterFromScope = false;
               }, true);
               scope.$watch('zoom', function(newValue, oldValue) {
-                var settingZoomFromScope, _ref1, _ref2;
-                if (_.isEqual(newValue, oldValue) || _gMap.getZoom() === scope.zoom || settingFromDirective) {
+                var _ref1, _ref2;
+                if (_.isEqual(newValue, oldValue) || _gMap.getZoom() === scope.zoom) {
                   return;
                 }
                 settingZoomFromScope = true;
@@ -6592,7 +6640,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             idKey: '=idkey',
             doRebuildAll: '=dorebuildall',
             models: '=models',
-            chunk: '=chunk'
+            chunk: '=chunk',
+            cleanchunk: '=cleanchunk'
           });
         }
       };

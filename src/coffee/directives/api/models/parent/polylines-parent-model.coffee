@@ -69,12 +69,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
           _async.each @plurals.values(), (child) =>
             child.destroy true #to make sure it is really dead, otherwise watchers can kick off (artifacts in path create)
-          , false
+          , _async.chunkSizeFrom(@scope.cleanchunk, false)
           .then =>
             delete @plurals if doDelete
             @plurals = new PropMap()
 
-      watchDestroy: (scope)=>
+      watchDestroy: (scope) =>
         scope.$on '$destroy', =>
           @rebuildAll(scope, false, true)
 

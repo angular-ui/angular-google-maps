@@ -6,4 +6,5 @@ angular.module('uiGmapgoogle-maps.directives.api')
         doRebuildAll: '=dorebuildall' #root level directive attribute not a model level, should default to false
         models: '=models'
         chunk: '=chunk' #false to disable chunking, otherwise a number to define chunk size
+        cleanchunk: '=cleanchunk' #false to disable chunking, otherwise a number to define chunk size
 ]
