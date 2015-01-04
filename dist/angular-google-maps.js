@@ -6204,7 +6204,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
-              var customListeners, disabledEvents, dragging, el, eventName, getEventHandler, mapOptions, maybeHookToEvent, opts, resolveSpawned, settingCenterFromDirective, settingCenterFromScope, settingZoomFromDirective, settingZoomFromScope, spawned, type, _gMap, _ref;
+              var customListeners, disabledEvents, dragging, el, eventName, getEventHandler, mapOptions, maybeHookToEvent, opts, resolveSpawned, settingFromDirective, spawned, type, updateCenter, _gMap, _ref;
               DEFAULTS = {
                 mapTypeId: maps.MapTypeId.ROADMAP
               };
@@ -6288,92 +6288,42 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                   });
                 });
-                maybeHookToEvent('drag', function() {
-                  var c, _ref1, _ref2, _ref3;
-                  c = _gMap.center;
-                  return $timeout(function() {
-                    var s;
+                updateCenter = function(c, s) {
+                  if (c == null) {
+                    c = _gMap.center;
+                  }
+                  if (s == null) {
                     s = scope;
-                    if (angular.isDefined(s.center.type)) {
+                  }
+                  if (_.contains(disabledEvents, 'center')) {
+                    return;
+                  }
+                  if (angular.isDefined(s.center.type)) {
+                    if (s.center.coordinates[1] !== c.lat()) {
                       s.center.coordinates[1] = c.lat();
+                    }
+                    if (s.center.coordinates[0] !== c.lng()) {
                       return s.center.coordinates[0] = c.lng();
-                    } else {
+                    }
+                  } else {
+                    if (s.center.latitude !== c.lat()) {
                       s.center.latitude = c.lat();
+                    }
+                    if (s.center.longitude !== c.lng()) {
                       return s.center.longitude = c.lng();
                     }
-                  }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? (_ref3 = _ref2.debounce) != null ? _ref3.dragMs : void 0 : void 0 : void 0);
-                });
-                settingZoomFromScope = false;
-                settingZoomFromDirective = false;
-                maybeHookToEvent('zoom_changed', function() {
-                  var _ref1, _ref2;
-                  if (settingZoomFromScope) {
-                    return;
                   }
-                  if (scope.zoom !== _gMap.zoom) {
-                    settingZoomFromDirective = true;
-                    return $timeout(function() {
-                      scope.zoom = _gMap.zoom;
-                      return settingZoomFromDirective = false;
-                    }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0);
-                  }
-                });
-                settingCenterFromScope = false;
-                settingCenterFromDirective = false;
-                maybeHookToEvent('center_changed', function() {
-                  var c, _ref1, _ref2;
-                  c = _gMap.center;
-                  if (settingCenterFromScope) {
-                    return;
-                  }
-                  settingCenterFromDirective = true;
-                  return $timeout(function() {
-                    var s;
-                    s = scope;
-                    if (!_gMap.dragging) {
-                      if (angular.isDefined(s.center.type)) {
-                        if (s.center.coordinates[1] !== c.lat()) {
-                          s.center.coordinates[1] = c.lat();
-                        }
-                        if (s.center.coordinates[0] !== c.lng()) {
-                          s.center.coordinates[0] = c.lng();
-                        }
-                      } else {
-                        if (s.center.latitude !== c.lat()) {
-                          s.center.latitude = c.lat();
-                        }
-                        if (s.center.longitude !== c.lng()) {
-                          s.center.longitude = c.lng();
-                        }
-                      }
-                    }
-                    return settingCenterFromDirective = false;
-                  }, (_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.centerMs : void 0 : void 0);
-                });
+                };
+                settingFromDirective = false;
                 maybeHookToEvent('idle', function() {
                   var b, ne, sw;
                   b = _gMap.getBounds();
                   ne = b.getNorthEast();
                   sw = b.getSouthWest();
+                  settingFromDirective = true;
                   return scope.$evalAsync(function(s) {
-                    var c;
-                    c = _gMap.center;
-                    if (angular.isDefined(s.center.type)) {
-                      if (s.center.coordinates[1] !== c.lat()) {
-                        s.center.coordinates[1] = c.lat();
-                      }
-                      if (s.center.coordinates[0] !== c.lng()) {
-                        s.center.coordinates[0] = c.lng();
-                      }
-                    } else {
-                      if (s.center.latitude !== c.lat()) {
-                        s.center.latitude = c.lat();
-                      }
-                      if (s.center.longitude !== c.lng()) {
-                        s.center.longitude = c.lng();
-                      }
-                    }
-                    if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0) {
+                    updateCenter();
+                    if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0 && !_.contains(disabledEvents, 'bounds')) {
                       s.bounds.northeast = {
                         latitude: ne.lat(),
                         longitude: ne.lng()
@@ -6382,9 +6332,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                         latitude: sw.lat(),
                         longitude: sw.lng()
                       };
-                      s.zoom = _gMap.zoom;
-                      return scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
                     }
+                    if (!_.contains(disabledEvents, 'zoom')) {
+                      s.zoom = _gMap.zoom;
+                      scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
+                    }
+                    return settingFromDirective = false;
                   });
                 });
               }
@@ -6436,8 +6389,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 };
               }
               scope.$watch('center', function(newValue, oldValue) {
-                var coords;
-                if (newValue === oldValue || settingCenterFromDirective) {
+                var coords, settingCenterFromScope;
+                if (newValue === oldValue || settingFromDirective) {
                   return;
                 }
                 coords = _this.getCoords(scope.center);
@@ -6458,8 +6411,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return settingCenterFromScope = false;
               }, true);
               scope.$watch('zoom', function(newValue, oldValue) {
-                var _ref1, _ref2;
-                if (_.isEqual(newValue, oldValue) || _gMap.getZoom() === scope.zoom) {
+                var settingZoomFromScope, _ref1, _ref2;
+                if (_.isEqual(newValue, oldValue) || _gMap.getZoom() === scope.zoom || settingFromDirective) {
                   return;
                 }
                 settingZoomFromScope = true;
