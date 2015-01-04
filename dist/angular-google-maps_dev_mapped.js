@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2014-12-23
+/*! angular-google-maps 2.0.12 2015-01-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -609,9 +609,10 @@ Nicholas McCready - https://twitter.com/nmccready
         managePromiseQueue: managePromiseQueue,
         promiseLock: managePromiseQueue,
         defaultChunkSize: defaultChunkSize,
-        chunkSizeFrom: function(fromSize) {
-          var ret;
-          ret = void 0;
+        chunkSizeFrom: function(fromSize, ret) {
+          if (ret == null) {
+            ret = void 0;
+          }
           if (_.isNumber(fromSize)) {
             ret = fromSize;
           }
@@ -4308,7 +4309,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (model != null) {
                   return model.destroy(false);
                 }
-              }, false).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 delete _this.scope.markerModels;
                 if (_this.gMarkerManager != null) {
                   _this.gMarkerManager.clear();
@@ -4465,7 +4466,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
-              }, false).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (doDelete) {
                   delete _this.plurals;
                 }
@@ -4745,7 +4746,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
-              }, false).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (doDelete) {
                   delete _this.plurals;
                 }
@@ -5347,7 +5348,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               return _async.each(_this.windows.values(), function(child) {
                 return child.destroy();
-              }, false).then(function() {
+              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (doDelete) {
                   delete _this.windows;
                 }
@@ -6639,7 +6640,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             idKey: '=idkey',
             doRebuildAll: '=dorebuildall',
             models: '=models',
-            chunk: '=chunk'
+            chunk: '=chunk',
+            cleanchunk: '=cleanchunk'
           });
         }
       };
