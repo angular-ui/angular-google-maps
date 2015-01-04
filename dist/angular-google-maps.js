@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/*! angular-google-maps 2.0.12 2014-12-29
-=======
-/*! angular-google-maps 2.0.12 2014-12-23
->>>>>>> master
+/*! angular-google-maps 2.0.12 2015-01-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4400,7 +4396,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           self = this;
           this.$log = $log;
           this.plurals = new PropMap();
-          this.scopePropNames = ['path', 'stroke', 'fill', 'clickable', 'draggable', 'editable', 'geodesic', 'icons', 'visible'];
+          this.scopePropNames = ['path', 'stroke', 'clickable', 'draggable', 'editable', 'geodesic', 'icons', 'visible'];
           _.each(this.scopePropNames, (function(_this) {
             return function(name) {
               return _this[name + 'Key'] = void 0;
