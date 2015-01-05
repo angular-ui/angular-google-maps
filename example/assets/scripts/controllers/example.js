@@ -377,7 +377,8 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
         },
         options: {
           boxClass: 'custom-info-window',
-          closeBoxDiv: '<div" class="pull-right" style="position: relative; cursor: pointer; margin: -20px -15px;">X</div>'
+          closeBoxDiv: '<div" class="pull-right" style="position: relative; cursor: pointer; margin: -20px -15px;">X</div>',
+          disableAutoPan: true
         },
         show: true
       },
@@ -607,7 +608,6 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
 
   $scope.staticMarker = {
     id: 0,
-    icon: 'assets/images/plane.png',
     coords: {
       latitude: 40.1451,
       longitude: -99.6680
