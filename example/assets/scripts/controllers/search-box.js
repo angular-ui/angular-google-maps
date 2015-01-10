@@ -3,7 +3,7 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
 .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
   GoogleMapApi.configure({
 //    key: 'your api key',
-    v: '3.16',
+    v: '3.17',
     libraries: 'places'
   });
 }])
