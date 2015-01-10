@@ -87,12 +87,20 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
       //position:'top-right',
       position:'top-left',
       options: {
-        bounds: {}
+        bounds: {},
+        autocomplete:true
       },
       //parentdiv:'searchBoxParent',
       events: {
+        place_changed: function (autocomplete){
+            
+            place = autocomplete.getPlace()
+            console.log(place);
+        },
         places_changed: function (searchBox) {
+          
           places = searchBox.getPlaces()
+
           if (places.length == 0) {
             return;
           }

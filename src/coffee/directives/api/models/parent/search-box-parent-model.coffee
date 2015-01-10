@@ -16,7 +16,11 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             if angular.isUndefined @scope.options.visible
                 @scope.options.visible = true
 
+            if angular.isUndefined @scope.options.autocomplete
+                @scope.options.autocomplete = false
+
             @visible = scope.options.visible
+            @autocomplete = scope.options.autocomplete
 
             controlDiv = angular.element '<div></div>'
             controlDiv.append @template
@@ -41,8 +45,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             else
                 @addAsMapControl()
 
-            @listener = google.maps.event.addListener @searchBox, 'places_changed', =>
-                @places = @searchBox.getPlaces()
+            if @autocomplete
+                @listener = google.maps.event.addListener @searchBox, 'place_changed', =>
+                    @places = @searchBox.getPlace()
+            else
+                @listener = google.maps.event.addListener @searchBox, 'places_changed', =>
+                    @places = @searchBox.getPlaces()
 
             @listeners = @setEvents @searchBox, @scope, @scope
             @$log.info @
@@ -58,7 +66,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             @parentDiv.append @input
 
         createSearchBox: () =>
-            @searchBox = new google.maps.places.SearchBox @input, @scope.options
+            if @autocomplete
+                console.log "making an autocomplete object"
+                @searchBox = new google.maps.places.Autocomplete @input, @scope.options
+            else
+                console.log "making a searchbox object"
+                @searchBox = new google.maps.places.SearchBox @input, @scope.options
 
         setBounds: (bounds) =>
             if angular.isUndefined bounds.isEmpty
