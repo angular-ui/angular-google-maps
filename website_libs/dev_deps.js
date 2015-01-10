@@ -202,4 +202,3 @@
         dismissList[j].onclick = doDismiss;
     }
 })();
-
