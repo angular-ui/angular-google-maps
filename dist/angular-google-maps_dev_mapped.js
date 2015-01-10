@@ -5339,10 +5339,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         SearchBoxParentModel.prototype.createSearchBox = function() {
           if (this.autocomplete) {
-            console.log("making an autocomplete object");
             return this.searchBox = new google.maps.places.Autocomplete(this.input, this.scope.options);
           } else {
-            console.log("making an searchbox object");
             return this.searchBox = new google.maps.places.SearchBox(this.input, this.scope.options);
           }
         };

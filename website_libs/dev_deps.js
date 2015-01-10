@@ -1,5 +1,5 @@
 /*!
- * Bootstrap without jQuery v0.4.1 for Bootstrap 3
+ * Bootstrap without jQuery v0.5.0 for Bootstrap 3
  * By Daniel Davis under MIT License
  * https://github.com/tagawa/bootstrap-without-jquery
  */
@@ -32,6 +32,16 @@
     }
     var transitionend = transitionEndEventName();
     
+    // Get an event's target element and the element specified by the "data-target" attribute
+    function getTargets(event) {
+        var targets = {};
+        event = event || window.event;
+        targets.evTarget = event.currentTarget || event.srcElement;
+        var dataTarget = targets.evTarget.getAttribute('data-target');
+        targets.dataTarget = (dataTarget) ? document.querySelector(dataTarget) : false;
+        return targets;
+    }
+    
     // Get the potential max height of an element
     function getMaxHeight(element) {
         // Source: http://n12v.com/css-transition-to-from-auto/
@@ -42,6 +52,19 @@
         element.offsetHeight; // force repaint
         return maxHeight;
     }
+    
+    // Fire a specified event
+    // Source: http://youmightnotneedjquery.com/
+    function fireTrigger(element, eventType) {
+        if (document.createEvent) {
+            var event = document.createEvent('HTMLEvents');
+            event.initEvent(eventType, true, false);
+            element.dispatchEvent(event);
+        } else {
+            element.fireEvent('on' + eventType);
+        }
+    }
+
     
     /*
      * Collapse action
@@ -102,24 +125,81 @@
 
     // Start the collapse action on the chosen element
     function doCollapse(event) {
-        // Get target element from data-target attribute
-        event = event || window.event;
-        var evTarget = event.currentTarget || event.srcElement;
-        var dataTarget = evTarget.getAttribute('data-target');
-        var target = document.querySelector(dataTarget);
+        event.preventDefault();
+        var targets = getTargets(event);
+        var dataTarget = targets.dataTarget;
         
         // Add the "in" class name when elements are unhidden
-        if (target.classList.contains('in')) {
-            hide(target, evTarget);
+        if (dataTarget.classList.contains('in')) {
+            hide(dataTarget, targets.evTarget);
         } else {
-            show(target, evTarget);
+            show(dataTarget, targets.evTarget);
         }
         return false;
     }
     
     // Get all elements that are collapse triggers and add click event listeners
-    var collapsibles = document.querySelectorAll('[data-toggle=collapse]');
-    for (var i = 0, leni = collapsibles.length; i < leni; i++) {
-        collapsibles[i].onclick = doCollapse;
+    var collapsibleList = document.querySelectorAll('[data-toggle=collapse]');
+    for (var i = 0, leni = collapsibleList.length; i < leni; i++) {
+        collapsibleList[i].onclick = doCollapse;
+    }
+    
+    
+    /*
+     * Alert dismiss action
+     * 1. Get list of all elements that are alert dismiss buttons
+     * 2. Add click event listener to these elements
+     * 3. When clicked, find the target or parent element with class name "alert"
+     * 4. Remove that element from the DOM
+     */
+     
+    // Start the collapse action on the chosen element
+    function doDismiss(event) {
+        event.preventDefault();
+        // Get target element from data-target attribute
+        var targets = getTargets(event);
+        var target = targets.dataTarget;
+        
+        if (!target) {
+            // If data-target not specified, get parent or grandparent node with class="alert"
+            var parent = targets.evTarget.parentNode;
+            if (parent.classList.contains('alert')) {
+                target = parent;
+            } else if (parent.parentNode.classList.contains('alert')) {
+                target = parent.parentNode;
+            }
+        }
+        
+        fireTrigger(target, 'close.bs.alert');
+        target.classList.remove('in');
+        
+        function removeElement() {
+            // Remove alert from DOM
+            try {
+                target.parentNode.removeChild(target);
+                fireTrigger(target, 'closed.bs.alert');
+            } catch(e) {
+                window.console.error('Unable to remove alert');
+            }
+        }
+        
+        // Call the complete() function after the transition has finished
+        if (transitionend && target.classList.contains('fade')) {
+            target.addEventListener(transitionend, function() {
+                removeElement();
+            }, false);
+        } else {
+            // For browsers that don't support transitions (e.g. IE9 and lower);
+            removeElement();
+        }
+
+        return false;
+    }
+    
+     // Get all alert dismiss buttons and add click event listeners
+    var dismissList = document.querySelectorAll('[data-dismiss=alert]');
+    for (var j = 0, lenj = dismissList.length; j < lenj; j++) {
+        dismissList[j].onclick = doDismiss;
     }
 })();
+

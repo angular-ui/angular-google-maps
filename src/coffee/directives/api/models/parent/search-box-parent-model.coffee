@@ -67,10 +67,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
         createSearchBox: () =>
             if @autocomplete
-                console.log "making an autocomplete object"
                 @searchBox = new google.maps.places.Autocomplete @input, @scope.options
             else
-                console.log "making a searchbox object"
                 @searchBox = new google.maps.places.SearchBox @input, @scope.options
 
         setBounds: (bounds) =>
