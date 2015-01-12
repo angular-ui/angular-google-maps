@@ -24,9 +24,6 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
     , function ($scope, $timeout, $log, $http, GoogleMapApi) {
   $log.doLog = true
 
-
-
-
   GoogleMapApi.then(function(maps) {
     maps.visualRefresh = true;
     $scope.defaultBounds = new google.maps.LatLngBounds(
@@ -84,29 +81,25 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
     },
     searchbox: {
       template:'searchbox.tpl.html',
-      //position:'top-right',
-      position:'top-left',
       options: {
-        bounds: {}
+        autocomplete:true,
+        types: ['(cities)'],
+        componentRestrictions: {country: 'fr'}
       },
-      //parentdiv:'searchBoxParent',
       events: {
-        places_changed: function (searchBox) {
-          
-          places = searchBox.getPlaces()
+        place_changed: function (autocomplete){
+            
+          place = autocomplete.getPlace()
 
-          if (places.length == 0) {
-            return;
-          }
-          // For each place, get the icon, place name, and location.
-          newMarkers = [];
-          var bounds = new google.maps.LatLngBounds();
-          for (var i = 0, place; place = places[i]; i++) {
-            // Create a marker for each place.
+          if (place.address_components) {
+            
+            newMarkers = [];
+            var bounds = new google.maps.LatLngBounds();
+
             var marker = {
-              id:i,
+              id:place.place_id,
               place_id: place.place_id,
-              name: place.name,
+              name: place.address_components[0].long_name,
               latitude: place.geometry.location.lat(),
               longitude: place.geometry.location.lng(),
               options: {
@@ -115,38 +108,47 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
               templateurl:'window.tpl.html',
               templateparameter: place
             };
+            
             newMarkers.push(marker);
 
             bounds.extend(place.geometry.location);
-          }
 
-          $scope.map.bounds = {
-            northeast: {
-              latitude: bounds.getNorthEast().lat(),
-              longitude: bounds.getNorthEast().lng()
-            },
-            southwest: {
-              latitude: bounds.getSouthWest().lat(),
-              longitude: bounds.getSouthWest().lng()
+            $scope.map.bounds = {
+              northeast: {
+                latitude: bounds.getNorthEast().lat(),
+                longitude: bounds.getNorthEast().lng()
+              },
+              southwest: {
+                latitude: bounds.getSouthWest().lat(),
+                longitude: bounds.getSouthWest().lng()
+              }
             }
+
+            _.each(newMarkers, function(marker) {
+              marker.closeClick = function() {
+                $scope.selected.options.visible = false;
+                marker.options.visble = false;
+                return $scope.$apply();
+              };
+              marker.onClicked = function() {
+                $scope.selected.options.visible = false;
+                $scope.selected = marker;
+                $scope.selected.options.visible = true;
+              };
+            });
+
+            $scope.map.markers = newMarkers;
+          } else {
+            console.log("do something else with the search string: " + place.name);
           }
-
-          _.each(newMarkers, function(marker) {
-            marker.closeClick = function() {
-              $scope.selected.options.visible = false;
-              marker.options.visble = false;
-              return $scope.$apply();
-            };
-            marker.onClicked = function() {
-              $scope.selected.options.visible = false;
-              $scope.selected = marker;
-              $scope.selected.options.visible = true;
-            };
-          });
-
-          $scope.map.markers = newMarkers;
         }
       }
+
+
     }
   });
+
+
+
+
 }]);
