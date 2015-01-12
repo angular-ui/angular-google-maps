@@ -231,12 +231,16 @@ angular.module('uiGmapgoogle-maps.directives.api')
               settingCenterFromScope = false
             , true
 
+            zoomPromise = null
             scope.$watch 'zoom', (newValue, oldValue) =>
-              return  if _.isEqual(newValue,oldValue) or _gMap.getZoom() == scope.zoom or settingFromDirective
+              return unless newValue?
+              return  if _.isEqual(newValue,oldValue) or _gMap?.getZoom() == scope?.zoom or settingFromDirective
               #make this time out longer than zoom_changes because zoom_changed should be done first
               #being done first should make scopes equal
               settingZoomFromScope = true
-              $timeout  ->
+
+              $timeout.cancel(zoomPromise) if zoomPromise?
+              zoomPromise = $timeout  ->
                 _gMap.setZoom newValue
                 settingZoomFromScope = false
               , scope.eventOpts?.debounce?.zoomMs + 20, false # use $timeout as a simple wrapper for setTimeout without calling $apply
