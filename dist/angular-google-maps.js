@@ -6270,7 +6270,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
-              var customListeners, disabledEvents, dragging, el, eventName, getEventHandler, mapOptions, maybeHookToEvent, opts, resolveSpawned, settingFromDirective, spawned, type, updateCenter, _gMap, _ref;
+              var customListeners, disabledEvents, dragging, el, eventName, getEventHandler, mapOptions, maybeHookToEvent, opts, resolveSpawned, settingFromDirective, spawned, type, updateCenter, zoomPromise, _gMap, _ref;
               DEFAULTS = {
                 mapTypeId: maps.MapTypeId.ROADMAP
               };
@@ -6476,13 +6476,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
                 return settingCenterFromScope = false;
               }, true);
+              zoomPromise = null;
               scope.$watch('zoom', function(newValue, oldValue) {
                 var settingZoomFromScope, _ref1, _ref2;
-                if (_.isEqual(newValue, oldValue) || _gMap.getZoom() === scope.zoom || settingFromDirective) {
+                if (newValue == null) {
+                  return;
+                }
+                if (_.isEqual(newValue, oldValue) || (_gMap != null ? _gMap.getZoom() : void 0) === (scope != null ? scope.zoom : void 0) || settingFromDirective) {
                   return;
                 }
                 settingZoomFromScope = true;
-                return $timeout(function() {
+                if (zoomPromise != null) {
+                  $timeout.cancel(zoomPromise);
+                }
+                return zoomPromise = $timeout(function() {
                   _gMap.setZoom(newValue);
                   return settingZoomFromScope = false;
                 }, ((_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0) + 20, false);
