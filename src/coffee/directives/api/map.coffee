@@ -243,7 +243,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
             scope.$watch 'bounds', (newValue, oldValue) ->
               return  if newValue is oldValue
-              if !newValue.northeast.latitude? or !newValue.northeast.longitude? or !newValue.southwest.latitude? or !newValue.southwest.longitude?
+              if !newValue?.northeast?.latitude? or !newValue?.northeast?.longitude? or !newValue?.southwest?.latitude? or !newValue?.southwest?.longitude?
                 $log.error "Invalid map bounds for new value: #{JSON.stringify newValue}"
                 return
               ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude)
