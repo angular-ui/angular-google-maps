@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2015-01-05
+/*! angular-google-maps 2.1.0-SNAPSHOT 2015-01-12
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -5189,7 +5189,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (angular.isUndefined(this.scope.options.visible)) {
             this.scope.options.visible = true;
           }
+          if (angular.isUndefined(this.scope.options.autocomplete)) {
+            this.scope.options.autocomplete = false;
+          }
           this.visible = scope.options.visible;
+          this.autocomplete = scope.options.autocomplete;
           controlDiv = angular.element('<div></div>');
           controlDiv.append(this.template);
           this.input = controlDiv.find('input')[0];
@@ -5217,11 +5221,19 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           } else {
             this.addAsMapControl();
           }
-          this.listener = google.maps.event.addListener(this.searchBox, 'places_changed', (function(_this) {
-            return function() {
-              return _this.places = _this.searchBox.getPlaces();
-            };
-          })(this));
+          if (this.autocomplete) {
+            this.listener = google.maps.event.addListener(this.searchBox, 'place_changed', (function(_this) {
+              return function() {
+                return _this.places = _this.searchBox.getPlace();
+              };
+            })(this));
+          } else {
+            this.listener = google.maps.event.addListener(this.searchBox, 'places_changed', (function(_this) {
+              return function() {
+                return _this.places = _this.searchBox.getPlaces();
+              };
+            })(this));
+          }
           this.listeners = this.setEvents(this.searchBox, this.scope, this.scope);
           this.$log.info(this);
           return this.scope.$on('$destroy', (function(_this) {
@@ -5241,7 +5253,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         SearchBoxParentModel.prototype.createSearchBox = function() {
-          return this.searchBox = new google.maps.places.SearchBox(this.input, this.scope.options);
+          if (this.autocomplete) {
+            return this.searchBox = new google.maps.places.Autocomplete(this.input, this.scope.options);
+          } else {
+            return this.searchBox = new google.maps.places.SearchBox(this.input, this.scope.options);
+          }
         };
 
         SearchBoxParentModel.prototype.setBounds = function(bounds) {
@@ -6472,11 +6488,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }, ((_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0) + 20, false);
               });
               scope.$watch('bounds', function(newValue, oldValue) {
-                var bounds, ne, sw;
+                var bounds, ne, sw, _ref1, _ref2, _ref3, _ref4;
                 if (newValue === oldValue) {
                   return;
                 }
-                if ((newValue.northeast.latitude == null) || (newValue.northeast.longitude == null) || (newValue.southwest.latitude == null) || (newValue.southwest.longitude == null)) {
+                if (((newValue != null ? (_ref1 = newValue.northeast) != null ? _ref1.latitude : void 0 : void 0) == null) || ((newValue != null ? (_ref2 = newValue.northeast) != null ? _ref2.longitude : void 0 : void 0) == null) || ((newValue != null ? (_ref3 = newValue.southwest) != null ? _ref3.latitude : void 0 : void 0) == null) || ((newValue != null ? (_ref4 = newValue.southwest) != null ? _ref4.longitude : void 0 : void 0) == null)) {
                   $log.error("Invalid map bounds for new value: " + (JSON.stringify(newValue)));
                   return;
                 }
