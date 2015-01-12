@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2015-01-10
+/*! angular-google-maps 2.0.12 2015-01-12
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -6438,11 +6438,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }, ((_ref1 = scope.eventOpts) != null ? (_ref2 = _ref1.debounce) != null ? _ref2.zoomMs : void 0 : void 0) + 20, false);
               });
               scope.$watch('bounds', function(newValue, oldValue) {
-                var bounds, ne, sw;
+                var bounds, ne, sw, _ref1, _ref2, _ref3, _ref4;
                 if (newValue === oldValue) {
                   return;
                 }
-                if ((newValue.northeast.latitude == null) || (newValue.northeast.longitude == null) || (newValue.southwest.latitude == null) || (newValue.southwest.longitude == null)) {
+                if (((newValue != null ? (_ref1 = newValue.northeast) != null ? _ref1.latitude : void 0 : void 0) == null) || ((newValue != null ? (_ref2 = newValue.northeast) != null ? _ref2.longitude : void 0 : void 0) == null) || ((newValue != null ? (_ref3 = newValue.southwest) != null ? _ref3.latitude : void 0 : void 0) == null) || ((newValue != null ? (_ref4 = newValue.southwest) != null ? _ref4.longitude : void 0 : void 0) == null)) {
                   $log.error("Invalid map bounds for new value: " + (JSON.stringify(newValue)));
                   return;
                 }
