@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2015-01-12
+/*! angular-google-maps 2.1.0-SNAPSHOT 2015-01-15
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -2595,8 +2595,6 @@ Nicholas McCready - https://twitter.com/nmccready
 
           BasePolyChildModel.include(GmapUtil);
 
-          BasePolyChildModel.include(EventsHelper);
-
           function BasePolyChildModel(scope, attrs, map, defaults, model) {
             var create;
             this.scope = scope;
@@ -2643,10 +2641,12 @@ Nicholas McCready - https://twitter.com/nmccready
                       return _this.extendMapBounds(map, pathPoints);
                     }
                   });
-                  _this.listeners = _this.model ? _this.setEvents(_this.shape, _this.scope, _this.model) : _this.setEvents(_this.shape, _this.scope, _this.scope);
-                  return _this.internalListeners = _this.model ? _this.setEvents(_this.shape, {
+                  if (angular.isDefined(scope.events) && angular.isObject(scope.events)) {
+                    _this.listeners = _this.model ? EventsHelper.setEvents(_this.shape, _this.scope, _this.model) : EventsHelper.setEvents(_this.shape, _this.scope, _this.scope);
+                  }
+                  return _this.internalListeners = _this.model ? EventsHelper.setEvents(_this.shape, {
                     events: _this.internalEvents
-                  }, _this.model) : _this.setEvents(_this.shape, {
+                  }, _this.model) : EventsHelper.setEvents(_this.shape, {
                     events: _this.internalEvents
                   }, _this.scope);
                 }
@@ -2777,15 +2777,12 @@ Nicholas McCready - https://twitter.com/nmccready
                 };
               })(this));
             }
-            if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
-              this.listeners = EventsHelper.setEvents(this.shape, scope, scope);
-            }
           }
 
           BasePolyChildModel.prototype.clean = function() {
             var _ref;
-            this.removeEvents(this.listeners);
-            this.removeEvents(this.internalListeners);
+            EventsHelper.removeEvents(this.listeners);
+            EventsHelper.removeEvents(this.internalListeners);
             if ((_ref = this.shape) != null) {
               _ref.setMap(null);
             }
