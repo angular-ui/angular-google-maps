@@ -5,7 +5,6 @@ angular.module('uiGmapgoogle-maps.directives.api')
     (Builder, gFactory) ->
       class BasePolyChildModel extends Builder
         @include GmapUtil
-        @include EventsHelper
         constructor: (@scope, @attrs, @map, @defaults, @model) ->
           #where @model is a reference to model in the controller scope
           #clonedModel is a copy for comparison
@@ -19,7 +18,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
                 @isDragging = false
             dragstart: =>
               @isDragging = true
-  
+
           create = =>
             return if @isDragging #avoid unnecessary creation (be nice if we knew we were editing too)
             pathPoints = @convertPathPoints @scope.path
@@ -30,11 +29,12 @@ angular.module('uiGmapgoogle-maps.directives.api')
               @extendMapBounds map, pathPoints if @scope.fit
               arraySync @shape.getPath(), @scope, 'path', (pathPoints) =>
                 @extendMapBounds map, pathPoints if @scope.fit
-              @listeners = if @model then @setEvents @shape, @scope, @model else @setEvents @shape, @scope, @scope
-              @internalListeners = if @model then @setEvents @shape, events: @internalEvents, @model else @setEvents @shape, events: @internalEvents, @scope
-  
+              if angular.isDefined(scope.events) and angular.isObject scope.events
+                @listeners = if @model then EventsHelper.setEvents @shape, @scope, @model else EventsHelper.setEvents @shape, @scope, @scope
+              @internalListeners = if @model then EventsHelper.setEvents @shape, events: @internalEvents, @model else EventsHelper.setEvents @shape, events: @internalEvents, @scope
+
           create() #handle stuff without being dependent on digests (ie using watches for init)
-  
+
           scope.$watch 'path', (newValue, oldValue) =>
             if not _.isEqual(newValue, oldValue) or not @shape
               create()
@@ -66,7 +66,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
                 @shape?.setOptions @buildOpts(@shape.getPath())
             , true
           #End Booleans
-  
+
           if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.weight)
             scope.$watch 'stroke.weight', (newValue, oldValue) =>
               @shape?.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
@@ -87,25 +87,22 @@ angular.module('uiGmapgoogle-maps.directives.api')
           scope.$on '$destroy', =>
             @clean()
             @scope = null
-  
+
           if angular.isDefined(scope.fill) and angular.isDefined scope.fill.color
             scope.$watch 'fill.color', (newValue, oldValue) =>
               @shape.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
-  
+
           if angular.isDefined(scope.fill) and angular.isDefined scope.fill.opacity
             scope.$watch 'fill.opacity', (newValue, oldValue) =>
               @shape.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
-  
+
           if angular.isDefined scope.zIndex
             scope.$watch 'zIndex', (newValue, oldValue) =>
               @shape.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
-  
-          if angular.isDefined(scope.events) and scope.events isnt null and angular.isObject scope.events
-            @listeners = EventsHelper.setEvents @shape, scope, scope
-  
+
         clean: =>
-          @removeEvents @listeners
-          @removeEvents @internalListeners
+          EventsHelper.removeEvents @listeners
+          EventsHelper.removeEvents @internalListeners
           @shape?.setMap null
           @shape = null
 ]
