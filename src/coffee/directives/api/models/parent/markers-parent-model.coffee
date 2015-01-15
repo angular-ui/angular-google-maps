@@ -40,7 +40,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             @watch 'idKey', scope
 
             @gMarkerManager = undefined
-            @createMarkersFromScratch(scope)
+            @createAllNew(scope)
 
 
           onWatch: (propNameToWatch, scope, newValue, oldValue) =>
@@ -70,7 +70,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             else
               @pieceMeal @scope, false
 
-          createMarkersFromScratch: (scope) =>
+          createAllNew: (scope) =>
             if @gMarkerManager?
               @gMarkerManager.clear()
               delete @gMarkerManager
@@ -120,9 +120,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               return
             if @scope.plurals?.length
               @onDestroy(scope).then =>
-                @createMarkersFromScratch(scope)
+                @createAllNew(scope)
             else
-              @createMarkersFromScratch(scope)
+              @createAllNew(scope)
 
           pieceMeal: (scope) =>
             return if scope.$$destroyed

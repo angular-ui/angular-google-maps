@@ -4081,7 +4081,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.updateChild = __bind(this.updateChild, this);
           this.pieceMeal = __bind(this.pieceMeal, this);
           this.rebuildAll = __bind(this.rebuildAll, this);
-          this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
+          this.createAllNew = __bind(this.createAllNew, this);
           this.createChildScopes = __bind(this.createChildScopes, this);
           this.validateScope = __bind(this.validateScope, this);
           this.onWatch = __bind(this.onWatch, this);
@@ -4122,7 +4122,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watch('fit', scope);
           this.watch('idKey', scope);
           this.gMarkerManager = void 0;
-          this.createMarkersFromScratch(scope);
+          this.createAllNew(scope);
         }
 
         MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
@@ -4162,7 +4162,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
         };
 
-        MarkersParentModel.prototype.createMarkersFromScratch = function(scope) {
+        MarkersParentModel.prototype.createAllNew = function(scope) {
           var maybeCanceled;
           if (this.gMarkerManager != null) {
             this.gMarkerManager.clear();
@@ -4230,11 +4230,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if ((_ref = this.scope.plurals) != null ? _ref.length : void 0) {
             return this.onDestroy(scope).then((function(_this) {
               return function() {
-                return _this.createMarkersFromScratch(scope);
+                return _this.createAllNew(scope);
               };
             })(this));
           } else {
-            return this.createMarkersFromScratch(scope);
+            return this.createAllNew(scope);
           }
         };
 
