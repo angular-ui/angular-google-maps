@@ -89,14 +89,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @$log.error('No models to create Polygons from! I Need direct models!')
           return
 
-        if @gMap?
-          #at the very least we need a Map, the marker is optional as we can create Windows without markers
-          if @scope.models?
-            @watchIdKey @scope
-            if isCreatingFromScratch
-              @createAllNew @scope, false
-            else
-              @pieceMeal @scope, false
+        return if not @gMap? or not @scope.models?
+        @watchIdKey @scope
+        if isCreatingFromScratch
+          @createAllNew @scope, false
+        else
+          @pieceMeal @scope, false
 
       watchIdKey: (scope)=>
         @setIdKey scope
