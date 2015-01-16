@@ -3161,12 +3161,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               var coords, newValue, oldValue;
               oldValue = _this.gObject.getIcon();
-              newValue = _this.getProp('icon', _this.model);
+              newValue = _this.getProp('icon', scope, _this.model);
               if (oldValue === newValue) {
                 return;
               }
               _this.gObject.setIcon(newValue);
-              coords = _this.getProp('coords', _this.model);
+              coords = _this.getProp('coords', scope, _this.model);
               _this.gObject.setPosition(_this.getCoords(coords));
               return _this.gObject.setVisible(_this.validateCoords(coords));
             };
