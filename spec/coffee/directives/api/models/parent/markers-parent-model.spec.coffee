@@ -67,7 +67,10 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
     expect(@testCtor).toBeDefined()
 
   it 'can be created', ->
-    expect(@subject?).toBeDefined()
+    expect(@subject).toBeDefined()
+
+  it 'has plurals', ->
+    expect(@subject.plurals).toBeDefined()
 
   describe 'clusterEvents', ->
     describe 'basic event handling', ->
