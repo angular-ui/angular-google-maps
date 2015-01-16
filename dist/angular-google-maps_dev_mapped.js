@@ -4088,7 +4088,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           var self;
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, map);
           self = this;
-          this.scope.plurals = new PropMap();
+          this.plurals = new PropMap();
+          this.scope.plurals = this.plurals;
           this.scope.pluralsUpdate = {
             updateCtr: 0
           };
