@@ -13,7 +13,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
           constructor: (scope, element, attrs, map) ->
             super(scope, element, attrs, map)
             self = @
-            @scope.plurals = new PropMap()
+
+            @plurals = new PropMap() #for api consistency
+            @scope.plurals = @plurals #for transclusion
             @scope.pluralsUpdate =
               updateCtr: 0
 
