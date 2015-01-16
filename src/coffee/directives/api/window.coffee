@@ -47,9 +47,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
         if scope.control?
           scope.control.getGWindows = =>
             @childWindows.map (child)=>
-              child.gWin
+              child.gObject
           scope.control.getChildWindows = =>
             @childWindows
+          scope.control.getPlurals = scope.control.getChildWindows
           scope.control.showWindow = =>
             @childWindows.map (child) =>
               child.showWindow()

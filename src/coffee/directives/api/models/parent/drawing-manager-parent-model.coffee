@@ -5,29 +5,29 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         class DrawingManagerParentModel extends BaseObject
           @include EventsHelper
           constructor: (@scope, element, @attrs, @map) ->
-            drawingManager = new google.maps.drawing.DrawingManager @scope.options
-            drawingManager.setMap @map
+            gObject = new google.maps.drawing.DrawingManager @scope.options
+            gObject.setMap @map
 
             listeners = undefined
 
             if @scope.control?
               @scope.control.getDrawingManager = ->
-                drawingManager
+                gObject
 
             if !@scope.static and @scope.options
               @scope.$watch 'options', (newValue) ->
-                drawingManager?.setOptions newValue
+                gObject?.setOptions newValue
               , true
 
             if @scope.events?
-              listeners = @setEvents drawingManager, @scope, @scope
+              listeners = @setEvents gObject, @scope, @scope
               scope.$watch 'events', (newValue, oldValue) =>
                 unless _.isEqual newValue, oldValue
                   @removeEvents listeners if listeners?
-                  listeners = @setEvents drawingManager, @scope, @scope
+                  listeners = @setEvents gObject, @scope, @scope
 
             scope.$on '$destroy', =>
               @removeEvents listeners if listeners?
-              drawingManager.setMap null
-              drawingManager = null
+              gObject.setMap null
+              gObject = null
     ]

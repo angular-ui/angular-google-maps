@@ -9,34 +9,34 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       @doShow = true
 
       @doShow = @scope.show if angular.isDefined(@attrs.show)
-      @layer.setMap @gMap if @doShow and @gMap?
+      @gObject.setMap @gMap if @doShow and @gMap?
       @scope.$watch 'show', (newValue, oldValue) =>
         if newValue isnt oldValue
           @doShow = newValue
           if newValue
-            @layer.setMap @gMap
+            @gObject.setMap @gMap
           else
-            @layer.setMap null
+            @gObject.setMap null
       , true
       @scope.$watch 'options', (newValue, oldValue) =>
         if newValue isnt oldValue
-          @layer.setMap null
-          @layer = null
+          @gObject.setMap null
+          @gObject = null
           @createGoogleLayer()
       , true
 
-      @scope.$on '$destroy', => @layer.setMap null
+      @scope.$on '$destroy', => @gObject.setMap null
 
     createGoogleLayer: =>
       unless @attrs.options?
-        @layer = if @attrs.namespace == undefined then new google.maps[@attrs.type]()
+        @gObject = if @attrs.namespace == undefined then new google.maps[@attrs.type]()
         else new google.maps[@attrs.namespace][@attrs.type]()
       else
-        @layer = if @attrs.namespace == undefined then new google.maps[@attrs.type](@scope.options)
+        @gObject = if @attrs.namespace == undefined then new google.maps[@attrs.type](@scope.options)
         else new google.maps[@attrs.namespace][@attrs.type](@scope.options)
 
-      if @layer? and @onLayerCreated?
-        @onLayerCreated(@scope, @layer)? @layer
+      if @gObject? and @onLayerCreated?
+        @onLayerCreated(@scope, @gObject)? @gObject
 
   LayerParentModel
 ]
