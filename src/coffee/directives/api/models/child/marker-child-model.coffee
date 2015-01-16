@@ -145,10 +145,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         return if @isNotValid(scope) or !@gObject?
         @renderGMarker doDraw, =>
           oldValue = @gObject.getIcon()
-          newValue = @getProp 'icon', @model
+          newValue = @getProp 'icon',scope, @model
           return if  oldValue == newValue
           @gObject.setIcon newValue
-          coords = @getProp 'coords', @model
+          coords = @getProp 'coords', scope, @model
           @gObject.setPosition @getCoords coords
           @gObject.setVisible @validateCoords coords
 
