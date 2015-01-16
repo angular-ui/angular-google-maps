@@ -36,7 +36,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
         if scope.control?
           scope.control.getGWindows = =>
             parentModel.plurals.map (child)->
-              child.gWin
+              child.gObject
           #deprecated use getPlurals
           scope.control.getChildWindows = =>
             parentModel.plurals

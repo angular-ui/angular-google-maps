@@ -73,4 +73,4 @@ describe "directives.api.Window", ->
       @$rootScope.$apply() #force $q to resolve
       expect(@mocks.scope.control.getChildWindows().length).toBe(1)
       expect(@mocks.scope.control.getChildWindows()[0]).toEqual(@childWindow)
-      expect(@mocks.scope.control.getGWindows()[0]).toEqual(@childWindow.gWin)
+      expect(@mocks.scope.control.getGWindows()[0]).toEqual(@childWindow.gObject)
