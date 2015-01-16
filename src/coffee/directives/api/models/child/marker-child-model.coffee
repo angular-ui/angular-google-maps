@@ -11,13 +11,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       @include MarkerOptions
 
       destroy = (child) ->
-        if child?.gMarker?
+        if child?.gObject?
           child.removeEvents child.externalListeners
           child.removeEvents child.internalListeners
-          if child?.gMarker
-            child.gMarkerManager.remove child.gMarker if child.removeFromManager
-            child.gMarker.setMap null
-            child.gMarker = null
+          if child?.gObject
+            child.gMarkerManager.remove child.gObject if child.removeFromManager
+            child.gObject.setMap null
+            child.gObject = null
 
       constructor: (scope, @model, @keys, @gMap, @defaults, @doClick, @gMarkerManager, @doDrawSelf = true,
         @trackModel = true, @needRedraw = false) ->
@@ -35,7 +35,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         super(scope)
 
         @scope.getGMarker = =>
-          @gMarker
+          @gObject
 
         @firstTime = true
         if @trackModel
@@ -92,9 +92,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             return
 
           validCb() if validCb?
-          @gMarkerManager.add @gMarker if doDraw and @gMarker
+          @gMarkerManager.add @gObject if doDraw and @gObject
         else
-          @gMarkerManager.remove @gMarker if doDraw and @gMarker
+          @gMarkerManager.remove @gObject if doDraw and @gObject
 
       setMyScope: (thingThatChanged, model, oldModel = undefined, isInit = false, doDraw = true) =>
         if not model?
@@ -102,7 +102,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         else
           @model = model
 
-        if !@gMarker
+        if !@gObject
           @setOptions @scope, doDraw
           justCreated = true
         switch thingThatChanged
@@ -126,31 +126,31 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @gMarkerManager.draw() if @doDrawSelf and doDraw
 
       isNotValid: (scope, doCheckGmarker = true) =>
-        hasNoGmarker = unless doCheckGmarker then false else @gMarker == undefined
+        hasNoGmarker = unless doCheckGmarker then false else @gObject == undefined
         hasIdenticalScopes = unless @trackModel then scope.$id != @scope.$id else false
         hasIdenticalScopes or hasNoGmarker
 
       setCoords: (scope, doDraw = true) =>
-        return if @isNotValid(scope) or !@gMarker?
+        return if @isNotValid(scope) or !@gObject?
         @renderGMarker doDraw, =>
           newModelVal = @getProp 'coords', scope, @model
           newGValue = @getCoords newModelVal
-          oldGValue = @gMarker.getPosition()
+          oldGValue = @gObject.getPosition()
           if oldGValue? and newGValue?
             return if newGValue.lng() == oldGValue.lng() and newGValue.lat() == oldGValue.lat()
-          @gMarker.setPosition newGValue
-          @gMarker.setVisible @validateCoords newModelVal
+          @gObject.setPosition newGValue
+          @gObject.setVisible @validateCoords newModelVal
 
       setIcon: (scope, doDraw = true) =>
-        return if @isNotValid(scope) or !@gMarker?
+        return if @isNotValid(scope) or !@gObject?
         @renderGMarker doDraw, =>
-          oldValue = @gMarker.getIcon()
-          newValue = @getProp 'icon', scope, @model
+          oldValue = @gObject.getIcon()
+          newValue = @getProp 'icon', @model
           return if  oldValue == newValue
-          @gMarker.setIcon newValue
-          coords = @getProp 'coords', scope, @model
-          @gMarker.setPosition @getCoords coords
-          @gMarker.setVisible @validateCoords coords
+          @gObject.setIcon newValue
+          coords = @getProp 'coords', @model
+          @gObject.setPosition @getCoords coords
+          @gObject.setVisible @validateCoords coords
 
       setOptions: (scope, doDraw = true) =>
         return if @isNotValid scope, false
@@ -161,32 +161,32 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @opts = @createOptions coords, icon, _options
 
           #update existing options if it is the same type
-          if @gMarker?
-            @gMarker.setOptions @opts
+          if @gObject?
+            @gObject.setOptions @opts
 
-          unless @gMarker
+          unless @gObject
             if @isLabel @opts
-              @gMarker = new MarkerWithLabel @setLabelOptions @opts
+              @gObject = new MarkerWithLabel @setLabelOptions @opts
             else
-              @gMarker = new google.maps.Marker @opts
-            _.extend @gMarker, model: @model
+              @gObject = new google.maps.Marker @opts
+            _.extend @gObject, model: @model
 
           #hook external event handlers for events
           @removeEvents @externalListeners if @externalListeners
           @removeEvents @internalListeners if @internalListeners
-          @externalListeners = @setEvents @gMarker, @scope, @model, ['dragend']
+          @externalListeners = @setEvents @gObject, @scope, @model, ['dragend']
           #must pass fake $evalAsync see events-helper
-          @internalListeners = @setEvents @gMarker, {events: @internalEvents(), $evalAsync: () ->}, @model
+          @internalListeners = @setEvents @gObject, {events: @internalEvents(), $evalAsync: () ->}, @model
 
-          @gMarker.key = @id if @id?
+          @gObject.key = @id if @id?
 
-        if @gMarker and (@gMarker.getMap() or @gMarkerManager.type != MarkerManager.type)
-          @deferred.resolve @gMarker
+        if @gObject and (@gObject.getMap() or @gMarkerManager.type != MarkerManager.type)
+          @deferred.resolve @gObject
         else
-          return @deferred.reject 'gMarker is null' unless @gMarker
-          unless @gMarker?.getMap() and @gMarkerManager.type == MarkerManager.type
-            $log.debug 'gMarker has no map yet'
-            @deferred.resolve @gMarker
+          return @deferred.reject 'gObject is null' unless @gObject
+          unless @gObject?.getMap() and @gMarkerManager.type == MarkerManager.type
+            $log.debug 'gObject has no map yet'
+            @deferred.resolve @gObject
 
         if @model[@fitKey]
           @gMarkerManager.fit()
@@ -198,7 +198,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       internalEvents: =>
         dragend: (marker, eventName, model, mousearg) =>
           modelToSet = if @trackModel then @scope.model else @model
-          newCoords = @setCoordsFromEvent @modelOrKey(modelToSet, @coordsKey), @gMarker.getPosition()
+          newCoords = @setCoordsFromEvent @modelOrKey(modelToSet, @coordsKey), @gObject.getPosition()
           modelToSet = @setVal model, @coordsKey, newCoords
           #since we ignored dragend for scope above, if @scope.events has it then we should fire it
           events = @scope.events

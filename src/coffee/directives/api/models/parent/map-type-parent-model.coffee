@@ -14,27 +14,31 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         @doShow = @scope.show if angular.isDefined(@attrs.show)
         @showOverlay() if @doShow and @gMap?
 
-        @scope.$watch('show', (newValue, oldValue) =>
+        @scope.$watch 'show', (newValue, oldValue) =>
           if newValue isnt oldValue
             @doShow = newValue
             if newValue
               @showOverlay()
             else
               @hideOverlay()
-        , true)
-        @scope.$watch('options', (newValue, oldValue) =>
+        , true
+
+        @scope.$watch 'options', (newValue, oldValue) =>
           unless _.isEqual newValue, oldValue
             @refreshMapType()
-        , true)
-        @scope.$watch('refresh', (newValue, oldValue) =>
-          unless _.isEqual newValue, oldValue
-            @refreshMapType()
-        , true) if angular.isDefined @attrs.refresh
+        , true
+
+        if angular.isDefined @attrs.refresh
+          @scope.$watch('refresh', (newValue, oldValue) =>
+            unless _.isEqual newValue, oldValue
+              @refreshMapType()
+          , true)
+
         @scope.$on '$destroy', =>
           @hideOverlay()
           @mapType = null
 
-      createMapType: ()=>
+      createMapType: =>
         if @scope.options.getTile?
           @mapType = @scope.options
         else if @scope.options.getTileUrl?
@@ -49,16 +53,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
         @mapType.layerId = @id
 
-      refreshMapType: ()=>
+      refreshMapType: =>
         @hideOverlay()
         @mapType = null
         @createMapType()
         @showOverlay() if @doShow and @gMap?
 
-      showOverlay: ()=>
+      showOverlay: =>
         @gMap.overlayMapTypes.push @mapType
 
-      hideOverlay: ()=>
+      hideOverlay: =>
         found = false
         @gMap.overlayMapTypes.forEach (mapType, index) =>
           if not found and mapType.layerId is @id

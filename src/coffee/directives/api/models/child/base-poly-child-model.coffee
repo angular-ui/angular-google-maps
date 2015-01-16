@@ -22,21 +22,21 @@ angular.module('uiGmapgoogle-maps.directives.api')
           create = =>
             return if @isDragging #avoid unnecessary creation (be nice if we knew we were editing too)
             pathPoints = @convertPathPoints @scope.path
-            if @shape?
+            if @gObject?
               @clean()
-            @shape = gFactory @buildOpts pathPoints if pathPoints.length > 0
-            if @shape
+            @gObject = gFactory @buildOpts pathPoints if pathPoints.length > 0
+            if @gObject
               @extendMapBounds map, pathPoints if @scope.fit
-              arraySync @shape.getPath(), @scope, 'path', (pathPoints) =>
+              arraySync @gObject.getPath(), @scope, 'path', (pathPoints) =>
                 @extendMapBounds map, pathPoints if @scope.fit
               if angular.isDefined(scope.events) and angular.isObject scope.events
-                @listeners = if @model then EventsHelper.setEvents @shape, @scope, @model else EventsHelper.setEvents @shape, @scope, @scope
-              @internalListeners = if @model then EventsHelper.setEvents @shape, events: @internalEvents, @model else EventsHelper.setEvents @shape, events: @internalEvents, @scope
+                @listeners = if @model then EventsHelper.setEvents @gObject, @scope, @model else EventsHelper.setEvents @gObject, @scope, @scope
+              @internalListeners = if @model then EventsHelper.setEvents @gObject, events: @internalEvents, @model else EventsHelper.setEvents @gObject, events: @internalEvents, @scope
 
           create() #handle stuff without being dependent on digests (ie using watches for init)
 
           scope.$watch 'path', (newValue, oldValue) =>
-            if not _.isEqual(newValue, oldValue) or not @shape
+            if not _.isEqual(newValue, oldValue) or not @gObject
               create()
           , true
           #TODO refactor all these sets and watches to be handled functionally as an array
@@ -45,64 +45,64 @@ angular.module('uiGmapgoogle-maps.directives.api')
             scope.$watch 'editable', (newValue, oldValue) =>
               if newValue isnt oldValue
                 newValue = not @isFalse newValue
-                @shape?.setEditable newValue
+                @gObject?.setEditable newValue
             , true
           if angular.isDefined scope.draggable
             scope.$watch 'draggable', (newValue, oldValue) =>
               if newValue isnt oldValue
                 newValue = not @isFalse newValue
-                @shape?.setDraggable newValue
+                @gObject?.setDraggable newValue
             , true
           if angular.isDefined scope.visible
             scope.$watch 'visible', (newValue, oldValue) =>
               if newValue isnt oldValue
                 newValue = not @isFalse newValue
-              @shape?.setVisible newValue
+              @gObject?.setVisible newValue
             , true
           if angular.isDefined scope.geodesic
             scope.$watch 'geodesic', (newValue, oldValue) =>
               if newValue isnt oldValue
                 newValue = not @isFalse newValue
-                @shape?.setOptions @buildOpts(@shape.getPath())
+                @gObject?.setOptions @buildOpts(@gObject.getPath())
             , true
           #End Booleans
 
           if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.weight)
             scope.$watch 'stroke.weight', (newValue, oldValue) =>
-              @shape?.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
+              @gObject?.setOptions @buildOpts(@gObject.getPath()) if newValue isnt oldValue
             , true
           if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.color)
             scope.$watch 'stroke.color', (newValue, oldValue) =>
-              @shape?.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
+              @gObject?.setOptions @buildOpts(@gObject.getPath()) if newValue isnt oldValue
             , true
           if angular.isDefined(scope.stroke) and angular.isDefined(scope.stroke.opacity)
             scope.$watch 'stroke.opacity', (newValue, oldValue) =>
-              @shape?.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
+              @gObject?.setOptions @buildOpts(@gObject.getPath()) if newValue isnt oldValue
             , true
           if angular.isDefined(scope.icons)
             scope.$watch 'icons', (newValue, oldValue) =>
-              @shape?.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
+              @gObject?.setOptions @buildOpts(@gObject.getPath()) if newValue isnt oldValue
             , true
-          # Remove @shape on scope $destroy
+          # Remove @gObject on scope $destroy
           scope.$on '$destroy', =>
             @clean()
             @scope = null
 
           if angular.isDefined(scope.fill) and angular.isDefined scope.fill.color
             scope.$watch 'fill.color', (newValue, oldValue) =>
-              @shape.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
+              @gObject.setOptions @buildOpts(@gObject.getPath()) if newValue isnt oldValue
 
           if angular.isDefined(scope.fill) and angular.isDefined scope.fill.opacity
             scope.$watch 'fill.opacity', (newValue, oldValue) =>
-              @shape.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
+              @gObject.setOptions @buildOpts(@gObject.getPath()) if newValue isnt oldValue
 
           if angular.isDefined scope.zIndex
             scope.$watch 'zIndex', (newValue, oldValue) =>
-              @shape.setOptions @buildOpts(@shape.getPath()) if newValue isnt oldValue
+              @gObject.setOptions @buildOpts(@gObject.getPath()) if newValue isnt oldValue
 
         clean: =>
           EventsHelper.removeEvents @listeners
           EventsHelper.removeEvents @internalListeners
-          @shape?.setMap null
-          @shape = null
+          @gObject?.setMap null
+          @gObject = null
 ]

@@ -143,7 +143,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             _async.promiseLock @, uiGmapPromise.promiseTypes.create, 'createAllNew',
               ((canceledMsg) -> maybeCanceled = canceledMsg), =>
                 _async.each scope.models, (model) =>
-                  gMarker = if hasGMarker then @getItem(scope, modelsPropToIterate, model[@idKey])?.gMarker else undefined
+                  gMarker = if hasGMarker then @getItem(scope, modelsPropToIterate, model[@idKey])?.gObject else undefined
                   unless maybeCanceled
                     $log.error 'Unable to get gMarker from markersScope!' if not gMarker and @markersScope
                     @createWindow(model, gMarker, @gMap)
@@ -173,7 +173,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                 .then =>
                   #add all adds via creating new ChildMarkers which are appended to @markers
                   _async.each payload.adds, (modelToAdd) =>
-                    gMarker = @getItem(scope, modelsPropToIterate, modelToAdd[@idKey])?.gMarker
+                    gMarker = @getItem(scope, modelsPropToIterate, modelToAdd[@idKey])?.gObject
                     throw 'Gmarker undefined' unless gMarker
                     @createWindow(modelToAdd, gMarker, @gMap)
                     maybeCanceled

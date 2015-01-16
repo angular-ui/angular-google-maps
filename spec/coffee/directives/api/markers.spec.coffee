@@ -71,7 +71,7 @@ describe 'uiGmapMarkers (directive creation)', ->
           done()
         , 350
 
-    describe 'update an existing marker should modify an existing gMarker', =>
+    describe 'update an existing marker should modify an existing gObject (gMarker)', =>
       beforeEach ->
         @updateTest = (done, updateFn ) =>
           scope = rootScope.$new()
