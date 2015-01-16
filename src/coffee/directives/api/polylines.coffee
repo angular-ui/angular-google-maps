@@ -17,6 +17,5 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
           unless scope.models
             @$log.warn 'polylines: no models found to create from'
-          Plural.link(scope)
-          new PolylinesParentModel scope, element, attrs, map, @DEFAULTS
+          Plural.link scope, new PolylinesParentModel(scope, element, attrs, map, @DEFAULTS)
 ]

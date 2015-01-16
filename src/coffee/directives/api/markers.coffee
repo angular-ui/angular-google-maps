@@ -22,13 +22,6 @@ angular.module("uiGmapgoogle-maps.directives.api")
       link: (scope, element, attrs, ctrl) ->
         parentModel = undefined
         ready = ->
-          Plural.link(scope)
-          if scope.control?
-            scope.control.getGMarkers = ->
-              parentModel.gMarkerManager?.getGMarkers()
-            #deprecated use getPlurals
-            scope.control.getChildMarkers = ->
-              parentModel.plurals
           scope.deferred.resolve()
 
         IMarker.mapPromise(scope, ctrl).then (map) ->
@@ -39,6 +32,14 @@ angular.module("uiGmapgoogle-maps.directives.api")
             _.defer parentModel.gMarkerManager.draw
 
           parentModel = new MarkersParentModel(scope, element, attrs, map)
+          Plural.link(scope, parentModel)
+          if scope.control?
+            scope.control.getGMarkers = ->
+              parentModel.gMarkerManager?.getGMarkers()
+            #deprecated use getPlurals
+            scope.control.getChildMarkers = ->
+              parentModel.plurals
+
           _.last(parentModel.existingPieces._content).then ->
             ready()
 ]

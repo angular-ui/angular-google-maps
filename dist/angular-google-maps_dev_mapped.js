@@ -6640,16 +6640,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           var parentModel, ready;
           parentModel = void 0;
           ready = function() {
-            Plural.link(scope);
-            if (scope.control != null) {
-              scope.control.getGMarkers = function() {
-                var _ref;
-                return (_ref = parentModel.gMarkerManager) != null ? _ref.getGMarkers() : void 0;
-              };
-              scope.control.getChildMarkers = function() {
-                return parentModel.plurals;
-              };
-            }
             return scope.deferred.resolve();
           };
           return IMarker.mapPromise(scope, ctrl).then(function(map) {
@@ -6659,6 +6649,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return _.defer(parentModel.gMarkerManager.draw);
             });
             parentModel = new MarkersParentModel(scope, element, attrs, map);
+            Plural.link(scope, parentModel);
+            if (scope.control != null) {
+              scope.control.getGMarkers = function() {
+                var _ref;
+                return (_ref = parentModel.gMarkerManager) != null ? _ref.getGMarkers() : void 0;
+              };
+              scope.control.getChildMarkers = function() {
+                return parentModel.plurals;
+              };
+            }
             return _.last(parentModel.existingPieces._content).then(function() {
               return ready();
             });
@@ -6676,7 +6676,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
   angular.module('uiGmapgoogle-maps.directives.api').service('uiGmapPlural', [
     function() {
       var _initControl;
-      _initControl = function(scope) {
+      _initControl = function(scope, parent) {
         if (scope.control == null) {
           return;
         }
@@ -6706,8 +6706,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             control: '=control'
           });
         },
-        link: function(scope) {
-          return _initControl(scope);
+        link: function(scope, parent) {
+          return _initControl(scope, parent);
         }
       };
     }
@@ -6774,16 +6774,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         Polygons.prototype.link = function(scope, element, attrs, mapCtrl) {
           return mapCtrl.getScope().deferred.promise.then((function(_this) {
             return function(map) {
-              var parent;
               if (angular.isUndefined(scope.path) || scope.path === null) {
                 _this.$log.warn('polygons: no valid path attribute found');
               }
               if (!scope.models) {
                 _this.$log.warn('polygons: no models found to create from');
               }
-              parent = null;
-              Plural.link(scope);
-              return parent = new ParentModel(scope, element, attrs, map, _this.DEFAULTS);
+              return Plural.link(scope, new ParentModel(scope, element, attrs, map, _this.DEFAULTS));
             };
           })(this));
         };
@@ -6856,8 +6853,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (!scope.models) {
                 _this.$log.warn('polylines: no models found to create from');
               }
-              Plural.link(scope);
-              return new PolylinesParentModel(scope, element, attrs, map, _this.DEFAULTS);
+              return Plural.link(scope, new PolylinesParentModel(scope, element, attrs, map, _this.DEFAULTS));
             };
           })(this));
         };
@@ -7043,7 +7039,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         Windows.prototype.init = function(scope, element, attrs, ctrls, map, additionalScope) {
           var parentModel;
           parentModel = new WindowsParentModel(scope, element, attrs, ctrls, map, additionalScope);
-          Plural.link(scope);
+          Plural.link(scope, parentModel);
           if (scope.control != null) {
             scope.control.getGWindows = (function(_this) {
               return function() {

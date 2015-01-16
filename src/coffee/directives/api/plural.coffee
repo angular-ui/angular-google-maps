@@ -1,6 +1,6 @@
 angular.module('uiGmapgoogle-maps.directives.api')
 .service 'uiGmapPlural', [->
-  _initControl = (scope) ->
+  _initControl = (scope, parent) ->
     return unless scope.control?
 
     scope.control.updateModels = (models) ->
@@ -26,8 +26,8 @@ angular.module('uiGmapgoogle-maps.directives.api')
       cleanchunk: '=cleanchunk' #false to disable chunking, otherwise a number to define chunk size
       control: '=control'
 
-  link: (scope) ->
-    _initControl(scope)
+  link: (scope, parent) ->
+    _initControl(scope, parent)
 
 
 
