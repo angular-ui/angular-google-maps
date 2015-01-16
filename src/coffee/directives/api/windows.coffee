@@ -32,12 +32,14 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
       init: (scope, element, attrs, ctrls, map, additionalScope) =>
         parentModel = new WindowsParentModel(scope, element, attrs, ctrls, map, additionalScope)
+        Plural.link(scope)
         if scope.control?
           scope.control.getGWindows = =>
-            parentModel.windows.map (child)->
+            parentModel.plurals.map (child)->
               child.gWin
+          #deprecated use getPlurals
           scope.control.getChildWindows = =>
-            parentModel.windows
+            parentModel.plurals
 
 
 ]
