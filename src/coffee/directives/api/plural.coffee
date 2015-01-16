@@ -15,7 +15,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
       parent.rebuildAll(scope, false, true)
 
     scope.control.getPlurals = ->
-      scope.plurals
+      parent.plurals
 
   extend: (obj, obj2) ->
     _.extend obj.scope or {}, obj2 or {},

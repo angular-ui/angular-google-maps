@@ -6692,7 +6692,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return parent.rebuildAll(scope, false, true);
         };
         return scope.control.getPlurals = function() {
-          return scope.plurals;
+          return parent.plurals;
         };
       };
       return {
