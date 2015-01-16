@@ -4131,15 +4131,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.newChildMarker = __bind(this.newChildMarker, this);
           this.updateChild = __bind(this.updateChild, this);
           this.pieceMeal = __bind(this.pieceMeal, this);
-          this.reBuildMarkers = __bind(this.reBuildMarkers, this);
-          this.createMarkersFromScratch = __bind(this.createMarkersFromScratch, this);
+          this.rebuildAll = __bind(this.rebuildAll, this);
+          this.createAllNew = __bind(this.createAllNew, this);
+          this.createChildScopes = __bind(this.createChildScopes, this);
           this.validateScope = __bind(this.validateScope, this);
           this.onWatch = __bind(this.onWatch, this);
           var self;
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, map);
           self = this;
-          this.scope.markerModels = new PropMap();
-          this.scope.markerModelsUpdate = {
+          this.scope.plurals = new PropMap();
+          this.scope.pluralsUpdate = {
             updateCtr: 0
           };
           this.$log.info(this);
@@ -4172,7 +4173,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watch('fit', scope);
           this.watch('idKey', scope);
           this.gMarkerManager = void 0;
-          this.createMarkersFromScratch(scope);
+          this.createAllNew(scope);
         }
 
         MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
@@ -4180,7 +4181,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.idKey = newValue;
           }
           if (this.doRebuildAll || propNameToWatch === 'doCluster') {
-            return this.reBuildMarkers(scope);
+            return this.rebuildAll(scope);
           } else {
             return this.pieceMeal(scope);
           }
@@ -4195,7 +4196,24 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return MarkersParentModel.__super__.validateScope.call(this, scope) || modelsNotDefined;
         };
 
-        MarkersParentModel.prototype.createMarkersFromScratch = function(scope) {
+
+        /*
+        Not used internally by this parent
+        created for consistency for external control in the API
+         */
+
+        MarkersParentModel.prototype.createChildScopes = function(isCreatingFromScratch) {
+          if ((this.gMap == null) || (this.scope.models == null)) {
+            return;
+          }
+          if (isCreatingFromScratch) {
+            return this.createAllNew(this.scope, false);
+          } else {
+            return this.pieceMeal(this.scope, false);
+          }
+        };
+
+        MarkersParentModel.prototype.createAllNew = function(scope) {
           var maybeCanceled;
           if (this.gMarkerManager != null) {
             this.gMarkerManager.clear();
@@ -4249,25 +4267,25 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (scope.fit) {
                   _this.gMarkerManager.fit();
                 }
-                return _this.scope.markerModelsUpdate.updateCtr += 1;
+                return _this.scope.pluralsUpdate.updateCtr += 1;
               }, _async.chunkSizeFrom(scope.chunk));
             };
           })(this));
         };
 
-        MarkersParentModel.prototype.reBuildMarkers = function(scope) {
+        MarkersParentModel.prototype.rebuildAll = function(scope) {
           var _ref;
           if (!scope.doRebuild && scope.doRebuild !== void 0) {
             return;
           }
-          if ((_ref = this.scope.markerModels) != null ? _ref.length : void 0) {
+          if ((_ref = this.scope.plurals) != null ? _ref.length : void 0) {
             return this.onDestroy(scope).then((function(_this) {
               return function() {
-                return _this.createMarkersFromScratch(scope);
+                return _this.createAllNew(scope);
               };
             })(this));
           } else {
-            return this.createMarkersFromScratch(scope);
+            return this.createAllNew(scope);
           }
         };
 
@@ -4278,13 +4296,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           maybeCanceled = null;
           payload = null;
-          if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.markerModels.length > 0) {
+          if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.plurals.length > 0) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
               return function() {
                 return uiGmapPromise.promise((function() {
-                  return _this.figureOutState(_this.idKey, scope, _this.scope.markerModels, _this.modelKeyComparison);
+                  return _this.figureOutState(_this.idKey, scope, _this.scope.plurals, _this.modelKeyComparison);
                 })).then(function(state) {
                   payload = state;
                   return _async.each(payload.removals, function(child) {
@@ -4292,7 +4310,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       if (child.destroy != null) {
                         child.destroy();
                       }
-                      _this.scope.markerModels.remove(child.id);
+                      _this.scope.plurals.remove(child.id);
                       return maybeCanceled;
                     }
                   }, _async.chunkSizeFrom(scope.chunk));
@@ -4309,18 +4327,18 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }).then(function() {
                   if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
                     _this.gMarkerManager.draw();
-                    scope.markerModels = _this.scope.markerModels;
+                    scope.plurals = _this.scope.plurals;
                     if (scope.fit) {
                       _this.gMarkerManager.fit();
                     }
                   }
-                  return _this.scope.markerModelsUpdate.updateCtr += 1;
+                  return _this.scope.pluralsUpdate.updateCtr += 1;
                 });
               };
             })(this));
           } else {
             this.inProgress = false;
-            return this.reBuildMarkers(scope);
+            return this.rebuildAll(scope);
           }
         };
 
@@ -4346,24 +4364,24 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return keys[k] = scope[k];
           });
           child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gMarkerManager, doDrawSelf = false);
-          this.scope.markerModels.put(model[this.idKey], child);
+          this.scope.plurals.put(model[this.idKey], child);
           return child;
         };
 
         MarkersParentModel.prototype.onDestroy = function(scope) {
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
-              return _async.each(_this.scope.markerModels.values(), function(model) {
+              return _async.each(_this.scope.plurals.values(), function(model) {
                 if (model != null) {
                   return model.destroy(false);
                 }
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                delete _this.scope.markerModels;
+                delete _this.scope.plurals;
                 if (_this.gMarkerManager != null) {
                   _this.gMarkerManager.clear();
                 }
-                _this.scope.markerModels = new PropMap();
-                return _this.scope.markerModelsUpdate.updateCtr += 1;
+                _this.scope.plurals = new PropMap();
+                return _this.scope.pluralsUpdate.updateCtr += 1;
               });
             };
           })(this));
@@ -4372,18 +4390,18 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         MarkersParentModel.prototype.maybeExecMappedEvent = function(cluster, fnName) {
           var pair, _ref;
           if (_.isFunction((_ref = this.scope.clusterEvents) != null ? _ref[fnName] : void 0)) {
-            pair = this.mapClusterToMarkerModels(cluster);
+            pair = this.mapClusterToPlurals(cluster);
             if (this.origClusterEvents[fnName]) {
               return this.origClusterEvents[fnName](pair.cluster, pair.mapped);
             }
           }
         };
 
-        MarkersParentModel.prototype.mapClusterToMarkerModels = function(cluster) {
+        MarkersParentModel.prototype.mapClusterToPlurals = function(cluster) {
           var mapped;
           mapped = cluster.getMarkers().map((function(_this) {
             return function(g) {
-              return _this.scope.markerModels.get(g.key).model;
+              return _this.scope.plurals.get(g.key).model;
             };
           })(this));
           return {
@@ -4551,15 +4569,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.$log.error('No models to create Polygons from! I Need direct models!');
             return;
           }
-          if (this.gMap != null) {
-            if (this.scope.models != null) {
-              this.watchIdKey(this.scope);
-              if (isCreatingFromScratch) {
-                return this.createAllNew(this.scope, false);
-              } else {
-                return this.pieceMeal(this.scope, false);
-              }
-            }
+          if ((this.gMap == null) || (this.scope.models == null)) {
+            return;
+          }
+          this.watchIdKey(this.scope);
+          if (isCreatingFromScratch) {
+            return this.createAllNew(this.scope, false);
+          } else {
+            return this.pieceMeal(this.scope, false);
           }
         };
 
@@ -5323,10 +5340,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.setChildScope = __bind(this.setChildScope, this);
           this.createWindow = __bind(this.createWindow, this);
           this.setContentKeys = __bind(this.setContentKeys, this);
-          this.pieceMealWindows = __bind(this.pieceMealWindows, this);
-          this.createAllNewWindows = __bind(this.createAllNewWindows, this);
+          this.pieceMeal = __bind(this.pieceMeal, this);
+          this.createAllNew = __bind(this.createAllNew, this);
           this.watchIdKey = __bind(this.watchIdKey, this);
-          this.createChildScopesWindows = __bind(this.createChildScopesWindows, this);
+          this.createChildScopes = __bind(this.createChildScopes, this);
           this.watchOurScope = __bind(this.watchOurScope, this);
           this.watchDestroy = __bind(this.watchDestroy, this);
           this.onDestroy = __bind(this.onDestroy, this);
@@ -5335,7 +5352,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchModels = __bind(this.watchModels, this);
           this.go = __bind(this.go, this);
           WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache);
-          this.windows = new PropMap();
+          this.plurals = new PropMap();
           this.scopePropNames = ['coords', 'template', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick', 'options', 'show'];
           _.each(this.scopePropNames, (function(_this) {
             return function(name) {
@@ -5363,12 +5380,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this));
-          return this.createChildScopesWindows();
+          return this.createChildScopes();
         };
 
         WindowsParentModel.prototype.watchModels = function(scope) {
           var itemToWatch;
-          itemToWatch = this.markersScope != null ? 'markerModelsUpdate' : 'models';
+          itemToWatch = this.markersScope != null ? 'pluralsUpdate' : 'models';
           return scope.$watch(itemToWatch, (function(_this) {
             return function(newValue, oldValue) {
               var doScratch;
@@ -5377,13 +5394,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (_this.doRebuildAll || _this.doINeedToWipe(scope.models)) {
                   return _this.rebuildAll(scope, true, true);
                 } else {
-                  doScratch = _this.windows.length === 0;
+                  doScratch = _this.plurals.length === 0;
                   if (_this.existingPieces != null) {
                     return _.last(_this.existingPieces._content).then(function() {
-                      return _this.createChildScopesWindows(doScratch);
+                      return _this.createChildScopes(doScratch);
                     });
                   } else {
-                    return _this.createChildScopesWindows(doScratch);
+                    return _this.createChildScopes(doScratch);
                   }
                 }
               }
@@ -5394,14 +5411,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         WindowsParentModel.prototype.doINeedToWipe = function(newValue) {
           var newValueIsEmpty;
           newValueIsEmpty = newValue != null ? newValue.length === 0 : true;
-          return this.windows.length > 0 && newValueIsEmpty;
+          return this.plurals.length > 0 && newValueIsEmpty;
         };
 
         WindowsParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
           return this.onDestroy(doDelete).then((function(_this) {
             return function() {
               if (doCreate) {
-                return _this.createChildScopesWindows();
+                return _this.createChildScopes();
               }
             };
           })(this));
@@ -5410,13 +5427,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         WindowsParentModel.prototype.onDestroy = function(doDelete) {
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
-              return _async.each(_this.windows.values(), function(child) {
+              return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy();
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (doDelete) {
-                  delete _this.windows;
+                  delete _this.plurals;
                 }
-                return _this.windows = new PropMap();
+                return _this.plurals = new PropMap();
               });
             };
           })(this));
@@ -5442,7 +5459,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        WindowsParentModel.prototype.createChildScopesWindows = function(isCreatingFromScratch) {
+        WindowsParentModel.prototype.createChildScopes = function(isCreatingFromScratch) {
           var modelsNotDefined, _ref, _ref1;
           if (isCreatingFromScratch == null) {
             isCreatingFromScratch = true;
@@ -5460,7 +5477,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.isIconVisibleOnClick = this.linked.scope.isIconVisibleOnClick;
           }
           modelsNotDefined = angular.isUndefined(this.linked.scope.models);
-          if (modelsNotDefined && (this.markersScope === void 0 || (((_ref = this.markersScope) != null ? _ref.markerModels : void 0) === void 0 || ((_ref1 = this.markersScope) != null ? _ref1.models : void 0) === void 0))) {
+          if (modelsNotDefined && (this.markersScope === void 0 || (((_ref = this.markersScope) != null ? _ref.plurals : void 0) === void 0 || ((_ref1 = this.markersScope) != null ? _ref1.models : void 0) === void 0))) {
             this.$log.error('No models to create windows from! Need direct models or models derived from markers!');
             return;
           }
@@ -5468,17 +5485,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             if (this.linked.scope.models != null) {
               this.watchIdKey(this.linked.scope);
               if (isCreatingFromScratch) {
-                return this.createAllNewWindows(this.linked.scope, false);
+                return this.createAllNew(this.linked.scope, false);
               } else {
-                return this.pieceMealWindows(this.linked.scope, false);
+                return this.pieceMeal(this.linked.scope, false);
               }
             } else {
               this.parentScope = this.markersScope;
               this.watchIdKey(this.parentScope);
               if (isCreatingFromScratch) {
-                return this.createAllNewWindows(this.markersScope, true, 'markerModels', false);
+                return this.createAllNew(this.markersScope, true, 'plurals', false);
               } else {
-                return this.pieceMealWindows(this.markersScope, true, 'markerModels', false);
+                return this.pieceMeal(this.markersScope, true, 'plurals', false);
               }
             }
           }
@@ -5496,7 +5513,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        WindowsParentModel.prototype.createAllNewWindows = function(scope, hasGMarker, modelsPropToIterate, isArray) {
+        WindowsParentModel.prototype.createAllNew = function(scope, hasGMarker, modelsPropToIterate, isArray) {
           var maybeCanceled;
           if (modelsPropToIterate == null) {
             modelsPropToIterate = 'models';
@@ -5514,7 +5531,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return;
           }
           maybeCanceled = null;
-          return _async.promiseLock(this, uiGmapPromise.promiseTypes.create, 'createAllNewWindows', (function(canceledMsg) {
+          return _async.promiseLock(this, uiGmapPromise.promiseTypes.create, 'createAllNew', (function(canceledMsg) {
             return maybeCanceled = canceledMsg;
           }), (function(_this) {
             return function() {
@@ -5535,7 +5552,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        WindowsParentModel.prototype.pieceMealWindows = function(scope, hasGMarker, modelsPropToIterate, isArray) {
+        WindowsParentModel.prototype.pieceMeal = function(scope, hasGMarker, modelsPropToIterate, isArray) {
           var maybeCanceled, payload;
           if (modelsPropToIterate == null) {
             modelsPropToIterate = 'models';
@@ -5549,18 +5566,18 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.windows.length > 0) {
+          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
               return function() {
                 return uiGmapPromise.promise((function() {
-                  return _this.figureOutState(_this.idKey, scope, _this.windows, _this.modelKeyComparison);
+                  return _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
                 })).then(function(state) {
                   payload = state;
                   return _async.each(payload.removals, function(child) {
                     if (child != null) {
-                      _this.windows.remove(child.id);
+                      _this.plurals.remove(child.id);
                       if (child.destroy != null) {
                         child.destroy(true);
                       }
@@ -5581,7 +5598,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               };
             })(this));
           } else {
-            $log.debug('pieceMealWindows: rebuildAll');
+            $log.debug('pieceMeal: rebuildAll');
             return this.rebuildAll(this.scope, true, true);
           }
         };
@@ -5612,12 +5629,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           };
           this.DEFAULTS = this.scopeOrModelVal(this.optionsKey, this.scope, model) || {};
           opts = this.createWindowOptions(gMarker, childScope, fakeElement.html(), this.DEFAULTS);
-          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, (_ref = this.markersScope) != null ? (_ref1 = _ref.markerModels.get(model[this.idKey])) != null ? _ref1.scope : void 0 : void 0, fakeElement, false, true);
+          child = new WindowChildModel(model, childScope, opts, this.isIconVisibleOnClick, gMap, (_ref = this.markersScope) != null ? (_ref1 = _ref.plurals.get(model[this.idKey])) != null ? _ref1.scope : void 0 : void 0, fakeElement, false, true);
           if (model[this.idKey] == null) {
             this.$log.error('Window model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.');
             return;
           }
-          this.windows.put(model[this.idKey], child);
+          this.plurals.put(model[this.idKey], child);
           return child;
         };
 
@@ -6603,7 +6620,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           Markers.__super__.constructor.call(this);
           this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
           Plural.extend(this, {
-            doRebuildAll: '=dorebuildall',
             doCluster: '=docluster',
             clusterOptions: '=clusteroptions',
             clusterEvents: '=clusterevents',
@@ -6623,13 +6639,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           var parentModel, ready;
           parentModel = void 0;
           ready = function() {
+            Plural.link(scope);
             if (scope.control != null) {
               scope.control.getGMarkers = function() {
                 var _ref;
                 return (_ref = parentModel.gMarkerManager) != null ? _ref.getGMarkers() : void 0;
               };
               scope.control.getChildMarkers = function() {
-                return parentModel.markerModels;
+                return parentModel.plurals;
               };
             }
             return scope.deferred.resolve();
@@ -6655,8 +6672,28 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 ;(function() {
-  angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapPlural', [
+  angular.module('uiGmapgoogle-maps.directives.api').service('uiGmapPlural', [
     function() {
+      var _initControl;
+      _initControl = function(scope) {
+        if (scope.control == null) {
+          return;
+        }
+        scope.control.updateModels = function(models) {
+          scope.models = models;
+          return parent.createChildScopes(false);
+        };
+        scope.control.newModels = function(models) {
+          scope.models = models;
+          return parent.rebuildAll(scope, true, true);
+        };
+        scope.control.clean = function() {
+          return parent.rebuildAll(scope, false, true);
+        };
+        return scope.control.getPlurals = function() {
+          return scope.plurals;
+        };
+      };
       return {
         extend: function(obj, obj2) {
           return _.extend(obj.scope || {}, obj2 || {}, {
@@ -6664,8 +6701,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             doRebuildAll: '=dorebuildall',
             models: '=models',
             chunk: '=chunk',
-            cleanchunk: '=cleanchunk'
+            cleanchunk: '=cleanchunk',
+            control: '=control'
           });
+        },
+        link: function(scope) {
+          return _initControl(scope);
         }
       };
     }
@@ -6740,19 +6781,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 _this.$log.warn('polygons: no models found to create from');
               }
               parent = null;
-              if (scope.control != null) {
-                scope.control.updateModels = function(models) {
-                  scope.models = models;
-                  return parent.createChildScopes(false);
-                };
-                scope.control.newModels = function(models) {
-                  scope.models = models;
-                  return parent.rebuildAll(scope, true, true);
-                };
-                scope.control.clean = function() {
-                  return parent.rebuildAll(scope, false, true);
-                };
-              }
+              Plural.link(scope);
               return parent = new ParentModel(scope, element, attrs, map, _this.DEFAULTS);
             };
           })(this));
@@ -6805,7 +6834,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapPolylines', [
-    'uiGmapIPolyline', '$timeout', 'uiGmaparray-sync', 'uiGmapPolylinesParentModel', function(IPolyline, $timeout, arraySync, PolylinesParentModel) {
+    'uiGmapIPolyline', '$timeout', 'uiGmaparray-sync', 'uiGmapPolylinesParentModel', 'uiGmapPlural', function(IPolyline, $timeout, arraySync, PolylinesParentModel, Plural) {
       var Polylines;
       return Polylines = (function(_super) {
         __extends(Polylines, _super);
@@ -6813,8 +6842,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         function Polylines() {
           this.link = __bind(this.link, this);
           Polylines.__super__.constructor.call(this);
-          this.scope.idKey = '=idkey';
-          this.scope.models = '=models';
+          Plural.extend(this);
           this.$log.info(this);
         }
 
@@ -6827,6 +6855,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (!scope.models) {
                 _this.$log.warn('polylines: no models found to create from');
               }
+              Plural.link(scope);
               return new PolylinesParentModel(scope, element, attrs, map, _this.DEFAULTS);
             };
           })(this));
@@ -7012,17 +7041,18 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         Windows.prototype.init = function(scope, element, attrs, ctrls, map, additionalScope) {
           var parentModel;
           parentModel = new WindowsParentModel(scope, element, attrs, ctrls, map, additionalScope);
+          Plural.link(scope);
           if (scope.control != null) {
             scope.control.getGWindows = (function(_this) {
               return function() {
-                return parentModel.windows.map(function(child) {
+                return parentModel.plurals.map(function(child) {
                   return child.gWin;
                 });
               };
             })(this);
             return scope.control.getChildWindows = (function(_this) {
               return function() {
-                return parentModel.windows;
+                return parentModel.plurals;
               };
             })(this);
           }
