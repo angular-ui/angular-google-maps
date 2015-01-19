@@ -1,27 +1,19 @@
 angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 .factory 'uiGmapPolylinesParentModel', ['$timeout', 'uiGmapLogger',
   'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap',
-  'uiGmapPolylineChildModel', 'uiGmap_async', 'uiGmapPromise',
-  ($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async, uiGmapPromise) ->
+  'uiGmapPolylineChildModel', 'uiGmap_async', 'uiGmapPromise', 'uiGmapIPolyline',
+  ($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async, uiGmapPromise, IPolyline) ->
     class PolylinesParentModel extends ModelKey
       @include ModelsWatcher
       constructor: (@scope, @element, @attrs, @gMap, @defaults) ->
         super(scope)
+        @interface = IPolyline
         self = @
         @$log = $log
         @plurals = new PropMap()
-        @scopePropNames = [
-          'path'
-          'stroke'
-          'clickable'
-          'draggable'
-          'editable'
-          'geodesic'
-          'icons'
-          'visible'
-        ]
+
         #setting up local references to propety keys IE: @pathKey
-        _.each @scopePropNames, (name) => @[name + 'Key'] = undefined
+        _.each IPolyline.scopeKeys, (name) => @[name + 'Key'] = undefined
         @models = undefined
         @firstTime = true
         @$log.info @
@@ -79,7 +71,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @rebuildAll(scope, false, true)
 
       watchOurScope: (scope) =>
-        _.each @scopePropNames, (name) =>
+        _.each IPolyline.scopeKeys, (name) =>
           nameKey = name + 'Key'
           @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
           @watch(scope, name, nameKey)
@@ -176,7 +168,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         child
 
       setChildScope: (childScope, model) =>
-        _.each @scopePropNames, (name) =>
+        _.each IPolyline.scopeKeys, (name) =>
           nameKey = name + 'Key'
           newValue = if @[nameKey] == 'self' then model else model[@[nameKey]]
           if(newValue != childScope[name])

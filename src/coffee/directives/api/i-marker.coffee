@@ -3,7 +3,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
  (BaseObject, CtrlHandle)->
     class IMarker extends BaseObject
 
-      IMarker.scopeKeys =
+      IMarker.scope =
         coords: '=coords'
         icon: '=icon'
         click: '&click'
@@ -13,7 +13,8 @@ angular.module('uiGmapgoogle-maps.directives.api')
         idKey: '=idkey'
         control: '=control'
 
-      IMarker.keys = _.keys IMarker.scopeKeys
+      IMarker.scopeKeys = _.keys(IMarker.scope)
+      IMarker.keys = IMarker.scopeKeys
 
       @extend CtrlHandle
       constructor: ->
@@ -22,5 +23,5 @@ angular.module('uiGmapgoogle-maps.directives.api')
         @priority = -1
         @transclude = true
         @replace = true
-        @scope = _.extend @scope or {}, IMarker.scopeKeys
+        @scope = _.extend @scope or {}, IMarker.scope
 ]
