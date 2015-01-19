@@ -2539,11 +2539,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return opts;
         },
         isLabel: function(options) {
-          if ((options.labelContent != null) || (options.labelAnchor != null) || (options.labelClass != null) || (options.labelStyle != null) || (options.labelVisible != null)) {
-            return true;
-          } else {
+          if (options == null) {
             return false;
           }
+          return (options.labelContent != null) || (options.labelAnchor != null) || (options.labelClass != null) || (options.labelStyle != null) || (options.labelVisible != null);
         }
       });
     }
@@ -2913,7 +2912,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.updateModel = __bind(this.updateModel, this);
           this.handleModelChanges = __bind(this.handleModelChanges, this);
           this.destroy = __bind(this.destroy, this);
-          this.clonedModel = _.clone(this.model, true);
+          this.clonedModel = _.extend({}, this.model);
           this.deferred = uiGmapPromise.defer();
           _.each(this.keys, (function(_this) {
             return function(v, k) {
@@ -2988,7 +2987,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.updateModel = function(model) {
-          this.cloneModel = _.clone(model, true);
+          this.clonedModel = _.extend({}, model);
           return this.setMyScope('all', model, this.model);
         };
 
@@ -3128,12 +3127,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               var coords, newValue, oldValue;
               oldValue = _this.gObject.getIcon();
-              newValue = _this.getProp('icon', _this.model);
+              newValue = _this.getProp(_this.iconKey, _this.model);
               if (oldValue === newValue) {
                 return;
               }
               _this.gObject.setIcon(newValue);
-              coords = _this.getProp('coords', _this.model);
+              coords = _this.getProp(_this.coordsKey, _this.model);
               _this.gObject.setPosition(_this.getCoords(coords));
               return _this.gObject.setVisible(_this.validateCoords(coords));
             };
@@ -3155,6 +3154,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               icon = _this.getProp(_this.iconKey, _this.model);
               _options = _this.getProp(_this.optionsKey, _this.model);
               _this.opts = _this.createOptions(coords, icon, _options);
+              if (_this.isLabel(_this.gObject) !== _this.isLabel(_this.opts)) {
+                _this.gMarkerManager.remove(_this.gObject);
+                _this.gObject = void 0;
+              }
               if (_this.gObject != null) {
                 _this.gObject.setOptions(_this.opts);
               }
