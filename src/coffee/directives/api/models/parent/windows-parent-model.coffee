@@ -6,20 +6,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
   ['uiGmapIWindowParentModel', 'uiGmapModelsWatcher',
     'uiGmapPropMap', 'uiGmapWindowChildModel',
     'uiGmapLinked', 'uiGmap_async', 'uiGmapLogger',
-    '$timeout', '$compile', '$http', '$templateCache', '$interpolate','uiGmapPromise',
+    '$timeout', '$compile', '$http', '$templateCache', '$interpolate','uiGmapPromise', 'uiGmapIWindow', 'uiGmapGmapUtil',
     (IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async, $log,
-      $timeout, $compile, $http, $templateCache, $interpolate,uiGmapPromise) ->
+      $timeout, $compile, $http, $templateCache, $interpolate, uiGmapPromise, IWindow, GmapUtil) ->
         class WindowsParentModel extends IWindowParentModel
           @include ModelsWatcher
           constructor: (scope, element, attrs, ctrls, @gMap, @markersScope) ->
             super(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache)
-
+            @interface = IWindow
             @plurals = new PropMap()
 
-            @scopePropNames = ['coords', 'template', 'templateUrl', 'templateParameter',
-                               'isIconVisibleOnClick', 'closeClick', 'options', 'show']
             #setting up local references to propety keys IE: @coordsKey
-            _.each @scopePropNames, (name) =>
+            _.each IWindow.scopeKeys, (name) =>
               @[name + 'Key'] = undefined
             @linked = new Linked(scope, element, attrs, ctrls)
             @models = undefined
@@ -83,7 +81,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @rebuildAll(scope, false, true)
 
           watchOurScope: (scope) =>
-            _.each @scopePropNames, (name) =>
+            _.each IWindow.scopeKeys, (name) =>
               nameKey = name + 'Key'
               @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
 
@@ -208,7 +206,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             child
 
           setChildScope: (childScope, model) =>
-            _.each @scopePropNames, (name) =>
+            _.each IWindow.scopeKeys, (name) =>
               nameKey = name + 'Key'
               newValue = if @[nameKey] == 'self' then model else model[@[nameKey]]
               if(newValue != childScope[name])
@@ -222,6 +220,19 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             interpModel = {}
             interpModel[key] = model[key] for key in @contentKeys
             exp(interpModel)
+
+          modelKeyComparison: (model1, model2) =>
+            #handle possible transclusion
+            scope = if @scope.coords? then @scope else @parentScope
+            if not scope? then throw 'No scope or parentScope set!'
+            isEqual = GmapUtil.equalCoords @evalModelHandle(model1, scope.coords),
+              @evalModelHandle(model2, scope.coords)
+            #deep comparison of the rest of properties
+            return isEqual unless isEqual
+            #compare the rest of the properties that are being watched by scope
+            isEqual = _.every _.without(@interface.scopeKeys, 'coords'), (k) =>
+              @evalModelHandle(model1, scope[k]) == @evalModelHandle(model2, scope[k])
+            isEqual
 
         WindowsParentModel
   ]

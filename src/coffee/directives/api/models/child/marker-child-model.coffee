@@ -23,7 +23,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @trackModel = true, @needRedraw = false) ->
         #where @model is a reference to model in the controller scope
         #clonedModel is a copy for comparison
-        @clonedModel = _.clone @model,true
+        @clonedModel = _.extend({},@model)
         @deferred = uiGmapPromise.defer()
         _.each @keys, (v, k) =>
           keyValue = @keys[k]
@@ -80,7 +80,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @needRedraw = true
 
       updateModel: (model) =>
-        @cloneModel = _.clone(model,true)
+        @clonedModel = _.extend({},model) #changed from _.clone(model, true) eliminates lodash dep (so you can use underscore)
         @setMyScope 'all', model, @model
 
       renderGMarker: (doDraw = true, validCb) ->
@@ -159,6 +159,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           icon = @getProp 'icon', scope, @model
           _options = @getProp 'options', scope, @model
           @opts = @createOptions coords, icon, _options
+
+          if @isLabel(@gObject) != @isLabel(@opts) and @gObject?
+            @gMarkerManager.remove @gObject
+            @gObject = undefined
 
           #update existing options if it is the same type
           if @gObject?

@@ -4,23 +4,36 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     class ModelKey extends BaseObject
       constructor: (@scope) ->
         super()
+        ##common scope keys interface for iterating comparators
+        @interface = {}
+        @interface.scopeKeys = []
+
         @defaultIdKey = 'id'
         @idKey = undefined
 
       evalModelHandle: (model, modelKey) ->
-        if model == undefined or modelKey == undefined
-          return undefined
+        return if not model? or not modelKey?
+
         if modelKey == 'self'
           model
         else #modelKey may use dot-notation
+          modelKey = modelKey() if _.isFunction(modelKey)
           GmapUtil.getPath(model, modelKey)
 
-      modelKeyComparison: (model1, model2, scope) =>
-        #passing scope as an argument allows for alternate scopes to be evaluates
-        #like windows uses markerScope if it has a marker directive as a parent
-        if not scope?.coords? then throw 'No coords to compare!'
-        GmapUtil.equalCoords @scopeOrModelVal('coords', scope, model1),
-          @scopeOrModelVal('coords', scope, model2)
+      modelKeyComparison: (model1, model2) =>
+        hasCoords = _.contains(@interface.scopeKeys, 'coords')
+        scope = @scope if hasCoords and  @scope.coords? or not hasCoords
+        if not scope? then throw 'No scope set!'
+        if hasCoords
+          isEqual = GmapUtil.equalCoords  @scopeOrModelVal('coords', scope, model1),
+            @scopeOrModelVal('coords', scope, model2)
+          #deep comparison of the rest of properties
+          return isEqual unless isEqual
+        #compare the rest of the properties that are being watched by scope
+        isEqual = _.every _.without(@interface.scopeKeys, 'coords'), (k) =>
+          @scopeOrModelVal(scope[k], scope, model1) == @scopeOrModelVal(scope[k], scope, model2)
+        isEqual
+
 
       setIdKey: (scope) =>
         @idKey = if scope.idKey? then scope.idKey else @defaultIdKey

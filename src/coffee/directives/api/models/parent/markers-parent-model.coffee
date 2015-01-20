@@ -12,6 +12,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
           @include ModelsWatcher
           constructor: (scope, element, attrs, map) ->
             super(scope, element, attrs, map)
+            @interface = IMarker
             self = @
 
             @plurals = new PropMap() #for api consistency
@@ -181,7 +182,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             childScope = scope.$new(false)
             childScope.events = scope.events
             keys = {}
-            _.each IMarker.scopeKeys, (v,k) ->
+            IMarker.scopeKeys.forEach (k) ->
               keys[k] = scope[k]
             child = new MarkerChildModel(childScope, model, keys, @map, @DEFAULTS,
               @doClick, @gMarkerManager, doDrawSelf = false) #this is managed so child is not drawing itself

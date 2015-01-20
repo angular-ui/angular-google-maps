@@ -17,12 +17,10 @@ angular.module('uiGmapgoogle-maps.directives.api.options')
       opts
 
     isLabel: (options) ->
-      if options.labelContent? or
-          options.labelAnchor? or
-          options.labelClass? or
-          options.labelStyle? or
-          options.labelVisible?
-        return true
-      else false
-
+      return false unless options?
+      options.labelContent? or
+      options.labelAnchor? or
+      options.labelClass? or
+      options.labelStyle? or
+      options.labelVisible?
 ]
