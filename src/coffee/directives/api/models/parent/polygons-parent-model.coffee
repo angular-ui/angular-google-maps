@@ -170,7 +170,4 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         @plurals.put(model[@idKey], child)
 #        $log.debug "create: " + @plurals.length
         child
-
-      modelKeyComparison: (model1, model2) =>
-        _.isEqual @evalModelHandle(model1, @scope.path), @evalModelHandle(model2, @scope.path)
 ]

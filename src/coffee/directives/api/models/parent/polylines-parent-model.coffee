@@ -174,7 +174,4 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           if(newValue != childScope[name])
             childScope[name] = newValue
         childScope.model = model
-
-      modelKeyComparison: (model1, model2) =>
-        _.isEqual @evalModelHandle(model1, @scope.path), @evalModelHandle(model2, @scope.path)
 ]

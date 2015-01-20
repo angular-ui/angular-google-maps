@@ -21,12 +21,14 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           GmapUtil.getPath(model, modelKey)
 
       modelKeyComparison: (model1, model2) =>
-        scope = if @scope.coords? then @scope else @parentScope
-        if not scope? then throw 'No scope or parentScope set!'
-        isEqual = GmapUtil.equalCoords @evalModelHandle(model1, scope.coords),
-          @evalModelHandle(model2, scope.coords)
-        #deep comparison of the rest of properties
-        return isEqual unless isEqual
+        hasCoords = _.contains(@interface.scopeKeys, 'coords')
+        scope = @scope if hasCoords and  @scope.coords? or not hasCoords
+        if not scope? then throw 'No scope set!'
+        if hasCoords
+          isEqual = GmapUtil.equalCoords @evalModelHandle(model1, scope.coords),
+            @evalModelHandle(model2, scope.coords)
+          #deep comparison of the rest of properties
+          return isEqual unless isEqual
         #compare the rest of the properties that are being watched by scope
         isEqual = _.every _.without(@interface.scopeKeys, 'coords'), (k) =>
           @evalModelHandle(model1, scope[k]) == @evalModelHandle(model2, scope[k])

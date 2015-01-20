@@ -1255,14 +1255,19 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         ModelKey.prototype.modelKeyComparison = function(model1, model2) {
-          var isEqual, scope;
-          scope = this.scope.coords != null ? this.scope : this.parentScope;
-          if (scope == null) {
-            throw 'No scope or parentScope set!';
+          var hasCoords, isEqual, scope;
+          hasCoords = _.contains(this["interface"].scopeKeys, 'coords');
+          if (hasCoords && (this.scope.coords != null) || !hasCoords) {
+            scope = this.scope;
           }
-          isEqual = GmapUtil.equalCoords(this.evalModelHandle(model1, scope.coords), this.evalModelHandle(model2, scope.coords));
-          if (!isEqual) {
-            return isEqual;
+          if (scope == null) {
+            throw 'No scope set!';
+          }
+          if (hasCoords) {
+            isEqual = GmapUtil.equalCoords(this.evalModelHandle(model1, scope.coords), this.evalModelHandle(model2, scope.coords));
+            if (!isEqual) {
+              return isEqual;
+            }
           }
           isEqual = _.every(_.without(this["interface"].scopeKeys, 'coords'), (function(_this) {
             return function(k) {
@@ -4416,7 +4421,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.attrs = attrs;
           this.gMap = gMap;
           this.defaults = defaults;
-          this.modelKeyComparison = __bind(this.modelKeyComparison, this);
           this.createChild = __bind(this.createChild, this);
           this.pieceMeal = __bind(this.pieceMeal, this);
           this.createAllNew = __bind(this.createAllNew, this);
@@ -4663,10 +4667,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return child;
         };
 
-        PolygonsParentModel.prototype.modelKeyComparison = function(model1, model2) {
-          return _.isEqual(this.evalModelHandle(model1, this.scope.path), this.evalModelHandle(model2, this.scope.path));
-        };
-
         return PolygonsParentModel;
 
       })(ModelKey);
@@ -4694,7 +4694,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.attrs = attrs;
           this.gMap = gMap;
           this.defaults = defaults;
-          this.modelKeyComparison = __bind(this.modelKeyComparison, this);
           this.setChildScope = __bind(this.setChildScope, this);
           this.createChild = __bind(this.createChild, this);
           this.pieceMeal = __bind(this.pieceMeal, this);
@@ -4953,10 +4952,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this));
           return childScope.model = model;
-        };
-
-        PolylinesParentModel.prototype.modelKeyComparison = function(model1, model2) {
-          return _.isEqual(this.evalModelHandle(model1, this.scope.path), this.evalModelHandle(model2, this.scope.path));
         };
 
         return PolylinesParentModel;
@@ -5307,6 +5302,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         function WindowsParentModel(scope, element, attrs, ctrls, gMap, markersScope) {
           this.gMap = gMap;
           this.markersScope = markersScope;
+          this.modelKeyComparison = __bind(this.modelKeyComparison, this);
           this.interpolateContent = __bind(this.interpolateContent, this);
           this.setChildScope = __bind(this.setChildScope, this);
           this.createWindow = __bind(this.createWindow, this);
@@ -5636,6 +5632,24 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             interpModel[key] = model[key];
           }
           return exp(interpModel);
+        };
+
+        WindowsParentModel.prototype.modelKeyComparison = function(model1, model2) {
+          var isEqual, scope;
+          scope = this.scope.coords != null ? this.scope : this.parentScope;
+          if (scope == null) {
+            throw 'No scope or parentScope set!';
+          }
+          isEqual = GmapUtil.equalCoords(this.evalModelHandle(model1, scope.coords), this.evalModelHandle(model2, scope.coords));
+          if (!isEqual) {
+            return isEqual;
+          }
+          isEqual = _.every(_.without(this["interface"].scopeKeys, 'coords'), (function(_this) {
+            return function(k) {
+              return _this.evalModelHandle(model1, scope[k]) === _this.evalModelHandle(model2, scope[k]);
+            };
+          })(this));
+          return isEqual;
         };
 
         return WindowsParentModel;

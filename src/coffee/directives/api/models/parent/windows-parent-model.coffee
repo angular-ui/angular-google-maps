@@ -221,5 +221,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             interpModel[key] = model[key] for key in @contentKeys
             exp(interpModel)
 
+          modelKeyComparison: (model1, model2) =>
+            #handle possible transclusion
+            scope = if @scope.coords? then @scope else @parentScope
+            if not scope? then throw 'No scope or parentScope set!'
+            isEqual = GmapUtil.equalCoords @evalModelHandle(model1, scope.coords),
+              @evalModelHandle(model2, scope.coords)
+            #deep comparison of the rest of properties
+            return isEqual unless isEqual
+            #compare the rest of the properties that are being watched by scope
+            isEqual = _.every _.without(@interface.scopeKeys, 'coords'), (k) =>
+              @evalModelHandle(model1, scope[k]) == @evalModelHandle(model2, scope[k])
+            isEqual
+
         WindowsParentModel
   ]
