@@ -24,6 +24,7 @@ function mapController(GoogleMapApi) {
   viewmodel.changeOptionsToNotLabel= changeOptionsToNotLabel;
   viewmodel.changePath= changePath;
   viewmodel.changeFill= changeFill;
+  viewmodel.changeStroke= changeStroke;
   viewmodel.markerControl = {}
 
 
@@ -120,5 +121,8 @@ function mapController(GoogleMapApi) {
   }
   function changeFill(){
     viewmodel.map.polygons[0].fill.color = '#ec19d0';
+  }
+  function changeStroke(){
+    viewmodel.map.polygons[0].stroke.color = '#ec19d0';
   }
 }
