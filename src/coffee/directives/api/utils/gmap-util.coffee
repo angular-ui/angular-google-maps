@@ -214,6 +214,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     map.fitBounds bounds
 
   getPath: (object, key) ->
+    #if the key is not a sting then we already have the value
+    return  key if not key? or not _.isString key
     obj = object
     _.each key.split('.'), (value) ->
       if obj then obj = obj[value]

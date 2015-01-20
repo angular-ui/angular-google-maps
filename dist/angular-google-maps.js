@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2015-01-16
+/*! angular-google-maps 2.0.12 2015-01-19
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1043,6 +1043,9 @@ Nicholas McCready - https://twitter.com/nmccready
         },
         getPath: function(object, key) {
           var obj;
+          if ((key == null) || !_.isString(key)) {
+            return key;
+          }
           obj = object;
           _.each(key.split('.'), function(value) {
             if (obj) {
@@ -1231,28 +1234,47 @@ Nicholas McCready - https://twitter.com/nmccready
           this.setIdKey = __bind(this.setIdKey, this);
           this.modelKeyComparison = __bind(this.modelKeyComparison, this);
           ModelKey.__super__.constructor.call(this);
+          this["interface"] = {};
+          this["interface"].scopeKeys = [];
           this.defaultIdKey = 'id';
           this.idKey = void 0;
         }
 
         ModelKey.prototype.evalModelHandle = function(model, modelKey) {
-          if (model === void 0 || modelKey === void 0) {
-            return void 0;
+          if ((model == null) || (modelKey == null)) {
+            return;
           }
           if (modelKey === 'self') {
             return model;
           } else {
+            if (_.isFunction(modelKey)) {
+              modelKey = modelKey();
+            }
             return GmapUtil.getPath(model, modelKey);
           }
         };
 
         ModelKey.prototype.modelKeyComparison = function(model1, model2) {
-          var scope;
-          scope = this.scope.coords != null ? this.scope : this.parentScope;
-          if (scope == null) {
-            throw 'No scope or parentScope set!';
+          var hasCoords, isEqual, scope;
+          hasCoords = _.contains(this["interface"].scopeKeys, 'coords');
+          if (hasCoords && (this.scope.coords != null) || !hasCoords) {
+            scope = this.scope;
           }
-          return GmapUtil.equalCoords(this.evalModelHandle(model1, scope.coords), this.evalModelHandle(model2, scope.coords));
+          if (scope == null) {
+            throw 'No scope set!';
+          }
+          if (hasCoords) {
+            isEqual = GmapUtil.equalCoords(this.evalModelHandle(model1, scope.coords), this.evalModelHandle(model2, scope.coords));
+            if (!isEqual) {
+              return isEqual;
+            }
+          }
+          isEqual = _.every(_.without(this["interface"].scopeKeys, 'coords'), (function(_this) {
+            return function(k) {
+              return _this.evalModelHandle(model1, scope[k]) === _this.evalModelHandle(model2, scope[k]);
+            };
+          })(this));
+          return isEqual;
         };
 
         ModelKey.prototype.setIdKey = function(scope) {
@@ -2522,11 +2544,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return opts;
         },
         isLabel: function(options) {
-          if ((options.labelContent != null) || (options.labelAnchor != null) || (options.labelClass != null) || (options.labelStyle != null) || (options.labelVisible != null)) {
-            return true;
-          } else {
+          if (options == null) {
             return false;
           }
+          return (options.labelContent != null) || (options.labelAnchor != null) || (options.labelClass != null) || (options.labelStyle != null) || (options.labelVisible != null);
         }
       });
     }
@@ -2896,7 +2917,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.updateModel = __bind(this.updateModel, this);
           this.handleModelChanges = __bind(this.handleModelChanges, this);
           this.destroy = __bind(this.destroy, this);
-          this.clonedModel = _.clone(this.model, true);
+          this.clonedModel = _.extend({}, this.model);
           this.deferred = uiGmapPromise.defer();
           _.each(this.keys, (function(_this) {
             return function(v, k) {
@@ -2971,7 +2992,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.updateModel = function(model) {
-          this.cloneModel = _.clone(model, true);
+          this.clonedModel = _.extend({}, model);
           return this.setMyScope('all', model, this.model);
         };
 
@@ -3111,12 +3132,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               var coords, newValue, oldValue;
               oldValue = _this.gObject.getIcon();
-              newValue = _this.getProp('icon', _this.model);
+              newValue = _this.getProp(_this.iconKey, _this.model);
               if (oldValue === newValue) {
                 return;
               }
               _this.gObject.setIcon(newValue);
-              coords = _this.getProp('coords', _this.model);
+              coords = _this.getProp(_this.coordsKey, _this.model);
               _this.gObject.setPosition(_this.getCoords(coords));
               return _this.gObject.setVisible(_this.validateCoords(coords));
             };
@@ -3138,6 +3159,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               icon = _this.getProp(_this.iconKey, _this.model);
               _options = _this.getProp(_this.optionsKey, _this.model);
               _this.opts = _this.createOptions(coords, icon, _options);
+              if (_this.isLabel(_this.gObject) !== _this.isLabel(_this.opts) && (_this.gObject != null)) {
+                _this.gMarkerManager.remove(_this.gObject);
+                _this.gObject = void 0;
+              }
               if (_this.gObject != null) {
                 _this.gObject.setOptions(_this.opts);
               }
@@ -3337,7 +3362,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         }
 
         WindowChildModel.prototype.doShow = function() {
-          if (this.scope.show) {
+          if (this.scope.show === true) {
             return this.showWindow();
           } else {
             return this.hideWindow();
@@ -4087,6 +4112,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.onWatch = __bind(this.onWatch, this);
           var self;
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, map);
+          this["interface"] = IMarker;
           self = this;
           this.plurals = new PropMap();
           this.scope.plurals = this.plurals;
@@ -4310,7 +4336,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           childScope = scope.$new(true);
           childScope.events = scope.events;
           keys = {};
-          _.each(IMarker.scopeKeys, function(v, k) {
+          IMarker.scopeKeys.forEach(function(k) {
             return keys[k] = scope[k];
           });
           child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gMarkerManager, doDrawSelf = false);
@@ -4381,7 +4407,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapPolygonsParentModel', [
-    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapPolygonChildModel', 'uiGmap_async', 'uiGmapPromise', function($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolygonChildModel, _async, uiGmapPromise) {
+    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapPolygonChildModel', 'uiGmap_async', 'uiGmapPromise', 'uiGmapIPolygon', function($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolygonChildModel, _async, uiGmapPromise, IPolygon) {
       var PolygonsParentModel;
       return PolygonsParentModel = (function(_super) {
         __extends(PolygonsParentModel, _super);
@@ -4395,7 +4421,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.attrs = attrs;
           this.gMap = gMap;
           this.defaults = defaults;
-          this.modelKeyComparison = __bind(this.modelKeyComparison, this);
           this.createChild = __bind(this.createChild, this);
           this.pieceMeal = __bind(this.pieceMeal, this);
           this.createAllNew = __bind(this.createAllNew, this);
@@ -4409,11 +4434,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchModels = __bind(this.watchModels, this);
           this.watch = __bind(this.watch, this);
           PolygonsParentModel.__super__.constructor.call(this, scope);
+          this["interface"] = IPolygon;
           self = this;
           this.$log = $log;
           this.plurals = new PropMap();
-          this.scopePropNames = ['path', 'stroke', 'clickable', 'draggable', 'editable', 'geodesic', 'icons', 'visible'];
-          _.each(this.scopePropNames, (function(_this) {
+          _.each(IPolygon.scopeKeys, (function(_this) {
             return function(name) {
               return _this[name + 'Key'] = void 0;
             };
@@ -4501,7 +4526,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolygonsParentModel.prototype.watchOurScope = function(scope) {
-          return _.each(this.scopePropNames, (function(_this) {
+          return _.each(IPolygon.scopeKeys, (function(_this) {
             return function(name) {
               var nameKey;
               nameKey = name + 'Key';
@@ -4624,7 +4649,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         PolygonsParentModel.prototype.createChild = function(model, gMap) {
           var child, childScope;
           childScope = this.scope.$new(false);
-          this.setChildScope(this.scopePropNames, childScope, model);
+          this.setChildScope(IPolygon.scopeKeys, childScope, model);
           childScope.$watch('model', (function(_this) {
             return function(newValue, oldValue) {
               if (newValue !== oldValue) {
@@ -4642,10 +4667,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return child;
         };
 
-        PolygonsParentModel.prototype.modelKeyComparison = function(model1, model2) {
-          return _.isEqual(this.evalModelHandle(model1, this.scope.path), this.evalModelHandle(model2, this.scope.path));
-        };
-
         return PolygonsParentModel;
 
       })(ModelKey);
@@ -4659,7 +4680,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapPolylinesParentModel', [
-    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapPolylineChildModel', 'uiGmap_async', 'uiGmapPromise', function($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async, uiGmapPromise) {
+    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapPolylineChildModel', 'uiGmap_async', 'uiGmapPromise', 'uiGmapIPolyline', function($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async, uiGmapPromise, IPolyline) {
       var PolylinesParentModel;
       return PolylinesParentModel = (function(_super) {
         __extends(PolylinesParentModel, _super);
@@ -4673,7 +4694,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.attrs = attrs;
           this.gMap = gMap;
           this.defaults = defaults;
-          this.modelKeyComparison = __bind(this.modelKeyComparison, this);
           this.setChildScope = __bind(this.setChildScope, this);
           this.createChild = __bind(this.createChild, this);
           this.pieceMeal = __bind(this.pieceMeal, this);
@@ -4688,11 +4708,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchModels = __bind(this.watchModels, this);
           this.watch = __bind(this.watch, this);
           PolylinesParentModel.__super__.constructor.call(this, scope);
+          this["interface"] = IPolyline;
           self = this;
           this.$log = $log;
           this.plurals = new PropMap();
-          this.scopePropNames = ['path', 'stroke', 'clickable', 'draggable', 'editable', 'geodesic', 'icons', 'visible'];
-          _.each(this.scopePropNames, (function(_this) {
+          _.each(IPolyline.scopeKeys, (function(_this) {
             return function(name) {
               return _this[name + 'Key'] = void 0;
             };
@@ -4780,7 +4800,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolylinesParentModel.prototype.watchOurScope = function(scope) {
-          return _.each(this.scopePropNames, (function(_this) {
+          return _.each(IPolyline.scopeKeys, (function(_this) {
             return function(name) {
               var nameKey;
               nameKey = name + 'Key';
@@ -4921,7 +4941,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolylinesParentModel.prototype.setChildScope = function(childScope, model) {
-          _.each(this.scopePropNames, (function(_this) {
+          _.each(IPolyline.scopeKeys, (function(_this) {
             return function(name) {
               var nameKey, newValue;
               nameKey = name + 'Key';
@@ -4932,10 +4952,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this));
           return childScope.model = model;
-        };
-
-        PolylinesParentModel.prototype.modelKeyComparison = function(model1, model2) {
-          return _.isEqual(this.evalModelHandle(model1, this.scope.path), this.evalModelHandle(model2, this.scope.path));
         };
 
         return PolylinesParentModel;
@@ -5276,7 +5292,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapWindowsParentModel', [
-    'uiGmapIWindowParentModel', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapWindowChildModel', 'uiGmapLinked', 'uiGmap_async', 'uiGmapLogger', '$timeout', '$compile', '$http', '$templateCache', '$interpolate', 'uiGmapPromise', function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async, $log, $timeout, $compile, $http, $templateCache, $interpolate, uiGmapPromise) {
+    'uiGmapIWindowParentModel', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapWindowChildModel', 'uiGmapLinked', 'uiGmap_async', 'uiGmapLogger', '$timeout', '$compile', '$http', '$templateCache', '$interpolate', 'uiGmapPromise', 'uiGmapIWindow', 'uiGmapGmapUtil', function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async, $log, $timeout, $compile, $http, $templateCache, $interpolate, uiGmapPromise, IWindow, GmapUtil) {
       var WindowsParentModel;
       WindowsParentModel = (function(_super) {
         __extends(WindowsParentModel, _super);
@@ -5286,6 +5302,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         function WindowsParentModel(scope, element, attrs, ctrls, gMap, markersScope) {
           this.gMap = gMap;
           this.markersScope = markersScope;
+          this.modelKeyComparison = __bind(this.modelKeyComparison, this);
           this.interpolateContent = __bind(this.interpolateContent, this);
           this.setChildScope = __bind(this.setChildScope, this);
           this.createWindow = __bind(this.createWindow, this);
@@ -5302,9 +5319,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchModels = __bind(this.watchModels, this);
           this.go = __bind(this.go, this);
           WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache);
+          this["interface"] = IWindow;
           this.plurals = new PropMap();
-          this.scopePropNames = ['coords', 'template', 'templateUrl', 'templateParameter', 'isIconVisibleOnClick', 'closeClick', 'options', 'show'];
-          _.each(this.scopePropNames, (function(_this) {
+          _.each(IWindow.scopeKeys, (function(_this) {
             return function(name) {
               return _this[name + 'Key'] = void 0;
             };
@@ -5400,7 +5417,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.watchOurScope = function(scope) {
-          return _.each(this.scopePropNames, (function(_this) {
+          return _.each(IWindow.scopeKeys, (function(_this) {
             return function(name) {
               var nameKey;
               nameKey = name + 'Key';
@@ -5589,7 +5606,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.setChildScope = function(childScope, model) {
-          _.each(this.scopePropNames, (function(_this) {
+          _.each(IWindow.scopeKeys, (function(_this) {
             return function(name) {
               var nameKey, newValue;
               nameKey = name + 'Key';
@@ -5615,6 +5632,24 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             interpModel[key] = model[key];
           }
           return exp(interpModel);
+        };
+
+        WindowsParentModel.prototype.modelKeyComparison = function(model1, model2) {
+          var isEqual, scope;
+          scope = this.scope.coords != null ? this.scope : this.parentScope;
+          if (scope == null) {
+            throw 'No scope or parentScope set!';
+          }
+          isEqual = GmapUtil.equalCoords(this.evalModelHandle(model1, scope.coords), this.evalModelHandle(model2, scope.coords));
+          if (!isEqual) {
+            return isEqual;
+          }
+          isEqual = _.every(_.without(this["interface"].scopeKeys, 'coords'), (function(_this) {
+            return function(k) {
+              return _this.evalModelHandle(model1, scope[k]) === _this.evalModelHandle(model2, scope[k]);
+            };
+          })(this));
+          return isEqual;
         };
 
         return WindowsParentModel;
@@ -5957,7 +5992,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
       return IMarker = (function(_super) {
         __extends(IMarker, _super);
 
-        IMarker.scopeKeys = {
+        IMarker.scope = {
           coords: '=coords',
           icon: '=icon',
           click: '&click',
@@ -5968,7 +6003,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           control: '=control'
         };
 
-        IMarker.keys = _.keys(IMarker.scopeKeys);
+        IMarker.scopeKeys = _.keys(IMarker.scope);
+
+        IMarker.keys = IMarker.scopeKeys;
 
         IMarker.extend(CtrlHandle);
 
@@ -5978,7 +6015,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.priority = -1;
           this.transclude = true;
           this.replace = true;
-          this.scope = _.extend(this.scope || {}, IMarker.scopeKeys);
+          this.scope = _.extend(this.scope || {}, IMarker.scope);
         }
 
         return IMarker;
@@ -5998,19 +6035,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
       return IPolygon = (function(_super) {
         __extends(IPolygon, _super);
 
-        IPolygon.include(GmapUtil);
-
-        IPolygon.extend(CtrlHandle);
-
-        function IPolygon() {}
-
-        IPolygon.prototype.restrict = 'EMA';
-
-        IPolygon.prototype.replace = true;
-
-        IPolygon.prototype.require = '^' + 'uiGmapGoogleMap';
-
-        IPolygon.prototype.scope = {
+        IPolygon.scope = {
           path: '=path',
           stroke: '=stroke',
           clickable: '=',
@@ -6026,6 +6051,22 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           fit: '=',
           control: '=control'
         };
+
+        IPolygon.scopeKeys = _.keys(IPolygon.scope);
+
+        IPolygon.include(GmapUtil);
+
+        IPolygon.extend(CtrlHandle);
+
+        function IPolygon() {}
+
+        IPolygon.prototype.restrict = 'EMA';
+
+        IPolygon.prototype.replace = true;
+
+        IPolygon.prototype.require = '^' + 'uiGmapGoogleMap';
+
+        IPolygon.prototype.scope = IPolygon.scope;
 
         IPolygon.prototype.DEFAULTS = {};
 
@@ -6048,19 +6089,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
       return IPolyline = (function(_super) {
         __extends(IPolyline, _super);
 
-        IPolyline.include(GmapUtil);
-
-        IPolyline.extend(CtrlHandle);
-
-        function IPolyline() {}
-
-        IPolyline.prototype.restrict = 'EMA';
-
-        IPolyline.prototype.replace = true;
-
-        IPolyline.prototype.require = '^' + 'uiGmapGoogleMap';
-
-        IPolyline.prototype.scope = {
+        IPolyline.scope = {
           path: '=',
           stroke: '=',
           clickable: '=',
@@ -6073,6 +6102,22 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           fit: '=',
           events: '='
         };
+
+        IPolyline.scopeKeys = _.keys(IPolyline.scope);
+
+        IPolyline.include(GmapUtil);
+
+        IPolyline.extend(CtrlHandle);
+
+        function IPolyline() {}
+
+        IPolyline.prototype.restrict = 'EMA';
+
+        IPolyline.prototype.replace = true;
+
+        IPolyline.prototype.require = '^' + 'uiGmapGoogleMap';
+
+        IPolyline.prototype.scope = IPolyline.scope;
 
         IPolyline.prototype.DEFAULTS = {};
 
@@ -6120,6 +6165,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
       return IWindow = (function(_super) {
         __extends(IWindow, _super);
 
+        IWindow.scope = {
+          coords: '=coords',
+          template: '=template',
+          templateUrl: '=templateurl',
+          templateParameter: '=templateparameter',
+          isIconVisibleOnClick: '=isiconvisibleonclick',
+          closeClick: '&closeclick',
+          options: '=options',
+          control: '=control',
+          show: '=show'
+        };
+
+        IWindow.scopeKeys = _.keys(IWindow.scope);
+
         IWindow.include(ChildEvents);
 
         IWindow.extend(CtrlHandle);
@@ -6131,17 +6190,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.priority = -100;
           this.require = '^' + 'uiGmapGoogleMap';
           this.replace = true;
-          this.scope = {
-            coords: '=coords',
-            template: '=template',
-            templateUrl: '=templateurl',
-            templateParameter: '=templateparameter',
-            isIconVisibleOnClick: '=isiconvisibleonclick',
-            closeClick: '&closeclick',
-            options: '=options',
-            control: '=control',
-            show: '=show'
-          };
+          this.scope = _.extend(this.scope || {}, IWindow.scope);
         }
 
         return IWindow;

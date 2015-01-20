@@ -33,7 +33,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         #todo: watch model in here, and recreate / clean gObject on change
 
         doShow: =>
-          if @scope.show
+          if @scope.show == true
             @showWindow()
           else
             @hideWindow()

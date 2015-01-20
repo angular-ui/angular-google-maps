@@ -3,13 +3,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
   'uiGmapGmapUtil', 'uiGmapBaseObject', 'uiGmapLogger', 'uiGmapCtrlHandle',
   (GmapUtil, BaseObject, Logger, CtrlHandle) ->
     class IPolyline extends BaseObject
-      @include GmapUtil
-      @extend CtrlHandle
-      constructor: ()->
-      restrict: 'EMA'
-      replace: true
-      require: '^' + 'uiGmapGoogleMap'
-      scope:
+      IPolyline.scope =
         path: '='
         stroke: '='
         clickable: '='
@@ -21,6 +15,15 @@ angular.module('uiGmapgoogle-maps.directives.api')
         static: '='
         fit: '='
         events: '='
+      IPolyline.scopeKeys = _.keys(IPolyline.scope)
+
+      @include GmapUtil
+      @extend CtrlHandle
+      constructor: ->
+      restrict: 'EMA'
+      replace: true
+      require: '^' + 'uiGmapGoogleMap'
+      scope: IPolyline.scope
 
       DEFAULTS: {}
       $log: Logger

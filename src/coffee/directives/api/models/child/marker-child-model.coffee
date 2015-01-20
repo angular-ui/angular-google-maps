@@ -23,7 +23,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @trackModel = true, @needRedraw = false) ->
         #where @model is a reference to model in the controller scope
         #clonedModel is a copy for comparison
-        @clonedModel = _.clone @model,true
+        @clonedModel = _.extend({},@model)
         @deferred = uiGmapPromise.defer()
         _.each @keys, (v, k) =>
           @[k + 'Key'] = if _.isFunction @keys[k] then @keys[k]() else @keys[k]
@@ -78,7 +78,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @needRedraw = true
 
       updateModel: (model) =>
-        @cloneModel = _.clone(model,true)
+        @clonedModel = _.extend({},model) #changed from _.clone(model, true) eliminates lodash dep (so you can use underscore)
         @setMyScope 'all', model, @model
 
       renderGMarker: (doDraw = true, validCb) ->
@@ -143,10 +143,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         return if @isNotValid(scope) or !@gObject?
         @renderGMarker doDraw, =>
           oldValue = @gObject.getIcon()
-          newValue = @getProp 'icon', @model
+          newValue = @getProp @iconKey, @model
           return if  oldValue == newValue
           @gObject.setIcon newValue
-          coords = @getProp 'coords', @model
+          coords = @getProp(@coordsKey, @model)
           @gObject.setPosition @getCoords coords
           @gObject.setVisible @validateCoords coords
 
@@ -157,6 +157,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           icon = @getProp @iconKey, @model
           _options = @getProp @optionsKey, @model
           @opts = @createOptions coords, icon, _options
+
+          if @isLabel(@gObject) != @isLabel(@opts) and @gObject?
+            @gMarkerManager.remove @gObject
+            @gObject = undefined
 
           #update existing options if it is the same type
           if @gObject?

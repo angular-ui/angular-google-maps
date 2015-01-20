@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+    <script src="../bower_components/lodash/dist/lodash.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-1075-plurals-updates-other-than-coords.js"></script>
+</head>
+<body ng-app="appMaps">
+<div ng-controller="mapCtrl as mapvm">
+    <button ng-click="mapvm.changeIcon()">Update Icon property</button>
+    <button ng-click=mapvm.changeObject()>Replace Marker object</button>
+    <button ng-click=mapvm.changeOptionsToLabel()>Change Options to MarkerLabel</button>
+    <button ng-click=mapvm.changeOptionsToNotLabel()>Change Options to Marker</button>
+    <button ng-click=mapvm.changePath()>Change Polygon Path</button>
+    <button ng-click=mapvm.changeFill()>Change Polygon Fill</button>
+    <button ng-click=mapvm.changeStroke()>Change Polygon Stroke</button>
+    <ui-gmap-google-map
+            center='mapvm.map.center'
+            zoom='mapvm.map.zoom'>
+
+        <ui-gmap-markers
+                models="mapvm.map.markers"
+                coords="'location'"
+                icon="'icon'"
+                options="'options'"
+                control="mapvm.markerControl"
+                >
+        </ui-gmap-markers>
+
+        <ui-gmap-polygons
+                models="mapvm.map.polygons"
+                path="'path'"
+                fill="'fill'"
+                stroke="'stroke'"
+                >
+        </ui-gmap-polygons>
+
+    </ui-gmap-google-map>
+</div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 describe 'uiGmapWindowsParentModel', ->
   beforeEach ->
-    angular.mock.module('uiGmapgoogle-maps.directives.api.models.parent')
+    angular.mock.module('mockModule', 'uiGmapgoogle-maps')
+
 
     inject  ($rootScope, uiGmapWindowsParentModel) =>
         @scope = $rootScope.$new()
