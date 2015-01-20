@@ -158,7 +158,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           _options = @getProp @optionsKey, @model
           @opts = @createOptions coords, icon, _options
 
-          if @isLabel(@gObject) != @isLabel(@opts)
+          if @isLabel(@gObject) != @isLabel(@opts) and @gObject?
             @gMarkerManager.remove @gObject
             @gObject = undefined
 

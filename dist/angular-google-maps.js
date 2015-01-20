@@ -3159,7 +3159,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               icon = _this.getProp(_this.iconKey, _this.model);
               _options = _this.getProp(_this.optionsKey, _this.model);
               _this.opts = _this.createOptions(coords, icon, _options);
-              if (_this.isLabel(_this.gObject) !== _this.isLabel(_this.opts)) {
+              if (_this.isLabel(_this.gObject) !== _this.isLabel(_this.opts) && (_this.gObject != null)) {
                 _this.gMarkerManager.remove(_this.gObject);
                 _this.gObject = void 0;
               }
@@ -5292,7 +5292,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapWindowsParentModel', [
-    'uiGmapIWindowParentModel', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapWindowChildModel', 'uiGmapLinked', 'uiGmap_async', 'uiGmapLogger', '$timeout', '$compile', '$http', '$templateCache', '$interpolate', 'uiGmapPromise', function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async, $log, $timeout, $compile, $http, $templateCache, $interpolate, uiGmapPromise) {
+    'uiGmapIWindowParentModel', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapWindowChildModel', 'uiGmapLinked', 'uiGmap_async', 'uiGmapLogger', '$timeout', '$compile', '$http', '$templateCache', '$interpolate', 'uiGmapPromise', 'uiGmapIWindow', 'uiGmapGmapUtil', function(IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async, $log, $timeout, $compile, $http, $templateCache, $interpolate, uiGmapPromise, IWindow, GmapUtil) {
       var WindowsParentModel;
       WindowsParentModel = (function(_super) {
         __extends(WindowsParentModel, _super);
@@ -5319,9 +5319,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchModels = __bind(this.watchModels, this);
           this.go = __bind(this.go, this);
           WindowsParentModel.__super__.constructor.call(this, scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache);
-          this["interface"] = WindowChildModel;
+          this["interface"] = IWindow;
           this.plurals = new PropMap();
-          _.each(WindowChildModel.scopeKeys, (function(_this) {
+          _.each(IWindow.scopeKeys, (function(_this) {
             return function(name) {
               return _this[name + 'Key'] = void 0;
             };
@@ -5417,7 +5417,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.watchOurScope = function(scope) {
-          return _.each(WindowChildModel.scopeKeys, (function(_this) {
+          return _.each(IWindow.scopeKeys, (function(_this) {
             return function(name) {
               var nameKey;
               nameKey = name + 'Key';
@@ -5606,7 +5606,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.setChildScope = function(childScope, model) {
-          _.each(WindowChildModel.scopeKeys, (function(_this) {
+          _.each(IWindow.scopeKeys, (function(_this) {
             return function(name) {
               var nameKey, newValue;
               nameKey = name + 'Key';

@@ -6,18 +6,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
   ['uiGmapIWindowParentModel', 'uiGmapModelsWatcher',
     'uiGmapPropMap', 'uiGmapWindowChildModel',
     'uiGmapLinked', 'uiGmap_async', 'uiGmapLogger',
-    '$timeout', '$compile', '$http', '$templateCache', '$interpolate','uiGmapPromise',
+    '$timeout', '$compile', '$http', '$templateCache', '$interpolate','uiGmapPromise', 'uiGmapIWindow', 'uiGmapGmapUtil',
     (IWindowParentModel, ModelsWatcher, PropMap, WindowChildModel, Linked, _async, $log,
-      $timeout, $compile, $http, $templateCache, $interpolate, uiGmapPromise) ->
+      $timeout, $compile, $http, $templateCache, $interpolate, uiGmapPromise, IWindow, GmapUtil) ->
         class WindowsParentModel extends IWindowParentModel
           @include ModelsWatcher
           constructor: (scope, element, attrs, ctrls, @gMap, @markersScope) ->
             super(scope, element, attrs, ctrls, $timeout, $compile, $http, $templateCache)
-            @interface = WindowChildModel
+            @interface = IWindow
             @plurals = new PropMap()
 
             #setting up local references to propety keys IE: @coordsKey
-            _.each WindowChildModel.scopeKeys, (name) =>
+            _.each IWindow.scopeKeys, (name) =>
               @[name + 'Key'] = undefined
             @linked = new Linked(scope, element, attrs, ctrls)
             @models = undefined
@@ -81,7 +81,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @rebuildAll(scope, false, true)
 
           watchOurScope: (scope) =>
-            _.each WindowChildModel.scopeKeys, (name) =>
+            _.each IWindow.scopeKeys, (name) =>
               nameKey = name + 'Key'
               @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
 
@@ -206,7 +206,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             child
 
           setChildScope: (childScope, model) =>
-            _.each WindowChildModel.scopeKeys, (name) =>
+            _.each IWindow.scopeKeys, (name) =>
               nameKey = name + 'Key'
               newValue = if @[nameKey] == 'self' then model else model[@[nameKey]]
               if(newValue != childScope[name])
