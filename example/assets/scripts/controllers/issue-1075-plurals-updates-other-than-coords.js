@@ -22,6 +22,8 @@ function mapController(GoogleMapApi) {
   viewmodel.changeObject = changeObject;
   viewmodel.changeOptionsToLabel= changeOptionsToLabel;
   viewmodel.changeOptionsToNotLabel= changeOptionsToNotLabel;
+  viewmodel.changePath= changePath;
+  viewmodel.changeFill= changeFill;
   viewmodel.markerControl = {}
 
 
@@ -37,7 +39,39 @@ function mapController(GoogleMapApi) {
         id: 'abc123',
         icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
       }
-    ]
+    ],
+    polygons: [
+      {
+        id: 1,
+        path: [
+          {
+            latitude: 45,
+            longitude: -74
+          },
+          {
+            latitude: 30,
+            longitude: -89
+          },
+          {
+            latitude: 37,
+            longitude: -122
+          },
+          {
+            latitude: 60,
+            longitude: -95
+          }
+        ],
+        stroke: {
+          color: '#ff6262',
+          weight: 5
+        },
+        fill:{ color: '#2c8aa7', opacity: '0.3' },
+        editable: true,
+        draggable: true,
+        geodesic: true,
+        visible: true
+        }
+      ]
   };
 
   function changeIcon() {
@@ -80,5 +114,11 @@ function mapController(GoogleMapApi) {
   function changeOptionsToNotLabel(){
     viewmodel.map.markers[0].options = {};
   }
-}
 
+  function changePath(){
+    viewmodel.map.polygons[0].path[0].latitude += 5;
+  }
+  function changeFill(){
+    viewmodel.map.polygons[0].fill.color = '#ec19d0';
+  }
+}
