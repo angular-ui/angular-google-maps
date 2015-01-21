@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2015-01-19
+/*! angular-google-maps 2.0.12 2015-01-20
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -6529,12 +6529,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   if (_.isEqual(newValue, oldValue)) {
                     return;
                   }
-                  opts.options = newValue;
+                  if (watchItem === 'options') {
+                    opts.options = newValue;
+                  } else {
+                    opts.options[watchItem] = newValue;
+                  }
                   if (_gMap != null) {
                     return _gMap.setOptions(opts);
                   }
-                });
-              }, true);
+                }, true);
+              });
             };
           })(this));
         };

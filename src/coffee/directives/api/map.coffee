@@ -259,7 +259,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
               scope.$watch toWatch, (newValue,oldValue) ->
                 watchItem = @exp
                 return  if _.isEqual(newValue,oldValue)
-                opts.options = newValue
+                if watchItem == 'options'
+                  opts.options = newValue
+                else
+                  opts.options[watchItem] = newValue
                 _gMap.setOptions opts  if _gMap?
-            , true
+              , true
   ]
