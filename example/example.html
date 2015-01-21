@@ -88,7 +88,7 @@
         </ui-gmap-marker>
 
         <ui-gmap-markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
-                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
+                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions" modelsbyref="true">
         </ui-gmap-markers>
 
         <ui-gmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'" events="map.markers2Events">
@@ -228,7 +228,10 @@
                 <td>
                     <div>Do Cluster?: <input type="checkbox" ng-model="map.doClusterRandomMarkers"></div>
                     <div>Cluster Options: <input type="text" ng-model='map.clusterOptionsText'>
-                        <div>Use Ugly Cluster Image?: <input type="checkbox" ng-model="map.doUgly"></div>
+                      <div ng-repeat="cType in map.clusterTypes">
+                        {{cType}}
+                        <input ng-model="map.currentClusterType" type="radio" id="{{cType}}" value="{{cType}}" ng-change="map.selectClusterType(cType)">
+                      </div>
                     </div>
                     <div ng-init="numOfMarkers = 1000">
                         <input type="text" text="Number of Markers" ng-model="numOfMarkers">

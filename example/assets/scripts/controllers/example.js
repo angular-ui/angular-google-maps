@@ -173,6 +173,49 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
     return ret;
   };
 
+
+  var clusterTypes = ['standard','ugly','beer'];
+  var selectedClusterTypes = {
+    ugly:{
+      title: 'Hi I am a Cluster!',
+      gridSize: 60, ignoreHidden: true,
+      minimumClusterSize: 2,
+      imageExtension: 'png',
+      imagePath: 'assets/images/cluster', imageSizes: [72]
+    },
+    beer:{
+      title: 'Beer!',
+      gridSize: 60,
+      ignoreHidden: true,
+      minimumClusterSize: 2,
+      enableRetinaIcons: true,
+      styles: [{
+        url: 'assets/images/beer.png',
+        textColor: '#ddddd',
+        textSize: 18,
+        width: 33,
+        height: 33,
+      }]
+    },
+    standard:{
+      title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2
+    }
+  };
+  var selectClusterType = function(value){
+    var cloned = _.clone($scope.map.randomMarkers, true);
+    $scope.map.randomMarkers = [];
+    $scope.map.clusterOptions = $scope.map.selectedClusterTypes[value] || $scope.map.selectedClusterTypes['standard'];
+    $scope.map.clusterOptionsText =  angular.toJson($scope.map.clusterOptions);
+    if(!value){
+      value = 'standard';
+    }
+    $timeout(function(){
+      $scope.map.randomMarkers = cloned;
+    },200);
+
+    return value;
+  };
+
   angular.extend($scope, {
     example2: {
       doRebuildAll: false
@@ -307,9 +350,11 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
       dynamicMarkers: [],
       randomMarkers: [],
       doClusterRandomMarkers: true,
-      doUgly: false, //great name :)
-      clusterOptions: {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2,
-        imageExtension: 'png', imagePath: 'assets/images/cluster', imageSizes: [72]},
+      currentClusterType: 'standard',
+      clusterTypes: clusterTypes,
+      selectClusterType: selectClusterType,
+      selectedClusterTypes: selectedClusterTypes,
+      clusterOptions: selectedClusterTypes['standard'],
       clickedMarker: {
         id: 0,
         options:{
@@ -580,27 +625,6 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
       $scope.map.clusterOptions = angular.fromJson($scope.map.clusterOptionsText);
   });
 
-  var doUglyFn = function (value) {
-    if (value === undefined || value === null) {
-      value = $scope.map.doUgly;
-    }
-    var json;
-    if (value)
-      json = {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2,
-        imageExtension: 'png', imagePath: 'assets/images/cluster', imageSizes: [72]};
-    else
-      json = {title: 'Hi I am a Cluster!', gridSize: 60, ignoreHidden: true, minimumClusterSize: 2};
-    $scope.map.clusterOptions = json;
-    $scope.map.clusterOptionsText = angular.toJson(json);
-  };
-  doUglyFn();
-
-  $scope.$watch('map.doUgly', function (newValue, oldValue) {
-    if (newValue !== oldValue) {
-      doUglyFn(newValue);
-    }
-  });
-
   $scope.genRandomMarkers = function (numberOfMarkers) {
     genRandomMarkers(numberOfMarkers, $scope);
   };
@@ -619,7 +643,7 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
         $log.log(marker.getPosition().lng());
       }
     }
-  }
+  };
   $scope.onMarkerClicked = onMarkerClicked;
 
   $scope.clackMarker = function (gMarker,eventName, model) {
