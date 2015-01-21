@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2015-01-20
+/*! angular-google-maps 2.1.0-SNAPSHOT 2015-01-21
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -848,7 +848,13 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapGmapUtil', [
     'uiGmapLogger', '$compile', function(Logger, $compile) {
-      var getCoords, getLatitude, getLongitude, validateCoords;
+      var getCoords, getLatitude, getLongitude, validateCoords, _isFalse, _isTruthy;
+      _isTruthy = function(value, bool, optionsArray) {
+        return value === bool || optionsArray.indexOf(value) !== -1;
+      };
+      _isFalse = function(value) {
+        return _isTruthy(value, false, ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO']);
+      };
       getLatitude = function(value) {
         if (Array.isArray(value) && value.length === 2) {
           return value[1];
@@ -973,11 +979,12 @@ Nicholas McCready - https://twitter.com/nmccready
           return ret;
         },
         defaultDelay: 50,
-        isTrue: function(val) {
-          return angular.isDefined(val) && val !== null && val === true || val === '1' || val === 'y' || val === 'true';
+        isTrue: function(value) {
+          return _isTruthy(value, true, ['true', 'TRUE', 1, 'y', 'Y', 'yes', 'YES']);
         },
-        isFalse: function(value) {
-          return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
+        isFalse: _isFalse,
+        isFalsy: function(value) {
+          return _isTruthy(value, false, [void 0, null]) || _isFalse(value);
         },
         getCoords: getCoords,
         validateCoords: validateCoords,
@@ -4994,7 +5001,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolylinesParentModel.prototype.setChildScope = function(childScope, model) {
-          _.each(IPolyline.scopeKeys, (function(_this) {
+          IPolyline.scopeKeys.forEach((function(_this) {
             return function(name) {
               var nameKey, newValue;
               nameKey = name + 'Key';
@@ -13625,6 +13632,59 @@ angular.module('uiGmapgoogle-maps.extensions')
               return this;
             }).apply(obj1, [obj2]);
           };
+          ////////////////////////////////////////////////////////////////////////////////
+          /*
+          Other overrides relevant to MarkerClusterPlus
+          */
+          ////////////////////////////////////////////////////////////////////////////////
+          /**
+          * Positions and shows the icon.
+          */
+          ClusterIcon.prototype.show = function () {
+            if (this.div_) {
+              var img = "";
+              // NOTE: values must be specified in px units
+              var bp = this.backgroundPosition_.split(" ");
+              var spriteH = parseInt(bp[0].trim(), 10);
+              var spriteV = parseInt(bp[1].trim(), 10);
+              var pos = this.getPosFromLatLng_(this.center_);
+              this.div_.style.cssText = this.createCss(pos);
+              img = "<img src='" + this.url_ + "' style='position: absolute; top: " + spriteV + "px; left: " + spriteH + "px; ";
+              if (!this.cluster_.getMarkerClusterer().enableRetinaIcons_) {
+                img += "clip: rect(" + (-1 * spriteV) + "px, " + ((-1 * spriteH) + this.width_) + "px, " +
+                ((-1 * spriteV) + this.height_) + "px, " + (-1 * spriteH) + "px);";
+              }
+              // ADDED FOR RETINA SUPPORT
+              else {
+                img += "width: " + this.width_ + "px;" + "height: " + this.height_ + "px;";
+              }
+              // END ADD
+              img += "'>";
+              this.div_.innerHTML = img + "<div style='" +
+              "position: absolute;" +
+              "top: " + this.anchorText_[0] + "px;" +
+              "left: " + this.anchorText_[1] + "px;" +
+              "color: " + this.textColor_ + ";" +
+              "font-size: " + this.textSize_ + "px;" +
+              "font-family: " + this.fontFamily_ + ";" +
+              "font-weight: " + this.fontWeight_ + ";" +
+              "font-style: " + this.fontStyle_ + ";" +
+              "text-decoration: " + this.textDecoration_ + ";" +
+              "text-align: center;" +
+              "width: " + this.width_ + "px;" +
+              "line-height:" + this.height_ + "px;" +
+              "'>" + this.sums_.text + "</div>";
+              if (typeof this.sums_.title === "undefined" || this.sums_.title === "") {
+                this.div_.title = this.cluster_.getMarkerClusterer().getTitle();
+              } else {
+                this.div_.title = this.sums_.title;
+              }
+              this.div_.style.display = "";
+            }
+            this.visible_ = true;
+          };
+          //END OTHER OVERRIDES
+          ////////////////////////////////////////////////////////////////////////////////
 
           return NgMapMarkerClusterer;
 
