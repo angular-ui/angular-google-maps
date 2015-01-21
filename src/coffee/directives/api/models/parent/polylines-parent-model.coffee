@@ -168,7 +168,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         child
 
       setChildScope: (childScope, model) =>
-        _.each IPolyline.scopeKeys, (name) =>
+        IPolyline.scopeKeys.forEach (name) =>
           nameKey = name + 'Key'
           newValue = if @[nameKey] == 'self' then model else model[@[nameKey]]
           if(newValue != childScope[name])

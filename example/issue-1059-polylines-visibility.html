@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+    <link rel="stylesheet" href="assets/stylesheets/gwin-size-fix.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+    <script src="../bower_components/lodash/dist/lodash.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-1059-polylines-visibility.js"></script>
+    <script src="assets/scripts/controllers/templates/issue-1056-template-ctrl.js"></script>
+</head>
+<body ng-app="appMaps">
+<div id="map_canvas" ng-controller="mainCtrl as main">
+    <div class="buttons">
+        <button ng-click="main.toggleLine(0)"> toggle line1 {{main.polylines[0].visible}}</button>
+        <button ng-click="main.toggleLine(1)"> toggle line2 {{main.polylines[1].visible}}</button>
+        <button ng-click="main.toggleEditable(0)"> toggle line1 edit {{main.polylines[0].editable}}</button>
+        <button ng-click="main.toggleEditable(1)"> toggle line2 edit {{main.polylines[1].editable}}</button>
+
+    </div>
+    <ui-gmap-google-map center="main.map.center" zoom="main.map.zoom" draggable="true" options="main.options"
+                        bounds="main.map.bounds">
+        <ui-gmap-polylines
+                models="main.polylines"
+                path="'path'"
+                stroke="'stroke'"
+                visible="'visible'"
+                geodesic="'geodesic'"
+                fit="false"
+                editable="'editable'"
+                draggable="'draggable'"
+        ></ui-gmap-polylines>
+    </ui-gmap-google-map>
+</div>
+</body>
+</html>

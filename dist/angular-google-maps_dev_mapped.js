@@ -798,7 +798,13 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapGmapUtil', [
     'uiGmapLogger', '$compile', function(Logger, $compile) {
-      var getCoords, getLatitude, getLongitude, validateCoords;
+      var getCoords, getLatitude, getLongitude, validateCoords, _isFalse, _isTruthy;
+      _isTruthy = function(value, bool, optionsArray) {
+        return value === bool || optionsArray.indexOf(value) !== -1;
+      };
+      _isFalse = function(value) {
+        return _isTruthy(value, false, ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO']);
+      };
       getLatitude = function(value) {
         if (Array.isArray(value) && value.length === 2) {
           return value[1];
@@ -923,11 +929,12 @@ Nicholas McCready - https://twitter.com/nmccready
           return ret;
         },
         defaultDelay: 50,
-        isTrue: function(val) {
-          return angular.isDefined(val) && val !== null && val === true || val === '1' || val === 'y' || val === 'true';
+        isTrue: function(value) {
+          return _isTruthy(value, true, ['true', 'TRUE', 1, 'y', 'Y', 'yes', 'YES']);
         },
-        isFalse: function(value) {
-          return ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) !== -1;
+        isFalse: _isFalse,
+        isFalsy: function(value) {
+          return _isTruthy(value, false, [void 0, null]) || _isFalse(value);
         },
         getCoords: getCoords,
         validateCoords: validateCoords,
@@ -4941,7 +4948,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         PolylinesParentModel.prototype.setChildScope = function(childScope, model) {
-          _.each(IPolyline.scopeKeys, (function(_this) {
+          IPolyline.scopeKeys.forEach((function(_this) {
             return function(name) {
               var nameKey, newValue;
               nameKey = name + 'Key';

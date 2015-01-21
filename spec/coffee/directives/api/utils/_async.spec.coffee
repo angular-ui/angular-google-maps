@@ -128,6 +128,8 @@ describe "_async", ->
   describe 'chunkSizeFrom', ->
     it 'undefined returns undefined', ->
       expect(@subject.chunkSizeFrom(undefined)).toBeFalsy()
+      #note this allows chunkSize to default to a chunk of 20 or some chunk
+      #if it returns false then chunking is disabled by default on plurals
       expect(@subject.chunkSizeFrom(undefined) == undefined).toBeTruthy()
 
     it 'false returns false', ->

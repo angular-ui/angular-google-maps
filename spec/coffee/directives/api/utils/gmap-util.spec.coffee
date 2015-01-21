@@ -50,26 +50,107 @@ describe 'utils.gmap-util', ->
     it 'type:foo, w lat lon', ->
       expect(@subject.validateCoords( type: 'foo', latitude: 45, longitude:150 )).toEqual true
 
-  it 'should evaluate truthiness correctly', ->
-    expect(@subject.isTrue(true)).toEqual(true)
-    expect(@subject.isTrue('true')).toEqual(true)
-    expect(@subject.isTrue('1')).toEqual(true)
-    expect(@subject.isTrue('y')).toEqual(true)
+  describe 'should evaluate truthiness correctly', ->
+    it 'true', ->
+      expect(@subject.isTrue(true)).toEqual(true)
+    it '"true"', ->
+      expect(@subject.isTrue('true')).toEqual(true)
+    it '1', ->
+      expect(@subject.isTrue(1)).toEqual(true)
+    it '"TRUE"', ->
+      expect(@subject.isTrue("TRUE")).toEqual(true)
+    it '"y"', ->
+      expect(@subject.isTrue('y')).toEqual(true)
+    it 'undefined', ->
+      expect(@subject.isTrue()).toEqual(false)
+    it 'null', ->
+      expect(@subject.isTrue(null)).toEqual(false)
+    #falses to be false
+    it '"false"', ->
+      expect(@subject.isTrue('false')).toEqual(false)
+    it '"FALSE"', ->
+      expect(@subject.isTrue('FALSE')).toEqual(false)
+    it '0', ->
+      expect(@subject.isTrue(0)).toEqual(false)
+    it '"n"', ->
+      expect(@subject.isTrue('n')).toEqual(false)
+    it '"N"', ->
+      expect(@subject.isTrue('N')).toEqual(false)
+    it '"no"', ->
+      expect(@subject.isTrue('no')).toEqual(false)
+    it '"NO"', ->
+      expect(@subject.isTrue('NO')).toEqual(false)
+    it 'false', ->
+      expect(@subject.isTrue(false)).toEqual(false)
 
-    expect(@subject.isTrue()).toEqual(false)
-    expect(@subject.isTrue(null)).toEqual(false)
+  describe 'should evaluate false correctly', ->
+    it '"false"', ->
+      expect(@subject.isFalse('false')).toEqual(true)
+    it '"FALSE"', ->
+      expect(@subject.isFalse('FALSE')).toEqual(true)
+    it '0', ->
+      expect(@subject.isFalse(0)).toEqual(true)
+    it '"n"', ->
+      expect(@subject.isFalse('n')).toEqual(true)
+    it '"N"', ->
+      expect(@subject.isFalse('N')).toEqual(true)
+    it '"no"', ->
+      expect(@subject.isFalse('no')).toEqual(true)
+    it '"NO"', ->
+      expect(@subject.isFalse('NO')).toEqual(true)
+    it 'false', ->
+      expect(@subject.isFalse(false)).toEqual(true)
+    #expect truthies to be false
+    it 'true', ->
+      expect(@subject.isFalse(true)).toEqual(false)
+    it '"true"', ->
+      expect(@subject.isFalse('true')).toEqual(false)
+    it '1', ->
+      expect(@subject.isFalse(1)).toEqual(false)
+    it '"TRUE"', ->
+      expect(@subject.isFalse("TRUE")).toEqual(false)
+    it '"y"', ->
+      expect(@subject.isFalse('y')).toEqual(false)
+    #expect null and undefined
+    it 'undefined', ->
+      expect(@subject.isFalse()).toEqual(false)
+    it 'null', ->
+      expect(@subject.isFalse(null)).toEqual(false)
 
-  it 'should evaluate falsiness correctly', ->
-    expect(@subject.isFalse('false')).toEqual(true)
-    expect(@subject.isFalse('FALSE')).toEqual(true)
-    expect(@subject.isFalse(0)).toEqual(true)
-    expect(@subject.isFalse('n')).toEqual(true)
-    expect(@subject.isFalse('N')).toEqual(true)
-    expect(@subject.isFalse('no')).toEqual(true)
-    expect(@subject.isFalse('NO')).toEqual(true)
+  describe 'should evaluate falsiness correctly', ->
+    it '"false"', ->
+      expect(@subject.isFalsy('false')).toEqual(true)
+    it '"FALSE"', ->
+      expect(@subject.isFalsy('FALSE')).toEqual(true)
+    it '0', ->
+      expect(@subject.isFalsy(0)).toEqual(true)
+    it '"n"', ->
+      expect(@subject.isFalsy('n')).toEqual(true)
+    it '"N"', ->
+      expect(@subject.isFalsy('N')).toEqual(true)
+    it '"no"', ->
+      expect(@subject.isFalsy('no')).toEqual(true)
+    it '"NO"', ->
+      expect(@subject.isFalsy('NO')).toEqual(true)
+    it 'false', ->
+      expect(@subject.isFalsy(false)).toEqual(true)
+    #expect truthies to be false
+    it 'true', ->
+      expect(@subject.isFalsy(true)).toEqual(false)
+    it '"true"', ->
+      expect(@subject.isFalsy('true')).toEqual(false)
+    it '1', ->
+      expect(@subject.isFalsy(1)).toEqual(false)
+    it '"TRUE"', ->
+      expect(@subject.isFalsy("TRUE")).toEqual(false)
+    it '"y"', ->
+      expect(@subject.isFalsy('y')).toEqual(false)
+    #expect null and undefined
+    it 'undefined', ->
+      expect(@subject.isFalsy()).toEqual(true)
+    it 'null', ->
+      expect(@subject.isFalsy(null)).toEqual(true)
 
-    # XXX: Is this really true?
-    expect(@subject.isFalse(false)).toEqual(false)
 
   it 'should convert path points correctly', ->
     latlong = {longitude: 45, latitude: -27}
