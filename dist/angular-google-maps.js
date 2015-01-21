@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.9 2014-11-24
+/*! angular-google-maps 2.0.9 2015-01-21
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3410,8 +3410,38 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     'uiGmapLogger', '$timeout', function($log, $timeout) {
       var DrawingManagerParentModel;
       return DrawingManagerParentModel = (function() {
+        DrawingManagerParentModel.prototype.setEvents = function(gObject, scope, model, ignores) {
+          if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
+            return _.compact(_.map(scope.events, function(eventHandler, eventName) {
+              var doIgnore;
+              if (ignores) {
+                doIgnore = _(ignores).contains(eventName);
+              }
+              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName]) && !doIgnore) {
+                return google.maps.event.addListener(gObject, eventName, function() {
+                  if (!scope.$evalAsync) {
+                    scope.$evalAsync = function() {};
+                  }
+                  return scope.$evalAsync(eventHandler.apply(scope, [gObject, eventName, arguments]));
+                });
+              }
+            }));
+          }
+        };
+
+        DrawingManagerParentModel.prototype.removeEvents = function(listeners) {
+          if (!listeners) {
+            return;
+          }
+          return listeners.forEach(function(l) {
+            if (l) {
+              return google.maps.event.removeListener(l);
+            }
+          });
+        };
+
         function DrawingManagerParentModel(scope, element, attrs, map) {
-          var drawingManager;
+          var drawingManager, listeners;
           this.scope = scope;
           this.attrs = attrs;
           this.map = map;
@@ -3427,7 +3457,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return drawingManager != null ? drawingManager.setOptions(newValue) : void 0;
             }, true);
           }
+          listeners = this.setEvents(drawingManager, scope, scope);
           scope.$on('$destroy', function() {
+            this.removeEvents(listeners);
             drawingManager.setMap(null);
             return drawingManager = null;
           });
@@ -5179,7 +5211,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         scope: {
           "static": '@',
           control: '=',
-          options: '='
+          options: '=',
+          events: "="
         }
       };
     }
