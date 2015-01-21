@@ -6581,12 +6581,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   if (_.isEqual(newValue, oldValue)) {
                     return;
                   }
-                  opts.options = newValue;
+                  if (watchItem === 'options') {
+                    opts.options = newValue;
+                  } else {
+                    opts.options[watchItem] = newValue;
+                  }
                   if (_gMap != null) {
                     return _gMap.setOptions(opts);
                   }
-                });
-              }, true);
+                }, true);
+              });
             };
           })(this));
         };
