@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.9 2015-01-21
+/*! angular-google-maps 2.0.9 2015-01-22
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3406,39 +3406,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 ;(function() {
-  angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapDrawingManagerParentModel', [
-    'uiGmapLogger', '$timeout', function($log, $timeout) {
-      var DrawingManagerParentModel;
-      return DrawingManagerParentModel = (function() {
-        DrawingManagerParentModel.prototype.setEvents = function(gObject, scope, model, ignores) {
-          if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
-            return _.compact(_.map(scope.events, function(eventHandler, eventName) {
-              var doIgnore;
-              if (ignores) {
-                doIgnore = _(ignores).contains(eventName);
-              }
-              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName]) && !doIgnore) {
-                return google.maps.event.addListener(gObject, eventName, function() {
-                  if (!scope.$evalAsync) {
-                    scope.$evalAsync = function() {};
-                  }
-                  return scope.$evalAsync(eventHandler.apply(scope, [gObject, eventName, arguments]));
-                });
-              }
-            }));
-          }
-        };
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-        DrawingManagerParentModel.prototype.removeEvents = function(listeners) {
-          if (!listeners) {
-            return;
-          }
-          return listeners.forEach(function(l) {
-            if (l) {
-              return google.maps.event.removeListener(l);
-            }
-          });
-        };
+  angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapDrawingManagerParentModel', [
+    'uiGmapLogger', '$timeout', 'uiGmapBaseObject', 'uiGmapEventsHelper', function($log, $timeout, BaseObject, EventsHelper) {
+      var DrawingManagerParentModel;
+      return DrawingManagerParentModel = (function(_super) {
+        __extends(DrawingManagerParentModel, _super);
+
+        DrawingManagerParentModel.include(EventsHelper);
 
         function DrawingManagerParentModel(scope, element, attrs, map) {
           var drawingManager, listeners;
@@ -3469,7 +3446,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         return DrawingManagerParentModel;
 
-      })();
+      })(BaseObject);
     }
   ]);
 
