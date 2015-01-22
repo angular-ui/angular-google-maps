@@ -3458,11 +3458,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             }, true);
           }
           listeners = this.setEvents(drawingManager, scope, scope);
-          scope.$on('$destroy', function() {
-            this.removeEvents(listeners);
-            drawingManager.setMap(null);
-            return drawingManager = null;
-          });
+          scope.$on('$destroy', (function(_this) {
+            return function() {
+              _this.removeEvents(listeners);
+              drawingManager.setMap(null);
+              return drawingManager = null;
+            };
+          })(this));
         }
 
         return DrawingManagerParentModel;

@@ -36,7 +36,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
             listeners = @setEvents drawingManager, scope, scope
 
-            scope.$on '$destroy', ->
+            scope.$on '$destroy', =>
               @removeEvents listeners
               drawingManager.setMap null
               drawingManager = null
