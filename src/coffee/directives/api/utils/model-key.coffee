@@ -25,13 +25,13 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         scope = @scope if hasCoords and  @scope.coords? or not hasCoords
         if not scope? then throw 'No scope set!'
         if hasCoords
-          isEqual = GmapUtil.equalCoords @evalModelHandle(model1, scope.coords),
-            @evalModelHandle(model2, scope.coords)
+          isEqual = GmapUtil.equalCoords  @scopeOrModelVal('coords', scope, model1),
+            @scopeOrModelVal('coords', scope, model2)
           #deep comparison of the rest of properties
           return isEqual unless isEqual
         #compare the rest of the properties that are being watched by scope
         isEqual = _.every _.without(@interface.scopeKeys, 'coords'), (k) =>
-          @evalModelHandle(model1, scope[k]) == @evalModelHandle(model2, scope[k])
+          @scopeOrModelVal(scope[k], scope, model1) == @scopeOrModelVal(scope[k], scope, model2)
         isEqual
 
 
@@ -49,8 +49,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           return model[key]
         model
 
-      getProp: (propName, model) =>
-        @modelOrKey(model, propName)
+      getProp: (propName, scope, model) =>
+        @scopeOrModelVal(propName, scope, model)
 
       ###
       For the cases were watching a large object we only want to know the list of props

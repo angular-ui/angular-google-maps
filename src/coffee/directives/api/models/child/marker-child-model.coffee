@@ -26,7 +26,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @clonedModel = _.extend({},@model)
         @deferred = uiGmapPromise.defer()
         _.each @keys, (v, k) =>
-          @[k + 'Key'] = if _.isFunction @keys[k] then @keys[k]() else @keys[k]
+          keyValue = @keys[k]
+          if keyValue? and not _.isFunction(keyValue)  and _.isString(keyValue)
+            @[k + 'Key'] = keyValue
         @idKey = @idKeyKey or 'id'
         @id = @model[@idKey] if @model[@idKey]?
 
@@ -83,7 +85,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
       renderGMarker: (doDraw = true, validCb) ->
         #doDraw is to only update the marker on the map when it is really ready
-        coords = @getProp(@coordsKey, @model)
+        coords = @getProp('coords', @scope, @model)
         if coords?
           if !@validateCoords coords
             $log.debug 'MarkerChild does not have coords yet. They may be defined later.'
@@ -131,7 +133,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       setCoords: (scope, doDraw = true) =>
         return if @isNotValid(scope) or !@gObject?
         @renderGMarker doDraw, =>
-          newModelVal = @getProp @coordsKey, @model
+          newModelVal = @getProp 'coords', scope, @model
           newGValue = @getCoords newModelVal
           oldGValue = @gObject.getPosition()
           if oldGValue? and newGValue?
@@ -143,19 +145,19 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         return if @isNotValid(scope) or !@gObject?
         @renderGMarker doDraw, =>
           oldValue = @gObject.getIcon()
-          newValue = @getProp @iconKey, @model
+          newValue = @getProp 'icon',scope, @model
           return if  oldValue == newValue
           @gObject.setIcon newValue
-          coords = @getProp(@coordsKey, @model)
+          coords = @getProp 'coords', scope, @model
           @gObject.setPosition @getCoords coords
           @gObject.setVisible @validateCoords coords
 
       setOptions: (scope, doDraw = true) =>
         return if @isNotValid scope, false
         @renderGMarker doDraw, =>
-          coords = @getProp @coordsKey, @model
-          icon = @getProp @iconKey, @model
-          _options = @getProp @optionsKey, @model
+          coords = @getProp 'coords', scope, @model
+          icon = @getProp 'icon', scope, @model
+          _options = @getProp 'options', scope, @model
           @opts = @createOptions coords, icon, _options
 
           if @isLabel(@gObject) != @isLabel(@opts) and @gObject?
@@ -207,7 +209,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           events.dragend(marker, eventName, modelToSet, mousearg) if events?.dragend?
           @scope.$apply()
         click: (marker, eventName, model, mousearg) =>
-          click = if _.isFunction(@clickKey) then @clickKey else @getProp @clickKey, @model
+          click = @getProp 'click', @scope, @model
           if @doClick and click?
             @scope.$evalAsync click marker, eventName, @model, mousearg
 

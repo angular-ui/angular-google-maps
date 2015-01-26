@@ -22,6 +22,7 @@ module.exports = (grunt) ->
     'grunt-debug-task'
     'grunt-curl'
     'grunt-verbosity'
+    'grunt-release'
     'grunt-webpack'
     ].forEach (gruntLib) ->
       grunt.loadNpmTasks gruntLib

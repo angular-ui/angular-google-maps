@@ -87,8 +87,8 @@
         <ui-gmap-marker coords="staticMarker.coords" options="staticMarker.options" events="staticMarker.events" idKey="staticMarker.id">
         </ui-gmap-marker>
 
-        <ui-gmap-markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="onMarkerClicked"
-                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions" modelsbyref="true">
+        <ui-gmap-markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="onClick"
+                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
         </ui-gmap-markers>
 
         <ui-gmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="onMarkerClicked" options="'options'" events="map.markers2Events">
@@ -109,7 +109,7 @@
         <ui-gmap-markers models="map.clickMarkers" coords="'self'" click="clackMarker" >
         </ui-gmap-markers>
 
-        <ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="onMarkerClicked" fit='true'>
+        <ui-gmap-markers models="map.dynamicMarkers" coords="'self'" icon="'icon'" click="onClick" fit='true'>
             <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p>Dynamic Marker created via a delay!</p>
@@ -121,7 +121,7 @@
             </ui-gmap-windows>
         </ui-gmap-markers>
 
-        <ui-gmap-markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="onMarkerClicked" >
+        <ui-gmap-markers idKey="map.mexiIdKey" models="map.mexiMarkers" coords="'self'" icon="'icon'" click="onClick" >
             <ui-gmap-windows show="'showWindow'" closeClick="'closeClick'" ng-cloak>
                 <div>
                     <p>Mexi!</p>
@@ -228,10 +228,7 @@
                 <td>
                     <div>Do Cluster?: <input type="checkbox" ng-model="map.doClusterRandomMarkers"></div>
                     <div>Cluster Options: <input type="text" ng-model='map.clusterOptionsText'>
-                      <div ng-repeat="cType in map.clusterTypes">
-                        {{cType}}
-                        <input ng-model="map.currentClusterType" type="radio" id="{{cType}}" value="{{cType}}" ng-change="map.selectClusterType(cType)">
-                      </div>
+                        <div>Use Ugly Cluster Image?: <input type="checkbox" ng-model="map.doUgly"></div>
                     </div>
                     <div ng-init="numOfMarkers = 1000">
                         <input type="text" text="Number of Markers" ng-model="numOfMarkers">

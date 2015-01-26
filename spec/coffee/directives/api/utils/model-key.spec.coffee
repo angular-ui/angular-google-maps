@@ -21,9 +21,9 @@ describe 'ModelKey Tests', ->
     @subject.interface.scopeKeys = ['coords']
     expect(@subject.modelKeyComparison).toThrow('No scope set!')
     @scope.coords = 'coords'
-    expect(@subject.modelKeyComparison(model1, model1)).toEqual(true)
-    expect(@subject.modelKeyComparison(model1, model2)).toEqual(false)
-    expect(@subject.modelKeyComparison(model2, model3)).toEqual(true)
+    expect(@subject.modelKeyComparison(model1, model1,@scope)).toEqual(true)
+    expect(@subject.modelKeyComparison(model1, model2,@scope)).toEqual(false)
+    expect(@subject.modelKeyComparison(model2, model3,@scope)).toEqual(true)
 
   it 'should properly set id key', ->
     expect(@subject.idKey).toEqual(undefined)

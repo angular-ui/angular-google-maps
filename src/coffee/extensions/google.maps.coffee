@@ -59,6 +59,39 @@ angular.module('uiGmapgoogle-maps.extensions')
         else
           @_isOpen = val
 
+      class uiGmapInfoBox extends window.InfoBox
+        constructor: (opts) ->
+          box = new window.InfoBox(opts)
+          _.extend @, box
+          @closeBoxDiv_ = opts.closeBoxDiv if opts.closeBoxDiv?
+
+        getCloseBoxDiv_: =>
+          @closeBoxDiv_
+        #overriding with fetching div or image block
+        getCloseBoxImg_: ->
+          #custom div has pref
+          div = @getCloseBoxDiv_()
+          img = @getOrigCloseBoxImg_()
+          div or img
+
+        #default lame behavior, why grab an image when a template is possibly better!
+        getOrigCloseBoxImg_: =>
+          img = ""
+          if @closeBoxURL_ isnt ""
+            img = "<img"
+            img += " src='" + @closeBoxURL_ + "'"
+            img += " align=right" # Do this because Opera chokes on style='float: right;'
+            img += " style='"
+            img += " position: relative;" # Required by MSIE
+            img += " cursor: pointer;"
+            img += " margin: " + @closeBoxMargin_ + ";"
+            img += "'>"
+          img
+
+
+      window.uiGmapInfoBox = uiGmapInfoBox
+
+
     if window.MarkerLabel_
 
       window.MarkerLabel_::setContent = ->
