@@ -1,8 +1,6 @@
 ###
 @authors:
-- Nicolas Laplante https://plus.google.com/108189012221374960701
 - Nicholas McCready - https://twitter.com/nmccready
-- Carrie Kengle - http://about.me/carrie
 ###
 
 ###
@@ -14,7 +12,6 @@ angular.module('uiGmapgoogle-maps')
     name = 'uiGmapStreetViewPanorama'
 
     restrict: 'EMA'
-    priority: -1
     template: '<div class="angular-google-map-street-view-panorama"></div>'
     replace: true
     scope:

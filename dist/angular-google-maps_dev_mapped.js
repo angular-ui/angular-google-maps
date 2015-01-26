@@ -7595,9 +7595,7 @@ This directive creates a new scope.
 ;
 /*
 @authors:
-- Nicolas Laplante https://plus.google.com/108189012221374960701
 - Nicholas McCready - https://twitter.com/nmccready
-- Carrie Kengle - http://about.me/carrie
  */
 
 
@@ -7612,7 +7610,6 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
       name = 'uiGmapStreetViewPanorama';
       return {
         restrict: 'EMA',
-        priority: -1,
         template: '<div class="angular-google-map-street-view-panorama"></div>',
         replace: true,
         scope: {
