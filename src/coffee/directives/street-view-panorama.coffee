@@ -10,93 +10,106 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
 ###
 angular.module('uiGmapgoogle-maps')
 .directive 'uiGmapStreetViewPanorama', ['uiGmapGoogleMapApi', 'uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapEventsHelper'
-  (GoogleMapApi, Logger, GmapUtil, EventsHelper) ->
+  (GoogleMapApi, $log, GmapUtil, EventsHelper) ->
     name = 'uiGmapStreetViewPanorama'
 
     restrict: 'EMA'
-    require: '^' + 'uiGmapGoogleMap'
     priority: -1
-    template: '<span class="angular-google-map-street-view-panorama" ng-transclude></span>'
+    template: '<span class="angular-google-map-street-view-panorama"></span>'
     replace: true
     scope:
       focal_coord: '='
-      events: '='
-      radius: '='
+
+      radius: '=?'
+      events: '=?'
       options: '=?'
       control: '=?'
       pov_options: '=?'
 
     link: (scope, element, attrs) ->
       GoogleMapApi.then (maps) =>
+        pano = undefined
+        sv = undefined
+        didCreateOptionsFromDirective = false
+        listeners = undefined
 
-      pano = undefined
-      sv = undefined
-      didCreateOptionsFromDirective = false
-      listeners = undefined
+        clean = ->
+          EventsHelper.removeEvents listeners
 
-      clean = ->
-        EventsHelper.removeEvents listeners
+          if pano?
+            pano.unbind 'position'
+            pano.setVisible false
+          if sv?
+            sv.setVisible false
+            sv = undefined
 
-        if pano?
-          pano.unbind 'position'
-          pano.setVisible false
-        if sv?
-          sv.setVisible false
-          sv = undefined
+        handleSettings = (point) ->
+          didCreateOptionsFromDirective = true
 
-      create = ->
-        unless scope.focal_coord
-          $log.error "#{name}: focalCoord needs to be defined"
-          return
-        unless scope.radius
-          $log.error "#{name}: needs a radius to set the camera view from its focal target."
-          return
+          #required
+          focalPoint = GmapUtil.getCoords scope.focal_coord
+          #derrived
+          heading = google.maps.geometry.spherical.computeHeading(point, focalPoint)
+          #options down
+          scope.radius = scope.radius or 50
+          scope.pov_options = angular.extend
+            heading: heading
+            zoom: 1
+            pitch: 0
+          , scope.pov_options or {}
 
-        clean()
+          scope.pov_options = pov
 
-        unless sv?
-          sv = new google.maps.StreetViewService()
-        sv?.setOptions scope.options
+          scope.options = angular.extend
+            navigationControl: false
+            addressControl: false
+            linksControl: false
+            position: point
+            pov: pov
+            visible: true
+          , scope.options or {}
+          didCreateOptionsFromDirective = false
 
-        if scope.events
-          listeners = EventsHelper.setEvents sv, scope, scope
+        create = ->
+          unless scope.focal_coord
+            $log.error "#{name}: focalCoord needs to be defined"
+            return
+          unless scope.radius
+            $log.error "#{name}: needs a radius to set the camera view from its focal target."
+            return
 
-        focalPoint = GmapUtil.getCoords scope.focal_coord
-        sv.getPanoramaByLocation position, scope.radius, (streetViewPanoramaData, status) ->
-          if status is "OK"
-            point = $scope.options?.position or streetViewPanoramaData.location.latLng
-            heading = google.maps.geometry.spherical.computeHeading(point, focalPoint)
+          clean()
 
-            opts = angular.extend
-              navigationControl: false
-              addressControl: false
-              linksControl: false
-              pov:
-                heading: heading
-                zoom: 1
-                pitch: 0
-              position: point
-              visible: true
-            , scope.options or {}
+          unless sv?
+            sv = new google.maps.StreetViewService()
+          sv?.setOptions scope.options
 
-            didCreateOptionsFromDirective = true
-            scope.options = opts
-            pano = new google.maps.StreetViewPanorama(element, opts)
-            didCreateOptionsFromDirective = false
-      #end create
+          if scope.events
+            listeners = EventsHelper.setEvents sv, scope, scope
+          position = scope.options?.position or sv.location.latLng
+          handleSettings(position)
 
-      if scope.control?
-        scope.control.getGObject = ->
-          sv
-
-      scope.$watch 'options', (newValue, oldValue) ->
-        #options are limited so we do not have to worry about them conflicting with positon
-        return if newValue ==  oldValue or didCreateOptionsFromDirective
-        create()
-
-      scope.$on '$destroy', ->
-        clean()
+          sv.getPanoramaByLocation position, scope.radius, (streetViewPanoramaData, status) ->
+            if status is "OK"
+              scope.options = opts
+              pano = new google.maps.StreetViewPanorama(element, scope.options)
 
 
+        if scope.control?
+          scope.control.getGObject = ->
+            sv
 
+        firstTime = true
+        scope.$watch 'options', (newValue, oldValue) ->
+          #options are limited so we do not have to worry about them conflicting with positon
+          return if (newValue ==  oldValue or didCreateOptionsFromDirective) and not firstTime
+          firstTime = false unless firstTime
+          create()
+
+        scope.$watch 'focal_coord', (newValue, oldValue) ->
+          return if newValue ==  oldValue
+          create()
+
+        scope.$on '$destroy', ->
+          clean()
 ]
