@@ -31,6 +31,7 @@ angular.module('uiGmapgoogle-maps')
         didCreateOptionsFromDirective = false
         listeners = undefined
         opts = null
+        povOpts = null
 
         clean = ->
           EventsHelper.removeEvents listeners
@@ -47,18 +48,18 @@ angular.module('uiGmapgoogle-maps')
           didCreateOptionsFromDirective = true
           #options down
           scope.radius = scope.radius or 50
-          scope.povoptions = angular.extend
+          povOpts = angular.extend
             heading: heading
             zoom: 1
             pitch: 0
           , scope.povoptions or {}
 
-          scope.options = opts = angular.extend
+          opts = opts = angular.extend
             navigationControl: false
             addressControl: false
             linksControl: false
             position: perspectivePoint
-            pov: scope.povoptions
+            pov: povOpts
             visible: true
           , scope.options or {}
           didCreateOptionsFromDirective = false
@@ -87,10 +88,14 @@ angular.module('uiGmapgoogle-maps')
               #derrived
               handleSettings(perspectivePoint, focalPoint)
               ele = element[0]
-              pano = new google.maps.StreetViewPanorama(ele, scope.options)
+              pano = new google.maps.StreetViewPanorama(ele, opts)
 
 
         if scope.control?
+          scope.control.getOptions = ->
+            opts
+          scope.control.getPovOptions = ->
+            povOpts
           scope.control.getGObject = ->
             sv
 

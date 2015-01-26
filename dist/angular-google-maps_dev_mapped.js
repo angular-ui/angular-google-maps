@@ -7623,12 +7623,13 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
         link: function(scope, element, attrs) {
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
-              var clean, create, didCreateOptionsFromDirective, firstTime, handleSettings, listeners, opts, pano, sv;
+              var clean, create, didCreateOptionsFromDirective, firstTime, handleSettings, listeners, opts, pano, povOpts, sv;
               pano = void 0;
               sv = void 0;
               didCreateOptionsFromDirective = false;
               listeners = void 0;
               opts = null;
+              povOpts = null;
               clean = function() {
                 EventsHelper.removeEvents(listeners);
                 if (pano != null) {
@@ -7647,17 +7648,17 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
                 heading = google.maps.geometry.spherical.computeHeading(perspectivePoint, focalPoint);
                 didCreateOptionsFromDirective = true;
                 scope.radius = scope.radius || 50;
-                scope.povoptions = angular.extend({
+                povOpts = angular.extend({
                   heading: heading,
                   zoom: 1,
                   pitch: 0
                 }, scope.povoptions || {});
-                scope.options = opts = angular.extend({
+                opts = opts = angular.extend({
                   navigationControl: false,
                   addressControl: false,
                   linksControl: false,
                   position: perspectivePoint,
-                  pov: scope.povoptions,
+                  pov: povOpts,
                   visible: true
                 }, scope.options || {});
                 return didCreateOptionsFromDirective = false;
@@ -7686,11 +7687,17 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
                     perspectivePoint = streetViewPanoramaData.location.latLng;
                     handleSettings(perspectivePoint, focalPoint);
                     ele = element[0];
-                    return pano = new google.maps.StreetViewPanorama(ele, scope.options);
+                    return pano = new google.maps.StreetViewPanorama(ele, opts);
                   }
                 });
               };
               if (scope.control != null) {
+                scope.control.getOptions = function() {
+                  return opts;
+                };
+                scope.control.getPovOptions = function() {
+                  return povOpts;
+                };
                 scope.control.getGObject = function() {
                   return sv;
                 };
