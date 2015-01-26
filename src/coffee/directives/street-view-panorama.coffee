@@ -83,7 +83,7 @@ angular.module('uiGmapgoogle-maps')
 
           sv.getPanoramaByLocation focalPoint, scope.radius, (streetViewPanoramaData, status) ->
             if status is "OK"
-              perspectivePoint = scope.options?.position or streetViewPanoramaData.location.latLng
+              perspectivePoint = streetViewPanoramaData.location.latLng
               #derrived
               handleSettings(perspectivePoint, focalPoint)
               ele = element[0]
