@@ -7681,9 +7681,9 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
                 }
                 focalPoint = GmapUtil.getCoords(scope.focalcoord);
                 return sv.getPanoramaByLocation(focalPoint, scope.radius, function(streetViewPanoramaData, status) {
-                  var ele, perspectivePoint, _ref;
+                  var ele, perspectivePoint;
                   if (status === "OK") {
-                    perspectivePoint = ((_ref = scope.options) != null ? _ref.position : void 0) || streetViewPanoramaData.location.latLng;
+                    perspectivePoint = streetViewPanoramaData.location.latLng;
                     handleSettings(perspectivePoint, focalPoint);
                     ele = element[0];
                     return pano = new google.maps.StreetViewPanorama(ele, scope.options);
