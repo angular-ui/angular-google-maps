@@ -7613,24 +7613,25 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
       return {
         restrict: 'EMA',
         priority: -1,
-        template: '<span class="angular-google-map-street-view-panorama"></span>',
+        template: '<div class="angular-google-map-street-view-panorama"></div>',
         replace: true,
         scope: {
-          focal_coord: '=',
+          focalcoord: '=',
           radius: '=?',
           events: '=?',
           options: '=?',
           control: '=?',
-          pov_options: '=?'
+          povoptions: '=?'
         },
         link: function(scope, element, attrs) {
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
-              var clean, create, didCreateOptionsFromDirective, firstTime, handleSettings, listeners, pano, sv;
+              var clean, create, didCreateOptionsFromDirective, firstTime, handleSettings, listeners, opts, pano, sv;
               pano = void 0;
               sv = void 0;
               didCreateOptionsFromDirective = false;
               listeners = void 0;
+              opts = null;
               clean = function() {
                 EventsHelper.removeEvents(listeners);
                 if (pano != null) {
@@ -7638,35 +7639,35 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
                   pano.setVisible(false);
                 }
                 if (sv != null) {
-                  sv.setVisible(false);
+                  if ((sv != null ? sv.setVisible : void 0) != null) {
+                    sv.setVisible(false);
+                  }
                   return sv = void 0;
                 }
               };
-              handleSettings = function(point) {
-                var focalPoint, heading;
+              handleSettings = function(perspectivePoint, focalPoint) {
+                var heading;
+                heading = google.maps.geometry.spherical.computeHeading(perspectivePoint, focalPoint);
                 didCreateOptionsFromDirective = true;
-                focalPoint = GmapUtil.getCoords(scope.focal_coord);
-                heading = google.maps.geometry.spherical.computeHeading(point, focalPoint);
                 scope.radius = scope.radius || 50;
-                scope.pov_options = angular.extend({
+                scope.povoptions = angular.extend({
                   heading: heading,
                   zoom: 1,
                   pitch: 0
-                }, scope.pov_options || {});
-                scope.pov_options = pov;
-                scope.options = angular.extend({
+                }, scope.povoptions || {});
+                scope.options = opts = angular.extend({
                   navigationControl: false,
                   addressControl: false,
                   linksControl: false,
-                  position: point,
-                  pov: pov,
+                  position: perspectivePoint,
+                  pov: scope.povoptions,
                   visible: true
                 }, scope.options || {});
                 return didCreateOptionsFromDirective = false;
               };
               create = function() {
-                var position, _ref;
-                if (!scope.focal_coord) {
+                var focalPoint;
+                if (!scope.focalcoord) {
                   $log.error("" + name + ": focalCoord needs to be defined");
                   return;
                 }
@@ -7678,18 +7679,17 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
                 if (sv == null) {
                   sv = new google.maps.StreetViewService();
                 }
-                if (sv != null) {
-                  sv.setOptions(scope.options);
-                }
                 if (scope.events) {
                   listeners = EventsHelper.setEvents(sv, scope, scope);
                 }
-                position = ((_ref = scope.options) != null ? _ref.position : void 0) || sv.location.latLng;
-                handleSettings(position);
-                return sv.getPanoramaByLocation(position, scope.radius, function(streetViewPanoramaData, status) {
+                focalPoint = GmapUtil.getCoords(scope.focalcoord);
+                return sv.getPanoramaByLocation(focalPoint, scope.radius, function(streetViewPanoramaData, status) {
+                  var ele, perspectivePoint, _ref;
                   if (status === "OK") {
-                    scope.options = opts;
-                    return pano = new google.maps.StreetViewPanorama(element, scope.options);
+                    perspectivePoint = ((_ref = scope.options) != null ? _ref.position : void 0) || streetViewPanoramaData.location.latLng;
+                    handleSettings(perspectivePoint, focalPoint);
+                    ele = element[0];
+                    return pano = new google.maps.StreetViewPanorama(ele, scope.options);
                   }
                 });
               };
@@ -7698,20 +7698,21 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
                   return sv;
                 };
               }
-              firstTime = true;
               scope.$watch('options', function(newValue, oldValue) {
-                if ((newValue === oldValue || didCreateOptionsFromDirective) && !firstTime) {
+                if (newValue === oldValue || newValue === opts || didCreateOptionsFromDirective) {
                   return;
-                }
-                if (!firstTime) {
-                  firstTime = false;
                 }
                 return create();
               });
-              scope.$watch('focal_coord', function(newValue, oldValue) {
-                if (newValue === oldValue) {
+              firstTime = true;
+              scope.$watch('focalcoord', function(newValue, oldValue) {
+                if (newValue === oldValue && !firstTime) {
                   return;
                 }
+                if (newValue == null) {
+                  return;
+                }
+                firstTime = false;
                 return create();
               });
               return scope.$on('$destroy', function() {

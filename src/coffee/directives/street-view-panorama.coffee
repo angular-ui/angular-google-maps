@@ -15,23 +15,25 @@ angular.module('uiGmapgoogle-maps')
 
     restrict: 'EMA'
     priority: -1
-    template: '<span class="angular-google-map-street-view-panorama"></span>'
+    template: '<div class="angular-google-map-street-view-panorama"></div>'
     replace: true
     scope:
-      focal_coord: '='
+      focalcoord: '='
 
       radius: '=?'
       events: '=?'
       options: '=?'
       control: '=?'
-      pov_options: '=?'
+      povoptions: '=?'
 
     link: (scope, element, attrs) ->
       GoogleMapApi.then (maps) =>
+
         pano = undefined
         sv = undefined
         didCreateOptionsFromDirective = false
         listeners = undefined
+        opts = null
 
         clean = ->
           EventsHelper.removeEvents listeners
@@ -40,38 +42,32 @@ angular.module('uiGmapgoogle-maps')
             pano.unbind 'position'
             pano.setVisible false
           if sv?
-            sv.setVisible false
+            sv.setVisible false if sv?.setVisible?
             sv = undefined
 
-        handleSettings = (point) ->
+        handleSettings = (perspectivePoint, focalPoint) ->
+          heading = google.maps.geometry.spherical.computeHeading(perspectivePoint, focalPoint)
           didCreateOptionsFromDirective = true
-
-          #required
-          focalPoint = GmapUtil.getCoords scope.focal_coord
-          #derrived
-          heading = google.maps.geometry.spherical.computeHeading(point, focalPoint)
           #options down
           scope.radius = scope.radius or 50
-          scope.pov_options = angular.extend
+          scope.povoptions = angular.extend
             heading: heading
             zoom: 1
             pitch: 0
-          , scope.pov_options or {}
+          , scope.povoptions or {}
 
-          scope.pov_options = pov
-
-          scope.options = angular.extend
+          scope.options = opts = angular.extend
             navigationControl: false
             addressControl: false
             linksControl: false
-            position: point
-            pov: pov
+            position: perspectivePoint
+            pov: scope.povoptions
             visible: true
           , scope.options or {}
           didCreateOptionsFromDirective = false
 
         create = ->
-          unless scope.focal_coord
+          unless scope.focalcoord
             $log.error "#{name}: focalCoord needs to be defined"
             return
           unless scope.radius
@@ -82,32 +78,35 @@ angular.module('uiGmapgoogle-maps')
 
           unless sv?
             sv = new google.maps.StreetViewService()
-          sv?.setOptions scope.options
 
           if scope.events
             listeners = EventsHelper.setEvents sv, scope, scope
-          position = scope.options?.position or sv.location.latLng
-          handleSettings(position)
 
-          sv.getPanoramaByLocation position, scope.radius, (streetViewPanoramaData, status) ->
+          focalPoint = GmapUtil.getCoords scope.focalcoord
+
+          sv.getPanoramaByLocation focalPoint, scope.radius, (streetViewPanoramaData, status) ->
             if status is "OK"
-              scope.options = opts
-              pano = new google.maps.StreetViewPanorama(element, scope.options)
+              perspectivePoint = scope.options?.position or streetViewPanoramaData.location.latLng
+              #derrived
+              handleSettings(perspectivePoint, focalPoint)
+              ele = element[0]
+              pano = new google.maps.StreetViewPanorama(ele, scope.options)
 
 
         if scope.control?
           scope.control.getGObject = ->
             sv
 
-        firstTime = true
         scope.$watch 'options', (newValue, oldValue) ->
           #options are limited so we do not have to worry about them conflicting with positon
-          return if (newValue ==  oldValue or didCreateOptionsFromDirective) and not firstTime
-          firstTime = false unless firstTime
+          return if newValue == oldValue or newValue == opts  or didCreateOptionsFromDirective
           create()
 
-        scope.$watch 'focal_coord', (newValue, oldValue) ->
-          return if newValue ==  oldValue
+        firstTime = true
+        scope.$watch 'focalcoord', (newValue, oldValue) ->
+          return if newValue ==  oldValue and not firstTime
+          return unless newValue?
+          firstTime = false
           create()
 
         scope.$on '$destroy', ->

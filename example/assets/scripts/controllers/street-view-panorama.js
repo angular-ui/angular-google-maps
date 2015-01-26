@@ -13,5 +13,9 @@ angular.module('app', ['uiGmapgoogle-maps'])
       bounds: {},
       draw: undefined
     };
-}]);
+    $scope.map.marker = _.extend({}, $scope.map.center);
+}])
+.controller('PanCtrl',function(){
+
+});
 
