@@ -19,7 +19,7 @@ angular.module('uiGmapgoogle-maps')
 'uiGmapSearchBoxParentModel', '$http', '$templateCache', '$compile',
   (GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache, $compile) ->
     class SearchBox
-      require: '^ngModel'
+      require: 'ngModel'
       constructor:  ->
         @$log = Logger
         @restrict = 'EMA'

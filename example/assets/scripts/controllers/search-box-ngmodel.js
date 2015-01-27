@@ -28,7 +28,7 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
      if (newValue == oldValue) {
        return null;
      } else {
-      //do something with the changed value
+       //console.log("the value changed to " + newValue);
      }
 
     });

@@ -7490,7 +7490,7 @@ This directive creates a new scope.
     'uiGmapGoogleMapApi', 'uiGmapLogger', 'uiGmapSearchBoxParentModel', '$http', '$templateCache', '$compile', function(GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache, $compile) {
       var SearchBox;
       SearchBox = (function() {
-        SearchBox.prototype.require = '^ngModel';
+        SearchBox.prototype.require = 'ngModel';
 
         function SearchBox() {
           this.link = __bind(this.link, this);
