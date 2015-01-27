@@ -22,6 +22,7 @@ angular.module('uiGmapgoogle-maps')
       options: '=?'
       control: '=?'
       povoptions: '=?'
+      imagestatus: '='
 
     link: (scope, element, attrs) ->
       GoogleMapApi.then (maps) =>
@@ -83,6 +84,10 @@ angular.module('uiGmapgoogle-maps')
           focalPoint = GmapUtil.getCoords scope.focalcoord
 
           sv.getPanoramaByLocation focalPoint, scope.radius, (streetViewPanoramaData, status) ->
+            #get status via scope or callback
+            scope.imagestatus = status if scope.imagestatus?
+            if scope.events.image_status_changed?
+              scope.events.image_status_changed(sv, 'image_status_changed', scope, status)
             if status is "OK"
               perspectivePoint = streetViewPanoramaData.location.latLng
               #derrived

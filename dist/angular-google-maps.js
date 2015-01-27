@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2015-01-26
+/*! angular-google-maps 2.1.0-SNAPSHOT 2015-01-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -7618,7 +7618,8 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
           events: '=?',
           options: '=?',
           control: '=?',
-          povoptions: '=?'
+          povoptions: '=?',
+          imagestatus: '='
         },
         link: function(scope, element, attrs) {
           return GoogleMapApi.then((function(_this) {
@@ -7683,6 +7684,12 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
                 focalPoint = GmapUtil.getCoords(scope.focalcoord);
                 return sv.getPanoramaByLocation(focalPoint, scope.radius, function(streetViewPanoramaData, status) {
                   var ele, perspectivePoint;
+                  if (scope.imagestatus != null) {
+                    scope.imagestatus = status;
+                  }
+                  if (scope.events.image_status_changed != null) {
+                    scope.events.image_status_changed(sv, 'image_status_changed', scope, status);
+                  }
                   if (status === "OK") {
                     perspectivePoint = streetViewPanoramaData.location.latLng;
                     handleSettings(perspectivePoint, focalPoint);
