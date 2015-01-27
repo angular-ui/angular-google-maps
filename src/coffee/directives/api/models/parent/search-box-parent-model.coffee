@@ -5,7 +5,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
     class SearchBoxParentModel extends BaseObject
         @include EventsHelper
         constructor: (@scope, @element, @attrs, @gMap, @ctrlPosition, @template, @$log = Logger) ->
-            console.log @template
             unless @attrs.template?
                 @$log.error 'template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!'
                 return
