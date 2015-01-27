@@ -65,12 +65,7 @@
 			<td>Expression to evaluate as the map's zoom level. This must be a number between 1<sup>[1]</sup> and 20<sup>[2]</sup>.</td>
 		</tr>
 		<tr>
-			<td>draggable</td>
-			<td><span class="label label-default">string</span></td>
-			<td><code>true</code> if map must be draggable, <code>false</code> otherwise</td>
-		</tr>
-		<tr>
-			<td>draging</td>
+			<td>dragging</td>
 			<td><span class="label label-default">string</span></td>
 			<td><code>true</code> while map is dragging state, <code>false</code> otherwise</td>
 		</tr>
@@ -107,7 +102,6 @@
 <script type="text/ng-template" id="googleMapTemplate">
 <ui-gmap-google-map center='{expression}'
 	zoom='{expression}'
-	draggable='{string}'
 	dragging='{expression}'
 	refresh='{expression}'
 	options='{expression}'
