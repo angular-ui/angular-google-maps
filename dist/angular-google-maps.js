@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2015-01-21
+/*! angular-google-maps 2.0.12 2015-01-26
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3643,11 +3643,19 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         CircleParentModel.include(EventsHelper);
 
         function CircleParentModel(scope, element, attrs, map, DEFAULTS) {
-          var gObject, listeners;
+          var clean, gObject;
           this.scope = scope;
           this.attrs = attrs;
           this.map = map;
           this.DEFAULTS = DEFAULTS;
+          clean = (function(_this) {
+            return function() {
+              if (_this.listeners != null) {
+                _this.removeEvents(_this.listeners);
+                return _this.listeners = void 0;
+              }
+            };
+          })(this);
           gObject = new google.maps.Circle(this.buildOpts(GmapUtil.getCoords(scope.center), scope.radius));
           this.setMyOptions = (function(_this) {
             return function(newVals, oldVals) {
@@ -3666,13 +3674,19 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             }, 'radius'
           ]);
           this.watchProps();
-          listeners = this.setEvents(gObject, scope, scope);
-          google.maps.event.addListener(gObject, 'radius_changed', function() {
+          clean();
+          this.listeners = this.setEvents(gObject, scope, scope, ['radius_changed']);
+          this.listeners.push(google.maps.event.addListener(gObject, 'radius_changed', function() {}));
+          this.listeners.push(google.maps.event.addListener(gObject, 'radius_changed', function() {
             return scope.$evalAsync(function() {
-              return scope.radius = gObject.getRadius();
+              var newRadius;
+              newRadius = gObject.getRadius();
+              if (newRadius !== scope.radius) {
+                return scope.radius = newRadius;
+              }
             });
-          });
-          google.maps.event.addListener(gObject, 'center_changed', function() {
+          }));
+          this.listeners.push(google.maps.event.addListener(gObject, 'center_changed', function() {
             return scope.$evalAsync(function() {
               if (angular.isDefined(scope.center.type)) {
                 scope.center.coordinates[1] = gObject.getCenter().lat();
@@ -3682,10 +3696,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return scope.center.longitude = gObject.getCenter().lng();
               }
             });
-          });
+          }));
           scope.$on('$destroy', (function(_this) {
             return function() {
-              _this.removeEvents(listeners);
+              clean();
               return gObject.setMap(null);
             };
           })(this));

@@ -7,6 +7,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
     @include GmapUtil
     @include EventsHelper
     constructor: (@scope, element, @attrs, @map, @DEFAULTS) ->
+      clean = =>
+        if @listeners?
+          @removeEvents @listeners
+          @listeners = undefined
       gObject =
         new google.maps.Circle @buildOpts GmapUtil.getCoords(scope.center), scope.radius
 
@@ -21,13 +25,17 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       ]
       @watchProps()
 
-      listeners = @setEvents gObject, scope, scope
+      clean()
+      @listeners = @setEvents gObject, scope, scope, ['radius_changed']
 
-      google.maps.event.addListener gObject, 'radius_changed', ->
+      @listeners.push google.maps.event.addListener gObject, 'radius_changed', ->
+      @listeners.push google.maps.event.addListener gObject, 'radius_changed', ->
+        ## radius_changed appears to fire twice (original and new) which is not too helpful
         scope.$evalAsync ->
-          scope.radius = gObject.getRadius()
+          newRadius = gObject.getRadius()
+          scope.radius = newRadius if newRadius != scope.radius
 
-      google.maps.event.addListener gObject, 'center_changed', ->
+      @listeners.push google.maps.event.addListener gObject, 'center_changed', ->
         scope.$evalAsync ->
           if angular.isDefined(scope.center.type)
             scope.center.coordinates[1] = gObject.getCenter().lat()
@@ -37,7 +45,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             scope.center.longitude = gObject.getCenter().lng()
 
       scope.$on '$destroy', =>
-        @removeEvents listeners
+        clean()
         gObject.setMap null
 
       $log.info @
