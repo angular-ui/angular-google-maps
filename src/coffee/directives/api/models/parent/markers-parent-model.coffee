@@ -12,9 +12,12 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
           @include ModelsWatcher
           constructor: (scope, element, attrs, map) ->
             super(scope, element, attrs, map)
+            @interface = IMarker
             self = @
-            @scope.markerModels = new PropMap()
-            @scope.markerModelsUpdate =
+
+            @plurals = new PropMap() #for api consistency
+            @scope.plurals = @plurals #for transclusion
+            @scope.pluralsUpdate =
               updateCtr: 0
 
             @$log.info @
@@ -40,14 +43,14 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             @watch 'idKey', scope
 
             @gMarkerManager = undefined
-            @createMarkersFromScratch(scope)
+            @createAllNew(scope)
 
 
           onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             if propNameToWatch == "idKey" and newValue != oldValue
               @idKey = newValue
             if @doRebuildAll or propNameToWatch == 'doCluster'
-              @reBuildMarkers(scope)
+              @rebuildAll(scope)
             else
               @pieceMeal(scope)
 
@@ -58,7 +61,19 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 
             super(scope) or modelsNotDefined
 
-          createMarkersFromScratch: (scope) =>
+          ###
+          Not used internally by this parent
+          created for consistency for external control in the API
+          ###
+          createChildScopes: (isCreatingFromScratch) =>
+            return if not @gMap? or not @scope.models?
+
+            if isCreatingFromScratch
+              @createAllNew @scope, false
+            else
+              @pieceMeal @scope, false
+
+          createAllNew: (scope) =>
             if @gMarkerManager?
               @gMarkerManager.clear()
               delete @gMarkerManager
@@ -100,37 +115,37 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 @modelsRendered = true
                 @gMarkerManager.draw()
                 @gMarkerManager.fit() if scope.fit
-                @scope.markerModelsUpdate.updateCtr += 1
+                @scope.pluralsUpdate.updateCtr += 1
               , _async.chunkSizeFrom scope.chunk
 
-          reBuildMarkers: (scope) =>
+          rebuildAll: (scope) =>
             if(!scope.doRebuild and scope.doRebuild != undefined)
               return
-            if @scope.markerModels?.length
+            if @scope.plurals?.length
               @onDestroy(scope).then =>
-                @createMarkersFromScratch(scope)
+                @createAllNew(scope)
             else
-              @createMarkersFromScratch(scope)
+              @createAllNew(scope)
 
           pieceMeal: (scope) =>
             return if scope.$$destroyed
             #allows graceful fallout of _async.each
             maybeCanceled = null
             payload = null
-            if @scope.models? and @scope.models.length > 0 and @scope.markerModels.length > 0 #and @scope.models.length == @scope.markerModels.length
+            if @scope.models? and @scope.models.length > 0 and @scope.plurals.length > 0 #and @scope.models.length == @scope.plurals.length
 
               _async.promiseLock @, uiGmapPromise.promiseTypes.update, 'pieceMeal', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
-                uiGmapPromise.promise((=> @figureOutState @idKey, scope, @scope.markerModels, @modelKeyComparison))
+                uiGmapPromise.promise((=> @figureOutState @idKey, scope, @scope.plurals, @modelKeyComparison))
                 .then (state) =>
                   payload = state
                   _async.each payload.removals, (child) =>
                     if child?
                       child.destroy() if child.destroy?
-                      @scope.markerModels.remove(child.id)
+                      @scope.plurals.remove(child.id)
                       maybeCanceled
                   , _async.chunkSizeFrom scope.chunk
                 .then =>
-                    #add all adds via creating new ChildMarkers which are appended to @scope.markerModels
+                    #add all adds via creating new ChildMarkers which are appended to @scope.plurals
                   _async.each payload.adds, (modelToAdd) =>
                     @newChildMarker(modelToAdd, scope)
                     maybeCanceled
@@ -144,13 +159,13 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                   #finally redraw if something has changed
                   if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
                     @gMarkerManager.draw()
-                    scope.markerModels = @scope.markerModels #for other directives like windows
+                    scope.plurals = @scope.plurals #for other directives like windows
                     @gMarkerManager.fit() if scope.fit #note fit returns a promise
-                  @scope.markerModelsUpdate.updateCtr += 1
+                  @scope.pluralsUpdate.updateCtr += 1
 
             else
               @inProgress = false
-              @reBuildMarkers(scope)
+              @rebuildAll(scope)
 
           updateChild:(child, model) =>
             unless model[@idKey]?
@@ -163,36 +178,36 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             unless model[@idKey]?
               @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
               return
-            @$log.info('child', child, 'markers', @scope.markerModels)
+            @$log.info('child', child, 'markers', @scope.plurals)
             childScope = scope.$new(true)
             childScope.events = scope.events
             keys = {}
-            _.each IMarker.scopeKeys, (v,k) ->
+            IMarker.scopeKeys.forEach (k) ->
               keys[k] = scope[k]
             child = new MarkerChildModel(childScope, model, keys, @map, @DEFAULTS,
               @doClick, @gMarkerManager, doDrawSelf = false) #this is managed so child is not drawing itself
-            @scope.markerModels.put(model[@idKey], child) #major change this makes model.id a requirement
+            @scope.plurals.put(model[@idKey], child) #major change this makes model.id a requirement
             child
 
           onDestroy: (scope) =>
             _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
-              _async.each @scope.markerModels.values(), (model) =>
+              _async.each @scope.plurals.values(), (model) =>
                 model.destroy(false) if model?
               , _async.chunkSizeFrom(@scope.cleanchunk, false)
               .then =>
-                delete @scope.markerModels
+                delete @scope.plurals
                 @gMarkerManager.clear() if @gMarkerManager?
-                @scope.markerModels = new PropMap()
-                @scope.markerModelsUpdate.updateCtr += 1
+                @scope.plurals = new PropMap()
+                @scope.pluralsUpdate.updateCtr += 1
 
           maybeExecMappedEvent:(cluster, fnName) ->
             if _.isFunction @scope.clusterEvents?[fnName]
-              pair = @mapClusterToMarkerModels cluster
+              pair = @mapClusterToPlurals cluster
               @origClusterEvents[fnName](pair.cluster,pair.mapped) if @origClusterEvents[fnName]
 
-          mapClusterToMarkerModels:(cluster) ->
+          mapClusterToPlurals:(cluster) ->
             mapped = cluster.getMarkers().map (g) =>
-              @scope.markerModels.get(g.key).model
+              @scope.plurals.get(g.key).model
             cluster: cluster
             mapped: mapped
 

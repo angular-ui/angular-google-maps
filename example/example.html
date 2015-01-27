@@ -78,17 +78,17 @@
             <a href ="//google-maps-utility-library-v3.googlecode.com/svn/trunk/infobox/docs/reference.html#InfoBoxOptions">infoBox plugin</a> is included.
         </ui-gmap-window>
 
-        <!--<ui-gmap-window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"-->
-                <!--options="map.templatedInfoWindow.options"-->
-                <!--templateUrl="map.templatedInfoWindow.templateUrl"-->
-                <!--templateParameter="map.templatedInfoWindow.templateParameter" ng-cloak>-->
-        <!--</ui-gmap-window>-->
+        <ui-gmap-window show="map.templatedInfoWindow.show" coords="map.templatedInfoWindow.coords"
+                options="map.templatedInfoWindow.options"
+                templateUrl="map.templatedInfoWindow.templateUrl"
+                templateParameter="map.templatedInfoWindow.templateParameter" ng-cloak>
+        </ui-gmap-window>
 
         <ui-gmap-marker coords="staticMarker.coords" options="staticMarker.options" events="staticMarker.events" idKey="staticMarker.id">
         </ui-gmap-marker>
 
         <ui-gmap-markers models="map.randomMarkers" coords="'self'" icon="'icon'" click="'onClicked'"
-                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions">
+                    doCluster="map.doClusterRandomMarkers" clusterOptions="map.clusterOptions" modelsbyref="true">
         </ui-gmap-markers>
 
         <ui-gmap-markers models="map.markers2" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'" events="map.markers2Events">
@@ -228,7 +228,10 @@
                 <td>
                     <div>Do Cluster?: <input type="checkbox" ng-model="map.doClusterRandomMarkers"></div>
                     <div>Cluster Options: <input type="text" ng-model='map.clusterOptionsText'>
-                        <div>Use Ugly Cluster Image?: <input type="checkbox" ng-model="map.doUgly"></div>
+                      <div ng-repeat="cType in map.clusterTypes">
+                        {{cType}}
+                        <input ng-model="map.currentClusterType" type="radio" id="{{cType}}" value="{{cType}}" ng-change="map.selectClusterType(cType)">
+                      </div>
                     </div>
                     <div ng-init="numOfMarkers = 1000">
                         <input type="text" text="Number of Markers" ng-model="numOfMarkers">

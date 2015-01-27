@@ -9,7 +9,7 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
 }])
 
 .run(['$templateCache', function ($templateCache) {
-  $templateCache.put('searchbox.tpl.html', '<input id="pac-input" class="pac-controls" type="text" placeholder="Search">');
+  $templateCache.put('searchbox.tpl.html', '<input id="pac-input" class="pac-controls" type="text" ng-model="ngModel" placeholder="Search">');
   $templateCache.put('window.tpl.html', '<div ng-controller="WindowCtrl" ng-init="showPlaceDetails(parameter)">{{place.name}}</div>');
 }])
 
@@ -24,7 +24,14 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
     , function ($scope, $timeout, $log, $http, GoogleMapApi) {
   $log.doLog = true
 
+   $scope.$watch( 'searchModel.searchTerm', function (newValue, oldValue){
+     if (newValue == oldValue) {
+       return null;
+     } else {
+      //do something with the changed value
+     }
 
+    });
 
 
   GoogleMapApi.then(function(maps) {
@@ -56,6 +63,9 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
       },
       templateurl:'window.tpl.html',
       templateparameter: {}
+    },
+    searchModel: {
+      searchTerm : "Pizza"
     },
     map: {
       control: {},

@@ -1,6 +1,12 @@
 angular.module('uiGmapgoogle-maps.directives.api.utils')
 .service 'uiGmapGmapUtil', ['uiGmapLogger', '$compile', (Logger, $compile) ->
   #BEGIN Private Methods
+  _isTruthy = (value, bool, optionsArray) ->
+    value is bool or optionsArray.indexOf(value) != -1
+
+  _isFalse = (value) ->
+    _isTruthy(value, false,['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'])
+
   getLatitude = (value) ->
     if Array.isArray(value) and value.length is 2
       value[1]
@@ -100,11 +106,13 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
   defaultDelay: 50
 
-  isTrue: (val) ->
-    angular.isDefined(val) and val isnt null and val is true or val is '1' or val is 'y' or val is 'true'
+  isTrue: (value) ->
+    _isTruthy(value, true, ['true', 'TRUE', 1, 'y', 'Y', 'yes', 'YES'])
 
-  isFalse: (value) ->
-    ['false', 'FALSE', 0, 'n', 'N', 'no', 'NO'].indexOf(value) != -1
+  isFalse: _isFalse
+
+  isFalsy: (value) ->
+    _isTruthy(value, false,[undefined, null]) or _isFalse(value)
 
   getCoords: getCoords
 
@@ -214,6 +222,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     map.fitBounds bounds
 
   getPath: (object, key) ->
+    #if the key is not a sting then we already have the value
+    return  key if not key? or not _.isString key
     obj = object
     _.each key.split('.'), (value) ->
       if obj then obj = obj[value]

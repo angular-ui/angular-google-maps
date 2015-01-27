@@ -7,7 +7,6 @@ angular.module("uiGmapgoogle-maps.directives.api")
         super()
         @template = '<span class="angular-google-map-markers" ng-transclude></span>'
         Plural.extend @,
-          doRebuildAll: '=dorebuildall' #root level directive attribute not a model level, should default to false
           doCluster: '=docluster'
           clusterOptions: '=clusteroptions'
           clusterEvents: '=clusterevents'
@@ -23,11 +22,6 @@ angular.module("uiGmapgoogle-maps.directives.api")
       link: (scope, element, attrs, ctrl) ->
         parentModel = undefined
         ready = ->
-          if scope.control?
-            scope.control.getGMarkers = ->
-              parentModel.gMarkerManager?.getGMarkers()
-            scope.control.getChildMarkers = ->
-              parentModel.markerModels
           scope.deferred.resolve()
 
         IMarker.mapPromise(scope, ctrl).then (map) ->
@@ -38,6 +32,14 @@ angular.module("uiGmapgoogle-maps.directives.api")
             _.defer parentModel.gMarkerManager.draw
 
           parentModel = new MarkersParentModel(scope, element, attrs, map)
+          Plural.link(scope, parentModel)
+          if scope.control?
+            scope.control.getGMarkers = ->
+              parentModel.gMarkerManager?.getGMarkers()
+            #deprecated use getPlurals
+            scope.control.getChildMarkers = ->
+              parentModel.plurals
+
           _.last(parentModel.existingPieces._content).then ->
             ready()
 ]

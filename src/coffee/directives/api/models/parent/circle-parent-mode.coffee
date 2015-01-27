@@ -7,12 +7,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
     @include GmapUtil
     @include EventsHelper
     constructor: (@scope, element, @attrs, @map, @DEFAULTS) ->
-      circle =
+      gObject =
         new google.maps.Circle @buildOpts GmapUtil.getCoords(scope.center), scope.radius
 
       @setMyOptions = (newVals, oldVals) =>
         unless _.isEqual newVals,oldVals
-          circle.setOptions @buildOpts GmapUtil.getCoords(scope.center), scope.radius
+          gObject.setOptions @buildOpts GmapUtil.getCoords(scope.center), scope.radius
 
       @props = @props.concat [
         {prop: 'center',isColl: true}
@@ -21,24 +21,24 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       ]
       @watchProps()
 
-      listeners = @setEvents circle, scope, scope
+      listeners = @setEvents gObject, scope, scope
 
-      google.maps.event.addListener circle, 'radius_changed', ->
+      google.maps.event.addListener gObject, 'radius_changed', ->
         scope.$evalAsync ->
-          scope.radius = circle.getRadius()
+          scope.radius = gObject.getRadius()
 
-      google.maps.event.addListener circle, 'center_changed', ->
+      google.maps.event.addListener gObject, 'center_changed', ->
         scope.$evalAsync ->
           if angular.isDefined(scope.center.type)
-            scope.center.coordinates[1] = circle.getCenter().lat()
-            scope.center.coordinates[0] = circle.getCenter().lng()
+            scope.center.coordinates[1] = gObject.getCenter().lat()
+            scope.center.coordinates[0] = gObject.getCenter().lng()
           else
-            scope.center.latitude = circle.getCenter().lat()
-            scope.center.longitude = circle.getCenter().lng()
+            scope.center.latitude = gObject.getCenter().lat()
+            scope.center.longitude = gObject.getCenter().lng()
 
       scope.$on '$destroy', =>
         @removeEvents listeners
-        circle.setMap null
+        gObject.setMap null
 
       $log.info @
 ]

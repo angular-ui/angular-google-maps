@@ -231,19 +231,23 @@ angular.module('uiGmapgoogle-maps.directives.api')
               settingCenterFromScope = false
             , true
 
+            zoomPromise = null
             scope.$watch 'zoom', (newValue, oldValue) =>
-              return  if _.isEqual(newValue,oldValue) or _gMap.getZoom() == scope.zoom or settingFromDirective
+              return unless newValue?
+              return  if _.isEqual(newValue,oldValue) or _gMap?.getZoom() == scope?.zoom or settingFromDirective
               #make this time out longer than zoom_changes because zoom_changed should be done first
               #being done first should make scopes equal
               settingZoomFromScope = true
-              $timeout  ->
+
+              $timeout.cancel(zoomPromise) if zoomPromise?
+              zoomPromise = $timeout  ->
                 _gMap.setZoom newValue
                 settingZoomFromScope = false
               , scope.eventOpts?.debounce?.zoomMs + 20, false # use $timeout as a simple wrapper for setTimeout without calling $apply
 
             scope.$watch 'bounds', (newValue, oldValue) ->
               return  if newValue is oldValue
-              if !newValue.northeast.latitude? or !newValue.northeast.longitude? or !newValue.southwest.latitude? or !newValue.southwest.longitude?
+              if !newValue?.northeast?.latitude? or !newValue?.northeast?.longitude? or !newValue?.southwest?.latitude? or !newValue?.southwest?.longitude?
                 $log.error "Invalid map bounds for new value: #{JSON.stringify newValue}"
                 return
               ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude)
@@ -255,7 +259,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
               scope.$watch toWatch, (newValue,oldValue) ->
                 watchItem = @exp
                 return  if _.isEqual(newValue,oldValue)
-                opts.options = newValue
+                if watchItem == 'options'
+                  opts.options = newValue
+                else
+                  opts.options[watchItem] = newValue
                 _gMap.setOptions opts  if _gMap?
-            , true
+              , true
   ]

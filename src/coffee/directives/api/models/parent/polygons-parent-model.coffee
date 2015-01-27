@@ -1,27 +1,19 @@
 angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 .factory 'uiGmapPolygonsParentModel', ['$timeout', 'uiGmapLogger',
   'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap',
-  'uiGmapPolygonChildModel', 'uiGmap_async', 'uiGmapPromise',
-  ($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolygonChildModel, _async, uiGmapPromise) ->
+  'uiGmapPolygonChildModel', 'uiGmap_async', 'uiGmapPromise', 'uiGmapIPolygon',
+  ($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolygonChildModel, _async, uiGmapPromise, IPolygon) ->
     class PolygonsParentModel extends ModelKey
       @include ModelsWatcher
       constructor: (@scope, @element, @attrs, @gMap, @defaults) ->
         super(scope)
+        @interface = IPolygon
         self = @
         @$log = $log
         @plurals = new PropMap()
-        @scopePropNames = [
-          'path'
-          'stroke'
-          'clickable'
-          'draggable'
-          'editable'
-          'geodesic'
-          'icons'
-          'visible'
-        ]
+
         #setting up local references to propety keys IE: @pathKey
-        _.each @scopePropNames, (name) => @[name + 'Key'] = undefined
+        _.each IPolygon.scopeKeys, (name) => @[name + 'Key'] = undefined
         @models = undefined
         @firstTime = true
         @$log.info @
@@ -79,7 +71,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @rebuildAll(scope, false, true)
 
       watchOurScope: (scope) =>
-        _.each @scopePropNames, (name) =>
+        _.each IPolygon.scopeKeys, (name) =>
           nameKey = name + 'Key'
           @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
           @watch(scope, name, nameKey)
@@ -89,14 +81,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @$log.error('No models to create Polygons from! I Need direct models!')
           return
 
-        if @gMap?
-          #at the very least we need a Map, the marker is optional as we can create Windows without markers
-          if @scope.models?
-            @watchIdKey @scope
-            if isCreatingFromScratch
-              @createAllNew @scope, false
-            else
-              @pieceMeal @scope, false
+        return if not @gMap? or not @scope.models?
+        @watchIdKey @scope
+        if isCreatingFromScratch
+          @createAllNew @scope, false
+        else
+          @pieceMeal @scope, false
 
       watchIdKey: (scope)=>
         @setIdKey scope
@@ -160,7 +150,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       createChild: (model, gMap)=>
         childScope = @scope.$new(false)
-        @setChildScope(@scopePropNames, childScope, model)
+        @setChildScope(IPolygon.scopeKeys, childScope, model)
 
         childScope.$watch('model', (newValue, oldValue) =>
           if(newValue != oldValue)
@@ -180,7 +170,4 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         @plurals.put(model[@idKey], child)
 #        $log.debug "create: " + @plurals.length
         child
-
-      modelKeyComparison: (model1, model2) =>
-        _.isEqual @evalModelHandle(model1, @scope.path), @evalModelHandle(model2, @scope.path)
 ]

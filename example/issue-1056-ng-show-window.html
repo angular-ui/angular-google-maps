@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+    <link rel="stylesheet" href="assets/stylesheets/gwin-size-fix.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+    <script src="../bower_components/lodash/dist/lodash.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-1056-ng-show-window.js"></script>
+    <script src="assets/scripts/controllers/templates/issue-1056-template-ctrl.js"></script>
+</head>
+<body ng-app="appMaps">
+<div ng-controller="mapCtrl">
+    <ui-gmap-google-map class="col-md-12"
+                        center="map.center"
+                        zoom="map.zoom"
+                        dragging="map.dragging"
+                        control="map.control">
+        <ui-gmap-marker ng-repeat="m in map.markers" coords="m" click="m.click()" idkey='m.wonkyId'>
+            <ui-gmap-window show="true" templateUrl="'assets/templates/issue-1056-template.html'" templateParameter="m">
+            </ui-gmap-window>
+        </ui-gmap-marker>
+    </ui-gmap-google-map>
+</div>
+</body>
+</html>

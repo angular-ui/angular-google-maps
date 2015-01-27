@@ -1,0 +1,16 @@
+/*
+http://stackoverflow.com/questions/1554893/google-maps-api-v3-infowindow-not-sizing-correctly
+*/
+.gm-style-iw {
+    overflow:auto !important;
+    max-width:300px;
+    min-height:75px;
+    max-height:175px
+}
+
+.gm-style-iw > div{
+    overflow:auto !important;
+    max-width:300px;
+    min-height:75px;
+    max-height:175px;
+}

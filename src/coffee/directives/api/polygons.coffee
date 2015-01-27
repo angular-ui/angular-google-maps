@@ -17,18 +17,6 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
           unless scope.models
             @$log.warn 'polygons: no models found to create from'
-          parent = null
-          if scope.control?
-            scope.control.updateModels = (models) ->
-              scope.models = models
-              parent.createChildScopes(false)
-            scope.control.newModels = (models) ->
-              scope.models = models
-              parent.rebuildAll(scope, true, true)
 
-            scope.control.clean = ->
-              parent.rebuildAll(scope, false, true)
-          parent = new ParentModel scope, element, attrs, map, @DEFAULTS
-
-
+          Plural.link scope, new ParentModel(scope, element, attrs, map, @DEFAULTS)
 ]

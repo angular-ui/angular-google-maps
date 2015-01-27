@@ -5,6 +5,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
     class SearchBoxParentModel extends BaseObject
         @include EventsHelper
         constructor: (@scope, @element, @attrs, @gMap, @ctrlPosition, @template, @$log = Logger) ->
+            console.log @template
             unless @attrs.template?
                 @$log.error 'template attribute for the search-box directive is mandatory. Places Search Box creation aborted!!'
                 return
@@ -28,7 +29,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
             @init()
 
-        init: () =>
+        init: =>
             @createSearchBox()
 
             @scope.$watch('options', (newValue, oldValue) =>
@@ -46,30 +47,30 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                 @addAsMapControl()
 
             if @autocomplete
-                @listener = google.maps.event.addListener @searchBox, 'place_changed', =>
-                    @places = @searchBox.getPlace()
+                @listener = google.maps.event.addListener @gObject, 'place_changed', =>
+                    @places = @gObject.getPlace()
             else
-                @listener = google.maps.event.addListener @searchBox, 'places_changed', =>
-                    @places = @searchBox.getPlaces()
+                @listener = google.maps.event.addListener @gObject, 'places_changed', =>
+                    @places = @gObject.getPlaces()
 
-            @listeners = @setEvents @searchBox, @scope, @scope
+            @listeners = @setEvents @gObject, @scope, @scope
             @$log.info @
 
             @scope.$on '$destroy', =>
-                @searchBox = null
+                @gObject = null
 
-        addAsMapControl: () =>
+        addAsMapControl: =>
             @gMap.controls[google.maps.ControlPosition[@ctrlPosition]].push(@input)
 
-        addToParentDiv: () =>
+        addToParentDiv: =>
             @parentDiv = angular.element document.getElementById(@scope.parentdiv)
             @parentDiv.append @input
 
-        createSearchBox: () =>
+        createSearchBox: =>
             if @autocomplete
-                @searchBox = new google.maps.places.Autocomplete @input, @scope.options
+                @gObject = new google.maps.places.Autocomplete @input, @scope.options
             else
-                @searchBox = new google.maps.places.SearchBox @input, @scope.options
+                @gObject = new google.maps.places.SearchBox @input, @scope.options
 
         setBounds: (bounds) =>
             if angular.isUndefined bounds.isEmpty
@@ -77,11 +78,11 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               return
             else
               if bounds.isEmpty() == false
-                  if @searchBox?
-                      @searchBox.setBounds(bounds)
+                  if @gObject?
+                      @gObject.setBounds(bounds)
 
-        getBounds: () =>
-            @searchBox.getBounds()
+        getBounds: =>
+            @gObject.getBounds()
 
         setVisibility: (val) =>
             if @attrs.parentdiv?
