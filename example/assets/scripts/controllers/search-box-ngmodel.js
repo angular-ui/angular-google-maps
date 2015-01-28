@@ -9,7 +9,7 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
 }])
 
 .run(['$templateCache', function ($templateCache) {
-  $templateCache.put('searchbox.tpl.html', '<input id="pac-input" class="pac-controls" type="text" placeholder="Search">');
+  $templateCache.put('searchbox.tpl.html', '<input id="pac-input" class="pac-controls" type="text" ng-model="ngModel" placeholder="Search">');
   $templateCache.put('window.tpl.html', '<div ng-controller="WindowCtrl" ng-init="showPlaceDetails(parameter)">{{place.name}}</div>');
 }])
 
@@ -23,6 +23,16 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
 .controller("SearchBoxController",['$scope', '$timeout', 'uiGmapLogger', '$http','uiGmapGoogleMapApi'
     , function ($scope, $timeout, $log, $http, GoogleMapApi) {
   $log.doLog = true
+
+   $scope.$watch( 'searchModel.searchTerm', function (newValue, oldValue){
+     if (newValue == oldValue) {
+       return null;
+     } else {
+       //console.log("the value changed to " + newValue);
+     }
+
+    });
+
 
   GoogleMapApi.then(function(maps) {
     maps.visualRefresh = true;
@@ -53,6 +63,9 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
       },
       templateurl:'window.tpl.html',
       templateparameter: {}
+    },
+    searchModel: {
+      searchTerm : "Pizza"
     },
     map: {
       control: {},

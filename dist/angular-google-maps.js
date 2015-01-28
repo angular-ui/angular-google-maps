@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2015-01-21
+/*! angular-google-maps 2.0.12 2015-01-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -7490,6 +7490,8 @@ This directive creates a new scope.
     'uiGmapGoogleMapApi', 'uiGmapLogger', 'uiGmapSearchBoxParentModel', '$http', '$templateCache', '$compile', function(GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache, $compile) {
       var SearchBox;
       SearchBox = (function() {
+        SearchBox.prototype.require = 'ngModel';
+
         function SearchBox() {
           this.link = __bind(this.link, this);
           this.$log = Logger;
@@ -7504,7 +7506,8 @@ This directive creates a new scope.
             events: '=events',
             position: '=?position',
             options: '=?options',
-            parentdiv: '=?parentdiv'
+            parentdiv: '=?parentdiv',
+            ngModel: "=?"
           };
         }
 
