@@ -86,7 +86,7 @@ angular.module('uiGmapgoogle-maps')
           sv.getPanoramaByLocation focalPoint, scope.radius, (streetViewPanoramaData, status) ->
             #get status via scope or callback
             scope.imagestatus = status if scope.imagestatus?
-            if scope.events.image_status_changed?
+            if scope.events?.image_status_changed?
               scope.events.image_status_changed(sv, 'image_status_changed', scope, status)
             if status is "OK"
               perspectivePoint = streetViewPanoramaData.location.latLng
