@@ -7528,6 +7528,8 @@ This directive creates a new scope.
     'uiGmapGoogleMapApi', 'uiGmapLogger', 'uiGmapSearchBoxParentModel', '$http', '$templateCache', '$compile', function(GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache, $compile) {
       var SearchBox;
       SearchBox = (function() {
+        SearchBox.prototype.require = 'ngModel';
+
         function SearchBox() {
           this.link = __bind(this.link, this);
           this.$log = Logger;
@@ -7542,7 +7544,8 @@ This directive creates a new scope.
             events: '=events',
             position: '=?position',
             options: '=?options',
-            parentdiv: '=?parentdiv'
+            parentdiv: '=?parentdiv',
+            ngModel: "=?"
           };
         }
 

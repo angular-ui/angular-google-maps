@@ -19,6 +19,7 @@ angular.module('uiGmapgoogle-maps')
 'uiGmapSearchBoxParentModel', '$http', '$templateCache', '$compile',
   (GoogleMapApi, Logger, SearchBoxParentModel, $http, $templateCache, $compile) ->
     class SearchBox
+      require: 'ngModel'
       constructor:  ->
         @$log = Logger
         @restrict = 'EMA'
@@ -33,9 +34,9 @@ angular.module('uiGmapgoogle-maps')
           position: '=?position' #optional
           options: '=?options' #optional
           parentdiv: '=?parentdiv' #optional
-
+          ngModel: "=?" #optional
+      
       link: (scope, element, attrs, mapCtrl) =>
-
         GoogleMapApi.then (maps) =>
           $http.get(scope.template, { cache: $templateCache })
             .success (template) =>
