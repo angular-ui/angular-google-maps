@@ -9,9 +9,11 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
     constructor: (@scope, element, @attrs, @map, @DEFAULTS) ->
       lastRadius = null
       clean = =>
+        lastRadius = null
         if @listeners?
           @removeEvents @listeners
           @listeners = undefined
+
       gObject =
         new google.maps.Circle @buildOpts GmapUtil.getCoords(scope.center), scope.radius
 
@@ -31,7 +33,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       @listeners.push google.maps.event.addListener gObject, 'radius_changed', ->
         ###
-          possible google bug, and or because a circle has two radiuses
+          possible google bug, and or because a circle has two radii
           radius_changed appears to fire twice (original and new) which is not too helpful
           therefore we will check for radius changes manually and bail out if nothing has changed
         ###
