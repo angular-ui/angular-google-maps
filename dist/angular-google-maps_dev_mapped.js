@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2015-01-26
+/*! angular-google-maps 2.0.12 2015-01-29
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3643,11 +3643,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         CircleParentModel.include(EventsHelper);
 
         function CircleParentModel(scope, element, attrs, map, DEFAULTS) {
-          var clean, gObject;
+          var clean, gObject, lastRadius;
           this.scope = scope;
           this.attrs = attrs;
           this.map = map;
           this.DEFAULTS = DEFAULTS;
+          lastRadius = null;
           clean = (function(_this) {
             return function() {
               if (_this.listeners != null) {
@@ -3676,13 +3677,26 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchProps();
           clean();
           this.listeners = this.setEvents(gObject, scope, scope, ['radius_changed']);
-          this.listeners.push(google.maps.event.addListener(gObject, 'radius_changed', function() {}));
           this.listeners.push(google.maps.event.addListener(gObject, 'radius_changed', function() {
+
+            /*
+              possible google bug, and or because a circle has two radiuses
+              radius_changed appears to fire twice (original and new) which is not too helpful
+              therefore we will check for radius changes manually and bail out if nothing has changed
+             */
+            var newRadius;
+            newRadius = gObject.getRadius();
+            if (newRadius === lastRadius) {
+              return;
+            }
+            lastRadius = newRadius;
             return scope.$evalAsync(function() {
-              var newRadius;
-              newRadius = gObject.getRadius();
+              var _ref, _ref1;
               if (newRadius !== scope.radius) {
-                return scope.radius = newRadius;
+                scope.radius = newRadius;
+              }
+              if (((_ref = scope.events) != null ? _ref.radius_changed : void 0) && _.isFunction((_ref1 = scope.events) != null ? _ref1.radius_changed : void 0)) {
+                return scope.events.radius_changed(gObject, 'radius_changed', scope, arguments);
               }
             });
           }));
