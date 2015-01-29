@@ -2,21 +2,23 @@ describe "_async", ->
   rootScope = null
   timeout = null
   q = null
+  browser = null
 
   digest = (fn, times = 1) =>
     fn()
     if times
       _.range(times).forEach -> # i would like to say that it sucks that I have to do this.. (angular)
-        timeout?.flush()
+        timeout?.flush() if browser.deferredFns?.length
     rootScope?.$apply()
 
   beforeEach ->
     module "uiGmapgoogle-maps"
-    inject (_$rootScope_, $timeout, uiGmap_async, $q) =>
+    inject (_$rootScope_, $timeout, uiGmap_async, $q, $browser) =>
       q = $q
       rootScope = _$rootScope_
       timeout = $timeout
       @subject = uiGmap_async
+      browser = $browser
 
   afterEach ->
     rootScope = null

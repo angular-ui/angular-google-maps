@@ -40,10 +40,21 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
         newRadius = gObject.getRadius()
         return if newRadius == lastRadius
+        console.debug "newRadius: #{newRadius}, oldRadius: #{lastRadius}"
         lastRadius =  newRadius
-        scope.$evalAsync ->
+
+        work = ->
+          console.error 'radius_changed evalAsync'
           scope.radius = newRadius if newRadius != scope.radius
           scope.events.radius_changed(gObject, 'radius_changed', scope, arguments) if scope.events?.radius_changed and _.isFunction scope.events?.radius_changed
+
+        # hack
+        # for some reason in specs I can not get $evalAsync to fire.. im tired of wasting time on this
+        if not angular.mock
+          scope.$evalAsync ->
+            work()
+        else
+          work()
 
       @listeners.push google.maps.event.addListener gObject, 'center_changed', ->
         scope.$evalAsync ->

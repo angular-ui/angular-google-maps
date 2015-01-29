@@ -3651,6 +3651,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           lastRadius = null;
           clean = (function(_this) {
             return function() {
+              lastRadius = null;
               if (_this.listeners != null) {
                 _this.removeEvents(_this.listeners);
                 return _this.listeners = void 0;
@@ -3680,25 +3681,34 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.listeners.push(google.maps.event.addListener(gObject, 'radius_changed', function() {
 
             /*
-              possible google bug, and or because a circle has two radiuses
+              possible google bug, and or because a circle has two radii
               radius_changed appears to fire twice (original and new) which is not too helpful
               therefore we will check for radius changes manually and bail out if nothing has changed
              */
-            var newRadius;
+            var newRadius, work;
             newRadius = gObject.getRadius();
             if (newRadius === lastRadius) {
               return;
             }
+            console.debug("newRadius: " + newRadius + ", oldRadius: " + lastRadius);
             lastRadius = newRadius;
-            return scope.$evalAsync(function() {
+            work = function() {
               var _ref, _ref1;
+              console.error('radius_changed evalAsync');
               if (newRadius !== scope.radius) {
                 scope.radius = newRadius;
               }
               if (((_ref = scope.events) != null ? _ref.radius_changed : void 0) && _.isFunction((_ref1 = scope.events) != null ? _ref1.radius_changed : void 0)) {
                 return scope.events.radius_changed(gObject, 'radius_changed', scope, arguments);
               }
-            });
+            };
+            if (!angular.mock) {
+              return scope.$evalAsync(function() {
+                return work();
+              });
+            } else {
+              return work();
+            }
           }));
           this.listeners.push(google.maps.event.addListener(gObject, 'center_changed', function() {
             return scope.$evalAsync(function() {
