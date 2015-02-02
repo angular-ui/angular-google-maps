@@ -1,23 +1,14 @@
 describe 'uiGmapCircle', ->
   allDone =  undefined
-  rootScope = null
-  timeout = null
   GCircle = null
-  digest = null
   modelClicked = false
-  browser = null
 
   afterEach ->
-    digest = null
     GCircle.resetInstances()
     modelClicked = false
 
   beforeEach ->
-    digest = (fn) =>
-     fn()
-     timeout?.flush() if browser.deferredFns?.length
-     rootScope?.$digest()
-     
+
     @html = """
       <ui-gmap-google-map draggable="true" center="map.center" zoom="map.zoom">
           <ui-gmap-circle center='map.circle.center'
@@ -59,30 +50,28 @@ describe 'uiGmapCircle', ->
     apiMock = window['uiGmapInitiator'].initMock().apiMock
     GCircle = window.google.maps.Circle
 
-    inject ['$rootScope', '$timeout', '$compile', '$q', 'uiGmapCircle', '$browser',
-      ($rootScope, $timeout, $compile, $q, directive, $browser) =>
-        rootScope = $rootScope
-        timeout = $timeout
+    inject (_$rootScope_, $timeout, $browser, $compile, uiGmapCircle) =>
         @compile = $compile
-        @subject = directive
-        browser = $browser
-    ]
+        @subject = uiGmapCircle
+        @browser = $browser
+        @rootScope = _$rootScope_
+        @timeout = $timeout
 
   describe 'should add one circle',  ->
     it 'from start', (done) ->
-      scope = rootScope.$new()
+      scope = @rootScope.$new()
       @map.circle = @circle
       _.extend scope, map: @map
 
       element = @compile(@html)(scope)
-      digest =>
-        timeout =>
+      @digest =>
+        @timeout =>
           expect(GCircle.instances).toEqual(1)
           done()
 
   describe 'events', ->
     it 'call radius changed once', (done) ->
-      scope = rootScope.$new()
+      scope = @rootScope.$new()
 
       @circle.events =
         radius_changed: ->
@@ -101,29 +90,11 @@ describe 'uiGmapCircle', ->
           expect(@circle.events.radius_changed.calls.count()).toBe(1)
           done()
 
-      digest =>
-        timeout =>
+      @digest =>
+        @timeout =>
           expect(GCircle.instances).toEqual(1)
           GCircle.creationUnSubscribe listener
         , 500
-
-
-#  describe 'dynamic', ->
-#    it 'delayed creation', (done) ->
-#      scope = rootScope.$new()
-#      scope.items = []
-#      _.extend scope, map: @map
-#
-#      element = @compile(@html)(scope)
-#      expect(GCircle.instances).toEqual(0)
-#      digest =>
-#        timeout =>
-#          @map.circle = @circle
-#        , 250
-#        timeout =>
-#          expect(GCircle.instances).toEqual(1)
-#          done()
-#        , 350
 
   it 'exists', ->
     expect(@subject).toBeDefined()
