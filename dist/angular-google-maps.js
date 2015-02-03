@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2015-01-29
+/*! angular-google-maps 2.1.0-SNAPSHOT 2015-02-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3696,11 +3696,21 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         CircleParentModel.include(EventsHelper);
 
         function CircleParentModel(scope, element, attrs, map, DEFAULTS) {
-          var gObject, listeners;
+          var clean, gObject, lastRadius;
           this.scope = scope;
           this.attrs = attrs;
           this.map = map;
           this.DEFAULTS = DEFAULTS;
+          lastRadius = null;
+          clean = (function(_this) {
+            return function() {
+              lastRadius = null;
+              if (_this.listeners != null) {
+                _this.removeEvents(_this.listeners);
+                return _this.listeners = void 0;
+              }
+            };
+          })(this);
           gObject = new google.maps.Circle(this.buildOpts(GmapUtil.getCoords(scope.center), scope.radius));
           this.setMyOptions = (function(_this) {
             return function(newVals, oldVals) {
@@ -3719,13 +3729,39 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             }, 'radius'
           ]);
           this.watchProps();
-          listeners = this.setEvents(gObject, scope, scope);
-          google.maps.event.addListener(gObject, 'radius_changed', function() {
-            return scope.$evalAsync(function() {
-              return scope.radius = gObject.getRadius();
-            });
-          });
-          google.maps.event.addListener(gObject, 'center_changed', function() {
+          clean();
+          this.listeners = this.setEvents(gObject, scope, scope, ['radius_changed']);
+          this.listeners.push(google.maps.event.addListener(gObject, 'radius_changed', function() {
+
+            /*
+              possible google bug, and or because a circle has two radii
+              radius_changed appears to fire twice (original and new) which is not too helpful
+              therefore we will check for radius changes manually and bail out if nothing has changed
+             */
+            var newRadius, work;
+            newRadius = gObject.getRadius();
+            if (newRadius === lastRadius) {
+              return;
+            }
+            lastRadius = newRadius;
+            work = function() {
+              var _ref, _ref1;
+              if (newRadius !== scope.radius) {
+                scope.radius = newRadius;
+              }
+              if (((_ref = scope.events) != null ? _ref.radius_changed : void 0) && _.isFunction((_ref1 = scope.events) != null ? _ref1.radius_changed : void 0)) {
+                return scope.events.radius_changed(gObject, 'radius_changed', scope, arguments);
+              }
+            };
+            if (!angular.mock) {
+              return scope.$evalAsync(function() {
+                return work();
+              });
+            } else {
+              return work();
+            }
+          }));
+          this.listeners.push(google.maps.event.addListener(gObject, 'center_changed', function() {
             return scope.$evalAsync(function() {
               if (angular.isDefined(scope.center.type)) {
                 scope.center.coordinates[1] = gObject.getCenter().lat();
@@ -3735,10 +3771,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return scope.center.longitude = gObject.getCenter().lng();
               }
             });
-          });
+          }));
           scope.$on('$destroy', (function(_this) {
             return function() {
-              _this.removeEvents(listeners);
+              clean();
               return gObject.setMap(null);
             };
           })(this));
@@ -6505,7 +6541,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     return;
                   }
                   google.maps.event.trigger(_gMap, 'resize');
-                  if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.latitude : void 0) != null)) {
+                  if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.longitude : void 0) != null)) {
                     coords = _this.getCoords(maybeCoords);
                     if (_this.isTrue(attrs.pan)) {
                       return _gMap.panTo(coords);

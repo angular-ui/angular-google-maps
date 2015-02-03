@@ -3,18 +3,14 @@ describe 'uiGmapIMarkerParentModel', ->
     angular.mock.module('uiGmapgoogle-maps.directives.api.models.parent')
 
     @clickCount = 0
-    inject ['$rootScope', '$timeout', '$compile',
-    '$http', '$templateCache', '$interpolate', 'uiGmapIMarkerParentModel',
-      ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, IMarkerParentModel) =>
-        @rootScope = $rootScope
-        @scope = $rootScope.$new()
-        @ele = $compile('<ui-gmap-markers models="models"></ui-gmap-markers>')(@scope)
+    @html = '<ui-gmap-markers models="models"></ui-gmap-markers>'
+    @injects.push ($http, $templateCache, $interpolate, uiGmapIMarkerParentModel) =>
         @attrs = {click: @click}
-        @IMarkerParentModel = IMarkerParentModel
-        @$timeout = $timeout
+        @IMarkerParentModel = uiGmapIMarkerParentModel
         @scope.click = () =>
           @clickCount++
-    ]
+
+    @injectAll()
 
   it 'should instantiate', ->
     @scope.coords = {

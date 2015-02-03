@@ -1,8 +1,9 @@
 describe "directives.api.control", ->
   beforeEach ->
     window['uiGmapInitiator'].initDirective @, "Control"
-    inject ($templateCache) ->
+    @injects.push ($templateCache) ->
       $templateCache.put('mockControl.tpl.html', '<button class="mock">Control</button>')
+    @injectAll()
 
   it "can be created", ->
     expect(@subject).toBeDefined()

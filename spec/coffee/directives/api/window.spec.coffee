@@ -1,6 +1,6 @@
-describe "directives.api.Window", ->
+describe "uiGmapWindow", ->
     beforeEach ->
-        window['uiGmapInitiator'].initMock()
+        window['uiGmapInitiator'].initMock(@)
         @mocks =
             scope:
                 coords:
@@ -18,20 +18,18 @@ describe "directives.api.Window", ->
             attrs: {
                 isiconvisibleonclick:true
             }
-            ctrls: [{getMap:()->{}}]
+            ctrls: [{getMap:->{}}]
         @gmap = {}
-        inject ['$rootScope','$q', '$compile', '$http',
-        '$templateCache', 'uiGmapExtendGWin', 'uiGmapWindow',
-          (_$rootScope_,$q, $compile, $http, $templateCache, ExtendGWin, Window) =>
+        @injects.push ['$http', '$templateCache', 'uiGmapExtendGWin', 'uiGmapWindow',
+          ($http, $templateCache, ExtendGWin, Window) =>
             ExtendGWin.init()
-            @$rootScope =  _$rootScope_
-            d = $q.defer()
+            d = @q.defer()
             d.resolve @gmap
 
-            @$rootScope.deferred = d
-            @mocks.ctrls[0].getScope =  =>
-                @$rootScope
-            @windowScope = _.extend @$rootScope.$new(), @mocks.scope
+            @rootScope.deferred = d
+            @mocks.ctrls[0].getScope = =>
+                @rootScope
+            @windowScope = _.extend @rootScope.$new(), @mocks.scope
 
             @subject = new Window()
             @subject.onChildCreation = (child) =>
@@ -39,12 +37,13 @@ describe "directives.api.Window", ->
 
             @prom = d.promise
         ]
+        @injectAll()
 
     it "should test receive the fulfilled promise!!", ->
         result = undefined
         @prom.then (returnFromPromise) ->
             result = returnFromPromise
-        @$rootScope.$apply() # promises are resolved/dispatched only on next $digest cycle
+        @digest =>
         expect(result).toBe @gmap
 
     it 'can be created', ->
@@ -57,20 +56,21 @@ describe "directives.api.Window", ->
         crap = null
         @prom.then ->
             crap = "set"
-        @$rootScope.$apply() #force $q to resolve
+        @digest =>
         expect(crap).toBe 'set'
         expect(@childWindow).toBeDefined()
         expect(@childWindow.opts).toBeDefined()
 
     it 'slaps control functions when a control is available', ->
       @subject.link(@mocks.scope, @mocks.element, @mocks.attrs, @mocks.ctrls)
-      @$rootScope.$apply() #force $q to resolve
+      @digest =>
       expect(@mocks.scope.control.getChildWindows).toBeDefined()
       expect(@mocks.scope.control.getGWindows).toBeDefined()
 
     it 'control functions work', ->
       @subject.link(@mocks.scope, @mocks.element, @mocks.attrs, @mocks.ctrls)
-      @$rootScope.$apply() #force $q to resolve
+      @digest =>
+      expect(@mocks.scope.control.getChildWindows).toBeDefined()
       expect(@mocks.scope.control.getChildWindows().length).toBe(1)
       expect(@mocks.scope.control.getChildWindows()[0]).toEqual(@childWindow)
       expect(@mocks.scope.control.getGWindows()[0]).toEqual(@childWindow.gObject)
