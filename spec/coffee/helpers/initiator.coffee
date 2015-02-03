@@ -1,45 +1,35 @@
-defaultMap =
-  zoom: 12
-  center:
-    longitude: 47
-    latitude: -27
-
 window["uiGmapInitiator"] =
-  initDirective: (toInit, apiSubjectClassName, thingsToInit = ['initAll'], map = defaultMap)->
+  initDirective: (testSuite, apiSubjectClassName, thingsToInit = ['initAll'])->
 
-    injects = ['$compile', '$rootScope', '$timeout', 'uiGmapLogger']
+    injects = ['uiGmapLogger']
     if apiSubjectClassName?
       injects.push 'uiGmap' + apiSubjectClassName
 
     module "uiGmapgoogle-maps.mocks"
 
     inject (GoogleApiMock) ->
-      toInit.apiMock = new GoogleApiMock()
+      testSuite.apiMock = new GoogleApiMock()
       thingsToInit.forEach (init) ->
-        toInit.apiMock[init]()
+        testSuite.apiMock[init]()
 
-    injects.push ($compile, $rootScope, $timeout, Logger, SubjectClass) ->
-      toInit.compile = $compile
-      toInit.rootScope = $rootScope
-      toInit.subject = new SubjectClass() if SubjectClass?
-      toInit.log = Logger
+    injects.push (Logger, SubjectClass) ->
+      testSuite.subject = new SubjectClass() if SubjectClass?
+      testSuite.log = Logger
 
-      # mock map scope
-      toInit.scope = toInit.rootScope.$new()
-      toInit.scope.map = map
+      spyOn testSuite.log, 'error'
 
-    inject injects
+    testSuite.injects.push injects
 
-    spyOn toInit.log, 'error'
-    toInit
+    testSuite
 
-  initMock: ->
+  initMock: (testSuite, injectedCb) ->
     app = module "uiGmapgoogle-maps.mocks"
     module "uiGmapgoogle-maps.directives.api.utils"
     apiMock = undefined
-    inject ['GoogleApiMock',(GoogleApiMock) =>
+    testSuite.injects.push (GoogleApiMock) =>
       apiMock = new GoogleApiMock()
       apiMock.initAll()
-    ]
+      injectedCb(apiMock) if injectedCb? and _.isFunction injectedCb
+
     app: app
     apiMock: apiMock

@@ -1,14 +1,14 @@
-describe "directives.api.map", ->
+describe "uiGmapMap", ->
   beforeEach ->
     window['uiGmapInitiator'].initDirective @, "Map", ['initAll'], {}
-    @html = angular.element """
+    @html = """
       <ui-gmap-google-map center='map.center'
         control='map.control' zoom='map.zoom'
         options ='map.options'
         events='map.events'>
       </ui-gmap-google-map>
       """
-    _.extend @scope,
+    @scope =
       map:
         events: {}
         options: {}
@@ -19,10 +19,7 @@ describe "directives.api.map", ->
           longitude: 47
           latitude: -27
 
-    @digest = (fn) =>
-      @compile(@html)(@scope)
-      fn()
-      @rootScope.$apply()
+    @injectAll()
 
   afterEach ->
     @scope = null

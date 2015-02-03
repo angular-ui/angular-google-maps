@@ -3,11 +3,11 @@ describe 'Events Mock', ->
   afterEach ->
     google.maps.event.clearListeners()
   beforeEach ->
-    module "uiGmapgoogle-maps.mocks"
-    inject (GoogleApiMock) ->
-      apiMock = new GoogleApiMock()
+    window['uiGmapInitiator'].initMock @, (apiMock) ->
       subject = apiMock.getPolyline()
       subject.resetInstances()
+
+    @injectAll()
 
   it 'exists', ->
     expect(window.google.maps.event).toBeDefined()
