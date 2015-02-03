@@ -3,12 +3,13 @@ describe 'uiGmapEventsHelper', ->
   beforeEach ->
     module 'uiGmapgoogle-maps.directives.api.utils'
     module 'uiGmapgoogle-maps.mocks'
-    inject ['uiGmapEventsHelper', 'GoogleApiMock', (EventsHelper, GoogleApiMock) =>
+    @injects.push ['uiGmapEventsHelper', 'GoogleApiMock', (EventsHelper, GoogleApiMock) =>
       @subject = EventsHelper
       @gmap = new GoogleApiMock()
       @gmap.mockAPI()
       @listeners = @gmap.mockEvent()
     ]
+    @injectAll()
 
     scope =
       events:

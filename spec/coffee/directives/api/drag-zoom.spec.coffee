@@ -1,34 +1,19 @@
 describe 'uiGmapDragZoom spec', ->
   allDone = undefined
-  rootScope = null
-  timeout = null
-  mockMap = null
-
-  digest = (fn) =>
-    fn()
-    timeout.flush()
-    rootScope.$apply()
 
   beforeEach ->
 
-    apiMock = window['uiGmapInitiator'].initMock().apiMock
+    window['uiGmapInitiator'].initMock @, (apiMock) ->
+      map = apiMock.getMap()
+      map.prototype.enableKeyDragZoom = @enableKeyDragZoom
 
-    inject ['$rootScope', '$timeout', '$compile', '$q', 'uiGmapDragZoom', 'uiGmapGoogleMapApi',
-      ($rootScope, $timeout, $compile, $q, DragZoom, Api) =>
-        rootScope = $rootScope
-        timeout = $timeout
-
+    @injects.push ['uiGmapDragZoom', 'uiGmapGoogleMapApi',
+      (DragZoom, Api) =>
         @enableKeyDragZoom = (opts) ->
         spyOn(@, 'enableKeyDragZoom')
-
-        mockMap = =>
-          map = apiMock.getMap()
-          map.prototype.enableKeyDragZoom = @enableKeyDragZoom
-        mockMap()
-
-        @compile = $compile
         @subject = DragZoom
     ]
+    @injectAll()
 
   it 'should be called from creation', (done) ->
     html = """
@@ -36,7 +21,7 @@ describe 'uiGmapDragZoom spec', ->
             <ui-gmap-drag-zoom keyboardkey="'alt'" spec="spec"></ui-gmap-drag-zoom>
         </ui-gmap-google-map>
              """
-    scope = rootScope.$new()
+    scope = @rootScope.$new()
     scope.items = []
     scope.map = {}
     scope.map.zoom = 12
@@ -47,8 +32,8 @@ describe 'uiGmapDragZoom spec', ->
     spyOn(scope.spec, 'enableKeyDragZoom')
 
     element = @compile(html)(scope)
-    digest =>
-      timeout =>
+    @digest =>
+      @timeout =>
         #when it gets here map.prototype.enableKeyDragZoom has been squashed
         expect(scope.spec.enableKeyDragZoom).toHaveBeenCalled()
         done()

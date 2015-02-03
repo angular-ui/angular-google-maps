@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2015-02-02
+/*! angular-google-maps 2.0.12 2015-02-03
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3690,11 +3690,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             if (newRadius === lastRadius) {
               return;
             }
-            console.debug("newRadius: " + newRadius + ", oldRadius: " + lastRadius);
             lastRadius = newRadius;
             work = function() {
               var _ref, _ref1;
-              console.error('radius_changed evalAsync');
               if (newRadius !== scope.radius) {
                 scope.radius = newRadius;
               }

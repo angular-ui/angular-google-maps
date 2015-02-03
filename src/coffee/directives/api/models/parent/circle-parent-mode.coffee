@@ -40,11 +40,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
         newRadius = gObject.getRadius()
         return if newRadius == lastRadius
-        console.debug "newRadius: #{newRadius}, oldRadius: #{lastRadius}"
+
         lastRadius =  newRadius
 
         work = ->
-          console.error 'radius_changed evalAsync'
           scope.radius = newRadius if newRadius != scope.radius
           scope.events.radius_changed(gObject, 'radius_changed', scope, arguments) if scope.events?.radius_changed and _.isFunction scope.events?.radius_changed
 

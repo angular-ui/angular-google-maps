@@ -23,7 +23,7 @@ describe 'uiGmapCircle', ->
         </ui-gmap-circle>
       </ui-gmap-google-map>
     """
-    @map =
+    map =
       zoom: 12
       center : {longitude: 47, latitude: -27}
 
@@ -47,23 +47,28 @@ describe 'uiGmapCircle', ->
         radius_changed: (gObject) ->
 
 
-    apiMock = window['uiGmapInitiator'].initMock().apiMock
-    GCircle = window.google.maps.Circle
+    apiMock = window['uiGmapInitiator']
+    .initMock(@, ->
+      GCircle = window.google.maps.Circle
+    ).apiMock
 
-    inject (_$rootScope_, $timeout, $browser, $compile, uiGmapCircle) =>
-        @compile = $compile
-        @subject = uiGmapCircle
-        @browser = $browser
-        @rootScope = _$rootScope_
-        @timeout = $timeout
+    @injects.push (uiGmapCircle) =>
+      @subject = uiGmapCircle
+
+    @circle.events =
+      radius_changed: ->
+
+    _spy = spyOn @circle.events, 'radius_changed'
+
+    map.circle = @circle
+
+    @scope = angular.extend @scope or {}, map: map
+
+    @injectAll()
 
   describe 'should add one circle',  ->
     it 'from start', (done) ->
-      scope = @rootScope.$new()
-      @map.circle = @circle
-      _.extend scope, map: @map
 
-      element = @compile(@html)(scope)
       @digest =>
         @timeout =>
           expect(GCircle.instances).toEqual(1)
@@ -71,17 +76,7 @@ describe 'uiGmapCircle', ->
 
   describe 'events', ->
     it 'call radius changed once', (done) ->
-      scope = @rootScope.$new()
 
-      @circle.events =
-        radius_changed: ->
-
-      _spy = spyOn @circle.events, 'radius_changed'
-
-      @map.circle = @circle
-      _.extend scope, map: @map
-
-      element = @compile(@html)(scope)
 
       listener = GCircle.creationSubscribe @, (gObject) =>
         _.delay =>

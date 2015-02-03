@@ -1,7 +1,17 @@
 describe 'uiGmapMapTypeParentModelSpec', ->
   beforeEach ->
 
-    window['uiGmapInitiator'].initMock().apiMock
+    window['uiGmapInitiator'].initMock @, (apiMock) =>
+      apiMock.mockAPI()
+      apiMock.mockMap()
+      @tempMaps = google.maps
+      google.maps.ImageMapType = (opts) =>
+        @setOpts = opts
+        getTileUrl: ->
+
+      spyOn(google.maps, 'ImageMapType').and.callThrough();
+      @mapCtrl = new window.google.maps.Map()
+
     angular.module('mockModule', ['uiGmapgoogle-maps', 'uiGmapgoogle-maps.mocks'])
     .value('mapCtrl', {})
     .value('element', {})
@@ -9,41 +19,27 @@ describe 'uiGmapMapTypeParentModelSpec', ->
     .value('model', {})
     .value('scope', @scope)
 
-    inject ['GoogleApiMock', (GoogleApiMock) =>
-      mock = new GoogleApiMock()
-      mock.mockAPI()
-      mock.mockMap()
-    ]
-
-    @scope =
+    scope =
       options:
         blah: true
-        getTileUrl: ()->
+        getTileUrl: ->
 
-      $watch: ()->
-      $on: ()->
+      $watch: ->
+      $on: ->
     @attrs =
       id: 'testmaptype'
       options: 'someBoundAttr'
-    self = @
-    @setOpts
-    @tempMaps = google.maps
-    google.maps.ImageMapType = (opts) =>
-      self.setOpts = opts
-      getTileUrl: ()->
-    spyOn(google.maps, 'ImageMapType').and.callThrough();
 
-    @mapCtrl = new window.google.maps.Map()
 
     @timeout = (fnc, time) =>
       fnc()
 
-    inject ['$rootScope', 'uiGmapMapTypeParentModel', ($rootScope, MapTypeParentModel) =>
-      scope = $rootScope.$new()
-      @constructor = MapTypeParentModel
-      @scope = _.extend @scope, scope
+    @injects.push (uiGmapMapTypeParentModel) =>
+      @constructor = uiGmapMapTypeParentModel
+      _.extend @scope, scope
       @subject = new @constructor(@scope, {}, @attrs, @mapCtrl)
-    ]
+
+    @injectAll()
 
   afterEach ->
     google.maps = @tempMaps
