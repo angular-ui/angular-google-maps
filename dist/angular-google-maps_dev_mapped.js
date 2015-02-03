@@ -6489,7 +6489,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     return;
                   }
                   google.maps.event.trigger(_gMap, 'resize');
-                  if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.latitude : void 0) != null)) {
+                  if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.longitude : void 0) != null)) {
                     coords = _this.getCoords(maybeCoords);
                     if (_this.isTrue(attrs.pan)) {
                       return _gMap.panTo(coords);
