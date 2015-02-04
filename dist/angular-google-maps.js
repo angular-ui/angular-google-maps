@@ -7810,7 +7810,7 @@ InfoBox.prototype.createInfoBoxDiv_ = function () {
       }));
     }
 
-    this.contextListener_ = google.maps.event.addDomListener(this.div_, "contextmenu", ignoreHandler);
+    this.contextListener_ = google.maps.event.addDomListener(this.div_, "contextmenu", cancelHandler);
 
     /**
      * This event is fired when the DIV containing the InfoBox's content is attached to the DOM.
