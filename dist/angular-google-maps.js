@@ -803,25 +803,15 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 ;(function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  angular.module('uiGmapgoogle-maps.directives.api.utils').factory('uiGmapFitHelper', [
-    'uiGmapBaseObject', 'uiGmapLogger', 'uiGmap_async', function(BaseObject, $log, _async) {
-      var FitHelper;
-      return FitHelper = (function(_super) {
-        __extends(FitHelper, _super);
-
-        function FitHelper() {
-          return FitHelper.__super__.constructor.apply(this, arguments);
-        }
-
-        FitHelper.prototype.fit = function(gMarkers, gMap) {
+  angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapFitHelper', [
+    'uiGmapLogger', 'uiGmap_async', function($log, _async) {
+      return {
+        fit: function(gMarkers, gMap) {
           var bounds, everSet;
           if (gMap && gMarkers && gMarkers.length > 0) {
             bounds = new google.maps.LatLngBounds();
             everSet = false;
-            return _async.each(gMarkers, (function(_this) {
+            gMarkers.forEach((function(_this) {
               return function(gMarker) {
                 if (gMarker) {
                   if (!everSet) {
@@ -830,17 +820,13 @@ Nicholas McCready - https://twitter.com/nmccready
                   return bounds.extend(gMarker.getPosition());
                 }
               };
-            })(this)).then(function() {
-              if (everSet) {
-                return gMap.fitBounds(bounds);
-              }
-            });
+            })(this));
+            if (everSet) {
+              return gMap.fitBounds(bounds);
+            }
           }
-        };
-
-        return FitHelper;
-
-      })(BaseObject);
+        }
+      };
     }
   ]);
 
@@ -1806,16 +1792,12 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 ;(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   angular.module('uiGmapgoogle-maps.directives.api.managers').factory('uiGmapClustererMarkerManager', [
     'uiGmapLogger', 'uiGmapFitHelper', 'uiGmapPropMap', function($log, FitHelper, PropMap) {
       var ClustererMarkerManager;
-      ClustererMarkerManager = (function(_super) {
-        __extends(ClustererMarkerManager, _super);
-
+      ClustererMarkerManager = (function() {
         ClustererMarkerManager.type = 'ClustererMarkerManager';
 
         function ClustererMarkerManager(gMap, opt_markers, opt_options, opt_events) {
@@ -1835,7 +1817,6 @@ Nicholas McCready - https://twitter.com/nmccready
           this.addMany = __bind(this.addMany, this);
           this.update = __bind(this.update, this);
           this.add = __bind(this.add, this);
-          ClustererMarkerManager.__super__.constructor.call(this);
           this.type = ClustererMarkerManager.type;
           this.clusterer = new NgMapMarkerClusterer(gMap, opt_markers, this.opt_options);
           this.propMapGMarkers = new PropMap();
@@ -1942,7 +1923,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         ClustererMarkerManager.prototype.fit = function() {
-          return ClustererMarkerManager.__super__.fit.call(this, this.getGMarkers(), this.clusterer.getMap());
+          return FitHelper.fit(this.getGMarkers(), this.clusterer.getMap());
         };
 
         ClustererMarkerManager.prototype.getGMarkers = function() {
@@ -1953,25 +1934,19 @@ Nicholas McCready - https://twitter.com/nmccready
 
         return ClustererMarkerManager;
 
-      })(FitHelper);
+      })();
       return ClustererMarkerManager;
     }
   ]);
 
 }).call(this);
 ;(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   angular.module("uiGmapgoogle-maps.directives.api.managers").factory("uiGmapMarkerManager", [
     "uiGmapLogger", "uiGmapFitHelper", "uiGmapPropMap", function(Logger, FitHelper, PropMap) {
       var MarkerManager;
-      MarkerManager = (function(_super) {
-        __extends(MarkerManager, _super);
-
-        MarkerManager.include(FitHelper);
-
+      MarkerManager = (function() {
         MarkerManager.type = 'MarkerManager';
 
         function MarkerManager(gMap, opt_markers, opt_options) {
@@ -1985,7 +1960,6 @@ Nicholas McCready - https://twitter.com/nmccready
           this.addMany = __bind(this.addMany, this);
           this.update = __bind(this.update, this);
           this.add = __bind(this.add, this);
-          MarkerManager.__super__.constructor.call(this);
           this.type = MarkerManager.type;
           this.gMap = gMap;
           this.gMarkers = new PropMap();
@@ -2090,7 +2064,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         MarkerManager.prototype.fit = function() {
-          return MarkerManager.__super__.fit.call(this, this.getGMarkers(), this.gMap);
+          return FitHelper.fit(this.getGMarkers(), this.gMap);
         };
 
         MarkerManager.prototype.getGMarkers = function() {
@@ -2099,7 +2073,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         return MarkerManager;
 
-      })(FitHelper);
+      })();
       return MarkerManager;
     }
   ]);
@@ -4335,10 +4309,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return maybeCanceled;
               }, _async.chunkSizeFrom(scope.chunk)).then(function() {
                 _this.modelsRendered = true;
-                _this.gMarkerManager.draw();
                 if (scope.fit) {
                   _this.gMarkerManager.fit();
                 }
+                _this.gMarkerManager.draw();
                 return _this.scope.pluralsUpdate.updateCtr += 1;
               }, _async.chunkSizeFrom(scope.chunk));
             };
@@ -4398,11 +4372,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }, _async.chunkSizeFrom(scope.chunk));
                 }).then(function() {
                   if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
-                    _this.gMarkerManager.draw();
                     scope.plurals = _this.scope.plurals;
                     if (scope.fit) {
                       _this.gMarkerManager.fit();
                     }
+                    _this.gMarkerManager.draw();
                   }
                   return _this.scope.pluralsUpdate.updateCtr += 1;
                 });

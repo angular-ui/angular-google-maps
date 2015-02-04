@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+    <link rel="stylesheet" href="http://rawgit.com/danielcrisp/angular-rangeslider/v0.0.11/angular.rangeSlider.css">
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+    <script src="../bower_components/lodash/dist/lodash.js"></script>
+
+    <script src="http://rawgit.com/danielcrisp/angular-rangeslider/v0.0.11/angular.rangeSlider.js"></script>
+
+
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-1028-clusterer-rerender.js"></script>
+</head>
+<body ng-app="app">
+<h1>Clusterer</h1>
+<section ng-controller="MapCtrl">
+    <ui-gmap-google-map center='project.map.center' zoom='project.map.zoom' options="map_options">
+        <ui-gmap-markers
+                models="project.filtered_locations"
+                coords="'self'"
+                icon="'icon'"
+                doCluster="true"
+                fit="true"
+        >
+                </ui-gmap-markers>
+    </ui-gmap-google-map>
+    <div range-slider min="minIndex" max="maxIndex"  model-max="userMaxIndex" step="1" attach-handle-values="true" pin-handle="min">
+    </div>
+    <p>Locations shown: <span>{{userMaxIndex}}</span></p>
+</section>
+</body>
+</html>

@@ -113,8 +113,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               , _async.chunkSizeFrom scope.chunk
               .then =>
                 @modelsRendered = true
-                @gMarkerManager.draw()
                 @gMarkerManager.fit() if scope.fit
+                @gMarkerManager.draw()
                 @scope.pluralsUpdate.updateCtr += 1
               , _async.chunkSizeFrom scope.chunk
 
@@ -158,9 +158,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 .then =>
                   #finally redraw if something has changed
                   if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
-                    @gMarkerManager.draw()
                     scope.plurals = @scope.plurals #for other directives like windows
                     @gMarkerManager.fit() if scope.fit #note fit returns a promise
+                    @gMarkerManager.draw()
                   @scope.pluralsUpdate.updateCtr += 1
 
             else
