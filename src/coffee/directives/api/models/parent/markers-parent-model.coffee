@@ -42,7 +42,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             @watch 'fit', scope
             @watch 'idKey', scope
 
-            @gMarkerManager = undefined
+            @gManager = undefined
             @createAllNew(scope)
 
 
@@ -74,9 +74,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @pieceMeal @scope, false
 
           createAllNew: (scope) =>
-            if @gMarkerManager?
-              @gMarkerManager.clear()
-              delete @gMarkerManager
+            if @gManager?
+              @gManager.clear()
+              delete @gManager
 
             if scope.doCluster
               if scope.clusterEvents
@@ -98,9 +98,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                   mouseover:(cluster) ->
                     self.maybeExecMappedEvent cluster, 'mouseover'
 
-              @gMarkerManager = new ClustererMarkerManager @map, undefined, scope.clusterOptions, scope.clusterEvents
+              @gManager = new ClustererMarkerManager @map, undefined, scope.clusterOptions, scope.clusterEvents
             else
-              @gMarkerManager = new MarkerManager @map
+              @gManager = new MarkerManager @map
 
             return if @didQueueInitPromise(@,scope)
 
@@ -116,8 +116,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               , _async.chunkSizeFrom scope.chunk
               .then =>
                 @modelsRendered = true
-                @gMarkerManager.fit() if scope.fit
-                @gMarkerManager.draw()
+                @gManager.fit() if scope.fit
+                @gManager.draw()
                 @scope.pluralsUpdate.updateCtr += 1
               , _async.chunkSizeFrom scope.chunk
 
@@ -162,8 +162,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                   #finally redraw if something has changed
                   if(payload.adds.length > 0 or payload.removals.length > 0 or payload.updates.length > 0)
                     scope.plurals = @scope.plurals #for other directives like windows
-                    @gMarkerManager.fit() if scope.fit #note fit returns a promise
-                    @gMarkerManager.draw()
+                    @gManager.fit() if scope.fit #note fit returns a promise
+                    @gManager.draw()
                   @scope.pluralsUpdate.updateCtr += 1
 
             else
@@ -188,7 +188,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             IMarker.scopeKeys.forEach (k) ->
               keys[k] = scope[k]
             child = new MarkerChildModel(childScope, model, keys, @map, @DEFAULTS,
-              @doClick, @gMarkerManager, doDrawSelf = false) #this is managed so child is not drawing itself
+              @doClick, @gManager, doDrawSelf = false) #this is managed so child is not drawing itself
             @scope.plurals.put(model[@idKey], child) #major change this makes model.id a requirement
             child
 
@@ -199,7 +199,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               , _async.chunkSizeFrom(@scope.cleanchunk, false)
               .then =>
                 delete @scope.plurals
-                @gMarkerManager.clear() if @gMarkerManager?
+                @gManager.clear() if @gManager?
                 @scope.plurals = new PropMap()
                 @scope.pluralsUpdate.updateCtr += 1
 

@@ -16,6 +16,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
         maxZoom: 18,
         minZoom: 3
       },
+      markerControl: {},
       events: {
         idle: function (map) {
           $scope.map.actualZoom = map.getZoom();
@@ -53,6 +54,11 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
       }
       $scope.searchResults.results = $scope.searchResults.results.concat(markers);
     };
+
+    $scope.forceClusterDraw = function(){
+      $scope.map.markerControl.managerDraw();
+    };
+
 
     $scope.reset = function () {
       lastId = 1;

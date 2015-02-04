@@ -23,10 +23,12 @@
                 idkey="'key'"
                 chunk="false"
                 cleanchunk="false"
+                control="map.markerControl"
                 ></ui-gmap-markers>
     </ui-gmap-google-map>
     <button ng-click="reset()">Reset</button><br>
     <button ng-click="addMarkers(500)">Add</button><br>
+    <button ng-click="forceClusterDraw()">Force Cluster Draw</button><br>
     <p>Max number of results to show: 100<br/>Num of items in results: {{searchResults.results.length}}</p>
     <p>doCluster:{{map.doCluster}}</p>
     <p>actualZoom:{{map.actualZoom}}</p>

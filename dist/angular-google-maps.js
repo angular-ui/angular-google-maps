@@ -2867,7 +2867,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             child.removeEvents(child.internalListeners);
             if (child != null ? child.gObject : void 0) {
               if (child.removeFromManager) {
-                child.gMarkerManager.remove(child.gObject);
+                child.gManager.remove(child.gObject);
               }
               child.gObject.setMap(null);
               return child.gObject = null;
@@ -2875,14 +2875,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
         };
 
-        function MarkerChildModel(scope, model, keys, gMap, defaults, doClick, gMarkerManager, doDrawSelf, trackModel, needRedraw) {
+        function MarkerChildModel(scope, model, keys, gMap, defaults, doClick, gManager, doDrawSelf, trackModel, needRedraw) {
           var action;
           this.model = model;
           this.keys = keys;
           this.gMap = gMap;
           this.defaults = defaults;
           this.doClick = doClick;
-          this.gMarkerManager = gMarkerManager;
+          this.gManager = gManager;
           this.doDrawSelf = doDrawSelf != null ? doDrawSelf : true;
           this.trackModel = trackModel != null ? trackModel : true;
           this.needRedraw = needRedraw != null ? needRedraw : false;
@@ -2992,11 +2992,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               validCb();
             }
             if (doDraw && this.gObject) {
-              return this.gMarkerManager.add(this.gObject);
+              return this.gManager.add(this.gObject);
             }
           } else {
             if (doDraw && this.gObject) {
-              return this.gMarkerManager.remove(this.gObject);
+              return this.gManager.remove(this.gObject);
             }
           }
         };
@@ -3061,12 +3061,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             doDraw = true;
           }
           if (gSetter != null) {
-            gSetter(this.scope, doDraw);
-          }
-          if (this.doDrawSelf && doDraw) {
-            return this.gMarkerManager.draw();
+            return gSetter(this.scope, doDraw);
           }
         };
+
+        if (MarkerChildModel.doDrawSelf && doDraw) {
+          MarkerChildModel.gManager.draw();
+        }
 
         MarkerChildModel.prototype.isNotValid = function(scope, doCheckGmarker) {
           var hasIdenticalScopes, hasNoGmarker;
@@ -3141,7 +3142,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               _options = _this.getProp(_this.optionsKey, _this.model);
               _this.opts = _this.createOptions(coords, icon, _options);
               if (_this.isLabel(_this.gObject) !== _this.isLabel(_this.opts) && (_this.gObject != null)) {
-                _this.gMarkerManager.remove(_this.gObject);
+                _this.gManager.remove(_this.gObject);
                 _this.gObject = void 0;
               }
               if (_this.gObject != null) {
@@ -3173,19 +3174,19 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this));
-          if (this.gObject && (this.gObject.getMap() || this.gMarkerManager.type !== MarkerManager.type)) {
+          if (this.gObject && (this.gObject.getMap() || this.gManager.type !== MarkerManager.type)) {
             this.deferred.resolve(this.gObject);
           } else {
             if (!this.gObject) {
               return this.deferred.reject('gObject is null');
             }
-            if (!(((_ref = this.gObject) != null ? _ref.getMap() : void 0) && this.gMarkerManager.type === MarkerManager.type)) {
+            if (!(((_ref = this.gObject) != null ? _ref.getMap() : void 0) && this.gManager.type === MarkerManager.type)) {
               $log.debug('gObject has no map yet');
               this.deferred.resolve(this.gObject);
             }
           }
           if (this.model[this.fitKey]) {
-            return this.gMarkerManager.fit();
+            return this.gManager.fit();
           }
         };
 
@@ -4165,7 +4166,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watch('clusterEvents', scope);
           this.watch('fit', scope);
           this.watch('idKey', scope);
-          this.gMarkerManager = void 0;
+          this.gManager = void 0;
           this.createAllNew(scope);
         }
 
@@ -4208,9 +4209,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         MarkersParentModel.prototype.createAllNew = function(scope) {
           var maybeCanceled, self, _ref, _ref1, _ref2;
-          if (this.gMarkerManager != null) {
-            this.gMarkerManager.clear();
-            delete this.gMarkerManager;
+          if (this.gManager != null) {
+            this.gManager.clear();
+            delete this.gManager;
           }
           if (scope.doCluster) {
             if (scope.clusterEvents) {
@@ -4236,9 +4237,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
               });
             }
-            this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, scope.clusterEvents);
+            this.gManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, scope.clusterEvents);
           } else {
-            this.gMarkerManager = new MarkerManager(this.map);
+            this.gManager = new MarkerManager(this.map);
           }
           if (this.didQueueInitPromise(this, scope)) {
             return;
@@ -4254,9 +4255,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }, _async.chunkSizeFrom(scope.chunk)).then(function() {
                 _this.modelsRendered = true;
                 if (scope.fit) {
-                  _this.gMarkerManager.fit();
+                  _this.gManager.fit();
                 }
-                _this.gMarkerManager.draw();
+                _this.gManager.draw();
                 return _this.scope.pluralsUpdate.updateCtr += 1;
               }, _async.chunkSizeFrom(scope.chunk));
             };
@@ -4318,9 +4319,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
                     scope.plurals = _this.scope.plurals;
                     if (scope.fit) {
-                      _this.gMarkerManager.fit();
+                      _this.gManager.fit();
                     }
-                    _this.gMarkerManager.draw();
+                    _this.gManager.draw();
                   }
                   return _this.scope.pluralsUpdate.updateCtr += 1;
                 });
@@ -4353,7 +4354,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           IMarker.scopeKeys.forEach(function(k) {
             return keys[k] = scope[k];
           });
-          child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gMarkerManager, doDrawSelf = false);
+          child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gManager, doDrawSelf = false);
           this.scope.plurals.put(model[this.idKey], child);
           return child;
         };
@@ -4367,8 +4368,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 delete _this.scope.plurals;
-                if (_this.gMarkerManager != null) {
-                  _this.gMarkerManager.clear();
+                if (_this.gManager != null) {
+                  _this.gManager.clear();
                 }
                 _this.scope.plurals = new PropMap();
                 return _this.scope.pluralsUpdate.updateCtr += 1;
@@ -6594,25 +6595,25 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           mapPromise = IMarker.mapPromise(scope, ctrl);
           mapPromise.then((function(_this) {
             return function(map) {
-              var doClick, doDrawSelf, gMarkerManager, keys, m, trackModel;
-              gMarkerManager = new MarkerManager(map);
+              var doClick, doDrawSelf, gManager, keys, m, trackModel;
+              gManager = new MarkerManager(map);
               keys = _.object(IMarker.keys, IMarker.keys);
-              m = new MarkerChildModel(scope, scope, keys, map, {}, doClick = true, gMarkerManager, doDrawSelf = false, trackModel = false);
+              m = new MarkerChildModel(scope, scope, keys, map, {}, doClick = true, gManager, doDrawSelf = false, trackModel = false);
               m.deferred.promise.then(function(gMarker) {
                 return scope.deferred.resolve(gMarker);
               });
               if (scope.control != null) {
-                return scope.control.getGMarkers = gMarkerManager.getGMarkers;
+                return scope.control.getGMarkers = gManager.getGMarkers;
               }
             };
           })(this));
           return scope.$on('$destroy', (function(_this) {
             return function() {
-              var gMarkerManager;
-              if (typeof gMarkerManager !== "undefined" && gMarkerManager !== null) {
-                gMarkerManager.clear();
+              var gManager;
+              if (typeof gManager !== "undefined" && gManager !== null) {
+                gManager.clear();
               }
-              return gMarkerManager = null;
+              return gManager = null;
             };
           })(this));
         };
@@ -6663,14 +6664,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             var mapScope;
             mapScope = ctrl.getScope();
             mapScope.$watch('idleAndZoomChanged', function() {
-              return _.defer(parentModel.gMarkerManager.draw);
+              return _.defer(parentModel.gManager.draw);
             });
             parentModel = new MarkersParentModel(scope, element, attrs, map);
             Plural.link(scope, parentModel);
             if (scope.control != null) {
               scope.control.getGMarkers = function() {
                 var _ref;
-                return (_ref = parentModel.gMarkerManager) != null ? _ref.getGMarkers() : void 0;
+                return (_ref = parentModel.gManager) != null ? _ref.getGMarkers() : void 0;
               };
               scope.control.getChildMarkers = function() {
                 return parentModel.plurals;
@@ -6708,8 +6709,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         scope.control.clean = function() {
           return parent.rebuildAll(scope, false, true);
         };
-        return scope.control.getPlurals = function() {
+        scope.control.getPlurals = function() {
           return parent.plurals;
+        };
+        scope.control.getManager = function() {
+          return parent.gManager;
+        };
+        scope.control.hasManager = function() {
+          return (parent.gManager != null) === true;
+        };
+        return scope.control.managerDraw = function() {
+          var _ref;
+          if (scope.control.hasManager()) {
+            return (_ref = scope.control.getManager()) != null ? _ref.draw() : void 0;
+          }
         };
       };
       return {
