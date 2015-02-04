@@ -1,7 +1,7 @@
 describe 'uiGmapWindowChildModel', ->
     beforeEach ->
 
-        mock = window['uiGmapInitiator'].initMock()
+        window['uiGmapInitiator'].initMock(@)
 
         if window.InfoBox
             @infoBoxRealTemp = window.InfoBox
@@ -13,28 +13,29 @@ describe 'uiGmapWindowChildModel', ->
                 @div_ = document.createElement('div')
                 @div_.className = @boxClass_
 
-        @scope =
+        scope =
             coords:
                 latitude: 90.0
                 longitude: 89.0
             show: true
+
         @commonOpts =
-            position: new google.maps.LatLng(@scope.coords.latitude, @scope.coords.longitude)
+            position: new google.maps.LatLng(scope.coords.latitude, scope.coords.longitude)
         @windowOpts = _.extend(@commonOpts, content: 'content')
         @gMarker = new google.maps.Marker(@commonOpts)
         #define / inject values into the item we are testing... not a controller but it allows us to inject
         #constructor: (@model, @scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerScope,
         #@element, @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
 
-        inject ($rootScope, uiGmapWindowChildModel) =>
-          scope = $rootScope.$new()
+        @injects.push (uiGmapWindowChildModel) =>
           isIconVisibleOnClick = true
           model = _.extend @scope, scope
           mapCtrl = document.gMap
           @gMarker
 
           @subject =
-            new uiGmapWindowChildModel model, scope, @windowOpts, isIconVisibleOnClick, mapCtrl, undefined, '<span>hi</span>'
+            new uiGmapWindowChildModel model, @scope, @windowOpts, isIconVisibleOnClick, mapCtrl, undefined, '<span>hi</span>'
+        @injectAll()
 
     it 'can be created', ->
         expect(@subject).toBeDefined()

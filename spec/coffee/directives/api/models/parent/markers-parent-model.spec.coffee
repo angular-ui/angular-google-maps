@@ -45,23 +45,20 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
     .value('scope', @scope)
 
     module 'mockModule'
-    window['uiGmapInitiator'].initMock()
+    window['uiGmapInitiator'].initMock(@)
 
-    inject ['$rootScope', 'element', 'attrs', 'map',
-      'uiGmapMarkersParentModel', 'uiGmapGoogleMapsUtilV3','uiGmapExtendMarkerClusterer',
-      ($rootScope, element, attrs, map, MarkersParentModel, GoogleMapsUtilV3,ExtendMarkerClusterer) =>
-        GoogleMapsUtilV3.init()
-        ExtendMarkerClusterer.init()
-        scope = $rootScope.$new()
+    @injects.push (element, attrs, map, uiGmapMarkersParentModel, uiGmapGoogleMapsUtilV3,uiGmapExtendMarkerClusterer) =>
+        uiGmapGoogleMapsUtilV3.init()
+        uiGmapExtendMarkerClusterer.init()
 
-        @scope = _.extend scope, @scope
         @scope.options =
           animation: google.maps.Animation.BOUNCE
-        @testCtor = MarkersParentModel
+        @testCtor = uiGmapMarkersParentModel
 
         @subject = new @testCtor(@scope, element, attrs, map)
         @subject
-    ]
+
+    @injectAll()
 
   it 'constructor exist', ->
     expect(@testCtor).toBeDefined()

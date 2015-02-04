@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="../website_libs/dev_deps.js"></script>
+    <script src="https://code.angularjs.org/1.3.6/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-1068-circle-events-doubled.js"></script>
+    <title>Map</title>
+</head>
+
+<body>
+<div data-ng-controller="MapsCtrl">
+    <ui-gmap-google-map center='map.center'
+                        zoom='map.zoom'
+                        draggable='map.draggable'
+                        dragging='map.dragging'
+                        refresh='map.refresh'
+                        options='map.options'
+                        events='map.events'
+                        pan='map.pan'>
+
+        <ui-gmap-circle center='map.circle.center'
+                        radius='map.circle.radius'
+                        fill='map.circle.fill'
+                        stroke='map.circle.stroke'
+                        clickable='map.circle.clickable'
+                        draggable='map.circle.draggable'
+                        editable='map.circle.editable'
+                        visible='map.circle.visible'
+                        events='map.circle.events'>
+        </ui-gmap-circle>
+
+    </ui-gmap-google-map>
+</div>
+</body>
+
+</html>

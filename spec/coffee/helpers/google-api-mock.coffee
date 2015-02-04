@@ -1,3 +1,6 @@
+capitalize = (s) ->
+  return s[0].toUpperCase() + s.slice(1)
+
 angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
 .factory('GoogleApiMock', ->
   class MapObject
@@ -101,6 +104,42 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         @opacity = num
       getOpacity: =>
         @opacity
+
+  getCircle = ->
+    class Circle extends MapObject
+      _.extend @::, DraggableObject::, VisibleObject::
+      @instances = 0
+      @resetInstances = =>
+        @instances = 0
+      @creationSubscribe = (obj, cb) ->
+        window.google.maps.event.addListener(obj, 'creation', cb)
+      @creationUnSubscribe = (listener) ->
+        window.google.maps.event.removeListener listener
+
+      constructor: (opts) ->
+        super()
+        @props= ['draggable', 'editable', 'map','visible', 'radius', 'center']
+        @setOptions opts
+
+        Circle.instances += 1
+        if window?.google?.maps?.event?
+          window.google.maps.event.fireAllListeners 'creation', @
+
+        #getters
+        @props.forEach (p) =>
+          @["get#{capitalize p}"] = =>
+            @[p]
+
+        #setters
+        @props.forEach (p) =>
+          @["set#{capitalize p}"] = (val) =>
+            @[p] = val
+
+      setOptions: (o)=>
+        super(o)
+        _.extend @, o
+
+
 
   getMap = ->
     Map = (opts) -> return
@@ -227,6 +266,7 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         @mockEvent
         @mockInfoWindow
         @mockMarker
+        @mockCircle
         @mockMVCArray
         @mockPoint
         @mockPolygon
@@ -369,6 +409,9 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
 
     mockMVCArray: (impl = getMVCArray()) ->
       window.google.maps.MVCArray = impl
+
+    mockCircle: (Circle = getCircle())->
+      window.google.maps.Circle = Circle
 
     mockPoint: (Point = (x, y) -> return {x: x, y: y}) ->
       window.google.maps.Point = Point

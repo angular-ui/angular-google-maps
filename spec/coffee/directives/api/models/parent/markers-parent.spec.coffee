@@ -34,21 +34,17 @@ xdescribe 'uiGmapMarkersParentModel', ->
       @provide.decorator 'uiGmapMarkerChildModel', () => @markerChildModel
 
     @clickCount = 0
-    inject ['$rootScope', '$timeout', '$compile', '$http',
-    '$templateCache', '$interpolate', 'uiGmapMarkersParentModel',
-      ($rootScope, $timeout, $compile, $http, $templateCache, $interpolate, MarkersParentModel) =>
-      @rootScope = $rootScope
-      @scope = $rootScope.$new()
-      @ele = $compile('<ui-gmap-markers models="models"></ui-gmap-markers>')(@scope)
+    @html = '<ui-gmap-markers models="models"></ui-gmap-markers>'
+    @injects.push ['$http', '$templateCache', '$interpolate', 'uiGmapMarkersParentModel',
+      ($http, $templateCache, $interpolate, MarkersParentModel) =>
       @attrs = {click: @click}
       @MarkersParentModel = MarkersParentModel
-      @$timeout = $timeout
       @scope.click = () =>
         @clickCount++
     ]
 
     @map = jasmine.createSpyObj('map')
-    @subject = new @MarkersParentModel(@scope, @ele, @attrs, @map, @$timeout)
+    @subject = new @MarkersParentModel(@scope, {}, @attrs, @map, @$timeout)
 
   it 'should instantiate', ->
     expect(@subject?).toEqual(true)
