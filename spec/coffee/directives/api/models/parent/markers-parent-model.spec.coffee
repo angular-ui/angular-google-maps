@@ -96,7 +96,7 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
             )).toBeTruthy()
         describe 'some legacy event', =>
           it 'crap - ', -> #not a real event but shows that any existing function can be fired
-            @subject.gMarkerManager.opt_events.crap()
+            @subject.gManager.opt_events.crap()
             expect(@markerModelsCluster).toBe('crap')
       describe 'not fired', ->
         it 'click - ', ->

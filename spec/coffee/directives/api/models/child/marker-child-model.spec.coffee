@@ -98,7 +98,7 @@ describe 'uiGmapMarkerChildModel', ->
   it 'wipes gObject', ->
     @subject.destroy()
     expect(@subject.gObject).toBeFalsy()
-    expect(@subject.gMarkerManager.gMarkers.length).toEqual(0)
+    expect(@subject.gManager.gMarkers.length).toEqual(0)
 
   describe 'attaches to marker events', ->
     it 'setEvents exists', ->
