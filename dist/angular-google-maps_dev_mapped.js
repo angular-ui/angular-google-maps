@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2015-02-03
+/*! angular-google-maps 2.0.12 2015-02-04
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4207,39 +4207,36 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.createAllNew = function(scope) {
-          var maybeCanceled;
+          var maybeCanceled, self, _ref, _ref1, _ref2;
           if (this.gMarkerManager != null) {
             this.gMarkerManager.clear();
             delete this.gMarkerManager;
           }
           if (scope.doCluster) {
             if (scope.clusterEvents) {
-              this.clusterInternalOptions = _.once((function(_this) {
-                return function() {
-                  var self, _ref, _ref1, _ref2;
-                  self = _this;
-                  if (!_this.origClusterEvents) {
-                    _this.origClusterEvents = {
-                      click: (_ref = scope.clusterEvents) != null ? _ref.click : void 0,
-                      mouseout: (_ref1 = scope.clusterEvents) != null ? _ref1.mouseout : void 0,
-                      mouseover: (_ref2 = scope.clusterEvents) != null ? _ref2.mouseover : void 0
-                    };
-                    return _.extend(scope.clusterEvents, {
-                      click: function(cluster) {
-                        return self.maybeExecMappedEvent(cluster, 'click');
-                      },
-                      mouseout: function(cluster) {
-                        return self.maybeExecMappedEvent(cluster, 'mouseout');
-                      },
-                      mouseover: function(cluster) {
-                        return self.maybeExecMappedEvent(cluster, 'mouseover');
-                      }
-                    });
-                  }
+              self = this;
+              if (!this.origClusterEvents) {
+                this.origClusterEvents = {
+                  click: (_ref = scope.clusterEvents) != null ? _ref.click : void 0,
+                  mouseout: (_ref1 = scope.clusterEvents) != null ? _ref1.mouseout : void 0,
+                  mouseover: (_ref2 = scope.clusterEvents) != null ? _ref2.mouseover : void 0
                 };
-              })(this))();
+              } else {
+                angular.extend(scope.clusterEvents, this.origClusterEvents);
+              }
+              angular.extend(scope.clusterEvents, {
+                click: function(cluster) {
+                  return self.maybeExecMappedEvent(cluster, 'click');
+                },
+                mouseout: function(cluster) {
+                  return self.maybeExecMappedEvent(cluster, 'mouseout');
+                },
+                mouseover: function(cluster) {
+                  return self.maybeExecMappedEvent(cluster, 'mouseover');
+                }
+              });
             }
-            this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, this.clusterInternalOptions);
+            this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, scope.clusterEvents);
           } else {
             this.gMarkerManager = new MarkerManager(this.map);
           }
