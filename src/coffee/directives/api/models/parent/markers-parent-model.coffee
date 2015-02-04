@@ -80,22 +80,25 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 
             if scope.doCluster
               if scope.clusterEvents
-                @clusterInternalOptions = do _.once =>
-                  self = @
-                  unless @origClusterEvents
-                    @origClusterEvents =
-                      click: scope.clusterEvents?.click
-                      mouseout: scope.clusterEvents?.mouseout
-                      mouseover: scope.clusterEvents?.mouseover
-                    _.extend scope.clusterEvents,
-                      click:(cluster) ->
-                        self.maybeExecMappedEvent cluster, 'click'
-                      mouseout:(cluster) ->
-                        self.maybeExecMappedEvent cluster, 'mouseout'
-                      mouseover:(cluster) ->
-                        self.maybeExecMappedEvent cluster, 'mouseover'
+                self = @
+                if not @origClusterEvents
+                  @origClusterEvents =
+                    click: scope.clusterEvents?.click
+                    mouseout: scope.clusterEvents?.mouseout
+                    mouseover: scope.clusterEvents?.mouseover
+                else
+                  #rollback to not have stack overflow to call self over and over
+                  angular.extend scope.clusterEvents, @origClusterEvents
 
-              @gMarkerManager = new ClustererMarkerManager @map, undefined, scope.clusterOptions, @clusterInternalOptions
+                angular.extend scope.clusterEvents,
+                  click:(cluster) ->
+                    self.maybeExecMappedEvent cluster, 'click'
+                  mouseout:(cluster) ->
+                    self.maybeExecMappedEvent cluster, 'mouseout'
+                  mouseover:(cluster) ->
+                    self.maybeExecMappedEvent cluster, 'mouseover'
+
+              @gMarkerManager = new ClustererMarkerManager @map, undefined, scope.clusterOptions, scope.clusterEvents
             else
               @gMarkerManager = new MarkerManager @map
 

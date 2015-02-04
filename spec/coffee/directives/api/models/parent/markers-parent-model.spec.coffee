@@ -76,21 +76,21 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
           it 'click - ', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
-            @subject.clusterInternalOptions.click @clusterTest
+            @subject.scope.clusterEvents.click @clusterTest
             expect(_.all(@markerModelsCluster, (entity, i)=>
               entity == @subject.plurals.get(i+1).model
             )).toBeTruthy()
           it 'mouseout - ', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
-            @subject.clusterInternalOptions.mouseout @clusterTest
+            @subject.scope.clusterEvents.mouseout @clusterTest
             expect(_.all(@markerModelsCluster, (entity, i)=>
               entity == @subject.plurals.get(i+1).model
             )).toBeTruthy()
           it 'mouseover - ', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
-            @subject.clusterInternalOptions.mouseover @clusterTest
+            @subject.scope.clusterEvents.mouseover @clusterTest
             expect(_.all(@markerModelsCluster, (entity, i)=>
               entity == @subject.plurals.get(i+1).model
             )).toBeTruthy()
