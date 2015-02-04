@@ -19,7 +19,14 @@
 <h1>Clusterer</h1>
 <section ng-controller="MapCtrl">
     <ui-gmap-google-map center='project.map.center' zoom='project.map.zoom' options="map_options">
-        <ui-gmap-markers models="project.filtered_locations" coords="'self'" icon="'icon'" doCluster="true" fit="true" doRebuildAll="true"></ui-gmap-markers>
+        <ui-gmap-markers
+                models="project.filtered_locations"
+                coords="'self'"
+                icon="'icon'"
+                doCluster="true"
+                fit="true"
+        >
+                </ui-gmap-markers>
     </ui-gmap-google-map>
     <div range-slider min="minIndex" max="maxIndex"  model-max="userMaxIndex" step="1" attach-handle-values="true" pin-handle="min">
     </div>

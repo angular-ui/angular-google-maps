@@ -1,11 +1,9 @@
 angular.module("uiGmapgoogle-maps.directives.api.managers")
 .factory "uiGmapMarkerManager", ["uiGmapLogger", "uiGmapFitHelper",
 "uiGmapPropMap", (Logger, FitHelper, PropMap) ->
-  class MarkerManager extends FitHelper
-    @include FitHelper
+  class MarkerManager
     @type = 'MarkerManager'
     constructor: (gMap, opt_markers, opt_options) ->
-      super()
       @type = MarkerManager.type
       @gMap = gMap
       @gMarkers = new PropMap()
@@ -73,7 +71,7 @@ angular.module("uiGmapgoogle-maps.directives.api.managers")
         gMarker.doAdd = doAdd
 
     fit: =>
-      super @getGMarkers(), @gMap
+      FitHelper.fit @getGMarkers(), @gMap
 
     getGMarkers: =>
       @gMarkers.values()
