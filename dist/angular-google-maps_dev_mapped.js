@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2015-02-04
+/*! angular-google-maps 2.0.12 2015-02-06
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -58,28 +58,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
   angular.module('uiGmapgoogle-maps.directives.api', ['uiGmapgoogle-maps.directives.api.models.parent']);
 
-  angular.module('uiGmapgoogle-maps', ['uiGmapgoogle-maps.directives.api', 'uiGmapgoogle-maps.providers']).factory('uiGmapdebounce', [
-    '$timeout', function($timeout) {
-      return function(fn) {
-        var nthCall;
-        nthCall = 0;
-        return function() {
-          var argz, later, that;
-          that = this;
-          argz = arguments;
-          nthCall++;
-          later = (function(version) {
-            return function() {
-              if (version === nthCall) {
-                return fn.apply(that, argz);
-              }
-            };
-          })(nthCall);
-          return $timeout(later, 0, true);
-        };
-      };
-    }
-  ]);
+  angular.module('uiGmapgoogle-maps', ['uiGmapgoogle-maps.directives.api', 'uiGmapgoogle-maps.providers']);
 
 }).call(this);
 ;(function() {
@@ -6456,11 +6435,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               scope.map = _gMap;
               if ((attrs.control != null) && (scope.control != null)) {
                 scope.control.refresh = function(maybeCoords) {
-                  var coords;
+                  var coords, _ref1, _ref2;
                   if (_gMap == null) {
                     return;
                   }
-                  google.maps.event.trigger(_gMap, 'resize');
+                  if (((typeof google !== "undefined" && google !== null ? (_ref1 = google.maps) != null ? (_ref2 = _ref1.event) != null ? _ref2.trigger : void 0 : void 0 : void 0) != null) && (_gMap != null)) {
+                    google.maps.event.trigger(_gMap, 'resize');
+                  }
                   if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.longitude : void 0) != null)) {
                     coords = _this.getCoords(maybeCoords);
                     if (_this.isTrue(attrs.pan)) {
@@ -7559,6 +7540,48 @@ This directive creates a new scope.
 
       })();
       return new SearchBox();
+    }
+  ]);
+
+}).call(this);
+;(function() {
+  angular.module('uiGmapgoogle-maps').directive('uiGmapShow', [
+    '$animate', 'uiGmapLogger', function($animate, $log) {
+      return {
+        scope: {
+          'uiGmapShow': '=',
+          'uiGmapAfterShow': '&',
+          'uiGmapAfterHide': '&'
+        },
+        link: function(scope, element) {
+          var angular_post_1_3_handle, angular_pre_1_3_handle, handle;
+          angular_post_1_3_handle = function(animateAction, cb) {
+            return $animate[animateAction](element, 'ng-hide').then(function() {
+              return cb();
+            });
+          };
+          angular_pre_1_3_handle = function(animateAction, cb) {
+            return $animate[animateAction](element, 'ng-hide', cb);
+          };
+          handle = function(animateAction, cb) {
+            if (angular.version.major > 1) {
+              return $log.error("uiGmapShow is not supported for Angular Major greater than 1.\nYour Major is " + angular.version.major + "\"");
+            }
+            if (angular.version.major === 1 && angular.version.minor < 3) {
+              return angular_pre_1_3_handle(animateAction, cb);
+            }
+            return angular_post_1_3_handle(animateAction, cb);
+          };
+          return scope.$watch('uiGmapShow', function(show) {
+            if (show) {
+              handle('removeClass', scope.uiGmapAfterShow);
+            }
+            if (!show) {
+              return handle('addClass', scope.uiGmapAfterHide);
+            }
+          });
+        }
+      };
     }
   ]);
 
