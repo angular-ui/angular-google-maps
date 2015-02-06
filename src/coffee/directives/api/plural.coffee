@@ -17,6 +17,15 @@ angular.module('uiGmapgoogle-maps.directives.api')
     scope.control.getPlurals = ->
       parent.plurals
 
+    scope.control.getManager = ->
+      parent.gManager
+
+    scope.control.hasManager = ->
+      parent.gManager? == true
+
+    scope.control.managerDraw = ->
+      scope.control.getManager()?.draw() if scope.control.hasManager()
+
   extend: (obj, obj2) ->
     _.extend obj.scope or {}, obj2 or {},
       idKey: '=idkey' #id key to bind to that makes a model unique, if it does not exist default to rebuilding all markers

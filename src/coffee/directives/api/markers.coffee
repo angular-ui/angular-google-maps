@@ -29,13 +29,13 @@ angular.module("uiGmapgoogle-maps.directives.api")
 
           #this is to deal with race conditions in how MarkerClusterer deals with drawing on idle
           mapScope.$watch 'idleAndZoomChanged', ->
-            _.defer parentModel.gMarkerManager.draw
+            _.defer parentModel.gManager.draw
 
           parentModel = new MarkersParentModel(scope, element, attrs, map)
           Plural.link(scope, parentModel)
           if scope.control?
             scope.control.getGMarkers = ->
-              parentModel.gMarkerManager?.getGMarkers()
+              parentModel.gManager?.getGMarkers()
             #deprecated use getPlurals
             scope.control.getChildMarkers = ->
               parentModel.plurals

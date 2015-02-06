@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+    <script src="../bower_components/lodash/dist/lodash.js"></script>
+    <script data-require="chance@*" data-semver="0.5.3" src="http://chancejs.com/chance.min.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-1136-markers-cluster-linger.js"></script>
+</head>
+<body ng-app="appMaps">
+<div ng-controller="mapCtrl">
+    <ui-gmap-google-map center="map.center"
+                        zoom="map.zoom" draggable="true" options="map.options"
+            events="map.events">
+        <!--doCluster="map.doCluster"-->
+        <ui-gmap-markers ng-if="map.showMarkers"
+                doCluster="map.doCluster"
+                models="searchResults.results"
+                coords="'coords'"
+                idkey="'key'"
+                chunk="false"
+                cleanchunk="false"
+                control="map.markerControl"
+                ></ui-gmap-markers>
+    </ui-gmap-google-map>
+    <button ng-click="reset()">Reset</button><br>
+    <button ng-click="addMarkers(500)">Add</button><br>
+    <button ng-click="forceClusterDraw()">Force Cluster Draw</button><br>
+    <p>Max number of results to show: 100<br/>Num of items in results: {{searchResults.results.length}}</p>
+    <p>doCluster:{{map.doCluster}}</p>
+    <p>actualZoom:{{map.actualZoom}}</p>
+    <p>zoom:{{map.zoom}}</p>
+    <p>showMarkers:{{map.showMarkers}}</p>
+</div>
+</body>
+</html>
