@@ -51,7 +51,6 @@ concatDist =
     "src/js/**/*.js" #this all will only work if the dependency orders do not matter
     "src/js/**/**/*.js"
     "src/js/**/**/**/*.js"
-    "bower_components/angular-inview/angular-inview.js" #it's not on npm.. so we pull it in (only on bower for now)
     "!src/js/wrapped/webpack/*.js"
     "!src/js/wrapped/*.js"
   ]
