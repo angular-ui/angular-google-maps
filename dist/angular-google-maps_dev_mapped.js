@@ -3609,47 +3609,51 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchProps();
           clean();
           this.listeners = this.setEvents(gObject, scope, scope, ['radius_changed']);
-          this.listeners.push(google.maps.event.addListener(gObject, 'radius_changed', function() {
+          if (this.listeners != null) {
+            this.listeners.push(google.maps.event.addListener(gObject, 'radius_changed', function() {
 
-            /*
-              possible google bug, and or because a circle has two radii
-              radius_changed appears to fire twice (original and new) which is not too helpful
-              therefore we will check for radius changes manually and bail out if nothing has changed
-             */
-            var newRadius, work;
-            newRadius = gObject.getRadius();
-            if (newRadius === lastRadius) {
-              return;
-            }
-            lastRadius = newRadius;
-            work = function() {
-              var _ref, _ref1;
-              if (newRadius !== scope.radius) {
-                scope.radius = newRadius;
+              /*
+                possible google bug, and or because a circle has two radii
+                radius_changed appears to fire twice (original and new) which is not too helpful
+                therefore we will check for radius changes manually and bail out if nothing has changed
+               */
+              var newRadius, work;
+              newRadius = gObject.getRadius();
+              if (newRadius === lastRadius) {
+                return;
               }
-              if (((_ref = scope.events) != null ? _ref.radius_changed : void 0) && _.isFunction((_ref1 = scope.events) != null ? _ref1.radius_changed : void 0)) {
-                return scope.events.radius_changed(gObject, 'radius_changed', scope, arguments);
-              }
-            };
-            if (!angular.mock) {
-              return scope.$evalAsync(function() {
-                return work();
-              });
-            } else {
-              return work();
-            }
-          }));
-          this.listeners.push(google.maps.event.addListener(gObject, 'center_changed', function() {
-            return scope.$evalAsync(function() {
-              if (angular.isDefined(scope.center.type)) {
-                scope.center.coordinates[1] = gObject.getCenter().lat();
-                return scope.center.coordinates[0] = gObject.getCenter().lng();
+              lastRadius = newRadius;
+              work = function() {
+                var _ref, _ref1;
+                if (newRadius !== scope.radius) {
+                  scope.radius = newRadius;
+                }
+                if (((_ref = scope.events) != null ? _ref.radius_changed : void 0) && _.isFunction((_ref1 = scope.events) != null ? _ref1.radius_changed : void 0)) {
+                  return scope.events.radius_changed(gObject, 'radius_changed', scope, arguments);
+                }
+              };
+              if (!angular.mock) {
+                return scope.$evalAsync(function() {
+                  return work();
+                });
               } else {
-                scope.center.latitude = gObject.getCenter().lat();
-                return scope.center.longitude = gObject.getCenter().lng();
+                return work();
               }
-            });
-          }));
+            }));
+          }
+          if (this.listeners != null) {
+            this.listeners.push(google.maps.event.addListener(gObject, 'center_changed', function() {
+              return scope.$evalAsync(function() {
+                if (angular.isDefined(scope.center.type)) {
+                  scope.center.coordinates[1] = gObject.getCenter().lat();
+                  return scope.center.coordinates[0] = gObject.getCenter().lng();
+                } else {
+                  scope.center.latitude = gObject.getCenter().lat();
+                  return scope.center.longitude = gObject.getCenter().lng();
+                }
+              });
+            }));
+          }
           scope.$on('$destroy', (function(_this) {
             return function() {
               clean();
