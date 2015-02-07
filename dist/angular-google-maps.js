@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2015-02-03
+/*! angular-google-maps 2.1.0-SNAPSHOT 2015-02-06
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -58,28 +58,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
   angular.module('uiGmapgoogle-maps.directives.api', ['uiGmapgoogle-maps.directives.api.models.parent']);
 
-  angular.module('uiGmapgoogle-maps', ['uiGmapgoogle-maps.directives.api', 'uiGmapgoogle-maps.providers']).factory('uiGmapdebounce', [
-    '$timeout', function($timeout) {
-      return function(fn) {
-        var nthCall;
-        nthCall = 0;
-        return function() {
-          var argz, later, that;
-          that = this;
-          argz = arguments;
-          nthCall++;
-          later = (function(version) {
-            return function() {
-              if (version === nthCall) {
-                return fn.apply(that, argz);
-              }
-            };
-          })(nthCall);
-          return $timeout(later, 0, true);
-        };
-      };
-    }
-  ]);
+  angular.module('uiGmapgoogle-maps', ['uiGmapgoogle-maps.directives.api', 'uiGmapgoogle-maps.providers']);
 
 }).call(this);
 ;(function() {
@@ -259,7 +238,7 @@ Nicholas McCready - https://twitter.com/nmccready
           window.uiGmapInfoBox = uiGmapInfoBox;
         }
         if (window.MarkerLabel_) {
-          window.MarkerLabel_.prototype.setContent = function() {
+          return window.MarkerLabel_.prototype.setContent = function() {
             var content;
             content = this.marker_.get('labelContent');
             if (!content || _.isEqual(this.oldContent, content)) {
@@ -273,33 +252,10 @@ Nicholas McCready - https://twitter.com/nmccready
               this.labelDiv_.innerHTML = '';
               this.labelDiv_.appendChild(content);
               content = content.cloneNode(true);
+              this.labelDiv_.innerHTML = '';
               this.eventDiv_.appendChild(content);
               this.oldContent = content;
             }
-          };
-
-          /*
-          Removes the DIV for the label from the DOM. It also removes all event handlers.
-          This method is called automatically when the marker's <code>setMap(null)</code>
-          method is called.
-          @private
-           */
-          return window.MarkerLabel_.prototype.onRemove = function() {
-            if (this.labelDiv_.parentNode != null) {
-              this.labelDiv_.parentNode.removeChild(this.labelDiv_);
-            }
-            if (this.eventDiv_.parentNode != null) {
-              this.eventDiv_.parentNode.removeChild(this.eventDiv_);
-            }
-            if (!this.listeners_) {
-              return;
-            }
-            if (!this.listeners_.length) {
-              return;
-            }
-            this.listeners_.forEach(function(l) {
-              return google.maps.event.removeListener(l);
-            });
           };
         }
       })
@@ -2915,7 +2871,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             child.removeEvents(child.internalListeners);
             if (child != null ? child.gObject : void 0) {
               if (child.removeFromManager) {
-                child.gMarkerManager.remove(child.gObject);
+                child.gManager.remove(child.gObject);
               }
               child.gObject.setMap(null);
               return child.gObject = null;
@@ -2923,14 +2879,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
         };
 
-        function MarkerChildModel(scope, model, keys, gMap, defaults, doClick, gMarkerManager, doDrawSelf, trackModel, needRedraw) {
+        function MarkerChildModel(scope, model, keys, gMap, defaults, doClick, gManager, doDrawSelf, trackModel, needRedraw) {
           var action;
           this.model = model;
           this.keys = keys;
           this.gMap = gMap;
           this.defaults = defaults;
           this.doClick = doClick;
-          this.gMarkerManager = gMarkerManager;
+          this.gManager = gManager;
           this.doDrawSelf = doDrawSelf != null ? doDrawSelf : true;
           this.trackModel = trackModel != null ? trackModel : true;
           this.needRedraw = needRedraw != null ? needRedraw : false;
@@ -3044,11 +3000,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               validCb();
             }
             if (doDraw && this.gObject) {
-              return this.gMarkerManager.add(this.gObject);
+              return this.gManager.add(this.gObject);
             }
           } else {
             if (doDraw && this.gObject) {
-              return this.gMarkerManager.remove(this.gObject);
+              return this.gManager.remove(this.gObject);
             }
           }
         };
@@ -3113,12 +3069,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             doDraw = true;
           }
           if (gSetter != null) {
-            gSetter(this.scope, doDraw);
-          }
-          if (this.doDrawSelf && doDraw) {
-            return this.gMarkerManager.draw();
+            return gSetter(this.scope, doDraw);
           }
         };
+
+        if (MarkerChildModel.doDrawSelf && doDraw) {
+          MarkerChildModel.gManager.draw();
+        }
 
         MarkerChildModel.prototype.isNotValid = function(scope, doCheckGmarker) {
           var hasIdenticalScopes, hasNoGmarker;
@@ -3193,7 +3150,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               _options = _this.getProp('options', scope, _this.model);
               _this.opts = _this.createOptions(coords, icon, _options);
               if (_this.isLabel(_this.gObject) !== _this.isLabel(_this.opts) && (_this.gObject != null)) {
-                _this.gMarkerManager.remove(_this.gObject);
+                _this.gManager.remove(_this.gObject);
                 _this.gObject = void 0;
               }
               if (_this.gObject != null) {
@@ -3225,19 +3182,19 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this));
-          if (this.gObject && (this.gObject.getMap() || this.gMarkerManager.type !== MarkerManager.type)) {
+          if (this.gObject && (this.gObject.getMap() || this.gManager.type !== MarkerManager.type)) {
             this.deferred.resolve(this.gObject);
           } else {
             if (!this.gObject) {
               return this.deferred.reject('gObject is null');
             }
-            if (!(((_ref = this.gObject) != null ? _ref.getMap() : void 0) && this.gMarkerManager.type === MarkerManager.type)) {
+            if (!(((_ref = this.gObject) != null ? _ref.getMap() : void 0) && this.gManager.type === MarkerManager.type)) {
               $log.debug('gObject has no map yet');
               this.deferred.resolve(this.gObject);
             }
           }
           if (this.model[this.fitKey]) {
-            return this.gMarkerManager.fit();
+            return this.gManager.fit();
           }
         };
 
@@ -3705,47 +3662,51 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchProps();
           clean();
           this.listeners = this.setEvents(gObject, scope, scope, ['radius_changed']);
-          this.listeners.push(google.maps.event.addListener(gObject, 'radius_changed', function() {
+          if (this.listeners != null) {
+            this.listeners.push(google.maps.event.addListener(gObject, 'radius_changed', function() {
 
-            /*
-              possible google bug, and or because a circle has two radii
-              radius_changed appears to fire twice (original and new) which is not too helpful
-              therefore we will check for radius changes manually and bail out if nothing has changed
-             */
-            var newRadius, work;
-            newRadius = gObject.getRadius();
-            if (newRadius === lastRadius) {
-              return;
-            }
-            lastRadius = newRadius;
-            work = function() {
-              var _ref, _ref1;
-              if (newRadius !== scope.radius) {
-                scope.radius = newRadius;
+              /*
+                possible google bug, and or because a circle has two radii
+                radius_changed appears to fire twice (original and new) which is not too helpful
+                therefore we will check for radius changes manually and bail out if nothing has changed
+               */
+              var newRadius, work;
+              newRadius = gObject.getRadius();
+              if (newRadius === lastRadius) {
+                return;
               }
-              if (((_ref = scope.events) != null ? _ref.radius_changed : void 0) && _.isFunction((_ref1 = scope.events) != null ? _ref1.radius_changed : void 0)) {
-                return scope.events.radius_changed(gObject, 'radius_changed', scope, arguments);
-              }
-            };
-            if (!angular.mock) {
-              return scope.$evalAsync(function() {
-                return work();
-              });
-            } else {
-              return work();
-            }
-          }));
-          this.listeners.push(google.maps.event.addListener(gObject, 'center_changed', function() {
-            return scope.$evalAsync(function() {
-              if (angular.isDefined(scope.center.type)) {
-                scope.center.coordinates[1] = gObject.getCenter().lat();
-                return scope.center.coordinates[0] = gObject.getCenter().lng();
+              lastRadius = newRadius;
+              work = function() {
+                var _ref, _ref1;
+                if (newRadius !== scope.radius) {
+                  scope.radius = newRadius;
+                }
+                if (((_ref = scope.events) != null ? _ref.radius_changed : void 0) && _.isFunction((_ref1 = scope.events) != null ? _ref1.radius_changed : void 0)) {
+                  return scope.events.radius_changed(gObject, 'radius_changed', scope, arguments);
+                }
+              };
+              if (!angular.mock) {
+                return scope.$evalAsync(function() {
+                  return work();
+                });
               } else {
-                scope.center.latitude = gObject.getCenter().lat();
-                return scope.center.longitude = gObject.getCenter().lng();
+                return work();
               }
-            });
-          }));
+            }));
+          }
+          if (this.listeners != null) {
+            this.listeners.push(google.maps.event.addListener(gObject, 'center_changed', function() {
+              return scope.$evalAsync(function() {
+                if (angular.isDefined(scope.center.type)) {
+                  scope.center.coordinates[1] = gObject.getCenter().lat();
+                  return scope.center.coordinates[0] = gObject.getCenter().lng();
+                } else {
+                  scope.center.latitude = gObject.getCenter().lat();
+                  return scope.center.longitude = gObject.getCenter().lng();
+                }
+              });
+            }));
+          }
           scope.$on('$destroy', (function(_this) {
             return function() {
               clean();
@@ -4218,7 +4179,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watch('clusterEvents', scope);
           this.watch('fit', scope);
           this.watch('idKey', scope);
-          this.gMarkerManager = void 0;
+          this.gManager = void 0;
           this.createAllNew(scope);
         }
 
@@ -4260,41 +4221,38 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.createAllNew = function(scope) {
-          var maybeCanceled;
-          if (this.gMarkerManager != null) {
-            this.gMarkerManager.clear();
-            delete this.gMarkerManager;
+          var maybeCanceled, self, _ref, _ref1, _ref2;
+          if (this.gManager != null) {
+            this.gManager.clear();
+            delete this.gManager;
           }
           if (scope.doCluster) {
             if (scope.clusterEvents) {
-              this.clusterInternalOptions = _.once((function(_this) {
-                return function() {
-                  var self, _ref, _ref1, _ref2;
-                  self = _this;
-                  if (!_this.origClusterEvents) {
-                    _this.origClusterEvents = {
-                      click: (_ref = scope.clusterEvents) != null ? _ref.click : void 0,
-                      mouseout: (_ref1 = scope.clusterEvents) != null ? _ref1.mouseout : void 0,
-                      mouseover: (_ref2 = scope.clusterEvents) != null ? _ref2.mouseover : void 0
-                    };
-                    return _.extend(scope.clusterEvents, {
-                      click: function(cluster) {
-                        return self.maybeExecMappedEvent(cluster, 'click');
-                      },
-                      mouseout: function(cluster) {
-                        return self.maybeExecMappedEvent(cluster, 'mouseout');
-                      },
-                      mouseover: function(cluster) {
-                        return self.maybeExecMappedEvent(cluster, 'mouseover');
-                      }
-                    });
-                  }
+              self = this;
+              if (!this.origClusterEvents) {
+                this.origClusterEvents = {
+                  click: (_ref = scope.clusterEvents) != null ? _ref.click : void 0,
+                  mouseout: (_ref1 = scope.clusterEvents) != null ? _ref1.mouseout : void 0,
+                  mouseover: (_ref2 = scope.clusterEvents) != null ? _ref2.mouseover : void 0
                 };
-              })(this))();
+              } else {
+                angular.extend(scope.clusterEvents, this.origClusterEvents);
+              }
+              angular.extend(scope.clusterEvents, {
+                click: function(cluster) {
+                  return self.maybeExecMappedEvent(cluster, 'click');
+                },
+                mouseout: function(cluster) {
+                  return self.maybeExecMappedEvent(cluster, 'mouseout');
+                },
+                mouseover: function(cluster) {
+                  return self.maybeExecMappedEvent(cluster, 'mouseover');
+                }
+              });
             }
-            this.gMarkerManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, this.clusterInternalOptions);
+            this.gManager = new ClustererMarkerManager(this.map, void 0, scope.clusterOptions, scope.clusterEvents);
           } else {
-            this.gMarkerManager = new MarkerManager(this.map);
+            this.gManager = new MarkerManager(this.map);
           }
           if (this.didQueueInitPromise(this, scope)) {
             return;
@@ -4310,9 +4268,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }, _async.chunkSizeFrom(scope.chunk)).then(function() {
                 _this.modelsRendered = true;
                 if (scope.fit) {
-                  _this.gMarkerManager.fit();
+                  _this.gManager.fit();
                 }
-                _this.gMarkerManager.draw();
+                _this.gManager.draw();
                 return _this.scope.pluralsUpdate.updateCtr += 1;
               }, _async.chunkSizeFrom(scope.chunk));
             };
@@ -4374,9 +4332,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   if (payload.adds.length > 0 || payload.removals.length > 0 || payload.updates.length > 0) {
                     scope.plurals = _this.scope.plurals;
                     if (scope.fit) {
-                      _this.gMarkerManager.fit();
+                      _this.gManager.fit();
                     }
-                    _this.gMarkerManager.draw();
+                    _this.gManager.draw();
                   }
                   return _this.scope.pluralsUpdate.updateCtr += 1;
                 });
@@ -4409,7 +4367,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           IMarker.scopeKeys.forEach(function(k) {
             return keys[k] = scope[k];
           });
-          child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gMarkerManager, doDrawSelf = false);
+          child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gManager, doDrawSelf = false);
           this.scope.plurals.put(model[this.idKey], child);
           return child;
         };
@@ -4423,8 +4381,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 delete _this.scope.plurals;
-                if (_this.gMarkerManager != null) {
-                  _this.gMarkerManager.clear();
+                if (_this.gManager != null) {
+                  _this.gManager.clear();
                 }
                 _this.scope.plurals = new PropMap();
                 return _this.scope.pluralsUpdate.updateCtr += 1;
@@ -6510,11 +6468,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               scope.map = _gMap;
               if ((attrs.control != null) && (scope.control != null)) {
                 scope.control.refresh = function(maybeCoords) {
-                  var coords;
+                  var coords, _ref1, _ref2;
                   if (_gMap == null) {
                     return;
                   }
-                  google.maps.event.trigger(_gMap, 'resize');
+                  if (((typeof google !== "undefined" && google !== null ? (_ref1 = google.maps) != null ? (_ref2 = _ref1.event) != null ? _ref2.trigger : void 0 : void 0 : void 0) != null) && (_gMap != null)) {
+                    google.maps.event.trigger(_gMap, 'resize');
+                  }
                   if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.longitude : void 0) != null)) {
                     coords = _this.getCoords(maybeCoords);
                     if (_this.isTrue(attrs.pan)) {
@@ -6649,25 +6609,25 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           mapPromise = IMarker.mapPromise(scope, ctrl);
           mapPromise.then((function(_this) {
             return function(map) {
-              var doClick, doDrawSelf, gMarkerManager, keys, m, trackModel;
-              gMarkerManager = new MarkerManager(map);
+              var doClick, doDrawSelf, gManager, keys, m, trackModel;
+              gManager = new MarkerManager(map);
               keys = _.object(IMarker.keys, IMarker.keys);
-              m = new MarkerChildModel(scope, scope, keys, map, {}, doClick = true, gMarkerManager, doDrawSelf = false, trackModel = false);
+              m = new MarkerChildModel(scope, scope, keys, map, {}, doClick = true, gManager, doDrawSelf = false, trackModel = false);
               m.deferred.promise.then(function(gMarker) {
                 return scope.deferred.resolve(gMarker);
               });
               if (scope.control != null) {
-                return scope.control.getGMarkers = gMarkerManager.getGMarkers;
+                return scope.control.getGMarkers = gManager.getGMarkers;
               }
             };
           })(this));
           return scope.$on('$destroy', (function(_this) {
             return function() {
-              var gMarkerManager;
-              if (typeof gMarkerManager !== "undefined" && gMarkerManager !== null) {
-                gMarkerManager.clear();
+              var gManager;
+              if (typeof gManager !== "undefined" && gManager !== null) {
+                gManager.clear();
               }
-              return gMarkerManager = null;
+              return gManager = null;
             };
           })(this));
         };
@@ -6718,14 +6678,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             var mapScope;
             mapScope = ctrl.getScope();
             mapScope.$watch('idleAndZoomChanged', function() {
-              return _.defer(parentModel.gMarkerManager.draw);
+              return _.defer(parentModel.gManager.draw);
             });
             parentModel = new MarkersParentModel(scope, element, attrs, map);
             Plural.link(scope, parentModel);
             if (scope.control != null) {
               scope.control.getGMarkers = function() {
                 var _ref;
-                return (_ref = parentModel.gMarkerManager) != null ? _ref.getGMarkers() : void 0;
+                return (_ref = parentModel.gManager) != null ? _ref.getGMarkers() : void 0;
               };
               scope.control.getChildMarkers = function() {
                 return parentModel.plurals;
@@ -6763,8 +6723,20 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         scope.control.clean = function() {
           return parent.rebuildAll(scope, false, true);
         };
-        return scope.control.getPlurals = function() {
+        scope.control.getPlurals = function() {
           return parent.plurals;
+        };
+        scope.control.getManager = function() {
+          return parent.gManager;
+        };
+        scope.control.hasManager = function() {
+          return (parent.gManager != null) === true;
+        };
+        return scope.control.managerDraw = function() {
+          var _ref;
+          if (scope.control.hasManager()) {
+            return (_ref = scope.control.getManager()) != null ? _ref.draw() : void 0;
+          }
         };
       };
       return {
@@ -7605,6 +7577,48 @@ This directive creates a new scope.
   ]);
 
 }).call(this);
+;(function() {
+  angular.module('uiGmapgoogle-maps').directive('uiGmapShow', [
+    '$animate', 'uiGmapLogger', function($animate, $log) {
+      return {
+        scope: {
+          'uiGmapShow': '=',
+          'uiGmapAfterShow': '&',
+          'uiGmapAfterHide': '&'
+        },
+        link: function(scope, element) {
+          var angular_post_1_3_handle, angular_pre_1_3_handle, handle;
+          angular_post_1_3_handle = function(animateAction, cb) {
+            return $animate[animateAction](element, 'ng-hide').then(function() {
+              return cb();
+            });
+          };
+          angular_pre_1_3_handle = function(animateAction, cb) {
+            return $animate[animateAction](element, 'ng-hide', cb);
+          };
+          handle = function(animateAction, cb) {
+            if (angular.version.major > 1) {
+              return $log.error("uiGmapShow is not supported for Angular Major greater than 1.\nYour Major is " + angular.version.major + "\"");
+            }
+            if (angular.version.major === 1 && angular.version.minor < 3) {
+              return angular_pre_1_3_handle(animateAction, cb);
+            }
+            return angular_post_1_3_handle(animateAction, cb);
+          };
+          return scope.$watch('uiGmapShow', function(show) {
+            if (show) {
+              handle('removeClass', scope.uiGmapAfterShow);
+            }
+            if (!show) {
+              return handle('addClass', scope.uiGmapAfterHide);
+            }
+          });
+        }
+      };
+    }
+  ]);
+
+}).call(this);
 ;
 /*
 @authors:
@@ -7771,7 +7785,7 @@ angular.module('uiGmapgoogle-maps.wrapped')
       //BEGIN REPLACE
       /**
  * @name InfoBox
- * @version 1.1.12 [December 11, 2012]
+ * @version 1.1.13 [March 19, 2014]
  * @author Gary Little (inspired by proof-of-concept code from Pamela Fox of Google)
  * @copyright Copyright 2010 Gary Little [gary at luxcentral.com]
  * @fileoverview InfoBox extends the Google Maps JavaScript API V3 <tt>OverlayView</tt> class.
@@ -8171,10 +8185,15 @@ InfoBox.prototype.setBoxStyle_ = function () {
       }
     }
 
+    // Fix for iOS disappearing InfoBox problem.
+    // See http://stackoverflow.com/questions/9229535/google-maps-markers-disappear-at-certain-zoom-level-only-on-iphone-ipad
+    this.div_.style.WebkitTransform = "translateZ(0)";
+
     // Fix up opacity style for benefit of MSIE:
     //
     if (typeof this.div_.style.opacity !== "undefined" && this.div_.style.opacity !== "") {
-
+      // See http://www.quirksmode.org/css/opacity.html
+      this.div_.style.MsFilter = "\"progid:DXImageTransform.Microsoft.Alpha(Opacity=" + (this.div_.style.opacity * 100) + ")\"";
       this.div_.style.filter = "alpha(opacity=" + (this.div_.style.opacity * 100) + ")";
     }
 
@@ -8259,7 +8278,7 @@ InfoBox.prototype.draw = function () {
 
   if (this.isHidden_) {
 
-    this.div_.style.visibility = 'hidden';
+    this.div_.style.visibility = "hidden";
 
   } else {
 
@@ -11086,7 +11105,7 @@ MarkerClusterer.IMAGE_SIZES = [53, 56, 66, 78, 90];
 
 /**
  * @name MarkerWithLabel for V3
- * @version 1.1.9 [June 30, 2013]
+ * @version 1.1.10 [April 8, 2014]
  * @author Gary Little (inspired by code from Marc Ridey of Google).
  * @copyright Copyright 2012 Gary Little [gary at luxcentral.com]
  * @fileoverview MarkerWithLabel extends the Google Maps JavaScript API V3
@@ -11124,14 +11143,15 @@ MarkerClusterer.IMAGE_SIZES = [53, 56, 66, 78, 90];
 /**
  * @param {Function} childCtor Child class.
  * @param {Function} parentCtor Parent class.
+ * @private
  */
 function inherits(childCtor, parentCtor) {
-  /** @constructor */
-  function tempCtor() {};
+  /* @constructor */
+  function tempCtor() {}
   tempCtor.prototype = parentCtor.prototype;
   childCtor.superClass_ = parentCtor.prototype;
   childCtor.prototype = new tempCtor();
-  /** @override */
+  /* @override */
   childCtor.prototype.constructor = childCtor;
 }
 
@@ -11165,6 +11185,7 @@ function MarkerLabel_(marker, crossURL, handCursorURL) {
   // Get the DIV for the "X" to be displayed when the marker is raised.
   this.crossDiv_ = MarkerLabel_.getSharedCross(crossURL);
 }
+
 inherits(MarkerLabel_, google.maps.OverlayView);
 
 /**
@@ -11435,6 +11456,7 @@ MarkerLabel_.prototype.setContent = function () {
     this.labelDiv_.innerHTML = ""; // Remove current content
     this.labelDiv_.appendChild(content);
     content = content.cloneNode(true);
+    this.eventDiv_.innerHTML = ""; // Remove current content
     this.eventDiv_.appendChild(content);
   }
 };
@@ -11647,6 +11669,7 @@ function MarkerWithLabel(opt_options) {
   // that the marker label listens for in order to react to state changes.
   google.maps.Marker.apply(this, arguments);
 }
+
 inherits(MarkerWithLabel, google.maps.Marker);
 
 /**
