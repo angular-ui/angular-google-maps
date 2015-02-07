@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+    <link rel="stylesheet" href="assets/stylesheets/example.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="../website_libs/dev_deps.js"></script>
+    <script src="https://code.angularjs.org/1.2.6/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.underscore.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-1114-map-distorted.js"></script>
+    <title>Map</title>
+</head>
+
+<body>
+<div data-ng-controller="MapsCtrl">
+    <div ui-gmap-show="map.show" ui-gmap-after-show="refresh()">
+        <ui-gmap-google-map center='map.center'
+                            zoom='map.zoom'
+                            draggable='map.draggable'
+                            dragging='map.dragging'
+                            refresh='map.refresh'
+                            options='map.options'
+                            events='map.events'
+                            pan='map.pan'
+                            control='map.control'
+                >
+
+        </ui-gmap-google-map>
+    </div>
+    <button ng-click="map.show = !map.show;">{{map.show ? "Hide":"Show"}}</button>
+</div>
+
+</body>
+
+</html>

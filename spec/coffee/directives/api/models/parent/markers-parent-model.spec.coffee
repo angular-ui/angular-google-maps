@@ -76,27 +76,27 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
           it 'click - ', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
-            @subject.clusterInternalOptions.click @clusterTest
+            @subject.scope.clusterEvents.click @clusterTest
             expect(_.all(@markerModelsCluster, (entity, i)=>
               entity == @subject.plurals.get(i+1).model
             )).toBeTruthy()
           it 'mouseout - ', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
-            @subject.clusterInternalOptions.mouseout @clusterTest
+            @subject.scope.clusterEvents.mouseout @clusterTest
             expect(_.all(@markerModelsCluster, (entity, i)=>
               entity == @subject.plurals.get(i+1).model
             )).toBeTruthy()
           it 'mouseover - ', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
-            @subject.clusterInternalOptions.mouseover @clusterTest
+            @subject.scope.clusterEvents.mouseover @clusterTest
             expect(_.all(@markerModelsCluster, (entity, i)=>
               entity == @subject.plurals.get(i+1).model
             )).toBeTruthy()
         describe 'some legacy event', =>
           it 'crap - ', -> #not a real event but shows that any existing function can be fired
-            @subject.gMarkerManager.opt_events.crap()
+            @subject.gManager.opt_events.crap()
             expect(@markerModelsCluster).toBe('crap')
       describe 'not fired', ->
         it 'click - ', ->

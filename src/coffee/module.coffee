@@ -50,16 +50,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent', [
   'uiGmapgoogle-maps.providers'
 ])
 angular.module('uiGmapgoogle-maps.directives.api', [ 'uiGmapgoogle-maps.directives.api.models.parent'])
-angular.module('uiGmapgoogle-maps', [ 'uiGmapgoogle-maps.directives.api', 'uiGmapgoogle-maps.providers'])
-.factory 'uiGmapdebounce', ['$timeout', ($timeout) ->
-  (fn) -> # debounce fn
-    nthCall = 0
-    -> # intercepting fn
-      that = this
-      argz = arguments
-      nthCall++
-      later = ((version) ->
-        ->
-          fn.apply that, argz  if version is nthCall)(nthCall)
-      $timeout later, 0, true
-]
+angular.module('uiGmapgoogle-maps', [
+  'uiGmapgoogle-maps.directives.api'
+  'uiGmapgoogle-maps.providers'
+])

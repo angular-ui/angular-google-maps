@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+    <link rel="stylesheet" href="http://rawgit.com/danielcrisp/angular-rangeslider/v0.0.11/angular.rangeSlider.css">
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/lodash/dist/lodash.js"></script>
+
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-1129-cluster-events-trigger-lazy.js"></script>
+</head>
+<body ng-app="app">
+<div ng-controller="MapCtrl">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="map.options" bounds="map.bounds">
+        <ui-gmap-markers models="map.markers" coords="'coordinates'" icon="'icon'" doCluster="true"
+            clusteroptions="map.clusterOptions" clusterevents="map.clusterEvents">
+        </ui-gmap-markers>
+    </ui-gmap-google-map>
+</div>
+</body>
+</html>

@@ -43,7 +43,7 @@ describe "uiGmapMarker", ->
     expect(@subject).toBeDefined()
 
   describe "link", ->
-    it 'gMarkerManager exists', ->
+    it 'gManager exists', ->
       @subject.link(@mocks.scope, @mocks.element, @mocks.attrs, @mocks.ctrl)
       @$rootScope.$apply()
       expect(@mocks.scope.control.getGMarkers()).toBeDefined()

@@ -83,7 +83,7 @@ function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi,IsReady) {
         refresh: function () {
           $scope.map2.control.refresh({latitude: 32.779680, longitude: -79.935493});
           $scope.map2.showMap = false;
-          _.defer(function () {
+          $timeout(function () {
             $scope.map2.showMap = true;
           });
         },

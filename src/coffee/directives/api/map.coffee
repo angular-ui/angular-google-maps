@@ -193,7 +193,8 @@ angular.module('uiGmapgoogle-maps.directives.api')
             if attrs.control? and scope.control?
               scope.control.refresh = (maybeCoords) =>
                 return unless _gMap?
-                google.maps.event.trigger _gMap, 'resize' #actually refresh
+                if google?.maps?.event?.trigger? and _gMap?
+                  google.maps.event.trigger _gMap, 'resize' #actually refresh
                 if maybeCoords?.latitude? and maybeCoords?.longitude?
                   coords = @getCoords(maybeCoords)
                   if @isTrue(attrs.pan)
