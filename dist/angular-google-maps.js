@@ -7584,7 +7584,7 @@ angular.module('uiGmapgoogle-maps.wrapped')
       //BEGIN REPLACE
       /**
  * @name InfoBox
- * @version 1.1.12 [December 11, 2012]
+ * @version 1.1.13 [March 19, 2014]
  * @author Gary Little (inspired by proof-of-concept code from Pamela Fox of Google)
  * @copyright Copyright 2010 Gary Little [gary at luxcentral.com]
  * @fileoverview InfoBox extends the Google Maps JavaScript API V3 <tt>OverlayView</tt> class.
@@ -7984,10 +7984,15 @@ InfoBox.prototype.setBoxStyle_ = function () {
       }
     }
 
+    // Fix for iOS disappearing InfoBox problem.
+    // See http://stackoverflow.com/questions/9229535/google-maps-markers-disappear-at-certain-zoom-level-only-on-iphone-ipad
+    this.div_.style.WebkitTransform = "translateZ(0)";
+
     // Fix up opacity style for benefit of MSIE:
     //
     if (typeof this.div_.style.opacity !== "undefined" && this.div_.style.opacity !== "") {
-
+      // See http://www.quirksmode.org/css/opacity.html
+      this.div_.style.MsFilter = "\"progid:DXImageTransform.Microsoft.Alpha(Opacity=" + (this.div_.style.opacity * 100) + ")\"";
       this.div_.style.filter = "alpha(opacity=" + (this.div_.style.opacity * 100) + ")";
     }
 
@@ -8072,7 +8077,7 @@ InfoBox.prototype.draw = function () {
 
   if (this.isHidden_) {
 
-    this.div_.style.visibility = 'hidden';
+    this.div_.style.visibility = "hidden";
 
   } else {
 
