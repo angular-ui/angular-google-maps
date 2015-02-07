@@ -188,7 +188,7 @@ Nicholas McCready - https://twitter.com/nmccready
           };
         }
         if (window.MarkerLabel_) {
-          window.MarkerLabel_.prototype.setContent = function() {
+          return window.MarkerLabel_.prototype.setContent = function() {
             var content;
             content = this.marker_.get('labelContent');
             if (!content || _.isEqual(this.oldContent, content)) {
@@ -202,33 +202,10 @@ Nicholas McCready - https://twitter.com/nmccready
               this.labelDiv_.innerHTML = '';
               this.labelDiv_.appendChild(content);
               content = content.cloneNode(true);
+              this.labelDiv_.innerHTML = '';
               this.eventDiv_.appendChild(content);
               this.oldContent = content;
             }
-          };
-
-          /*
-          Removes the DIV for the label from the DOM. It also removes all event handlers.
-          This method is called automatically when the marker's <code>setMap(null)</code>
-          method is called.
-          @private
-           */
-          return window.MarkerLabel_.prototype.onRemove = function() {
-            if (this.labelDiv_.parentNode != null) {
-              this.labelDiv_.parentNode.removeChild(this.labelDiv_);
-            }
-            if (this.eventDiv_.parentNode != null) {
-              this.eventDiv_.parentNode.removeChild(this.eventDiv_);
-            }
-            if (!this.listeners_) {
-              return;
-            }
-            if (!this.listeners_.length) {
-              return;
-            }
-            this.listeners_.forEach(function(l) {
-              return google.maps.event.removeListener(l);
-            });
           };
         }
       })
@@ -10922,7 +10899,7 @@ MarkerClusterer.IMAGE_SIZES = [53, 56, 66, 78, 90];
 
 /**
  * @name MarkerWithLabel for V3
- * @version 1.1.9 [June 30, 2013]
+ * @version 1.1.10 [April 8, 2014]
  * @author Gary Little (inspired by code from Marc Ridey of Google).
  * @copyright Copyright 2012 Gary Little [gary at luxcentral.com]
  * @fileoverview MarkerWithLabel extends the Google Maps JavaScript API V3
@@ -10960,14 +10937,15 @@ MarkerClusterer.IMAGE_SIZES = [53, 56, 66, 78, 90];
 /**
  * @param {Function} childCtor Child class.
  * @param {Function} parentCtor Parent class.
+ * @private
  */
 function inherits(childCtor, parentCtor) {
-  /** @constructor */
-  function tempCtor() {};
+  /* @constructor */
+  function tempCtor() {}
   tempCtor.prototype = parentCtor.prototype;
   childCtor.superClass_ = parentCtor.prototype;
   childCtor.prototype = new tempCtor();
-  /** @override */
+  /* @override */
   childCtor.prototype.constructor = childCtor;
 }
 
@@ -11001,6 +10979,7 @@ function MarkerLabel_(marker, crossURL, handCursorURL) {
   // Get the DIV for the "X" to be displayed when the marker is raised.
   this.crossDiv_ = MarkerLabel_.getSharedCross(crossURL);
 }
+
 inherits(MarkerLabel_, google.maps.OverlayView);
 
 /**
@@ -11271,6 +11250,7 @@ MarkerLabel_.prototype.setContent = function () {
     this.labelDiv_.innerHTML = ""; // Remove current content
     this.labelDiv_.appendChild(content);
     content = content.cloneNode(true);
+    this.eventDiv_.innerHTML = ""; // Remove current content
     this.eventDiv_.appendChild(content);
   }
 };
@@ -11483,6 +11463,7 @@ function MarkerWithLabel(opt_options) {
   // that the marker label listens for in order to react to state changes.
   google.maps.Marker.apply(this, arguments);
 }
+
 inherits(MarkerWithLabel, google.maps.Marker);
 
 /**

@@ -63,6 +63,7 @@ angular.module('uiGmapgoogle-maps.extensions')
 
       window.MarkerLabel_::setContent = ->
         content = @marker_.get('labelContent')
+        #uigmap patches checking for undefined content and different
         return if !content or _.isEqual @oldContent, content
         if typeof content?.nodeType is 'undefined'
           @labelDiv_.innerHTML = content
@@ -72,23 +73,8 @@ angular.module('uiGmapgoogle-maps.extensions')
           @labelDiv_.innerHTML = '' # Remove current content
           @labelDiv_.appendChild content
           content = content.cloneNode(true)
+          @labelDiv_.innerHTML = '' # Remove current content
           @eventDiv_.appendChild content
           @oldContent = content
-        return
-
-      ###
-      Removes the DIV for the label from the DOM. It also removes all event handlers.
-      This method is called automatically when the marker's <code>setMap(null)</code>
-      method is called.
-      @private
-      ###
-      window.MarkerLabel_::onRemove = ->
-        @labelDiv_.parentNode.removeChild @labelDiv_  if @labelDiv_.parentNode?
-        @eventDiv_.parentNode.removeChild @eventDiv_  if @eventDiv_.parentNode?
-        # Remove event listeners:
-        return unless @listeners_
-        return unless @listeners_.length
-        @listeners_.forEach (l) ->
-          google.maps.event.removeListener l
         return
   )
