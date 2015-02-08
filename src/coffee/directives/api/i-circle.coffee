@@ -15,4 +15,5 @@ angular.module("uiGmapgoogle-maps.directives.api").service "uiGmapICircle", [ ->
     icons: "=icons"
     visible: "="
     events: "="
+    control: "="
 ]
