@@ -80,7 +80,10 @@ angular.module('angularGoogleMapsApp')
         url: '/not-found',
         templateUrl: 'views/404.html',
         controller: 'NotFoundCtrl'
-      });
+      })
+    .state('plural', {
+      templateUrl: 'views/directive/partials/plural.html'
+    });
 
     $urlRouterProvider.otherwise('/');
   }])

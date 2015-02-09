@@ -12,6 +12,7 @@ angular.module('angularGoogleMapsApp')
     'marker-label',
     'markers',
     'polygon',
+    'polygons',
     'polyline',
     'polylines',
     'rectangle',
@@ -63,7 +64,7 @@ angular.module('angularGoogleMapsApp')
 //      return 'views/directive/' + directive + '.html';
 //    };
 
-    $scope.query = null;
+    $scope.query = '';
 
     $scope.$watch(function () {
       return $location.hash();

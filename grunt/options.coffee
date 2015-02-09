@@ -269,13 +269,13 @@ module.exports =
       configFile: 'karma.conf.coffee'
       singleRun: true
 
-  cdnify:
-    dist:
-      html: [
-        '<%= yeoman.dist %>/*.html'
-        '<%= yeoman.dist %>/views/*.html'
-        '<%= yeoman.dist %>/views/**/**/*.html'
-      ]
+#  cdnify:
+#    dist:
+#      html: [
+#        '<%= yeoman.dist %>/*.html'
+#        '<%= yeoman.dist %>/views/*.html'
+#        '<%= yeoman.dist %>/views/**/**/*.html'
+#      ]
 
   ngmin:
     dist:

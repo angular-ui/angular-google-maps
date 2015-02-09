@@ -53,7 +53,6 @@
                     An array of objects defining each marker to add to the map
                     <div class="bs-callout bs-callout-danger">
                         <h4>Model Id/Key</h4>
-                        <span class="badge badge-danger">New in v1.1</span>
                         <br/>
                         Models (any plural directive) are now required to have some sort of identifier property. Please
                         see
@@ -68,8 +67,6 @@
             <td>idkey</td>
             <td><span class="label label-info">expression</span></td>
             <td>
-                <span class="badge badge-info">New in v1.1</span>
-
                 <p>The name of the property in a model which identifies its key/id. This should be an integer
                     or numeric string. (not required) If the attribute is not defined they it defaults to the <code>model.id</code>
                     field.</p>
@@ -88,8 +85,7 @@
             <td>
                 <p>The name of the property in the models array containing the windows coordinates. Must refer to an
                     object
-                    containing <code>latitude</code> and <code>longitude</code> properties, or <span
-                            class="badge badge-info">New in v1.1</span> a <a
+                    containing <code>latitude</code> and <code>longitude</code> properties, or a <a
                             href="http://geojson.org/geojson-spec.html#point">GeoJSON Point</a> object.</p>
                 <span>The special value <code>'self'</code> can be used to tell the directive that the objects in the array directly contain the marker coordinate object values</span>
             </td>
@@ -133,44 +129,9 @@
             <td>The name of the property in the models array to evaluate when closing the window via a click event</td>
         </tr>
         <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='InfoWindow';directive='Windows';isStringTypeOnArray=true">
-        <tr>
-            <td>control</td>
-            <td><span class="label label-default">Object</span></td>
-            <td>
-                <span class="badge badge-info">New in v1.2.0</span>
-
-                <p></p>
-                <code>{}</code> otherwise <code>undefined / null </code>
-
-                <p></p>
-                If some object is passed (via scope binding) functionality is appended to that object. This allows you
-                to get "control" of some
-                underlying logic of the marker directive..
-                <br>
-
-                <p>
-                    The following functions are added:
-                </p>
-
-                <p></p>
-
-                <p><code>getGMarkers() </code> - Array of all the google.markers associated with this directive</p>
-
-                <p>example</p>
-                <code>$scope.winControl.getGWindows();</code>
-
-                <p><code>getChildMarkers() </code> - PropMap() (see code) all child objects which encapsulate gWindow.
-                </p>
-
-                <p>example: get all ChildWindows as an array</p>
-                <code>$scope.winControl.getChildWindows().values();</code>
-
-                <p>example: get a specific ChildMarker by id/idKey</p>
-                <code>$scope.winControl.getChildWindows()[id] <br/>or $scope.winControl.getChildWindows().get(id)</code>
-            </td>
-        </tr>
         </tbody>
     </table>
+    <ng-include src="'./views/directive/partials/plural.html'"></ng-include>
 
     <h4>Example</h4>
     <runnable-example example="'windows'"></runnable-example>
@@ -189,7 +150,11 @@
         closeClick="'{string}'"
 
         options='{string}'
+
         control='{expression}'
+        chunk='{expression}'
+        cleanchunk='{expression}'
+        doRebuildAll="{string or object}"
         >
 
 </ui-gmap-windows>
