@@ -66,6 +66,24 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 		</tr>
 		<tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Circle'">
 		</tr>
+		<tr>
+			<td>control</td>
+			<td><span class="label label-info">expression</span></td>
+			<td>
+				<p>Should either evaluate to an empty object (<code>{}</code>) or <code>undefined / null </code>.</p>
+
+				<p>If the result is an object, functionality is appended to that object. This allows you to get "control" of the
+					underlying <a google-api="Circle">Circle</a> instance.</p>
+
+				<p>The following functions are added:</p>
+
+				<ul><li><code>getCircle()</code> - Returns the <a google-api="Circle">Circle</a> instance</li></ul>
+
+				<p>example</p>
+				<code>$scope.circleControl.getCircle();</code>
+
+			</td>
+		</tr>
 	</tbody>
 </table>
 
@@ -82,6 +100,7 @@ See <a href="https://developers.google.com/maps/documentation/javascript/referen
 	editable='{string}'
 	visible='{expression}'
 	events='{expression}'
+	control='{expression}'
 >
 </ui-gmap-circle>
 </script>
