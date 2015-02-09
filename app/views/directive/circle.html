@@ -72,27 +72,28 @@
         </tr>
         <tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Circle'">
         </tr>
-        <tr>
-            <td>control</td>
-            <td><span class="label label-info">expression</span></td>
-            <td>
-                <p>Should either evaluate to an empty object (<code>{}</code>) or <code>undefined / null </code>.</p>
+        <!-- Uncomment when develop (2.1 becomes master)-->
+        <!--<tr>-->
+            <!--<td>control</td>-->
+            <!--<td><span class="label label-info">expression</span></td>-->
+            <!--<td>-->
+                <!--<p>Should either evaluate to an empty object (<code>{}</code>) or <code>undefined / null </code>.</p>-->
 
-                <p>If the result is an object, functionality is appended to that object. This allows you to get
-                    "control" of the
-                    underlying <a google-api="Circle">Circle</a> instance.</p>
+                <!--<p>If the result is an object, functionality is appended to that object. This allows you to get-->
+                    <!--"control" of the-->
+                    <!--underlying <a google-api="Circle">Circle</a> instance.</p>-->
 
-                <p>The following functions are added:</p>
+                <!--<p>The following functions are added:</p>-->
 
-                <ul>
-                    <li><code>getCircle()</code> - Returns the <a google-api="Circle">Circle</a> instance</li>
-                </ul>
+                <!--<ul>-->
+                    <!--<li><code>getCircle()</code> - Returns the <a google-api="Circle">Circle</a> instance</li>-->
+                <!--</ul>-->
 
-                <p>example</p>
-                <code>$scope.circleControl.getCircle();</code>
+                <!--<p>example</p>-->
+                <!--<code>$scope.circleControl.getCircle();</code>-->
 
-            </td>
-        </tr>
+            <!--</td>-->
+        <!--</tr>-->
         </tbody>
     </table>
 
@@ -109,8 +110,9 @@
                 editable='{string}'
                 visible='{expression}'
                 events='{expression}'
-                control='{expression}'
         >
+
 </ui-gmap-circle>
 </script>
+    <!--control='{expression}'-->
 </new-scope>
