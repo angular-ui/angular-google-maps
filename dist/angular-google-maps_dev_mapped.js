@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-SNAPSHOT 2015-02-06
+/*! angular-google-maps 2.1.0-SNAPSHOT 2015-02-09
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3660,6 +3660,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             }, 'radius'
           ]);
           this.watchProps();
+          if (this.scope.control != null) {
+            this.scope.control.getCircle = function() {
+              return gObject;
+            };
+          }
           clean();
           this.listeners = this.setEvents(gObject, scope, scope, ['radius_changed']);
           if (this.listeners != null) {
@@ -5937,7 +5942,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           geodesic: "=",
           icons: "=icons",
           visible: "=",
-          events: "="
+          events: "=",
+          control: "="
         }
       };
     }
