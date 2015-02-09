@@ -1,14 +1,19 @@
 <td>events</td>
 <td><span class="label label-info">expression</span></td>
 <td>
-  <p><span class="badge badge-info"></span> Custom events to apply to the {{thing}}. This is an associative array, where keys are event names and values are handler functions.
-    See <a ng-href="https://developers.google.com/maps/documentation/javascript/reference#{{thing}}">{{thing}} events</a>.</p>
-  <span>The handler function takes four parameters (note the args are expanding on the original google sdk's default args):</span>
-  <ol>
-	  <li>{{thing}}: the GoogleMaps {{thing}} object</li>
-	  <li>eventName: the name of the event</li>
-    <li>model: internal angular-google-map model being used to generate the google {{thing}} object. This can be a model (plural directive) and or scope (singular directive).</li>
-	  <li>arguments: the arguments provided by Google Maps for this event type. See
-			<a ng-href="https://developers.google.com/maps/documentation/javascript/reference#{{thing}}">the {{thing}} docs</a></li>
-  </ol>
+    <p><span class="badge badge-info"></span> Custom events to apply to the {{thing}}. This is an associative array,
+        where keys are event names and values are handler functions.
+        See <a ng-href="https://developers.google.com/maps/documentation/javascript/reference#{{thing}}">{{thing}}
+            events</a>.</p>
+    <span>The handler function takes four parameters (note the args are expanding on the original google sdk's default args):</span>
+    <ol>
+        <li>{{thing}}: the GoogleMaps {{thing}} object</li>
+        <li>eventName: the name of the event</li>
+        <li>model: internal angular-google-map model being used to generate the google {{thing}} object. This can be a
+            model (plural directive) and or scope (singular directive).
+        </li>
+        <li>arguments: the arguments provided by Google Maps for this event type. See
+            <a ng-href="https://developers.google.com/maps/documentation/javascript/reference#{{thing}}">the {{thing}}
+                docs</a></li>
+    </ol>
 </td>

@@ -1,8 +1,8 @@
-<new-scope ng-init="thing='Polyline';directive='Polylines';isStringTypeOnArray=true">
+<new-scope ng-init="directive='Polygons';isStringTypeOnArray=true;thing='Polygon';">
     <ng-include src="'./views/directive/partials/polys.html'">
     </ng-include>
 <script type="text/ng-template" id="polyTemplate">
-<ui-gmap-polylines
+<ui-gmap-polygons
         idKey="{expression}"
         models="{expression}"
 
@@ -22,7 +22,10 @@
         chunk='{expression}'
         cleanchunk='{expression}'
         doRebuildAll="{string or object}"
+
+        fill='{expression}'
+        zindex='{expression}'
         >
-</ui-gmap-polylines>
+</ui-gmap-polygons>
 </script>
 </new-scope>

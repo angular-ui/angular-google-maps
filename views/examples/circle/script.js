@@ -23,7 +23,8 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
                 draggable: true, // optional: defaults to false
                 clickable: true, // optional: defaults to true
                 editable: true, // optional: defaults to false
-                visible: true // optional: defaults to true
+                visible: true, // optional: defaults to true
+                control: {}
             }
         ];
     });
