@@ -19,7 +19,8 @@ describe 'uiGmapCircle', ->
                         draggable='map.circle.draggable'
                         editable='map.circle.editable'
                         visible='map.circle.visible'
-                        events='map.circle.events'>
+                        events='map.circle.events'
+                        control='map.circle.control'>
         </ui-gmap-circle>
       </ui-gmap-google-map>
     """
@@ -45,7 +46,7 @@ describe 'uiGmapCircle', ->
       visible: true
       events:
         radius_changed: (gObject) ->
-
+      control: {}
 
     apiMock = window['uiGmapInitiator']
     .initMock(@, ->
@@ -93,3 +94,10 @@ describe 'uiGmapCircle', ->
 
   it 'exists', ->
     expect(@subject).toBeDefined()
+
+  it 'creates control', (done) ->
+    @digest =>
+      @timeout =>
+        expect(@circle.control.getCircle).toBeDefined()
+        expect(@circle.control.getCircle()).toEqual(jasmine.any(GCircle))
+        done()

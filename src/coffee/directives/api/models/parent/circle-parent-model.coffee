@@ -28,6 +28,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       ]
       @watchProps()
 
+      if @scope.control?
+        @scope.control.getCircle = ->
+          gObject
+
       clean()
       @listeners = @setEvents gObject, scope, scope, ['radius_changed']
       if @listeners?
