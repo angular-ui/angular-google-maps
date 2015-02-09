@@ -1,105 +1,105 @@
 <new-scope>
-<p>The <code>markers</code> directive is similar to the <code>marker</code> directive,
-    but it is used when many markers need to be added to the map. It overcomes the high overhead of
-    using the <code>ng-repeat</code><code>marker</code> directive.</p>
-<br/>
-<p>Please note: To render windows associated with the markers directive; it is not required to use windows. The window directive
-    can be utilized just as effectively when it is put outside the scope of a markers or marker directive. This is especially the
-    case when you only need to render one window at a time.
-</p>
-<p>
+    <p>The <code>markers</code> directive is similar to the <code>marker</code> directive,
+        but it is used when many markers need to be added to the map. It overcomes the high overhead of
+        using the <code>ng-repeat</code><code>marker</code> directive.</p>
+    <br/>
 
-    This directive is intended to be used with
-    <code><a ui-sref="api.window" class="ng-binding" href="#!/api">window</a></code> or
-    <code><a ui-sref="api.windows" class="ng-binding" href="#!/api">windows</a></code>
-    Where <code>windows</code> can be used inside (associated positioning with each marker) or outside (association is independent) to the MarkersDirective's scope.
-    <code>window</code> however can only be used outside the scope of markers and the association would be independent.
-</p>
+    <p>Please note: To render windows associated with the markers directive; it is not required to use windows. The
+        window directive
+        can be utilized just as effectively when it is put outside the scope of a markers or marker directive. This is
+        especially the
+        case when you only need to render one window at a time.
+    </p>
 
-<h4>Usage</h4>
+    <p>
 
-<div hljs language="html" include="'markersTemplate'"></div>
+        This directive is intended to be used with
+        <code><a ui-sref="api.window" class="ng-binding" href="#!/api">window</a></code> or
+        <code><a ui-sref="api.windows" class="ng-binding" href="#!/api">windows</a></code>
+        Where <code>windows</code> can be used inside (associated positioning with each marker) or outside (association
+        is independent) to the MarkersDirective's scope.
+        <code>window</code> however can only be used outside the scope of markers and the association would be
+        independent.
+    </p>
 
-<h4>Parameters</h4>
+    <h4>Usage</h4>
 
-<p class="muted">Required properties are in <span class="text-error">red</span>.</p>
+    <div hljs language="html" include="'markersTemplate'"></div>
 
-<table class="table table-bordered table-striped">
-    <thead>
-    <tr>
-        <th>Param</th>
-        <th>Type</th>
-        <th>Details</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>models</td>
-        <td><span class="label label-danger">expression</span></td>
-        <td>
-            <div>
-                An array of objects defining each marker to add to the map
-                <div class="bs-callout bs-callout-danger">
-                    <h4>Model Id/Key</h4>
-                    <span class="badge badge-danger">New in v1.1</span>
-                    <br/>
-                    Models (any plural directive) are now required to have some sort of identifier property. Please see
-                    the idKey attribute.
-                    This is for performance reasons; where under the hood, models are a map instead of an array.
-                    This removed the "flash bug" and is much faster.
+    <h4>Parameters</h4>
+
+    <p class="muted">Required properties are in <span class="text-error">red</span>.</p>
+
+    <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+            <th>Param</th>
+            <th>Type</th>
+            <th>Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>models</td>
+            <td><span class="label label-danger">expression</span></td>
+            <td>
+                <div>
+                    An array of objects defining each marker to add to the map
+                    <div class="bs-callout bs-callout-danger">
+                        <h4>Model Id/Key</h4>
+                        <br/>
+                        Models (any plural directive) are now required to have some sort of identifier property. Please
+                        see
+                        the idKey attribute.
+                        This is for performance reasons; where under the hood, models are a map instead of an array.
+                        This removed the "flash bug" and is much faster.
+                    </div>
                 </div>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td>idkey<br><span class="badge badge-info">New in v1.1</span></td>
-        <td><span class="label label-info">expression</span></td>
-        <td>
+            </td>
+        </tr>
+        <tr>
+            <td>idkey</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>
 
 
-            <p>The name of the property in a model which identifies its key/id. This should be an integer
-                or numeric string.</p>
-            <p>Although this attribute is optional (it defaults to the <code>model.id</code> field),
-                a model Id is required and must be present in the specified property in model or in the <code>model.id</code>
-                field if this attribute is not specified</p>
-        </td>
-    </tr>
-    <tr>
-        <td>doRebuildAll</td>
-        <td><span class="label label-info">expression</span></td>
-        <td>boolean property to tell the directive to refresh all the markers on any kind change to models. (Think
-            legacy "flash"). Yes sometimes this is wanted.
-        </td>
-    </tr>
-    <tr>
-        <td>doCluster</td>
-        <td><span class="label label-info">expression</span></td>
-        <td>boolean property to tell the directive to use clustering. This attribute is not really bindable at the
-            moment. Therefore it just needs to evaluate to javascript true. "true" or even "".
-        </td>
-    </tr>
-    <tr>
-        <td>clusterOptions</td>
-        <td><span class="label label-info">expression</span></td>
-        <td>object containing options to pass to the marker
-            <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.16/docs/reference.html">
-                clusterer
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td>clusterEvents</td>
-        <td><span class="label label-info">expression</span></td>
-        <td>object containing event options to pass to the marker
-            <span class="badge badge-info">New in v1.1</span>
-            <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.16/docs/reference.html">
-                clusterer
-            </a>
-            events handle.
-            <p>
-                This companion object is expected to be an object of the following optional functions: click, mouseover,
-                or mouseout.
-            </p>
+                <p>The name of the property in a model which identifies its key/id. This should be an integer
+                    or numeric string.</p>
+
+                <p>Although this attribute is optional (it defaults to the <code>model.id</code> field),
+                    a model Id is required and must be present in the specified property in model or in the <code>model.id</code>
+                    field if this attribute is not specified</p>
+            </td>
+        </tr>
+        <tr>
+            <td>doCluster</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>boolean property to tell the directive to use clustering. This attribute is not really bindable at the
+                moment. Therefore it just needs to evaluate to javascript true. "true" or even "".
+            </td>
+        </tr>
+        <tr>
+            <td>clusterOptions</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>object containing options to pass to the marker
+                <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.16/docs/reference.html">
+                    clusterer
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>clusterEvents</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>object containing event options to pass to the marker
+                <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.16/docs/reference.html">
+                    clusterer
+                </a>
+                events handle.
+                <p>
+                    This companion object is expected to be an object of the following optional functions: click,
+                    mouseover,
+                    or mouseout.
+                </p>
             <pre>
 # example
 # for more see example (grunt examples)
@@ -110,73 +110,59 @@ $scope.clickEventsObject =
   mouseover: (cluster, clusterModels) ->
             </pre>
 
-            <p>
-                The function handle signature is (cluster:Array[GMarkers], clusterModels:Array[YourModel]). This handler
-                returns a directly mapped array of your models which belong to gMarker cluster sent along.
-            </p>
-        </td>
-    </tr>
-    <tr>
-        <td>fit</td>
-        <td><span class="label label-info">string / boolean</span></td>
-        <td>boolean property to instruct the map to fit its bounds around the markers</td>
-    </tr>
-    <tr>
-        <td>coords</td>
-        <td><span class="label label-danger">string</span></td>
-        <td>
-            <p>The name of the property in the models array containing the marker coordinates. Must refer to an object
-                containing <code>latitude</code> and <code>longitude</code> properties, or <span
-                        class="badge badge-info">New in v1.1</span> a <a
-                        href="http://geojson.org/geojson-spec.html#point">GeoJSON Point</a> object.</p>
-            <span>The special value <code>'self'</code> can be used to tell the directive that the objects in the array directly contain the marker coordinate object values</span>
-        </td>
-    </tr>
-    <tr>
-        <td>icon</td>
-        <td><span class="label label-info">string</span></td>
-        <td>The name of the property of the model in the models array containing the URL to the icon image to use for each marker</td>
-    </tr>
-    <tr>
-        <td>click</td>
-        <td><span class="label label-info">string or expression</span></td>
-        <td>PerModel / or expression binding : event handler executed when clicking a marker</td>
-    </tr>
-    <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='Marker';directive='Markers';hasLabelOptions=true;isStringTypeOnArray=true">
-    <tr>
-        <td>control</td>
-        <td><span class="label label-default">Object</span></td>
-        <td>
-            <span class="badge badge-info">New in v1.2.0</span>
-            <p></p>
-            <code>{}</code> otherwise <code>undefined / null </code>
-            <p></p>
-            If some object is passed (via scope binding) functionality is appended to that object. This allows you to get "control" of some
-            underlying logic of the marker directive..
-            <br>
-            <p>
-                The following functions are added:
-            </p>
-            <p></p>
-            <p><code>getGMarkers() </code> - Array of all the google.markers associated with this directive</p>
-            <p>example</p>
-            <code>$scope.markerControl.getGMarkers();</code>
-            <p><code>getChildMarkers() </code> - PropMap() (see code) all child objects which encapsulate gMarkers.</p>
-            <p>example: get all ChildMarkers as an array</p>
-            <code>$scope.markerControl.getChildMarkers().values();</code>
-            <p>example: get a specific ChildMarker by id/idKey</p>
-            <code>$scope.markerControl.getChildMarkers()[id]
-                <br/>
-                or $scope.markerControl.getChildMarkers().get(id)</code>
-        </td>
-    </tr>
-    <tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Marker'">
+                <p>
+                    The function handle signature is (cluster:Array[GMarkers], clusterModels:Array[YourModel]). This
+                    handler
+                    returns a directly mapped array of your models which belong to gMarker cluster sent along.
+                </p>
+            </td>
         </tr>
-    </tbody>
-</table>
+        <tr>
+            <td>fit</td>
+            <td><span class="label label-info">string / boolean</span></td>
+            <td>boolean property to instruct the map to fit its bounds around the markers</td>
+        </tr>
+        <tr>
+            <td>coords</td>
+            <td><span class="label label-danger">string</span></td>
+            <td>
+                <p>The name of the property in the models array containing the marker coordinates. Must refer to an
+                    object
+                    containing <code>latitude</code> and <code>longitude</code> properties, or  a <a
+                            href="http://geojson.org/geojson-spec.html#point">GeoJSON Point</a> object.</p>
+                <span>The special value <code>'self'</code> can be used to tell the directive that the objects in the array directly contain the marker coordinate object values</span>
+            </td>
+        </tr>
+        <tr>
+            <td>icon</td>
+            <td><span class="label label-info">string</span></td>
+            <td>The name of the property of the model in the models array containing the URL to the icon image to use
+                for each marker
+            </td>
+        </tr>
+        <tr>
+            <td>click</td>
+            <td><span class="label label-info">string or expression</span></td>
+            <td>PerModel / or expression binding : event handler executed when clicking a marker</td>
+        </tr>
+        <tr>
+            <td>modelsbyref</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>expression binding : To evaluate to truthy. This also means markers by default deep watches since
+                modelsbyref is undefined. If set to true, 'true', 'T', and many more then shallow watching is turned on.
+                Search the code base for uiGmapGmapUtil.isTrue
+            </td>
+        </tr>
+        <tr ng-include="'./views/directive/partials/options.html'"
+            ng-init="thing='Marker';directive='Markers';hasLabelOptions=true;isStringTypeOnArray=true">
+        <tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Marker'">
+        </tr>
+        </tbody>
+    </table>
+    <ng-include src="'./views/directive/partials/plural.html'"></ng-include>
 
-<h4>Example</h4>
-<runnable-example example="'markers'"></runnable-example>
+    <h4>Example</h4>
+    <runnable-example example="'markers'"></runnable-example>
 
 <script type="text/ng-template" id="markersTemplate">
     <!--
@@ -193,30 +179,35 @@ $scope.clickEventsObject =
             labelContent: ''
             labelAnchor: ''
             labelClass: ''
+            modelsbyref: to evaluate to true via isTrue, defaults to undefined.. thus false
 
             click: //used as "'someProp'" or '"someProp"' , notice the quotes!! otherwise a normal expression (non special quotes)
     -->
     <ui-gmap-markers
-             models='{expression}'
-             idKey='{expression}'
-             doRebuildAll="{string or object}"
+            models='{expression}'
+            idKey='{expression}'
 
-             doCluster="{string or object}"
-             clusterOptions='{expression}'
-             fit="{string or object}"
+            doCluster="{string or object}"
+            clusterOptions='{expression}'
+            fit="{string or object}"
 
-             labelContent='{expression}'
+            labelContent='{expression}'
 
-             coords="'{string}'"
-             icon="'{string}'"
-             options="'{string}'"
-             labelContent="'{string}'"
-             labelAnchor="'{string}'"
-             labelClass="'{string}'"
-             click="'{string or expression to a function}'"
+            coords="'{string}'"
+            icon="'{string}'"
+            options="'{string}'"
+            labelContent="'{string}'"
+            labelAnchor="'{string}'"
+            labelClass="'{string}'"
+            click="'{string or expression to a function}'"
+            modelsbyref="{expression}"
 
-             events="{expression}"
-             control='{expression}'
+            events="{expression}"
+
+            control='{expression}'
+            chunk='{expression}'
+            cleanchunk='{expression}'
+            doRebuildAll="{string or object}"
             >
     </ui-gmap-markers>
 </script>

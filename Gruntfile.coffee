@@ -64,7 +64,6 @@ module.exports = (grunt) ->
     'autoprefixer'
     'copy:vendor_fonts'
     'copy:dist'
-    'cdnify'
     'ngmin'
   ]
 
