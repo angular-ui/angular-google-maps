@@ -9,7 +9,7 @@ Beyond that, the instances passed back to you come back with the following info:
         <strong>map:</strong>
          The actual gMap (google map sdk instance of the google.maps.Map).
         <br>
-        <strong>map._id:</strong>
+        <strong>map.uiGmap_id:</strong>
          A unique UUID that gets assigned to the gMap via ui-gamp api.
     </li>
 </ul>
@@ -18,10 +18,10 @@ Beyond that, the instances passed back to you come back with the following info:
 
 <div hljs language="js">
 .controller("someController", function(uiGmapIsReady) {
-    uiGmapIsReady.promise(2).then(function(instances) {
+    uiGmapIsReady.promise(1).then(function(instances) {
         instances.forEach(function(inst) {
-            var map = int.map;
-            var uuid = map._id;
+            var map = inst.map;
+            var uuid = map.uiGmap_id;
             var mapInstanceNumber = inst.instance; // Starts at 1.
         });
     });
