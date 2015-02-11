@@ -1,20 +1,19 @@
+<div class="uiGmapPromise">
 <h2 id="Promise">uiGmapPromise Service</h2>
 Service is a utility to aid in Angular $q promises. It is primarily used for its extensions of
 <code>ExposedPromise</code> and <code>SniffedPromise</code>.
-<br>
+If you want examples your best bet is to look at <a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/_async.coffee">_async.coffee</a>. Most of uiGmapPromise was written for it.
+<br><br>
 <a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/promise.coffee">source code</a>
 
 <table class="table table-bordered table-striped">
-    <thead>
-    <tr>
-        <th>Functions / Classes</th>
-        <th>Type</th>
-        <th>Args</th>
-        <th>Returns</th>
-        <th>Details</th>
-    </tr>
-    </thead>
-    <tbody>
+      <tr>
+          <th class="small">Functions / Classes</th>
+          <th class="small">Type</th>
+          <th class="small">Args</th>
+          <th class="small">Returns</th>
+          <th style="details">Details</th>
+      </tr>
     <tr>
         <td>defer</td>
         <td><span class="label label-info">function</span></td>
@@ -37,7 +36,7 @@ Service is a utility to aid in Angular $q promises. It is primarily used for its
     <tr>
         <td>resolve</td>
         <td><span class="label label-info">function</span></td>
-        <td><span class="label label-info">None - But should have at least one to resolve something other than defined. (TODO)</span></td>
+        <td><span class="label label-info" title="But should have at least one to resolve something other than defined. (TODO)">None</span></td>
         <td><span class="label label-info">Angular Promise</span></td>
         <td>
           Creates a resolved promise and returns it. This is useful for scenarios where you want your
@@ -53,9 +52,9 @@ Service is a utility to aid in Angular $q promises. It is primarily used for its
         <td>
           Returns an object that has fields that represent a Promises intent.
           <code>
-            create : 'create'
-            update : 'update'
-            delete : 'delete'
+            create : 'create'<br>
+            update : 'update'<br>
+            delete : 'delete'<br>
             init: 'init'
           </code>
         </td>
@@ -68,9 +67,9 @@ Service is a utility to aid in Angular $q promises. It is primarily used for its
         <td>
           Returns an object that has fields that represent a Promises status enum.
           <code>
-            IN_PROGRESS: 0
-            RESOLVED: 1
-            REJECTED: 2
+            IN_PROGRESS: 0 <br>
+            RESOLVED: 1 <br>
+            REJECTED: 2 <br>
           </code>
         </td>
     </tr>
@@ -111,28 +110,33 @@ Service is a utility to aid in Angular $q promises. It is primarily used for its
     <tr>
         <td>SniffedPromise</td>
         <td><span class="label label-info">function</span></td>
-        <td><span class="label label-info">
-          <ul>
-            <li>
-              function - that returns a Promise that has not been started
-            </li>
-            <li>
-              promiseType (see above) - intention of the non-exec promise.
-            </li>
-          </ul></span></td>
+        <td>
+          <div>
+            <span class="label label-info" title="that returns a Promise that has not been started">
+              function
+            </span>
+            <span class="label label-info" title="(see above) - intention of the non-exec promise.">
+              promiseType
+            </span>
+          </div>
+        </td>
         <td><span class="label label-info">SniffedPromise</span></td>
         <td>
           This is a utility function to possibly kick off a promise if its intended promiseType is
           acceptable. The whole purpose of this is to give a Promise intent without starting it.
           <br>
           <br>
-          Fields:
-          <code>promise</code>
+          Args:
+          <br>
+          <code>fnPromise</code> - function that returns a Promise that has not been started.<br>
+          <code>promiseType</code> - The associated promises intent. <br>
+
+          <br>
+          Returned Object (SniffedPromise)<br>
+          <code>promise</code> - fnPromise alias <br>
           <code>promiseType</code>
         </td>
     </tr>
-    </tbody>
+    
 </table>
-<br>
-If you want examples your best bet is to look at _async.coffee. Most of uiGmapPromise was written for it.
-<a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/_async.coffee">source code</a>
+</div>
