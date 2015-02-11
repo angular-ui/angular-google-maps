@@ -25,7 +25,8 @@ angular.module('angularGoogleMapsApp')
   ])
   .constant('serviceList', [
     'Logger',
-    'IsReady'
+    'IsReady',
+    'Promise'
   ])
   .config([ '$stateProvider', 'directiveList', 'providerList', 'serviceList',
     function ($stateProvider, directiveList, providerList, serviceList) {

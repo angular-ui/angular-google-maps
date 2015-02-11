@@ -264,3 +264,11 @@ ul.separated li:not(:first-child) {
     width: 100%;
     height: 350px;
 }
+
+.uiGmapPromise th.small{
+  width:10%;
+}
+
+.uiGmapPromise th.details{
+  width:60%;
+}
