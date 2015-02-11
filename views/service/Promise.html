@@ -1,0 +1,138 @@
+<h2 id="Promise">uiGmapPromise Service</h2>
+Service is a utility to aid in Angular $q promises. It is primarily used for its extensions of
+<code>ExposedPromise</code> and <code>SniffedPromise</code>.
+<br>
+<a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/promise.coffee">source code</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>Functions / Classes</th>
+        <th>Type</th>
+        <th>Args</th>
+        <th>Returns</th>
+        <th>Details</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>defer</td>
+        <td><span class="label label-info">function</span></td>
+        <td><span class="label label-info">None</span></td>
+        <td><span class="label label-info">Angular Deferred</span></td>
+        <td>
+          acessor to $q.defer
+        </td>
+    </tr>
+    <tr>
+        <td>promise</td>
+        <td><span class="label label-info">function</span></td>
+        <td><span class="label label-info">function</span></td>
+        <td><span class="label label-info">Angular Promise</span></td>
+        <td>
+          Executes a function immediatley but its result is resolved.
+          To access the result use the Angular Promise API.
+        </td>
+    </tr>
+    <tr>
+        <td>resolve</td>
+        <td><span class="label label-info">function</span></td>
+        <td><span class="label label-info">None - But should have at least one to resolve something other than defined. (TODO)</span></td>
+        <td><span class="label label-info">Angular Promise</span></td>
+        <td>
+          Creates a resolved promise and returns it. This is useful for scenarios where you want your
+          code to flow in a similar manner for cases where no promise exist.
+          Think bluebird Promise.resolve() as this is it's intention.
+        </td>
+    </tr>
+    <tr>
+        <td>promiseTypes</td>
+        <td><span class="label label-info">Object</span></td>
+        <td><span class="label label-info">NA</span></td>
+        <td><span class="label label-info">NA</span></td>
+        <td>
+          Returns an object that has fields that represent a Promises intent.
+          <code>
+            create : 'create'
+            update : 'update'
+            delete : 'delete'
+            init: 'init'
+          </code>
+        </td>
+    </tr>
+    <tr>
+        <td>promiseStatus</td>
+        <td><span class="label label-info">Object</span></td>
+        <td><span class="label label-info">NA</span></td>
+        <td><span class="label label-info">NA</span></td>
+        <td>
+          Returns an object that has fields that represent a Promises status enum.
+          <code>
+            IN_PROGRESS: 0
+            RESOLVED: 1
+            REJECTED: 2
+          </code>
+        </td>
+    </tr>
+    <tr>
+        <td>isInProgress</td>
+        <td><span class="label label-info">function</span></td>
+        <td><span class="label label-info">Angular Promise</span></td>
+        <td><span class="label label-info">Boolean</span></td>
+        <td>
+          Checks the state of an Angular Promise and returns true if it is in progress.
+        </td>
+    </tr>
+    <tr>
+        <td>isResolved</td>
+        <td><span class="label label-info">function</span></td>
+        <td><span class="label label-info">Angular Promise</span></td>
+        <td><span class="label label-info">Boolean</span></td>
+        <td>
+          Checks the state of an Angular Promise and returns true if it is resolved.
+        </td>
+    </tr>
+    <tr>
+        <td>ExposedPromise</td>
+        <td><span class="label label-info">function</span></td>
+        <td><span class="label label-info">Angular Promise</span></td>
+        <td><span class="label label-info">ExposedPromise</span></td>
+        <td>
+          Wrapps an Angular Promise and allows a promise to be cancelable. This class combined with
+          <code>SniffedPromise</code> allows the API to check a Promise for its intention and decide whether to allow a promise to continue or not.
+          This is useful in scenarios where Promises are being queued up and can be forgotten/dropped.
+          <br>
+          <br>
+          Methods:
+          <code>cancel</code>
+          <code>notify</code>
+        </td>
+    </tr>
+    <tr>
+        <td>SniffedPromise</td>
+        <td><span class="label label-info">function</span></td>
+        <td><span class="label label-info">
+          <ul>
+            <li>
+              function - that returns a Promise that has not been started
+            </li>
+            <li>
+              promiseType (see above) - intention of the non-exec promise.
+            </li>
+          </ul></span></td>
+        <td><span class="label label-info">SniffedPromise</span></td>
+        <td>
+          This is a utility function to possibly kick off a promise if its intended promiseType is
+          acceptable. The whole purpose of this is to give a Promise intent without starting it.
+          <br>
+          <br>
+          Fields:
+          <code>promise</code>
+          <code>promiseType</code>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<br>
+If you want examples your best bet is to look at _async.coffee. Most of uiGmapPromise was written for it.
+<a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/_async.coffee">source code</a>
