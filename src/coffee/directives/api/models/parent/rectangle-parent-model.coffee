@@ -22,8 +22,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         else if scope.bounds.getNorthEast? and scope.bounds.getSouthWest? #google format
             bounds = scope.bounds
         else
-          if bound?
-            $log.error "Invalid bounds for newValue: #{JSON.stringify scope.bounds}" #note if bouds is recursive this could crash
+          if scope.bounds?
+            $log.error "Invalid bounds for newValue: #{JSON.stringify scope.bounds}" #note if bounds is recursive this could crash
       createBounds()
       gObject = new google.maps.Rectangle(@buildOpts bounds)
       $log.info "gObject (rectangle) created: #{gObject}"
