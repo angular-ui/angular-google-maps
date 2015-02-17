@@ -21,10 +21,14 @@ angular.module('uiGmapgoogle-maps.providers')
         script.src = getScriptUrl(options) + query
         document.body.appendChild script
 
+      isGoogleMapsLoaded = ->
+        angular.isDefined(window.google) and angular.isDefined(window.google.maps)
+
       load: (options)->
         deferred = $q.defer()
+
         # Early-resolve if google-maps-api is already in global-scope
-        if angular.isDefined(window.google) and angular.isDefined(window.google.maps)
+        if isGoogleMapsLoaded()
           deferred.resolve window.google.maps
           return deferred.promise
 
@@ -34,10 +38,10 @@ angular.module('uiGmapgoogle-maps.providers')
           deferred.resolve window.google.maps
           return
 
-        # Cordova specific
-        if window.navigator.connection?.type == Connection.NONE
+        # Cordova specific https://github.com/apache/cordova-plugin-network-information/
+        if window.navigator.connection && window.navigator.connection.type == window.Connection.NONE
           document.addEventListener 'online', ->
-            includeScript options
+            includeScript options if !isGoogleMapsLoaded()
         else
           includeScript options
 
