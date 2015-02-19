@@ -24,6 +24,7 @@ angular.module('angularGoogleMapsApp')
     'GoogleMapApi'
   ])
   .constant('serviceList', [
+    'Async',
     'Logger',
     'IsReady',
     'Promise'
@@ -45,9 +46,9 @@ angular.module('angularGoogleMapsApp')
       });
   }])
   .controller('ApiCtrl',[ '$scope', '$rootScope', '$location', '$state',
-    'directiveList', 'providerList', 'serviceList',
+    'directiveList', 'providerList', 'serviceList','$anchorScroll',
     function ($scope, $rootScope, $location, $state,
-      directiveList, providerList, serviceList) {
+      directiveList, providerList, serviceList, $anchorScroll) {
     if ($state.current.name === "api") {
       $state.go("api." + providerList[0]);
     }
@@ -61,9 +62,10 @@ angular.module('angularGoogleMapsApp')
       $scope.current = $state.$current.name.substring(4);
     });
 
-//    $scope.viewUrl = function (directive) {
-//      return 'views/directive/' + directive + '.html';
-//    };
+    $scope.scrollTo = function(id) {
+       $location.hash(id);
+       $anchorScroll();
+     };
 
     $scope.query = '';
 

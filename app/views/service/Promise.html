@@ -1,7 +1,6 @@
-<div class="uiGmapPromise">
+<div class="uiGmapPromise uigmap-api">
 Service is a utility to aid in Angular $q promises. It is primarily used for its extensions of
-<code>ExposedPromise</code> and <code>SniffedPromise</code>.
-If you want examples your best bet is to look at <a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/_async.coffee">_async.coffee</a>. Most of uiGmapPromise was written for it.
+<code>ExposedPromise</code> and <code>SniffedPromise</code> by <a ui-sref="api.Async" href="#!/api">uiGmap_Async</a>.
 <br/><br/>
 <a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/promise.coffee">source code</a>
 
@@ -11,7 +10,7 @@ If you want examples your best bet is to look at <a href="https://github.com/ang
           <th class="small">Type</th>
           <th class="small">Args</th>
           <th class="small">Returns</th>
-          <th style="details">Details</th>
+          <th class="details">Details</th>
       </tr>
     <tr>
         <td>defer</td>
@@ -40,7 +39,7 @@ If you want examples your best bet is to look at <a href="https://github.com/ang
         <td>
           Creates a resolved promise and returns it. This is useful for scenarios where you want your
           code to flow in a similar manner for cases where no promise exist.
-          Think bluebird Promise.resolve() as this is it's intention.
+          Think bluebird <a href="https://github.com/petkaantonov/bluebird/blob/master/API.md#promiseresolvedynamic-value---promise">Promise.resolve()</a> as this is it's intention.
         </td>
     </tr>
     <tr>

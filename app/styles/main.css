@@ -265,10 +265,10 @@ ul.separated li:not(:first-child) {
     height: 350px;
 }
 
-.uiGmapPromise th.small{
+.uigmap-api th.small{
   width:10%;
 }
 
-.uiGmapPromise th.details{
+.uigmap-api th.details{
   width:60%;
 }
