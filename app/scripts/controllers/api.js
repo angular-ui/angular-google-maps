@@ -27,6 +27,7 @@ angular.module('angularGoogleMapsApp')
     'Async',
     'Logger',
     'IsReady',
+    'PropMap',
     'Promise'
   ])
   .config([ '$stateProvider', 'directiveList', 'providerList', 'serviceList',
