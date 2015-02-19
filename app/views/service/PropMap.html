@@ -1,0 +1,103 @@
+<div class="uiGmapPropMap uigmap-api">
+  Hashmap/Dictionary/KVP which caches it's state when being converted to an Array.
+  <a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/prop-map.coffee">Service (Source Code)</a>.
+<br/><br/>
+<table class="table table-bordered table-striped">
+      <tr>
+          <th class="small">Functions / Classes</th>
+          <th class="small">Type</th>
+          <th class="small">Args</th>
+          <th class="small">Returns</th>
+          <th class="details">Details</th>
+      </tr>
+      <tr>
+          <td>get</td>
+          <td><span class="label label-info">function</span></td>
+          <td><span class="label label-info">key:String</span></td>
+          <td><span class="label label-info">Any</span></td>
+          <td>
+            Calls the underlying object to get a property by its field/key name.
+          </td>
+      </tr>
+      <tr>
+          <td>put</td>
+          <td><span class="label label-info">function</span></td>
+          <td><span class="label label-info">key:String</span></td>
+          <td><span class="label label-info">value:Any</span></td>
+          <td>
+            Add a value to the hash map.
+          </td>
+      </tr>
+      <tr>
+          <td>push</td>
+          <td><span class="label label-info">function</span></td>
+          <td><span class="label label-info">object</span></td>
+          <td>
+            <span class="label label-info">key:String</span>
+            <span>default:"key"</span>
+          </td>
+          <td>
+            Add a value to the hash map. By pulling a value from the passed in objects property.
+          </td>
+      </tr>
+      <tr>
+          <td>remove</td>
+          <td><span class="label label-info">function</span></td>
+          <td><span class="label label-info">key:String</span></td>
+          <td>
+            <span class="label label-info">isSafe:Bool</span>
+            <span>default:false</span>
+            </td>
+          <td>
+            Removes a value from the hashmap. It is an additional measure to
+            remove an item from the hashmap safley.
+          </td>
+      </tr>
+      <tr id="uiGmapPropMapSlice">
+          <td>slice</td>
+          <td><span class="label label-info">function</span></td>
+          <td></td>
+          <td></td>
+          <td>
+            Removes all values and keys from the hashmap.
+          </td>
+      </tr>
+      <tr>
+          <td>removeAll</td>
+          <td><span class="label label-info">function</span></td>
+          <td></td>
+          <td></td>
+          <td>
+            Alias to <a ng-click="scrollTo('uiGmapPropMapSlice')" href>slice</a>
+          </td>
+      </tr>
+      <tr id="uiGmapPropMapEach">
+        <td>each</td>
+        <td><span class="label label-info">function</span></td>
+        <td>
+          <div class="multiple-arg-functions">
+            <span class="label label-info" >
+              Array
+            </span>
+            <span class="label label-info" title="iterator cb">
+              chunkCb(item):function
+            </span>
+          </div>
+        </td>
+        <td><span class="label label-info">Angular Promise</span></td>
+        <td>
+          Similar to the Array.each and _.each where there underlying hashmap is iterated like an array.
+        </td>
+    </tr>
+    <tr>
+        <td>map</td>
+        <td><span class="label label-info">function</span></td>
+        <td></td>
+        <td></td>
+        <td>
+          See <a ng-click="scrollTo('uiGmapPropMapEach')" href>each</a> above Array.map and _.map
+        </td>
+    </tr>
+    </tbody>
+</table>
+</div>
