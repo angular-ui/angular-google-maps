@@ -1,0 +1,89 @@
+<div class="uiGmap_async uigmap-api">
+  <a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/_async.coffee">Service (Source Code)</a> is primarily used to provide chunked asynchronous iterators.
+<br/><br/>
+<table class="table table-bordered table-striped">
+      <tr>
+          <th class="small">Functions / Classes</th>
+          <th class="small">Type</th>
+          <th class="small">Args</th>
+          <th class="small">Returns</th>
+          <th class="details">Details</th>
+      </tr>
+    <tr id="uiGmapAsyncEach">
+        <td>each</td>
+        <td><span class="label label-info">function</span></td>
+        <td>
+          <div class="multiple-arg-functions">
+            <span class="label label-info" >
+              Array
+            </span>
+            <span class="label label-info" title="iterator cb">
+              chunkCb:function
+            </span>
+            <span class="label label-info" title="size of items to execute the chunkCb on before a pause or boolean false to disable chunking">
+              chunkSize:Int or Bool
+            </span>
+            <span class="label label-info" title="callbacks between chunks">
+              pauseCb:function
+            </span>
+            <span class="label label-info" title="starting index">
+              index:Int
+            </span>
+            <span class="label label-info" title="milliseconds between chunks">
+              pauseMilli:Int
+            </span>
+          </div>
+        </td>
+        <td><span class="label label-info">Angular Promise</span></td>
+        <td>
+          Similar to the Array.each and _.each iterators with the main difference that the work
+          is chunked to mimic threading to give temporary focus back to other UI functions to not hang the UI.
+        </td>
+    </tr>
+    <tr id='uiGmapAsyncMap'>
+        <td>map</td>
+        <td><span class="label label-info">function</span></td>
+        <td></td>
+        <td></td>
+        <td>
+          See <a ng-click="scrollTo('uiGmapAsyncEach')" href>each</a> above Array.map and _.map
+        </td>
+    </tr>
+    <tr id="uiGmapAsyncManagePromiseQueue">
+        <td>managePromiseQueue</td>
+        <td><span class="label label-info">function</span></td>
+        <td>
+          <span class="label label-info">Queue[ExposedPromise]</span>
+          <span class="label label-info">SniffedPromise</span>
+          <span class="label label-info">function(string)</span>
+        </td>
+        <td>
+          <span class="label label-info">ExposedPromise</span>
+        </td>
+        <td>
+          Utilizes a PromiseManager where the existingPieces (promise work to be done) is analyzed.
+          The main decision is if a promise can be skipped, canceled or executed. This is
+          similar to a locking mechanism in that it deals with avoiding promise race conditions.
+          It relies heavily on an ExposedPromises intention via SniffedPromise.
+          It is best to see the <a href="https://github.com/angular-ui/angular-google-maps/blob/master/src/coffee/directives/api/utils/_async.coffee">code base</a>.
+        </td>
+    </tr>
+    <tr>
+        <td>promiseLock</td>
+        <td><span class="label label-info">function</span></td>
+        <td></td>
+        <td></td>
+        <td>alias to <a ng-click="scrollTo('uiGmapAsyncManagePromiseQueue')" href>managePromiseQueue</a></td>
+    </tr>
+    <tr>
+        <td>defaultChunkSize</td>
+        <td><span class="label label-info">Int</span></td>
+        <td></td>
+        <td></td>
+        <td>Default chunk size of items to iterate for
+          <a ng-click="scrollTo('uiGmapAsyncEach')" href>each</a>
+          and <a ng-click="scrollTo('uiGmapAsyncMap')" href>map</a> if one is not specified.</td>
+    </tr>
+    </tbody>
+</table>
+</div>
