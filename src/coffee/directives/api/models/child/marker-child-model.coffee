@@ -164,7 +164,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
           #update existing options if it is the same type
           if @gObject?
-            @gObject.setOptions @opts
+            @gObject.setOptions @setLabelOptions @opts
 
           unless @gObject
             if @isLabel @opts
