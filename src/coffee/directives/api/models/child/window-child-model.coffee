@@ -30,10 +30,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @scope.$on '$destroy', =>
             @destroy()
           $log.info @
-        #todo: watch model in here, and recreate / clean gObject on change
 
-        doShow: =>
-          if @scope.show == true
+        doShow: (wasOpen) =>
+          if @scope.show == true or wasOpen
             @showWindow()
           else
             @hideWindow()
@@ -43,7 +42,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @scope.$watch 'show', @doShow, true
           @doShow()
 
+
         watchElement: =>
+          #note this is not efficient and is mainly dependent on model changing anywhere
+          #thus this is more targeted towards window and now windows
+          #if updateModel is used then it is more direct without watch overhead
+          #supporting this until window is removed
           @scope.$watch =>
             return unless @element or @html
             if @html isnt @element.html() and @gObject
@@ -54,44 +58,46 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
         createGWin: (isOpen = false) =>
           maybeMarker = @getGmarker()
-          unless @gObject?
-            defaults = {}
-            if @opts?
-              #being double careful for race condition on @opts.position via watch coords (if element and coords change at same time)
-              @opts.position = @getCoords @scope.coords if @scope.coords
-              defaults = @opts
-            if @element
-              @html = if _.isObject(@element) then @element.html() else @element
-            _opts = if @scope.options then @scope.options else defaults
-            @opts = @createWindowOptions maybeMarker, @markerScope or @scope, @html, _opts
 
-          if @opts? and !@gObject
-            if @opts.boxClass and (window.InfoBox and typeof window.InfoBox is 'function')
-              @gObject = new window.InfoBox @opts
-            else
-              @gObject = new google.maps.InfoWindow @opts
-            @handleClick(@scope?.options?.forceClick or isOpen)
-            @doShow()
+          defaults = {}
+          if @opts?
+            #being double careful for race condition on @opts.position via watch coords (if element and coords change at same time)
+            @opts.position = @getCoords @scope.coords if @scope.coords
+            defaults = @opts
+          if @element
+            @html = if _.isObject(@element) then @element.html() else @element
+          _opts = if @scope.options then @scope.options else defaults
+          @opts = @createWindowOptions maybeMarker, @markerScope or @scope, @html, _opts
 
-            # Set visibility of marker back to what it was before opening the window
-            @listeners.push google.maps.event.addListener @gObject, 'domready', ->
-              ChromeFixes.maybeRepaint @content
-
-            @listeners.push google.maps.event.addListener @gObject, 'closeclick', =>
-              if maybeMarker
-                maybeMarker.setAnimation @oldMarkerAnimation
-                if @markerIsVisibleAfterWindowClose
-                  _.delay => #appears to help animation chrome bug
-                    maybeMarker.setVisible false
-                    maybeMarker.setVisible @markerIsVisibleAfterWindowClose
-                  , 250
-              @gObject.close()
-              @model.show = false
-              if @scope.closeClick?
-                @scope.$evalAsync @scope.closeClick()
+          if @opts?
+            unless @gObject
+              if @opts.boxClass and (window.InfoBox and typeof window.InfoBox is 'function')
+                @gObject = new window.InfoBox @opts
               else
-                #update models state change since it is out of angular scope (closeClick)
-                @scope.$evalAsync()
+                @gObject = new google.maps.InfoWindow @opts
+
+              # Set visibility of marker back to what it was before opening the window
+              @listeners.push google.maps.event.addListener @gObject, 'domready', ->
+                ChromeFixes.maybeRepaint @content
+
+              @listeners.push google.maps.event.addListener @gObject, 'closeclick', =>
+                if maybeMarker
+                  maybeMarker.setAnimation @oldMarkerAnimation
+                  if @markerIsVisibleAfterWindowClose
+                    _.delay => #appears to help animation chrome bug
+                      maybeMarker.setVisible false
+                      maybeMarker.setVisible @markerIsVisibleAfterWindowClose
+                    , 250
+                @gObject.close()
+                @model.show = false
+                if @scope.closeClick?
+                  @scope.$evalAsync @scope.closeClick()
+                else
+                  #update models state change since it is out of angular scope (closeClick)
+                  @scope.$evalAsync()
+            @gObject.setContent @opts.content
+            @handleClick(@scope?.options?.forceClick or isOpen)
+            @doShow(@gObject.isOpen())
 
         watchCoords: =>
           scope = if @markerScope? then @markerScope else @scope
@@ -179,10 +185,11 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           else
             @gObject.setPosition overridePos if overridePos
 
-        remove: =>
+        remove: (doRemoveWindow = true) =>
           @hideWindow()
           @removeEvents @listeners
           @listeners.length = 0
+          doRemoveWindow
           delete @gObject
           delete @opts
 
@@ -190,6 +197,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @remove()
           if @scope? and not @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
             @scope.$destroy()
+
+        updateModel: (model) =>
+          @clonedModel = _.extend({},model)
+          _.extend(@model, @clonedModel)
 
       WindowChildModel
   ]

@@ -1190,6 +1190,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         function ModelKey(scope) {
           this.scope = scope;
+          this.updateChild = __bind(this.updateChild, this);
           this.destroy = __bind(this.destroy, this);
           this.setChildScope = __bind(this.setChildScope, this);
           this.getChanges = __bind(this.getChanges, this);
@@ -1364,6 +1365,14 @@ Nicholas McCready - https://twitter.com/nmccready
           } else {
             return this.clean();
           }
+        };
+
+        ModelKey.prototype.updateChild = function(child, model) {
+          if (model[this.idKey] == null) {
+            this.$log.error("Model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
+            return;
+          }
+          return child.updateModel(model);
         };
 
         return ModelKey;
@@ -2812,8 +2821,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
   angular.module('uiGmapgoogle-maps.directives.api.models.child').factory('uiGmapMarkerChildModel', [
     'uiGmapModelKey', 'uiGmapGmapUtil', 'uiGmapLogger', 'uiGmapEventsHelper', 'uiGmapPropertyAction', 'uiGmapMarkerOptions', 'uiGmapIMarker', 'uiGmapMarkerManager', 'uiGmapPromise', function(ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker, MarkerManager, uiGmapPromise) {
-      var MarkerChildModel, keys;
-      keys = ['coords', 'icon', 'options', 'fit'];
+      var MarkerChildModel;
       MarkerChildModel = (function(_super) {
         var destroy;
 
@@ -3270,6 +3278,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.element = element;
           this.needToManualDestroy = needToManualDestroy != null ? needToManualDestroy : false;
           this.markerIsVisibleAfterWindowClose = markerIsVisibleAfterWindowClose != null ? markerIsVisibleAfterWindowClose : true;
+          this.updateModel = __bind(this.updateModel, this);
           this.destroy = __bind(this.destroy, this);
           this.remove = __bind(this.remove, this);
           this.getLatestPosition = __bind(this.getLatestPosition, this);
@@ -3307,8 +3316,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           $log.info(this);
         }
 
-        WindowChildModel.prototype.doShow = function() {
-          if (this.scope.show === true) {
+        WindowChildModel.prototype.doShow = function(wasOpen) {
+          if (this.scope.show === true || wasOpen) {
             return this.showWindow();
           } else {
             return this.hideWindow();
@@ -3348,51 +3357,52 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             isOpen = false;
           }
           maybeMarker = this.getGmarker();
-          if (this.gObject == null) {
-            defaults = {};
-            if (this.opts != null) {
-              if (this.scope.coords) {
-                this.opts.position = this.getCoords(this.scope.coords);
-              }
-              defaults = this.opts;
+          defaults = {};
+          if (this.opts != null) {
+            if (this.scope.coords) {
+              this.opts.position = this.getCoords(this.scope.coords);
             }
-            if (this.element) {
-              this.html = _.isObject(this.element) ? this.element.html() : this.element;
-            }
-            _opts = this.scope.options ? this.scope.options : defaults;
-            this.opts = this.createWindowOptions(maybeMarker, this.markerScope || this.scope, this.html, _opts);
+            defaults = this.opts;
           }
-          if ((this.opts != null) && !this.gObject) {
-            if (this.opts.boxClass && (window.InfoBox && typeof window.InfoBox === 'function')) {
-              this.gObject = new window.InfoBox(this.opts);
-            } else {
-              this.gObject = new google.maps.InfoWindow(this.opts);
-            }
-            this.handleClick(((_ref = this.scope) != null ? (_ref1 = _ref.options) != null ? _ref1.forceClick : void 0 : void 0) || isOpen);
-            this.doShow();
-            this.listeners.push(google.maps.event.addListener(this.gObject, 'domready', function() {
-              return ChromeFixes.maybeRepaint(this.content);
-            }));
-            return this.listeners.push(google.maps.event.addListener(this.gObject, 'closeclick', (function(_this) {
-              return function() {
-                if (maybeMarker) {
-                  maybeMarker.setAnimation(_this.oldMarkerAnimation);
-                  if (_this.markerIsVisibleAfterWindowClose) {
-                    _.delay(function() {
-                      maybeMarker.setVisible(false);
-                      return maybeMarker.setVisible(_this.markerIsVisibleAfterWindowClose);
-                    }, 250);
+          if (this.element) {
+            this.html = _.isObject(this.element) ? this.element.html() : this.element;
+          }
+          _opts = this.scope.options ? this.scope.options : defaults;
+          this.opts = this.createWindowOptions(maybeMarker, this.markerScope || this.scope, this.html, _opts);
+          if (this.opts != null) {
+            if (!this.gObject) {
+              if (this.opts.boxClass && (window.InfoBox && typeof window.InfoBox === 'function')) {
+                this.gObject = new window.InfoBox(this.opts);
+              } else {
+                this.gObject = new google.maps.InfoWindow(this.opts);
+              }
+              this.listeners.push(google.maps.event.addListener(this.gObject, 'domready', function() {
+                return ChromeFixes.maybeRepaint(this.content);
+              }));
+              this.listeners.push(google.maps.event.addListener(this.gObject, 'closeclick', (function(_this) {
+                return function() {
+                  if (maybeMarker) {
+                    maybeMarker.setAnimation(_this.oldMarkerAnimation);
+                    if (_this.markerIsVisibleAfterWindowClose) {
+                      _.delay(function() {
+                        maybeMarker.setVisible(false);
+                        return maybeMarker.setVisible(_this.markerIsVisibleAfterWindowClose);
+                      }, 250);
+                    }
                   }
-                }
-                _this.gObject.close();
-                _this.model.show = false;
-                if (_this.scope.closeClick != null) {
-                  return _this.scope.$evalAsync(_this.scope.closeClick());
-                } else {
-                  return _this.scope.$evalAsync();
-                }
-              };
-            })(this)));
+                  _this.gObject.close();
+                  _this.model.show = false;
+                  if (_this.scope.closeClick != null) {
+                    return _this.scope.$evalAsync(_this.scope.closeClick());
+                  } else {
+                    return _this.scope.$evalAsync();
+                  }
+                };
+              })(this)));
+            }
+            this.gObject.setContent(this.opts.content);
+            this.handleClick(((_ref = this.scope) != null ? (_ref1 = _ref.options) != null ? _ref1.forceClick : void 0 : void 0) || isOpen);
+            return this.doShow(this.gObject.isOpen());
           }
         };
 
@@ -3540,10 +3550,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
         };
 
-        WindowChildModel.prototype.remove = function() {
+        WindowChildModel.prototype.remove = function(doRemoveWindow) {
+          if (doRemoveWindow == null) {
+            doRemoveWindow = true;
+          }
           this.hideWindow();
           this.removeEvents(this.listeners);
           this.listeners.length = 0;
+          doRemoveWindow;
           delete this.gObject;
           return delete this.opts;
         };
@@ -3557,6 +3571,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if ((this.scope != null) && !((_ref = this.scope) != null ? _ref.$$destroyed : void 0) && (this.needToManualDestroy || manualOverride)) {
             return this.scope.$destroy();
           }
+        };
+
+        WindowChildModel.prototype.updateModel = function(model) {
+          this.clonedModel = _.extend({}, model);
+          return _.extend(this.model, this.clonedModel);
         };
 
         return WindowChildModel;
@@ -4089,7 +4108,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         function MarkersParentModel(scope, element, attrs, map) {
           this.onDestroy = __bind(this.onDestroy, this);
           this.newChildMarker = __bind(this.newChildMarker, this);
-          this.updateChild = __bind(this.updateChild, this);
           this.pieceMeal = __bind(this.pieceMeal, this);
           this.rebuildAll = __bind(this.rebuildAll, this);
           this.createAllNew = __bind(this.createAllNew, this);
@@ -4299,14 +4317,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.inProgress = false;
             return this.rebuildAll(scope);
           }
-        };
-
-        MarkersParentModel.prototype.updateChild = function(child, model) {
-          if (model[this.idKey] == null) {
-            this.$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
-            return;
-          }
-          return child.updateModel(model);
         };
 
         MarkersParentModel.prototype.newChildMarker = function(model, scope) {
@@ -5544,6 +5554,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     _this.createWindow(modelToAdd, gMarker, _this.gMap);
                     return maybeCanceled;
                   });
+                }).then(function() {
+                  return _async.each(payload.updates, function(update) {
+                    _this.updateChild(update.child, update.model);
+                    return maybeCanceled;
+                  }, _async.chunkSizeFrom(scope.chunk));
                 });
               };
             })(this));

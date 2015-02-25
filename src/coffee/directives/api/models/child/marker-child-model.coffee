@@ -4,7 +4,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
   'uiGmapLogger', 'uiGmapEventsHelper', 'uiGmapPropertyAction',
   'uiGmapMarkerOptions', 'uiGmapIMarker', 'uiGmapMarkerManager', 'uiGmapPromise',
   (ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker, MarkerManager, uiGmapPromise) ->
-    keys = ['coords', 'icon', 'options', 'fit']
+
     class MarkerChildModel extends ModelKey
       @include GmapUtil
       @include EventsHelper
