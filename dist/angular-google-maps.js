@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.12 2015-02-06
+/*! angular-google-maps 2.0.12 2015-02-25
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -64,7 +64,7 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module('uiGmapgoogle-maps.providers').factory('uiGmapMapScriptLoader', [
     '$q', 'uiGmapuuid', function($q, uuid) {
-      var getScriptUrl, scriptId;
+      var getScriptUrl, includeScript, isGoogleMapsLoaded, scriptId;
       scriptId = void 0;
       getScriptUrl = function(options) {
         if (options.china) {
@@ -73,11 +73,29 @@ Nicholas McCready - https://twitter.com/nmccready
           return 'https://maps.googleapis.com/maps/api/js?';
         }
       };
+      includeScript = function(options) {
+        var query, script;
+        query = _.map(options, function(v, k) {
+          return k + '=' + v;
+        });
+        if (scriptId) {
+          document.getElementById(scriptId).remove();
+        }
+        query = query.join('&');
+        script = document.createElement('script');
+        script.id = scriptId = "ui_gmap_map_load_" + (uuid.generate());
+        script.type = 'text/javascript';
+        script.src = getScriptUrl(options) + query;
+        return document.body.appendChild(script);
+      };
+      isGoogleMapsLoaded = function() {
+        return angular.isDefined(window.google) && angular.isDefined(window.google.maps);
+      };
       return {
         load: function(options) {
-          var deferred, query, randomizedFunctionName, script;
+          var deferred, randomizedFunctionName;
           deferred = $q.defer();
-          if (angular.isDefined(window.google) && angular.isDefined(window.google.maps)) {
+          if (isGoogleMapsLoaded()) {
             deferred.resolve(window.google.maps);
             return deferred.promise;
           }
@@ -86,19 +104,15 @@ Nicholas McCready - https://twitter.com/nmccready
             window[randomizedFunctionName] = null;
             deferred.resolve(window.google.maps);
           };
-          query = _.map(options, function(v, k) {
-            return k + '=' + v;
-          });
-          if (scriptId) {
-            document.getElementById(scriptId).remove();
+          if (window.navigator.connection && window.navigator.connection.type === window.Connection.NONE) {
+            document.addEventListener('online', function() {
+              if (!isGoogleMapsLoaded()) {
+                return includeScript(options);
+              }
+            });
+          } else {
+            includeScript(options);
           }
-          query = query.join('&');
-          script = document.createElement('script');
-          scriptId = "ui_gmap_map_load_" + uuid.generate();
-          script.id = scriptId;
-          script.type = 'text/javascript';
-          script.src = getScriptUrl(options) + query;
-          document.body.appendChild(script);
           return deferred.promise;
         }
       };
@@ -1736,7 +1750,7 @@ Nicholas McCready - https://twitter.com/nmccready
           var msg;
           if (gMarker.key == null) {
             msg = 'gMarker.key undefined and it is REQUIRED!!';
-            return Logger.error(msg);
+            return $log.error(msg);
           }
         };
 
@@ -1805,7 +1819,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         };
 
-        ClustererMarkerManager.prototype.clearEvents = function(options) {
+        ClustererMarkerManager.prototype.clearEvents = function(options, optionsName) {
           var eventHandler, eventName, _results;
           if (angular.isDefined(options) && (options != null) && angular.isObject(options)) {
             _results = [];
@@ -1823,8 +1837,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         ClustererMarkerManager.prototype.destroy = function() {
-          this.clearEvents(this.opt_events);
-          this.clearEvents(this.opt_internal_events);
+          this.clearEvents(this.opt_events, 'opt_events');
           return this.clear();
         };
 
@@ -4976,7 +4989,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               } else if ((scope.bounds.getNorthEast != null) && (scope.bounds.getSouthWest != null)) {
                 return bounds = scope.bounds;
               } else {
-                if (typeof bound !== "undefined" && bound !== null) {
+                if (scope.bounds != null) {
                   return $log.error("Invalid bounds for newValue: " + (JSON.stringify(scope.bounds)));
                 }
               }

@@ -59,6 +59,12 @@ If you plan to hack on the directives or want to run the example, first thing to
 npm install #note bower install is run on post install 
 ```
 
+* Installing for [Meteor](https://www.meteor.com/) application:
+
+```shell
+meteor add angularui:angular-google-maps
+```
+
 ### Building
 To build the library after you made changes, simply run grunt:
 

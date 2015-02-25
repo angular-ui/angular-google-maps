@@ -3,6 +3,7 @@ _ = require 'lodash'
 
 module.exports = (grunt) ->
   # Load the required plugins
+  require('./grunt/bower')(grunt)
   [
     "grunt-contrib-uglify"
     "grunt-contrib-jshint"
@@ -46,19 +47,21 @@ module.exports = (grunt) ->
   options.open = _.extend options.open, allExamplesOpen
   grunt.initConfig options
 
-
   # Default task: build a release in dist/
   grunt.registerTask "default", [
-    'verbosity', "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat:dist",
-    "copy", "uglify::dist", "jasmine:consoleSpec"]
-
+    'bower', 'curl',
+    'verbosity', 'clean:dist', 'jshint', 'mkdir', 'coffee',
+    'concat:libs', 'replace', 'webpack', 'concat:dist',
+    'copy', 'uglify::dist', 'jasmine:consoleSpec']
 
   # run default "grunt" prior to generate _SpecRunner.html
   grunt.registerTask "spec", [
+    'bower', 'curl',
     'verbosity', "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat",
     "copy", "connect:jasmineServer", "jasmine:spec", "open:jasmine", "watch:spec"]
 
   grunt.registerTask "coverage", [
+    'bower', 'curl',
     "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "concat:dist",
     "copy", "uglify:dist", "jasmine:coverage"]
 
@@ -75,6 +78,7 @@ module.exports = (grunt) ->
   grunt.registerTask "fast", dev.concat ["jasmine:spec"]
 
   grunt.registerTask "mappAll", [
+    'bower', 'curl',
     "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat", "uglify"
     "copy", "jasmine:spec"]
 
