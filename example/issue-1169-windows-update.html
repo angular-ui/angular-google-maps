@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html ng-app="appMaps">
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/lodash/dist/lodash.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-1169-windows-update.js"></script>
+</head>
+<body>
+<div ng-controller="MapCtrl as mapCtrl">
+    <ui-gmap-google-map center="mapCtrl.map.display.center" zoom="mapCtrl.map.display.zoom" control="mapCtrl.map.display.control">
+        <ui-gmap-polyline ng-show="mapCtrl.map.polys.length" ng-repeat="p in mapCtrl.map.polys" path="p.path" stroke="p.stroke" visible="p.visible" geodesic="p.geodesic" fit="p.fit" editable="p.editable" draggable="p.draggable" icons="p.icons"></ui-gmap-polyline>
+        <ui-gmap-markers models="mapCtrl.map.markers" coords="'self'" icon="'icon'" click="'onClicked'" options="'options'">
+            <ui-gmap-windows
+                    closeclick="'closeClick'"
+                    ng-cloak="">
+                <div ng-non-bindable>
+                    {{miles}}
+                </div>
+            </ui-gmap-windows>
+        </ui-gmap-markers>
+    </ui-gmap-google-map>
+</div>
+</body>
+</html>

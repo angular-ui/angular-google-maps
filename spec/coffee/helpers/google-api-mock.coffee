@@ -47,6 +47,12 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
       else
         @_isOpen = val
 
+    setContent: (content) =>
+      @content = content
+
+    getContent: =>
+      @content
+
   getLatLng = ->
     class LatLng
       constructor: (@y,@x, nowrap) ->

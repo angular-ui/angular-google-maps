@@ -175,6 +175,11 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                     throw 'Gmarker undefined' unless gMarker
                     @createWindow(modelToAdd, gMarker, @gMap)
                     maybeCanceled
+                .then =>
+                  _async.each payload.updates, (update) =>
+                    @updateChild update.child, update.model
+                    maybeCanceled
+                  , _async.chunkSizeFrom scope.chunk
 
             else
               $log.debug('pieceMeal: rebuildAll')
