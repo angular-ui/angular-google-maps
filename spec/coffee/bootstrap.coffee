@@ -21,7 +21,8 @@ beforeEach ->
 
   @injects = []
 
-  @injects.push (_$rootScope_, $timeout, $q, $browser, $compile) =>
+  @injects.push (_$rootScope_, $timeout, $q, $browser, $compile, uiGmapPropMap) =>
+    window.PropMap = uiGmapPropMap
     @q = $q
     @browser = $browser
     @rootScope = _$rootScope_
