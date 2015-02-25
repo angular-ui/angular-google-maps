@@ -29,10 +29,13 @@ _______________________
 
 These will probably be close to the last 2.0.X releases. Depending on the severity of the bugs other 2.0.X releases may be necessary.
 
-## 3.0 vs 2.1.X Voting results:
+## 2.1
 
-![](https://lh3.googleusercontent.com/-YPPGRRhEVEg/VJhH8lC_YQI/AAAAAAAAbP8/ys3CzWTKTpU/w870-h362-no/Screen%2BShot%2B2014-12-22%2Bat%2B10.36.19%2BAM.png)
- 
+So I guess the poll was for naught.. So develop has been pretty stable for a while now and it is mainly what I use for work. Therefore I plan on cutting a 2.1.X release soon. 3.0.X is going to take some time to flush out. So I'd rather get this out now.
+
+Main Changes:
+- Plural directives can evaluate expressions (new) and (old) string properties of models.
+
 ## 3.0.X
 This release is going to be much stricter in terms of when it will be released and allowed features. It will require more specs and will be focusing on bad bugs, unifying the API. There are more items being discussed internally as well and they will become public discussion soon.
 
@@ -48,12 +51,18 @@ Overall we are thinking making this a more aggressive follow up to 2.1.X on watc
 
 __________________
 ## Getting started
-This is a directive for AngularJS `~1.0.7+, ~1.2.2+`.
+This is a set of directives and services for AngularJS `~1.0.7+, ^1.2.2+`.
 
 If you plan to hack on the directives or want to run the example, first thing to do is to install NPM dependencies:
 
 ```shell
 npm install #note bower install is run on post install 
+```
+
+* Installing for [Meteor](https://www.meteor.com/) application:
+
+```shell
+meteor add angularui:angular-google-maps
 ```
 
 ### Building

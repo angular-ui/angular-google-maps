@@ -17,3 +17,6 @@ _SpecRunner.html
 /curl_components
 .tmp
 /app
+
+# Meteor package creation files
+.versions

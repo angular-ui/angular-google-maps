@@ -19,7 +19,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
     checkKey: (gMarker) ->
       unless gMarker.key?
         msg = 'gMarker.key undefined and it is REQUIRED!!'
-        Logger.error msg
+        $log.error msg
 
     add: (gMarker)=>
       @checkKey gMarker
@@ -63,7 +63,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
             $log.info "#{optionsName}: Attaching event: #{eventName} to clusterer"
             google.maps.event.addListener @clusterer, eventName, options[eventName]
 
-    clearEvents: (options) ->
+    clearEvents: (options, optionsName) ->
       if angular.isDefined(options) and options? and angular.isObject(options)
         for eventName, eventHandler of options
           if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
@@ -71,8 +71,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
             google.maps.event.clearListeners @clusterer, eventName
 
     destroy: =>
-      @clearEvents @opt_events
-      @clearEvents @opt_internal_events
+      @clearEvents @opt_events, 'opt_events'
       @clear()
 
     fit: =>

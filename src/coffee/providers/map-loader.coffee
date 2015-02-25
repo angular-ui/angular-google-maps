@@ -5,36 +5,45 @@ angular.module('uiGmapgoogle-maps.providers')
 
       getScriptUrl = (options)->
         if options.china
-          return 'http://maps.google.cn/maps/api/js?'
+          'http://maps.google.cn/maps/api/js?'
         else
-          return 'https://maps.googleapis.com/maps/api/js?'
+          'https://maps.googleapis.com/maps/api/js?'
+
+      includeScript = (options)->
+        query = _.map options, (v, k) ->
+          k + '=' + v
+
+        document.getElementById(scriptId).remove() if scriptId
+        query = query.join '&'
+        script = document.createElement 'script'
+        script.id = scriptId = "ui_gmap_map_load_#{uuid.generate()}"
+        script.type = 'text/javascript'
+        script.src = getScriptUrl(options) + query
+        document.body.appendChild script
+
+      isGoogleMapsLoaded = ->
+        angular.isDefined(window.google) and angular.isDefined(window.google.maps)
 
       load: (options)->
         deferred = $q.defer()
+
         # Early-resolve if google-maps-api is already in global-scope
-        if angular.isDefined(window.google) and angular.isDefined(window.google.maps)
+        if isGoogleMapsLoaded()
           deferred.resolve window.google.maps
           return deferred.promise
 
         randomizedFunctionName = options.callback = 'onGoogleMapsReady' + Math.round(Math.random() * 1000)
         window[randomizedFunctionName] = ->
           window[randomizedFunctionName] = null
-          # Resolve the promise
           deferred.resolve window.google.maps
           return
 
-        query = _.map options, (v, k) ->
-          k + '=' + v
-
-        if scriptId
-          document.getElementById(scriptId).remove()
-        query = query.join '&'
-        script = document.createElement 'script'
-        scriptId = "ui_gmap_map_load_" + uuid.generate()
-        script.id = scriptId
-        script.type = 'text/javascript'
-        script.src = getScriptUrl(options) + query
-        document.body.appendChild script
+        # Cordova specific https://github.com/apache/cordova-plugin-network-information/
+        if window.navigator.connection && window.navigator.connection.type == window.Connection.NONE
+          document.addEventListener 'online', ->
+            includeScript options if !isGoogleMapsLoaded()
+        else
+          includeScript options
 
         # Return the promise
         deferred.promise
