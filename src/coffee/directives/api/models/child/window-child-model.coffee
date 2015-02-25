@@ -185,11 +185,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           else
             @gObject.setPosition overridePos if overridePos
 
-        remove: (doRemoveWindow = true) =>
+        remove: =>
           @hideWindow()
           @removeEvents @listeners
           @listeners.length = 0
-          doRemoveWindow
           delete @gObject
           delete @opts
 
