@@ -49,13 +49,14 @@ module.exports = (grunt) ->
 
   # Default task: build a release in dist/
   grunt.registerTask "default", [
-    'verbosity', "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat:dist",
+    'curl', 'verbosity', "clean:dist", "jshint", "mkdir", "coffee",
+    "concat:libs", "replace", "webpack", "concat:dist",
     "copy", "uglify::dist", "jasmine:consoleSpec"]
-
 
   # run default "grunt" prior to generate _SpecRunner.html
   grunt.registerTask "spec", [
-    'verbosity', "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat",
+    'verbosity', "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace",
+    "webpack", "concat",
     "copy", "connect:jasmineServer", "jasmine:spec", "open:jasmine", "watch:spec"]
 
   grunt.registerTask "coverage", [
