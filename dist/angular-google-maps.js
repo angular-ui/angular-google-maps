@@ -3550,14 +3550,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
         };
 
-        WindowChildModel.prototype.remove = function(doRemoveWindow) {
-          if (doRemoveWindow == null) {
-            doRemoveWindow = true;
-          }
+        WindowChildModel.prototype.remove = function() {
           this.hideWindow();
           this.removeEvents(this.listeners);
           this.listeners.length = 0;
-          doRemoveWindow;
           delete this.gObject;
           return delete this.opts;
         };
