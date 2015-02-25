@@ -7,8 +7,6 @@
 _ = require 'lodash'
 path = require 'path'
 relativePath = path.join __dirname, '../'
-fs = require 'fs'
-
 
 jf = require 'jsonfile'
 
