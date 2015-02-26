@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html ng-app="appMaps">
+<head>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/lodash/dist/lodash.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script src="assets/scripts/controllers/issue-1170-map-center.js"></script>
+</head>
+<body>
+<div ng-controller="MapCtrl as mapCtrl">
+    <ui-gmap-google-map
+            center="mapCtrl.map.center"
+            zoom="mapCtrl.map.zoom"
+            control="mapCtrl.map.control">
+    </ui-gmap-google-map>
+    <div>
+        center: {{mapCtrl.map.center}}
+    </div>
+</div>
+
+</body>
+</html>
