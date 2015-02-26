@@ -3118,7 +3118,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 _this.gObject = void 0;
               }
               if (_this.gObject != null) {
-                _this.gObject.setOptions(_this.opts);
+                _this.gObject.setOptions(_this.setLabelOptions(_this.opts));
               }
               if (!_this.gObject) {
                 if (_this.isLabel(_this.opts)) {
@@ -13315,7 +13315,7 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
  * Created by Petr Bruna ccg1415 and Nick McCready on 7/13/14.
  */
 angular.module('uiGmapgoogle-maps.extensions')
-.service('uiGmapExtendMarkerClusterer',['uiGmapLodash', function (uiGmapLodash) {
+.service('uiGmapExtendMarkerClusterer',['uiGmapLodash', 'uiGmapPropMap', function (uiGmapLodash, PropMap) {
   return {
     init: _.once(function () {
       (function () {
@@ -13339,7 +13339,7 @@ angular.module('uiGmapgoogle-maps.extensions')
 
           function NgMapCluster(opts) {
             NgMapCluster.__super__.constructor.call(this, opts);
-            this.markers_ = new window.PropMap();
+            this.markers_ = new PropMap();
           }
 
           /**
@@ -13449,7 +13449,7 @@ angular.module('uiGmapgoogle-maps.extensions')
 
           function NgMapMarkerClusterer(map, opt_markers, opt_options) {
             NgMapMarkerClusterer.__super__.constructor.call(this, map, opt_markers, opt_options);
-            this.markers_ = new window.PropMap();
+            this.markers_ = new PropMap();
           }
 
           /**
