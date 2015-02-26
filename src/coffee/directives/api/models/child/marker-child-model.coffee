@@ -4,7 +4,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
   'uiGmapLogger', 'uiGmapEventsHelper', 'uiGmapPropertyAction',
   'uiGmapMarkerOptions', 'uiGmapIMarker', 'uiGmapMarkerManager', 'uiGmapPromise',
   (ModelKey, GmapUtil, $log, EventsHelper, PropertyAction, MarkerOptions, IMarker, MarkerManager, uiGmapPromise) ->
-    keys = ['coords', 'icon', 'options', 'fit']
+
     class MarkerChildModel extends ModelKey
       @include GmapUtil
       @include EventsHelper
@@ -166,7 +166,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
           #update existing options if it is the same type
           if @gObject?
-            @gObject.setOptions @opts
+            @gObject.setOptions @setLabelOptions @opts
 
           unless @gObject
             if @isLabel @opts
