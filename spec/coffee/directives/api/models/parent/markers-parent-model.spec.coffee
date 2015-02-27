@@ -69,6 +69,13 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
   it 'has plurals', ->
     expect(@subject.plurals).toBeDefined()
 
+  describe 'plurals reference stays the same', ->
+    it 'initially', ->
+      expect(@subject.plurals).toEqual(@subject.scope.plurals)
+    it 'post destruction', ->
+      @subject.onDestroy(@subject.scope)
+      expect(@subject.plurals).toEqual(@subject.scope.plurals)
+
   describe 'clusterEvents', ->
     describe 'basic event handling', ->
       describe 'is fired', ->
@@ -98,5 +105,6 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
           it 'crap - ', -> #not a real event but shows that any existing function can be fired
             @subject.gManager.opt_events.crap()
             expect(@markerModelsCluster).toBe('crap')
+
       describe 'not fired', ->
         it 'click - ', ->
