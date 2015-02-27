@@ -78,7 +78,9 @@ If you get errors from `jshint` or specs, just add the `--force` argument.
 ```shell
 grunt mappAll
 ```
-This will generate source maps for development (angular-google-maps_dev_mapped.js) (non minified) and source maps to minified (angular-google-maps_dev_mapped.min.js) files. They each have their own corresponding map files.  To get the coinciding source files you will need to copy the generated `/tmp` directory (currently not under scc).
+This will generate source maps for development (angular-google-maps_dev_mapped.js) (non minified) and source maps to minified 
+(angular-google-maps_dev_mapped.min.js) files. They each have their own corresponding map files.  To get the coinciding source 
+files you will need to copy the generated `/tmp` directory (currently not under scc).
 
 ### Running the example
 To run the example page, just run
@@ -99,12 +101,13 @@ Filing issues:
 - Search open/**closed** issues, src examples (./examples), gitter, and then google plus community! **Again please search!**
 - issues w/ plnkrs get attention quicker
 
-Pull requests more than welcome! If you're adding new features, it would be appreciated if you would provide some docs about the feature. This can be done either by adding a card to our [Waffle.io board](https://waffle.io/angular-ui/angular-google-maps), forking the website branch and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
+Pull requests more than welcome! If you're adding new features, it would be appreciated if you would provide some docs about the feature. 
+This can be done either by adding a card to our [Waffle.io board](https://waffle.io/angular-ui/angular-google-maps), forking the website 
+branch and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
 
-[Branching Model w Git Flow](http://nvie.com/posts/a-successful-git-branching-model/)
-We are trying to follow the git flow branching model where all bugs that are considered urgent / patches will be pull
-requested against master. If the PR (pull request) is an improvement and a non urgent fix it will go towards develop
-which is the working(SNAPSHOT) next version of what master will be.
+### Branching Scheme
+master - points to the active targeted next release branch (2_1_X)
 
-When patches and bugs are rolled into master they will be immediatley rolled into develop as well. Where the flow is
-PR(bug fix) -> merge master -> merge develop .
+2_0_X - latest of 2_0_X
+2_1_X - latest of 2_1_X
+... etc
