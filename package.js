@@ -3,6 +3,13 @@ var packageName = 'angularui:angular-google-maps'; // https://atmospherejs.com/a
 var where = 'client'; // where to install: 'client' or 'server'. For both, pass nothing.
 var version = '2.0.13';
 
+// console.log(global);
+var packagePath = process.env.PWD + '/package.json';
+// console.log("packagePath: " + packagePath);
+
+var npmVersion = Npm.require(packagePath).version;
+console.log("uigmap version to publish: " + npmVersion);
+
 Package.describe({
   name: packageName,
   version: version,
