@@ -87,6 +87,7 @@ module.exports = (grunt) ->
   # and running a webserver on port 3100 with livereload. Web page is opened
   # automatically in the default browser.
 
+  grunt.registerTask 'bump-@-pre', ['bump-only:prerelease', 'mappAll', 'bump-commit']
   grunt.registerTask 'bump-@', ['bump-only', 'mappAll', 'bump-commit']
   grunt.registerTask 'bump-@-minor', ['bump-only:minor', 'mappAll', 'bump-commit']
   grunt.registerTask 'bump-@-major', ['bump-only:major', 'mappAll', 'bump-commit']
