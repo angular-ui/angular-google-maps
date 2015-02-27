@@ -1,4 +1,15 @@
 #!/bin/sh
-set -e
-npm publish
+# removed set -e so npm can publish if meteor fails
+#set -e
+
+if  ! hash meteor &> /dev/null ;then
+  curl https://install.meteor.com | sh
+fi
+
+echo meteor Publishing
 meteor publish
+
+echo npm Publishing
+npm publish ./
+
+exit 0
