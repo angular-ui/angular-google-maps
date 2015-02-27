@@ -96,6 +96,8 @@ module.exports = (grunt) ->
         push: false
         pushTo: "origin"
         gitDescribeOptions: "--tags --always --abbrev=1 --dirty=-d"
+        prereleaseName: 'X'
+
     release:
       options:
         bump: false
