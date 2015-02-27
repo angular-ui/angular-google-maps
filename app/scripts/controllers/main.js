@@ -38,7 +38,7 @@ angular.module('angularGoogleMapsApp')
       $scope.latestTag = {};
       if (data && data.length) {
         $scope.latestTag = _.filter(data, function (d) {
-          return 0 >= d.name.indexOf('SNAPSHOT');
+          return 0 >= d.name.indexOf('SNAPSHOT') && 0 >= d.name.indexOf('X');
         })[0];
       }
       $scope.downloadUrl = DOWNLOAD_URL_TEMPLATE.replace('%REF%', $scope.latestTag.name);
