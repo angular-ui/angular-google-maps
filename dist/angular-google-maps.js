@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.13 2015-02-25
+/*! angular-google-maps 2.0.13 2015-02-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4093,7 +4093,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
   angular.module("uiGmapgoogle-maps.directives.api.models.parent").factory("uiGmapMarkersParentModel", [
     "uiGmapIMarkerParentModel", "uiGmapModelsWatcher", "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async", "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker", "uiGmapPromise", "uiGmapGmapUtil", "uiGmapLogger", function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise, GmapUtil, $log) {
-      var MarkersParentModel;
+      var MarkersParentModel, _setPlurals;
+      _setPlurals = function(val, objToSet) {
+        objToSet.plurals = new PropMap();
+        objToSet.scope.plurals = objToSet.plurals;
+        return objToSet;
+      };
       MarkersParentModel = (function(_super) {
         __extends(MarkersParentModel, _super);
 
@@ -4114,8 +4119,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, map);
           this["interface"] = IMarker;
           self = this;
-          this.plurals = new PropMap();
-          this.scope.plurals = this.plurals;
+          _setPlurals(new PropMap(), this);
           this.scope.pluralsUpdate = {
             updateCtr: 0
           };
@@ -4341,11 +4345,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return model.destroy(false);
                 }
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                delete _this.scope.plurals;
                 if (_this.gManager != null) {
                   _this.gManager.clear();
                 }
-                _this.scope.plurals = new PropMap();
+                _this.plurals.removeAll();
+                if (_this.plurals !== _this.scope.plurals) {
+                  console.error('plurals out of sync for MarkersParentModel');
+                }
                 return _this.scope.pluralsUpdate.updateCtr += 1;
               });
             };
