@@ -96,6 +96,8 @@ module.exports = (grunt) ->
         push: false
         pushTo: "origin"
         gitDescribeOptions: "--tags --always --abbrev=1 --dirty=-d"
+        prereleaseName: 'X'
+
     pkg: grunt.file.readJSON("package.json")
     pkgFn: ->
       grunt.file.readJSON("package.json") #always get latest!
