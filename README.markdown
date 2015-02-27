@@ -106,8 +106,8 @@ This can be done either by adding a card to our [Waffle.io board](https://waffle
 branch and issuing a PR with the updated documentation page, or by opening an issue for us to add the documentation to the site.
 
 ### Branching Scheme
-master - points to the active targeted next release branch (2_1_X)
 
-2_0_X - latest of 2_0_X
-2_1_X - latest of 2_1_X
+- master: points to the active targeted next release branch (2_1_X)
+- 2_0_X: latest of 2_0_X
+- 2_1_X: ""
 ... etc
