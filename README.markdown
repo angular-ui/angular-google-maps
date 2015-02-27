@@ -107,7 +107,7 @@ branch and issuing a PR with the updated documentation page, or by opening an is
 
 ### Branching Scheme
 
-- master: points to the active targeted next release branch (2_1_X)
-- 2_0_X: latest of 2_0_X
-- 2_1_X: ""
+- master: points to the active targeted next release branch
+- 2.0.X: latest of 2.0.X
+- 2.1.X: ""
 ... etc
