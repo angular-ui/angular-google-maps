@@ -39,7 +39,7 @@ angular.module('uiGmapgoogle-maps.providers')
           return
 
         # Cordova specific https://github.com/apache/cordova-plugin-network-information/
-        if window.navigator.connection && window.navigator.connection.type == window.Connection.NONE
+        if window.navigator.connection && window.Connection && window.navigator.connection.type == window.Connection.NONE
           document.addEventListener 'online', ->
             includeScript options if !isGoogleMapsLoaded()
         else
