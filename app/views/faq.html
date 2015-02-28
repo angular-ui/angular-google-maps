@@ -7,6 +7,7 @@
     <li><a href="#faq-map-instance">How do I access the map instance?</a></li>
     <li><a href="#faq-map-height">Can I dynamically set the map height?</a></li>
     <li><a href="#faq-map-events-apply">Map events are not working!</a></li>
+	<li><a href="#faq-multiple-windows">How do I only open one window at a time?</a></li>
     <li><a href="#faq-map-partial-render">My map is only partially rendering!</a></li>
 </ul>
 
@@ -84,20 +85,20 @@
             */
 
             body, html {
-            height: 100%;
-            width: 100%;
+                height: 100%;
+                width: 100%;
             }
             .angular-google-map-container {
-            height: 100%;
-            width: 50%;
-            position: absolute;
+                height: 100%;
+                width: 50%;
+                position: absolute;
             }
 
             .middle {
-            display: table;
-            width: 50%;
-            margin-left: auto;
-            margin-right: auto;
+                display: table;
+                width: 50%;
+                margin-left: auto;
+                margin-right: auto;
             }
 
             /*
@@ -105,9 +106,9 @@
             psuedo element with clearfix and display: table; , all after (which is why I know .middle works above)
             */
             .container{
-            width: 50%;
-            padding-left: 0;
-            padding-right: 0;
+                width: 50%;
+                padding-left: 0;
+                padding-right: 0;
             }
         </div>
     </div>
@@ -122,17 +123,55 @@
 
 <div hljs>
     $scope.map = {
-    events: {
-    tilesloaded: function (map) {
-    $scope.$apply(function () {
-    $scope.mapInstance = map;
-    });
-    }
-    }
+    	events: {
+            tilesloaded: function (map) {
+                $scope.$apply(function () {
+                    $scope.mapInstance = map;
+                });
+            }
+        }
     }
 </div>
+<h3 id="faq-map-partial-render" class="faq-entry-title">How do I only open one window at a time?</h3>
+<p>Most likely this is a symptom of using the 'windows' directive when all you really need is the 'window' directive.
+The 'windows' directive has efficiency advantages over 'window' <i>when you are display a large number of windows simultaneously.</i>
+If only one window at a time is needed, then use 'window' and change out the bindings. One method of accomplishing this is outlined below:
+</p>
+<div hljs>
+	<ui-gmap-google-map center="map.center" zoom="map.zoom">
+		<ui-gmap-window show="map.window.show" coords="map.window.model" options="map.window.options" closeClick="map.window.closeClick()">
+			<div ng-non-bindable>test</div>
+		</ui-gmap-window>
+		<ui-gmap-markers idKey="'bid'" models="map.markers" coords="'self'" doCluster="false" fit="'true'" icon="'icon'" events="map.markersEvents" options="'options'"></ui-gmap-markers>
+	</ui-gmap-google-map>
+</div>
 
-<h3 id="faq-map-partial-render" class="faq-entry-title">My map is only partially rendering!</h3>
+<div hljs>
+	$scope.map = {
+        center: {
+            latitude: 50.6278,
+            longitude: 3.0583
+        },
+        zoom: 12,
+        markers: [], // array of models to display
+        markersEvents: {
+            click: function(marker, eventName, model, arguments) {
+                $scope.map.window.model = model;
+                $scope.map.window.show = true;
+            }
+        },
+        window: {
+            marker: {},
+            show: false,
+            closeClick: function() {
+                this.show = false;
+            },
+            options: {} // define when map is ready
+        }
+	};
+</div>
+
+<h3 id="faq-multiple-windows" class="faq-entry-title">My map is only partially rendering!</h3>
 
 <p>If rendering starts before elements are full size, google maps calculates according to the smaller size. This is most
     commonly the case with a hidden element (eg, ng-show). To fix this, use "ng-if" instead, as this will wait to attach
