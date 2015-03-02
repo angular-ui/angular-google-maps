@@ -38,6 +38,9 @@ angular.module('uiGmapgoogle-maps')
       
       link: (scope, element, attrs, mapCtrl) =>
         GoogleMapApi.then (maps) =>
+          unless scope.template?
+            @$log.error 'searchBox: the template property is required'
+            return
           $http.get(scope.template, { cache: $templateCache })
             .success (template) =>
               if angular.isUndefined scope.events

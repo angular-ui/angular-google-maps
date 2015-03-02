@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-X.0 2015-02-27
+/*! angular-google-maps 2.1.0-X.0 2015-03-01
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -104,7 +104,7 @@ Nicholas McCready - https://twitter.com/nmccready
             window[randomizedFunctionName] = null;
             deferred.resolve(window.google.maps);
           };
-          if (window.navigator.connection && window.navigator.connection.type === window.Connection.NONE) {
+          if (window.navigator.connection && window.Connection && window.navigator.connection.type === window.Connection.NONE) {
             document.addEventListener('online', function() {
               if (!isGoogleMapsLoaded()) {
                 return includeScript(options);
@@ -7579,6 +7579,10 @@ This directive creates a new scope.
         SearchBox.prototype.link = function(scope, element, attrs, mapCtrl) {
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
+              if (scope.template == null) {
+                _this.$log.error('searchBox: the template property is required');
+                return;
+              }
               return $http.get(scope.template, {
                 cache: $templateCache
               }).success(function(template) {
