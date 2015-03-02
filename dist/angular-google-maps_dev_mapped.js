@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-X.0 2015-03-01
+/*! angular-google-maps 2.1.0-X.0 2015-03-02
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -7580,8 +7580,8 @@ This directive creates a new scope.
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
               if (scope.template == null) {
-                _this.$log.error('searchBox: the template property is required');
-                return;
+                $templateCache.put('uigmap-searchbox-default.tpl.html', '<input type="text">');
+                scope.template = 'uigmap-searchbox-default.tpl.html';
               }
               return $http.get(scope.template, {
                 cache: $templateCache

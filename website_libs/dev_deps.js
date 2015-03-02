@@ -246,4 +246,3 @@
         dropdown.onblur = closeDropdown;
     }
 })();
-
