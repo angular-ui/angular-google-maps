@@ -15,7 +15,7 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
     getCorrectModel: (scope) ->
       if angular.isDefined(scope?.model) then scope.model else scope
 
-    buildOpts: (customOpts = {}, forEachOpts = {}) =>
+    buildOpts: (customOpts = {}, cachedEval, forEachOpts = {}) =>
       unless @scope
         $log.error 'this.scope not defined in CommonOptionsBuilder can not buildOpts'
         return
@@ -42,7 +42,9 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
           zIndex: 0,
           icons: []
       ), (defaultValue, key) =>
-        val = @scopeOrModelVal key, @scope, model
+
+        val = if cachedEval then cachedEval[key] @scopeOrModelVal key, @scope, model
+
         if angular.isUndefined val
           opts[key] = defaultValue
         else

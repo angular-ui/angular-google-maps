@@ -152,10 +152,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         childScope = @scope.$new(false)
         @setChildScope(IPolygon.scopeKeys, childScope, model)
 
-        childScope.$watch('model', (newValue, oldValue) =>
+        childScope.$watch 'model', (newValue, oldValue) =>
           if(newValue != oldValue)
             @setChildScope(childScope, newValue)
-        , true)
+        , true
 
         childScope.static = @scope.static
         child = new PolygonChildModel childScope, @attrs, gMap, @defaults, model
