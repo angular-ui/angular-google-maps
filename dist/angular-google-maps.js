@@ -2273,7 +2273,7 @@ Nicholas McCready - https://twitter.com/nmccready
         function CommonOptionsBuilder() {
           this.watchProps = __bind(this.watchProps, this);
           this.buildOpts = __bind(this.buildOpts, this);
-          this.hasModel = _(this.scope).chain().keys().contains('model').value();
+          return CommonOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
         CommonOptionsBuilder.prototype.props = [
@@ -2282,6 +2282,14 @@ Nicholas McCready - https://twitter.com/nmccready
             isColl: true
           }
         ];
+
+        CommonOptionsBuilder.prototype.getCorrectModel = function(scope) {
+          if (angular.isDefined(scope != null ? scope.model : void 0)) {
+            return scope.model;
+          } else {
+            return scope;
+          }
+        };
 
         CommonOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
           var model, opts, stroke;
@@ -2299,7 +2307,7 @@ Nicholas McCready - https://twitter.com/nmccready
             $log.error('this.map not defined in CommonOptionsBuilder can not buildOpts');
             return;
           }
-          model = this.hasModel ? this.scope.model : this.scope;
+          model = this.getCorrectModel(this.scope);
           stroke = this.scopeOrModelVal('stroke', this.scope, model);
           opts = angular.extend(customOpts, this.DEFAULTS, {
             map: this.map,
@@ -2395,7 +2403,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         ShapeOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
           var fill, model;
-          model = this.hasModel ? this.scope.model : this.scope;
+          model = this.getCorrectModel(this.scope);
           fill = this.scopeOrModelVal('fill', this.scope, model);
           customOpts = angular.extend(customOpts, {
             fillColor: fill != null ? fill.color : void 0,

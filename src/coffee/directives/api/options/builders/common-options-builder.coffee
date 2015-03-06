@@ -3,8 +3,6 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
 [ 'uiGmapBaseObject', 'uiGmapLogger', 'uiGmapModelKey', (BaseObject, $log, ModelKey) ->
 
   class CommonOptionsBuilder extends ModelKey
-    constructor: ->
-      @hasModel = _(@scope).chain().keys().contains('model').value()
 
     props: [
       'clickable'
@@ -14,6 +12,9 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
       {prop: 'stroke',isColl: true}
     ]
 
+    getCorrectModel: (scope) ->
+      if angular.isDefined(scope?.model) then scope.model else scope
+
     buildOpts: (customOpts = {}, forEachOpts = {}) =>
       unless @scope
         $log.error 'this.scope not defined in CommonOptionsBuilder can not buildOpts'
@@ -22,7 +23,7 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
         $log.error 'this.map not defined in CommonOptionsBuilder can not buildOpts'
         return
 
-      model = if @hasModel then @scope.model else @scope #handle plurals
+      model = @getCorrectModel(@scope)
 
       stroke = @scopeOrModelVal 'stroke', @scope, model
       opts = angular.extend customOpts, @DEFAULTS,
