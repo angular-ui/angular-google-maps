@@ -12,7 +12,7 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
     class ShapeOptionsBuilder extends CommonOptionsBuilder
       buildOpts: (customOpts, cachedEval, forEachOpts) ->
         model = @getCorrectModel(@scope)
-        fill = @scopeOrModelVal 'fill', @scope, model
+        fill =  if cachedEval then cachedEval['fill'] else @scopeOrModelVal 'fill', @scope, model
         customOpts = angular.extend customOpts,
           fillColor: fill?.color
           fillOpacity: fill?.opacity

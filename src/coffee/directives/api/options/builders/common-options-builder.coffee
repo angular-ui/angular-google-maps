@@ -43,7 +43,7 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
           icons: []
       ), (defaultValue, key) =>
 
-        val = if cachedEval then cachedEval[key] @scopeOrModelVal key, @scope, model
+        val = if cachedEval then cachedEval[key] else @scopeOrModelVal key, @scope, model
 
         if angular.isUndefined val
           opts[key] = defaultValue

@@ -18,24 +18,24 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         @firstTime = true
         @$log.info @
 
-        @watchOurScope(scope)
+        #@watchOurScope(scope)
         @createChildScopes()
 
       #watch this scope(Parent to all Models), these updates reflect expression / Key changes
       #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
-      watch: (scope, name, nameKey) =>
-        scope.$watch name, (newValue, oldValue) =>
-          if (newValue != oldValue)
-            maybeCanceled =  null
-            @[nameKey] = if _.isFunction newValue then newValue() else newValue
-
-            _async.promiseLock @, uiGmapPromise.promiseTypes.update, "watch #{name} #{nameKey}"
-            , ((canceledMsg) -> maybeCanceled = canceledMsg)
-            , =>
-              _async.each @plurals.values(), (model) =>
-                model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
-                maybeCanceled
-              , _async.chunkSizeFrom scope.chunk
+#      watch: (scope, name, nameKey) =>
+#        scope.$watch name, (newValue, oldValue) =>
+#          if (newValue != oldValue)
+#            maybeCanceled =  null
+#            @[nameKey] = if _.isFunction newValue then newValue() else newValue
+#
+#            _async.promiseLock @, uiGmapPromise.promiseTypes.update, "watch #{name} #{nameKey}"
+#            , ((canceledMsg) -> maybeCanceled = canceledMsg)
+#            , =>
+#              _async.each @plurals.values(), (model) =>
+#                model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
+#                maybeCanceled
+#              , _async.chunkSizeFrom scope.chunk
 
 
       watchModels: (scope) =>
@@ -70,11 +70,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         scope.$on '$destroy', =>
           @rebuildAll(scope, false, true)
 
-      watchOurScope: (scope) =>
-        _.each IPolygon.scopeKeys, (name) =>
-          nameKey = name + 'Key'
-          @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
-          @watch(scope, name, nameKey)
+#      watchOurScope: (scope) =>
+#        canCall = (maybeCall) ->
+#          return false unless _.isFunction(maybeCall)
+#          hasZeroArgs = !maybeCall.length
+#          hasZeroArgs
+#
+#        _.each IPolygon.scopeKeys, (name) =>
+#          nameKey = name + 'Key'
+#          @[nameKey] = if canCall(scope[name]) then scope[name]() else scope[name]
+#          @watch(scope, name, nameKey)
 
       createChildScopes: (isCreatingFromScratch = true) =>
         if angular.isUndefined(@scope.models)

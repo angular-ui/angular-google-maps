@@ -1344,7 +1344,7 @@ Nicholas McCready - https://twitter.com/nmccready
             return function(name) {
               var isScopeObj, newValue;
               isScopeObj = _this.scopeOrModelVal(name, childScope, model, true);
-              if (!isScopeObj.isScope) {
+              if ((isScopeObj != null ? isScopeObj.value : void 0) != null) {
                 newValue = isScopeObj.value;
                 if (newValue !== childScope[name]) {
                   return childScope[name] = newValue;
@@ -2327,7 +2327,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }), (function(_this) {
             return function(defaultValue, key) {
               var val;
-              val = cachedEval ? cachedEval[key](_this.scopeOrModelVal(key, _this.scope, model)) : void 0;
+              val = cachedEval ? cachedEval[key] : _this.scopeOrModelVal(key, _this.scope, model);
               if (angular.isUndefined(val)) {
                 return opts[key] = defaultValue;
               } else {
@@ -2404,7 +2404,7 @@ Nicholas McCready - https://twitter.com/nmccready
         ShapeOptionsBuilder.prototype.buildOpts = function(customOpts, cachedEval, forEachOpts) {
           var fill, model;
           model = this.getCorrectModel(this.scope);
-          fill = this.scopeOrModelVal('fill', this.scope, model);
+          fill = cachedEval ? cachedEval['fill'] : this.scopeOrModelVal('fill', this.scope, model);
           customOpts = angular.extend(customOpts, {
             fillColor: fill != null ? fill.color : void 0,
             fillOpacity: fill != null ? fill.opacity : void 0
@@ -2564,8 +2564,11 @@ Nicholas McCready - https://twitter.com/nmccready
                 if (_this.gObject != null) {
                   _this.clean();
                 }
+                if (scope.model != null) {
+                  maybeCachedEval = scope;
+                }
                 if (pathPoints.length > 0) {
-                  _this.gObject = gFactory(_this.buildOpts(pathPoints, maybeCachedEval = scope.model));
+                  _this.gObject = gFactory(_this.buildOpts(pathPoints, maybeCachedEval));
                 }
                 if (_this.gObject) {
                   if (_this.scope.fit) {
@@ -4429,13 +4432,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.createAllNew = __bind(this.createAllNew, this);
           this.watchIdKey = __bind(this.watchIdKey, this);
           this.createChildScopes = __bind(this.createChildScopes, this);
-          this.watchOurScope = __bind(this.watchOurScope, this);
           this.watchDestroy = __bind(this.watchDestroy, this);
           this.onDestroy = __bind(this.onDestroy, this);
           this.rebuildAll = __bind(this.rebuildAll, this);
           this.doINeedToWipe = __bind(this.doINeedToWipe, this);
           this.watchModels = __bind(this.watchModels, this);
-          this.watch = __bind(this.watch, this);
           PolygonsParentModel.__super__.constructor.call(this, scope);
           this["interface"] = IPolygon;
           self = this;
@@ -4449,29 +4450,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.models = void 0;
           this.firstTime = true;
           this.$log.info(this);
-          this.watchOurScope(scope);
           this.createChildScopes();
         }
-
-        PolygonsParentModel.prototype.watch = function(scope, name, nameKey) {
-          return scope.$watch(name, (function(_this) {
-            return function(newValue, oldValue) {
-              var maybeCanceled;
-              if (newValue !== oldValue) {
-                maybeCanceled = null;
-                _this[nameKey] = _.isFunction(newValue) ? newValue() : newValue;
-                return _async.promiseLock(_this, uiGmapPromise.promiseTypes.update, "watch " + name + " " + nameKey, (function(canceledMsg) {
-                  return maybeCanceled = canceledMsg;
-                }), function() {
-                  return _async.each(_this.plurals.values(), function(model) {
-                    model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                    return maybeCanceled;
-                  }, _async.chunkSizeFrom(scope.chunk));
-                });
-              }
-            };
-          })(this));
-        };
 
         PolygonsParentModel.prototype.watchModels = function(scope) {
           return scope.$watchCollection('models', (function(_this) {
@@ -4524,17 +4504,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return scope.$on('$destroy', (function(_this) {
             return function() {
               return _this.rebuildAll(scope, false, true);
-            };
-          })(this));
-        };
-
-        PolygonsParentModel.prototype.watchOurScope = function(scope) {
-          return _.each(IPolygon.scopeKeys, (function(_this) {
-            return function(name) {
-              var nameKey;
-              nameKey = name + 'Key';
-              _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
-              return _this.watch(scope, name, nameKey);
             };
           })(this));
         };
