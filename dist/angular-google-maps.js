@@ -4456,10 +4456,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         PolygonsParentModel.prototype.watchModels = function(scope) {
           return scope.$watchCollection('models', (function(_this) {
             return function(newValue, oldValue) {
-              if (!(_.isEqual(newValue, oldValue) && (_this.lastNewValue !== newValue || _this.lastOldValue !== oldValue))) {
-                _this.lastNewValue = newValue;
-                _this.lastOldValue = oldValue;
-                if (_this.doINeedToWipe(newValue)) {
+              if (newValue === oldValue) {
+                if (_this.doINeedToWipe(newValue) || scope.doRebuildAll) {
                   return _this.rebuildAll(scope, true, true);
                 } else {
                   return _this.createChildScopes(false);
@@ -4491,10 +4489,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                if (doDelete) {
-                  delete _this.plurals;
-                }
-                return _this.plurals = new PropMap();
+                var _ref;
+                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
               });
             };
           })(this));
@@ -4592,12 +4588,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
                 }).then(function(state) {
                   payload = state;
-                  return _async.each(payload.removals, function(id) {
-                    var child;
-                    child = _this.plurals.get(id);
+                  if (payload.updates.length) {
+                    $log.warning("polygons updates: " + payload.updates.length + " will be missed");
+                  }
+                  return _async.each(payload.removals, function(child) {
                     if (child != null) {
                       child.destroy();
-                      _this.plurals.remove(id);
+                      _this.plurals.remove(child.model[_this.idKey]);
                       return maybeCanceled;
                     }
                   }, _async.chunkSizeFrom(scope.chunk));

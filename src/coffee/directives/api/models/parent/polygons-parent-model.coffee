@@ -40,11 +40,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       watchModels: (scope) =>
         scope.$watchCollection 'models', (newValue, oldValue) =>
-          #check to make sure that the newValue Array is really a set of new objects
-          unless _.isEqual(newValue, oldValue) and (@lastNewValue != newValue or @lastOldValue != oldValue)
-            @lastNewValue = newValue
-            @lastOldValue = oldValue
-            if @doINeedToWipe(newValue)
+          unless newValue != oldValue
+            if @doINeedToWipe(newValue) or scope.doRebuildAll
               @rebuildAll(scope, true, true)
             else
               @createChildScopes(false)
@@ -63,8 +60,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             child.destroy true #to make sure it is really dead, otherwise watchers can kick off (artifacts in path create)
           , _async.chunkSizeFrom(@scope.cleanchunk, false)
           .then =>
-            delete @plurals if doDelete
-            @plurals = new PropMap()
+            @plurals?.removeAll()
 
       watchDestroy: (scope)=>
         scope.$on '$destroy', =>
@@ -134,11 +130,13 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             uiGmapPromise.promise( => @figureOutState @idKey, scope, @plurals, @modelKeyComparison)
             .then (state) =>
               payload = state
-              _async.each payload.removals, (id) =>
-                child = @plurals.get(id)
+              if(payload.updates.length)
+                #TODO: not supporting updates yet
+                $log.warning("polygons updates: #{payload.updates.length} will be missed")
+              _async.each payload.removals, (child) =>
                 if child?
                   child.destroy()
-                  @plurals.remove(id)
+                  @plurals.remove(child.model[@idKey])
                   maybeCanceled
               , _async.chunkSizeFrom scope.chunk
             .then =>
