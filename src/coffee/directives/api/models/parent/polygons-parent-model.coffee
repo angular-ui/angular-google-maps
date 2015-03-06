@@ -40,7 +40,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       watchModels: (scope) =>
         scope.$watchCollection 'models', (newValue, oldValue) =>
-          unless newValue != oldValue
+          unless newValue == oldValue
             if @doINeedToWipe(newValue) or scope.doRebuildAll
               @rebuildAll(scope, true, true)
             else
