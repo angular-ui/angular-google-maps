@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.13 2015-03-06
+/*! angular-google-maps 2.0.13 2015-03-08
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4966,12 +4966,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               var _ref, _ref1;
               if ((scope.bounds != null) && (((_ref = scope.bounds) != null ? _ref.sw : void 0) != null) && (((_ref1 = scope.bounds) != null ? _ref1.ne : void 0) != null) && _this.validateBoundPoints(scope.bounds)) {
                 bounds = _this.convertBoundPoints(scope.bounds);
-                return $log.info("new new bounds created: " + rectangle);
+                return $log.info("new new bounds created: " + (JSON.stringify(bounds)));
               } else if ((scope.bounds.getNorthEast != null) && (scope.bounds.getSouthWest != null)) {
                 return bounds = scope.bounds;
               } else {
                 if (scope.bounds != null) {
-                  return $log.error("Invalid bounds for newValue: " + (JSON.stringify(scope.bounds)));
+                  return $log.error("Invalid bounds for newValue: " + (JSON.stringify(scope != null ? scope.bounds : void 0)));
                 }
               }
             };
