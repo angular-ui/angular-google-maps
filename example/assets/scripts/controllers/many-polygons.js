@@ -49,12 +49,14 @@
     .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
       GoogleMapApi.configure({
         //    key: 'your api key',
-        v: '3.17',
+        v: '3.18',
         libraries: 'geometry'
       });
     }])
     .controller('ctrl', ['$scope', "uiGmapLogger", "uiGmapGoogleMapApi", "$http",
       function ($scope, $log, uiGmapGoogleMapApi, $http) {
+        $log.currentLevel = $log.LEVELS.debug;
+        var polyFillCtr = 0;
         $scope.map = {
           center: {
             latitude: 26.153215225012733,
@@ -66,6 +68,15 @@
           events: {},
           bounds: {},
           polys: [],
+          getPolyFill: function(model){
+            if(!model){
+              $log.debug("model undefined!");
+              return;
+            }
+            polyFillCtr += 1;
+            $log.debug("polyFillCtr: " + polyFillCtr + ", id: " + model.id);
+            return { color: '#2c8aa7', opacity: '0.3' };
+          },
           polyEvents: {
             click: function (gPoly, eventName, polyModel) {
               window.alert("Poly Clicked: id:" + polyModel.$id + ' ' + JSON.stringify(polyModel.path));
@@ -76,6 +87,7 @@
         var rawPolys = [];
         uiGmapGoogleMapApi.then(function () {
           $http.get('assets/json/many_polygons.json').then(function (data) {
+            $log.debug("poly length: " + data.data.length);
             $scope.map.polys = data.data;
           });
 
