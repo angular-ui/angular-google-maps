@@ -508,7 +508,7 @@ Nicholas McCready - https://twitter.com/nmccready
         if (angular.isArray(collection)) {
           array = collection;
         } else {
-          array = keys ? keys : Object.keys(collection);
+          array = keys ? keys : Object.keys(_.omit(collection, 'length'));
           keys = array;
         }
         if (cb == null) {
@@ -1235,7 +1235,6 @@ Nicholas McCready - https://twitter.com/nmccready
           this["interface"].scopeKeys = [];
           this.defaultIdKey = 'id';
           this.idKey = void 0;
-          this.cached = {};
         }
 
         ModelKey.prototype.evalModelHandle = function(model, modelKey) {
@@ -1389,16 +1388,13 @@ Nicholas McCready - https://twitter.com/nmccready
           return childScope.model = model;
         };
 
-        ModelKey.prototype.onDestroy = function(scope) {
-          return this.cached = {};
-        };
+        ModelKey.prototype.onDestroy = function(scope) {};
 
         ModelKey.prototype.destroy = function(manualOverride) {
           var _ref;
           if (manualOverride == null) {
             manualOverride = false;
           }
-          this.cached = {};
           if ((this.scope != null) && !((_ref = this.scope) != null ? _ref.$$destroyed : void 0) && (this.needToManualDestroy || manualOverride)) {
             return this.scope.$destroy();
           } else {
@@ -1415,16 +1411,17 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         ModelKey.prototype.modelsLength = function() {
-          var array;
+          var len;
+          len = 0;
           if (this.scope.models == null) {
-            return 0;
+            return len;
           }
-          if (this.scope.models !== this.cached.models) {
-            this.cached.models = this.scope.models;
-            array = angular.isArray(this.scope.models) ? this.scope.models : Object.keys(this.scope.models);
-            this.cached.modelsLength = array.length;
+          if (angular.isArray(this.scope.models) || (this.scope.models.length != null)) {
+            len = this.scope.models.length;
+          } else {
+            len = Object.keys(this.scope.models).length;
           }
-          return this.cached.modelsLength;
+          return len;
         };
 
         return ModelKey;

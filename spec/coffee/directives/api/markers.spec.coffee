@@ -34,7 +34,9 @@ describe 'uiGmapMarkers (directive creation)', ->
         toPush.id = 0
         toPush.latitude = 47
         toPush.longitude = -27
-        @scope.items = {0: toPush}
+        @scope.items =
+          0: toPush
+          length: 1
 
         @digest =>
           @timeout =>
@@ -47,6 +49,7 @@ describe 'uiGmapMarkers (directive creation)', ->
 
         items  = {}
         array = _.range(2)
+        items.length = array.length
         array.forEach (num) ->
           toPush =
             id: num

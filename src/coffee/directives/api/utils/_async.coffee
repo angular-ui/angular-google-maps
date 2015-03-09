@@ -148,7 +148,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     if angular.isArray collection
       array = collection
     else
-      array = if keys then keys else Object.keys(collection)
+      array = if keys then keys else Object.keys(_.omit(collection, 'length'))
       keys = array
 
     if !cb? #shifting args if last cb is not defined

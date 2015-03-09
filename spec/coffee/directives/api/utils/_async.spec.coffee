@@ -147,7 +147,7 @@ describe "_async", ->
           pauses++
         .then ->
           expect(pauses).toEqual(0)
-          vals = _.values(known)
+          vals = _.values(_.omit known, 'length')
           expect(test.length).toEqual(vals.length)
           expect(test).toEqual(vals)
           done()
@@ -155,7 +155,8 @@ describe "_async", ->
     it "101 outputs 101 elements equal to the original, with 1 pauses", (done) ->
       @digest =>
         known = {}
-        known[num] = num for num in [0..101]
+        known[num] = num for num in [0..100]
+        known.length = _.values(known).length
         test = []
         pauses = 1
 
@@ -166,7 +167,7 @@ describe "_async", ->
           pauses++
         .then ->
           expect(pauses).toEqual(2)
-          vals = _.values(known)
+          vals = _.values(_.omit known, 'length')
           expect(test.length).toEqual(vals.length)
           expect(test).toEqual(vals)
           done()
@@ -175,6 +176,7 @@ describe "_async", ->
       @digest =>
         known = {}
         known[num] = num for num in [0..999]
+        known.length = _.values(known).length
         test = []
         pauses = 1
         @subject.each known, (num) ->
@@ -183,7 +185,7 @@ describe "_async", ->
         , ->
           pauses++
         .then ->
-          vals = _.values(known)
+          vals = _.values(_.omit known, 'length')
           expect(test.length).toEqual(vals.length)
           expect(test).toEqual(vals)
           expect(pauses).toEqual(10)
@@ -206,7 +208,7 @@ describe "_async", ->
           .then (mapped) ->
             test = mapped
             expect(test[999]).toEqual("$1000")
-            vals = _.values(known)
+            vals = _.values(_.omit known, 'length')
             expect(test.length).toEqual(vals.length)
             expect(test).toEqual(
               _.map vals, (n)->

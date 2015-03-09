@@ -10,7 +10,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
         @defaultIdKey = 'id'
         @idKey = undefined
-        @cached = {}
+#        @cached = {}
 
       evalModelHandle: (model, modelKey) ->
         return if not model? or not modelKey?
@@ -125,10 +125,10 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
 
       onDestroy: (scope) =>
-        @cached = {}
+#        @cached = {}
 
       destroy: (manualOverride = false) =>
-        @cached = {}
+#        @cached = {}
         if @scope? and not @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
           @scope.$destroy()
         else
@@ -143,13 +143,15 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
 
       modelsLength: =>
-        return 0 unless @scope.models?
+        len = 0
+        return len unless @scope.models?
 
-        if @scope.models != @cached.models
-          @cached.models = @scope.models
-          array = if angular.isArray(@scope.models) then @scope.models else Object.keys(@scope.models)
-          @cached.modelsLength = array.length
-        #we have existing cachedLength or one was just set
-        return @cached.modelsLength
+        # isArray .. get length
+        # OR check to see if there is length field which (is essentially cached on the front or backend)
+        if angular.isArray(@scope.models) or @scope.models.length?
+          len = @scope.models.length
+        else #worst case ... pay the price
+          len = Object.keys(@scope.models).length
+        len
 
 ]
