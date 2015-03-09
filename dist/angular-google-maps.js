@@ -4188,7 +4188,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this));
-          if ((scope.models == null) || this.modelsLength() === 0) {
+          if (!this.modelsLength()) {
             this.modelsRendered = false;
           }
           this.scope.$watch('models', (function(_this) {
@@ -4328,7 +4328,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           maybeCanceled = null;
           payload = null;
-          if ((this.scope.models != null) && this.modelsLength() > 0 && this.scope.plurals.length > 0) {
+          if (this.modelsLength() && this.scope.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -4625,7 +4625,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && this.modelsLength() > 0 && this.plurals.length > 0) {
+          if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -4898,7 +4898,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && this.modelsLength() > 0 && this.plurals.length > 0) {
+          if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -5546,7 +5546,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && this.modelsLength() > 0 && this.plurals.length > 0) {
+          if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -5589,7 +5589,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.setContentKeys = function(models) {
-          if (this.modelsLength() > 0) {
+          if (this.modelsLength()) {
             return this.contentKeys = Object.keys(models[0]);
           }
         };

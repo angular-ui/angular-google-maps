@@ -156,7 +156,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             payload = null
             @models = scope.models
 
-            if scope? and scope.models? and @modelsLength() > 0 and @plurals.length > 0
+            if scope? and @modelsLength() and @plurals.length
 
               _async.promiseLock @, uiGmapPromise.promiseTypes.update, 'pieceMeal', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
                 uiGmapPromise.promise((=> @figureOutState @idKey, scope, @plurals, @modelKeyComparison))
@@ -186,7 +186,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @rebuildAll(@scope, true, true)
 
           setContentKeys: (models)=>
-            if(@modelsLength() > 0)
+            if @modelsLength()
               @contentKeys = Object.keys(models[0])
 
           createWindow: (model, gMarker, gMap)=>

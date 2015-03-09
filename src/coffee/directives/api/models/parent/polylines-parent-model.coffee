@@ -123,7 +123,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         maybeCanceled = null
         payload = null
         @models = scope.models
-        if scope? and scope.models? and @modelsLength() > 0 and @plurals.length > 0
+        if scope? and @modelsLength() and @plurals.length
           _async.promiseLock @, uiGmapPromise.promiseTypes.update, 'pieceMeal', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
             uiGmapPromise.promise( => @figureOutState @idKey, scope, @plurals, @modelKeyComparison)
             .then (state) =>

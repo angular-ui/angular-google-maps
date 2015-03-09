@@ -32,7 +32,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               if (newValue != oldValue)
                 @doRebuildAll = newValue
 
-            @modelsRendered = false if not scope.models? or @modelsLength() == 0
+            @modelsRendered = false if !@modelsLength()
             @scope.$watch 'models', (newValue, oldValue) =>
               if !_.isEqual(newValue,oldValue) or not @modelsRendered
                 return if newValue.length == 0 and oldValue.length == 0
@@ -139,7 +139,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             #allows graceful fallout of _async.each
             maybeCanceled = null
             payload = null
-            if @scope.models? and @modelsLength() > 0 and @scope.plurals.length > 0
+            if @modelsLength() and @scope.plurals.length
 
               _async.promiseLock @, uiGmapPromise.promiseTypes.update, 'pieceMeal', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
                 uiGmapPromise.promise((=> @figureOutState @idKey, scope, @scope.plurals, @modelKeyComparison))
