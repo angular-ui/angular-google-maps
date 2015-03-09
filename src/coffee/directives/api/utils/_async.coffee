@@ -137,6 +137,27 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     true
 
 
+  _getIterateeValue = (collection, array, index) ->
+    _isArray = collection == array
+    valOrKey = array[index]
+    return  valOrKey if _isArray
+    collection[valOrKey]
+
+  _getArrayAndKeys = (collection, keys, bailOutCb, cb) ->
+    #checks to handle array and object iteration
+    if angular.isArray collection
+      array = collection
+    else
+      array = if keys then keys else Object.keys(collection)
+      keys = array
+
+    if !cb? #shifting args if last cb is not defined
+      cb = bailOutCb
+
+    if angular.isArray(array) and (array == undefined or array?.length <= 0)
+      return bailOutCb() if cb != bailOutCb
+    cb(array, keys)
+
   ###
     Author: Nicholas McCready & jfriend00
     _async handles things asynchronous-like :), to allow the UI to be free'd to do other things
@@ -146,33 +167,35 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     asynchronously underneath. Each should be sufficient for most things to be derived from.
 
     Optional Asynchronous Chunking via promises.
-###
-  doChunk = (array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index) ->
-    if chunkSizeOrDontChunk and chunkSizeOrDontChunk < array.length
-      cnt = chunkSizeOrDontChunk
-    else
-      cnt = array.length
+  ###
+  doChunk = (collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, _keys) ->
+    _getArrayAndKeys collection, _keys, (array, keys) ->
 
-    i = index
-    keepGoing = true
-    while keepGoing and cnt-- and i < (if array then array.length else i + 1)
-      # process array[index] here
-      keepGoing = logTryCatch chunkCb, undefined, overallD, [array[i], i]
-      ++i
-
-    if array
-      if keepGoing and i < array.length
-        index = i
-        if chunkSizeOrDontChunk
-          if pauseCb? and _.isFunction pauseCb
-            logTryCatch pauseCb, undefined, overallD, []
-          $timeout ->
-            doChunk array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index
-          , pauseMilli, false
+      if chunkSizeOrDontChunk and chunkSizeOrDontChunk < array.length
+        cnt = chunkSizeOrDontChunk
       else
-        overallD.resolve()
+        cnt = array.length
 
-  each = (array, chunk, chunkSizeOrDontChunk = defaultChunkSize, pauseCb, index = 0, pauseMilli = 1) ->
+      i = index
+      keepGoing = true
+      while keepGoing and cnt-- and i < (if array then array.length else i + 1)
+        # process array[index] here
+        keepGoing = logTryCatch chunkCb, undefined, overallD, [_getIterateeValue(collection, array, i), i]
+        ++i
+
+      if array
+        if keepGoing and i < array.length
+          index = i
+          if chunkSizeOrDontChunk
+            if pauseCb? and _.isFunction pauseCb
+              logTryCatch pauseCb, undefined, overallD, []
+            $timeout ->
+              doChunk collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, keys
+            , pauseMilli, false
+        else
+          overallD.resolve()
+
+  each = (collection, chunk, chunkSizeOrDontChunk = defaultChunkSize, pauseCb, index = 0, pauseMilli = 1, _keys) ->
     ret = undefined
     overallD = uiGmapPromise.defer()
     ret = overallD.promise
@@ -183,25 +206,28 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       overallD.reject error
       return ret
 
-    if array == undefined or array?.length <= 0
+    _getArrayAndKeys collection, _keys
+    , ->
       overallD.resolve()
       return ret
-    # set this to whatever number of items you can process at once
-    doChunk array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index
+    , (array, keys) ->
+      # set this to whatever number of items you can process at once
+      doChunk collection, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index, keys
 
-    return ret
+      return ret
 
   #copied from underscore but w/ async each above
-  map = (objs, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli) ->
-
+  map = (collection, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, _keys) ->
     results = []
-    return uiGmapPromise.resolve(results)  unless objs? and objs?.length > 0
-
-    each(objs, (o) ->
-      results.push iterator o
-    , chunkSizeOrDontChunk, pauseCb, index, pauseMilli)
-    .then ->
-      results
+    _getArrayAndKeys collection, _keys
+    , ->
+      return uiGmapPromise.resolve(results)
+    , (array, keys) ->
+      each(collection, (o) ->
+        results.push iterator o
+      , chunkSizeOrDontChunk, pauseCb, index, pauseMilli, keys)
+      .then ->
+        results
 
 
   each: each

@@ -355,7 +355,7 @@ Nicholas McCready - https://twitter.com/nmccready
     }
   ]).service('uiGmap_async', [
     '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q', 'uiGmapDataStructures', 'uiGmapGmapUtil', function($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures, uiGmapGmapUtil) {
-      var ExposedPromise, PromiseQueueManager, SniffedPromise, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch;
+      var ExposedPromise, PromiseQueueManager, SniffedPromise, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch, _getArrayAndKeys, _getIterateeValue;
       promiseTypes = uiGmapPromise.promiseTypes;
       isInProgress = uiGmapPromise.isInProgress;
       promiseStatus = uiGmapPromise.promiseStatus;
@@ -494,6 +494,33 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         return true;
       };
+      _getIterateeValue = function(collection, array, index) {
+        var valOrKey, _isArray;
+        _isArray = collection === array;
+        valOrKey = array[index];
+        if (_isArray) {
+          return valOrKey;
+        }
+        return collection[valOrKey];
+      };
+      _getArrayAndKeys = function(collection, keys, bailOutCb, cb) {
+        var array;
+        if (angular.isArray(collection)) {
+          array = collection;
+        } else {
+          array = keys ? keys : Object.keys(collection);
+          keys = array;
+        }
+        if (cb == null) {
+          cb = bailOutCb;
+        }
+        if (angular.isArray(array) && (array === void 0 || (array != null ? array.length : void 0) <= 0)) {
+          if (cb !== bailOutCb) {
+            return bailOutCb();
+          }
+        }
+        return cb(array, keys);
+      };
 
       /*
         Author: Nicholas McCready & jfriend00
@@ -505,36 +532,38 @@ Nicholas McCready - https://twitter.com/nmccready
       
         Optional Asynchronous Chunking via promises.
        */
-      doChunk = function(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index) {
-        var cnt, i, keepGoing;
-        if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
-          cnt = chunkSizeOrDontChunk;
-        } else {
-          cnt = array.length;
-        }
-        i = index;
-        keepGoing = true;
-        while (keepGoing && cnt-- && i < (array ? array.length : i + 1)) {
-          keepGoing = logTryCatch(chunkCb, void 0, overallD, [array[i], i]);
-          ++i;
-        }
-        if (array) {
-          if (keepGoing && i < array.length) {
-            index = i;
-            if (chunkSizeOrDontChunk) {
-              if ((pauseCb != null) && _.isFunction(pauseCb)) {
-                logTryCatch(pauseCb, void 0, overallD, []);
-              }
-              return $timeout(function() {
-                return doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index);
-              }, pauseMilli, false);
-            }
+      doChunk = function(collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, _keys) {
+        return _getArrayAndKeys(collection, _keys, function(array, keys) {
+          var cnt, i, keepGoing;
+          if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
+            cnt = chunkSizeOrDontChunk;
           } else {
-            return overallD.resolve();
+            cnt = array.length;
           }
-        }
+          i = index;
+          keepGoing = true;
+          while (keepGoing && cnt-- && i < (array ? array.length : i + 1)) {
+            keepGoing = logTryCatch(chunkCb, void 0, overallD, [_getIterateeValue(collection, array, i), i]);
+            ++i;
+          }
+          if (array) {
+            if (keepGoing && i < array.length) {
+              index = i;
+              if (chunkSizeOrDontChunk) {
+                if ((pauseCb != null) && _.isFunction(pauseCb)) {
+                  logTryCatch(pauseCb, void 0, overallD, []);
+                }
+                return $timeout(function() {
+                  return doChunk(collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, keys);
+                }, pauseMilli, false);
+              }
+            } else {
+              return overallD.resolve();
+            }
+          }
+        });
       };
-      each = function(array, chunk, chunkSizeOrDontChunk, pauseCb, index, pauseMilli) {
+      each = function(collection, chunk, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, _keys) {
         var error, overallD, ret;
         if (chunkSizeOrDontChunk == null) {
           chunkSizeOrDontChunk = defaultChunkSize;
@@ -554,23 +583,25 @@ Nicholas McCready - https://twitter.com/nmccready
           overallD.reject(error);
           return ret;
         }
-        if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
+        return _getArrayAndKeys(collection, _keys, function() {
           overallD.resolve();
           return ret;
-        }
-        doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index);
-        return ret;
+        }, function(array, keys) {
+          doChunk(collection, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index, keys);
+          return ret;
+        });
       };
-      map = function(objs, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli) {
+      map = function(collection, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, _keys) {
         var results;
         results = [];
-        if (!((objs != null) && (objs != null ? objs.length : void 0) > 0)) {
+        return _getArrayAndKeys(collection, _keys, function() {
           return uiGmapPromise.resolve(results);
-        }
-        return each(objs, function(o) {
-          return results.push(iterator(o));
-        }, chunkSizeOrDontChunk, pauseCb, index, pauseMilli).then(function() {
-          return results;
+        }, function(array, keys) {
+          return each(collection, function(o) {
+            return results.push(iterator(o));
+          }, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, keys).then(function() {
+            return results;
+          });
         });
       };
       return {
