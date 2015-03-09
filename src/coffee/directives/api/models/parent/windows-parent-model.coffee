@@ -65,14 +65,14 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @onDestroy(doDelete).then =>
                 @createChildScopes() if doCreate
 
-          onDestroy:(doDelete) =>
+          onDestroy:(scope) =>
+            super(@scope)
             _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
               _async.each @plurals.values(), (child) =>
                 child.destroy()
               , _async.chunkSizeFrom(@scope.cleanchunk, false)
               .then =>
-                delete @plurals if doDelete
-                @plurals = new PropMap()
+                @plurals?.removeAll()
 
           watchDestroy: (scope)=>
             scope.$on '$destroy', =>
@@ -156,7 +156,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             payload = null
             @models = scope.models
 
-            if scope? and scope.models? and scope.models.length > 0 and @plurals.length > 0
+            if scope? and @modelsLength() and @plurals.length
 
               _async.promiseLock @, uiGmapPromise.promiseTypes.update, 'pieceMeal', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
                 uiGmapPromise.promise((=> @figureOutState @idKey, scope, @plurals, @modelKeyComparison))
@@ -186,7 +186,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @rebuildAll(@scope, true, true)
 
           setContentKeys: (models)=>
-            if(models.length > 0)
+            if @modelsLength()
               @contentKeys = Object.keys(models[0])
 
           createWindow: (model, gMarker, gMap)=>

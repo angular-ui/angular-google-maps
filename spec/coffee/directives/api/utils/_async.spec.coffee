@@ -10,108 +10,214 @@ describe "_async", ->
   afterEach ->
     @subject = null
 
-  it "handle array of 101 outputs 101 elements equal to the original, with 1 pauses", (done) ->
-    @digest =>
-      known = _.range(101)
-      test = []
-      pauses = 1
+  describe "arrays", ->
 
-      @subject.each known, (num) ->
-        test.push(num)
-      , 100
-      , ->
-        pauses++
-      .then ->
-        expect(pauses).toEqual(2)
-        expect(test.length).toEqual(known.length)
-        expect(test).toEqual(known)
-        done()
-
-  it "handle callback passes an index", (done) ->
-    @digest =>
-      chunkHit = false
-      @subject.each [1], (thing, index)->
-        chunkHit = true
-        expect(thing).toEqual 1
-        expect(index).toEqual 0
-      .then ->
-        expect(chunkHit).toBeTruthy()
-        done()
-
-  it "handle array of 200 outputs 200 elements equal to the original, with 2 pauses", (done) ->
-    @digest =>
-      known = _.range(200)
-      test = []
-      pauses = 1
-
-      @subject.each known, (num) ->
-        test.push(num)
-      , 100
-      , ->
-        pauses++
-      .then ->
-        expect(pauses).toEqual(2)
-        expect(test.length).toEqual(known.length)
-        expect(test).toEqual(known)
-        done()
-
-  it "handle array of 1000 outputs 1000 elements equal to the original, with 10 pauses", (done) ->
-    @digest =>
-      known = _.range(1000)
-      test = []
-      pauses = 1
-      @subject.each known, (num) ->
-        test.push(num)
-      , 100
-      , ->
-        pauses++
-      .then ->
-        expect(test.length).toEqual(known.length)
-        expect(test).toEqual(known)
-        expect(pauses).toEqual(10)
-        done()
-    , 10
-
-  it "handle map of 1000 outputs 1000 elements equal to the original, with 10 pauses", (done) ->
-    @digest =>
-      known = _.range(1000)
-      test = []
-      pauses = 1
-      @subject.map known, (num) ->
-        num += 1
-        "$#{num.toString()}"
-      , 100
-      , ->
-        pauses++
-      .then (mapped) ->
-        test = mapped
-        expect(test[999]).toEqual("$1000")
-        expect(test.length).toEqual(known.length)
-        expect(test).toEqual(
-          _.map known, (n)->
-            n += 1
-            "$#{n.toString()}"
-        )
-        expect(pauses).toEqual(10)
-        done()
-    , 10
-
-  describe "no chunking / pauses", ->
-    it "rang 101 zero pauses", (done) ->
+    it "handle zero elements", (done) ->
       @digest =>
-        known = _.range(101)
+        known = []
         test = []
         pauses = 0
-        @subject.each(known, (num) ->
+
+        @subject.each known, (num) ->
           test.push(num)
-        , chunking = false
+        , 100
         , ->
           pauses++
-        ).then ->
-          expect(pauses).toEqual(0) #it should not be hit
+        .then ->
+          expect(pauses).toEqual(0)
           expect(test.length).toEqual(known.length)
           expect(test).toEqual(known)
           done()
+
+    it "handle array of 101 outputs 101 elements equal to the original, with 1 pauses", (done) ->
+      @digest =>
+        known = _.range(101)
+        test = []
+        pauses = 1
+
+        @subject.each known, (num) ->
+          test.push(num)
+        , 100
+        , ->
+          pauses++
+        .then ->
+          expect(pauses).toEqual(2)
+          expect(test.length).toEqual(known.length)
+          expect(test).toEqual(known)
+          done()
+
+    it "handle callback passes an index", (done) ->
+      @digest =>
+        chunkHit = false
+        @subject.each [1], (thing, index)->
+          chunkHit = true
+          expect(thing).toEqual 1
+          expect(index).toEqual 0
+        .then ->
+          expect(chunkHit).toBeTruthy()
+          done()
+
+    it "handle array of 200 outputs 200 elements equal to the original, with 2 pauses", (done) ->
+      @digest =>
+        known = _.range(200)
+        test = []
+        pauses = 1
+
+        @subject.each known, (num) ->
+          test.push(num)
+        , 100
+        , ->
+          pauses++
+        .then ->
+          expect(pauses).toEqual(2)
+          expect(test.length).toEqual(known.length)
+          expect(test).toEqual(known)
+          done()
+
+    it "handle array of 1000 outputs 1000 elements equal to the original, with 10 pauses", (done) ->
+      @digest =>
+        known = _.range(1000)
+        test = []
+        pauses = 1
+        @subject.each known, (num) ->
+          test.push(num)
+        , 100
+        , ->
+          pauses++
+        .then ->
+          expect(test.length).toEqual(known.length)
+          expect(test).toEqual(known)
+          expect(pauses).toEqual(10)
+          done()
+      , 10
+
+    describe 'map', ->
+      it "handle 1000 outputs 1000 elements equal to the original, with 10 pauses", (done) ->
+        @digest =>
+          known = _.range(1000)
+          test = []
+          pauses = 1
+          @subject.map known, (num) ->
+            num += 1
+            "$#{num.toString()}"
+          , 100
+          , ->
+            pauses++
+          .then (mapped) ->
+            test = mapped
+            expect(test[999]).toEqual("$1000")
+            expect(test.length).toEqual(known.length)
+            expect(test).toEqual(
+              _.map known, (n)->
+                n += 1
+                "$#{n.toString()}"
+            )
+            expect(pauses).toEqual(10)
+            done()
+        , 10
+
+    describe "no chunking / pauses", ->
+      it "rang 101 zero pauses", (done) ->
+        @digest =>
+          known = _.range(101)
+          test = []
+          pauses = 0
+          @subject.each(known, (num) ->
+            test.push(num)
+          , chunking = false
+          , ->
+            pauses++
+          ).then ->
+            expect(pauses).toEqual(0) #it should not be hit
+            expect(test.length).toEqual(known.length)
+            expect(test).toEqual(known)
+            done()
+
+  describe "Objects", ->
+    it "handle zero elements", (done) ->
+      @digest =>
+        known = {}
+        test = []
+        pauses = 0
+
+        @subject.each known, (num) ->
+          test.push(num)
+        , 100
+        , ->
+          pauses++
+        .then ->
+          expect(pauses).toEqual(0)
+          vals = _.values(_.omit known, 'length')
+          expect(test.length).toEqual(vals.length)
+          expect(test).toEqual(vals)
+          done()
+
+    it "101 outputs 101 elements equal to the original, with 1 pauses", (done) ->
+      @digest =>
+        known = {}
+        known[num] = num for num in [0..100]
+        known.length = _.values(known).length
+        test = []
+        pauses = 1
+
+        @subject.each known, (num) ->
+          test.push(num)
+        , 100
+        , ->
+          pauses++
+        .then ->
+          expect(pauses).toEqual(2)
+          vals = _.values(_.omit known, 'length')
+          expect(test.length).toEqual(vals.length)
+          expect(test).toEqual(vals)
+          done()
+
+    it "handle 1000 outputs 1000 elements equal to the original, with 10 pauses", (done) ->
+      @digest =>
+        known = {}
+        known[num] = num for num in [0..999]
+        known.length = _.values(known).length
+        test = []
+        pauses = 1
+        @subject.each known, (num) ->
+          test.push(num)
+        , 100
+        , ->
+          pauses++
+        .then ->
+          vals = _.values(_.omit known, 'length')
+          expect(test.length).toEqual(vals.length)
+          expect(test).toEqual(vals)
+          expect(pauses).toEqual(10)
+          done()
+      , 10
+
+    describe 'map', ->
+      it "handle 1000 outputs 1000 elements equal to the original, with 10 pauses", (done) ->
+        @digest =>
+          known = {}
+          known[num] = num for num in [0..999]
+          test = []
+          pauses = 1
+          @subject.map known, (num) ->
+            num += 1
+            "$#{num.toString()}"
+          , 100
+          , ->
+            pauses++
+          .then (mapped) ->
+            test = mapped
+            expect(test[999]).toEqual("$1000")
+            vals = _.values(_.omit known, 'length')
+            expect(test.length).toEqual(vals.length)
+            expect(test).toEqual(
+              _.map vals, (n)->
+                n += 1
+                "$#{n.toString()}"
+            )
+            expect(pauses).toEqual(10)
+            done()
+        , 10
 
   describe 'chunkSizeFrom', ->
     it 'undefined returns undefined', ->
