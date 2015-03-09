@@ -43,8 +43,5 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 
     onWatch: (propNameToWatch, scope, newValue, oldValue) =>
 
-    onDestroy: (scope) =>
-      throw new String("OnDestroy Not Implemented!!")
-
   return IMarkerParentModel
 ]

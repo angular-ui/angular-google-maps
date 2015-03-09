@@ -1221,8 +1221,10 @@ Nicholas McCready - https://twitter.com/nmccready
 
         function ModelKey(scope) {
           this.scope = scope;
+          this.modelsLength = __bind(this.modelsLength, this);
           this.updateChild = __bind(this.updateChild, this);
           this.destroy = __bind(this.destroy, this);
+          this.onDestroy = __bind(this.onDestroy, this);
           this.setChildScope = __bind(this.setChildScope, this);
           this.getChanges = __bind(this.getChanges, this);
           this.getProp = __bind(this.getProp, this);
@@ -1233,6 +1235,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this["interface"].scopeKeys = [];
           this.defaultIdKey = 'id';
           this.idKey = void 0;
+          this.cached = {};
         }
 
         ModelKey.prototype.evalModelHandle = function(model, modelKey) {
@@ -1386,11 +1389,16 @@ Nicholas McCready - https://twitter.com/nmccready
           return childScope.model = model;
         };
 
+        ModelKey.prototype.onDestroy = function(scope) {
+          return this.cached = {};
+        };
+
         ModelKey.prototype.destroy = function(manualOverride) {
           var _ref;
           if (manualOverride == null) {
             manualOverride = false;
           }
+          this.cached = {};
           if ((this.scope != null) && !((_ref = this.scope) != null ? _ref.$$destroyed : void 0) && (this.needToManualDestroy || manualOverride)) {
             return this.scope.$destroy();
           } else {
@@ -1404,6 +1412,19 @@ Nicholas McCready - https://twitter.com/nmccready
             return;
           }
           return child.updateModel(model);
+        };
+
+        ModelKey.prototype.modelsLength = function() {
+          var array;
+          if (this.scope.models == null) {
+            return 0;
+          }
+          if (this.scope.models !== this.cached.models) {
+            this.cached.models = this.scope.models;
+            array = angular.isArray(this.scope.models) ? this.scope.models : Object.keys(this.scope.models);
+            this.cached.modelsLength = array.length;
+          }
+          return this.cached.modelsLength;
         };
 
         return ModelKey;
@@ -3824,7 +3845,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.element = element;
           this.attrs = attrs;
           this.map = map;
-          this.onDestroy = __bind(this.onDestroy, this);
           this.onWatch = __bind(this.onWatch, this);
           this.watch = __bind(this.watch, this);
           this.validateScope = __bind(this.validateScope, this);
@@ -3875,10 +3895,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         IMarkerParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {};
-
-        IMarkerParentModel.prototype.onDestroy = function(scope) {
-          throw new String("OnDestroy Not Implemented!!");
-        };
 
         return IMarkerParentModel;
 
@@ -4175,7 +4191,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this));
-          if ((scope.models == null) || scope.models.length === 0) {
+          if ((scope.models == null) || this.modelsLength() === 0) {
             this.modelsRendered = false;
           }
           this.scope.$watch('models', (function(_this) {
@@ -4315,7 +4331,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           maybeCanceled = null;
           payload = null;
-          if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.plurals.length > 0) {
+          if ((this.scope.models != null) && this.modelsLength() > 0 && this.scope.plurals.length > 0) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -4380,6 +4396,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.onDestroy = function(scope) {
+          MarkersParentModel.__super__.onDestroy.call(this, scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.scope.plurals.values(), function(model) {
@@ -4514,7 +4531,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        PolygonsParentModel.prototype.onDestroy = function(doDelete) {
+        PolygonsParentModel.prototype.onDestroy = function(scope) {
+          PolygonsParentModel.__super__.onDestroy.call(this, this.scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
@@ -4610,7 +4628,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+          if ((scope != null) && (scope.models != null) && this.modelsLength() > 0 && this.plurals.length > 0) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -4776,16 +4794,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        PolylinesParentModel.prototype.onDestroy = function(doDelete) {
+        PolylinesParentModel.prototype.onDestroy = function(scope) {
+          PolylinesParentModel.__super__.onDestroy.call(this, this.scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                if (doDelete) {
-                  delete _this.plurals;
-                }
-                return _this.plurals = new PropMap();
+                var _ref;
+                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
               });
             };
           })(this));
@@ -4884,7 +4901,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+          if ((scope != null) && (scope.models != null) && this.modelsLength() > 0 && this.plurals.length > 0) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -5391,16 +5408,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        WindowsParentModel.prototype.onDestroy = function(doDelete) {
+        WindowsParentModel.prototype.onDestroy = function(scope) {
+          WindowsParentModel.__super__.onDestroy.call(this, this.scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy();
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                if (doDelete) {
-                  delete _this.plurals;
-                }
-                return _this.plurals = new PropMap();
+                var _ref;
+                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
               });
             };
           })(this));
@@ -5533,7 +5549,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+          if ((scope != null) && (scope.models != null) && this.modelsLength() > 0 && this.plurals.length > 0) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -5576,7 +5592,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.setContentKeys = function(models) {
-          if (models.length > 0) {
+          if (this.modelsLength() > 0) {
             return this.contentKeys = Object.keys(models[0]);
           }
         };

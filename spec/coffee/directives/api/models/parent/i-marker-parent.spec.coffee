@@ -59,5 +59,5 @@ describe 'uiGmapIMarkerParentModel', ->
     it 'should throw onWatch', ->
       expect(@subject.onWatch).not.toThrow()
 
-    it 'should throw onDestroy', ->
-      expect(@subject.onDestroy).toThrow()
+    it 'should not throw onDestroy', ->
+      expect(@subject.onDestroy).not.toThrow()
