@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-X.0 2015-02-27
+/*! angular-google-maps 2.1.0-X.0 2015-03-08
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -104,7 +104,7 @@ Nicholas McCready - https://twitter.com/nmccready
             window[randomizedFunctionName] = null;
             deferred.resolve(window.google.maps);
           };
-          if (window.navigator.connection && window.navigator.connection.type === window.Connection.NONE) {
+          if (window.navigator.connection && window.Connection && window.navigator.connection.type === window.Connection.NONE) {
             document.addEventListener('online', function() {
               if (!isGoogleMapsLoaded()) {
                 return includeScript(options);
@@ -1394,7 +1394,7 @@ Nicholas McCready - https://twitter.com/nmccready
             return function(name) {
               var isScopeObj, newValue;
               isScopeObj = _this.scopeOrModelVal(name, childScope, model, true);
-              if (!isScopeObj.isScope) {
+              if ((isScopeObj != null ? isScopeObj.value : void 0) != null) {
                 newValue = isScopeObj.value;
                 if (newValue !== childScope[name]) {
                   return childScope[name] = newValue;
@@ -2323,7 +2323,7 @@ Nicholas McCready - https://twitter.com/nmccready
         function CommonOptionsBuilder() {
           this.watchProps = __bind(this.watchProps, this);
           this.buildOpts = __bind(this.buildOpts, this);
-          this.hasModel = _(this.scope).chain().keys().contains('model').value();
+          return CommonOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
         CommonOptionsBuilder.prototype.props = [
@@ -2333,7 +2333,15 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         ];
 
-        CommonOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
+        CommonOptionsBuilder.prototype.getCorrectModel = function(scope) {
+          if (angular.isDefined(scope != null ? scope.model : void 0)) {
+            return scope.model;
+          } else {
+            return scope;
+          }
+        };
+
+        CommonOptionsBuilder.prototype.buildOpts = function(customOpts, cachedEval, forEachOpts) {
           var model, opts, stroke;
           if (customOpts == null) {
             customOpts = {};
@@ -2349,7 +2357,7 @@ Nicholas McCready - https://twitter.com/nmccready
             $log.error('this.map not defined in CommonOptionsBuilder can not buildOpts');
             return;
           }
-          model = this.hasModel ? this.scope.model : this.scope;
+          model = this.getCorrectModel(this.scope);
           stroke = this.scopeOrModelVal('stroke', this.scope, model);
           opts = angular.extend(customOpts, this.DEFAULTS, {
             map: this.map,
@@ -2369,7 +2377,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }), (function(_this) {
             return function(defaultValue, key) {
               var val;
-              val = _this.scopeOrModelVal(key, _this.scope, model);
+              val = cachedEval ? cachedEval[key] : _this.scopeOrModelVal(key, _this.scope, model);
               if (angular.isUndefined(val)) {
                 return opts[key] = defaultValue;
               } else {
@@ -2421,10 +2429,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return PolylineOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
-        PolylineOptionsBuilder.prototype.buildOpts = function(pathPoints) {
+        PolylineOptionsBuilder.prototype.buildOpts = function(pathPoints, cachedEval) {
           return PolylineOptionsBuilder.__super__.buildOpts.call(this, {
             path: pathPoints
-          }, {
+          }, cachedEval, {
             geodesic: false
           });
         };
@@ -2443,15 +2451,15 @@ Nicholas McCready - https://twitter.com/nmccready
           return ShapeOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
-        ShapeOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
+        ShapeOptionsBuilder.prototype.buildOpts = function(customOpts, cachedEval, forEachOpts) {
           var fill, model;
-          model = this.hasModel ? this.scope.model : this.scope;
-          fill = this.scopeOrModelVal('fill', this.scope, model);
+          model = this.getCorrectModel(this.scope);
+          fill = cachedEval ? cachedEval['fill'] : this.scopeOrModelVal('fill', this.scope, model);
           customOpts = angular.extend(customOpts, {
             fillColor: fill != null ? fill.color : void 0,
             fillOpacity: fill != null ? fill.opacity : void 0
           });
-          return ShapeOptionsBuilder.__super__.buildOpts.call(this, customOpts, forEachOpts);
+          return ShapeOptionsBuilder.__super__.buildOpts.call(this, customOpts, cachedEval, forEachOpts);
         };
 
         return ShapeOptionsBuilder;
@@ -2468,10 +2476,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return PolygonOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
-        PolygonOptionsBuilder.prototype.buildOpts = function(pathPoints) {
+        PolygonOptionsBuilder.prototype.buildOpts = function(pathPoints, cachedEval) {
           return PolygonOptionsBuilder.__super__.buildOpts.call(this, {
             path: pathPoints
-          }, {
+          }, cachedEval, {
             geodesic: false
           });
         };
@@ -2490,10 +2498,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return RectangleOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
-        RectangleOptionsBuilder.prototype.buildOpts = function(bounds) {
+        RectangleOptionsBuilder.prototype.buildOpts = function(bounds, cachedEval) {
           return RectangleOptionsBuilder.__super__.buildOpts.call(this, {
             bounds: bounds
-          });
+          }, cachedEval);
         };
 
         return RectangleOptionsBuilder;
@@ -2510,11 +2518,11 @@ Nicholas McCready - https://twitter.com/nmccready
           return CircleOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
-        CircleOptionsBuilder.prototype.buildOpts = function(center, radius) {
+        CircleOptionsBuilder.prototype.buildOpts = function(center, radius, cachedEval) {
           return CircleOptionsBuilder.__super__.buildOpts.call(this, {
             center: center,
             radius: radius
-          });
+          }, cachedEval);
         };
 
         return CircleOptionsBuilder;
@@ -2598,7 +2606,7 @@ Nicholas McCready - https://twitter.com/nmccready
             };
             create = (function(_this) {
               return function() {
-                var pathPoints;
+                var maybeCachedEval, pathPoints;
                 if (_this.isDragging) {
                   return;
                 }
@@ -2606,8 +2614,11 @@ Nicholas McCready - https://twitter.com/nmccready
                 if (_this.gObject != null) {
                   _this.clean();
                 }
+                if (scope.model != null) {
+                  maybeCachedEval = scope;
+                }
                 if (pathPoints.length > 0) {
-                  _this.gObject = gFactory(_this.buildOpts(pathPoints));
+                  _this.gObject = gFactory(_this.buildOpts(pathPoints, maybeCachedEval));
                 }
                 if (_this.gObject) {
                   if (_this.scope.fit) {
@@ -4479,13 +4490,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.createAllNew = __bind(this.createAllNew, this);
           this.watchIdKey = __bind(this.watchIdKey, this);
           this.createChildScopes = __bind(this.createChildScopes, this);
-          this.watchOurScope = __bind(this.watchOurScope, this);
           this.watchDestroy = __bind(this.watchDestroy, this);
           this.onDestroy = __bind(this.onDestroy, this);
           this.rebuildAll = __bind(this.rebuildAll, this);
           this.doINeedToWipe = __bind(this.doINeedToWipe, this);
           this.watchModels = __bind(this.watchModels, this);
-          this.watch = __bind(this.watch, this);
           PolygonsParentModel.__super__.constructor.call(this, scope);
           this["interface"] = IPolygon;
           self = this;
@@ -4499,37 +4508,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.models = void 0;
           this.firstTime = true;
           this.$log.info(this);
-          this.watchOurScope(scope);
           this.createChildScopes();
         }
-
-        PolygonsParentModel.prototype.watch = function(scope, name, nameKey) {
-          return scope.$watch(name, (function(_this) {
-            return function(newValue, oldValue) {
-              var maybeCanceled;
-              if (newValue !== oldValue) {
-                maybeCanceled = null;
-                _this[nameKey] = _.isFunction(newValue) ? newValue() : newValue;
-                return _async.promiseLock(_this, uiGmapPromise.promiseTypes.update, "watch " + name + " " + nameKey, (function(canceledMsg) {
-                  return maybeCanceled = canceledMsg;
-                }), function() {
-                  return _async.each(_this.plurals.values(), function(model) {
-                    model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                    return maybeCanceled;
-                  }, _async.chunkSizeFrom(scope.chunk));
-                });
-              }
-            };
-          })(this));
-        };
 
         PolygonsParentModel.prototype.watchModels = function(scope) {
           return scope.$watchCollection('models', (function(_this) {
             return function(newValue, oldValue) {
-              if (!(_.isEqual(newValue, oldValue) && (_this.lastNewValue !== newValue || _this.lastOldValue !== oldValue))) {
-                _this.lastNewValue = newValue;
-                _this.lastOldValue = oldValue;
-                if (_this.doINeedToWipe(newValue)) {
+              if (newValue !== oldValue) {
+                if (_this.doINeedToWipe(newValue) || scope.doRebuildAll) {
                   return _this.rebuildAll(scope, true, true);
                 } else {
                   return _this.createChildScopes(false);
@@ -4561,10 +4547,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                if (doDelete) {
-                  delete _this.plurals;
-                }
-                return _this.plurals = new PropMap();
+                var _ref;
+                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
               });
             };
           })(this));
@@ -4574,17 +4558,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return scope.$on('$destroy', (function(_this) {
             return function() {
               return _this.rebuildAll(scope, false, true);
-            };
-          })(this));
-        };
-
-        PolygonsParentModel.prototype.watchOurScope = function(scope) {
-          return _.each(IPolygon.scopeKeys, (function(_this) {
-            return function(name) {
-              var nameKey;
-              nameKey = name + 'Key';
-              _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
-              return _this.watch(scope, name, nameKey);
             };
           })(this));
         };
@@ -4673,12 +4646,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
                 }).then(function(state) {
                   payload = state;
-                  return _async.each(payload.removals, function(id) {
-                    var child;
-                    child = _this.plurals.get(id);
+                  if (payload.updates.length) {
+                    $log.warning("polygons updates: " + payload.updates.length + " will be missed");
+                  }
+                  return _async.each(payload.removals, function(child) {
                     if (child != null) {
                       child.destroy();
-                      _this.plurals.remove(id);
+                      _this.plurals.remove(child.model[_this.idKey]);
                       return maybeCanceled;
                     }
                   }, _async.chunkSizeFrom(scope.chunk));
@@ -5050,12 +5024,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               var _ref, _ref1;
               if ((scope.bounds != null) && (((_ref = scope.bounds) != null ? _ref.sw : void 0) != null) && (((_ref1 = scope.bounds) != null ? _ref1.ne : void 0) != null) && _this.validateBoundPoints(scope.bounds)) {
                 bounds = _this.convertBoundPoints(scope.bounds);
-                return $log.info("new new bounds created: " + rectangle);
+                return $log.info("new new bounds created: " + (JSON.stringify(bounds)));
               } else if ((scope.bounds.getNorthEast != null) && (scope.bounds.getSouthWest != null)) {
                 return bounds = scope.bounds;
               } else {
                 if (scope.bounds != null) {
-                  return $log.error("Invalid bounds for newValue: " + (JSON.stringify(scope.bounds)));
+                  return $log.error("Invalid bounds for newValue: " + (JSON.stringify(scope != null ? scope.bounds : void 0)));
                 }
               }
             };
