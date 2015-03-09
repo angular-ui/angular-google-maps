@@ -18,12 +18,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       createBounds = =>
         if scope.bounds? and scope.bounds?.sw? and scope.bounds?.ne? and @validateBoundPoints(scope.bounds)
           bounds = @convertBoundPoints(scope.bounds)
-          $log.info "new new bounds created: #{rectangle}"
-        else if scope.bounds.getNorthEast? and scope.bounds.getSouthWest? #google format
+          $log.info "new new bounds created: #{JSON.stringify bounds}"
+        else if scope.bounds.getNorthEast? and scope.bounds.getSouthWest?
             bounds = scope.bounds
         else
           if scope.bounds?
-            $log.error "Invalid bounds for newValue: #{JSON.stringify scope.bounds}" #note if bounds is recursive this could crash
+            $log.error "Invalid bounds for newValue: #{JSON.stringify scope?.bounds}" #note if bounds is recursive this could crash
       createBounds()
       gObject = new google.maps.Rectangle(@buildOpts bounds)
       $log.info "gObject (rectangle) created: #{gObject}"

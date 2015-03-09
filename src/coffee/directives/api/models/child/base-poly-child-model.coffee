@@ -24,7 +24,9 @@ angular.module('uiGmapgoogle-maps.directives.api')
             pathPoints = @convertPathPoints @scope.path
             if @gObject?
               @clean()
-            @gObject = gFactory @buildOpts pathPoints if pathPoints.length > 0
+            if scope.model?
+              maybeCachedEval = scope
+            @gObject = gFactory @buildOpts(pathPoints, maybeCachedEval) if pathPoints.length > 0
             if @gObject
               @extendMapBounds map, pathPoints if @scope.fit
               arraySync @gObject.getPath(), @scope, 'path', (pathPoints) =>
