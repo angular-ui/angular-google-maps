@@ -18,6 +18,9 @@
     "webcomponent"
   ],
   "main": "dist/angular-google-maps.js",
+  "files":[
+    "dist/*"
+  ],
   "license": "MIT",
   "devDependencies": {
     "bower": "~1.3.12",
