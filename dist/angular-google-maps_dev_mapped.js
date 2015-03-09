@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-X.0 2015-03-08
+/*! angular-google-maps 2.1.0-X.0 2015-03-09
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -405,7 +405,7 @@ Nicholas McCready - https://twitter.com/nmccready
     }
   ]).service('uiGmap_async', [
     '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q', 'uiGmapDataStructures', 'uiGmapGmapUtil', function($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures, uiGmapGmapUtil) {
-      var ExposedPromise, PromiseQueueManager, SniffedPromise, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch;
+      var ExposedPromise, PromiseQueueManager, SniffedPromise, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch, _getArrayAndKeys, _getIterateeValue;
       promiseTypes = uiGmapPromise.promiseTypes;
       isInProgress = uiGmapPromise.isInProgress;
       promiseStatus = uiGmapPromise.promiseStatus;
@@ -544,6 +544,33 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         return true;
       };
+      _getIterateeValue = function(collection, array, index) {
+        var valOrKey, _isArray;
+        _isArray = collection === array;
+        valOrKey = array[index];
+        if (_isArray) {
+          return valOrKey;
+        }
+        return collection[valOrKey];
+      };
+      _getArrayAndKeys = function(collection, keys, bailOutCb, cb) {
+        var array;
+        if (angular.isArray(collection)) {
+          array = collection;
+        } else {
+          array = keys ? keys : Object.keys(_.omit(collection, 'length'));
+          keys = array;
+        }
+        if (cb == null) {
+          cb = bailOutCb;
+        }
+        if (angular.isArray(array) && (array === void 0 || (array != null ? array.length : void 0) <= 0)) {
+          if (cb !== bailOutCb) {
+            return bailOutCb();
+          }
+        }
+        return cb(array, keys);
+      };
 
       /*
         Author: Nicholas McCready & jfriend00
@@ -555,36 +582,38 @@ Nicholas McCready - https://twitter.com/nmccready
       
         Optional Asynchronous Chunking via promises.
        */
-      doChunk = function(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index) {
-        var cnt, i, keepGoing;
-        if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
-          cnt = chunkSizeOrDontChunk;
-        } else {
-          cnt = array.length;
-        }
-        i = index;
-        keepGoing = true;
-        while (keepGoing && cnt-- && i < (array ? array.length : i + 1)) {
-          keepGoing = logTryCatch(chunkCb, void 0, overallD, [array[i], i]);
-          ++i;
-        }
-        if (array) {
-          if (keepGoing && i < array.length) {
-            index = i;
-            if (chunkSizeOrDontChunk) {
-              if ((pauseCb != null) && _.isFunction(pauseCb)) {
-                logTryCatch(pauseCb, void 0, overallD, []);
-              }
-              return $timeout(function() {
-                return doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index);
-              }, pauseMilli, false);
-            }
+      doChunk = function(collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, _keys) {
+        return _getArrayAndKeys(collection, _keys, function(array, keys) {
+          var cnt, i, keepGoing;
+          if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
+            cnt = chunkSizeOrDontChunk;
           } else {
-            return overallD.resolve();
+            cnt = array.length;
           }
-        }
+          i = index;
+          keepGoing = true;
+          while (keepGoing && cnt-- && i < (array ? array.length : i + 1)) {
+            keepGoing = logTryCatch(chunkCb, void 0, overallD, [_getIterateeValue(collection, array, i), i]);
+            ++i;
+          }
+          if (array) {
+            if (keepGoing && i < array.length) {
+              index = i;
+              if (chunkSizeOrDontChunk) {
+                if ((pauseCb != null) && _.isFunction(pauseCb)) {
+                  logTryCatch(pauseCb, void 0, overallD, []);
+                }
+                return $timeout(function() {
+                  return doChunk(collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, keys);
+                }, pauseMilli, false);
+              }
+            } else {
+              return overallD.resolve();
+            }
+          }
+        });
       };
-      each = function(array, chunk, chunkSizeOrDontChunk, pauseCb, index, pauseMilli) {
+      each = function(collection, chunk, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, _keys) {
         var error, overallD, ret;
         if (chunkSizeOrDontChunk == null) {
           chunkSizeOrDontChunk = defaultChunkSize;
@@ -604,23 +633,25 @@ Nicholas McCready - https://twitter.com/nmccready
           overallD.reject(error);
           return ret;
         }
-        if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
+        return _getArrayAndKeys(collection, _keys, function() {
           overallD.resolve();
           return ret;
-        }
-        doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index);
-        return ret;
+        }, function(array, keys) {
+          doChunk(collection, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index, keys);
+          return ret;
+        });
       };
-      map = function(objs, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli) {
+      map = function(collection, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, _keys) {
         var results;
         results = [];
-        if (!((objs != null) && (objs != null ? objs.length : void 0) > 0)) {
+        return _getArrayAndKeys(collection, _keys, function() {
           return uiGmapPromise.resolve(results);
-        }
-        return each(objs, function(o) {
-          return results.push(iterator(o));
-        }, chunkSizeOrDontChunk, pauseCb, index, pauseMilli).then(function() {
-          return results;
+        }, function(array, keys) {
+          return each(collection, function(o) {
+            return results.push(iterator(o));
+          }, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, keys).then(function() {
+            return results;
+          });
         });
       };
       return {
@@ -1240,8 +1271,10 @@ Nicholas McCready - https://twitter.com/nmccready
 
         function ModelKey(scope) {
           this.scope = scope;
+          this.modelsLength = __bind(this.modelsLength, this);
           this.updateChild = __bind(this.updateChild, this);
           this.destroy = __bind(this.destroy, this);
+          this.onDestroy = __bind(this.onDestroy, this);
           this.setChildScope = __bind(this.setChildScope, this);
           this.getChanges = __bind(this.getChanges, this);
           this.getProp = __bind(this.getProp, this);
@@ -1405,6 +1438,8 @@ Nicholas McCready - https://twitter.com/nmccready
           return childScope.model = model;
         };
 
+        ModelKey.prototype.onDestroy = function(scope) {};
+
         ModelKey.prototype.destroy = function(manualOverride) {
           var _ref;
           if (manualOverride == null) {
@@ -1423,6 +1458,20 @@ Nicholas McCready - https://twitter.com/nmccready
             return;
           }
           return child.updateModel(model);
+        };
+
+        ModelKey.prototype.modelsLength = function() {
+          var len;
+          len = 0;
+          if (this.scope.models == null) {
+            return len;
+          }
+          if (angular.isArray(this.scope.models) || (this.scope.models.length != null)) {
+            len = this.scope.models.length;
+          } else {
+            len = Object.keys(this.scope.models).length;
+          }
+          return len;
         };
 
         return ModelKey;
@@ -3851,7 +3900,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.element = element;
           this.attrs = attrs;
           this.map = map;
-          this.onDestroy = __bind(this.onDestroy, this);
           this.onWatch = __bind(this.onWatch, this);
           this.watch = __bind(this.watch, this);
           this.validateScope = __bind(this.validateScope, this);
@@ -3902,10 +3950,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         IMarkerParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {};
-
-        IMarkerParentModel.prototype.onDestroy = function(scope) {
-          throw new String("OnDestroy Not Implemented!!");
-        };
 
         return IMarkerParentModel;
 
@@ -4202,7 +4246,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this));
-          if ((scope.models == null) || scope.models.length === 0) {
+          if (!this.modelsLength()) {
             this.modelsRendered = false;
           }
           this.scope.$watch('models', (function(_this) {
@@ -4342,7 +4386,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           maybeCanceled = null;
           payload = null;
-          if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.plurals.length > 0) {
+          if (this.modelsLength() && this.scope.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -4407,6 +4451,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.onDestroy = function(scope) {
+          MarkersParentModel.__super__.onDestroy.call(this, scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.scope.plurals.values(), function(model) {
@@ -4541,7 +4586,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        PolygonsParentModel.prototype.onDestroy = function(doDelete) {
+        PolygonsParentModel.prototype.onDestroy = function(scope) {
+          PolygonsParentModel.__super__.onDestroy.call(this, this.scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
@@ -4637,7 +4683,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+          if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -4803,16 +4849,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        PolylinesParentModel.prototype.onDestroy = function(doDelete) {
+        PolylinesParentModel.prototype.onDestroy = function(scope) {
+          PolylinesParentModel.__super__.onDestroy.call(this, this.scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                if (doDelete) {
-                  delete _this.plurals;
-                }
-                return _this.plurals = new PropMap();
+                var _ref;
+                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
               });
             };
           })(this));
@@ -4911,7 +4956,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+          if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -5418,16 +5463,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        WindowsParentModel.prototype.onDestroy = function(doDelete) {
+        WindowsParentModel.prototype.onDestroy = function(scope) {
+          WindowsParentModel.__super__.onDestroy.call(this, this.scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy();
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                if (doDelete) {
-                  delete _this.plurals;
-                }
-                return _this.plurals = new PropMap();
+                var _ref;
+                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
               });
             };
           })(this));
@@ -5560,7 +5604,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+          if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -5603,7 +5647,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.setContentKeys = function(models) {
-          if (models.length > 0) {
+          if (this.modelsLength()) {
             return this.contentKeys = Object.keys(models[0]);
           }
         };
@@ -11704,41 +11748,41 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 ;/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-/******/
+
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-/******/
+
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-/******/
+
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-/******/
+
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
+
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-/******/
+
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
-/******/
+
+
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-/******/
+
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-/******/
+
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-/******/
+
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -13492,7 +13536,7 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 
 
 /***/ }
-/******/ ]);/**
+/******/ ]);;/**
  * Performance overrides on MarkerClusterer custom to Angular Google Maps
  *
  * Created by Petr Bruna ccg1415 and Nick McCready on 7/13/14.

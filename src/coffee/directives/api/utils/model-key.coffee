@@ -10,6 +10,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
         @defaultIdKey = 'id'
         @idKey = undefined
+#        @cached = {}
 
       evalModelHandle: (model, modelKey) ->
         return if not model? or not modelKey?
@@ -123,7 +124,11 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         childScope.model = model
 
 
+      onDestroy: (scope) =>
+#        @cached = {}
+
       destroy: (manualOverride = false) =>
+#        @cached = {}
         if @scope? and not @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
           @scope.$destroy()
         else
@@ -135,4 +140,18 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           return
         #set isInit to true to force redraw after all updates are processed
         child.updateModel model
+
+
+      modelsLength: =>
+        len = 0
+        return len unless @scope.models?
+
+        # isArray .. get length
+        # OR check to see if there is length field which (is essentially cached on the front or backend)
+        if angular.isArray(@scope.models) or @scope.models.length?
+          len = @scope.models.length
+        else #worst case ... pay the price
+          len = Object.keys(@scope.models).length
+        len
+
 ]

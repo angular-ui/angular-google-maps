@@ -57,14 +57,14 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         @onDestroy(doDelete).then =>
           @createChildScopes() if doCreate
 
-      onDestroy: (doDelete) =>
+      onDestroy: (scope) =>
+        super(@scope)
         _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
           _async.each @plurals.values(), (child) =>
             child.destroy true #to make sure it is really dead, otherwise watchers can kick off (artifacts in path create)
           , _async.chunkSizeFrom(@scope.cleanchunk, false)
           .then =>
-            delete @plurals if doDelete
-            @plurals = new PropMap()
+            @plurals?.removeAll()
 
       watchDestroy: (scope) =>
         scope.$on '$destroy', =>
@@ -123,7 +123,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         maybeCanceled = null
         payload = null
         @models = scope.models
-        if scope? and scope.models? and scope.models.length > 0 and @plurals.length > 0
+        if scope? and @modelsLength() and @plurals.length
           _async.promiseLock @, uiGmapPromise.promiseTypes.update, 'pieceMeal', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
             uiGmapPromise.promise( => @figureOutState @idKey, scope, @plurals, @modelKeyComparison)
             .then (state) =>

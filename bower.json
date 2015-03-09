@@ -6,6 +6,17 @@
     "angular": ">=1.2.0",
     "lodash": "~2.4.1"
   },
+  "ignore":[
+    "example/*",
+    "*.json",
+    ".gitignore",
+    "travis.yml",
+    "*.html",
+    "src/*",
+    "*.coffee",
+    "package.js",
+    "*.markdown"
+  ],
   "devDependencies": {
     "angular-mocks": ">=1.2.x",
     "uuid": "http://github.com/LiosK/UUID.js/archive/v3.2.tar.gz",
