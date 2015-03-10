@@ -131,7 +131,7 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
   });
 
   var versionUrl = (window.location.host === "rawgithub.com" || window.location.host === "rawgit.com") ?
-    "http://rawgit.com/angular-ui/angular-google-maps/master/package.json" : "/package.json";
+    "http://rawgit.com/angular-ui/angular-google-maps/2.0.X/package.json" : "/package.json";
 
   $http.get(versionUrl).success(function (data) {
     if (!data)
