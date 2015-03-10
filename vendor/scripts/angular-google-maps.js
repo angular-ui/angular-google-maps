@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.13 2015-02-25
+/*! angular-google-maps 2.0.16 2015-03-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -104,7 +104,7 @@ Nicholas McCready - https://twitter.com/nmccready
             window[randomizedFunctionName] = null;
             deferred.resolve(window.google.maps);
           };
-          if (window.navigator.connection && window.navigator.connection.type === window.Connection.NONE) {
+          if (window.navigator.connection && window.Connection && window.navigator.connection.type === window.Connection.NONE) {
             document.addEventListener('online', function() {
               if (!isGoogleMapsLoaded()) {
                 return includeScript(options);
@@ -355,7 +355,7 @@ Nicholas McCready - https://twitter.com/nmccready
     }
   ]).service('uiGmap_async', [
     '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q', 'uiGmapDataStructures', 'uiGmapGmapUtil', function($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures, uiGmapGmapUtil) {
-      var ExposedPromise, PromiseQueueManager, SniffedPromise, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch;
+      var ExposedPromise, PromiseQueueManager, SniffedPromise, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch, _getArrayAndKeys, _getIterateeValue;
       promiseTypes = uiGmapPromise.promiseTypes;
       isInProgress = uiGmapPromise.isInProgress;
       promiseStatus = uiGmapPromise.promiseStatus;
@@ -494,6 +494,33 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         return true;
       };
+      _getIterateeValue = function(collection, array, index) {
+        var valOrKey, _isArray;
+        _isArray = collection === array;
+        valOrKey = array[index];
+        if (_isArray) {
+          return valOrKey;
+        }
+        return collection[valOrKey];
+      };
+      _getArrayAndKeys = function(collection, keys, bailOutCb, cb) {
+        var array;
+        if (angular.isArray(collection)) {
+          array = collection;
+        } else {
+          array = keys ? keys : Object.keys(_.omit(collection, ['length', 'forEach', 'map']));
+          keys = array;
+        }
+        if (cb == null) {
+          cb = bailOutCb;
+        }
+        if (angular.isArray(array) && (array === void 0 || (array != null ? array.length : void 0) <= 0)) {
+          if (cb !== bailOutCb) {
+            return bailOutCb();
+          }
+        }
+        return cb(array, keys);
+      };
 
       /*
         Author: Nicholas McCready & jfriend00
@@ -505,36 +532,39 @@ Nicholas McCready - https://twitter.com/nmccready
       
         Optional Asynchronous Chunking via promises.
        */
-      doChunk = function(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index) {
-        var cnt, i, keepGoing;
-        if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
-          cnt = chunkSizeOrDontChunk;
-        } else {
-          cnt = array.length;
-        }
-        i = index;
-        keepGoing = true;
-        while (keepGoing && cnt-- && i < (array ? array.length : i + 1)) {
-          keepGoing = logTryCatch(chunkCb, void 0, overallD, [array[i], i]);
-          ++i;
-        }
-        if (array) {
-          if (keepGoing && i < array.length) {
-            index = i;
-            if (chunkSizeOrDontChunk) {
-              if ((pauseCb != null) && _.isFunction(pauseCb)) {
-                logTryCatch(pauseCb, void 0, overallD, []);
-              }
-              return $timeout(function() {
-                return doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index);
-              }, pauseMilli, false);
-            }
+      doChunk = function(collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, _keys) {
+        return _getArrayAndKeys(collection, _keys, function(array, keys) {
+          var cnt, i, keepGoing, val;
+          if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
+            cnt = chunkSizeOrDontChunk;
           } else {
-            return overallD.resolve();
+            cnt = array.length;
           }
-        }
+          i = index;
+          keepGoing = true;
+          while (keepGoing && cnt-- && i < (array ? array.length : i + 1)) {
+            val = _getIterateeValue(collection, array, i);
+            keepGoing = angular.isFunction(val) ? true : logTryCatch(chunkCb, void 0, overallD, [val, i]);
+            ++i;
+          }
+          if (array) {
+            if (keepGoing && i < array.length) {
+              index = i;
+              if (chunkSizeOrDontChunk) {
+                if ((pauseCb != null) && _.isFunction(pauseCb)) {
+                  logTryCatch(pauseCb, void 0, overallD, []);
+                }
+                return $timeout(function() {
+                  return doChunk(collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, keys);
+                }, pauseMilli, false);
+              }
+            } else {
+              return overallD.resolve();
+            }
+          }
+        });
       };
-      each = function(array, chunk, chunkSizeOrDontChunk, pauseCb, index, pauseMilli) {
+      each = function(collection, chunk, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, _keys) {
         var error, overallD, ret;
         if (chunkSizeOrDontChunk == null) {
           chunkSizeOrDontChunk = defaultChunkSize;
@@ -554,23 +584,25 @@ Nicholas McCready - https://twitter.com/nmccready
           overallD.reject(error);
           return ret;
         }
-        if (array === void 0 || (array != null ? array.length : void 0) <= 0) {
+        return _getArrayAndKeys(collection, _keys, function() {
           overallD.resolve();
           return ret;
-        }
-        doChunk(array, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index);
-        return ret;
+        }, function(array, keys) {
+          doChunk(collection, chunkSizeOrDontChunk, pauseMilli, chunk, pauseCb, overallD, index, keys);
+          return ret;
+        });
       };
-      map = function(objs, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli) {
+      map = function(collection, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, _keys) {
         var results;
         results = [];
-        if (!((objs != null) && (objs != null ? objs.length : void 0) > 0)) {
+        return _getArrayAndKeys(collection, _keys, function() {
           return uiGmapPromise.resolve(results);
-        }
-        return each(objs, function(o) {
-          return results.push(iterator(o));
-        }, chunkSizeOrDontChunk, pauseCb, index, pauseMilli).then(function() {
-          return results;
+        }, function(array, keys) {
+          return each(collection, function(o) {
+            return results.push(iterator(o));
+          }, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, keys).then(function() {
+            return results;
+          });
         });
       };
       return {
@@ -1190,8 +1222,10 @@ Nicholas McCready - https://twitter.com/nmccready
 
         function ModelKey(scope) {
           this.scope = scope;
+          this.modelsLength = __bind(this.modelsLength, this);
           this.updateChild = __bind(this.updateChild, this);
           this.destroy = __bind(this.destroy, this);
+          this.onDestroy = __bind(this.onDestroy, this);
           this.setChildScope = __bind(this.setChildScope, this);
           this.getChanges = __bind(this.getChanges, this);
           this.getProp = __bind(this.getProp, this);
@@ -1344,7 +1378,7 @@ Nicholas McCready - https://twitter.com/nmccready
             return function(name) {
               var isScopeObj, newValue;
               isScopeObj = _this.scopeOrModelVal(name, childScope, model, true);
-              if (!isScopeObj.isScope) {
+              if ((isScopeObj != null ? isScopeObj.value : void 0) != null) {
                 newValue = isScopeObj.value;
                 if (newValue !== childScope[name]) {
                   return childScope[name] = newValue;
@@ -1354,6 +1388,8 @@ Nicholas McCready - https://twitter.com/nmccready
           })(this));
           return childScope.model = model;
         };
+
+        ModelKey.prototype.onDestroy = function(scope) {};
 
         ModelKey.prototype.destroy = function(manualOverride) {
           var _ref;
@@ -1373,6 +1409,24 @@ Nicholas McCready - https://twitter.com/nmccready
             return;
           }
           return child.updateModel(model);
+        };
+
+        ModelKey.prototype.modelsLength = function(arrayOrObjModels) {
+          var len, toCheck;
+          if (arrayOrObjModels == null) {
+            arrayOrObjModels = void 0;
+          }
+          len = 0;
+          toCheck = arrayOrObjModels ? arrayOrObjModels : this.scope.models;
+          if (toCheck == null) {
+            return len;
+          }
+          if (angular.isArray(toCheck) || (toCheck.length != null)) {
+            len = toCheck.length;
+          } else {
+            len = Object.keys(toCheck).length;
+          }
+          return len;
         };
 
         return ModelKey;
@@ -2260,6 +2314,46 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 ;(function() {
+  angular.module('uiGmapgoogle-maps').service('uiGmapObjectIterators', function() {
+    var _ignores, _iterators, _slapForEach, _slapMap;
+    _ignores = ['length', 'forEach', 'map'];
+    _iterators = [];
+    _slapForEach = function(object) {
+      object.forEach = function(cb) {
+        return _.each(_.omit(object, _ignores), function(val) {
+          if (!_.isFunction(val)) {
+            return cb(val);
+          }
+        });
+      };
+      return object;
+    };
+    _iterators.push(_slapForEach);
+    _slapMap = function(object) {
+      object.map = function(cb) {
+        return _.map(_.omit(object, _ignores), function(val) {
+          if (!_.isFunction(val)) {
+            return cb(val);
+          }
+        });
+      };
+      return object;
+    };
+    _iterators.push(_slapMap);
+    return {
+      slapMap: _slapMap,
+      slapForEach: _slapForEach,
+      slapAll: function(object) {
+        _iterators.forEach(function(it) {
+          return it(object);
+        });
+        return object;
+      }
+    };
+  });
+
+}).call(this);
+;(function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2273,7 +2367,7 @@ Nicholas McCready - https://twitter.com/nmccready
         function CommonOptionsBuilder() {
           this.watchProps = __bind(this.watchProps, this);
           this.buildOpts = __bind(this.buildOpts, this);
-          this.hasModel = _(this.scope).chain().keys().contains('model').value();
+          return CommonOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
         CommonOptionsBuilder.prototype.props = [
@@ -2283,7 +2377,15 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         ];
 
-        CommonOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
+        CommonOptionsBuilder.prototype.getCorrectModel = function(scope) {
+          if (angular.isDefined(scope != null ? scope.model : void 0)) {
+            return scope.model;
+          } else {
+            return scope;
+          }
+        };
+
+        CommonOptionsBuilder.prototype.buildOpts = function(customOpts, cachedEval, forEachOpts) {
           var model, opts, stroke;
           if (customOpts == null) {
             customOpts = {};
@@ -2299,7 +2401,7 @@ Nicholas McCready - https://twitter.com/nmccready
             $log.error('this.map not defined in CommonOptionsBuilder can not buildOpts');
             return;
           }
-          model = this.hasModel ? this.scope.model : this.scope;
+          model = this.getCorrectModel(this.scope);
           stroke = this.scopeOrModelVal('stroke', this.scope, model);
           opts = angular.extend(customOpts, this.DEFAULTS, {
             map: this.map,
@@ -2319,7 +2421,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }), (function(_this) {
             return function(defaultValue, key) {
               var val;
-              val = _this.scopeOrModelVal(key, _this.scope, model);
+              val = cachedEval ? cachedEval[key] : _this.scopeOrModelVal(key, _this.scope, model);
               if (angular.isUndefined(val)) {
                 return opts[key] = defaultValue;
               } else {
@@ -2371,10 +2473,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return PolylineOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
-        PolylineOptionsBuilder.prototype.buildOpts = function(pathPoints) {
+        PolylineOptionsBuilder.prototype.buildOpts = function(pathPoints, cachedEval) {
           return PolylineOptionsBuilder.__super__.buildOpts.call(this, {
             path: pathPoints
-          }, {
+          }, cachedEval, {
             geodesic: false
           });
         };
@@ -2393,15 +2495,15 @@ Nicholas McCready - https://twitter.com/nmccready
           return ShapeOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
-        ShapeOptionsBuilder.prototype.buildOpts = function(customOpts, forEachOpts) {
+        ShapeOptionsBuilder.prototype.buildOpts = function(customOpts, cachedEval, forEachOpts) {
           var fill, model;
-          model = this.hasModel ? this.scope.model : this.scope;
-          fill = this.scopeOrModelVal('fill', this.scope, model);
+          model = this.getCorrectModel(this.scope);
+          fill = cachedEval ? cachedEval['fill'] : this.scopeOrModelVal('fill', this.scope, model);
           customOpts = angular.extend(customOpts, {
             fillColor: fill != null ? fill.color : void 0,
             fillOpacity: fill != null ? fill.opacity : void 0
           });
-          return ShapeOptionsBuilder.__super__.buildOpts.call(this, customOpts, forEachOpts);
+          return ShapeOptionsBuilder.__super__.buildOpts.call(this, customOpts, cachedEval, forEachOpts);
         };
 
         return ShapeOptionsBuilder;
@@ -2418,10 +2520,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return PolygonOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
-        PolygonOptionsBuilder.prototype.buildOpts = function(pathPoints) {
+        PolygonOptionsBuilder.prototype.buildOpts = function(pathPoints, cachedEval) {
           return PolygonOptionsBuilder.__super__.buildOpts.call(this, {
             path: pathPoints
-          }, {
+          }, cachedEval, {
             geodesic: false
           });
         };
@@ -2440,10 +2542,10 @@ Nicholas McCready - https://twitter.com/nmccready
           return RectangleOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
-        RectangleOptionsBuilder.prototype.buildOpts = function(bounds) {
+        RectangleOptionsBuilder.prototype.buildOpts = function(bounds, cachedEval) {
           return RectangleOptionsBuilder.__super__.buildOpts.call(this, {
             bounds: bounds
-          });
+          }, cachedEval);
         };
 
         return RectangleOptionsBuilder;
@@ -2460,11 +2562,11 @@ Nicholas McCready - https://twitter.com/nmccready
           return CircleOptionsBuilder.__super__.constructor.apply(this, arguments);
         }
 
-        CircleOptionsBuilder.prototype.buildOpts = function(center, radius) {
+        CircleOptionsBuilder.prototype.buildOpts = function(center, radius, cachedEval) {
           return CircleOptionsBuilder.__super__.buildOpts.call(this, {
             center: center,
             radius: radius
-          });
+          }, cachedEval);
         };
 
         return CircleOptionsBuilder;
@@ -2548,7 +2650,7 @@ Nicholas McCready - https://twitter.com/nmccready
             };
             create = (function(_this) {
               return function() {
-                var pathPoints;
+                var maybeCachedEval, pathPoints;
                 if (_this.isDragging) {
                   return;
                 }
@@ -2556,8 +2658,11 @@ Nicholas McCready - https://twitter.com/nmccready
                 if (_this.gObject != null) {
                   _this.clean();
                 }
+                if (scope.model != null) {
+                  maybeCachedEval = scope;
+                }
                 if (pathPoints.length > 0) {
-                  _this.gObject = gFactory(_this.buildOpts(pathPoints));
+                  _this.gObject = gFactory(_this.buildOpts(pathPoints, maybeCachedEval));
                 }
                 if (_this.gObject) {
                   if (_this.scope.fit) {
@@ -3782,7 +3887,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.element = element;
           this.attrs = attrs;
           this.map = map;
-          this.onDestroy = __bind(this.onDestroy, this);
           this.onWatch = __bind(this.onWatch, this);
           this.watch = __bind(this.watch, this);
           this.validateScope = __bind(this.validateScope, this);
@@ -3833,10 +3937,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         IMarkerParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {};
-
-        IMarkerParentModel.prototype.onDestroy = function(scope) {
-          throw new String("OnDestroy Not Implemented!!");
-        };
 
         return IMarkerParentModel;
 
@@ -4093,7 +4193,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
   angular.module("uiGmapgoogle-maps.directives.api.models.parent").factory("uiGmapMarkersParentModel", [
     "uiGmapIMarkerParentModel", "uiGmapModelsWatcher", "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async", "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker", "uiGmapPromise", "uiGmapGmapUtil", "uiGmapLogger", function(IMarkerParentModel, ModelsWatcher, PropMap, MarkerChildModel, _async, ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise, GmapUtil, $log) {
-      var MarkersParentModel;
+      var MarkersParentModel, _setPlurals;
+      _setPlurals = function(val, objToSet) {
+        objToSet.plurals = new PropMap();
+        objToSet.scope.plurals = objToSet.plurals;
+        return objToSet;
+      };
       MarkersParentModel = (function(_super) {
         __extends(MarkersParentModel, _super);
 
@@ -4114,8 +4219,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, map);
           this["interface"] = IMarker;
           self = this;
-          this.plurals = new PropMap();
-          this.scope.plurals = this.plurals;
+          _setPlurals(new PropMap(), this);
           this.scope.pluralsUpdate = {
             updateCtr: 0
           };
@@ -4129,7 +4233,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
             };
           })(this));
-          if ((scope.models == null) || scope.models.length === 0) {
+          if (!this.modelsLength()) {
             this.modelsRendered = false;
           }
           this.scope.$watch('models', (function(_this) {
@@ -4269,7 +4373,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           maybeCanceled = null;
           payload = null;
-          if ((this.scope.models != null) && this.scope.models.length > 0 && this.scope.plurals.length > 0) {
+          if (this.modelsLength() && this.scope.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -4334,6 +4438,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.onDestroy = function(scope) {
+          MarkersParentModel.__super__.onDestroy.call(this, scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.scope.plurals.values(), function(model) {
@@ -4341,11 +4446,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return model.destroy(false);
                 }
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                delete _this.scope.plurals;
                 if (_this.gManager != null) {
                   _this.gManager.clear();
                 }
-                _this.scope.plurals = new PropMap();
+                _this.plurals.removeAll();
+                if (_this.plurals !== _this.scope.plurals) {
+                  console.error('plurals out of sync for MarkersParentModel');
+                }
                 return _this.scope.pluralsUpdate.updateCtr += 1;
               });
             };
@@ -4415,13 +4522,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.createAllNew = __bind(this.createAllNew, this);
           this.watchIdKey = __bind(this.watchIdKey, this);
           this.createChildScopes = __bind(this.createChildScopes, this);
-          this.watchOurScope = __bind(this.watchOurScope, this);
           this.watchDestroy = __bind(this.watchDestroy, this);
           this.onDestroy = __bind(this.onDestroy, this);
           this.rebuildAll = __bind(this.rebuildAll, this);
           this.doINeedToWipe = __bind(this.doINeedToWipe, this);
           this.watchModels = __bind(this.watchModels, this);
-          this.watch = __bind(this.watch, this);
           PolygonsParentModel.__super__.constructor.call(this, scope);
           this["interface"] = IPolygon;
           self = this;
@@ -4435,37 +4540,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.models = void 0;
           this.firstTime = true;
           this.$log.info(this);
-          this.watchOurScope(scope);
           this.createChildScopes();
         }
-
-        PolygonsParentModel.prototype.watch = function(scope, name, nameKey) {
-          return scope.$watch(name, (function(_this) {
-            return function(newValue, oldValue) {
-              var maybeCanceled;
-              if (newValue !== oldValue) {
-                maybeCanceled = null;
-                _this[nameKey] = _.isFunction(newValue) ? newValue() : newValue;
-                return _async.promiseLock(_this, uiGmapPromise.promiseTypes.update, "watch " + name + " " + nameKey, (function(canceledMsg) {
-                  return maybeCanceled = canceledMsg;
-                }), function() {
-                  return _async.each(_this.plurals.values(), function(model) {
-                    model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                    return maybeCanceled;
-                  }, _async.chunkSizeFrom(scope.chunk));
-                });
-              }
-            };
-          })(this));
-        };
 
         PolygonsParentModel.prototype.watchModels = function(scope) {
           return scope.$watchCollection('models', (function(_this) {
             return function(newValue, oldValue) {
-              if (!(_.isEqual(newValue, oldValue) && (_this.lastNewValue !== newValue || _this.lastOldValue !== oldValue))) {
-                _this.lastNewValue = newValue;
-                _this.lastOldValue = oldValue;
-                if (_this.doINeedToWipe(newValue)) {
+              if (newValue !== oldValue) {
+                if (_this.doINeedToWipe(newValue) || scope.doRebuildAll) {
                   return _this.rebuildAll(scope, true, true);
                 } else {
                   return _this.createChildScopes(false);
@@ -4491,16 +4573,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        PolygonsParentModel.prototype.onDestroy = function(doDelete) {
+        PolygonsParentModel.prototype.onDestroy = function(scope) {
+          PolygonsParentModel.__super__.onDestroy.call(this, this.scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                if (doDelete) {
-                  delete _this.plurals;
-                }
-                return _this.plurals = new PropMap();
+                var _ref;
+                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
               });
             };
           })(this));
@@ -4510,17 +4591,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return scope.$on('$destroy', (function(_this) {
             return function() {
               return _this.rebuildAll(scope, false, true);
-            };
-          })(this));
-        };
-
-        PolygonsParentModel.prototype.watchOurScope = function(scope) {
-          return _.each(IPolygon.scopeKeys, (function(_this) {
-            return function(name) {
-              var nameKey;
-              nameKey = name + 'Key';
-              _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
-              return _this.watch(scope, name, nameKey);
             };
           })(this));
         };
@@ -4600,7 +4670,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+          if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -4609,12 +4679,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
                 }).then(function(state) {
                   payload = state;
-                  return _async.each(payload.removals, function(id) {
-                    var child;
-                    child = _this.plurals.get(id);
+                  if (payload.updates.length) {
+                    $log.warning("polygons updates: " + payload.updates.length + " will be missed");
+                  }
+                  return _async.each(payload.removals, function(child) {
                     if (child != null) {
                       child.destroy();
-                      _this.plurals.remove(id);
+                      _this.plurals.remove(child.model[_this.idKey]);
                       return maybeCanceled;
                     }
                   }, _async.chunkSizeFrom(scope.chunk));
@@ -4765,16 +4836,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        PolylinesParentModel.prototype.onDestroy = function(doDelete) {
+        PolylinesParentModel.prototype.onDestroy = function(scope) {
+          PolylinesParentModel.__super__.onDestroy.call(this, this.scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy(true);
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                if (doDelete) {
-                  delete _this.plurals;
-                }
-                return _this.plurals = new PropMap();
+                var _ref;
+                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
               });
             };
           })(this));
@@ -4873,7 +4943,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           maybeCanceled = null;
           payload = null;
           this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+          if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -4986,12 +5056,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               var _ref, _ref1;
               if ((scope.bounds != null) && (((_ref = scope.bounds) != null ? _ref.sw : void 0) != null) && (((_ref1 = scope.bounds) != null ? _ref1.ne : void 0) != null) && _this.validateBoundPoints(scope.bounds)) {
                 bounds = _this.convertBoundPoints(scope.bounds);
-                return $log.info("new new bounds created: " + rectangle);
+                return $log.info("new new bounds created: " + (JSON.stringify(bounds)));
               } else if ((scope.bounds.getNorthEast != null) && (scope.bounds.getSouthWest != null)) {
                 return bounds = scope.bounds;
               } else {
                 if (scope.bounds != null) {
-                  return $log.error("Invalid bounds for newValue: " + (JSON.stringify(scope.bounds)));
+                  return $log.error("Invalid bounds for newValue: " + (JSON.stringify(scope != null ? scope.bounds : void 0)));
                 }
               }
             };
@@ -5316,7 +5386,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this));
           this.linked = new Linked(scope, element, attrs, ctrls);
-          this.models = void 0;
           this.contentKeys = void 0;
           this.isIconVisibleOnClick = void 0;
           this.firstTime = true;
@@ -5380,16 +5449,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        WindowsParentModel.prototype.onDestroy = function(doDelete) {
+        WindowsParentModel.prototype.onDestroy = function(scope) {
+          WindowsParentModel.__super__.onDestroy.call(this, this.scope);
           return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
             return function() {
               return _async.each(_this.plurals.values(), function(child) {
                 return child.destroy();
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                if (doDelete) {
-                  delete _this.plurals;
-                }
-                return _this.plurals = new PropMap();
+                var _ref;
+                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
               });
             };
           })(this));
@@ -5477,7 +5545,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (isArray == null) {
             isArray = false;
           }
-          this.models = scope.models;
           if (this.firstTime) {
             this.watchModels(scope);
             this.watchDestroy(scope);
@@ -5521,8 +5588,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           maybeCanceled = null;
           payload = null;
-          this.models = scope.models;
-          if ((scope != null) && (scope.models != null) && scope.models.length > 0 && this.plurals.length > 0) {
+          if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
@@ -5565,7 +5631,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.setContentKeys = function(models) {
-          if (models.length > 0) {
+          if (this.modelsLength(models)) {
             return this.contentKeys = Object.keys(models[0]);
           }
         };
@@ -11521,41 +11587,41 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 ;/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-/******/
+
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-/******/
+
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-/******/
+
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-/******/
+
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
+
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-/******/
+
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
-/******/
+
+
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-/******/
+
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-/******/
+
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-/******/
+
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -13309,7 +13375,7 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 
 
 /***/ }
-/******/ ]);/**
+/******/ ]);;/**
  * Performance overrides on MarkerClusterer custom to Angular Google Maps
  *
  * Created by Petr Bruna ccg1415 and Nick McCready on 7/13/14.
