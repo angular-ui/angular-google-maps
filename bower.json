@@ -1,6 +1,6 @@
 {
   "name": "angular-google-maps",
-  "version": "2.1.0-X.3",
+  "version": "2.1.0-X.4",
   "version": "2.0.14",
   "main": "./dist/angular-google-maps.js",
   "dependencies": {
