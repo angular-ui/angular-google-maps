@@ -18,9 +18,9 @@
     "grunt",
     "website_libs",
     "scripts",
-    "spec/directives",
-    "spec/providers",
-    "spec/usage",
+    "spec/coffee/directives",
+    "spec/coffee/providers",
+    "spec/coffee/usage",
     "tmp"
   ],
   "devDependencies": {
