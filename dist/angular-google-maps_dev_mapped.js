@@ -2339,7 +2339,7 @@ Nicholas McCready - https://twitter.com/nmccready
     return {
       slapMap: _slapMap,
       slapForEach: _slapForEach,
-      slappAll: function(object) {
+      slapAll: function(object) {
         _iterators.forEach(function(it) {
           return it(object);
         });
