@@ -23,7 +23,7 @@ angular.module('uiGmapgoogle-maps')
 
   slapMap: _slapMap
   slapForEach: _slapForEach
-  slappAll: (object) ->
+  slapAll: (object) ->
     _iterators.forEach (it) ->
       it(object)
     object
