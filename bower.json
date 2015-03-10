@@ -7,15 +7,21 @@
     "lodash": "~2.4.1"
   },
   "ignore":[
-    "example/*",
     "*.json",
     ".gitignore",
     "travis.yml",
     "*.html",
-    "src/*",
-    "*.coffee",
     "package.js",
-    "*.markdown"
+    "*.markdown",
+    "example",
+    "src",
+    "grunt",
+    "website_libs",
+    "scripts",
+    "spec/directives",
+    "spec/providers",
+    "spec/usage",
+    "tmp"
   ],
   "devDependencies": {
     "angular-mocks": ">=1.2.x",
