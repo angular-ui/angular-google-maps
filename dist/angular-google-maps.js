@@ -5588,7 +5588,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           maybeCanceled = null;
           payload = null;
-          this.models = scope.models;
           if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
