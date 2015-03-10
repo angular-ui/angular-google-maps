@@ -148,7 +148,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     if angular.isArray collection
       array = collection
     else
-      array = if keys then keys else Object.keys(_.omit(collection, 'length'))
+      array = if keys then keys else Object.keys(_.omit(collection, ['length', 'forEach', 'map']))
       keys = array
 
     if !cb? #shifting args if last cb is not defined
@@ -180,7 +180,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       keepGoing = true
       while keepGoing and cnt-- and i < (if array then array.length else i + 1)
         # process array[index] here
-        keepGoing = logTryCatch chunkCb, undefined, overallD, [_getIterateeValue(collection, array, i), i]
+        val = _getIterateeValue(collection, array, i)
+        keepGoing = if angular.isFunction val then true else logTryCatch chunkCb, undefined, overallD, [val, i]
         ++i
 
       if array

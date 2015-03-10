@@ -19,7 +19,9 @@
   ],
   "main": "dist/angular-google-maps.js",
   "files":[
-    "dist/*"
+    "dist/*",
+    "spec/coffee/helpers/google-api-mock.coffee",
+    "spec/coffee/helpers/initiator.coffee"
   ],
   "license": "MIT",
   "devDependencies": {
