@@ -142,16 +142,17 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         child.updateModel model
 
 
-      modelsLength: =>
+      modelsLength: (arrayOrObjModels = undefined) =>
         len = 0
-        return len unless @scope.models?
+        toCheck = if arrayOrObjModels then arrayOrObjModels else @scope.models
+        return len unless toCheck?
 
         # isArray .. get length
         # OR check to see if there is length field which (is essentially cached on the front or backend)
-        if angular.isArray(@scope.models) or @scope.models.length?
-          len = @scope.models.length
+        if angular.isArray(toCheck) or toCheck.length?
+          len = toCheck.length
         else #worst case ... pay the price
-          len = Object.keys(@scope.models).length
+          len = Object.keys(toCheck).length
         len
 
 ]
