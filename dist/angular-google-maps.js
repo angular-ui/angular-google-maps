@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.14 2015-03-09
+/*! angular-google-maps 2.0.14 2015-03-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -508,7 +508,7 @@ Nicholas McCready - https://twitter.com/nmccready
         if (angular.isArray(collection)) {
           array = collection;
         } else {
-          array = keys ? keys : Object.keys(_.omit(collection, 'length'));
+          array = keys ? keys : Object.keys(_.omit(collection, ['length', 'forEach', 'map']));
           keys = array;
         }
         if (cb == null) {
@@ -534,7 +534,7 @@ Nicholas McCready - https://twitter.com/nmccready
        */
       doChunk = function(collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, _keys) {
         return _getArrayAndKeys(collection, _keys, function(array, keys) {
-          var cnt, i, keepGoing;
+          var cnt, i, keepGoing, val;
           if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
             cnt = chunkSizeOrDontChunk;
           } else {
@@ -543,7 +543,8 @@ Nicholas McCready - https://twitter.com/nmccready
           i = index;
           keepGoing = true;
           while (keepGoing && cnt-- && i < (array ? array.length : i + 1)) {
-            keepGoing = logTryCatch(chunkCb, void 0, overallD, [_getIterateeValue(collection, array, i), i]);
+            val = _getIterateeValue(collection, array, i);
+            keepGoing = angular.isFunction(val) ? true : logTryCatch(chunkCb, void 0, overallD, [val, i]);
             ++i;
           }
           if (array) {
@@ -2306,6 +2307,46 @@ Nicholas McCready - https://twitter.com/nmccready
       };
     }
   ]);
+
+}).call(this);
+;(function() {
+  angular.module('uiGmapgoogle-maps').service('uiGmapObjectIterators', function() {
+    var _ignores, _iterators, _slapForEach, _slapMap;
+    _ignores = ['length', 'forEach', 'map'];
+    _iterators = [];
+    _slapForEach = function(object) {
+      object.forEach = function(cb) {
+        return _.each(_.omit(object, _ignores), function(val) {
+          if (!_.isFunction(val)) {
+            return cb(val);
+          }
+        });
+      };
+      return object;
+    };
+    _iterators.push(_slapForEach);
+    _slapMap = function(object) {
+      object.map = function(cb) {
+        return _.map(_.omit(object, _ignores), function(val) {
+          if (!_.isFunction(val)) {
+            return cb(val);
+          }
+        });
+      };
+      return object;
+    };
+    _iterators.push(_slapMap);
+    return {
+      slapMap: _slapMap,
+      slapForEach: _slapForEach,
+      slappAll: function(object) {
+        _iterators.forEach(function(it) {
+          return it(object);
+        });
+        return object;
+      }
+    };
+  });
 
 }).call(this);
 ;(function() {
