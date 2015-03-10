@@ -1,9 +1,6 @@
 angular.module("angular-google-maps-example", ['uiGmapgoogle-maps']).value("rndAddToLatLon",function () {
   return Math.floor(((Math.random() < 0.5 ? -1 : 1) * 2) + 1)
 }).controller("controller", function ($scope, $timeout, $log, $http, rndAddToLatLon) {
-  // Enable the new Google Maps visuals until it gets enabled by default.
-  // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
-  google.maps.visualRefresh = true;
 
   var versionUrl = window.location.host === "rawgithub.com" ? "http://rawgithub.com/nlaplante/angular-google-maps/master/package.json" : "/package.json";
 
@@ -34,7 +31,7 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps']).value("rndA
           id: 1,
           latitude: 45,
           longitude: -74,
-          showWindow: false,
+          showWindow: true,
           title: 'Marker 2'
         },
         {
@@ -70,8 +67,9 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps']).value("rndA
   };
 
 //  var oldMarker = null;
-  $scope.onMarkerClicked = function (marker) {
-    $scope.$apply();
+  $scope.onMarkerClicked = function (model) {
+    //model.showWindow = true;
+    //$scope.$apply();
   };
 
   $scope.onInsideWindowClick = function () {

@@ -20,7 +20,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             _.each IWindow.scopeKeys, (name) =>
               @[name + 'Key'] = undefined
             @linked = new Linked(scope, element, attrs, ctrls)
-            @models = undefined
+
             @contentKeys = undefined #model keys to parse html angular content
             @isIconVisibleOnClick = undefined
             @firstTime = true
@@ -129,7 +129,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
 
           createAllNew: (scope, hasGMarker, modelsPropToIterate = 'models', isArray = false) =>
-            @models = scope.models
             if @firstTime
               @watchModels scope
               @watchDestroy scope
@@ -154,7 +153,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             return if scope.$$destroyed
             maybeCanceled = null
             payload = null
-            @models = scope.models
 
             if scope? and @modelsLength() and @plurals.length
 
@@ -186,7 +184,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @rebuildAll(@scope, true, true)
 
           setContentKeys: (models)=>
-            if @modelsLength()
+            if @modelsLength(models)
               @contentKeys = Object.keys(models[0])
 
           createWindow: (model, gMarker, gMap)=>

@@ -1461,16 +1461,20 @@ Nicholas McCready - https://twitter.com/nmccready
           return child.updateModel(model);
         };
 
-        ModelKey.prototype.modelsLength = function() {
-          var len;
+        ModelKey.prototype.modelsLength = function(arrayOrObjModels) {
+          var len, toCheck;
+          if (arrayOrObjModels == null) {
+            arrayOrObjModels = void 0;
+          }
           len = 0;
-          if (this.scope.models == null) {
+          toCheck = arrayOrObjModels ? arrayOrObjModels : this.scope.models;
+          if (toCheck == null) {
             return len;
           }
-          if (angular.isArray(this.scope.models) || (this.scope.models.length != null)) {
-            len = this.scope.models.length;
+          if (angular.isArray(toCheck) || (toCheck.length != null)) {
+            len = toCheck.length;
           } else {
-            len = Object.keys(this.scope.models).length;
+            len = Object.keys(toCheck).length;
           }
           return len;
         };
@@ -5440,7 +5444,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             };
           })(this));
           this.linked = new Linked(scope, element, attrs, ctrls);
-          this.models = void 0;
           this.contentKeys = void 0;
           this.isIconVisibleOnClick = void 0;
           this.firstTime = true;
@@ -5600,7 +5603,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (isArray == null) {
             isArray = false;
           }
-          this.models = scope.models;
           if (this.firstTime) {
             this.watchModels(scope);
             this.watchDestroy(scope);
@@ -5644,7 +5646,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           maybeCanceled = null;
           payload = null;
-          this.models = scope.models;
           if ((scope != null) && this.modelsLength() && this.plurals.length) {
             return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
               return maybeCanceled = canceledMsg;
@@ -5688,7 +5689,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowsParentModel.prototype.setContentKeys = function(models) {
-          if (this.modelsLength()) {
+          if (this.modelsLength(models)) {
             return this.contentKeys = Object.keys(models[0]);
           }
         };
