@@ -25,6 +25,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         {prop: 'center',isColl: true}
         {prop: 'fill',isColl: true}
         'radius'
+        'zIndex'
       ]
       @watchProps()
 

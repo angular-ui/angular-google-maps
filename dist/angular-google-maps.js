@@ -3746,7 +3746,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             }, {
               prop: 'fill',
               isColl: true
-            }, 'radius'
+            }, 'radius', 'zIndex'
           ]);
           this.watchProps();
           clean();
