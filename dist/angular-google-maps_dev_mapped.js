@@ -3702,6 +3702,245 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 ;(function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapBasePolysParentModel', [
+    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmap_async', 'uiGmapPromise', function($timeout, $log, ModelKey, ModelsWatcher, PropMap, _async, uiGmapPromise) {
+      return function(IPoly, PolyChildModel, gObjectName) {
+        var BasePolysParentModel;
+        return BasePolysParentModel = (function(_super) {
+          __extends(BasePolysParentModel, _super);
+
+          BasePolysParentModel.include(ModelsWatcher);
+
+          function BasePolysParentModel(scope, element, attrs, gMap, defaults) {
+            var self;
+            this.scope = scope;
+            this.element = element;
+            this.attrs = attrs;
+            this.gMap = gMap;
+            this.defaults = defaults;
+            this.createChild = __bind(this.createChild, this);
+            this.pieceMeal = __bind(this.pieceMeal, this);
+            this.createAllNew = __bind(this.createAllNew, this);
+            this.watchIdKey = __bind(this.watchIdKey, this);
+            this.createChildScopes = __bind(this.createChildScopes, this);
+            this.watchDestroy = __bind(this.watchDestroy, this);
+            this.onDestroy = __bind(this.onDestroy, this);
+            this.rebuildAll = __bind(this.rebuildAll, this);
+            this.doINeedToWipe = __bind(this.doINeedToWipe, this);
+            this.watchModels = __bind(this.watchModels, this);
+            BasePolysParentModel.__super__.constructor.call(this, scope);
+            this["interface"] = IPoly;
+            self = this;
+            this.$log = $log;
+            this.plurals = new PropMap();
+            _.each(IPoly.scopeKeys, (function(_this) {
+              return function(name) {
+                return _this[name + 'Key'] = void 0;
+              };
+            })(this));
+            this.models = void 0;
+            this.firstTime = true;
+            this.$log.info(this);
+            this.createChildScopes();
+          }
+
+          BasePolysParentModel.prototype.watchModels = function(scope) {
+            return scope.$watchCollection('models', (function(_this) {
+              return function(newValue, oldValue) {
+                if (newValue !== oldValue) {
+                  if (_this.doINeedToWipe(newValue) || scope.doRebuildAll) {
+                    return _this.rebuildAll(scope, true, true);
+                  } else {
+                    return _this.createChildScopes(false);
+                  }
+                }
+              };
+            })(this));
+          };
+
+          BasePolysParentModel.prototype.doINeedToWipe = function(newValue) {
+            var newValueIsEmpty;
+            newValueIsEmpty = newValue != null ? newValue.length === 0 : true;
+            return this.plurals.length > 0 && newValueIsEmpty;
+          };
+
+          BasePolysParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
+            return this.onDestroy(doDelete).then((function(_this) {
+              return function() {
+                if (doCreate) {
+                  return _this.createChildScopes();
+                }
+              };
+            })(this));
+          };
+
+          BasePolysParentModel.prototype.onDestroy = function(scope) {
+            BasePolysParentModel.__super__.onDestroy.call(this, this.scope);
+            return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
+              return function() {
+                return _async.each(_this.plurals.values(), function(child) {
+                  return child.destroy(true);
+                }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
+                  var _ref;
+                  return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
+                });
+              };
+            })(this));
+          };
+
+          BasePolysParentModel.prototype.watchDestroy = function(scope) {
+            return scope.$on('$destroy', (function(_this) {
+              return function() {
+                return _this.rebuildAll(scope, false, true);
+              };
+            })(this));
+          };
+
+          BasePolysParentModel.prototype.createChildScopes = function(isCreatingFromScratch) {
+            if (isCreatingFromScratch == null) {
+              isCreatingFromScratch = true;
+            }
+            if (angular.isUndefined(this.scope.models)) {
+              this.$log.error("No models to create " + gObjectName + "s from! I Need direct models!");
+              return;
+            }
+            if ((this.gMap == null) || (this.scope.models == null)) {
+              return;
+            }
+            this.watchIdKey(this.scope);
+            if (isCreatingFromScratch) {
+              return this.createAllNew(this.scope, false);
+            } else {
+              return this.pieceMeal(this.scope, false);
+            }
+          };
+
+          BasePolysParentModel.prototype.watchIdKey = function(scope) {
+            this.setIdKey(scope);
+            return scope.$watch('idKey', (function(_this) {
+              return function(newValue, oldValue) {
+                if (newValue !== oldValue && (newValue == null)) {
+                  _this.idKey = newValue;
+                  return _this.rebuildAll(scope, true, true);
+                }
+              };
+            })(this));
+          };
+
+          BasePolysParentModel.prototype.createAllNew = function(scope, isArray) {
+            var maybeCanceled;
+            if (isArray == null) {
+              isArray = false;
+            }
+            this.models = scope.models;
+            if (this.firstTime) {
+              this.watchModels(scope);
+              this.watchDestroy(scope);
+            }
+            if (this.didQueueInitPromise(this, scope)) {
+              return;
+            }
+            maybeCanceled = null;
+            return _async.promiseLock(this, uiGmapPromise.promiseTypes.create, 'createAllNew', (function(canceledMsg) {
+              return maybeCanceled = canceledMsg;
+            }), (function(_this) {
+              return function() {
+                return _async.each(scope.models, function(model) {
+                  var child;
+                  child = _this.createChild(model, _this.gMap);
+                  if (maybeCanceled) {
+                    $log.debug('createNew should fall through safely');
+                    child.isEnabled = false;
+                  }
+                  return maybeCanceled;
+                }, _async.chunkSizeFrom(scope.chunk)).then(function() {
+                  return _this.firstTime = false;
+                });
+              };
+            })(this));
+          };
+
+          BasePolysParentModel.prototype.pieceMeal = function(scope, isArray) {
+            var maybeCanceled, payload;
+            if (isArray == null) {
+              isArray = true;
+            }
+            if (scope.$$destroyed) {
+              return;
+            }
+            maybeCanceled = null;
+            payload = null;
+            this.models = scope.models;
+            if ((scope != null) && this.modelsLength() && this.plurals.length) {
+              return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
+                return maybeCanceled = canceledMsg;
+              }), (function(_this) {
+                return function() {
+                  return uiGmapPromise.promise(function() {
+                    return _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
+                  }).then(function(state) {
+                    payload = state;
+                    if (payload.updates.length) {
+                      $log.info("polygons updates: " + payload.updates.length + " will be missed");
+                    }
+                    return _async.each(payload.removals, function(child) {
+                      if (child != null) {
+                        child.destroy();
+                        _this.plurals.remove(child.model[_this.idKey]);
+                        return maybeCanceled;
+                      }
+                    }, _async.chunkSizeFrom(scope.chunk));
+                  }).then(function() {
+                    return _async.each(payload.adds, function(modelToAdd) {
+                      if (maybeCanceled) {
+                        $log.debug('pieceMeal should fall through safely');
+                      }
+                      _this.createChild(modelToAdd, _this.gMap);
+                      return maybeCanceled;
+                    }, _async.chunkSizeFrom(scope.chunk));
+                  });
+                };
+              })(this));
+            } else {
+              this.inProgress = false;
+              return this.rebuildAll(this.scope, true, true);
+            }
+          };
+
+          BasePolysParentModel.prototype.createChild = function(model, gMap) {
+            var child, childScope;
+            childScope = this.scope.$new(false);
+            this.setChildScope(IPoly.scopeKeys, childScope, model);
+            childScope.$watch('model', (function(_this) {
+              return function(newValue, oldValue) {
+                if (newValue !== oldValue) {
+                  return _this.setChildScope(childScope, newValue);
+                }
+              };
+            })(this), true);
+            childScope["static"] = this.scope["static"];
+            child = new PolyChildModel(childScope, this.attrs, gMap, this.defaults, model);
+            if (model[this.idKey] == null) {
+              this.$log.error("" + gObjectName + " model has no id to assign a child to.\nThis is required for performance. Please assign id,\nor redirect id to a different key.");
+              return;
+            }
+            this.plurals.put(model[this.idKey], child);
+            return child;
+          };
+
+          return BasePolysParentModel;
+
+        })(ModelKey);
+      };
+    }
+  ]);
+
+}).call(this);
+;(function() {
   var __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -4512,477 +4751,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
 }).call(this);
 ;(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapPolygonsParentModel', [
-    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapPolygonChildModel', 'uiGmap_async', 'uiGmapPromise', 'uiGmapIPolygon', function($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolygonChildModel, _async, uiGmapPromise, IPolygon) {
-      var PolygonsParentModel;
-      return PolygonsParentModel = (function(_super) {
-        __extends(PolygonsParentModel, _super);
-
-        PolygonsParentModel.include(ModelsWatcher);
-
-        function PolygonsParentModel(scope, element, attrs, gMap, defaults) {
-          var self;
-          this.scope = scope;
-          this.element = element;
-          this.attrs = attrs;
-          this.gMap = gMap;
-          this.defaults = defaults;
-          this.createChild = __bind(this.createChild, this);
-          this.pieceMeal = __bind(this.pieceMeal, this);
-          this.createAllNew = __bind(this.createAllNew, this);
-          this.watchIdKey = __bind(this.watchIdKey, this);
-          this.createChildScopes = __bind(this.createChildScopes, this);
-          this.watchDestroy = __bind(this.watchDestroy, this);
-          this.onDestroy = __bind(this.onDestroy, this);
-          this.rebuildAll = __bind(this.rebuildAll, this);
-          this.doINeedToWipe = __bind(this.doINeedToWipe, this);
-          this.watchModels = __bind(this.watchModels, this);
-          PolygonsParentModel.__super__.constructor.call(this, scope);
-          this["interface"] = IPolygon;
-          self = this;
-          this.$log = $log;
-          this.plurals = new PropMap();
-          _.each(IPolygon.scopeKeys, (function(_this) {
-            return function(name) {
-              return _this[name + 'Key'] = void 0;
-            };
-          })(this));
-          this.models = void 0;
-          this.firstTime = true;
-          this.$log.info(this);
-          this.createChildScopes();
-        }
-
-        PolygonsParentModel.prototype.watchModels = function(scope) {
-          return scope.$watchCollection('models', (function(_this) {
-            return function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                if (_this.doINeedToWipe(newValue) || scope.doRebuildAll) {
-                  return _this.rebuildAll(scope, true, true);
-                } else {
-                  return _this.createChildScopes(false);
-                }
-              }
-            };
-          })(this));
-        };
-
-        PolygonsParentModel.prototype.doINeedToWipe = function(newValue) {
-          var newValueIsEmpty;
-          newValueIsEmpty = newValue != null ? newValue.length === 0 : true;
-          return this.plurals.length > 0 && newValueIsEmpty;
-        };
-
-        PolygonsParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
-          return this.onDestroy(doDelete).then((function(_this) {
-            return function() {
-              if (doCreate) {
-                return _this.createChildScopes();
-              }
-            };
-          })(this));
-        };
-
-        PolygonsParentModel.prototype.onDestroy = function(scope) {
-          PolygonsParentModel.__super__.onDestroy.call(this, this.scope);
-          return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
-            return function() {
-              return _async.each(_this.plurals.values(), function(child) {
-                return child.destroy(true);
-              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                var _ref;
-                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
-              });
-            };
-          })(this));
-        };
-
-        PolygonsParentModel.prototype.watchDestroy = function(scope) {
-          return scope.$on('$destroy', (function(_this) {
-            return function() {
-              return _this.rebuildAll(scope, false, true);
-            };
-          })(this));
-        };
-
-        PolygonsParentModel.prototype.createChildScopes = function(isCreatingFromScratch) {
-          if (isCreatingFromScratch == null) {
-            isCreatingFromScratch = true;
-          }
-          if (angular.isUndefined(this.scope.models)) {
-            this.$log.error('No models to create Polygons from! I Need direct models!');
-            return;
-          }
-          if ((this.gMap == null) || (this.scope.models == null)) {
-            return;
-          }
-          this.watchIdKey(this.scope);
-          if (isCreatingFromScratch) {
-            return this.createAllNew(this.scope, false);
-          } else {
-            return this.pieceMeal(this.scope, false);
-          }
-        };
-
-        PolygonsParentModel.prototype.watchIdKey = function(scope) {
-          this.setIdKey(scope);
-          return scope.$watch('idKey', (function(_this) {
-            return function(newValue, oldValue) {
-              if (newValue !== oldValue && (newValue == null)) {
-                _this.idKey = newValue;
-                return _this.rebuildAll(scope, true, true);
-              }
-            };
-          })(this));
-        };
-
-        PolygonsParentModel.prototype.createAllNew = function(scope, isArray) {
-          var maybeCanceled;
-          if (isArray == null) {
-            isArray = false;
-          }
-          this.models = scope.models;
-          if (this.firstTime) {
-            this.watchModels(scope);
-            this.watchDestroy(scope);
-          }
-          if (this.didQueueInitPromise(this, scope)) {
-            return;
-          }
-          maybeCanceled = null;
-          return _async.promiseLock(this, uiGmapPromise.promiseTypes.create, 'createAllNew', (function(canceledMsg) {
-            return maybeCanceled = canceledMsg;
-          }), (function(_this) {
-            return function() {
-              return _async.each(scope.models, function(model) {
-                var child;
-                child = _this.createChild(model, _this.gMap);
-                if (maybeCanceled) {
-                  $log.debug('createNew should fall through safely');
-                  child.isEnabled = false;
-                }
-                return maybeCanceled;
-              }, _async.chunkSizeFrom(scope.chunk)).then(function() {
-                return _this.firstTime = false;
-              });
-            };
-          })(this));
-        };
-
-        PolygonsParentModel.prototype.pieceMeal = function(scope, isArray) {
-          var maybeCanceled, payload;
-          if (isArray == null) {
-            isArray = true;
-          }
-          if (scope.$$destroyed) {
-            return;
-          }
-          maybeCanceled = null;
-          payload = null;
-          this.models = scope.models;
-          if ((scope != null) && this.modelsLength() && this.plurals.length) {
-            return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
-              return maybeCanceled = canceledMsg;
-            }), (function(_this) {
-              return function() {
-                return uiGmapPromise.promise(function() {
-                  return _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
-                }).then(function(state) {
-                  payload = state;
-                  if (payload.updates.length) {
-                    $log.warning("polygons updates: " + payload.updates.length + " will be missed");
-                  }
-                  return _async.each(payload.removals, function(child) {
-                    if (child != null) {
-                      child.destroy();
-                      _this.plurals.remove(child.model[_this.idKey]);
-                      return maybeCanceled;
-                    }
-                  }, _async.chunkSizeFrom(scope.chunk));
-                }).then(function() {
-                  return _async.each(payload.adds, function(modelToAdd) {
-                    if (maybeCanceled) {
-                      $log.debug('pieceMeal should fall through safely');
-                    }
-                    _this.createChild(modelToAdd, _this.gMap);
-                    return maybeCanceled;
-                  }, _async.chunkSizeFrom(scope.chunk));
-                });
-              };
-            })(this));
-          } else {
-            this.inProgress = false;
-            return this.rebuildAll(this.scope, true, true);
-          }
-        };
-
-        PolygonsParentModel.prototype.createChild = function(model, gMap) {
-          var child, childScope;
-          childScope = this.scope.$new(false);
-          this.setChildScope(IPolygon.scopeKeys, childScope, model);
-          childScope.$watch('model', (function(_this) {
-            return function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                return _this.setChildScope(childScope, newValue);
-              }
-            };
-          })(this), true);
-          childScope["static"] = this.scope["static"];
-          child = new PolygonChildModel(childScope, this.attrs, gMap, this.defaults, model);
-          if (model[this.idKey] == null) {
-            this.$log.error("Polygon model has no id to assign a child to.\nThis is required for performance. Please assign id,\nor redirect id to a different key.");
-            return;
-          }
-          this.plurals.put(model[this.idKey], child);
-          return child;
-        };
-
-        return PolygonsParentModel;
-
-      })(ModelKey);
-    }
-  ]);
-
-}).call(this);
-;(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapPolylinesParentModel', [
-    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmapPolylineChildModel', 'uiGmap_async', 'uiGmapPromise', 'uiGmapIPolyline', function($timeout, $log, ModelKey, ModelsWatcher, PropMap, PolylineChildModel, _async, uiGmapPromise, IPolyline) {
-      var PolylinesParentModel;
-      return PolylinesParentModel = (function(_super) {
-        __extends(PolylinesParentModel, _super);
-
-        PolylinesParentModel.include(ModelsWatcher);
-
-        function PolylinesParentModel(scope, element, attrs, gMap, defaults) {
-          var self;
-          this.scope = scope;
-          this.element = element;
-          this.attrs = attrs;
-          this.gMap = gMap;
-          this.defaults = defaults;
-          this.createChild = __bind(this.createChild, this);
-          this.pieceMeal = __bind(this.pieceMeal, this);
-          this.createAllNew = __bind(this.createAllNew, this);
-          this.watchIdKey = __bind(this.watchIdKey, this);
-          this.createChildScopes = __bind(this.createChildScopes, this);
-          this.watchDestroy = __bind(this.watchDestroy, this);
-          this.onDestroy = __bind(this.onDestroy, this);
-          this.rebuildAll = __bind(this.rebuildAll, this);
-          this.doINeedToWipe = __bind(this.doINeedToWipe, this);
-          this.watchModels = __bind(this.watchModels, this);
-          PolylinesParentModel.__super__.constructor.call(this, scope);
-          this["interface"] = IPolyline;
-          self = this;
-          this.$log = $log;
-          this.plurals = new PropMap();
-          _.each(IPolyline.scopeKeys, (function(_this) {
-            return function(name) {
-              return _this[name + 'Key'] = void 0;
-            };
-          })(this));
-          this.models = void 0;
-          this.firstTime = true;
-          this.$log.info(this);
-          this.createChildScopes();
-        }
-
-        PolylinesParentModel.prototype.watchModels = function(scope) {
-          return scope.$watchCollection('models', (function(_this) {
-            return function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                if (_this.doINeedToWipe(newValue) || scope.doRebuildAll) {
-                  return _this.rebuildAll(scope, true, true);
-                } else {
-                  return _this.createChildScopes(false);
-                }
-              }
-            };
-          })(this));
-        };
-
-        PolylinesParentModel.prototype.doINeedToWipe = function(newValue) {
-          var newValueIsEmpty;
-          newValueIsEmpty = newValue != null ? newValue.length === 0 : true;
-          return this.plurals.length > 0 && newValueIsEmpty;
-        };
-
-        PolylinesParentModel.prototype.rebuildAll = function(scope, doCreate, doDelete) {
-          return this.onDestroy(doDelete).then((function(_this) {
-            return function() {
-              if (doCreate) {
-                return _this.createChildScopes();
-              }
-            };
-          })(this));
-        };
-
-        PolylinesParentModel.prototype.onDestroy = function(scope) {
-          PolylinesParentModel.__super__.onDestroy.call(this, this.scope);
-          return _async.promiseLock(this, uiGmapPromise.promiseTypes["delete"], void 0, void 0, (function(_this) {
-            return function() {
-              return _async.each(_this.plurals.values(), function(child) {
-                return child.destroy(true);
-              }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
-                var _ref;
-                return (_ref = _this.plurals) != null ? _ref.removeAll() : void 0;
-              });
-            };
-          })(this));
-        };
-
-        PolylinesParentModel.prototype.watchDestroy = function(scope) {
-          return scope.$on('$destroy', (function(_this) {
-            return function() {
-              return _this.rebuildAll(scope, false, true);
-            };
-          })(this));
-        };
-
-        PolylinesParentModel.prototype.createChildScopes = function(isCreatingFromScratch) {
-          if (isCreatingFromScratch == null) {
-            isCreatingFromScratch = true;
-          }
-          if (angular.isUndefined(this.scope.models)) {
-            this.$log.error('No models to create Polylines from! I Need direct models!');
-            return;
-          }
-          if ((this.gMap == null) || (this.scope.models == null)) {
-            return;
-          }
-          this.watchIdKey(this.scope);
-          if (isCreatingFromScratch) {
-            return this.createAllNew(this.scope, false);
-          } else {
-            return this.pieceMeal(this.scope, false);
-          }
-        };
-
-        PolylinesParentModel.prototype.watchIdKey = function(scope) {
-          this.setIdKey(scope);
-          return scope.$watch('idKey', (function(_this) {
-            return function(newValue, oldValue) {
-              if (newValue !== oldValue && (newValue == null)) {
-                _this.idKey = newValue;
-                return _this.rebuildAll(scope, true, true);
-              }
-            };
-          })(this));
-        };
-
-        PolylinesParentModel.prototype.createAllNew = function(scope, isArray) {
-          var maybeCanceled;
-          if (isArray == null) {
-            isArray = false;
-          }
-          this.models = scope.models;
-          if (this.firstTime) {
-            this.watchModels(scope);
-            this.watchDestroy(scope);
-          }
-          if (this.didQueueInitPromise(this, scope)) {
-            return;
-          }
-          maybeCanceled = null;
-          return _async.promiseLock(this, uiGmapPromise.promiseTypes.create, 'createAllNew', (function(canceledMsg) {
-            return maybeCanceled = canceledMsg;
-          }), (function(_this) {
-            return function() {
-              return _async.each(scope.models, function(model) {
-                var child;
-                child = _this.createChild(model, _this.gMap);
-                if (maybeCanceled) {
-                  $log.debug('createNew should fall through safely');
-                  child.isEnabled = false;
-                }
-                return maybeCanceled;
-              }, _async.chunkSizeFrom(scope.chunk)).then(function() {
-                return _this.firstTime = false;
-              });
-            };
-          })(this));
-        };
-
-        PolylinesParentModel.prototype.pieceMeal = function(scope, isArray) {
-          var maybeCanceled, payload;
-          if (isArray == null) {
-            isArray = true;
-          }
-          if (scope.$$destroyed) {
-            return;
-          }
-          maybeCanceled = null;
-          payload = null;
-          this.models = scope.models;
-          if ((scope != null) && this.modelsLength() && this.plurals.length) {
-            return _async.promiseLock(this, uiGmapPromise.promiseTypes.update, 'pieceMeal', (function(canceledMsg) {
-              return maybeCanceled = canceledMsg;
-            }), (function(_this) {
-              return function() {
-                return uiGmapPromise.promise(function() {
-                  return _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
-                }).then(function(state) {
-                  payload = state;
-                  if (payload.updates.length) {
-                    $log.warning("polylines updates: " + payload.updates.length + " will be missed");
-                  }
-                  return _async.each(payload.removals, function(child) {
-                    if (child != null) {
-                      child.destroy();
-                      _this.plurals.remove(child.model[_this.idKey]);
-                      return maybeCanceled;
-                    }
-                  }, _async.chunkSizeFrom(scope.chunk));
-                }).then(function() {
-                  return _async.each(payload.adds, function(modelToAdd) {
-                    if (maybeCanceled) {
-                      $log.debug('pieceMeal should fall through safely');
-                    }
-                    _this.createChild(modelToAdd, _this.gMap);
-                    return maybeCanceled;
-                  }, _async.chunkSizeFrom(scope.chunk));
-                });
-              };
-            })(this));
-          } else {
-            this.inProgress = false;
-            return this.rebuildAll(this.scope, true, true);
-          }
-        };
-
-        PolylinesParentModel.prototype.createChild = function(model, gMap) {
-          var child, childScope;
-          childScope = this.scope.$new(false);
-          this.setChildScope(IPolyline.scopeKeys, childScope, model);
-          childScope.$watch('model', (function(_this) {
-            return function(newValue, oldValue) {
-              if (newValue !== oldValue) {
-                return _this.setChildScope(childScope, newValue);
-              }
-            };
-          })(this), true);
-          childScope["static"] = this.scope["static"];
-          child = new PolylineChildModel(childScope, this.attrs, gMap, this.defaults, model);
-          if (model[this.idKey] == null) {
-            this.$log.error("Polyline model has no id to assign a child to.\nThis is required for performance. Please assign id,\nor redirect id to a different key.");
-            return;
-          }
-          this.plurals.put(model[this.idKey], child);
-          return child;
-        };
-
-        return PolylinesParentModel;
-
-      })(ModelKey);
-    }
-  ]);
+  ['Polygon', 'Polyline'].forEach(function(name) {
+    return angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory("uiGmap" + name + "sParentModel", [
+      'uiGmapBasePolysParentModel', "uiGmap" + name + "ChildModel", "uiGmapI" + name, function(BasePolysParentModel, ChildModel, IPoly) {
+        return BasePolysParentModel(IPoly, ChildModel, name);
+      }
+    ]);
+  });
 
 }).call(this);
 ;(function() {
