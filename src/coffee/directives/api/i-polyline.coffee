@@ -15,6 +15,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
         static: '='
         fit: '='
         events: '='
+        zIndex: '=zindex'
       IPolyline.scopeKeys = _.keys(IPolyline.scope)
 
       @include GmapUtil

@@ -4768,19 +4768,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.attrs = attrs;
           this.gMap = gMap;
           this.defaults = defaults;
-          this.setChildScope = __bind(this.setChildScope, this);
           this.createChild = __bind(this.createChild, this);
           this.pieceMeal = __bind(this.pieceMeal, this);
           this.createAllNew = __bind(this.createAllNew, this);
           this.watchIdKey = __bind(this.watchIdKey, this);
           this.createChildScopes = __bind(this.createChildScopes, this);
-          this.watchOurScope = __bind(this.watchOurScope, this);
           this.watchDestroy = __bind(this.watchDestroy, this);
           this.onDestroy = __bind(this.onDestroy, this);
           this.rebuildAll = __bind(this.rebuildAll, this);
           this.doINeedToWipe = __bind(this.doINeedToWipe, this);
           this.watchModels = __bind(this.watchModels, this);
-          this.watch = __bind(this.watch, this);
           PolylinesParentModel.__super__.constructor.call(this, scope);
           this["interface"] = IPolyline;
           self = this;
@@ -4794,37 +4791,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.models = void 0;
           this.firstTime = true;
           this.$log.info(this);
-          this.watchOurScope(scope);
           this.createChildScopes();
         }
-
-        PolylinesParentModel.prototype.watch = function(scope, name, nameKey) {
-          return scope.$watch(name, (function(_this) {
-            return function(newValue, oldValue) {
-              var maybeCanceled;
-              if (newValue !== oldValue) {
-                maybeCanceled = null;
-                _this[nameKey] = _.isFunction(newValue) ? newValue() : newValue;
-                return _async.promiseLock(_this, uiGmapPromise.promiseTypes.update, "watch " + name + " " + nameKey, (function(canceledMsg) {
-                  return maybeCanceled = canceledMsg;
-                }), function() {
-                  return _async.each(_this.plurals.values(), function(model) {
-                    model.scope[name] = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-                    return maybeCanceled;
-                  }, false);
-                });
-              }
-            };
-          })(this));
-        };
 
         PolylinesParentModel.prototype.watchModels = function(scope) {
           return scope.$watchCollection('models', (function(_this) {
             return function(newValue, oldValue) {
-              if (!(_.isEqual(newValue, oldValue) && (_this.lastNewValue !== newValue || _this.lastOldValue !== oldValue))) {
-                _this.lastNewValue = newValue;
-                _this.lastOldValue = oldValue;
-                if (_this.doINeedToWipe(newValue)) {
+              if (newValue !== oldValue) {
+                if (_this.doINeedToWipe(newValue) || scope.doRebuildAll) {
                   return _this.rebuildAll(scope, true, true);
                 } else {
                   return _this.createChildScopes(false);
@@ -4872,17 +4846,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
-        PolylinesParentModel.prototype.watchOurScope = function(scope) {
-          return _.each(IPolyline.scopeKeys, (function(_this) {
-            return function(name) {
-              var nameKey;
-              nameKey = name + 'Key';
-              _this[nameKey] = typeof scope[name] === 'function' ? scope[name]() : scope[name];
-              return _this.watch(scope, name, nameKey);
-            };
-          })(this));
-        };
-
         PolylinesParentModel.prototype.createChildScopes = function(isCreatingFromScratch) {
           if (isCreatingFromScratch == null) {
             isCreatingFromScratch = true;
@@ -4891,15 +4854,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.$log.error('No models to create Polylines from! I Need direct models!');
             return;
           }
-          if (this.gMap != null) {
-            if (this.scope.models != null) {
-              this.watchIdKey(this.scope);
-              if (isCreatingFromScratch) {
-                return this.createAllNew(this.scope, false);
-              } else {
-                return this.pieceMeal(this.scope, false);
-              }
-            }
+          if ((this.gMap == null) || (this.scope.models == null)) {
+            return;
+          }
+          this.watchIdKey(this.scope);
+          if (isCreatingFromScratch) {
+            return this.createAllNew(this.scope, false);
+          } else {
+            return this.pieceMeal(this.scope, false);
           }
         };
 
@@ -4934,12 +4896,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }), (function(_this) {
             return function() {
               return _async.each(scope.models, function(model) {
-                _this.createChild(model, _this.gMap);
+                var child;
+                child = _this.createChild(model, _this.gMap);
                 if (maybeCanceled) {
                   $log.debug('createNew should fall through safely');
+                  child.isEnabled = false;
                 }
                 return maybeCanceled;
-              }).then(function() {
+              }, _async.chunkSizeFrom(scope.chunk)).then(function() {
                 return _this.firstTime = false;
               });
             };
@@ -4966,15 +4930,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return _this.figureOutState(_this.idKey, scope, _this.plurals, _this.modelKeyComparison);
                 }).then(function(state) {
                   payload = state;
-                  return _async.each(payload.removals, function(id) {
-                    var child;
-                    child = _this.plurals.get(id);
+                  if (payload.updates.length) {
+                    $log.warning("polylines updates: " + payload.updates.length + " will be missed");
+                  }
+                  return _async.each(payload.removals, function(child) {
                     if (child != null) {
                       child.destroy();
-                      _this.plurals.remove(id);
+                      _this.plurals.remove(child.model[_this.idKey]);
                       return maybeCanceled;
                     }
-                  });
+                  }, _async.chunkSizeFrom(scope.chunk));
                 }).then(function() {
                   return _async.each(payload.adds, function(modelToAdd) {
                     if (maybeCanceled) {
@@ -4982,7 +4947,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                     }
                     _this.createChild(modelToAdd, _this.gMap);
                     return maybeCanceled;
-                  });
+                  }, _async.chunkSizeFrom(scope.chunk));
                 });
               };
             })(this));
@@ -4995,7 +4960,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         PolylinesParentModel.prototype.createChild = function(model, gMap) {
           var child, childScope;
           childScope = this.scope.$new(false);
-          this.setChildScope(childScope, model);
+          this.setChildScope(IPolyline.scopeKeys, childScope, model);
           childScope.$watch('model', (function(_this) {
             return function(newValue, oldValue) {
               if (newValue !== oldValue) {
@@ -5011,20 +4976,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           this.plurals.put(model[this.idKey], child);
           return child;
-        };
-
-        PolylinesParentModel.prototype.setChildScope = function(childScope, model) {
-          IPolyline.scopeKeys.forEach((function(_this) {
-            return function(name) {
-              var nameKey, newValue;
-              nameKey = name + 'Key';
-              newValue = _this[nameKey] === 'self' ? model : model[_this[nameKey]];
-              if (newValue !== childScope[name]) {
-                return childScope[name] = newValue;
-              }
-            };
-          })(this));
-          return childScope.model = model;
         };
 
         return PolylinesParentModel;
@@ -6175,7 +6126,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           visible: '=',
           "static": '=',
           fit: '=',
-          events: '='
+          events: '=',
+          zIndex: '=zindex'
         };
 
         IPolyline.scopeKeys = _.keys(IPolyline.scope);
