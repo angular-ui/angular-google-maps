@@ -573,7 +573,7 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
   _.each($scope.map.markers, function (marker) {
     marker.closeClick = function () {
       marker.showWindow = false;
-      $scope.$apply();
+      $scope.$evalAsync();
     };
     marker.onClicked = function () {
       onMarkerClicked(marker);
@@ -583,6 +583,10 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
   $scope.map.markers2.forEach( function (marker) {
     marker.onClicked = function () {
       onMarkerClicked(marker);
+    };
+    marker.closeClick = function () {
+      marker.showWindow = false;
+      $scope.$evalAsync();
     };
   });
 

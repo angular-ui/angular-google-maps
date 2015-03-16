@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.16 2015-03-10
+/*! angular-google-maps 2.0.16 2015-03-16
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -720,15 +720,29 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module("uiGmapgoogle-maps.directives.api.utils").service("uiGmapEventsHelper", [
     "uiGmapLogger", function($log) {
+      var _getEventsObj, _hasEvents;
+      _hasEvents = function(obj) {
+        return angular.isDefined(obj.events) && (obj.events != null) && angular.isObject(obj.events);
+      };
+      _getEventsObj = function(scope, model) {
+        if (_hasEvents(scope)) {
+          return scope;
+        }
+        if (_hasEvents(model)) {
+          return model;
+        }
+      };
       return {
         setEvents: function(gObject, scope, model, ignores) {
-          if (angular.isDefined(scope.events) && (scope.events != null) && angular.isObject(scope.events)) {
-            return _.compact(_.map(scope.events, function(eventHandler, eventName) {
+          var eventObj;
+          eventObj = _getEventsObj(scope, model);
+          if (eventObj != null) {
+            return _.compact(_.map(eventObj.events, function(eventHandler, eventName) {
               var doIgnore;
               if (ignores) {
                 doIgnore = _(ignores).contains(eventName);
               }
-              if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName]) && !doIgnore) {
+              if (eventObj.events.hasOwnProperty(eventName) && angular.isFunction(eventObj.events[eventName]) && !doIgnore) {
                 return google.maps.event.addListener(gObject, eventName, function() {
                   if (!scope.$evalAsync) {
                     scope.$evalAsync = function() {};
