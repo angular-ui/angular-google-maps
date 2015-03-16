@@ -16,4 +16,5 @@ angular.module("uiGmapgoogle-maps.directives.api").service "uiGmapICircle", [ ->
     visible: "="
     events: "="
     control: "="
+    zIndex: "=zindex"
 ]
