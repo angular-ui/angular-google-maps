@@ -5984,7 +5984,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           geodesic: "=",
           icons: "=icons",
           visible: "=",
-          events: "="
+          events: "=",
+          zIndex: "=zindex"
         }
       };
     }
