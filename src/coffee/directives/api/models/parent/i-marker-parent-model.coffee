@@ -14,16 +14,17 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
       super(@scope)
       @$log = Logger
       # Validate required properties
-      throw new String("Unable to construct IMarkerParentModel due to invalid scope") unless @validateScope scope
-      @doClick = angular.isDefined attrs.click
-      if scope.options?
-        @DEFAULTS = scope.options
+      unless @validateScope @scope
+        throw new String("Unable to construct IMarkerParentModel due to invalid scope")
+      @doClick = angular.isDefined @attrs.click
+      if @scope.options?
+        @DEFAULTS = @scope.options
       # Wrap marker initialization inside a $timeout() call to make sure the map is created already
       @watch 'coords', @scope
       @watch 'icon', @scope
       @watch 'options', @scope
-      scope.$on "$destroy", =>
-        @onDestroy(scope)
+      @scope.$on "$destroy", =>
+        @onDestroy(@scope)
 
     validateScope: (scope)=>
       unless scope?

@@ -7,10 +7,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
     (IPoly, PolyChildModel, gObjectName) ->
       class BasePolysParentModel extends ModelKey
         @include ModelsWatcher
-        constructor: (@scope, @element, @attrs, @gMap, @defaults) ->
+        constructor: (scope, @element, @attrs, @gMap, @defaults) ->
           super(scope)
           @interface = IPoly
-          self = @
+
           @$log = $log
           @plurals = new PropMap()
 
