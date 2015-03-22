@@ -14,16 +14,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       myListeners = []
       listeners = undefined
       fit = =>
-        @fitMapBounds @map, bounds  if @isTrue(attrs.fit)
+        @fitMapBounds @map, bounds  if @isTrue(@attrs.fit)
       createBounds = =>
-        if scope.bounds? and scope.bounds?.sw? and scope.bounds?.ne? and @validateBoundPoints(scope.bounds)
-          bounds = @convertBoundPoints(scope.bounds)
+        if @scope.bounds? and @scope.bounds?.sw? and @scope.bounds?.ne? and @validateBoundPoints(@scope.bounds)
+          bounds = @convertBoundPoints(@scope.bounds)
           $log.info "new new bounds created: #{JSON.stringify bounds}"
-        else if scope.bounds.getNorthEast? and scope.bounds.getSouthWest?
-            bounds = scope.bounds
+        else if @scope.bounds.getNorthEast? and @scope.bounds.getSouthWest?
+            bounds = @scope.bounds
         else
-          if scope.bounds?
-            $log.error "Invalid bounds for newValue: #{JSON.stringify scope?.bounds}" #note if bounds is recursive this could crash
+          if @scope.bounds?
+            $log.error "Invalid bounds for newValue: #{JSON.stringify @scope?.bounds}" #note if bounds is recursive this could crash
       createBounds()
       gObject = new google.maps.Rectangle(@buildOpts bounds)
       $log.info "gObject (rectangle) created: #{gObject}"
@@ -37,7 +37,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         #if the scope notified this change then there is no reason
         #to update scope otherwise infinite loop
         return if settingBoundsFromScope
-        scope.$evalAsync (s) ->
+        @scope.$evalAsync (s) ->
           if s.bounds? and s.bounds.sw? and s.bounds.ne?
             s.bounds.ne =
               latitude: ne.lat()
@@ -68,7 +68,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       init() if bounds?
       # Update map when center coordinates change
-      scope.$watch 'bounds', ((newValue, oldValue) ->
+      @scope.$watch 'bounds', ((newValue, oldValue) ->
         return  if _.isEqual(newValue, oldValue) and bounds? or dragging
         settingBoundsFromScope = true
         unless newValue?
@@ -92,14 +92,14 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       @props.push 'bounds'
       @watchProps @props
 
-      if attrs.events?
-        listeners = @setEvents gObject, scope, scope
-        scope.$watch 'events', (newValue, oldValue) =>
+      if @attrs.events?
+        listeners = @setEvents gObject, @scope, @scope
+        @scope.$watch 'events', (newValue, oldValue) =>
           unless _.isEqual newValue, oldValue
             @removeEvents listeners if listeners?
-            listeners = @setEvents gObject, scope, scope
+            listeners = @setEvents gObject, @scope, @scope
       # Remove gObject on scope $destroy
-      scope.$on '$destroy', =>
+      @scope.$on '$destroy', =>
         clear()
 
       $log.info @

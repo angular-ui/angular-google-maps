@@ -6,7 +6,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
   class CircleParentModel extends Builder
     @include GmapUtil
     @include EventsHelper
-    constructor: (@scope, element, @attrs, @map, @DEFAULTS) ->
+    constructor: (scope, element, @attrs, @map, @DEFAULTS) ->
+      @scope = scope
       lastRadius = null
       clean = =>
         lastRadius = null

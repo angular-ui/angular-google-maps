@@ -40,6 +40,8 @@ module.exports = (grunt) ->
     allExamplesOpen[root] =
       path: pathValue
 
+#  console.log allExamplesOpen, true
+
   showOpenType = (toIterate = allExamplesOpen) ->
     _(toIterate).each (v, k) ->
       log "#{k} -> #{v.path}"
@@ -93,9 +95,11 @@ module.exports = (grunt) ->
   grunt.registerTask 'bump-@-major', ['bump-only:major', 'mappAll', 'bump-commit']
 
   exampleOpenTasks = []
-  _(allExamplesOpen).each (v, key) ->
+
+  _.each allExamplesOpen, (v, key) ->
     basicTask = "open:" + key
     #register individual task (runs by itself)
+
     grunt.registerTask key, ["fast", "clean:example", "connect:server", basicTask, "watch:all"]
     exampleOpenTasks.push basicTask
 

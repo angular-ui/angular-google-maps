@@ -3,10 +3,11 @@ log = require('util').log
 
 doCover = false #clean cheap way to disable coverage so you can debug the darn code.. thank you blanket
 
-requireConfig =
-    paths:
-      'lodash': 'bower_components/lodash/dist/lodash'
-    deps: ['lodash']
+_requireConfig =
+  paths:
+    'lodash': 'bower_components/lodash/dist/lodash'
+    'angular-mock': 'bower_components/angular-mocks/angular-mocks'
+  deps: ['lodash', 'angular-mock']
 
 # log('jasmineSettings: past requireConfig')
 
@@ -17,7 +18,6 @@ spec =
     vendor: [
       'tmp/string.js'
       'bower_components/angular/angular.js'
-      'bower_components/angular-mocks/angular-mocks.js'
     ]
     specs: ['tmp/spec/coffee/bootstrap.spec.js', 'tmp/spec/**/*spec.js']
     helpers: [
@@ -25,7 +25,7 @@ spec =
     ]
     template: require 'grunt-template-jasmine-requirejs'
     templateOptions:
-      requireConfig: requireConfig
+      requireConfig: _requireConfig
 
 consoleSpec = _.extend {}, spec
 consoleSpec.src = 'dist/angular-google-maps.js'
@@ -36,13 +36,13 @@ coverage = undefined
 
 if doCover
   coverage = _.clone spec
-  coverage.options =  _.extend coverage.options,
+  coverage.options = _.extend coverage.options,
     template: require 'grunt-template-jasmine-istanbul'
     templateOptions:
       template: require 'grunt-template-jasmine-requirejs'
       templateOptions:
         requireConfig:
-          requireConfig
+          _requireConfig
       coverage: 'spec/coverage/coverage.json'
       report: 'spec/coverage'
       thresholds:
