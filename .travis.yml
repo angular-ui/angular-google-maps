@@ -6,6 +6,8 @@ script: grunt
 branches:
   only:
     - master
-    - develop
-    - legacy
-    - gh-pages-new2
+    - 2.0.X
+    - 2.1.X
+    - 1.2.X
+    - 1.0.X
+    - website
