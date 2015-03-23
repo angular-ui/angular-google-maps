@@ -108,7 +108,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   managePromiseQueue = (objectToLock, promiseType, msg = '', cancelCb, fnPromise) ->
     cancelLogger = (msg) ->
       $log.debug "#{msg}: #{msg}"
-      cancelCb(msg)
+      if cancelCb? and _.isFunction cancelCb
+        cancelCb(msg)
     PromiseQueueManager objectToLock, SniffedPromise(fnPromise, promiseType), cancelLogger
 
 
