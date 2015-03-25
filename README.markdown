@@ -2,6 +2,7 @@
 
 > AngularJS directives for Google Maps
 
+For Pull Requests please see branching scheme below! Realize that PRS to master are for 2.1.X only. If you want it rolled into a 2.0.X release PR to **2.0.X**.
 
 [![Dependencies](https://david-dm.org/angular-ui/angular-google-maps.svg)](https://david-dm.org/angular-ui/angular-google-maps)&nbsp; 
 [![Dependencies](https://david-dm.org/angular-ui/angular-google-maps/dev-status.svg)](https://david-dm.org/angular-ui/angular-google-maps)&nbsp; 
@@ -74,7 +75,7 @@ branch and issuing a PR with the updated documentation page, or by opening an is
 
 ### Branching Scheme
 
-- master: points to the active targeted next release branch
+- master: points to the active targeted next release branch (2.1.X)
 - 2.0.X: latest of 2.0.X
 - 2.1.X: ""
 ... etc
