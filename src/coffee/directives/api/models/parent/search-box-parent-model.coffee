@@ -19,8 +19,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             if angular.isUndefined @scope.options.autocomplete
                 @scope.options.autocomplete = false
 
-            @visible = scope.options.visible
-            @autocomplete = scope.options.autocomplete
+            @visible = @scope.options.visible
+            @autocomplete = @scope.options.autocomplete
 
             controlDiv = angular.element '<div></div>'
             controlDiv.append @template
