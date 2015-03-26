@@ -1305,7 +1305,7 @@ Nicholas McCready - https://twitter.com/nmccready
             return;
           }
           if (key !== 'self') {
-            return model[key];
+            return GmapUtil.getPath(model, key);
           }
           return model;
         };
