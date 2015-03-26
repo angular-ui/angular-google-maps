@@ -47,7 +47,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       modelOrKey: (model, key) ->
         return unless key?
         if key != 'self'
-          return model[key]
+          return GmapUtil.getPath(model, key)
         model
 
       getProp: (propName, model) =>
