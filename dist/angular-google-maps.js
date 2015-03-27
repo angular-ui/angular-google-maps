@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-X.6 2015-03-26
+/*! angular-google-maps 2.1.0-X.6 2015-03-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4998,9 +4998,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         SearchBoxParentModel.include(EventsHelper);
 
-        function SearchBoxParentModel(scope1, element, attrs, gMap, ctrlPosition, template, $log) {
+        function SearchBoxParentModel(scope, element, attrs, gMap, ctrlPosition, template, $log) {
           var controlDiv;
-          this.scope = scope1;
+          this.scope = scope;
           this.element = element;
           this.attrs = attrs;
           this.gMap = gMap;
@@ -5028,8 +5028,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (angular.isUndefined(this.scope.options.autocomplete)) {
             this.scope.options.autocomplete = false;
           }
-          this.visible = scope.options.visible;
-          this.autocomplete = scope.options.autocomplete;
+          this.visible = this.scope.options.visible;
+          this.autocomplete = this.scope.options.autocomplete;
           controlDiv = angular.element('<div></div>');
           controlDiv.append(this.template);
           this.input = controlDiv.find('input')[0];
