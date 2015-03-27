@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.17 2015-03-26
+/*! angular-google-maps 2.0.17 2015-03-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -463,7 +463,9 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         cancelLogger = function(msg) {
           $log.debug(msg + ": " + msg);
-          return cancelCb(msg);
+          if ((cancelCb != null) && _.isFunction(cancelCb)) {
+            return cancelCb(msg);
+          }
         };
         return PromiseQueueManager(objectToLock, SniffedPromise(fnPromise, promiseType), cancelLogger);
       };
