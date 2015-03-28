@@ -78,7 +78,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
               @gObject?.setOptions @buildOpts(@gObject.getPath()) if newValue isnt oldValue
             , true
           if angular.isDefined(@scope.stroke) and angular.isDefined(@scope.stroke.opacity)
-            scope.$watch 'stroke.opacity', (newValue, oldValue) =>
+            @scope.$watch 'stroke.opacity', (newValue, oldValue) =>
               @gObject?.setOptions @buildOpts(@gObject.getPath()) if newValue isnt oldValue
             , true
           if angular.isDefined(@scope.icons)
