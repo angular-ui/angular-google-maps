@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-X.7 2015-03-27
+/*! angular-google-maps 2.1.0-X.7 2015-03-28
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -361,11 +361,6 @@ Nicholas McCready - https://twitter.com/nmccready
         i++;
       }
       return -1;
-    };
-    this["extends"] = function(arrayOfObjectsToCombine) {
-      return _.reduce(arrayOfObjectsToCombine, function(combined, toAdd) {
-        return _.extend(combined, toAdd);
-      }, {});
     };
     this.isNullOrUndefined = function(thing) {
       return _.isNull(thing || _.isUndefined(thing));
@@ -2690,9 +2685,9 @@ Nicholas McCready - https://twitter.com/nmccready
 
           BasePolyChildModel.include(GmapUtil);
 
-          function BasePolyChildModel(scope1, attrs, map1, defaults, model) {
+          function BasePolyChildModel(scope, attrs, map1, defaults, model) {
             var create;
-            this.scope = scope1;
+            this.scope = scope;
             this.attrs = attrs;
             this.map = map1;
             this.defaults = defaults;
@@ -2823,7 +2818,7 @@ Nicholas McCready - https://twitter.com/nmccready
               })(this), true);
             }
             if (angular.isDefined(this.scope.stroke) && angular.isDefined(this.scope.stroke.opacity)) {
-              scope.$watch('stroke.opacity', (function(_this) {
+              this.scope.$watch('stroke.opacity', (function(_this) {
                 return function(newValue, oldValue) {
                   var ref;
                   if (newValue !== oldValue) {
@@ -4120,9 +4115,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         DrawingManagerParentModel.include(EventsHelper);
 
-        function DrawingManagerParentModel(scope1, element, attrs, map) {
+        function DrawingManagerParentModel(scope, element, attrs, map) {
           var gObject, listeners;
-          this.scope = scope1;
+          this.scope = scope;
           this.attrs = attrs;
           this.map = map;
           gObject = new google.maps.drawing.DrawingManager(this.scope.options);
@@ -4140,7 +4135,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           if (this.scope.events != null) {
             listeners = this.setEvents(gObject, this.scope, this.scope);
-            scope.$watch('events', (function(_this) {
+            this.scope.$watch('events', (function(_this) {
               return function(newValue, oldValue) {
                 if (!_.isEqual(newValue, oldValue)) {
                   if (listeners != null) {
@@ -4151,7 +4146,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               };
             })(this));
           }
-          scope.$on('$destroy', (function(_this) {
+          this.scope.$on('$destroy', (function(_this) {
             return function() {
               if (listeners != null) {
                 _this.removeEvents(listeners);
@@ -4535,7 +4530,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           };
           this.$log.info(this);
           this.doRebuildAll = this.scope.doRebuildAll != null ? this.scope.doRebuildAll : false;
-          this.setIdKey(scope);
+          this.setIdKey(this.scope);
           this.scope.$watch('doRebuildAll', (function(_this) {
             return function(newValue, oldValue) {
               if (newValue !== oldValue) {
@@ -4553,17 +4548,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return;
                 }
                 _this.modelsRendered = true;
-                return _this.onWatch('models', scope, newValue, oldValue);
+                return _this.onWatch('models', _this.scope, newValue, oldValue);
               }
             };
           })(this), !this.isTrue(attrs.modelsbyref));
-          this.watch('doCluster', scope);
-          this.watch('clusterOptions', scope);
-          this.watch('clusterEvents', scope);
-          this.watch('fit', scope);
-          this.watch('idKey', scope);
+          this.watch('doCluster', this.scope);
+          this.watch('clusterOptions', this.scope);
+          this.watch('clusterEvents', this.scope);
+          this.watch('fit', this.scope);
+          this.watch('idKey', this.scope);
           this.gManager = void 0;
-          this.createAllNew(scope);
+          this.createAllNew(this.scope);
         }
 
         MarkersParentModel.prototype.onWatch = function(propNameToWatch, scope, newValue, oldValue) {
