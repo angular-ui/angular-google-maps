@@ -21,12 +21,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
             if @scope.events?
               listeners = @setEvents gObject, @scope, @scope
-              scope.$watch 'events', (newValue, oldValue) =>
+              @scope.$watch 'events', (newValue, oldValue) =>
                 unless _.isEqual newValue, oldValue
                   @removeEvents listeners if listeners?
                   listeners = @setEvents gObject, @scope, @scope
 
-            scope.$on '$destroy', =>
+            @scope.$on '$destroy', =>
               @removeEvents listeners if listeners?
               gObject.setMap null
               gObject = null

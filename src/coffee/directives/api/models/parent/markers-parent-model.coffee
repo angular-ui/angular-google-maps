@@ -27,7 +27,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             @$log.info @
             #assume do rebuild all is false and were lookging for a modelKey prop of id
             @doRebuildAll = if @scope.doRebuildAll? then @scope.doRebuildAll else false
-            @setIdKey scope
+            @setIdKey @scope
             @scope.$watch 'doRebuildAll', (newValue, oldValue) =>
               if (newValue != oldValue)
                 @doRebuildAll = newValue
@@ -37,17 +37,17 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               if !_.isEqual(newValue,oldValue) or not @modelsRendered
                 return if newValue.length == 0 and oldValue.length == 0
                 @modelsRendered = true
-                @onWatch('models', scope, newValue, oldValue)
+                @onWatch('models', @scope, newValue, oldValue)
             , !@isTrue(attrs.modelsbyref)
 
-            @watch 'doCluster', scope
-            @watch 'clusterOptions', scope
-            @watch 'clusterEvents', scope
-            @watch 'fit', scope
-            @watch 'idKey', scope
+            @watch 'doCluster', @scope
+            @watch 'clusterOptions', @scope
+            @watch 'clusterEvents', @scope
+            @watch 'fit', @scope
+            @watch 'idKey', @scope
 
             @gManager = undefined
-            @createAllNew(scope)
+            @createAllNew(@scope)
 
 
           onWatch: (propNameToWatch, scope, newValue, oldValue) =>

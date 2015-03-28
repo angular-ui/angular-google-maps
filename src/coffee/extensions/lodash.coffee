@@ -54,13 +54,6 @@ angular.module('uiGmapgoogle-maps.extensions')
           i++
       -1
 
-  #to easily inherit multiple objects
-  this.extends = (arrayOfObjectsToCombine)->
-      _.reduce arrayOfObjectsToCombine,(combined,toAdd)->
-          _.extend(combined,toAdd)
-      ,{}#starting point empty object
-
-
   @isNullOrUndefined = (thing) ->
     _.isNull thing or _.isUndefined thing
   @
