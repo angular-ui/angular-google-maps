@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.19 2015-03-28
+/*! angular-google-maps 2.0.19 2015-03-30
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1124,6 +1124,10 @@ Nicholas McCready - https://twitter.com/nmccready
         reset: function() {
           ctr = 0;
           return proms.length = 0;
+        },
+        decrement: function() {
+          ctr = ctr - 1;
+          return proms.length = proms.length - 1;
         }
       };
     }
@@ -6019,7 +6023,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             var ctrlObj, retCtrl;
             retCtrl = void 0;
             $scope.$on('$destroy', function() {
-              return IsReady.reset();
+              return IsReady.decrement();
             });
             ctrlObj = CtrlHandle.handle($scope);
             $scope.ctrlType = 'Map';
