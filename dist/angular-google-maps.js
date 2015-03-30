@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-X.8 2015-03-28
+/*! angular-google-maps 2.1.0-X.8 2015-03-30
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -7561,6 +7561,9 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
                 };
                 scope.control.getGObject = function() {
                   return sv;
+                };
+                scope.control.getGPano = function() {
+                  return pano;
                 };
               }
               scope.$watch('options', function(newValue, oldValue) {
