@@ -33,4 +33,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   reset: ->
     ctr = 0
     proms.length = 0
+  decrement: ->
+    ctr = ctr - 1
+    proms.length = proms.length - 1
 ]
