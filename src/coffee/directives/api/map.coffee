@@ -19,7 +19,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
           ctrlFn = ($scope) ->
             retCtrl = undefined
             $scope.$on '$destroy', ->
-              IsReady.reset()
+              IsReady.decrement()
 
             ctrlObj = CtrlHandle.handle $scope
             $scope.ctrlType = 'Map'
