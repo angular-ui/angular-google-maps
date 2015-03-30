@@ -10,6 +10,7 @@ angular.module('uiGmapgoogle-maps')
 .directive 'uiGmapStreetViewPanorama', ['uiGmapGoogleMapApi', 'uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapEventsHelper'
   (GoogleMapApi, $log, GmapUtil, EventsHelper) ->
     name = 'uiGmapStreetViewPanorama'
+    console.log 'uigmap directive on'
 
     restrict: 'EMA'
     template: '<div class="angular-google-map-street-view-panorama"></div>'
@@ -103,6 +104,8 @@ angular.module('uiGmapgoogle-maps')
             povOpts
           scope.control.getGObject = ->
             sv
+          scope.control.getGPano = ->
+            pano
 
         scope.$watch 'options', (newValue, oldValue) ->
           #options are limited so we do not have to worry about them conflicting with positon
