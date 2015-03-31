@@ -1174,6 +1174,10 @@ Nicholas McCready - https://twitter.com/nmccready
         reset: function() {
           ctr = 0;
           return proms.length = 0;
+        },
+        decrement: function() {
+          ctr = ctr - 1;
+          return proms.length = proms.length - 1;
         }
       };
     }
@@ -6077,7 +6081,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             var ctrlObj, retCtrl;
             retCtrl = void 0;
             $scope.$on('$destroy', function() {
-              return IsReady.reset();
+              return IsReady.decrement();
             });
             ctrlObj = CtrlHandle.handle($scope);
             $scope.ctrlType = 'Map';
