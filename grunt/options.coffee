@@ -2,6 +2,9 @@ log = require('util').log
 jasmineSettings = require './jasmine'
 _ = require 'lodash'
 
+clone = (obj) ->
+  _.extend {}, obj
+
 pipeline = [
   "src/coffee/module"
   "src/coffee/providers/*"
@@ -31,6 +34,7 @@ pipeline = [
   "src/coffee/directives/*"
 ]
 
+# configs for concat main distribution & dev mapping
 concatDist =
   options:
     banner: """
@@ -56,15 +60,26 @@ concatDist =
   ]
   dest: "dist/<%= pkg.name %>.js"
 
-clone = (obj) ->
-  _.extend {}, obj
-
 concatDistMapped = clone concatDist
 concatDistMapped.options = _.extend clone(concatDist.options),
   sourceMap: true
   sourceMapName: "dist/<%= pkg.name %>_dev_mapped.js.map"
 concatDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.js"
 
+# configs for concat street view directive & dev mapping
+concatStreetView = _.cloneDeep concatDist
+concatStreetView.src = [
+  "src/coffee/module"
+  "src/coffee/directives/street-view-panorama.coffee"
+].map( (f) -> "tmp/#{f}.js" )
+concatStreetView.dest = "dist/<%= pkg.name %>-street-view.js"
+concatStreetViewMapped = _.cloneDeep concatStreetView
+concatStreetViewMapped.options.sourceMap = true
+concatStreetViewMapped.options.sourceMapName = "dist/<%= pkg.name %>-street-view_dev_mapped.js.map"
+concatStreetViewMapped.dest = "dist/<%= pkg.name %>-street-view_dev_mapped.js"
+
+
+# configs for uglify main distribution & dev mapping
 uglifyDist=
   options:
     banner: "/*! <%= pkg.name %> <%= pkgFn().version %> <%= grunt.template.today(\"yyyy-mm-dd\") %>\n *  <%= pkg.description %>\n *  <%= pkg.repository.type %>: <%= pkg.repository.url %>\n */\n"
@@ -79,6 +94,17 @@ uglifyDistMapped.options = _.extend clone(uglifyDistMapped.options),
   sourceMapName: "dist/<%= pkg.name %>_dev_mapped.min.js.map"
 uglifyDistMapped.src =  "dist/<%= pkg.name %>_dev_mapped.js"
 uglifyDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.min.js"
+
+# configs for uglify street view directive & dev mapping
+uglifyStreetView = _.cloneDeep uglifyDist
+uglifyStreetView.src = "dist/<%= pkg.name %>-street-view.js"
+uglifyStreetView.dest = "dist/<%= pkg.name %>-street-view.min.js"
+uglifyStreetViewMapped = _.cloneDeep uglifyStreetView
+uglifyStreetViewMapped.options.sourceMap = true
+uglifyStreetViewMapped.options.sourceMapName = "dist/<%= pkg.name %>-street-view_dev_mapped.min.js.map"
+uglifyStreetViewMapped.src =  "dist/<%= pkg.name %>-street-view_dev_mapped.js"
+uglifyStreetViewMapped.dest = "dist/<%= pkg.name %>-street-view_dev_mapped.min.js"
+
 
 module.exports = (grunt) ->
   options =
@@ -114,6 +140,7 @@ module.exports = (grunt) ->
       dist: ["dist/*", "tmp"]
       example: ["example/<%= pkg.name %>.js"]
       spec: ["_Spec*"]
+      streetview: ["dist/*street-view*"]
 
     mkdir:
       all:
@@ -153,6 +180,8 @@ module.exports = (grunt) ->
       libs:
         src: ["curl_components/**/*.js"]
         dest: "tmp/libs.js"
+      streetview: concatStreetView
+      streetviewMapped: concatStreetViewMapped
     copy:
       dist:
         files: [
@@ -167,6 +196,8 @@ module.exports = (grunt) ->
     uglify:
       dist: uglifyDist
       distMapped: uglifyDistMapped
+      streetview: uglifyStreetView
+      streetviewMapped: uglifyStreetViewMapped
 
     jshint:
       all: ["Gruntfile.js", "temp/spec/js/*.js", "temp/spec/js/**/*.js", "temp/spec/js/**/**/*.js",
