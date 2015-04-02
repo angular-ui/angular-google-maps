@@ -2,9 +2,6 @@ log = require('util').log
 jasmineSettings = require './jasmine'
 _ = require 'lodash'
 
-clone = (obj) ->
-  _.extend {}, obj
-
 pipeline = [
   "src/coffee/module"
   "src/coffee/providers/*"
@@ -60,10 +57,9 @@ concatDist =
   ]
   dest: "dist/<%= pkg.name %>.js"
 
-concatDistMapped = clone concatDist
-concatDistMapped.options = _.extend clone(concatDist.options),
-  sourceMap: true
-  sourceMapName: "dist/<%= pkg.name %>_dev_mapped.js.map"
+concatDistMapped = _.cloneDeep concatDist
+concatDistMapped.options.sourceMap = true
+concatDistMapped.options.sourceMap = "dist/<%= pkg.name %>_dev_mapped.js.map"
 concatDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.js"
 
 # configs for concat street view directive & dev mapping
@@ -88,10 +84,9 @@ uglifyDist=
   src: "dist/<%= pkg.name %>.js"
   dest: "dist/<%= pkg.name %>.min.js"
 
-uglifyDistMapped = clone uglifyDist
-uglifyDistMapped.options = _.extend clone(uglifyDistMapped.options),
-  sourceMap: true
-  sourceMapName: "dist/<%= pkg.name %>_dev_mapped.min.js.map"
+uglifyDistMapped = _.cloneDeep uglifyDist
+uglifyDistMapped.options.sourceMap = true
+uglifyDistMapped.options.sourceMap = "dist/<%= pkg.name %>_dev_mapped.min.js.map"
 uglifyDistMapped.src =  "dist/<%= pkg.name %>_dev_mapped.js"
 uglifyDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.min.js"
 
