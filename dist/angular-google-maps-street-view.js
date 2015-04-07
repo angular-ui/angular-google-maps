@@ -61,4 +61,152 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module('uiGmapgoogle-maps', ['uiGmapgoogle-maps.directives.api', 'uiGmapgoogle-maps.providers']);
 
 }).call(this);
+;
+/*
+@authors:
+- Nicholas McCready - https://twitter.com/nmccready
+ */
+
+
+/*
+StreetViewPanorama Directive to care of basic initialization of StreetViewPanorama
+ */
+
+(function() {
+  angular.module('uiGmapgoogle-maps').directive('uiGmapStreetViewPanorama', [
+    'uiGmapGoogleMapApi', 'uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapEventsHelper', function(GoogleMapApi, $log, GmapUtil, EventsHelper) {
+      var name;
+      name = 'uiGmapStreetViewPanorama';
+      return {
+        restrict: 'EMA',
+        template: '<div class="angular-google-map-street-view-panorama"></div>',
+        replace: true,
+        scope: {
+          focalcoord: '=',
+          radius: '=?',
+          events: '=?',
+          options: '=?',
+          control: '=?',
+          povoptions: '=?',
+          imagestatus: '='
+        },
+        link: function(scope, element, attrs) {
+          return GoogleMapApi.then((function(_this) {
+            return function(maps) {
+              var clean, create, didCreateOptionsFromDirective, firstTime, handleSettings, listeners, opts, pano, povOpts, sv;
+              pano = void 0;
+              sv = void 0;
+              didCreateOptionsFromDirective = false;
+              listeners = void 0;
+              opts = null;
+              povOpts = null;
+              clean = function() {
+                EventsHelper.removeEvents(listeners);
+                if (pano != null) {
+                  pano.unbind('position');
+                  pano.setVisible(false);
+                }
+                if (sv != null) {
+                  if ((sv != null ? sv.setVisible : void 0) != null) {
+                    sv.setVisible(false);
+                  }
+                  return sv = void 0;
+                }
+              };
+              handleSettings = function(perspectivePoint, focalPoint) {
+                var heading;
+                heading = google.maps.geometry.spherical.computeHeading(perspectivePoint, focalPoint);
+                didCreateOptionsFromDirective = true;
+                scope.radius = scope.radius || 50;
+                povOpts = angular.extend({
+                  heading: heading,
+                  zoom: 1,
+                  pitch: 0
+                }, scope.povoptions || {});
+                opts = opts = angular.extend({
+                  navigationControl: false,
+                  addressControl: false,
+                  linksControl: false,
+                  position: perspectivePoint,
+                  pov: povOpts,
+                  visible: true
+                }, scope.options || {});
+                return didCreateOptionsFromDirective = false;
+              };
+              create = function() {
+                var focalPoint;
+                if (!scope.focalcoord) {
+                  $log.error(name + ": focalCoord needs to be defined");
+                  return;
+                }
+                if (!scope.radius) {
+                  $log.error(name + ": needs a radius to set the camera view from its focal target.");
+                  return;
+                }
+                clean();
+                if (sv == null) {
+                  sv = new google.maps.StreetViewService();
+                }
+                if (scope.events) {
+                  listeners = EventsHelper.setEvents(sv, scope, scope);
+                }
+                focalPoint = GmapUtil.getCoords(scope.focalcoord);
+                return sv.getPanoramaByLocation(focalPoint, scope.radius, function(streetViewPanoramaData, status) {
+                  var ele, perspectivePoint, ref;
+                  if (scope.imagestatus != null) {
+                    scope.imagestatus = status;
+                  }
+                  if (((ref = scope.events) != null ? ref.image_status_changed : void 0) != null) {
+                    scope.events.image_status_changed(sv, 'image_status_changed', scope, status);
+                  }
+                  if (status === "OK") {
+                    perspectivePoint = streetViewPanoramaData.location.latLng;
+                    handleSettings(perspectivePoint, focalPoint);
+                    ele = element[0];
+                    return pano = new google.maps.StreetViewPanorama(ele, opts);
+                  }
+                });
+              };
+              if (scope.control != null) {
+                scope.control.getOptions = function() {
+                  return opts;
+                };
+                scope.control.getPovOptions = function() {
+                  return povOpts;
+                };
+                scope.control.getGObject = function() {
+                  return sv;
+                };
+                scope.control.getGPano = function() {
+                  return pano;
+                };
+              }
+              scope.$watch('options', function(newValue, oldValue) {
+                if (newValue === oldValue || newValue === opts || didCreateOptionsFromDirective) {
+                  return;
+                }
+                return create();
+              });
+              firstTime = true;
+              scope.$watch('focalcoord', function(newValue, oldValue) {
+                if (newValue === oldValue && !firstTime) {
+                  return;
+                }
+                if (newValue == null) {
+                  return;
+                }
+                firstTime = false;
+                return create();
+              });
+              return scope.$on('$destroy', function() {
+                return clean();
+              });
+            };
+          })(this));
+        }
+      };
+    }
+  ]);
+
+}).call(this);
 }( window,angular));

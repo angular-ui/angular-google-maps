@@ -66,7 +66,7 @@ concatDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.js"
 concatStreetView = _.cloneDeep concatDist
 concatStreetView.src = [
   "src/coffee/module"
-  "src/coffee/directives/street-view-panorama.coffee"
+  "src/coffee/directives/street-view-panorama"
 ].map( (f) -> "tmp/#{f}.js" )
 concatStreetView.dest = "dist/<%= pkg.name %>-street-view.js"
 concatStreetViewMapped = _.cloneDeep concatStreetView
