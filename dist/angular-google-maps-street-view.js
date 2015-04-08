@@ -61,6 +61,200 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module('uiGmapgoogle-maps', ['uiGmapgoogle-maps.directives.api', 'uiGmapgoogle-maps.providers']);
 
 }).call(this);
+;(function() {
+  angular.module('uiGmapgoogle-maps.providers').factory('uiGmapMapScriptLoader', [
+    '$q', 'uiGmapuuid', function($q, uuid) {
+      var getScriptUrl, includeScript, isGoogleMapsLoaded, scriptId;
+      scriptId = void 0;
+      getScriptUrl = function(options) {
+        if (options.china) {
+          return 'http://maps.google.cn/maps/api/js?';
+        } else {
+          return 'https://maps.googleapis.com/maps/api/js?';
+        }
+      };
+      includeScript = function(options) {
+        var query, script;
+        query = _.map(options, function(v, k) {
+          return k + '=' + v;
+        });
+        if (scriptId) {
+          document.getElementById(scriptId).remove();
+        }
+        query = query.join('&');
+        script = document.createElement('script');
+        script.id = scriptId = "ui_gmap_map_load_" + (uuid.generate());
+        script.type = 'text/javascript';
+        script.src = getScriptUrl(options) + query;
+        return document.body.appendChild(script);
+      };
+      isGoogleMapsLoaded = function() {
+        return angular.isDefined(window.google) && angular.isDefined(window.google.maps);
+      };
+      return {
+        load: function(options) {
+          var deferred, randomizedFunctionName;
+          deferred = $q.defer();
+          if (isGoogleMapsLoaded()) {
+            deferred.resolve(window.google.maps);
+            return deferred.promise;
+          }
+          randomizedFunctionName = options.callback = 'onGoogleMapsReady' + Math.round(Math.random() * 1000);
+          window[randomizedFunctionName] = function() {
+            window[randomizedFunctionName] = null;
+            deferred.resolve(window.google.maps);
+          };
+          if (window.navigator.connection && window.Connection && window.navigator.connection.type === window.Connection.NONE) {
+            document.addEventListener('online', function() {
+              if (!isGoogleMapsLoaded()) {
+                return includeScript(options);
+              }
+            });
+          } else {
+            includeScript(options);
+          }
+          return deferred.promise;
+        }
+      };
+    }
+  ]).provider('uiGmapGoogleMapApi', function() {
+    this.options = {
+      china: false,
+      v: '3.17',
+      libraries: '',
+      language: 'en',
+      sensor: 'false'
+    };
+    this.configure = function(options) {
+      angular.extend(this.options, options);
+    };
+    this.$get = [
+      'uiGmapMapScriptLoader', (function(_this) {
+        return function(loader) {
+          return loader.load(_this.options);
+        };
+      })(this)
+    ];
+    return this;
+  });
+
+}).call(this);
+;(function() {
+  angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapLogger', [
+    '$log', function($log) {
+      var LEVELS, Logger, log, maybeExecLevel;
+      LEVELS = {
+        log: 1,
+        info: 2,
+        debug: 3,
+        warn: 4,
+        error: 5,
+        none: 6
+      };
+      maybeExecLevel = function(level, current, fn) {
+        if (level >= current) {
+          return fn();
+        }
+      };
+      log = function(logLevelFnName, msg) {
+        if ($log != null) {
+          return $log[logLevelFnName](msg);
+        } else {
+          return console[logLevelFnName](msg);
+        }
+      };
+      Logger = (function() {
+        function Logger() {
+          var logFns;
+          this.doLog = true;
+          logFns = {};
+          ['log', 'info', 'debug', 'warn', 'error'].forEach((function(_this) {
+            return function(level) {
+              return logFns[level] = function(msg) {
+                if (_this.doLog) {
+                  return maybeExecLevel(LEVELS[level], _this.currentLevel, function() {
+                    return log(level, msg);
+                  });
+                }
+              };
+            };
+          })(this));
+          this.LEVELS = LEVELS;
+          this.currentLevel = LEVELS.error;
+          this.log = logFns['log'];
+          this.info = logFns['info'];
+          this.debug = logFns['debug'];
+          this.warn = logFns['warn'];
+          this.error = logFns['error'];
+        }
+
+        Logger.prototype.spawn = function() {
+          return new Logger();
+        };
+
+        Logger.prototype.setLog = function(someLogger) {
+          return $log = someLogger;
+        };
+
+        return Logger;
+
+      })();
+      return new Logger();
+    }
+  ]);
+
+}).call(this);
+;(function() {
+  angular.module("uiGmapgoogle-maps.directives.api.utils").service("uiGmapEventsHelper", [
+    "uiGmapLogger", function($log) {
+      var _getEventsObj, _hasEvents;
+      _hasEvents = function(obj) {
+        return angular.isDefined(obj.events) && (obj.events != null) && angular.isObject(obj.events);
+      };
+      _getEventsObj = function(scope, model) {
+        if (_hasEvents(scope)) {
+          return scope;
+        }
+        if (_hasEvents(model)) {
+          return model;
+        }
+      };
+      return {
+        setEvents: function(gObject, scope, model, ignores) {
+          var eventObj;
+          eventObj = _getEventsObj(scope, model);
+          if (eventObj != null) {
+            return _.compact(_.map(eventObj.events, function(eventHandler, eventName) {
+              var doIgnore;
+              if (ignores) {
+                doIgnore = _(ignores).contains(eventName);
+              }
+              if (eventObj.events.hasOwnProperty(eventName) && angular.isFunction(eventObj.events[eventName]) && !doIgnore) {
+                return google.maps.event.addListener(gObject, eventName, function() {
+                  if (!scope.$evalAsync) {
+                    scope.$evalAsync = function() {};
+                  }
+                  return scope.$evalAsync(eventHandler.apply(scope, [gObject, eventName, model, arguments]));
+                });
+              }
+            }));
+          }
+        },
+        removeEvents: function(listeners) {
+          if (!listeners) {
+            return;
+          }
+          return listeners.forEach(function(l) {
+            if (l) {
+              return google.maps.event.removeListener(l);
+            }
+          });
+        }
+      };
+    }
+  ]);
+
+}).call(this);
 ;
 /*
 @authors:
