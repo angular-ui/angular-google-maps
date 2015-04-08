@@ -54,8 +54,8 @@ module.exports = (grunt) ->
   grunt.registerTask "default", [
     'bower', 'curl',
     'verbosity', 'clean:dist', 'jshint', 'mkdir', 'coffee',
-    'concat:libs', 'replace', 'webpack', 'concat:dist',
-    'copy', 'uglify::dist', 'jasmine:consoleSpec']
+    'concat:libs', 'replace', 'webpack', 'concat:dist', 'concat:streetview'
+    'copy', 'uglify:dist', 'uglify:streetview', 'jasmine:consoleSpec']
 
   # run default "grunt" prior to generate _SpecRunner.html
   grunt.registerTask "spec", [
@@ -76,7 +76,7 @@ module.exports = (grunt) ->
 
   dev = ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat", "copy"]
 
-  grunt.registerTask "dev", dev.concat ["uglify:distMapped", "jasmine:spec"]
+  grunt.registerTask "dev", dev.concat ["uglify:distMapped", "uglify:streetviewMapped", "jasmine:spec"]
 
   grunt.registerTask "fast", dev.concat ["jasmine:spec"]
 
@@ -84,6 +84,9 @@ module.exports = (grunt) ->
     'bower', 'curl',
     "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat", "uglify"
     "copy", "jasmine:spec"]
+
+  grunt.registerTask "build-street-view", ["coffee", "clean:streetview", "concat:streetview", "concat:streetviewMapped", 
+    "uglify:streetview", "uglify:streetviewMapped"]
 
   # Run the example page by creating a local copy of angular-google-maps.js
   # and running a webserver on port 3100 with livereload. Web page is opened
