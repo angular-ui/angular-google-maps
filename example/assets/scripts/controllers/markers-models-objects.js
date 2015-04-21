@@ -65,7 +65,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
         lastId = 1;//reset
         markers.length = num;
 
-        $scope.searchResults.results = uiGmapObjectIterators.slappAll(markers);
+        $scope.searchResults.results = uiGmapObjectIterators.slapAll(markers);
       };
 
       $scope.reset = function () {
