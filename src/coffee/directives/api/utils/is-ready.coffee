@@ -35,5 +35,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     proms.length = 0
   decrement: ->
     ctr = ctr - 1
-    proms.length = proms.length - 1
+    if proms.length > 0
+      proms.length = proms.length - 1
+    else
+      proms.length = 0
 ]
