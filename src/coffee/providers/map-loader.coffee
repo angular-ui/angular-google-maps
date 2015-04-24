@@ -4,13 +4,23 @@ angular.module('uiGmapgoogle-maps.providers')
       scriptId = undefined
 
       getScriptUrl = (options)->
+        #china doesn't allow https and has a special url
         if options.china
           'http://maps.google.cn/maps/api/js?'
         else
-          'https://maps.googleapis.com/maps/api/js?'
+          #auto will just use protocol-less api code so will automatically use https if used on https website, and http if used on http website
+          if options.transport == 'auto'
+            '//maps.googleapis.com/maps/api/js?';
+          else 
+            options.transport + '://maps.googleapis.com/maps/api/js?';
 
       includeScript = (options)->
-        query = _.map options, (v, k) ->
+        omitOptions = ['transport', 'isGoogleMapsForWork', 'china']
+        # 'Google Maps API for Work developers must not include a key in their requests.' so remove from url params
+        if options.isGoogleMapsForWork
+          omitOptions.push('key')
+          
+        query = _.map _.omit(options, omitOptions), (v, k) ->
           k + '=' + v
 
         document.getElementById(scriptId).remove() if scriptId
@@ -54,6 +64,9 @@ angular.module('uiGmapgoogle-maps.providers')
     # Some nice default options
     @options =
     #    key: 'api-key here',
+    #    client: 'gme-googleMapsForWorkClientId here'
+      transport: 'https'
+      isGoogleMapsForWork: false
       china: false
       v: '3.17'
       libraries: ''
