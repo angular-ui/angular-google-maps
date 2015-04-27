@@ -70,12 +70,20 @@ Nicholas McCready - https://twitter.com/nmccready
         if (options.china) {
           return 'http://maps.google.cn/maps/api/js?';
         } else {
-          return 'https://maps.googleapis.com/maps/api/js?';
+          if (options.transport === 'auto') {
+            return '//maps.googleapis.com/maps/api/js?';
+          } else {
+            return options.transport + '://maps.googleapis.com/maps/api/js?';
+          }
         }
       };
       includeScript = function(options) {
-        var query, script;
-        query = _.map(options, function(v, k) {
+        var omitOptions, query, script;
+        omitOptions = ['transport', 'isGoogleMapsForWork', 'china'];
+        if (options.isGoogleMapsForWork) {
+          omitOptions.push('key');
+        }
+        query = _.map(_.omit(options, omitOptions), function(v, k) {
           return k + '=' + v;
         });
         if (scriptId) {
@@ -119,6 +127,8 @@ Nicholas McCready - https://twitter.com/nmccready
     }
   ]).provider('uiGmapGoogleMapApi', function() {
     this.options = {
+      transport: 'https',
+      isGoogleMapsForWork: false,
       china: false,
       v: '3.17',
       libraries: '',
