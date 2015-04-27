@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0-X.10 2015-04-16
+/*! angular-google-maps 2.1.0-X.10 2015-04-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1177,7 +1177,11 @@ Nicholas McCready - https://twitter.com/nmccready
         },
         decrement: function() {
           ctr = ctr - 1;
-          return proms.length = proms.length - 1;
+          if (proms.length > 0) {
+            return proms.length = proms.length - 1;
+          } else {
+            return proms.length = 0;
+          }
         }
       };
     }
@@ -3335,7 +3339,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.setLabelOptions = function(opts) {
-          opts.labelAnchor = this.getLabelPositionPoint(opts.labelAnchor);
+          if (opts.labelAnchor) {
+            opts.labelAnchor = this.getLabelPositionPoint(opts.labelAnchor);
+          }
           return opts;
         };
 
