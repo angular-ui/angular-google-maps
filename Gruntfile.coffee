@@ -85,8 +85,10 @@ module.exports = (grunt) ->
     "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat", "uglify"
     "copy", "jasmine:spec"]
 
-  grunt.registerTask "build-street-view", ["coffee", "clean:streetview", "concat:streetview", "concat:streetviewMapped", 
+  grunt.registerTask "build-street-view", ["coffee", "clean:streetview", "concat:streetview", "concat:streetviewMapped",
     "uglify:streetview", "uglify:streetviewMapped"]
+
+  grunt.registerTask "buildAll", "mappAll"
 
   # Run the example page by creating a local copy of angular-google-maps.js
   # and running a webserver on port 3100 with livereload. Web page is opened
