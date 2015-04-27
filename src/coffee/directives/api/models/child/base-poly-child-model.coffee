@@ -28,9 +28,9 @@ angular.module('uiGmapgoogle-maps.directives.api')
               maybeCachedEval = @scope
             @gObject = gFactory @buildOpts(pathPoints, maybeCachedEval) if pathPoints.length > 0
             if @gObject
-              @extendMapBounds map, pathPoints if @scope.fit
+              @extendMapBounds @map, pathPoints if @scope.fit
               arraySync @gObject.getPath(), @scope, 'path', (pathPoints) =>
-                @extendMapBounds map, pathPoints if @scope.fit
+                @extendMapBounds @map, pathPoints if @scope.fit
               if angular.isDefined(@scope.events) and angular.isObject @scope.events
                 @listeners = if @model then EventsHelper.setEvents @gObject, @scope, @model else EventsHelper.setEvents @gObject, @scope, @scope
               @internalListeners = if @model then EventsHelper.setEvents @gObject, events: @internalEvents, @model else EventsHelper.setEvents @gObject, events: @internalEvents, @scope

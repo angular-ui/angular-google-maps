@@ -1,3 +1,6 @@
+
+We are looking for an active maintainers and or someone to take the "bull by the horns" on the project. @nmccready is active on other projects right now and does not have the time to dedicate to this project as needed. Therefore we are looking for some developers who would like to take the lead on this project. It is totally ripe for a rewrite (3.0, and angular 2.0). Email or private msg (gitter) nmccready if interested.
+
 # angular-google-maps
 
 > AngularJS directives for Google Maps

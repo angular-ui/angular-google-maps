@@ -196,7 +196,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @gManager.fit()
 
       setLabelOptions: (opts) =>
-        opts.labelAnchor = @getLabelPositionPoint opts.labelAnchor
+        opts.labelAnchor = @getLabelPositionPoint opts.labelAnchor if opts.labelAnchor
         opts
 
       internalEvents: =>
