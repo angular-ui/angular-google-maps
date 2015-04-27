@@ -10,7 +10,7 @@
     "angular-resource": "~1.3.3",
     "angular-cookies": "~1.3.3",
     "angular-sanitize": "~1.3.3",
-    "angular-google-maps": "~2.0.16",
+    "angular-google-maps": "~2.1.0",
     "angular-highlightjs": "~0.2.5",
     "share-button": "~0.0.3",
     "angular-semver-sort": "~0.2.0",
