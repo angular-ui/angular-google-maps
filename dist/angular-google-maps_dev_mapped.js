@@ -2689,11 +2689,11 @@ Nicholas McCready - https://twitter.com/nmccready
 
           BasePolyChildModel.include(GmapUtil);
 
-          function BasePolyChildModel(scope, attrs, map1, defaults, model) {
+          function BasePolyChildModel(scope, attrs, map, defaults, model) {
             var create;
             this.scope = scope;
             this.attrs = attrs;
-            this.map = map1;
+            this.map = map;
             this.defaults = defaults;
             this.model = model;
             this.clean = bind(this.clean, this);
@@ -2731,11 +2731,11 @@ Nicholas McCready - https://twitter.com/nmccready
                 }
                 if (_this.gObject) {
                   if (_this.scope.fit) {
-                    _this.extendMapBounds(map, pathPoints);
+                    _this.extendMapBounds(_this.map, pathPoints);
                   }
                   arraySync(_this.gObject.getPath(), _this.scope, 'path', function(pathPoints) {
                     if (_this.scope.fit) {
-                      return _this.extendMapBounds(map, pathPoints);
+                      return _this.extendMapBounds(_this.map, pathPoints);
                     }
                   });
                   if (angular.isDefined(_this.scope.events) && angular.isObject(_this.scope.events)) {
