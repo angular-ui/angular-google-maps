@@ -69,7 +69,7 @@ concatStreetView.src = [
   "wrapped_uuid"
   "src/coffee/providers/map-loader"
   "src/coffee/directives/api/utils/logger"
-  "src/coffee/directives/api/utils/gmail-util"
+  "src/coffee/directives/api/utils/gmap-util"
   "src/coffee/directives/api/utils/events-helper"
   "src/coffee/directives/street-view-panorama"
 ].map( (f) -> "tmp/#{f}.js" )
