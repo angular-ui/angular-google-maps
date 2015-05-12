@@ -66,6 +66,7 @@ concatDistMapped.dest = "dist/<%= pkg.name %>_dev_mapped.js"
 concatStreetView = _.cloneDeep concatDist
 concatStreetView.src = [
   "src/coffee/module"
+  "wrapped_uuid"
   "src/coffee/providers/map-loader"
   "src/coffee/directives/api/utils/logger"
   "src/coffee/directives/api/utils/gmail-util"

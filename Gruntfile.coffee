@@ -85,8 +85,8 @@ module.exports = (grunt) ->
     "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat", "uglify"
     "copy", "jasmine:spec"]
 
-  grunt.registerTask "build-street-view", ["coffee", "clean:streetview", "concat:streetview", "concat:streetviewMapped",
-    "uglify:streetview", "uglify:streetviewMapped"]
+  grunt.registerTask "build-street-view", ['clean:streetview','mkdir','coffee', 'concat:libs', 'replace',
+    'concat:streetview', 'concat:streetviewMapped', 'uglify:streetview', 'uglify:streetviewMapped']
 
   grunt.registerTask "buildAll", "mappAll"
 

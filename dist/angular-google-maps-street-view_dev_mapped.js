@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.0 2015-04-27
+/*! angular-google-maps 2.1.0 2015-05-12
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -61,6 +61,18 @@ Nicholas McCready - https://twitter.com/nmccready
   angular.module('uiGmapgoogle-maps', ['uiGmapgoogle-maps.directives.api', 'uiGmapgoogle-maps.providers']);
 
 }).call(this);
+;angular.module('uiGmapgoogle-maps.wrapped')
+.service('uiGmapuuid', function() {
+  //BEGIN REPLACE
+  /*
+ Version: core-1.0
+ The MIT License: Copyright (c) 2012 LiosK.
+*/
+function UUID(){}UUID.generate=function(){var a=UUID._gri,b=UUID._ha;return b(a(32),8)+"-"+b(a(16),4)+"-"+b(16384|a(12),4)+"-"+b(32768|a(14),4)+"-"+b(a(48),12)};UUID._gri=function(a){return 0>a?NaN:30>=a?0|Math.random()*(1<<a):53>=a?(0|1073741824*Math.random())+1073741824*(0|Math.random()*(1<<a-30)):NaN};UUID._ha=function(a,b){for(var c=a.toString(16),d=b-c.length,e="0";0<d;d>>>=1,e+=e)d&1&&(c=e+c);return c};
+
+  //END REPLACE
+return UUID;
+});
 ;(function() {
   angular.module('uiGmapgoogle-maps.providers').factory('uiGmapMapScriptLoader', [
     '$q', 'uiGmapuuid', function($q, uuid) {
