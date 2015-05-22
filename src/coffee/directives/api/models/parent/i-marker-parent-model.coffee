@@ -34,7 +34,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
       unless ret
         @$log.error(@constructor.name + ": no valid coords attribute found")
         return false
-      ret
+      type = scope.type
+      unless type
+        scope.type = 'marker'
 
     watch: (propNameToWatch, scope, equalityCheck = true) =>
       scope.$watch propNameToWatch, (newValue, oldValue) =>

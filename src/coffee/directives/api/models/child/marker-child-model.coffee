@@ -171,6 +171,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           unless @gObject
             if @isLabel @opts
               @gObject = new MarkerWithLabel @setLabelOptions @opts
+            else if @opts.content
+              @gObject = new RichMarker @opts
             else
               @gObject = new google.maps.Marker @opts
             _.extend @gObject, model: @model
