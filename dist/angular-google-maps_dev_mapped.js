@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.1 2015-05-22
+/*! angular-google-maps 2.1.1 2015-05-25
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4237,7 +4237,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         }
 
         IMarkerParentModel.prototype.validateScope = function(scope) {
-          var ret, type;
+          var ret;
           if (scope == null) {
             this.$log.error(this.constructor.name + ": invalid scope used");
             return false;
@@ -4247,10 +4247,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.$log.error(this.constructor.name + ": no valid coords attribute found");
             return false;
           }
-          type = scope.type;
-          if (!type) {
-            return scope.type = 'marker';
-          }
+          return ret;
         };
 
         IMarkerParentModel.prototype.watch = function(propNameToWatch, scope, equalityCheck) {
