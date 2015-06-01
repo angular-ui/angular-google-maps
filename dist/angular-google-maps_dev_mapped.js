@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.20 2015-04-27
+/*! angular-google-maps 2.0.20 2015-06-01
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -6058,7 +6058,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         Map.prototype.replace = false;
 
-        Map.prototype.template = '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>';
+        Map.prototype.template = '<div class="angular-google-map"><div class="angular-google-map-container" id="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>';
 
         Map.prototype.scope = {
           center: '=',
@@ -6137,7 +6137,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 zoom: scope.zoom,
                 bounds: scope.bounds
               });
-              _gMap = new google.maps.Map(el.find('div')[1], mapOptions);
+              if (typeof geeCreateFusionMap === 'function') {
+                _gMap = new geeCreateFusionMap("angular-google-map-container", geeServerDefs, mapOptions);
+              } else {
+                _gMap = new google.maps.Map(el.find('div')[1], mapOptions);
+              }
               _gMap['uiGmap_id'] = uuid.generate();
               dragging = false;
               listeners.push(google.maps.event.addListenerOnce(_gMap, 'idle', function() {
