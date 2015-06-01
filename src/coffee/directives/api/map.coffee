@@ -36,7 +36,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
         transclude: true
         replace: false
         #priority: 100,
-        template: '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>'
+        template: '<div class="angular-google-map"><div class="angular-google-map-container" id="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>'
 
         scope:
           center: '=' # required
@@ -101,7 +101,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
               zoom: scope.zoom
               bounds: scope.bounds
 
-            _gMap = new google.maps.Map(el.find('div')[1], mapOptions)
+            if typeof geeCreateFusionMap is 'function'
+              _gMap = new geeCreateFusionMap("angular-google-map-container", geeServerDefs, mapOptions)
+            else
+              _gMap = new google.maps.Map(el.find('div')[1], mapOptions)
             _gMap['uiGmap_id'] = uuid.generate()
 
             dragging = false
