@@ -289,7 +289,7 @@ module.exports = (grunt) ->
     verbosity:
       quiet:
         options: mode: 'dot'
-        tasks: ['coffee', 'clean', 'cleam:dist', 'copy', 'concat', 'jasmineSettings',
+        tasks: ['coffee', 'clean', 'clean:dist', 'copy', 'concat', 'jasmineSettings',
           'mkdir:all', 'jshint', 'uglify', 'replace', 'concat:dist', 'concat:libs']
 
     # for  commonjs libraries that need to be rolled in
