@@ -53,7 +53,7 @@ module.exports = (grunt) ->
   # Default task: build a release in dist/
   grunt.registerTask "default", [
     'bower', 'curl',
-    'verbosity', 'clean:dist', 'jshint', 'mkdir', 'coffee',
+    'verbosity', 'jshint', 'mkdir', 'coffee',
     'concat:libs', 'replace', 'webpack', 'concat:dist', 'concat:streetview'
     'copy', 'uglify:dist', 'uglify:streetview', 'jasmine:consoleSpec']
 
