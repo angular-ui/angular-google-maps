@@ -1092,52 +1092,58 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapIsReady', [
     '$q', '$timeout', function($q, $timeout) {
-      var ctr, promises, proms;
-      ctr = 0;
-      proms = [];
-      promises = function() {
-        return $q.all(proms);
+      var _checkIfReady, _ctr, _currentCheckNum, _maxCtrChecks, _promises, _proms;
+      _ctr = 0;
+      _proms = [];
+      _currentCheckNum = 1;
+      _maxCtrChecks = 50;
+      _promises = function() {
+        return $q.all(_proms);
+      };
+      _checkIfReady = function(deferred, expectedInstances) {
+        return $timeout(function() {
+          if (_currentCheckNum >= _maxCtrChecks) {
+            deferred.reject('Your maps are not found we have checked the maximum amount of times. :)');
+          }
+          _currentCheckNum += 1;
+          if (_ctr !== expectedInstances) {
+            return _checkIfReady(deferred, expectedInstances);
+          } else {
+            return deferred.resolve(_promises());
+          }
+        }, 100);
       };
       return {
         spawn: function() {
           var d;
           d = $q.defer();
-          proms.push(d.promise);
-          ctr += 1;
+          _proms.push(d.promise);
+          _ctr += 1;
           return {
-            instance: ctr,
+            instance: _ctr,
             deferred: d
           };
         },
-        promises: promises,
+        promises: _promises,
         instances: function() {
-          return ctr;
+          return _ctr;
         },
-        promise: function(expect) {
-          var d, ohCrap;
-          if (expect == null) {
-            expect = 1;
+        promise: function(expectedInstances) {
+          var d;
+          if (expectedInstances == null) {
+            expectedInstances = 1;
           }
           d = $q.defer();
-          ohCrap = function() {
-            return $timeout(function() {
-              if (ctr !== expect) {
-                return ohCrap();
-              } else {
-                return d.resolve(promises());
-              }
-            });
-          };
-          ohCrap();
+          _checkIfReady(d, expectedInstances);
           return d.promise;
         },
         reset: function() {
-          ctr = 0;
-          return proms.length = 0;
+          _ctr = 0;
+          _proms.length = 0;
         },
         decrement: function() {
-          ctr = ctr - 1;
-          return proms.length = proms.length - 1;
+          _ctr -= 1;
+          _proms.length -= 1;
         }
       };
     }
