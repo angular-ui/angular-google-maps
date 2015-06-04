@@ -288,7 +288,7 @@ module.exports = (grunt) ->
     curl: require './curl-deps'
     verbosity:
       quiet:
-        options: mode: 'dot'
+        options: mode: 'normal'
         tasks: ['coffee', 'clean', 'clean:dist', 'copy', 'concat', 'jasmineSettings',
           'mkdir:all', 'jshint', 'uglify', 'replace', 'concat:dist', 'concat:libs']
 
