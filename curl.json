@@ -4,6 +4,6 @@
     "gmap-util-infobox": "http://google-maps-utility-library-v3.googlecode.com/svn/tags/infobox/1.1.13/src/infobox.js",
     "gmap-util-markerclustererplus": "http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.1.1/src/markerclusterer.js",
     "gmap-util-markerwithlabel": "http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.10/src/markerwithlabel.js",
-    "gmap-util-richmarker": "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/richmarker/src/richmarker.js"
+     "gmap-util-richmarker": "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/richmarker/src/richmarker.js"
   }
 }
