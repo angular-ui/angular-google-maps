@@ -20,8 +20,7 @@ rcDirectory = null
 try
   rc = jf.readFileSync "#{relativePath}.curlrc"
   rcDirectory = rc.directory if rc
-catch
-
+  
 location = rcDirectory or 'curl_components'
 
 #take all dependencies and map them like bower / node
