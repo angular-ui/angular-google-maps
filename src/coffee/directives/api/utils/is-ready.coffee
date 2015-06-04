@@ -1,42 +1,50 @@
 angular.module('uiGmapgoogle-maps.directives.api.utils')
 .service 'uiGmapIsReady', ['$q', '$timeout', ($q, $timeout) ->
-  ctr = 0
-  proms = []
+  _ctr = 0
+  _proms = []
+  _currentCheckNum = 1
+  _maxCtrChecks = 50 #consider making this a angular const so it can be overriden by users
 
-  promises = ->
-    $q.all proms
+  _promises = ->
+    $q.all _proms
+
+
+  _checkIfReady = (deferred, expectedInstances) ->
+    $timeout ->
+      if _currentCheckNum >= _maxCtrChecks
+        deferred.reject('Your maps are not found we have checked the maximum amount of times. :)')
+      _currentCheckNum += 1
+      if _ctr != expectedInstances
+        _checkIfReady(deferred, expectedInstances)
+      else
+        deferred.resolve(_promises())
+    , 100
 
   spawn: ->
     d = $q.defer()
-    proms.push d.promise
-    ctr += 1
+    _proms.push d.promise
+    _ctr += 1
 
-    instance: ctr
+    instance: _ctr
     deferred: d
 
-  promises: promises
+  promises: _promises
 
   instances: ->
-    ctr
+    _ctr
 
-  promise: (expect = 1) ->
+  promise: (expectedInstances = 1) ->
     d = $q.defer()
-    ohCrap = ->
-      $timeout ->
-        if ctr != expect
-          ohCrap()
-        else
-          d.resolve(promises())
-    ohCrap()
+    _checkIfReady(d, expectedInstances)
     d.promise
 
   reset: ->
-    ctr = 0
-    proms.length = 0
+    _ctr = 0
+    _proms.length = 0
+    return
+
   decrement: ->
-    ctr = ctr - 1
-    if proms.length > 0
-      proms.length = proms.length - 1
-    else
-      proms.length = 0
+    _ctr -= 1 if _ctr > 0
+    _proms.length -= 1 if _proms.length
+    return
 ]
