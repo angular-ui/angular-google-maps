@@ -5,7 +5,7 @@ doCover = false #clean cheap way to disable coverage so you can debug the darn c
 
 _requireConfig =
   paths:
-    'lodash': 'bower_components/lodash/dist/lodash'
+    'lodash': 'bower_components/lodash/lodash'
     'angular-mock': 'bower_components/angular-mocks/angular-mocks'
   deps: ['lodash', 'angular-mock']
 
