@@ -1092,14 +1092,20 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapIsReady', [
     '$q', '$timeout', function($q, $timeout) {
-      var _checkIfReady, _ctr, _promises, _proms;
+      var _checkIfReady, _ctr, _currentCheckNum, _maxCtrChecks, _promises, _proms;
       _ctr = 0;
       _proms = [];
+      _currentCheckNum = 1;
+      _maxCtrChecks = 50;
       _promises = function() {
         return $q.all(_proms);
       };
       _checkIfReady = function(deferred, expectedInstances) {
         return $timeout(function() {
+          if (_currentCheckNum >= _maxCtrChecks) {
+            deferred.reject('Your maps are not found we have checked the maximum amount of times. :)');
+          }
+          _currentCheckNum += 1;
           if (_ctr !== expectedInstances) {
             return _checkIfReady(deferred, expectedInstances);
           } else {
