@@ -3,7 +3,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   _ctr = 0
   _proms = []
   _currentCheckNum = 1
-  _maxCtrChecks = 50 #consider maxing this a const so it can be overriden by users
+  _maxCtrChecks = 50 #consider making this a angular const so it can be overriden by users
 
   _promises = ->
     $q.all _proms
