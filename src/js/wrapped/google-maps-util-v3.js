@@ -13,6 +13,7 @@ angular.module('uiGmapgoogle-maps.wrapped')
       window.MarkerClusterer = MarkerClusterer;
       window.MarkerLabel_ = MarkerLabel_;
       window.MarkerWithLabel = MarkerWithLabel;
+      window.RichMarker = RichMarker;
     })
   };
 });

@@ -288,8 +288,8 @@ module.exports = (grunt) ->
     curl: require './curl-deps'
     verbosity:
       quiet:
-        options: mode: 'dot'
-        tasks: ['coffee', 'clean', 'cleam:dist', 'copy', 'concat', 'jasmineSettings',
+        options: mode: 'normal'
+        tasks: ['coffee', 'clean', 'clean:dist', 'copy', 'concat', 'jasmineSettings',
           'mkdir:all', 'jshint', 'uglify', 'replace', 'concat:dist', 'concat:libs']
 
     # for  commonjs libraries that need to be rolled in
