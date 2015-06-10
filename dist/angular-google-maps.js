@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.21 2015-06-04
+/*! angular-google-maps 2.0.21 2015-06-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -130,7 +130,7 @@ Nicholas McCready - https://twitter.com/nmccready
       transport: 'https',
       isGoogleMapsForWork: false,
       china: false,
-      v: '3.17',
+      v: '3',
       libraries: '',
       language: 'en',
       sensor: 'false'

@@ -11,7 +11,7 @@ angular.module('uiGmapgoogle-maps.providers')
           #auto will just use protocol-less api code so will automatically use https if used on https website, and http if used on http website
           if options.transport == 'auto'
             '//maps.googleapis.com/maps/api/js?';
-          else 
+          else
             options.transport + '://maps.googleapis.com/maps/api/js?';
 
       includeScript = (options)->
@@ -19,7 +19,7 @@ angular.module('uiGmapgoogle-maps.providers')
         # 'Google Maps API for Work developers must not include a key in their requests.' so remove from url params
         if options.isGoogleMapsForWork
           omitOptions.push('key')
-          
+
         query = _.map _.omit(options, omitOptions), (v, k) ->
           k + '=' + v
 
@@ -68,7 +68,10 @@ angular.module('uiGmapgoogle-maps.providers')
       transport: 'https'
       isGoogleMapsForWork: false
       china: false
-      v: '3.17'
+      # https://developers.google.com/maps/documentation/javascript/basics#Versioning
+      # This should be a release version.
+      # If it is not the version you want.. override it or then complain to google.
+      v: '3' #NOTICE THIS CAN BE OVERRIDEN, That is why this is a provider!!!!!!!!!
       libraries: ''
       language: 'en'
       sensor: 'false'
