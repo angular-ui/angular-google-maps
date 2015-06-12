@@ -18,7 +18,7 @@
     "webcomponent"
   ],
   "main": "dist/angular-google-maps.js",
-  "files":[
+  "files": [
     "dist/*",
     "spec/coffee/helpers/google-api-mock.coffee",
     "spec/coffee/helpers/initiator.coffee"

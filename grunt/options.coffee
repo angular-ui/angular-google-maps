@@ -216,9 +216,6 @@ module.exports = (grunt) ->
           hostname: "0.0.0.0"
           port: 8069
           base: ""
-    changelog:
-      options:
-        dest: "CHANGELOG.md"
 
     jasmine:
       spec: jasmineSettings.spec
@@ -262,6 +259,9 @@ module.exports = (grunt) ->
           #Make sure to use [name] or [id] in output.filename
           path: "tmp/"
           filename: "webpack.[name].js",
+
+    changelog:
+        options:{}
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options
