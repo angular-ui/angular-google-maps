@@ -263,5 +263,16 @@ module.exports = (grunt) ->
     changelog:
         options:{}
 
+    'modules-graph':
+        options:
+            externalDependenciesColor:'red'
+        library:
+            files:
+                'dist/angular-google-maps.dot': ['tmp/src/**/*.js']
+    graphviz:
+        library:
+            files:
+                'dist/angular-google-maps.png':'dist/angular-google-maps.dot'
+
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options

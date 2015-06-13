@@ -24,6 +24,8 @@ module.exports = (grunt) ->
     'grunt-curl'
     'grunt-verbosity'
     'grunt-webpack'
+    'grunt-angular-modules-graph'
+    'grunt-graphviz'
     ].forEach (gruntLib) ->
       grunt.loadNpmTasks gruntLib
 
@@ -126,5 +128,7 @@ module.exports = (grunt) ->
     listWithQuotes exampleOpenTasks
 
   grunt.registerTask 'allExamples', allExamplesTaskToRun
+
+  grunt.registerTask 'graph', ['modules-graph', 'graphviz']
 
 #to see all tasks available don't forget "grunt --help" !!!
