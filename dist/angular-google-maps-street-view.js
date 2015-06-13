@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.2 2015-06-12
+/*! angular-google-maps 2.1.3 2015-06-12
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -142,7 +142,7 @@ return UUID;
       transport: 'https',
       isGoogleMapsForWork: false,
       china: false,
-      v: '3.17',
+      v: '3',
       libraries: '',
       language: 'en',
       sensor: 'false'

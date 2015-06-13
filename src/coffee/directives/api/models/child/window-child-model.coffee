@@ -199,7 +199,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @scope.$destroy()
 
         updateModel: (model) =>
-          @clonedModel = _.extend({},model)
+          @clonedModel = _.clone(model,true)
           _.extend(@model, @clonedModel)
 
       WindowChildModel
