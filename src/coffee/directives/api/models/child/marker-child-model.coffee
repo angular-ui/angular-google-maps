@@ -144,12 +144,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       setIcon: (scope, doDraw = true) =>
         return if @isNotValid(scope) or !@gObject?
         @renderGMarker doDraw, =>
-          _options = @getProp 'options', scope, @model
           oldValue = @gObject.getIcon()
-          if _options.content
-            newValue = _options.content
-          else
-            newValue = @getProp 'icon',scope, @model
+          newValue = @getProp 'icon',scope, @model
           return if  oldValue == newValue
           @gObject.setIcon newValue
           coords = @getProp 'coords', scope, @model
@@ -178,6 +174,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             else if @opts.content
               @gObject = new RichMarker @opts
               @gObject.getIcon = @gObject.getContent
+              @gObject.setIcon = @gObject.setContent
             else
               @gObject = new google.maps.Marker @opts
             _.extend @gObject, model: @model
