@@ -24,8 +24,7 @@ module.exports = (grunt) ->
     'grunt-curl'
     'grunt-verbosity'
     'grunt-webpack'
-    'grunt-angular-modules-graph'
-    'grunt-graphviz'
+    'grunt-angular-architecture-graph'
     ].forEach (gruntLib) ->
       grunt.loadNpmTasks gruntLib
 
@@ -91,7 +90,7 @@ module.exports = (grunt) ->
   # Run the example page by creating a local copy of angular-google-maps.js
   # and running a webserver on port 3100 with livereload. Web page is opened
   # automatically in the default browser.
-  grunt.registerTask 'graph', ['modules-graph', 'graphviz']
+  grunt.registerTask 'graph', ['angular_architecture_graph']
 
   grunt.registerTask 'bump-@-preminor', ['changelog', 'bump-only:preminor', 'mappAll', 'graph', 'bump-commit']
   grunt.registerTask 'bump-@-prerelease', ['changelog','bump-only:prerelease', 'mappAll', 'graph', 'bump-commit']
