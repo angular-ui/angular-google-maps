@@ -8,6 +8,12 @@ This provider is was created for a few reasons:
         It guarantees that angular-google-maps does not begin processing any directives until all of the Google Maps SDK is fully ready!
     </li>
 </ul>
+
+<div class="alert alert-info">
+  <code>uiGmapGoogleMapApi</code> (<em>this service</em>) should not be used to wait for directives to finish
+  augmenting <code>control</code> objects. The <code>uiGmapIsReady</code> service should be used instead.
+</div>
+
 To utilize this provider you must load it and configure it properly. Please note the
 <a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/providers/map-loader.coffee#L31-L50">defaults</a>!
 

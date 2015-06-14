@@ -13,6 +13,11 @@ Beyond that, the instances passed back to you come back with the following info:
     </li>
 </ul>
 
+<div class="alert alert-info">
+  The <code>uiGmapGoogleMapApi</code> service should not be used to wait for directives to finish
+  augmenting <code>control</code> objects. <code>uiGmapIsReady</code> (<em>this service</em>) should be used instead.
+</div>
+
 <a href="https://github.com/angular-ui/angular-google-maps/blob/develop/src/coffee/directives/api/utils/is-ready.coffee">source code</a>
 
 <div hljs language="js">
