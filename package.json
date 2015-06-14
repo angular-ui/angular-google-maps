@@ -46,7 +46,6 @@
     "grunt-debug-task": "^0.1.7",
     "grunt-mkdir": "~0.1.2",
     "grunt-open": "~0.2.3",
-    "grunt-release": "^0.9.0",
     "grunt-replace": "^0.9.2",
     "grunt-subgrunt": "^0.4.5",
     "grunt-template-jasmine-istanbul": "~0.3.3",

@@ -23,7 +23,6 @@ module.exports = (grunt) ->
     'grunt-debug-task'
     'grunt-curl'
     'grunt-verbosity'
-    'grunt-release'
     'grunt-webpack'
     'grunt-angular-architecture-graph'
     ].forEach (gruntLib) ->

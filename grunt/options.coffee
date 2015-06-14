@@ -132,14 +132,6 @@ module.exports = (grunt) ->
         gitDescribeOptions: "--tags --always --abbrev=1 --dirty=-d"
         prereleaseName: 'X'
 
-    release:
-      options:
-        bump: false
-        add: false
-        commit: false
-        tag: false
-        push: false
-        pushTags: false
     pkg: _pkg
     pkgFn: ->
       grunt.file.readJSON("package.json") #always get latest!
