@@ -3276,9 +3276,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return this.renderGMarker(doDraw, (function(_this) {
             return function() {
-              var coords, newValue, oldValue;
+              var _options, coords, newValue, oldValue;
+              _options = _this.getProp('options', scope, _this.model);
               oldValue = _this.gObject.getIcon();
-              newValue = _this.getProp('icon', scope, _this.model);
+              if (_options.content) {
+                newValue = _options.content;
+              } else {
+                newValue = _this.getProp('icon', scope, _this.model);
+              }
               if (oldValue === newValue) {
                 return;
               }
@@ -3317,6 +3322,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   _this.gObject = new MarkerWithLabel(_this.setLabelOptions(_this.opts));
                 } else if (_this.opts.content) {
                   _this.gObject = new RichMarker(_this.opts);
+                  _this.gObject.getIcon = _this.gObject.getContent;
                 } else {
                   _this.gObject = new google.maps.Marker(_this.opts);
                 }
