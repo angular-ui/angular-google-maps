@@ -94,6 +94,9 @@ digraph dependencies {
       "uiGmapShow"[label="uiGmapShow", color=3]
       "uiGmapgoogle-maps" -> "uiGmapShow"
     
+      "uiGmapStreetViewPanorama"[label="uiGmapStreetViewPanorama", color=3]
+      "uiGmapgoogle-maps" -> "uiGmapStreetViewPanorama"
+    
 
 
 
@@ -215,6 +218,20 @@ digraph dependencies {
       
         "uiGmapLogger"[label="uiGmapLogger"]
         "uiGmapLogger" -> "uiGmapShow"
+      
+    
+      
+        "uiGmapGoogleMapApi"[label="uiGmapGoogleMapApi"]
+        "uiGmapGoogleMapApi" -> "uiGmapStreetViewPanorama"
+      
+        "uiGmapLogger"[label="uiGmapLogger"]
+        "uiGmapLogger" -> "uiGmapStreetViewPanorama"
+      
+        "uiGmapGmapUtil"[label="uiGmapGmapUtil"]
+        "uiGmapGmapUtil" -> "uiGmapStreetViewPanorama"
+      
+        "uiGmapEventsHelper"[label="uiGmapEventsHelper"]
+        "uiGmapEventsHelper" -> "uiGmapStreetViewPanorama"
       
     
 

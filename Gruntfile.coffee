@@ -83,7 +83,7 @@ module.exports = (grunt) ->
   grunt.registerTask "mappAll", [
     'bower', 'curl',
     "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat", "uglify"
-    "copy", "jasmine:spec"]
+    "copy", "jasmine:spec", "graph"]
 
   grunt.registerTask "build-street-view", ['clean:streetview','mkdir','coffee', 'concat:libs', 'replace',
     'concat:streetview', 'concat:streetviewMapped', 'uglify:streetview', 'uglify:streetviewMapped']
@@ -95,11 +95,11 @@ module.exports = (grunt) ->
   # automatically in the default browser.
   grunt.registerTask 'graph', ['angular_architecture_graph']
 
-  grunt.registerTask 'bump-@-preminor', ['changelog', 'bump-only:preminor', 'mappAll', 'graph', 'bump-commit']
-  grunt.registerTask 'bump-@-prerelease', ['changelog','bump-only:prerelease', 'mappAll', 'graph', 'bump-commit']
-  grunt.registerTask 'bump-@', ['changelog','bump-only', 'mappAll', 'graph', 'bump-commit']
-  grunt.registerTask 'bump-@-minor', ['changelog','bump-only:minor', 'mappAll', 'graph', 'bump-commit']
-  grunt.registerTask 'bump-@-major', ['changelog','bump-only:major', 'mappAll', 'graph', 'bump-commit']
+  grunt.registerTask 'bump-@-preminor', ['changelog', 'bump-only:preminor', 'mappAll', 'bump-commit']
+  grunt.registerTask 'bump-@-prerelease', ['changelog','bump-only:prerelease', 'mappAll', 'bump-commit']
+  grunt.registerTask 'bump-@', ['changelog','bump-only', 'mappAll', 'bump-commit']
+  grunt.registerTask 'bump-@-minor', ['changelog','bump-only:minor', 'mappAll', 'bump-commit']
+  grunt.registerTask 'bump-@-major', ['changelog','bump-only:major', 'mappAll', 'bump-commit']
 
   exampleOpenTasks = []
 
