@@ -1,6 +1,14 @@
 log = require('util').log
 jasmineSettings = require './jasmine'
 _ = require 'lodash'
+_pkg = require '../package.json'
+
+_pkg.nextVersion = do ->
+    # note this will fail on new minor or major releases.. oh well manually fix it
+    # for now as this is mainly for changelog
+    last = _.last _pkg.version.split('.')
+    next = Number(last) + 1
+    _pkg.version.replace(last, String(next))
 
 pipeline = [
   "src/coffee/module"
@@ -98,7 +106,7 @@ module.exports = (grunt) ->
         gitDescribeOptions: "--tags --always --abbrev=1 --dirty=-d"
         prereleaseName: 'X'
 
-    pkg: grunt.file.readJSON("package.json")
+    pkg: _pkg
     pkgFn: ->
       grunt.file.readJSON("package.json") #always get latest!
     clean:
@@ -261,7 +269,8 @@ module.exports = (grunt) ->
           filename: "webpack.[name].js",
 
     changelog:
-        options:{}
+        options:
+            version: _pkg.nextVersion
 
     angular_architecture_graph:
             diagram:
