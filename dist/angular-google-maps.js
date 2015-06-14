@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.3 2015-06-12
+/*! angular-google-maps 2.1.3 2015-06-14
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3058,7 +3058,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.updateModel = bind(this.updateModel, this);
           this.handleModelChanges = bind(this.handleModelChanges, this);
           this.destroy = bind(this.destroy, this);
-          this.clonedModel = _.extend({}, this.model);
+          this.clonedModel = _.clone(this.model, true);
           this.deferred = uiGmapPromise.defer();
           _.each(this.keys, (function(_this) {
             return function(v, k) {
@@ -3137,7 +3137,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.updateModel = function(model) {
-          this.clonedModel = _.extend({}, model);
+          this.clonedModel = _.clone(model, true);
           return this.setMyScope('all', model, this.model);
         };
 
@@ -3276,14 +3276,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           return this.renderGMarker(doDraw, (function(_this) {
             return function() {
-              var _options, coords, newValue, oldValue;
-              _options = _this.getProp('options', scope, _this.model);
+              var coords, newValue, oldValue;
               oldValue = _this.gObject.getIcon();
-              if (_options.content) {
-                newValue = _options.content;
-              } else {
-                newValue = _this.getProp('icon', scope, _this.model);
-              }
+              newValue = _this.getProp('icon', scope, _this.model);
               if (oldValue === newValue) {
                 return;
               }
@@ -3323,6 +3318,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 } else if (_this.opts.content) {
                   _this.gObject = new RichMarker(_this.opts);
                   _this.gObject.getIcon = _this.gObject.getContent;
+                  _this.gObject.setIcon = _this.gObject.setContent;
                 } else {
                   _this.gObject = new google.maps.Marker(_this.opts);
                 }
@@ -3773,7 +3769,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.updateModel = function(model) {
-          this.clonedModel = _.extend({}, model);
+          this.clonedModel = _.clone(model, true);
           return _.extend(this.model, this.clonedModel);
         };
 
