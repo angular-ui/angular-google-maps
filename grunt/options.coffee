@@ -123,7 +123,7 @@ module.exports = (grunt) ->
         updateConfigs: []
         commit: true
         commitMessage: "Release %VERSION%"
-        commitFiles: ['package.json', 'bower.json', 'Gruntfile.coffee', 'dist/*']
+        commitFiles: ['package.json', 'bower.json', 'CHANGELOG.md', 'Gruntfile.coffee', 'dist/*']
         createTag: true
         tagName: "%VERSION%"
         tagMessage: "Version %VERSION%"
