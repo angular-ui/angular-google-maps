@@ -3,9 +3,9 @@
 angular.module('angularGoogleMapsApp')
   .controller('HeadlinesCtrl',['$scope', '$http', '$log', '$interval', 'headlinesFetchInterval',
     function ($scope, $http, $log, $interval, headlinesFetchInterval) {
-  
+
     var showAtMost = 3, loadMoreCount = 3;
-  
+
   function fetchHeadlines() {
 
     $http({
@@ -32,7 +32,7 @@ angular.module('angularGoogleMapsApp')
   );
 
   $scope.displayed = function () {
-    return _.first($scope.headlines, showAtMost);
+    return _.take(_.uniq($scope.headlines, function(h){ return h.title;}),showAtMost);
   };
 
   $scope.loadMore = function () {

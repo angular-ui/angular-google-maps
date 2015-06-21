@@ -1,12 +1,11 @@
 {
   "private": true,
-  "name": "angular-google-maps",
+  "name": "angular-google-maps-website",
   "description": "Website for angular-google-maps",
   "version": "0.0.0",
   "repository": "https://github.com/angular-ui/angular-google-maps",
   "devDependencies": {
     "bower": "^1.3.12",
-    "grunt-git-log-json": "0.0.3",
     "connect-livereload": "~0.4.0",
     "grunt": "~0.4.5",
     "grunt-autoprefixer": "~1.0.1",
@@ -49,7 +48,7 @@
     "karma-script-launcher": "~0.1.0",
     "karma-story-reporter": "~0.2.2",
     "load-grunt-tasks": "~0.6.0",
-    "lodash": "^2.4.1",
+    "lodash": ">=2.4.1",
     "time-grunt": "~1.0.0"
   },
   "engines": {

@@ -1,6 +1,16 @@
 {
   "items": [
     {
+      "title": "Looking for Lead Maintainers",
+      "date": "June 2015",
+      "content": "<p>We are activley looking for more developers to help take this project to the next level. If interested please email <a href='mailto:nemtcan@gmail.com'>nmccready</a>.</p>"
+    },
+    {
+      "title": "Website updates",
+      "date": "June 2015",
+      "content": "<p>The community has been chipping in on the documentation which has been great! Keep it coming please!</p>"
+    },
+    {
       "title": "What is next, 2.1.X or 3.0.X?",
       "date": "Dec 12 2014",
       "content": "<p>Things are changing for the good, and we want your input. Please read the <a href='https://github.com/angular-ui/angular-google-maps/blob/master/README.markdown'>README.md<a/> and vote at the <a href='http://goo.gl/4YDSao'>Poll.<a/> <br/> Voting will end Dec 20th!.</p>"
