@@ -142,7 +142,14 @@ $scope.clickEventsObject =
         <tr>
             <td>click</td>
             <td><span class="label label-info">string or expression</span></td>
-            <td>PerModel / or expression binding : event handler executed when clicking a marker</td>
+            <td>PerModel / or expression binding : event handler executed when clicking a marker.
+                If you provide a function name (e.g. 'markerClick'), you will get three different parameters:
+                <ol>
+                	<li>the instance of the generated <code>google.maps.Marker</code> you clicked;</li>
+                	<li>the event name;</li>
+                	<li>the exact clicked marker object you have in the models.</li>
+                </ol>
+            </td>
         </tr>
         <tr>
             <td>modelsbyref</td>
@@ -189,12 +196,10 @@ $scope.clickEventsObject =
             clusterOptions='{expression}'
             fit="{string or object}"
 
-            labelContent='{expression}'
-
             coords="'{string}'"
             icon="'{string}'"
             options="'{string}'"
-            labelContent="'{string}'"
+            labelContent="'{string or expression}'"
             labelAnchor="'{string}'"
             labelClass="'{string}'"
             click="'{string or expression to a function}'"

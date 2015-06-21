@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.0.20 2015-04-27
+/*! angular-google-maps 2.1.5 2015-06-18
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -130,7 +130,7 @@ Nicholas McCready - https://twitter.com/nmccready
       transport: 'https',
       isGoogleMapsForWork: false,
       china: false,
-      v: '3.17',
+      v: '3',
       libraries: '',
       language: 'en',
       sensor: 'false'
@@ -150,9 +150,14 @@ Nicholas McCready - https://twitter.com/nmccready
 
 }).call(this);
 ;(function() {
+  var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
+
   angular.module('uiGmapgoogle-maps.extensions').service('uiGmapExtendGWin', function() {
     return {
       init: _.once(function() {
+        var uiGmapInfoBox;
         if (!(google || (typeof google !== "undefined" && google !== null ? google.maps : void 0) || (google.maps.InfoWindow != null))) {
           return;
         }
@@ -210,6 +215,51 @@ Nicholas McCready - https://twitter.com/nmccready
               return this._isOpen = val;
             }
           };
+          uiGmapInfoBox = (function(superClass) {
+            extend(uiGmapInfoBox, superClass);
+
+            function uiGmapInfoBox(opts) {
+              this.getOrigCloseBoxImg_ = bind(this.getOrigCloseBoxImg_, this);
+              this.getCloseBoxDiv_ = bind(this.getCloseBoxDiv_, this);
+              var box;
+              box = new window.InfoBox(opts);
+              _.extend(this, box);
+              if (opts.closeBoxDiv != null) {
+                this.closeBoxDiv_ = opts.closeBoxDiv;
+              }
+            }
+
+            uiGmapInfoBox.prototype.getCloseBoxDiv_ = function() {
+              return this.closeBoxDiv_;
+            };
+
+            uiGmapInfoBox.prototype.getCloseBoxImg_ = function() {
+              var div, img;
+              div = this.getCloseBoxDiv_();
+              img = this.getOrigCloseBoxImg_();
+              return div || img;
+            };
+
+            uiGmapInfoBox.prototype.getOrigCloseBoxImg_ = function() {
+              var img;
+              img = "";
+              if (this.closeBoxURL_ !== "") {
+                img = "<img";
+                img += " src='" + this.closeBoxURL_ + "'";
+                img += " align=right";
+                img += " style='";
+                img += " position: relative;";
+                img += " cursor: pointer;";
+                img += " margin: " + this.closeBoxMargin_ + ";";
+                img += "'>";
+              }
+              return img;
+            };
+
+            return uiGmapInfoBox;
+
+          })(window.InfoBox);
+          window.uiGmapInfoBox = uiGmapInfoBox;
         }
         if (window.MarkerLabel_) {
           return window.MarkerLabel_.prototype.setContent = function() {
@@ -1092,52 +1142,62 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapIsReady', [
     '$q', '$timeout', function($q, $timeout) {
-      var ctr, promises, proms;
-      ctr = 0;
-      proms = [];
-      promises = function() {
-        return $q.all(proms);
+      var _checkIfReady, _ctr, _currentCheckNum, _maxCtrChecks, _promises, _proms;
+      _ctr = 0;
+      _proms = [];
+      _currentCheckNum = 1;
+      _maxCtrChecks = 50;
+      _promises = function() {
+        return $q.all(_proms);
+      };
+      _checkIfReady = function(deferred, expectedInstances) {
+        return $timeout(function() {
+          if (_currentCheckNum >= _maxCtrChecks) {
+            deferred.reject('Your maps are not found we have checked the maximum amount of times. :)');
+          }
+          _currentCheckNum += 1;
+          if (_ctr !== expectedInstances) {
+            return _checkIfReady(deferred, expectedInstances);
+          } else {
+            return deferred.resolve(_promises());
+          }
+        }, 100);
       };
       return {
         spawn: function() {
           var d;
           d = $q.defer();
-          proms.push(d.promise);
-          ctr += 1;
+          _proms.push(d.promise);
+          _ctr += 1;
           return {
-            instance: ctr,
+            instance: _ctr,
             deferred: d
           };
         },
-        promises: promises,
+        promises: _promises,
         instances: function() {
-          return ctr;
+          return _ctr;
         },
-        promise: function(expect) {
-          var d, ohCrap;
-          if (expect == null) {
-            expect = 1;
+        promise: function(expectedInstances) {
+          var d;
+          if (expectedInstances == null) {
+            expectedInstances = 1;
           }
           d = $q.defer();
-          ohCrap = function() {
-            return $timeout(function() {
-              if (ctr !== expect) {
-                return ohCrap();
-              } else {
-                return d.resolve(promises());
-              }
-            });
-          };
-          ohCrap();
+          _checkIfReady(d, expectedInstances);
           return d.promise;
         },
         reset: function() {
-          ctr = 0;
-          return proms.length = 0;
+          _ctr = 0;
+          _proms.length = 0;
         },
         decrement: function() {
-          ctr = ctr - 1;
-          return proms.length = proms.length - 1;
+          if (_ctr > 0) {
+            _ctr -= 1;
+          }
+          if (_proms.length) {
+            _proms.length -= 1;
+          }
         }
       };
     }
@@ -1287,14 +1347,14 @@ Nicholas McCready - https://twitter.com/nmccready
             throw 'No scope set!';
           }
           if (hasCoords) {
-            isEqual = GmapUtil.equalCoords(this.evalModelHandle(model1, scope.coords), this.evalModelHandle(model2, scope.coords));
+            isEqual = GmapUtil.equalCoords(this.scopeOrModelVal('coords', scope, model1), this.scopeOrModelVal('coords', scope, model2));
             if (!isEqual) {
               return isEqual;
             }
           }
           isEqual = _.every(_.without(this["interface"].scopeKeys, 'coords'), (function(_this) {
             return function(k) {
-              return _this.evalModelHandle(model1, scope[k]) === _this.evalModelHandle(model2, scope[k]);
+              return _this.scopeOrModelVal(scope[k], scope, model1) === _this.scopeOrModelVal(scope[k], scope, model2);
             };
           })(this));
           return isEqual;
@@ -1321,8 +1381,8 @@ Nicholas McCready - https://twitter.com/nmccready
           return model;
         };
 
-        ModelKey.prototype.getProp = function(propName, model) {
-          return this.modelOrKey(model, propName);
+        ModelKey.prototype.getProp = function(propName, scope, model) {
+          return this.scopeOrModelVal(propName, scope, model);
         };
 
 
@@ -1490,7 +1550,7 @@ Nicholas McCready - https://twitter.com/nmccready
                 return adds.push(m);
               } else {
                 child = childObjects.get(m[idKey]);
-                if (!comparison(m, child.clonedModel)) {
+                if (!comparison(m, child.clonedModel, scope)) {
                   return updates.push({
                     model: m,
                     child: child
@@ -2866,7 +2926,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
   angular.module('uiGmapgoogle-maps.directives.api.models.child').factory('uiGmapDrawFreeHandChildModel', [
     'uiGmapLogger', '$q', function($log, $q) {
       var drawFreeHand, freeHandMgr;
-      drawFreeHand = function(map, polys, enable) {
+      drawFreeHand = function(map, polys, done) {
         var move, poly;
         poly = new google.maps.Polyline({
           map: map,
@@ -2886,42 +2946,40 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }));
           poly = null;
           google.maps.event.clearListeners(map.getDiv(), 'mousedown');
-          return enable();
+          return done();
         });
         return void 0;
       };
-      freeHandMgr = function(map1, defaultOptions) {
-        var disableMap, enable;
+      freeHandMgr = function(map1, scope) {
+        var disableMap, enableMap;
         this.map = map1;
-        if (!defaultOptions) {
-          defaultOptions = {
-            draggable: true,
-            zoomControl: true,
-            scrollwheel: true,
-            disableDoubleClickZoom: true
-          };
-        }
-        enable = (function(_this) {
+        disableMap = (function(_this) {
           return function() {
-            var ref;
+            var mapOptions;
+            mapOptions = {
+              draggable: false,
+              disableDefaultUI: true,
+              scrollwheel: false,
+              disableDoubleClickZoom: false
+            };
+            $log.info('disabling map move');
+            return _this.map.setOptions(mapOptions);
+          };
+        })(this);
+        enableMap = (function(_this) {
+          return function() {
+            var mapOptions, ref;
+            mapOptions = {
+              draggable: true,
+              disableDefaultUI: false,
+              scrollwheel: true,
+              disableDoubleClickZoom: true
+            };
             if ((ref = _this.deferred) != null) {
               ref.resolve();
             }
             return _.defer(function() {
-              return _this.map.setOptions(_.extend(_this.oldOptions, defaultOptions));
-            });
-          };
-        })(this);
-        disableMap = (function(_this) {
-          return function() {
-            $log.info('disabling map move');
-            _this.oldOptions = map.getOptions();
-            _this.oldOptions.center = map.getCenter();
-            return _this.map.setOptions({
-              draggable: false,
-              zoomControl: false,
-              scrollwheel: false,
-              disableDoubleClickZoom: false
+              return _this.map.setOptions(_.extend(mapOptions, scope.options));
             });
           };
         })(this);
@@ -2932,7 +2990,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             disableMap();
             $log.info('DrawFreeHandChildModel is engaged (drawing).');
             google.maps.event.addDomListener(_this.map.getDiv(), 'mousedown', function(e) {
-              return drawFreeHand(_this.map, _this.polys, enable);
+              return drawFreeHand(_this.map, _this.polys, enableMap);
             });
             return _this.deferred.promise;
           };
@@ -3000,11 +3058,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.updateModel = bind(this.updateModel, this);
           this.handleModelChanges = bind(this.handleModelChanges, this);
           this.destroy = bind(this.destroy, this);
-          this.clonedModel = _.extend({}, this.model);
+          this.clonedModel = _.clone(this.model, true);
           this.deferred = uiGmapPromise.defer();
           _.each(this.keys, (function(_this) {
             return function(v, k) {
-              return _this[k + 'Key'] = _.isFunction(_this.keys[k]) ? _this.keys[k]() : _this.keys[k];
+              var keyValue;
+              keyValue = _this.keys[k];
+              if ((keyValue != null) && !_.isFunction(keyValue) && _.isString(keyValue)) {
+                return _this[k + 'Key'] = keyValue;
+              }
             };
           })(this));
           this.idKey = this.idKeyKey || 'id';
@@ -3075,7 +3137,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.updateModel = function(model) {
-          this.clonedModel = _.extend({}, model);
+          this.clonedModel = _.clone(model, true);
           return this.setMyScope('all', model, this.model);
         };
 
@@ -3084,7 +3146,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (doDraw == null) {
             doDraw = true;
           }
-          coords = this.getProp(this.coordsKey, this.model);
+          coords = this.getProp('coords', this.scope, this.model);
           if (coords != null) {
             if (!this.validateCoords(coords)) {
               $log.debug('MarkerChild does not have coords yet. They may be defined later.');
@@ -3191,7 +3253,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return this.renderGMarker(doDraw, (function(_this) {
             return function() {
               var newGValue, newModelVal, oldGValue;
-              newModelVal = _this.getProp(_this.coordsKey, _this.model);
+              newModelVal = _this.getProp('coords', scope, _this.model);
               newGValue = _this.getCoords(newModelVal);
               oldGValue = _this.gObject.getPosition();
               if ((oldGValue != null) && (newGValue != null)) {
@@ -3216,12 +3278,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             return function() {
               var coords, newValue, oldValue;
               oldValue = _this.gObject.getIcon();
-              newValue = _this.getProp(_this.iconKey, _this.model);
+              newValue = _this.getProp('icon', scope, _this.model);
               if (oldValue === newValue) {
                 return;
               }
               _this.gObject.setIcon(newValue);
-              coords = _this.getProp(_this.coordsKey, _this.model);
+              coords = _this.getProp('coords', scope, _this.model);
               _this.gObject.setPosition(_this.getCoords(coords));
               return _this.gObject.setVisible(_this.validateCoords(coords));
             };
@@ -3239,9 +3301,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.renderGMarker(doDraw, (function(_this) {
             return function() {
               var _options, coords, icon;
-              coords = _this.getProp(_this.coordsKey, _this.model);
-              icon = _this.getProp(_this.iconKey, _this.model);
-              _options = _this.getProp(_this.optionsKey, _this.model);
+              coords = _this.getProp('coords', scope, _this.model);
+              icon = _this.getProp('icon', scope, _this.model);
+              _options = _this.getProp('options', scope, _this.model);
               _this.opts = _this.createOptions(coords, icon, _options);
               if (_this.isLabel(_this.gObject) !== _this.isLabel(_this.opts) && (_this.gObject != null)) {
                 _this.gManager.remove(_this.gObject);
@@ -3253,6 +3315,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (!_this.gObject) {
                 if (_this.isLabel(_this.opts)) {
                   _this.gObject = new MarkerWithLabel(_this.setLabelOptions(_this.opts));
+                } else if (_this.opts.content) {
+                  _this.gObject = new RichMarker(_this.opts);
+                  _this.gObject.getIcon = _this.gObject.getContent;
+                  _this.gObject.setIcon = _this.gObject.setContent;
                 } else {
                   _this.gObject = new google.maps.Marker(_this.opts);
                 }
@@ -3293,7 +3359,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.setLabelOptions = function(opts) {
-          opts.labelAnchor = this.getLabelPositionPoint(opts.labelAnchor);
+          if (opts.labelAnchor) {
+            opts.labelAnchor = this.getLabelPositionPoint(opts.labelAnchor);
+          }
           return opts;
         };
 
@@ -3315,7 +3383,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             click: (function(_this) {
               return function(marker, eventName, model, mousearg) {
                 var click;
-                click = _.isFunction(_this.clickKey) ? _this.clickKey : _this.getProp(_this.clickKey, _this.model);
+                click = _this.getProp('click', _this.scope, _this.model);
                 if (_this.doClick && (click != null)) {
                   return _this.scope.$evalAsync(click(marker, eventName, _this.model, mousearg));
                 }
@@ -3550,6 +3618,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return;
                 }
                 pos = _this.getCoords(newValue);
+                _this.doShow();
                 _this.gObject.setPosition(pos);
                 if (_this.opts) {
                   return _this.opts.position = pos;
@@ -3700,7 +3769,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.updateModel = function(model) {
-          this.clonedModel = _.extend({}, model);
+          this.clonedModel = _.clone(model, true);
           return _.extend(this.model, this.clonedModel);
         };
 
@@ -3996,6 +4065,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             }, 'radius', 'zIndex'
           ]);
           this.watchProps();
+          if (this.scope.control != null) {
+            this.scope.control.getCircle = function() {
+              return gObject;
+            };
+          }
           clean();
           this.listeners = this.setEvents(gObject, scope, scope, ['radius_changed']);
           if (this.listeners != null) {
@@ -4686,8 +4760,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
             return;
           }
-          this.$log.info('child', child, 'markers', this.scope.plurals);
-          childScope = scope.$new(true);
+          this.$log.info('child', child, 'markers', this.scope.markerModels);
+          childScope = scope.$new(false);
           childScope.events = scope.events;
           keys = {};
           IMarker.scopeKeys.forEach(function(k) {
@@ -5651,8 +5725,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         FreeDrawPolygons.prototype.scope = {
           polygons: '=',
-          draw: '=',
-          revertmapoptions: '='
+          draw: '='
         };
 
         FreeDrawPolygons.prototype.link = function(scope, element, attrs, ctrl) {
@@ -5665,7 +5738,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (!_.isArray(scope.polygons)) {
                 return $log.error('Free Draw Polygons must be of type Array!');
               }
-              freeHand = new DrawFreeHandChildModel(map, scope.revertmapoptions);
+              freeHand = new DrawFreeHandChildModel(map, ctrl.getScope());
               listener = void 0;
               return scope.draw = function() {
                 if (typeof listener === "function") {
@@ -5719,6 +5792,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           icons: "=icons",
           visible: "=",
           events: "=",
+          control: "=",
           zIndex: "=zindex"
         }
       };
@@ -7396,6 +7470,154 @@ This directive creates a new scope.
               return handle('addClass', scope.uiGmapAfterHide);
             }
           });
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+;
+/*
+@authors:
+- Nicholas McCready - https://twitter.com/nmccready
+ */
+
+
+/*
+StreetViewPanorama Directive to care of basic initialization of StreetViewPanorama
+ */
+
+(function() {
+  angular.module('uiGmapgoogle-maps').directive('uiGmapStreetViewPanorama', [
+    'uiGmapGoogleMapApi', 'uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapEventsHelper', function(GoogleMapApi, $log, GmapUtil, EventsHelper) {
+      var name;
+      name = 'uiGmapStreetViewPanorama';
+      return {
+        restrict: 'EMA',
+        template: '<div class="angular-google-map-street-view-panorama"></div>',
+        replace: true,
+        scope: {
+          focalcoord: '=',
+          radius: '=?',
+          events: '=?',
+          options: '=?',
+          control: '=?',
+          povoptions: '=?',
+          imagestatus: '='
+        },
+        link: function(scope, element, attrs) {
+          return GoogleMapApi.then((function(_this) {
+            return function(maps) {
+              var clean, create, didCreateOptionsFromDirective, firstTime, handleSettings, listeners, opts, pano, povOpts, sv;
+              pano = void 0;
+              sv = void 0;
+              didCreateOptionsFromDirective = false;
+              listeners = void 0;
+              opts = null;
+              povOpts = null;
+              clean = function() {
+                EventsHelper.removeEvents(listeners);
+                if (pano != null) {
+                  pano.unbind('position');
+                  pano.setVisible(false);
+                }
+                if (sv != null) {
+                  if ((sv != null ? sv.setVisible : void 0) != null) {
+                    sv.setVisible(false);
+                  }
+                  return sv = void 0;
+                }
+              };
+              handleSettings = function(perspectivePoint, focalPoint) {
+                var heading;
+                heading = google.maps.geometry.spherical.computeHeading(perspectivePoint, focalPoint);
+                didCreateOptionsFromDirective = true;
+                scope.radius = scope.radius || 50;
+                povOpts = angular.extend({
+                  heading: heading,
+                  zoom: 1,
+                  pitch: 0
+                }, scope.povoptions || {});
+                opts = opts = angular.extend({
+                  navigationControl: false,
+                  addressControl: false,
+                  linksControl: false,
+                  position: perspectivePoint,
+                  pov: povOpts,
+                  visible: true
+                }, scope.options || {});
+                return didCreateOptionsFromDirective = false;
+              };
+              create = function() {
+                var focalPoint;
+                if (!scope.focalcoord) {
+                  $log.error(name + ": focalCoord needs to be defined");
+                  return;
+                }
+                if (!scope.radius) {
+                  $log.error(name + ": needs a radius to set the camera view from its focal target.");
+                  return;
+                }
+                clean();
+                if (sv == null) {
+                  sv = new google.maps.StreetViewService();
+                }
+                if (scope.events) {
+                  listeners = EventsHelper.setEvents(sv, scope, scope);
+                }
+                focalPoint = GmapUtil.getCoords(scope.focalcoord);
+                return sv.getPanoramaByLocation(focalPoint, scope.radius, function(streetViewPanoramaData, status) {
+                  var ele, perspectivePoint, ref;
+                  if (scope.imagestatus != null) {
+                    scope.imagestatus = status;
+                  }
+                  if (((ref = scope.events) != null ? ref.image_status_changed : void 0) != null) {
+                    scope.events.image_status_changed(sv, 'image_status_changed', scope, status);
+                  }
+                  if (status === "OK") {
+                    perspectivePoint = streetViewPanoramaData.location.latLng;
+                    handleSettings(perspectivePoint, focalPoint);
+                    ele = element[0];
+                    return pano = new google.maps.StreetViewPanorama(ele, opts);
+                  }
+                });
+              };
+              if (scope.control != null) {
+                scope.control.getOptions = function() {
+                  return opts;
+                };
+                scope.control.getPovOptions = function() {
+                  return povOpts;
+                };
+                scope.control.getGObject = function() {
+                  return sv;
+                };
+                scope.control.getGPano = function() {
+                  return pano;
+                };
+              }
+              scope.$watch('options', function(newValue, oldValue) {
+                if (newValue === oldValue || newValue === opts || didCreateOptionsFromDirective) {
+                  return;
+                }
+                return create();
+              });
+              firstTime = true;
+              scope.$watch('focalcoord', function(newValue, oldValue) {
+                if (newValue === oldValue && !firstTime) {
+                  return;
+                }
+                if (newValue == null) {
+                  return;
+                }
+                firstTime = false;
+                return create();
+              });
+              return scope.$on('$destroy', function() {
+                return clean();
+              });
+            };
+          })(this));
         }
       };
     }
@@ -11324,6 +11546,828 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
   this.label.setMap(theMap);
 };
 
+// ==ClosureCompiler==
+// @compilation_level ADVANCED_OPTIMIZATIONS
+// @externs_url http://closure-compiler.googlecode.com/svn/trunk/contrib/externs/maps/google_maps_api_v3.js
+// @output_wrapper (function() {%output%})();
+// ==/ClosureCompiler==
+
+/**
+ * @license
+ * Copyright 2013 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * A RichMarker that allows any HTML/DOM to be added to a map and be draggable.
+ *
+ * @param {Object.<string, *>=} opt_options Optional properties to set.
+ * @extends {google.maps.OverlayView}
+ * @constructor
+ */
+function RichMarker(opt_options) {
+  var options = opt_options || {};
+
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this.ready_ = false;
+
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this.dragging_ = false;
+
+  if (opt_options['visible'] == undefined) {
+    opt_options['visible'] = true;
+  }
+
+  if (opt_options['shadow'] == undefined) {
+    opt_options['shadow'] = '7px -3px 5px rgba(88,88,88,0.7)';
+  }
+
+  if (opt_options['anchor'] == undefined) {
+    opt_options['anchor'] = RichMarkerPosition['BOTTOM'];
+  }
+
+  this.setValues(options);
+}
+RichMarker.prototype = new google.maps.OverlayView();
+window['RichMarker'] = RichMarker;
+
+
+/**
+ * Returns the current visibility state of the marker.
+ *
+ * @return {boolean} The visiblity of the marker.
+ */
+RichMarker.prototype.getVisible = function() {
+  return /** @type {boolean} */ (this.get('visible'));
+};
+RichMarker.prototype['getVisible'] = RichMarker.prototype.getVisible;
+
+
+/**
+ * Sets the visiblility state of the marker.
+ *
+ * @param {boolean} visible The visiblilty of the marker.
+ */
+RichMarker.prototype.setVisible = function(visible) {
+  this.set('visible', visible);
+};
+RichMarker.prototype['setVisible'] = RichMarker.prototype.setVisible;
+
+
+/**
+ *  The visible changed event.
+ */
+RichMarker.prototype.visible_changed = function() {
+  if (this.ready_) {
+    this.markerWrapper_.style['display'] = this.getVisible() ? '' : 'none';
+    this.draw();
+  }
+};
+RichMarker.prototype['visible_changed'] = RichMarker.prototype.visible_changed;
+
+
+/**
+ * Sets the marker to be flat.
+ *
+ * @param {boolean} flat If the marker is to be flat or not.
+ */
+RichMarker.prototype.setFlat = function(flat) {
+  this.set('flat', !!flat);
+};
+RichMarker.prototype['setFlat'] = RichMarker.prototype.setFlat;
+
+
+/**
+ * If the makrer is flat or not.
+ *
+ * @return {boolean} True the marker is flat.
+ */
+RichMarker.prototype.getFlat = function() {
+  return /** @type {boolean} */ (this.get('flat'));
+};
+RichMarker.prototype['getFlat'] = RichMarker.prototype.getFlat;
+
+
+/**
+ * Get the width of the marker.
+ *
+ * @return {Number} The width of the marker.
+ */
+RichMarker.prototype.getWidth = function() {
+  return /** @type {Number} */ (this.get('width'));
+};
+RichMarker.prototype['getWidth'] = RichMarker.prototype.getWidth;
+
+
+/**
+ * Get the height of the marker.
+ *
+ * @return {Number} The height of the marker.
+ */
+RichMarker.prototype.getHeight = function() {
+  return /** @type {Number} */ (this.get('height'));
+};
+RichMarker.prototype['getHeight'] = RichMarker.prototype.getHeight;
+
+
+/**
+ * Sets the marker's box shadow.
+ *
+ * @param {string} shadow The box shadow to set.
+ */
+RichMarker.prototype.setShadow = function(shadow) {
+  this.set('shadow', shadow);
+  this.flat_changed();
+};
+RichMarker.prototype['setShadow'] = RichMarker.prototype.setShadow;
+
+
+/**
+ * Gets the marker's box shadow.
+ *
+ * @return {string} The box shadow.
+ */
+RichMarker.prototype.getShadow = function() {
+  return /** @type {string} */ (this.get('shadow'));
+};
+RichMarker.prototype['getShadow'] = RichMarker.prototype.getShadow;
+
+
+/**
+ * Flat changed event.
+ */
+RichMarker.prototype.flat_changed = function() {
+  if (!this.ready_) {
+    return;
+  }
+
+  this.markerWrapper_.style['boxShadow'] =
+      this.markerWrapper_.style['webkitBoxShadow'] =
+      this.markerWrapper_.style['MozBoxShadow'] =
+      this.getFlat() ? '' : this.getShadow();
+};
+RichMarker.prototype['flat_changed'] = RichMarker.prototype.flat_changed;
+
+
+/**
+ * Sets the zIndex of the marker.
+ *
+ * @param {Number} index The index to set.
+ */
+RichMarker.prototype.setZIndex = function(index) {
+  this.set('zIndex', index);
+};
+RichMarker.prototype['setZIndex'] = RichMarker.prototype.setZIndex;
+
+
+/**
+ * Gets the zIndex of the marker.
+ *
+ * @return {Number} The zIndex of the marker.
+ */
+RichMarker.prototype.getZIndex = function() {
+  return /** @type {Number} */ (this.get('zIndex'));
+};
+RichMarker.prototype['getZIndex'] = RichMarker.prototype.getZIndex;
+
+
+/**
+ * zIndex changed event.
+ */
+RichMarker.prototype.zIndex_changed = function() {
+  if (this.getZIndex() && this.ready_) {
+    this.markerWrapper_.style.zIndex = this.getZIndex();
+  }
+};
+RichMarker.prototype['zIndex_changed'] = RichMarker.prototype.zIndex_changed;
+
+/**
+ * Whether the marker is draggable or not.
+ *
+ * @return {boolean} True if the marker is draggable.
+ */
+RichMarker.prototype.getDraggable = function() {
+  return /** @type {boolean} */ (this.get('draggable'));
+};
+RichMarker.prototype['getDraggable'] = RichMarker.prototype.getDraggable;
+
+
+/**
+ * Sets the marker to be draggable or not.
+ *
+ * @param {boolean} draggable If the marker is draggable or not.
+ */
+RichMarker.prototype.setDraggable = function(draggable) {
+  this.set('draggable', !!draggable);
+};
+RichMarker.prototype['setDraggable'] = RichMarker.prototype.setDraggable;
+
+
+/**
+ * Draggable property changed callback.
+ */
+RichMarker.prototype.draggable_changed = function() {
+  if (this.ready_) {
+    if (this.getDraggable()) {
+      this.addDragging_(this.markerWrapper_);
+    } else {
+      this.removeDragListeners_();
+    }
+  }
+};
+RichMarker.prototype['draggable_changed'] =
+    RichMarker.prototype.draggable_changed;
+
+
+/**
+ * Gets the postiton of the marker.
+ *
+ * @return {google.maps.LatLng} The position of the marker.
+ */
+RichMarker.prototype.getPosition = function() {
+  return /** @type {google.maps.LatLng} */ (this.get('position'));
+};
+RichMarker.prototype['getPosition'] = RichMarker.prototype.getPosition;
+
+
+/**
+ * Sets the position of the marker.
+ *
+ * @param {google.maps.LatLng} position The position to set.
+ */
+RichMarker.prototype.setPosition = function(position) {
+  this.set('position', position);
+};
+RichMarker.prototype['setPosition'] = RichMarker.prototype.setPosition;
+
+
+/**
+ * Position changed event.
+ */
+RichMarker.prototype.position_changed = function() {
+  this.draw();
+};
+RichMarker.prototype['position_changed'] =
+    RichMarker.prototype.position_changed;
+
+
+/**
+ * Gets the anchor.
+ *
+ * @return {google.maps.Size} The position of the anchor.
+ */
+RichMarker.prototype.getAnchor = function() {
+  return /** @type {google.maps.Size} */ (this.get('anchor'));
+};
+RichMarker.prototype['getAnchor'] = RichMarker.prototype.getAnchor;
+
+
+/**
+ * Sets the anchor.
+ *
+ * @param {RichMarkerPosition|google.maps.Size} anchor The anchor to set.
+ */
+RichMarker.prototype.setAnchor = function(anchor) {
+  this.set('anchor', anchor);
+};
+RichMarker.prototype['setAnchor'] = RichMarker.prototype.setAnchor;
+
+
+/**
+ * Anchor changed event.
+ */
+RichMarker.prototype.anchor_changed = function() {
+  this.draw();
+};
+RichMarker.prototype['anchor_changed'] = RichMarker.prototype.anchor_changed;
+
+
+/**
+ * Converts a HTML string to a document fragment.
+ *
+ * @param {string} htmlString The HTML string to convert.
+ * @return {Node} A HTML document fragment.
+ * @private
+ */
+RichMarker.prototype.htmlToDocumentFragment_ = function(htmlString) {
+  var tempDiv = document.createElement('DIV');
+  tempDiv.innerHTML = htmlString;
+  if (tempDiv.childNodes.length == 1) {
+    return /** @type {!Node} */ (tempDiv.removeChild(tempDiv.firstChild));
+  } else {
+    var fragment = document.createDocumentFragment();
+    while (tempDiv.firstChild) {
+      fragment.appendChild(tempDiv.firstChild);
+    }
+    return fragment;
+  }
+};
+
+
+/**
+ * Removes all children from the node.
+ *
+ * @param {Node} node The node to remove all children from.
+ * @private
+ */
+RichMarker.prototype.removeChildren_ = function(node) {
+  if (!node) {
+    return;
+  }
+
+  var child;
+  while (child = node.firstChild) {
+    node.removeChild(child);
+  }
+};
+
+
+/**
+ * Sets the content of the marker.
+ *
+ * @param {string|Node} content The content to set.
+ */
+RichMarker.prototype.setContent = function(content) {
+  this.set('content', content);
+};
+RichMarker.prototype['setContent'] = RichMarker.prototype.setContent;
+
+
+/**
+ * Get the content of the marker.
+ *
+ * @return {string|Node} The marker content.
+ */
+RichMarker.prototype.getContent = function() {
+  return /** @type {Node|string} */ (this.get('content'));
+};
+RichMarker.prototype['getContent'] = RichMarker.prototype.getContent;
+
+
+/**
+ * Sets the marker content and adds loading events to images
+ */
+RichMarker.prototype.content_changed = function() {
+  if (!this.markerContent_) {
+    // Marker content area doesnt exist.
+    return;
+  }
+
+  this.removeChildren_(this.markerContent_);
+  var content = this.getContent();
+  if (content) {
+    if (typeof content == 'string') {
+      content = content.replace(/^\s*([\S\s]*)\b\s*$/, '$1');
+      content = this.htmlToDocumentFragment_(content);
+    }
+    this.markerContent_.appendChild(content);
+
+    var that = this;
+    var images = this.markerContent_.getElementsByTagName('IMG');
+    for (var i = 0, image; image = images[i]; i++) {
+      // By default, a browser lets a image be dragged outside of the browser,
+      // so by calling preventDefault we stop this behaviour and allow the image
+      // to be dragged around the map and now out of the browser and onto the
+      // desktop.
+      google.maps.event.addDomListener(image, 'mousedown', function(e) {
+        if (that.getDraggable()) {
+          if (e.preventDefault) {
+            e.preventDefault();
+          }
+          e.returnValue = false;
+        }
+      });
+
+      // Because we don't know the size of an image till it loads, add a
+      // listener to the image load so the marker can resize and reposition
+      // itself to be the correct height.
+      google.maps.event.addDomListener(image, 'load', function() {
+        that.draw();
+      });
+    }
+
+    google.maps.event.trigger(this, 'domready');
+  }
+
+  if (this.ready_) {
+    this.draw();
+  }
+};
+RichMarker.prototype['content_changed'] = RichMarker.prototype.content_changed;
+
+/**
+ * Sets the cursor.
+ *
+ * @param {string} whichCursor What cursor to show.
+ * @private
+ */
+RichMarker.prototype.setCursor_ = function(whichCursor) {
+  if (!this.ready_) {
+    return;
+  }
+
+  var cursor = '';
+  if (navigator.userAgent.indexOf('Gecko/') !== -1) {
+    // Moz has some nice cursors :)
+    if (whichCursor == 'dragging') {
+      cursor = '-moz-grabbing';
+    }
+
+    if (whichCursor == 'dragready') {
+      cursor = '-moz-grab';
+    }
+
+    if (whichCursor == 'draggable') {
+      cursor = 'pointer';
+    }
+  } else {
+    if (whichCursor == 'dragging' || whichCursor == 'dragready') {
+      cursor = 'move';
+    }
+
+    if (whichCursor == 'draggable') {
+      cursor = 'pointer';
+    }
+  }
+
+  if (this.markerWrapper_.style.cursor != cursor) {
+    this.markerWrapper_.style.cursor = cursor;
+  }
+};
+
+/**
+ * Start dragging.
+ *
+ * @param {Event} e The event.
+ */
+RichMarker.prototype.startDrag = function(e) {
+  if (!this.getDraggable()) {
+    return;
+  }
+
+  if (!this.dragging_) {
+    this.dragging_ = true;
+    var map = this.getMap();
+    this.mapDraggable_ = map.get('draggable');
+    map.set('draggable', false);
+
+    // Store the current mouse position
+    this.mouseX_ = e.clientX;
+    this.mouseY_ = e.clientY;
+
+    this.setCursor_('dragready');
+
+    // Stop the text from being selectable while being dragged
+    this.markerWrapper_.style['MozUserSelect'] = 'none';
+    this.markerWrapper_.style['KhtmlUserSelect'] = 'none';
+    this.markerWrapper_.style['WebkitUserSelect'] = 'none';
+
+    this.markerWrapper_['unselectable'] = 'on';
+    this.markerWrapper_['onselectstart'] = function() {
+      return false;
+    };
+
+    this.addDraggingListeners_();
+
+    google.maps.event.trigger(this, 'dragstart');
+  }
+};
+
+
+/**
+ * Stop dragging.
+ */
+RichMarker.prototype.stopDrag = function() {
+  if (!this.getDraggable()) {
+    return;
+  }
+
+  if (this.dragging_) {
+    this.dragging_ = false;
+    this.getMap().set('draggable', this.mapDraggable_);
+    this.mouseX_ = this.mouseY_ = this.mapDraggable_ = null;
+
+    // Allow the text to be selectable again
+    this.markerWrapper_.style['MozUserSelect'] = '';
+    this.markerWrapper_.style['KhtmlUserSelect'] = '';
+    this.markerWrapper_.style['WebkitUserSelect'] = '';
+    this.markerWrapper_['unselectable'] = 'off';
+    this.markerWrapper_['onselectstart'] = function() {};
+
+    this.removeDraggingListeners_();
+
+    this.setCursor_('draggable');
+    google.maps.event.trigger(this, 'dragend');
+
+    this.draw();
+  }
+};
+
+
+/**
+ * Handles the drag event.
+ *
+ * @param {Event} e The event.
+ */
+RichMarker.prototype.drag = function(e) {
+  if (!this.getDraggable() || !this.dragging_) {
+    // This object isn't draggable or we have stopped dragging
+    this.stopDrag();
+    return;
+  }
+
+  var dx = this.mouseX_ - e.clientX;
+  var dy = this.mouseY_ - e.clientY;
+
+  this.mouseX_ = e.clientX;
+  this.mouseY_ = e.clientY;
+
+  var left = parseInt(this.markerWrapper_.style['left'], 10) - dx;
+  var top = parseInt(this.markerWrapper_.style['top'], 10) - dy;
+
+  this.markerWrapper_.style['left'] = left + 'px';
+  this.markerWrapper_.style['top'] = top + 'px';
+
+  var offset = this.getOffset_();
+
+  // Set the position property and adjust for the anchor offset
+  var point = new google.maps.Point(left - offset.width, top - offset.height);
+  var projection = this.getProjection();
+  this.setPosition(projection.fromDivPixelToLatLng(point));
+
+  this.setCursor_('dragging');
+  google.maps.event.trigger(this, 'drag');
+};
+
+
+/**
+ * Removes the drag listeners associated with the marker.
+ *
+ * @private
+ */
+RichMarker.prototype.removeDragListeners_ = function() {
+  if (this.draggableListener_) {
+    google.maps.event.removeListener(this.draggableListener_);
+    delete this.draggableListener_;
+  }
+  this.setCursor_('');
+};
+
+
+/**
+ * Add dragability events to the marker.
+ *
+ * @param {Node} node The node to apply dragging to.
+ * @private
+ */
+RichMarker.prototype.addDragging_ = function(node) {
+  if (!node) {
+    return;
+  }
+
+  var that = this;
+  this.draggableListener_ =
+    google.maps.event.addDomListener(node, 'mousedown', function(e) {
+      that.startDrag(e);
+    });
+
+  this.setCursor_('draggable');
+};
+
+
+/**
+ * Add dragging listeners.
+ *
+ * @private
+ */
+RichMarker.prototype.addDraggingListeners_ = function() {
+  var that = this;
+  if (this.markerWrapper_.setCapture) {
+    this.markerWrapper_.setCapture(true);
+    this.draggingListeners_ = [
+      google.maps.event.addDomListener(this.markerWrapper_, 'mousemove', function(e) {
+        that.drag(e);
+      }, true),
+      google.maps.event.addDomListener(this.markerWrapper_, 'mouseup', function() {
+        that.stopDrag();
+        that.markerWrapper_.releaseCapture();
+      }, true)
+    ];
+  } else {
+    this.draggingListeners_ = [
+      google.maps.event.addDomListener(window, 'mousemove', function(e) {
+        that.drag(e);
+      }, true),
+      google.maps.event.addDomListener(window, 'mouseup', function() {
+        that.stopDrag();
+      }, true)
+    ];
+  }
+};
+
+
+/**
+ * Remove dragging listeners.
+ *
+ * @private
+ */
+RichMarker.prototype.removeDraggingListeners_ = function() {
+  if (this.draggingListeners_) {
+    for (var i = 0, listener; listener = this.draggingListeners_[i]; i++) {
+      google.maps.event.removeListener(listener);
+    }
+    this.draggingListeners_.length = 0;
+  }
+};
+
+
+/**
+ * Get the anchor offset.
+ *
+ * @return {google.maps.Size} The size offset.
+ * @private
+ */
+RichMarker.prototype.getOffset_ = function() {
+  var anchor = this.getAnchor();
+  if (typeof anchor == 'object') {
+    return /** @type {google.maps.Size} */ (anchor);
+  }
+
+  var offset = new google.maps.Size(0, 0);
+  if (!this.markerContent_) {
+    return offset;
+  }
+
+  var width = this.markerContent_.offsetWidth;
+  var height = this.markerContent_.offsetHeight;
+
+  switch (anchor) {
+   case RichMarkerPosition['TOP_LEFT']:
+     break;
+   case RichMarkerPosition['TOP']:
+     offset.width = -width / 2;
+     break;
+   case RichMarkerPosition['TOP_RIGHT']:
+     offset.width = -width;
+     break;
+   case RichMarkerPosition['LEFT']:
+     offset.height = -height / 2;
+     break;
+   case RichMarkerPosition['MIDDLE']:
+     offset.width = -width / 2;
+     offset.height = -height / 2;
+     break;
+   case RichMarkerPosition['RIGHT']:
+     offset.width = -width;
+     offset.height = -height / 2;
+     break;
+   case RichMarkerPosition['BOTTOM_LEFT']:
+     offset.height = -height;
+     break;
+   case RichMarkerPosition['BOTTOM']:
+     offset.width = -width / 2;
+     offset.height = -height;
+     break;
+   case RichMarkerPosition['BOTTOM_RIGHT']:
+     offset.width = -width;
+     offset.height = -height;
+     break;
+  }
+
+  return offset;
+};
+
+
+/**
+ * Adding the marker to a map.
+ * Implementing the interface.
+ */
+RichMarker.prototype.onAdd = function() {
+  if (!this.markerWrapper_) {
+    this.markerWrapper_ = document.createElement('DIV');
+    this.markerWrapper_.style['position'] = 'absolute';
+  }
+
+  if (this.getZIndex()) {
+    this.markerWrapper_.style['zIndex'] = this.getZIndex();
+  }
+
+  this.markerWrapper_.style['display'] = this.getVisible() ? '' : 'none';
+
+  if (!this.markerContent_) {
+    this.markerContent_ = document.createElement('DIV');
+    this.markerWrapper_.appendChild(this.markerContent_);
+
+    var that = this;
+    google.maps.event.addDomListener(this.markerContent_, 'click', function(e) {
+      google.maps.event.trigger(that, 'click');
+    });
+    google.maps.event.addDomListener(this.markerContent_, 'mouseover', function(e) {
+      google.maps.event.trigger(that, 'mouseover');
+    });
+    google.maps.event.addDomListener(this.markerContent_, 'mouseout', function(e) {
+      google.maps.event.trigger(that, 'mouseout');
+    });
+  }
+
+  this.ready_ = true;
+  this.content_changed();
+  this.flat_changed();
+  this.draggable_changed();
+
+  var panes = this.getPanes();
+  if (panes) {
+    panes.overlayMouseTarget.appendChild(this.markerWrapper_);
+  }
+
+  google.maps.event.trigger(this, 'ready');
+};
+RichMarker.prototype['onAdd'] = RichMarker.prototype.onAdd;
+
+
+/**
+ * Impelementing the interface.
+ */
+RichMarker.prototype.draw = function() {
+  if (!this.ready_ || this.dragging_) {
+    return;
+  }
+
+  var projection = this.getProjection();
+
+  if (!projection) {
+    // The map projection is not ready yet so do nothing
+    return;
+  }
+
+  var latLng = /** @type {google.maps.LatLng} */ (this.get('position'));
+  var pos = projection.fromLatLngToDivPixel(latLng);
+
+  var offset = this.getOffset_();
+  this.markerWrapper_.style['top'] = (pos.y + offset.height) + 'px';
+  this.markerWrapper_.style['left'] = (pos.x + offset.width) + 'px';
+
+  var height = this.markerContent_.offsetHeight;
+  var width = this.markerContent_.offsetWidth;
+
+  if (width != this.get('width')) {
+    this.set('width', width);
+  }
+
+  if (height != this.get('height')) {
+    this.set('height', height);
+  }
+};
+RichMarker.prototype['draw'] = RichMarker.prototype.draw;
+
+
+/**
+ * Removing a marker from the map.
+ * Implementing the interface.
+ */
+RichMarker.prototype.onRemove = function() {
+  if (this.markerWrapper_ && this.markerWrapper_.parentNode) {
+    this.markerWrapper_.parentNode.removeChild(this.markerWrapper_);
+  }
+  this.removeDragListeners_();
+};
+RichMarker.prototype['onRemove'] = RichMarker.prototype.onRemove;
+
+
+/**
+ * RichMarker Anchor positions
+ * @enum {number}
+ */
+var RichMarkerPosition = {
+  'TOP_LEFT': 1,
+  'TOP': 2,
+  'TOP_RIGHT': 3,
+  'LEFT': 4,
+  'MIDDLE': 5,
+  'RIGHT': 6,
+  'BOTTOM_LEFT': 7,
+  'BOTTOM': 8,
+  'BOTTOM_RIGHT': 9
+};
+window['RichMarkerPosition'] = RichMarkerPosition;
+
       //END REPLACE
       window.InfoBox = InfoBox;
       window.Cluster = Cluster;
@@ -11331,6 +12375,7 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
       window.MarkerClusterer = MarkerClusterer;
       window.MarkerLabel_ = MarkerLabel_;
       window.MarkerWithLabel = MarkerWithLabel;
+      window.RichMarker = RichMarker;
     })
   };
 });
