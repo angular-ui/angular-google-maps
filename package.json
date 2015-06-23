@@ -25,7 +25,7 @@
     "grunt-contrib-uglify": "~0.6.0",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-gh-pages": "^0.9.1",
-    "grunt-git-log-json": "~0.0.6",
+    "grunt-git-log-json": "nlaplante/grunt-git-log-json#develop",
     "grunt-google-cdn": "~0.4.3",
     "grunt-karma": "~0.9.0",
     "grunt-ngmin": "~0.0.3",
