@@ -64,22 +64,6 @@
             </td>
         </tr>
         <tr>
-            <td>idkey</td>
-            <td><span class="label label-info">expression</span></td>
-            <td>
-                <p>The name of the property in a model which identifies its key/id. This should be an integer
-                    or numeric string. (not required) If the attribute is not defined they it defaults to the <code>model.id</code>
-                    field.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>doRebuildAll</td>
-            <td><span class="label label-info">expression</span></td>
-            <td>boolean property to tell the directive to refresh all the markers on any kind change to models. (Think
-                legacy "flash"). Yes sometimes this is wanted.
-            </td>
-        </tr>
-        <tr>
             <td>coords</td>
             <td><span class="label label-danger">string</span></td>
             <td>
@@ -127,6 +111,22 @@
             <td>closeClick</td>
             <td><span class="label label-danger">string</span></td>
             <td>The name of the property in the models array to evaluate when closing the window via a click event</td>
+        </tr>
+        <tr>
+            <td>idkey</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>
+                <p>The name of the property in a model which identifies its key/id. This should be an integer
+                    or numeric string. (not required) If the attribute is not defined they it defaults to the <code>model.id</code>
+                    field.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>doRebuildAll</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>boolean property to tell the directive to refresh all the markers on any kind change to models. (Think
+                legacy "flash"). Yes sometimes this is wanted.
+            </td>
         </tr>
         <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='InfoWindow';directive='Windows';isStringTypeOnArray=true">
         </tbody>
