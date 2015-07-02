@@ -58,6 +58,17 @@
             </td>
         </tr>
         <tr>
+            <td>coords</td>
+            <td><span class="label label-danger">string</span></td>
+            <td>
+                <p>The name of the property in the models array containing the marker coordinates. Must refer to an
+                    object
+                    containing <code>latitude</code> and <code>longitude</code> properties, or  a <a
+                            href="http://geojson.org/geojson-spec.html#point">GeoJSON Point</a> object.</p>
+                <span>The special value <code>'self'</code> can be used to tell the directive that the objects in the array directly contain the marker coordinate object values</span>
+            </td>
+        </tr>
+        <tr>
             <td>idkey</td>
             <td><span class="label label-info">expression</span></td>
             <td>
@@ -121,17 +132,6 @@ $scope.clickEventsObject =
             <td>fit</td>
             <td><span class="label label-info">string / boolean</span></td>
             <td>boolean property to instruct the map to fit its bounds around the markers</td>
-        </tr>
-        <tr>
-            <td>coords</td>
-            <td><span class="label label-danger">string</span></td>
-            <td>
-                <p>The name of the property in the models array containing the marker coordinates. Must refer to an
-                    object
-                    containing <code>latitude</code> and <code>longitude</code> properties, or  a <a
-                            href="http://geojson.org/geojson-spec.html#point">GeoJSON Point</a> object.</p>
-                <span>The special value <code>'self'</code> can be used to tell the directive that the objects in the array directly contain the marker coordinate object values</span>
-            </td>
         </tr>
         <tr>
             <td>icon</td>
