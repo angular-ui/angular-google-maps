@@ -49,6 +49,13 @@
         </td>
     </tr>
     <tr>
+        <td>zoom</td>
+        <td><span class="label label-danger">expression</span></td>
+        <td>Expression to evaluate as the map's zoom level. This must be a number between 1<sup>[1]</sup> and
+            20<sup>[2]</sup>.
+        </td>
+    </tr>
+    <tr>
         <td>control</td>
         <td><span class="label label-default">Object</span></td>
         <td><code>{}</code> otherwise <code>undefined / null </code>
@@ -72,13 +79,6 @@
 
             <p>example</p>
             <code>$scope.map.control.refresh({latitude: 32.779680, longitude: -79.935493});</code>
-        </td>
-    </tr>
-    <tr>
-        <td>zoom</td>
-        <td><span class="label label-danger">expression</span></td>
-        <td>Expression to evaluate as the map's zoom level. This must be a number between 1<sup>[1]</sup> and
-            20<sup>[2]</sup>.
         </td>
     </tr>
     <tr>
