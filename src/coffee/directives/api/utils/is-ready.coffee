@@ -34,6 +34,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     _ctr
 
   promise: (expectedInstances = 1) ->
+    _currentCheckNum = 1
     d = $q.defer()
     _checkIfReady(d, expectedInstances)
     d.promise
