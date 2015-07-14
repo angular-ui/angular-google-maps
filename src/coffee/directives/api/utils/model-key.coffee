@@ -94,7 +94,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           if doWrap
             return {isScope: isScope, value: ret}
           ret
-        scopeProp = scope[key]
+        scopeProp = _.get scope, key
 
         if _.isFunction scopeProp
           return maybeWrap true, scopeProp(model), doWrap
@@ -105,9 +105,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
         modelKey = scopeProp #this should be the key pointing to what we need
         unless modelKey
-          modelProp = model[key]
+          modelProp = _.get model, key
         else
-          modelProp = if modelKey == 'self' then model else model[modelKey]
+          modelProp = if modelKey == 'self' then model else _.get model, modelKey
         if _.isFunction modelProp
           return maybeWrap false, modelProp(), doWrap
         maybeWrap false, modelProp, doWrap
