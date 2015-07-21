@@ -52,6 +52,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'build', [
     'clean:dist'
     'bower:dev'
+    'git_log_json'
     'useminPrepare'
     'concat:vendor_js' #for testing /devs , overwritten by uglify/usemin
     'concat:vendor_app_js'
