@@ -2,14 +2,14 @@
 
 angular.module('angularGoogleMapsApp').controller('FooterCtrl', [
   '$scope', '$log', '$q', '$github',
-  function ($scope, $log, $q, $github) {
+  function($scope, $log, $q, $github) {
 
     var githubCalled = false;
 
     if (!githubCalled) {
       // GitHub api calls
       $q.all([$github.getAllCommits(), $github.getContributors(), $github.getIssues(), $github.getEvents()])
-        .then(function (results) {
+        .then(function(results) {
 
           var commits = results[0],
             contributors = results[1],
@@ -20,7 +20,7 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', [
             github: {
               branch: $github.getBranch(),
               commits: {
-                latest: commits.length ? commits[0] : {},
+                latest: commits.length ? commits[commits.length - 1] : null,
                 all: commits
               },
               issuesCount: issues.length,
@@ -29,7 +29,7 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', [
               events: events
             }
           });
-        }, function (err) {
+        }, function(err) {
           $log.error(err);
           $scope.github = null;
         });
@@ -41,7 +41,7 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', [
       return '<a href="' + actor.url + '" rel="external">' + actor.login + '</a>';
     }
 
-    $scope.eventLabel = function (event) {
+    $scope.eventLabel = function(event) {
 
       var pl = event.payload;
 
@@ -88,4 +88,5 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', [
 
       return "TODO (" + event.type + ")";
     };
-  }]);
+  }
+]);
