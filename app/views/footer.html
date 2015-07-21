@@ -40,12 +40,16 @@
 
                 <div class="col-md-2">
                     <h3>Latest commit</h3>
+                    <div ng-if="github.commits.latest !== null">
+                        <p>{{ github.commits.latest.commit.committer.date | date:"MMM d, y hh:mm" }}<br>
+                        by <a href="#!/">{{ github.commits.latest.author.login }}</a></p>
 
-                    <p>{{ github.commits.latest.commit.committer.date | date:"MMM d, y hh:mm" }}<br>
-                    by <a href="#!/">{{ github.commits.latest.author.login }}</a></p>
-
-                    <blockquote class="muted"><i>{{ github.commits.latest.commit.message }}</i></blockquote>
-                    <a class="btn btn-sm btn-default" href="{{ github.commits.latest.html_url }}">More details</a>
+                        <blockquote class="muted"><i>{{ github.commits.latest.commit.message }}</i></blockquote>
+                        <a class="btn btn-sm btn-default" href="{{ github.commits.latest.html_url }}">More details</a>
+                    </div>
+                    <div ng-if="github.commits.latest === null">
+                        No data to display
+                    </div>
                 </div>
             </div>
         </div>

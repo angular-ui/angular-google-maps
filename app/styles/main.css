@@ -106,6 +106,10 @@ footer li.thumbnail img {
 
 }
 
+footer blockquote{
+    font-size: 1.25em;
+}
+
 footer li.thumbnail {
     margin-right: 5px;
     margin-bottom: 0;
@@ -166,7 +170,7 @@ article {
 h2 {
     border-bottom: 1px solid #ecf0f1;
     padding-bottom: 4px;
-    /*	font-weight: 900;*/
+    /*  font-weight: 900;*/
 }
 
 h2:not(:first-child) {
