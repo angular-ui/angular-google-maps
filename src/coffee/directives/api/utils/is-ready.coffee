@@ -2,20 +2,17 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 .service 'uiGmapIsReady', ['$q', '$timeout', ($q, $timeout) ->
   _ctr = 0
   _proms = []
-  _currentCheckNum = 1
-  _maxCtrChecks = 50 #consider making this a angular const so it can be overriden by users
 
   _promises = ->
     $q.all _proms
 
 
-  _checkIfReady = (deferred, expectedInstances) ->
+  _checkIfReady = (deferred, expectedInstances, retriesLeft) ->
     $timeout ->
-      if _currentCheckNum >= _maxCtrChecks
+      if retriesLeft <= 0
         deferred.reject('Your maps are not found we have checked the maximum amount of times. :)')
-      _currentCheckNum += 1
       if _ctr != expectedInstances
-        _checkIfReady(deferred, expectedInstances)
+        _checkIfReady(deferred, expectedInstances, retriesLeft-1)
       else
         deferred.resolve(_promises())
     , 100
@@ -33,9 +30,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   instances: ->
     _ctr
 
-  promise: (expectedInstances = 1) ->
+  promise: (expectedInstances = 1, numRetries = 50) ->
     d = $q.defer()
-    _checkIfReady(d, expectedInstances)
+    _checkIfReady(d, expectedInstances, numRetries)
     d.promise
 
   reset: ->
