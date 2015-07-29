@@ -38,6 +38,9 @@ angular.module('uiGmapgoogle-maps')
       
       link: (scope, element, attrs, mapCtrl) =>
         GoogleMapApi.then (maps) =>
+          unless scope.template?
+            $templateCache.put 'uigmap-searchbox-default.tpl.html', '<input type="text">'
+            scope.template = 'uigmap-searchbox-default.tpl.html'
           $http.get(scope.template, { cache: $templateCache })
             .success (template) =>
               if angular.isUndefined scope.events

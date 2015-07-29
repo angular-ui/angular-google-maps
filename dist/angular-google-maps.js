@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-06-18
+/*! angular-google-maps 2.1.5 2015-07-28
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1142,22 +1142,19 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapIsReady', [
     '$q', '$timeout', function($q, $timeout) {
-      var _checkIfReady, _ctr, _currentCheckNum, _maxCtrChecks, _promises, _proms;
+      var _checkIfReady, _ctr, _promises, _proms;
       _ctr = 0;
       _proms = [];
-      _currentCheckNum = 1;
-      _maxCtrChecks = 50;
       _promises = function() {
         return $q.all(_proms);
       };
-      _checkIfReady = function(deferred, expectedInstances) {
+      _checkIfReady = function(deferred, expectedInstances, retriesLeft) {
         return $timeout(function() {
-          if (_currentCheckNum >= _maxCtrChecks) {
+          if (retriesLeft <= 0) {
             deferred.reject('Your maps are not found we have checked the maximum amount of times. :)');
           }
-          _currentCheckNum += 1;
           if (_ctr !== expectedInstances) {
-            return _checkIfReady(deferred, expectedInstances);
+            return _checkIfReady(deferred, expectedInstances, retriesLeft - 1);
           } else {
             return deferred.resolve(_promises());
           }
@@ -1178,13 +1175,16 @@ Nicholas McCready - https://twitter.com/nmccready
         instances: function() {
           return _ctr;
         },
-        promise: function(expectedInstances) {
+        promise: function(expectedInstances, numRetries) {
           var d;
           if (expectedInstances == null) {
             expectedInstances = 1;
           }
+          if (numRetries == null) {
+            numRetries = 50;
+          }
           d = $q.defer();
-          _checkIfReady(d, expectedInstances);
+          _checkIfReady(d, expectedInstances, numRetries);
           return d.promise;
         },
         reset: function() {
@@ -1436,7 +1436,7 @@ Nicholas McCready - https://twitter.com/nmccready
             }
             return ret;
           };
-          scopeProp = scope[key];
+          scopeProp = _.get(scope, key);
           if (_.isFunction(scopeProp)) {
             return maybeWrap(true, scopeProp(model), doWrap);
           }
@@ -1448,9 +1448,9 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           modelKey = scopeProp;
           if (!modelKey) {
-            modelProp = model[key];
+            modelProp = _.get(model, key);
           } else {
-            modelProp = modelKey === 'self' ? model : model[modelKey];
+            modelProp = modelKey === 'self' ? model : _.get(model, modelKey);
           }
           if (_.isFunction(modelProp)) {
             return maybeWrap(false, modelProp(), doWrap);
@@ -7405,6 +7405,10 @@ This directive creates a new scope.
         SearchBox.prototype.link = function(scope, element, attrs, mapCtrl) {
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
+              if (scope.template == null) {
+                $templateCache.put('uigmap-searchbox-default.tpl.html', '<input type="text">');
+                scope.template = 'uigmap-searchbox-default.tpl.html';
+              }
               return $http.get(scope.template, {
                 cache: $templateCache
               }).success(function(template) {
@@ -12454,7 +12458,7 @@ window['RichMarkerPosition'] = RichMarkerPosition;
 
 /***/ },
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	/*
 	Graph implemented as a modified incidence list. O(1) for every typical
@@ -12748,7 +12752,7 @@ window['RichMarkerPosition'] = RichMarkerPosition;
 
 /***/ },
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	/*
 	Minimum heap, i.e. smallest node at root.
@@ -12895,7 +12899,7 @@ window['RichMarkerPosition'] = RichMarkerPosition;
 
 /***/ },
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	/*
 	Doubly Linked.
@@ -13172,7 +13176,7 @@ window['RichMarkerPosition'] = RichMarkerPosition;
 
 /***/ },
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	/*
 	Kind of a stopgap measure for the upcoming [JavaScript
@@ -13363,7 +13367,7 @@ window['RichMarkerPosition'] = RichMarkerPosition;
 
 /***/ },
 /* 6 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	/*
 	Amortized O(1) dequeue!
@@ -13455,7 +13459,7 @@ window['RichMarkerPosition'] = RichMarkerPosition;
 
 /***/ },
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	/*
 	Credit to Wikipedia's article on [Red-black

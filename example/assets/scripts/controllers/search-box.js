@@ -80,7 +80,7 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
       }
     },
     searchbox: {
-      template:'searchbox.tpl.html',
+      template: 'searchbox.tpl.html',
       //position:'top-right',
       position:'top-left',
       options: {
