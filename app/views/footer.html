@@ -7,12 +7,13 @@
                 <div class="col-md-3">
                     <h3>Collaborators</h3>
                     <ul class="list-inline">
-                        <li class="thumbnail collaborator" ng-repeat="c in github.contributors track by c.login">
-                            <a ng-href="{{ c.url }}" rel="external nofollow">
+                        <li class="thumbnail collaborator" ng-repeat="c in github.contributors | limitTo:20 track by c.login">
+                            <a ng-href="{{ c.html_url }}" rel="external nofollow">
                                 <img ng-src="{{ c.avatar_url }}" alt="{{ c.login }}" title="{{ c.login }}">
                             </a>
                         </li>
                     </ul>
+                    <a href="//github.com/angular-ui/angular-google-maps/graphs/contributors" class="muted" target="_blank">and {{github.contributors.length - 20}} more contributors</p>
                 </div>
 
                 <div class="col-md-4">
@@ -64,7 +65,7 @@
 
         <div class="row">
             <p class="text-center text-tiny copyright">
-                &copy; 2013, 2014 <a href="https://github.com/angular-ui/angular-google-maps" rel="external">angular-google-maps</a>
+                &copy; 2013 - {{thisYear}} <a href="https://github.com/angular-ui/angular-google-maps" rel="external">angular-google-maps</a>
                 &mdash;
                 released under <a href="http://opensource.org/licenses/MIT" rel="external">the MIT license</a>
             </p>
