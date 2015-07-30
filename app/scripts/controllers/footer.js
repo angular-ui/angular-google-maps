@@ -20,7 +20,7 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', [
             github: {
               branch: $github.getBranch(),
               commits: {
-                latest: commits.length ? commits[0] : {},
+                latest: commits.length ? commits[commits.length - 1] : null,
                 all: commits
               },
               issuesCount: issues.length,
@@ -41,51 +41,54 @@ angular.module('angularGoogleMapsApp').controller('FooterCtrl', [
       return '<a href="' + actor.url + '" rel="external">' + actor.login + '</a>';
     }
 
+    $scope.thisYear = new Date().getFullYear();
+
     $scope.eventLabel = function (event) {
 
       var pl = event.payload;
 
       switch (event.type) {
-        case 'WatchEvent':
-          return 'starred this repository';
+      case 'WatchEvent':
+        return 'starred this repository';
 
-        case 'CreateEvent':
-          return 'created ' + pl.ref_type + ' ' + pl.ref;
+      case 'CreateEvent':
+        return 'created ' + pl.ref_type + ' ' + pl.ref;
 
-        case 'ForkEvent':
-          return 'forked this repository';
+      case 'ForkEvent':
+        return 'forked this repository';
 
-        case 'PushEvent':
-          return 'pushed ' + pl.size + ' commit(s) to ' + pl.ref.replace('refs/heads/', '');
+      case 'PushEvent':
+        return 'pushed ' + pl.size + ' commit(s) to ' + pl.ref.replace('refs/heads/', '');
 
-        case 'IssueCommentEvent':
-          return 'commented on issue ' + pl.issue.number;
+      case 'IssueCommentEvent':
+        return 'commented on issue ' + pl.issue.number;
 
-        case 'DeleteEvent':
-          return 'deleted ' + pl.ref_type + ' ' + pl.ref;
+      case 'DeleteEvent':
+        return 'deleted ' + pl.ref_type + ' ' + pl.ref;
 
-        case 'PullRequestEvent':
-          return pl.action + ' pull request ' + pl.pull_request.number;
+      case 'PullRequestEvent':
+        return pl.action + ' pull request ' + pl.pull_request.number;
 
-        case 'IssuesEvent':
-          return pl.action + ' issue ' + pl.issue.number;
+      case 'IssuesEvent':
+        return pl.action + ' issue ' + pl.issue.number;
 
-        case 'PullRequestReviewCommentEvent':
-          return 'commented on a <a href="' + pl.comment.html_url + '" rel="external">pull request</a>';
+      case 'PullRequestReviewCommentEvent':
+        return 'commented on a <a href="' + pl.comment.html_url + '" rel="external">pull request</a>';
 
-        case 'GollumEvent':
-          var page = pl.pages && pl.pages.length ? pl.pages[0] : null;
+      case 'GollumEvent':
+        var page = pl.pages && pl.pages.length ? pl.pages[0] : null;
 
-          if (page) {
-            return page.action + ' page <a href="' + page.html_url + '" rel="external">' + page.title + '</a> on the wiki';
-          }
+        if (page) {
+          return page.action + ' page <a href="' + page.html_url + '" rel="external">' + page.title + '</a> on the wiki';
+        }
 
-          return '[api data error]';
+        return '[api data error]';
 
-        case 'CommitCommentEvent':
-          return 'commented on commit ' + pl.comment.commit_id.substring(0, 8);
+      case 'CommitCommentEvent':
+        return 'commented on commit ' + pl.comment.commit_id.substring(0, 8);
       }
 
       return "TODO (" + event.type + ")";
     };
-  }]);
+  }
+]);
