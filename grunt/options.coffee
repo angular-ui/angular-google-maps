@@ -178,7 +178,7 @@ module.exports = (grunt) ->
       dist: concatDist
       distMapped: concatDistMapped
       libs:
-        src: ["curl_components/**/*.js"]
+        src: ["curl_components/**/*.js", "bower_components/OverlappingMarkerSpiderfier/dist/oms.js"]
         dest: "tmp/libs.js"
       streetview: concatStreetView
       streetviewMapped: concatStreetViewMapped
