@@ -3,10 +3,11 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
   "uiGmapIMarkerParentModel", "uiGmapModelsWatcher",
   "uiGmapPropMap", "uiGmapMarkerChildModel", "uiGmap_async",
   "uiGmapClustererMarkerManager", "uiGmapMarkerManager", "$timeout", "uiGmapIMarker",
-  "uiGmapPromise", "uiGmapGmapUtil", "uiGmapLogger",
+  "uiGmapPromise", "uiGmapGmapUtil", "uiGmapLogger", "uiGmapSpiderfierMarkerManager",
     (IMarkerParentModel, ModelsWatcher,
       PropMap, MarkerChildModel, _async,
-      ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise, GmapUtil, $log) ->
+      ClustererMarkerManager, MarkerManager, $timeout, IMarker, uiGmapPromise, GmapUtil, $log,
+      SpiderfierMarkerManager) ->
         _setPlurals  = (val, objToSet) ->
           objToSet.plurals = new PropMap() #for api consistency
           objToSet.scope.plurals = objToSet.plurals #for transclusion
@@ -41,8 +42,11 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             , !@isTrue(attrs.modelsbyref)
 
             @watch 'doCluster', @scope
+            @watch 'type', @scope
             @watch 'clusterOptions', @scope
             @watch 'clusterEvents', @scope
+            @watch 'typeOptions', @scope
+            @watch 'typeEvents', @scope
             @watch 'fit', @scope
             @watch 'idKey', @scope
 
@@ -53,7 +57,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
           onWatch: (propNameToWatch, scope, newValue, oldValue) =>
             if propNameToWatch == "idKey" and newValue != oldValue
               @idKey = newValue
-            if @doRebuildAll or propNameToWatch == 'doCluster'
+            if @doRebuildAll or (propNameToWatch == 'doCluster' or propNameToWatch == 'type')
               @rebuildAll(scope)
             else
               @pieceMeal(scope)
@@ -77,32 +81,39 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             else
               @pieceMeal @scope, false
 
+          bindToTypeEvents: (typeEvents) =>
+            self = @
+            if not @origTypeEvents
+              @origTypeEvents =
+                click: typeEvents?.click
+                mouseout: typeEvents?.mouseout
+                mouseover: typeEvents?.mouseover
+            else
+              #rollback to not have stack overflow to call self over and over
+              angular.extend typeEvents, @origTypeEvents
+
+            angular.extend typeEvents,
+              click:(group) ->
+                self.maybeExecMappedEvent group, 'click'
+              mouseout:(group) ->
+                self.maybeExecMappedEvent group, 'mouseout'
+              mouseover:(group) ->
+                self.maybeExecMappedEvent group, 'mouseover'
+
+
           createAllNew: (scope) =>
             if @gManager?
               @gManager.clear()
               delete @gManager
-
-            if scope.doCluster
-              if scope.clusterEvents
-                self = @
-                if not @origClusterEvents
-                  @origClusterEvents =
-                    click: scope.clusterEvents?.click
-                    mouseout: scope.clusterEvents?.mouseout
-                    mouseover: scope.clusterEvents?.mouseover
-                else
-                  #rollback to not have stack overflow to call self over and over
-                  angular.extend scope.clusterEvents, @origClusterEvents
-
-                angular.extend scope.clusterEvents,
-                  click:(cluster) ->
-                    self.maybeExecMappedEvent cluster, 'click'
-                  mouseout:(cluster) ->
-                    self.maybeExecMappedEvent cluster, 'mouseout'
-                  mouseover:(cluster) ->
-                    self.maybeExecMappedEvent cluster, 'mouseover'
-
-              @gManager = new ClustererMarkerManager @map, undefined, scope.clusterOptions, scope.clusterEvents
+            #support backwards comapat clusterEvents and clusterOptions
+            typeEvents = scope.typeEvents or scope.clusterEvents
+            typeOptions = scope.typeOptions or scope.clusterOptions
+            if scope.doCluster or scope.type == 'cluster'
+              if typeEvents?
+                @bindToTypeEvents typeEvents
+              @gManager = new ClustererMarkerManager @map, undefined, typeOptions, typeEvents
+            else if scope.type == 'spider'
+              @gManager = new SpiderfierMarkerManager @map, undefined, typeOptions, typeEvents
             else
               @gManager = new MarkerManager @map
 
@@ -203,16 +214,18 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                   console.error 'plurals out of sync for MarkersParentModel'
                 @scope.pluralsUpdate.updateCtr += 1
 
-          maybeExecMappedEvent:(cluster, fnName) ->
-            if _.isFunction @scope.clusterEvents?[fnName]
-              pair = @mapClusterToPlurals cluster
-              @origClusterEvents[fnName](pair.cluster,pair.mapped) if @origClusterEvents[fnName]
+          maybeExecMappedEvent:(group, fnName) ->
+            typeEvents = @scope.typeEvents or @scope.clusterEvents
+            if _.isFunction typeEvents?[fnName]
+              pair = @mapTypeToPlurals group
+              @origTypeEvents[fnName](pair.cluster,pair.mapped) if @origTypeEvents[fnName]
 
-          mapClusterToPlurals:(cluster) ->
-            mapped = cluster.getMarkers().map (g) =>
+          mapTypeToPlurals:(group) ->
+            mapped = group.getMarkers().map (g) =>
               @scope.plurals.get(g.key).model
-            cluster: cluster
+            cluster: group
             mapped: mapped
+            group: group
 
           getItem: (scope, modelsPropToIterate, index) ->
             if modelsPropToIterate == 'models'
