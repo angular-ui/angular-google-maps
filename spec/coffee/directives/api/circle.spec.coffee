@@ -47,6 +47,7 @@ describe 'uiGmapCircle', ->
       events:
         radius_changed: (gObject) ->
         center_changed: (gObject) ->
+          a = "s"
       control: {}
 
     apiMock = window['uiGmapInitiator']
@@ -92,19 +93,19 @@ describe 'uiGmapCircle', ->
 
     describe "updates gObject from model", ->
       it 'change center', (done) ->
-        gTestObject = null
-        @circle.events =
-          center_changed: (gObject, eventName, model) ->
-            gTestObject = gObject
-
+        #issue 1271
         @digest =>
           @timeout =>
             @circle.center =
               longitude: 50
               latitude: -50
-            expect(gTestObject.lng()).toBe(50)
-            expect(gTestObject.lat()).toBe(-50)
-            done()
+            # @circle.radius = 1
+            @digest =>
+              @timeout =>
+                gTestObject = @circle.control.getCircle().getCenter()
+                expect(gTestObject?.lng()).toBe(50)
+                expect(gTestObject?.lat()).toBe(-50)
+                done()
           , 500
 
     describe "updates model from gObject", ->
