@@ -2168,10 +2168,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.update = bind(this.update, this);
           this.add = bind(this.add, this);
           this.type = SpiderfierMarkerManager.type;
-          this.clusterer = new MarkerSpiderfier(gMap, _.extend(this.opt_options, {
-            markersWontMove: true,
-            markersWontHide: true
-          }));
+          this.clusterer = new MarkerSpiderfier(gMap, this.opt_options);
           this.propMapGMarkers = new PropMap();
           this.attachEvents(this.opt_events, 'opt_events');
           this.noDrawOnSingleAddRemoves = true;
@@ -2241,7 +2238,7 @@ Nicholas McCready - https://twitter.com/nmccready
               eventHandler = options[eventName];
               if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
                 $log.info(optionsName + ": Attaching event: " + eventName + " to clusterer");
-                results.push(google.maps.event.addListener(this.clusterer, eventName, options[eventName]));
+                results.push(this.clusterer.addListener(eventName, options[eventName]));
               } else {
                 results.push(void 0);
               }
@@ -2258,7 +2255,7 @@ Nicholas McCready - https://twitter.com/nmccready
               eventHandler = options[eventName];
               if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
                 $log.info(optionsName + ": Clearing event: " + eventName + " to clusterer");
-                results.push(google.maps.event.clearListeners(this.clusterer, eventName));
+                results.push(this.clusterer.clearListeners(eventName));
               } else {
                 results.push(void 0);
               }

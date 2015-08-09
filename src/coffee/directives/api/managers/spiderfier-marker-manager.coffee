@@ -6,7 +6,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
     constructor: (gMap, opt_markers={}, @opt_options = {}, @opt_events) ->
       @type = SpiderfierMarkerManager.type
 
-      @clusterer = new MarkerSpiderfier gMap, _.extend @opt_options, {markersWontMove: true, markersWontHide: true}
+      @clusterer = new MarkerSpiderfier gMap, @opt_options
 
       @propMapGMarkers = new PropMap() #keep in sync with cluster.markers_
 
@@ -61,14 +61,14 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
         for eventName, eventHandler of options
           if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
             $log.info "#{optionsName}: Attaching event: #{eventName} to clusterer"
-            google.maps.event.addListener @clusterer, eventName, options[eventName]
+            @clusterer.addListener eventName, options[eventName]
 
     clearEvents: (options, optionsName) ->
       if angular.isDefined(options) and options? and angular.isObject(options)
         for eventName, eventHandler of options
           if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
             $log.info "#{optionsName}: Clearing event: #{eventName} to clusterer"
-            google.maps.event.clearListeners @clusterer, eventName
+            @clusterer.clearListeners eventName
 
     destroy: =>
       @clearEvents @opt_events, 'opt_events'
