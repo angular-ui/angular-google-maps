@@ -3,7 +3,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
 'uiGmapFitHelper', 'uiGmapPropMap', 'uiGmapMarkerSpiderfier', ($log, FitHelper, PropMap, MarkerSpiderfier) ->
   class SpiderfierMarkerManager
     @type = 'SpiderfierMarkerManager'
-    constructor: (gMap, opt_markers={}, @opt_options = {}, @opt_events) ->
+    constructor: (gMap, opt_markers={}, @opt_options = {}, @opt_events, @scope) ->
       @type = SpiderfierMarkerManager.type
 
       @clusterer = new MarkerSpiderfier gMap, @opt_options
@@ -56,12 +56,16 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
     clear: ()=>
       @removeMany @getGMarkers()
 
-    attachEvents: (options, optionsName) ->
+    attachEvents: (options, optionsName) =>
       if angular.isDefined(options) and options? and angular.isObject(options)
-        for eventName, eventHandler of options
+        _.each options, (eventHandler, eventName) =>
           if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
             $log.info "#{optionsName}: Attaching event: #{eventName} to clusterer"
-            @clusterer.addListener eventName, options[eventName]
+            @clusterer.addListener eventName, =>
+              if eventName == 'spiderfy' or eventName == 'unspiderfy'
+                @scope.$evalAsync(options[eventName](arguments...))
+              else #for consistency to be like EventsHelper
+                @scope.$evalAsync(options[eventName]([arguments[0], eventName, arguments[0].model, arguments]...))
 
     clearEvents: (options, optionsName) ->
       if angular.isDefined(options) and options? and angular.isObject(options)

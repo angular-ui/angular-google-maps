@@ -116,7 +116,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @gManager = new ClustererMarkerManager @map, undefined, typeOptions, typeEvents
             else if scope.type == 'spider'
               @bindToTypeEvents(typeEvents, ['spiderfy', 'unspiderfy']) if typeEvents?
-              @gManager = new SpiderfierMarkerManager @map, undefined, typeOptions, typeEvents
+              @gManager = new SpiderfierMarkerManager @map, undefined, typeOptions, typeEvents, @scope
             else
               @gManager = new MarkerManager @map
 

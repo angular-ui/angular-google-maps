@@ -2150,16 +2150,18 @@ Nicholas McCready - https://twitter.com/nmccready
       return SpiderfierMarkerManager = (function() {
         SpiderfierMarkerManager.type = 'SpiderfierMarkerManager';
 
-        function SpiderfierMarkerManager(gMap, opt_markers, opt_options, opt_events) {
+        function SpiderfierMarkerManager(gMap, opt_markers, opt_options, opt_events, scope) {
           if (opt_markers == null) {
             opt_markers = {};
           }
           this.opt_options = opt_options != null ? opt_options : {};
           this.opt_events = opt_events;
+          this.scope = scope;
           this.checkSync = bind(this.checkSync, this);
           this.getGMarkers = bind(this.getGMarkers, this);
           this.fit = bind(this.fit, this);
           this.destroy = bind(this.destroy, this);
+          this.attachEvents = bind(this.attachEvents, this);
           this.clear = bind(this.clear, this);
           this.draw = bind(this.draw, this);
           this.removeMany = bind(this.removeMany, this);
@@ -2231,19 +2233,21 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         SpiderfierMarkerManager.prototype.attachEvents = function(options, optionsName) {
-          var eventHandler, eventName, results;
           if (angular.isDefined(options) && (options != null) && angular.isObject(options)) {
-            results = [];
-            for (eventName in options) {
-              eventHandler = options[eventName];
-              if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
-                $log.info(optionsName + ": Attaching event: " + eventName + " to clusterer");
-                results.push(this.clusterer.addListener(eventName, options[eventName]));
-              } else {
-                results.push(void 0);
-              }
-            }
-            return results;
+            return _.each(options, (function(_this) {
+              return function(eventHandler, eventName) {
+                if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
+                  $log.info(optionsName + ": Attaching event: " + eventName + " to clusterer");
+                  return _this.clusterer.addListener(eventName, function() {
+                    if (eventName === 'spiderfy' || eventName === 'unspiderfy') {
+                      return _this.scope.$evalAsync(options[eventName].apply(options, arguments));
+                    } else {
+                      return _this.scope.$evalAsync(options[eventName].apply(options, [arguments[0], eventName, arguments[0].model, arguments]));
+                    }
+                  });
+                }
+              };
+            })(this));
           }
         };
 
@@ -4828,7 +4832,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             if (typeEvents != null) {
               this.bindToTypeEvents(typeEvents, ['spiderfy', 'unspiderfy']);
             }
-            this.gManager = new SpiderfierMarkerManager(this.map, void 0, typeOptions, typeEvents);
+            this.gManager = new SpiderfierMarkerManager(this.map, void 0, typeOptions, typeEvents, this.scope);
           } else {
             this.gManager = new MarkerManager(this.map);
           }
