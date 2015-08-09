@@ -90,7 +90,24 @@ describe 'uiGmapCircle', ->
           GCircle.creationUnSubscribe listener
         , 500
 
-    describe "updates model from gObject changes", ->
+    describe "updates gObject from model", ->
+      it 'change center', (done) ->
+        gTestObject = null
+        @circle.events =
+          center_changed: (gObject, eventName, model) ->
+            gTestObject = gObject
+
+        @digest =>
+          @timeout =>
+            @circle.center =
+              longitude: 50
+              latitude: -50
+            expect(gTestObject.lng()).toBe(50)
+            expect(gTestObject.lat()).toBe(-50)
+            done()
+          , 500
+
+    describe "updates model from gObject", ->
       it 'change center', (done) ->
         listener = GCircle.creationSubscribe @, (gObject) =>
           _.delay =>
@@ -103,11 +120,9 @@ describe 'uiGmapCircle', ->
                 expect(@circle.center.latitude).toBe(-50)
                 expect(@circle.center.longitude).toBe(50)
                 done()
-
         @digest =>
           @timeout =>
             GCircle.creationUnSubscribe listener
-
           , 500
 
   it 'exists', ->
