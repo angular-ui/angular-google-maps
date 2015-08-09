@@ -46,6 +46,7 @@ describe 'uiGmapCircle', ->
       visible: true
       events:
         radius_changed: (gObject) ->
+        center_changed: (gObject) ->
       control: {}
 
     apiMock = window['uiGmapInitiator']
@@ -56,10 +57,8 @@ describe 'uiGmapCircle', ->
     @injects.push (uiGmapCircle) =>
       @subject = uiGmapCircle
 
-    @circle.events =
-      radius_changed: ->
-
-    _spy = spyOn @circle.events, 'radius_changed'
+    spyOn @circle.events, 'radius_changed'
+    spyOn @circle.events, 'center_changed'
 
     map.circle = @circle
 
@@ -78,7 +77,6 @@ describe 'uiGmapCircle', ->
   describe 'events', ->
     it 'call radius changed once', (done) ->
 
-
       listener = GCircle.creationSubscribe @, (gObject) =>
         _.delay =>
           window.google.maps.event.fireListener(gObject,'radius_changed')
@@ -91,6 +89,26 @@ describe 'uiGmapCircle', ->
           expect(GCircle.instances).toEqual(1)
           GCircle.creationUnSubscribe listener
         , 500
+
+    describe "updates model from gObject changes", ->
+      it 'change center', (done) ->
+        listener = GCircle.creationSubscribe @, (gObject) =>
+          _.delay =>
+            gObject.setCenter
+              lng: -> 50
+              lat: -> -50
+            window.google.maps.event.fireListener(gObject,'center_changed')
+            @digest =>
+              @timeout =>
+                expect(@circle.center.latitude).toBe(-50)
+                expect(@circle.center.longitude).toBe(50)
+                done()
+
+        @digest =>
+          @timeout =>
+            GCircle.creationUnSubscribe listener
+
+          , 500
 
   it 'exists', ->
     expect(@subject).toBeDefined()
