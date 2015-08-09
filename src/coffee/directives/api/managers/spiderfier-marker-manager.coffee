@@ -6,13 +6,12 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
     constructor: (gMap, opt_markers={}, @opt_options = {}, @opt_events) ->
       @type = SpiderfierMarkerManager.type
 
-      @clusterer = new NgMapMarkerClusterer gMap, opt_markers, @opt_options
+      @clusterer = new MarkerSpiderfier gMap, _.extend @opt_options, {markersWontMove: true, markersWontHide: true}
 
       @propMapGMarkers = new PropMap() #keep in sync with cluster.markers_
 
       @attachEvents @opt_events, 'opt_events'
 
-      @clusterer.setIgnoreHidden true
       @noDrawOnSingleAddRemoves = true
       $log.info @
 
@@ -22,6 +21,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
         $log.error msg
 
     add: (gMarker)=>
+      gMarker.setMap @clusterer.map #puts on map (could optimize for draw.. ugh)
       @checkKey gMarker
       @clusterer.addMarker gMarker, @noDrawOnSingleAddRemoves
       @propMapGMarkers.put gMarker.key, gMarker
@@ -41,6 +41,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       @checkKey gMarker
       exists = @propMapGMarkers.get gMarker.key
       if exists
+        gMarker.setMap null #puts on map (could optimize for draw.. ugh)
         @clusterer.removeMarker(gMarker, @noDrawOnSingleAddRemoves)
         @propMapGMarkers.remove gMarker.key
       @checkSync()
@@ -50,11 +51,10 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
         @remove gMarker
 
     draw: ()=>
-      @clusterer.repaint()
+      # @clusterer.repaint()
 
     clear: ()=>
       @removeMany @getGMarkers()
-      @clusterer.repaint()
 
     attachEvents: (options, optionsName) ->
       if angular.isDefined(options) and options? and angular.isObject(options)
@@ -75,10 +75,11 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       @clear()
 
     fit: =>
-      FitHelper.fit @getGMarkers(), @clusterer.getMap()
+      FitHelper.fit @getGMarkers(), @clusterer.map
 
     getGMarkers: =>
-      @clusterer.getMarkers().values()
+      #@clusterer.getMarkers().values() #leaving for later if we override internal Spiderfier to hash instead of default array
+      @clusterer.getMarkers()
 
     checkSync: =>
 #      throw 'GMarkers out of Sync in MarkerClusterer' if @getGMarkers().length != @propMapGMarkers.length

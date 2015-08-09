@@ -2168,10 +2168,12 @@ Nicholas McCready - https://twitter.com/nmccready
           this.update = bind(this.update, this);
           this.add = bind(this.add, this);
           this.type = SpiderfierMarkerManager.type;
-          this.clusterer = new NgMapMarkerClusterer(gMap, opt_markers, this.opt_options);
+          this.clusterer = new MarkerSpiderfier(gMap, _.extend(this.opt_options, {
+            markersWontMove: true,
+            markersWontHide: true
+          }));
           this.propMapGMarkers = new PropMap();
           this.attachEvents(this.opt_events, 'opt_events');
-          this.clusterer.setIgnoreHidden(true);
           this.noDrawOnSingleAddRemoves = true;
           $log.info(this);
         }
@@ -2185,6 +2187,7 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         SpiderfierMarkerManager.prototype.add = function(gMarker) {
+          gMarker.setMap(this.clusterer.map);
           this.checkKey(gMarker);
           this.clusterer.addMarker(gMarker, this.noDrawOnSingleAddRemoves);
           this.propMapGMarkers.put(gMarker.key, gMarker);
@@ -2209,6 +2212,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.checkKey(gMarker);
           exists = this.propMapGMarkers.get(gMarker.key);
           if (exists) {
+            gMarker.setMap(null);
             this.clusterer.removeMarker(gMarker, this.noDrawOnSingleAddRemoves);
             this.propMapGMarkers.remove(gMarker.key);
           }
@@ -2223,13 +2227,10 @@ Nicholas McCready - https://twitter.com/nmccready
           })(this));
         };
 
-        SpiderfierMarkerManager.prototype.draw = function() {
-          return this.clusterer.repaint();
-        };
+        SpiderfierMarkerManager.prototype.draw = function() {};
 
         SpiderfierMarkerManager.prototype.clear = function() {
-          this.removeMany(this.getGMarkers());
-          return this.clusterer.repaint();
+          return this.removeMany(this.getGMarkers());
         };
 
         SpiderfierMarkerManager.prototype.attachEvents = function(options, optionsName) {
@@ -2272,11 +2273,11 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         SpiderfierMarkerManager.prototype.fit = function() {
-          return FitHelper.fit(this.getGMarkers(), this.clusterer.getMap());
+          return FitHelper.fit(this.getGMarkers(), this.clusterer.map);
         };
 
         SpiderfierMarkerManager.prototype.getGMarkers = function() {
-          return this.clusterer.getMarkers().values();
+          return this.clusterer.getMarkers();
         };
 
         SpiderfierMarkerManager.prototype.checkSync = function() {};
