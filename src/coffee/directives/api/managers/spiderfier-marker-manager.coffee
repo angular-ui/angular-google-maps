@@ -1,6 +1,6 @@
 angular.module('uiGmapgoogle-maps.directives.api.managers')
 .factory 'uiGmapSpiderfierMarkerManager', ['uiGmapLogger',
-'uiGmapFitHelper', 'uiGmapPropMap', 'uiGmapMarkerSpiderfier', ($log, FitHelper, PropMap, uiGmapMarkerSpiderfier) ->
+'uiGmapFitHelper', 'uiGmapPropMap', 'uiGmapMarkerSpiderfier', ($log, FitHelper, PropMap, MarkerSpiderfier) ->
   class SpiderfierMarkerManager
     @type = 'SpiderfierMarkerManager'
     constructor: (gMap, opt_markers={}, @opt_options = {}, @opt_events) ->
