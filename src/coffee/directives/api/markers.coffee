@@ -7,13 +7,13 @@ angular.module("uiGmapgoogle-maps.directives.api")
         super()
         @template = '<span class="angular-google-map-markers" ng-transclude></span>'
         Plural.extend @,
-          doCluster: '=?' #deprecated use type instead; 2.2 we will remove
+          doCluster: '=?docluster' #deprecated use type instead; 2.2 we will remove
           clusterOptions: '=clusteroptions'#deprecated use typeOptions instead; 2.2 we will remove
           clusterEvents: '=clusterevents'#deprecated use typeEvents instead; 2.2 we will remove
           modelsByRef: '=modelsbyref'
-          type: '=?' # cluster, spider, default undefined - normal
-          typeOptions: '=?'
-          typeEvents: '=?'
+          type: '=?type' # cluster, spider, default undefined - normal
+          typeOptions: '=?typeoptions'
+          typeEvents: '=?typeevents'
 
         $log.info @
 

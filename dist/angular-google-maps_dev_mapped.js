@@ -6672,13 +6672,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           Markers.__super__.constructor.call(this);
           this.template = '<span class="angular-google-map-markers" ng-transclude></span>';
           Plural.extend(this, {
-            doCluster: '=?',
+            doCluster: '=?docluster',
             clusterOptions: '=clusteroptions',
             clusterEvents: '=clusterevents',
             modelsByRef: '=modelsbyref',
-            type: '=?',
-            typeOptions: '=?',
-            typeEvents: '=?'
+            type: '=?type',
+            typeOptions: '=?typeoptions',
+            typeEvents: '=?typeevents'
           });
           $log.info(this);
         }
