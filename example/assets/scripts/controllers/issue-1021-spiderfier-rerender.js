@@ -2,13 +2,15 @@ angular.module('app', ['uiGmapgoogle-maps', 'ui-rangeSlider'])
 .controller('MapCtrl', function ($scope, $http, $timeout, uiGmapIsReady, $log) {
 
   console.log("MapCtrl called");
-
   $scope.spiderEvents = {
     click: function(){
-      $log.debug("clicked: args: " + arguments);
+      $log.debug("clicked: args: " + arguments.length);
     },
-    spiderfy: function(){
-      $log.debug("spiderfy: args: " + arguments);
+    spiderfy: function(gMarkers, models, crap){
+      $log.debug("spiderfy: args: " + JSON.stringify(models));
+    },
+    unspiderfy: function(gMarkers, models){
+      $log.debug("unspiderfy: args: " + JSON.stringify(models));
     }
   };
   $scope.project = {};

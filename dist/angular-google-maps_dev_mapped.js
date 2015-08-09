@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-08
+/*! angular-google-maps 2.1.5 2015-08-09
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4777,29 +4777,38 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
         };
 
-        MarkersParentModel.prototype.bindToTypeEvents = function(typeEvents) {
-          var self;
+        MarkersParentModel.prototype.bindToTypeEvents = function(typeEvents, events) {
+          var internalHandles, self;
+          if (events == null) {
+            events = ['click', 'mouseout', 'mouseover'];
+          }
+
+          /*
+            You should only be binding to events that produce groups/clusters of somthing.
+            Otherwise use the orginal event handle.
+            For Example: Click on a cluster pushes a cluster/group obj through which has getMarkers
+            However Spiderfy's click is for a single marker so this is not ideal for that.
+           */
           self = this;
           if (!this.origTypeEvents) {
-            this.origTypeEvents = {
-              click: typeEvents != null ? typeEvents.click : void 0,
-              mouseout: typeEvents != null ? typeEvents.mouseout : void 0,
-              mouseover: typeEvents != null ? typeEvents.mouseover : void 0
-            };
+            this.origTypeEvents = {};
+            _.each(events, (function(_this) {
+              return function(eventName) {
+                return _this.origTypeEvents[eventName] = typeEvents != null ? typeEvents[eventName] : void 0;
+              };
+            })(this));
           } else {
             angular.extend(typeEvents, this.origTypeEvents);
           }
-          return angular.extend(typeEvents, {
-            click: function(group) {
-              return self.maybeExecMappedEvent(group, 'click');
-            },
-            mouseout: function(group) {
-              return self.maybeExecMappedEvent(group, 'mouseout');
-            },
-            mouseover: function(group) {
-              return self.maybeExecMappedEvent(group, 'mouseover');
-            }
-          });
+          internalHandles = {};
+          _.each(events, (function(_this) {
+            return function(eventName) {
+              return internalHandles[eventName] = function(group) {
+                return self.maybeExecMappedEvent(group, eventName);
+              };
+            };
+          })(this));
+          return angular.extend(typeEvents, internalHandles);
         };
 
         MarkersParentModel.prototype.createAllNew = function(scope) {
@@ -4816,6 +4825,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             }
             this.gManager = new ClustererMarkerManager(this.map, void 0, typeOptions, typeEvents);
           } else if (scope.type === 'spider') {
+            if (typeEvents != null) {
+              this.bindToTypeEvents(typeEvents, ['spiderfy', 'unspiderfy']);
+            }
             this.gManager = new SpiderfierMarkerManager(this.map, void 0, typeOptions, typeEvents);
           } else {
             this.gManager = new MarkerManager(this.map);
@@ -4958,14 +4970,23 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (_.isFunction(typeEvents != null ? typeEvents[fnName] : void 0)) {
             pair = this.mapTypeToPlurals(group);
             if (this.origTypeEvents[fnName]) {
-              return this.origTypeEvents[fnName](pair.cluster, pair.mapped);
+              return this.origTypeEvents[fnName](pair.group, pair.mapped);
             }
           }
         };
 
         MarkersParentModel.prototype.mapTypeToPlurals = function(group) {
-          var mapped;
-          mapped = group.getMarkers().map((function(_this) {
+          var arrayToMap, mapped;
+          if (_.isArray(group)) {
+            arrayToMap = group;
+          } else if (_.isFunction(group.getMarkers)) {
+            arrayToMap = group.getMarkers();
+          }
+          if (arrayToMap == null) {
+            $log.error("Unable to map event as we cannot find the array group to map");
+            return;
+          }
+          mapped = arrayToMap.map((function(_this) {
             return function(g) {
               return _this.scope.plurals.get(g.key).model;
             };

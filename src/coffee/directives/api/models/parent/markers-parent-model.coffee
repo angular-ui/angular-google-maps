@@ -81,25 +81,27 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             else
               @pieceMeal @scope, false
 
-          bindToTypeEvents: (typeEvents) =>
+          bindToTypeEvents: (typeEvents, events = ['click', 'mouseout', 'mouseover']) =>
+            ###
+              You should only be binding to events that produce groups/clusters of somthing.
+              Otherwise use the orginal event handle.
+              For Example: Click on a cluster pushes a cluster/group obj through which has getMarkers
+              However Spiderfy's click is for a single marker so this is not ideal for that.
+            ###
             self = @
             if not @origTypeEvents
-              @origTypeEvents =
-                click: typeEvents?.click
-                mouseout: typeEvents?.mouseout
-                mouseover: typeEvents?.mouseover
+              @origTypeEvents = {}
+              _.each events, (eventName) =>
+                @origTypeEvents[eventName] = typeEvents?[eventName]
             else
               #rollback to not have stack overflow to call self over and over
               angular.extend typeEvents, @origTypeEvents
+            internalHandles = {}
+            _.each events, (eventName) =>
+              internalHandles[eventName] = (group) ->
+                self.maybeExecMappedEvent group, eventName
 
-            angular.extend typeEvents,
-              click:(group) ->
-                self.maybeExecMappedEvent group, 'click'
-              mouseout:(group) ->
-                self.maybeExecMappedEvent group, 'mouseout'
-              mouseover:(group) ->
-                self.maybeExecMappedEvent group, 'mouseover'
-
+            angular.extend typeEvents, internalHandles
 
           createAllNew: (scope) =>
             if @gManager?
@@ -108,11 +110,12 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             #support backwards comapat clusterEvents and clusterOptions
             typeEvents = scope.typeEvents or scope.clusterEvents
             typeOptions = scope.typeOptions or scope.clusterOptions
+
             if scope.doCluster or scope.type == 'cluster'
-              if typeEvents?
-                @bindToTypeEvents typeEvents
+              @bindToTypeEvents(typeEvents) if typeEvents?
               @gManager = new ClustererMarkerManager @map, undefined, typeOptions, typeEvents
             else if scope.type == 'spider'
+              @bindToTypeEvents(typeEvents, ['spiderfy', 'unspiderfy']) if typeEvents?
               @gManager = new SpiderfierMarkerManager @map, undefined, typeOptions, typeEvents
             else
               @gManager = new MarkerManager @map
@@ -218,10 +221,18 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             typeEvents = @scope.typeEvents or @scope.clusterEvents
             if _.isFunction typeEvents?[fnName]
               pair = @mapTypeToPlurals group
-              @origTypeEvents[fnName](pair.cluster,pair.mapped) if @origTypeEvents[fnName]
+              @origTypeEvents[fnName](pair.group,pair.mapped) if @origTypeEvents[fnName]
 
           mapTypeToPlurals:(group) ->
-            mapped = group.getMarkers().map (g) =>
+            if _.isArray group
+              arrayToMap = group
+            else if _.isFunction group.getMarkers
+              arrayToMap = group.getMarkers()
+
+            unless arrayToMap?
+              $log.error "Unable to map event as we cannot find the array group to map"
+              return
+            mapped = arrayToMap.map (g) =>
               @scope.plurals.get(g.key).model
             cluster: group
             mapped: mapped

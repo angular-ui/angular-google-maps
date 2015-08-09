@@ -78,8 +78,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       FitHelper.fit @getGMarkers(), @clusterer.map
 
     getGMarkers: =>
-      #@clusterer.getMarkers().values() #leaving for later if we override internal Spiderfier to hash instead of default array
-      @clusterer.getMarkers()
+      @clusterer.getMarkers()#is an array so this should be fine as ClustererMarkerManager returns .values() (Array)
 
     checkSync: =>
 #      throw 'GMarkers out of Sync in MarkerClusterer' if @getGMarkers().length != @propMapGMarkers.length
