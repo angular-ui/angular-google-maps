@@ -1,8 +1,6 @@
 language: node_js
 node_js:
-    - "0.10.38"
-    - "0.12.4"
-    - "iojs"
+    - "0.12"
 before_script: PATH="$(npm bin):$PATH" npm install
 script: grunt
 branches:
@@ -13,3 +11,6 @@ branches:
     - 1.2.X
     - 1.0.X
     - website
+
+#http://docs.travis-ci.com/user/migrating-from-legacy/?utm_source=legacy-notice&utm_medium=banner&utm_campaign=legacy-upgrade#tl%3Bdr
+sudo: false

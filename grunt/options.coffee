@@ -57,6 +57,7 @@ concatDist =
     "tmp/wrapped_uuid.js"
     "tmp/wrapped_libs.js"
     "tmp/webpack.dataStructures.js"
+    "tmp/wrapped_marker_spiderfier.js"
     "src/js/**/*.js" #this all will only work if the dependency orders do not matter
     "src/js/**/**/*.js"
     "src/js/**/**/**/*.js"
@@ -276,11 +277,14 @@ module.exports = (grunt) ->
           ]
         src: 'src/js/wrapped/uuid.core.js'
         dest: 'tmp/wrapped_uuid.js'
-
-    subgrunt:
-      bluebird:
-        projects: {}
-  #          'bower_components/bluebird': ["build","--features='core'"]
+      markerSpiderfier:
+        options:
+          patterns: [
+            match: 'REPLACE_W_LIBS',
+            replacement: '<%= grunt.file.read("bower_components/OverlappingMarkerSpiderfier/dist/oms.js") %>'
+          ]
+        src: 'src/js/wrapped/marker_spiderfier.js'
+        dest: 'tmp/wrapped_marker_spiderfier.js'
 
     curl: require './curl-deps'
     verbosity:

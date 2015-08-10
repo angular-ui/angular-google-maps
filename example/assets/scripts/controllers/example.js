@@ -8,7 +8,7 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
 .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
   GoogleMapApi.configure({
 //    key: 'your api key',
-    v: '3.17',
+    // v: '3.20',
     libraries: 'weather,geometry,visualization'
   });
 }])
