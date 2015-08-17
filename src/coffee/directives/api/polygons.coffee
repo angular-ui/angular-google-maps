@@ -1,7 +1,7 @@
 angular.module('uiGmapgoogle-maps.directives.api')
 .factory 'uiGmapPolygons', [
-  'uiGmapIPolygon', '$timeout', 'uiGmaparray-sync', 'uiGmapPolygonsParentModel', 'uiGmapPlural',
-  (Interface, $timeout, arraySync, ParentModel, Plural) ->
+  'uiGmapIPolygon', '$timeout', 'uiGmapPolygonsParentModel', 'uiGmapPlural',
+  (Interface, $timeout, ParentModel, Plural) ->
     class Polygons extends Interface
       constructor: ->
         super()

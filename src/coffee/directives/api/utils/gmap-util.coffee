@@ -212,15 +212,6 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
     result
 
-  extendMapBounds: (map, points) ->
-    bounds = new google.maps.LatLngBounds()
-    i = 0
-
-    while i < points.length
-      bounds.extend points.getAt(i)
-      i++
-    map.fitBounds bounds
-
   getPath: (object, key) ->
     #if the key is not a sting then we already have the value
     return  key if not key? or not _.isString key

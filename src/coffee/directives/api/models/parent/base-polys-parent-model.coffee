@@ -1,9 +1,9 @@
 angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 .factory 'uiGmapBasePolysParentModel', [
   '$timeout', 'uiGmapLogger','uiGmapModelKey', 'uiGmapModelsWatcher',
-  'uiGmapPropMap', 'uiGmap_async', 'uiGmapPromise',
+  'uiGmapPropMap', 'uiGmap_async', 'uiGmapPromise', 'uiGmapFitHelper'
   ($timeout, $log, ModelKey, ModelsWatcher,
-    PropMap, _async, uiGmapPromise) ->
+    PropMap, _async, uiGmapPromise, FitHelper) ->
     (IPoly, PolyChildModel, gObjectName) ->
       class BasePolysParentModel extends ModelKey
         @include ModelsWatcher
@@ -110,14 +110,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           #allows graceful fallout of _async.each
           maybeCanceled = null
           _async.promiseLock @, uiGmapPromise.promiseTypes.create, 'createAllNew', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
-            _async.each scope.models, (model) =>
+            _async.map scope.models, (model) =>
               child = @createChild(model, @gMap)
               if maybeCanceled
                 $log.debug 'createNew should fall through safely'
                 child.isEnabled = false
               maybeCanceled
+              child.pathPoints.getArray()
             , _async.chunkSizeFrom scope.chunk
-            .then =>
+            .then (pathPoints) =>
+              @maybeFit(pathPoints)
               #handle done callBack
               @firstTime = false
 
@@ -150,6 +152,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                   @createChild(modelToAdd, @gMap)
                   maybeCanceled
                 , _async.chunkSizeFrom scope.chunk
+                .then =>
+                  @maybeFit()
           else
             @inProgress = false
             @rebuildAll(@scope, true, true)
@@ -164,7 +168,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           , true
 
           childScope.static = @scope.static
-          child = new PolyChildModel childScope, @attrs, gMap, @defaults, model
+          child = new PolyChildModel childScope, @attrs, gMap, @defaults, model, =>
+            @maybeFit()
 
           unless model[@idKey]?
             @$log.error """
@@ -176,4 +181,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @plurals.put(model[@idKey], child)
   #        $log.debug "create: " + @plurals.length
           child
+
+        maybeFit: (pathPoints = @plurals.map (p) -> p.pathPoints) =>
+          if @scope.fit
+            pathPoints = _.flatten pathPoints
+            FitHelper.fit pathPoints, @gMap
 ]

@@ -5,7 +5,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
     (Builder, gFactory) ->
       class BasePolyChildModel extends Builder
         @include GmapUtil
-        constructor: (@scope, @attrs, @map, @defaults, @model) ->
+        constructor: (@scope, @attrs, @map, @defaults, @model, gObjectChangeCb) ->
           #where @model is a reference to model in the controller scope
           #clonedModel is a copy for comparison
           @clonedModel = _.clone @model, true
@@ -21,16 +21,16 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
           create = =>
             return if @isDragging #avoid unnecessary creation (be nice if we knew we were editing too)
-            pathPoints = @convertPathPoints @scope.path
+            @pathPoints = @convertPathPoints @scope.path
             if @gObject?
               @clean()
             if @scope.model?
               maybeCachedEval = @scope
-            @gObject = gFactory @buildOpts(pathPoints, maybeCachedEval) if pathPoints.length > 0
+            @gObject = gFactory @buildOpts(@pathPoints, maybeCachedEval) if @pathPoints.length > 0
             if @gObject
-              @extendMapBounds @map, pathPoints if @scope.fit
               arraySync @gObject.getPath(), @scope, 'path', (pathPoints) =>
-                @extendMapBounds @map, pathPoints if @scope.fit
+                @pathPoints = pathPoints
+                gObjectChangeCb() if gObjectChangeCb?
               if angular.isDefined(@scope.events) and angular.isObject @scope.events
                 @listeners = if @model then EventsHelper.setEvents @gObject, @scope, @model else EventsHelper.setEvents @gObject, @scope, @scope
               @internalListeners = if @model then EventsHelper.setEvents @gObject, events: @internalEvents, @model else EventsHelper.setEvents @gObject, events: @internalEvents, @scope

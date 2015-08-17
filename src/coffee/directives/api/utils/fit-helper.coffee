@@ -1,13 +1,13 @@
 angular.module('uiGmapgoogle-maps.directives.api.utils')
-.service 'uiGmapFitHelper', [ 'uiGmapLogger', 'uiGmap_async',
-  ($log, _async) ->
-    fit: (gMarkers, gMap) ->
-      if gMap and gMarkers and gMarkers.length > 0
-        bounds = new google.maps.LatLngBounds()
-        everSet = false
-        gMarkers.forEach (gMarker) =>
-          if gMarker
-            everSet = true unless everSet
-            bounds.extend(gMarker.getPosition())
-        gMap.fitBounds(bounds) if everSet
+.service 'uiGmapFitHelper', [ 'uiGmapLogger', ($log) ->
+  fit: (markersOrPoints, gMap) ->
+    if gMap and markersOrPoints?.length
+      bounds = new google.maps.LatLngBounds()
+      everSet = false
+      for key, markerOrPoint of markersOrPoints
+        if markerOrPoint
+          everSet = true unless everSet
+          point = if _.isFunction markerOrPoint.getPosition then markerOrPoint.getPosition() else markerOrPoint
+        bounds.extend point
+      gMap.fitBounds(bounds) if everSet
 ]

@@ -159,12 +159,6 @@ describe 'utils.gmap-util', ->
     expect(@subject.convertPathPoints({type: 'Polygon', coordinates: [[1, 2] for [1..4]]}).getLength()).toEqual(4)
     expect(@subject.convertPathPoints({type: 'LineString', coordinates: [1, 2] for [1..4]}).getLength()).toEqual(4)
 
-  it 'should increase coverage', ->
-    latlong = {longitude: 45, latitude: -27}
-    @subject.getCoords(latlong)
-    @subject.getLabelPositionPoint('0 1')
-    @subject.extendMapBounds({fitBounds: (bounds) -> return undefined}, [])
-
   it '(getLabelPositionPoint) should convert decimal coordinates separated by a space into a map Point object', ->
     testCases = [
       { input: '22 0', expected: { x: 22, y: 0 } }
