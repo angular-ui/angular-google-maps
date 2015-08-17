@@ -1449,18 +1449,17 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         ModelKey.prototype.setChildScope = function(keys, childScope, model) {
-          _.each(keys, (function(_this) {
-            return function(name) {
-              var isScopeObj, newValue;
-              isScopeObj = _this.scopeOrModelVal(name, childScope, model, true);
-              if ((isScopeObj != null ? isScopeObj.value : void 0) != null) {
-                newValue = isScopeObj.value;
-                if (newValue !== childScope[name]) {
-                  return childScope[name] = newValue;
-                }
+          var isScopeObj, key, name, newValue;
+          for (key in keys) {
+            name = keys[key];
+            isScopeObj = this.scopeOrModelVal(name, childScope, model, true);
+            if ((isScopeObj != null ? isScopeObj.value : void 0) != null) {
+              newValue = isScopeObj.value;
+              if (newValue !== childScope[name]) {
+                childScope[name] = newValue;
               }
-            };
-          })(this));
+            }
+          }
           return childScope.model = model;
         };
 
@@ -3964,7 +3963,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
 
           BasePolysParentModel.prototype.watchModels = function(scope) {
-            return scope.$watchCollection('models', (function(_this) {
+            return scope.$watch('models', (function(_this) {
               return function(newValue, oldValue) {
                 if (newValue !== oldValue) {
                   if (_this.doINeedToWipe(newValue) || scope.doRebuildAll) {
@@ -3974,7 +3973,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }
                 }
               };
-            })(this));
+            })(this), true);
           };
 
           BasePolysParentModel.prototype.doINeedToWipe = function(newValue) {
@@ -4102,7 +4101,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }).then(function(state) {
                     payload = state;
                     if (payload.updates.length) {
-                      $log.info("polygons updates: " + payload.updates.length + " will be missed");
+                      _async.each(payload.updates, function(obj) {
+                        _.extend(obj.child.scope, obj.model);
+                        return obj.child.model = obj.model;
+                      });
                     }
                     return _async.each(payload.removals, function(child) {
                       if (child != null) {

@@ -114,7 +114,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
 
       setChildScope: (keys, childScope, model) =>
-        _.each keys, (name) =>
+        for key, name of keys
           isScopeObj = @scopeOrModelVal name, childScope, model, true
           if isScopeObj?.value? #if we have something evaluated save to scope to not reevaluate on init
             newValue = isScopeObj.value
