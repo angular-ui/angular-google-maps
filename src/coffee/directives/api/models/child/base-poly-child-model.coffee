@@ -6,10 +6,6 @@ angular.module('uiGmapgoogle-maps.directives.api')
       class BasePolyChildModel extends Builder
         @include GmapUtil
         constructor: (@scope, @attrs, @map, @defaults, @model) ->
-          #where @model is a reference to model in the controller scope
-          #clonedModel is a copy for comparison
-          @clonedModel = _.clone @model, true
-
           @isDragging = false
           @internalEvents =
             dragend: =>

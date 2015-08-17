@@ -9,10 +9,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         constructor: (@model, @scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerScope, @element,
           @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
 
-          #where @model is a reference to model in the controller scope
-          #clonedModel is a copy for comparison
-          @clonedModel = _.clone @model, true
-
           @getGmarker = ->
             @markerScope?.getGMarker() if @markerScope?['getGMarker']?
 
@@ -199,8 +195,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @scope.$destroy()
 
         updateModel: (model) =>
-          @clonedModel = _.clone(model,true)
-          _.extend(@model, @clonedModel)
+          _.extend(@model, model)
 
       WindowChildModel
   ]

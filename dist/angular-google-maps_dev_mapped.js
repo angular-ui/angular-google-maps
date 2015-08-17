@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-09
+/*! angular-google-maps 2.1.5 2015-08-17
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -2866,7 +2866,6 @@ Nicholas McCready - https://twitter.com/nmccready
             this.defaults = defaults;
             this.model = model;
             this.clean = bind(this.clean, this);
-            this.clonedModel = _.clone(this.model, true);
             this.isDragging = false;
             this.internalEvents = {
               dragend: (function(_this) {
@@ -3207,7 +3206,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.updateModel = bind(this.updateModel, this);
           this.handleModelChanges = bind(this.handleModelChanges, this);
           this.destroy = bind(this.destroy, this);
-          this.clonedModel = _.clone(this.model, true);
           this.deferred = uiGmapPromise.defer();
           _.each(this.keys, (function(_this) {
             return function(v, k) {
@@ -3286,7 +3284,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.updateModel = function(model) {
-          this.clonedModel = _.clone(model, true);
           return this.setMyScope('all', model, this.model);
         };
 
@@ -3638,7 +3635,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.watchElement = bind(this.watchElement, this);
           this.watchAndDoShow = bind(this.watchAndDoShow, this);
           this.doShow = bind(this.doShow, this);
-          this.clonedModel = _.clone(this.model, true);
           this.getGmarker = function() {
             var ref, ref1;
             if (((ref = this.markerScope) != null ? ref['getGMarker'] : void 0) != null) {
@@ -3918,8 +3914,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.updateModel = function(model) {
-          this.clonedModel = _.clone(model, true);
-          return _.extend(this.model, this.clonedModel);
+          return _.extend(this.model, model);
         };
 
         return WindowChildModel;
