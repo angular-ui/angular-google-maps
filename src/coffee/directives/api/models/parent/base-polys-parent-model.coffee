@@ -23,23 +23,11 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           # @watchOurScope(scope)
           @createChildScopes()
 
-        #watch this scope(Parent to all Models), these updates reflect expression / Key changes
-        #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
-        # watch: (scope, name, nameKey) =>
-        #   scope.$watch name, (newValue, oldValue) =>
-        #     if (newValue != oldValue)
-        #       maybeCanceled =  null
-        #       @[nameKey] = if _.isFunction newValue then newValue() else newValue
-        #
-        #       _async.promiseLock @, uiGmapPromise.promiseTypes.update, "watch #{name} #{nameKey}"
-        #       , ((canceledMsg) -> maybeCanceled = canceledMsg)
-        #       , =>
-        #        _async.each @plurals.values(), (model) =>
-        #          model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
-        #          maybeCanceled
-        #        , _async.chunkSizeFrom scope.chunk
-
         watchModels: (scope) =>
+          ###
+            This was watchCollection but not all model changes were being caught.
+            TODO: Make the directive flexible in overriding whether we watch models (and depth) via watch or watchColleciton.
+          ###
           scope.$watch 'models', (newValue, oldValue) =>
             unless newValue == oldValue
               if @doINeedToWipe(newValue) or scope.doRebuildAll
@@ -68,17 +56,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         watchDestroy: (scope)=>
           scope.$on '$destroy', =>
             @rebuildAll(scope, false, true)
-
-        # watchOurScope: (scope) =>
-        #   canCall = (maybeCall) ->
-        #     return false unless _.isFunction(maybeCall)
-        #     hasZeroArgs = !maybeCall.length
-        #     hasZeroArgs
-        #
-        #   _.each IPoly.scopeKeys, (name) =>
-        #     nameKey = name + 'Key'
-        #     @[nameKey] = if canCall(scope[name]) then scope[name]() else scope[name]
-        #     @watch(scope, name, nameKey)
 
         createChildScopes: (isCreatingFromScratch = true) =>
           if angular.isUndefined(@scope.models)

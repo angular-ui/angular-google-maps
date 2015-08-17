@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-16
+/*! angular-google-maps 2.1.5 2015-08-17
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3963,6 +3963,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
 
           BasePolysParentModel.prototype.watchModels = function(scope) {
+
+            /*
+              This was watchCollection but not all model changes were being caught.
+              TODO: Make the directive flexible in overriding whether we watch models (and depth) via watch or watchColleciton.
+             */
             return scope.$watch('models', (function(_this) {
               return function(newValue, oldValue) {
                 if (newValue !== oldValue) {
