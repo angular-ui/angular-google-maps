@@ -1,7 +1,7 @@
 angular.module('uiGmapgoogle-maps.directives.api')
 .factory 'uiGmapPolylines', [
-  'uiGmapIPolyline', '$timeout', 'uiGmaparray-sync', 'uiGmapPolylinesParentModel', 'uiGmapPlural',
-  (IPolyline, $timeout, arraySync, PolylinesParentModel, Plural) ->
+  'uiGmapIPolyline', '$timeout', 'uiGmapPolylinesParentModel', 'uiGmapPlural',
+  (IPolyline, $timeout, PolylinesParentModel, Plural) ->
     class Polylines extends IPolyline
       constructor: () ->
         super()

@@ -1,7 +1,7 @@
 angular.module('uiGmapgoogle-maps.directives.api')
 .factory 'uiGmapPolyline', [
-  'uiGmapIPolyline', '$timeout', 'uiGmaparray-sync', 'uiGmapPolylineChildModel',
-  (IPolyline, $timeout, arraySync, PolylineChildModel) ->
+  'uiGmapIPolyline', '$timeout', 'uiGmapPolylineChildModel',
+  (IPolyline, $timeout, PolylineChildModel) ->
     class Polyline extends IPolyline
       link: (scope, element, attrs, mapCtrl) =>
         # Wrap polyline initialization inside a $timeout() call to make sure the map is created already

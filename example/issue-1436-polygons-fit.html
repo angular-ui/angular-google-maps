@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org/" ng-app="appMaps">
+<head>
+    <meta charset="utf-8" />
+    <title>AngularJS Plunker</title>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/lodash/lodash.js"></script>
+    <script type='text/javascript' src="../dist/angular-google-maps_dev_mapped.js"></script>
+    <script>
+      angular.module('appMaps', ['uiGmapgoogle-maps'])
+        .controller('mainCtrl', function ($scope) {
+          $scope.map = {center: {latitude: 40.1451, longitude: -99.6680 }, zoom: 4, bounds: {}};
+          $scope.polylines = [
+            {
+              id: 1,
+              path: [
+                { latitude: 45, longitude: -74 },
+                { latitude: 30, longitude: -89 },
+                { latitude: 37, longitude: -122 },
+                { latitude: 60, longitude: -95 }
+              ],
+              stroke: { color: '#6060FB', weight: 3 }
+            },
+            {
+              id: 2,
+              path: [
+                { latitude: 44, longitude: -72 },
+                { latitude: 20, longitude: -100 },
+              ],
+              stroke: { color: '#000', weight: 3 }
+            },
+            {
+              id: 3,
+              path: [
+                { latitude: 10, longitude: -10 },
+                { latitude: 30, longitude: -50 },
+              ],
+              stroke: { color: '#666', weight: 3 }
+            }
+          ];
+        });
+    </script>
+    <style type="text/css">
+        html, body, #map_canvas {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+        }
+
+        #map_canvas {
+            position: relative;
+        }
+
+        .angular-google-map-container {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+        }
+        .buttons{
+          position: absolute;
+          z-index:10;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map_canvas" ng-controller="mainCtrl as main">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" bounds="map.bounds">
+        <ui-gmap-polylines
+            models="polylines"
+            path="'path'"
+            stroke="'stroke'"
+            visible="true"
+            fit="true"
+            ></ui-gmap-polylines>
+    </ui-gmap-google-map>
+</div>
+</body>
+
+</html>

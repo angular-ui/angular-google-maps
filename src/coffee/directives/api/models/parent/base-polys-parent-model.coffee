@@ -1,9 +1,9 @@
 angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 .factory 'uiGmapBasePolysParentModel', [
   '$timeout', 'uiGmapLogger','uiGmapModelKey', 'uiGmapModelsWatcher',
-  'uiGmapPropMap', 'uiGmap_async', 'uiGmapPromise',
+  'uiGmapPropMap', 'uiGmap_async', 'uiGmapPromise', 'uiGmapFitHelper'
   ($timeout, $log, ModelKey, ModelsWatcher,
-    PropMap, _async, uiGmapPromise) ->
+    PropMap, _async, uiGmapPromise, FitHelper) ->
     (IPoly, PolyChildModel, gObjectName) ->
       class BasePolysParentModel extends ModelKey
         @include ModelsWatcher
@@ -20,33 +20,21 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @firstTime = true
           @$log.info @
 
-          #@watchOurScope(scope)
+          # @watchOurScope(scope)
           @createChildScopes()
 
-        #watch this scope(Parent to all Models), these updates reflect expression / Key changes
-        #thus they need to be pushed to all the children models so that they are bound to the correct objects / keys
-  #      watch: (scope, name, nameKey) =>
-  #        scope.$watch name, (newValue, oldValue) =>
-  #          if (newValue != oldValue)
-  #            maybeCanceled =  null
-  #            @[nameKey] = if _.isFunction newValue then newValue() else newValue
-  #
-  #            _async.promiseLock @, uiGmapPromise.promiseTypes.update, "watch #{name} #{nameKey}"
-  #            , ((canceledMsg) -> maybeCanceled = canceledMsg)
-  #            , =>
-  #              _async.each @plurals.values(), (model) =>
-  #                model.scope[name] = if @[nameKey] == 'self' then model else model[@[nameKey]]
-  #                maybeCanceled
-  #              , _async.chunkSizeFrom scope.chunk
-
-
         watchModels: (scope) =>
-          scope.$watchCollection 'models', (newValue, oldValue) =>
+          ###
+            This was watchCollection but not all model changes were being caught.
+            TODO: Make the directive flexible in overriding whether we watch models (and depth) via watch or watchColleciton.
+          ###
+          scope.$watch 'models', (newValue, oldValue) =>
             unless newValue == oldValue
               if @doINeedToWipe(newValue) or scope.doRebuildAll
                 @rebuildAll(scope, true, true)
               else
                 @createChildScopes(false)
+          , true
 
         doINeedToWipe: (newValue) =>
           newValueIsEmpty = if newValue? then newValue.length == 0 else true
@@ -68,17 +56,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         watchDestroy: (scope)=>
           scope.$on '$destroy', =>
             @rebuildAll(scope, false, true)
-
-  #      watchOurScope: (scope) =>
-  #        canCall = (maybeCall) ->
-  #          return false unless _.isFunction(maybeCall)
-  #          hasZeroArgs = !maybeCall.length
-  #          hasZeroArgs
-  #
-  #        _.each IPoly.scopeKeys, (name) =>
-  #          nameKey = name + 'Key'
-  #          @[nameKey] = if canCall(scope[name]) then scope[name]() else scope[name]
-  #          @watch(scope, name, nameKey)
 
         createChildScopes: (isCreatingFromScratch = true) =>
           if angular.isUndefined(@scope.models)
@@ -110,14 +87,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           #allows graceful fallout of _async.each
           maybeCanceled = null
           _async.promiseLock @, uiGmapPromise.promiseTypes.create, 'createAllNew', ((canceledMsg) -> maybeCanceled = canceledMsg), =>
-            _async.each scope.models, (model) =>
+            _async.map scope.models, (model) =>
               child = @createChild(model, @gMap)
               if maybeCanceled
                 $log.debug 'createNew should fall through safely'
                 child.isEnabled = false
               maybeCanceled
+              child.pathPoints.getArray()
             , _async.chunkSizeFrom scope.chunk
-            .then =>
+            .then (pathPoints) =>
+              @maybeFit(pathPoints)
               #handle done callBack
               @firstTime = false
 
@@ -134,8 +113,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               .then (state) =>
                 payload = state
                 if(payload.updates.length)
-                  #TODO: not supporting updates yet
-                  $log.info("polygons updates: #{payload.updates.length} will be missed")
+                  _async.each payload.updates, (obj) =>
+                    _.extend obj.child.scope, obj.model
+                    obj.child.model = obj.model
                 _async.each payload.removals, (child) =>
                   if child?
                     child.destroy()
@@ -150,6 +130,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                   @createChild(modelToAdd, @gMap)
                   maybeCanceled
                 , _async.chunkSizeFrom scope.chunk
+                .then =>
+                  @maybeFit()
           else
             @inProgress = false
             @rebuildAll(@scope, true, true)
@@ -164,7 +146,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           , true
 
           childScope.static = @scope.static
-          child = new PolyChildModel childScope, @attrs, gMap, @defaults, model
+          child = new PolyChildModel childScope, @attrs, gMap, @defaults, model, =>
+            @maybeFit()
 
           unless model[@idKey]?
             @$log.error """
@@ -176,4 +159,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @plurals.put(model[@idKey], child)
   #        $log.debug "create: " + @plurals.length
           child
+
+        maybeFit: (pathPoints = @plurals.map (p) -> p.pathPoints) =>
+          if @scope.fit
+            pathPoints = _.flatten pathPoints
+            FitHelper.fit pathPoints, @gMap
 ]

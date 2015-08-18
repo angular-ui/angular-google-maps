@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-09
+/*! angular-google-maps 2.1.5 2015-08-17
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -827,23 +827,23 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapFitHelper', [
-    'uiGmapLogger', 'uiGmap_async', function($log, _async) {
+    'uiGmapLogger', function($log) {
       return {
-        fit: function(gMarkers, gMap) {
-          var bounds, everSet;
-          if (gMap && gMarkers && gMarkers.length > 0) {
+        fit: function(markersOrPoints, gMap) {
+          var bounds, everSet, key, markerOrPoint, point;
+          if (gMap && (markersOrPoints != null ? markersOrPoints.length : void 0)) {
             bounds = new google.maps.LatLngBounds();
             everSet = false;
-            gMarkers.forEach((function(_this) {
-              return function(gMarker) {
-                if (gMarker) {
-                  if (!everSet) {
-                    everSet = true;
-                  }
-                  return bounds.extend(gMarker.getPosition());
+            for (key in markersOrPoints) {
+              markerOrPoint = markersOrPoints[key];
+              if (markerOrPoint) {
+                if (!everSet) {
+                  everSet = true;
                 }
-              };
-            })(this));
+                point = _.isFunction(markerOrPoint.getPosition) ? markerOrPoint.getPosition() : markerOrPoint;
+              }
+              bounds.extend(point);
+            }
             if (everSet) {
               return gMap.fitBounds(bounds);
             }
@@ -1096,16 +1096,6 @@ Nicholas McCready - https://twitter.com/nmccready
             }
           }
           return result;
-        },
-        extendMapBounds: function(map, points) {
-          var bounds, i;
-          bounds = new google.maps.LatLngBounds();
-          i = 0;
-          while (i < points.length) {
-            bounds.extend(points.getAt(i));
-            i++;
-          }
-          return map.fitBounds(bounds);
         },
         getPath: function(object, key) {
           var obj;
@@ -1459,18 +1449,17 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         ModelKey.prototype.setChildScope = function(keys, childScope, model) {
-          _.each(keys, (function(_this) {
-            return function(name) {
-              var isScopeObj, newValue;
-              isScopeObj = _this.scopeOrModelVal(name, childScope, model, true);
-              if ((isScopeObj != null ? isScopeObj.value : void 0) != null) {
-                newValue = isScopeObj.value;
-                if (newValue !== childScope[name]) {
-                  return childScope[name] = newValue;
-                }
+          var isScopeObj, key, name, newValue;
+          for (key in keys) {
+            name = keys[key];
+            isScopeObj = this.scopeOrModelVal(name, childScope, model, true);
+            if ((isScopeObj != null ? isScopeObj.value : void 0) != null) {
+              newValue = isScopeObj.value;
+              if (newValue !== childScope[name]) {
+                childScope[name] = newValue;
               }
-            };
-          })(this));
+            }
+          }
           return childScope.model = model;
         };
 
@@ -2858,7 +2847,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
           BasePolyChildModel.include(GmapUtil);
 
-          function BasePolyChildModel(scope, attrs, map, defaults, model) {
+          function BasePolyChildModel(scope, attrs, map, defaults, model, gObjectChangeCb) {
             var create;
             this.scope = scope;
             this.attrs = attrs;
@@ -2884,27 +2873,25 @@ Nicholas McCready - https://twitter.com/nmccready
             };
             create = (function(_this) {
               return function() {
-                var maybeCachedEval, pathPoints;
+                var maybeCachedEval;
                 if (_this.isDragging) {
                   return;
                 }
-                pathPoints = _this.convertPathPoints(_this.scope.path);
+                _this.pathPoints = _this.convertPathPoints(_this.scope.path);
                 if (_this.gObject != null) {
                   _this.clean();
                 }
                 if (_this.scope.model != null) {
                   maybeCachedEval = _this.scope;
                 }
-                if (pathPoints.length > 0) {
-                  _this.gObject = gFactory(_this.buildOpts(pathPoints, maybeCachedEval));
+                if (_this.pathPoints.length > 0) {
+                  _this.gObject = gFactory(_this.buildOpts(_this.pathPoints, maybeCachedEval));
                 }
                 if (_this.gObject) {
-                  if (_this.scope.fit) {
-                    _this.extendMapBounds(_this.map, pathPoints);
-                  }
                   arraySync(_this.gObject.getPath(), _this.scope, 'path', function(pathPoints) {
-                    if (_this.scope.fit) {
-                      return _this.extendMapBounds(_this.map, pathPoints);
+                    _this.pathPoints = pathPoints;
+                    if (gObjectChangeCb != null) {
+                      return gObjectChangeCb();
                     }
                   });
                   if (angular.isDefined(_this.scope.events) && angular.isObject(_this.scope.events)) {
@@ -3936,7 +3923,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     hasProp = {}.hasOwnProperty;
 
   angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapBasePolysParentModel', [
-    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmap_async', 'uiGmapPromise', function($timeout, $log, ModelKey, ModelsWatcher, PropMap, _async, uiGmapPromise) {
+    '$timeout', 'uiGmapLogger', 'uiGmapModelKey', 'uiGmapModelsWatcher', 'uiGmapPropMap', 'uiGmap_async', 'uiGmapPromise', 'uiGmapFitHelper', function($timeout, $log, ModelKey, ModelsWatcher, PropMap, _async, uiGmapPromise, FitHelper) {
       return function(IPoly, PolyChildModel, gObjectName) {
         var BasePolysParentModel;
         return BasePolysParentModel = (function(superClass) {
@@ -3949,6 +3936,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.attrs = attrs;
             this.gMap = gMap1;
             this.defaults = defaults;
+            this.maybeFit = bind(this.maybeFit, this);
             this.createChild = bind(this.createChild, this);
             this.pieceMeal = bind(this.pieceMeal, this);
             this.createAllNew = bind(this.createAllNew, this);
@@ -3975,7 +3963,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
 
           BasePolysParentModel.prototype.watchModels = function(scope) {
-            return scope.$watchCollection('models', (function(_this) {
+
+            /*
+              This was watchCollection but not all model changes were being caught.
+              TODO: Make the directive flexible in overriding whether we watch models (and depth) via watch or watchColleciton.
+             */
+            return scope.$watch('models', (function(_this) {
               return function(newValue, oldValue) {
                 if (newValue !== oldValue) {
                   if (_this.doINeedToWipe(newValue) || scope.doRebuildAll) {
@@ -3985,7 +3978,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }
                 }
               };
-            })(this));
+            })(this), true);
           };
 
           BasePolysParentModel.prototype.doINeedToWipe = function(newValue) {
@@ -4075,15 +4068,17 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return maybeCanceled = canceledMsg;
             }), (function(_this) {
               return function() {
-                return _async.each(scope.models, function(model) {
+                return _async.map(scope.models, function(model) {
                   var child;
                   child = _this.createChild(model, _this.gMap);
                   if (maybeCanceled) {
                     $log.debug('createNew should fall through safely');
                     child.isEnabled = false;
                   }
-                  return maybeCanceled;
-                }, _async.chunkSizeFrom(scope.chunk)).then(function() {
+                  maybeCanceled;
+                  return child.pathPoints.getArray();
+                }, _async.chunkSizeFrom(scope.chunk)).then(function(pathPoints) {
+                  _this.maybeFit(pathPoints);
                   return _this.firstTime = false;
                 });
               };
@@ -4111,7 +4106,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }).then(function(state) {
                     payload = state;
                     if (payload.updates.length) {
-                      $log.info("polygons updates: " + payload.updates.length + " will be missed");
+                      _async.each(payload.updates, function(obj) {
+                        _.extend(obj.child.scope, obj.model);
+                        return obj.child.model = obj.model;
+                      });
                     }
                     return _async.each(payload.removals, function(child) {
                       if (child != null) {
@@ -4127,7 +4125,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       }
                       _this.createChild(modelToAdd, _this.gMap);
                       return maybeCanceled;
-                    }, _async.chunkSizeFrom(scope.chunk));
+                    }, _async.chunkSizeFrom(scope.chunk)).then(function() {
+                      return _this.maybeFit();
+                    });
                   });
                 };
               })(this));
@@ -4149,13 +4149,29 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               };
             })(this), true);
             childScope["static"] = this.scope["static"];
-            child = new PolyChildModel(childScope, this.attrs, gMap, this.defaults, model);
+            child = new PolyChildModel(childScope, this.attrs, gMap, this.defaults, model, (function(_this) {
+              return function() {
+                return _this.maybeFit();
+              };
+            })(this));
             if (model[this.idKey] == null) {
               this.$log.error(gObjectName + " model has no id to assign a child to.\nThis is required for performance. Please assign id,\nor redirect id to a different key.");
               return;
             }
             this.plurals.put(model[this.idKey], child);
             return child;
+          };
+
+          BasePolysParentModel.prototype.maybeFit = function(pathPoints) {
+            if (pathPoints == null) {
+              pathPoints = this.plurals.map(function(p) {
+                return p.pathPoints;
+              });
+            }
+            if (this.scope.fit) {
+              pathPoints = _.flatten(pathPoints);
+              return FitHelper.fit(pathPoints, this.gMap);
+            }
           };
 
           return BasePolysParentModel;
@@ -6809,7 +6825,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     hasProp = {}.hasOwnProperty;
 
   angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapPolygon', [
-    'uiGmapIPolygon', '$timeout', 'uiGmaparray-sync', 'uiGmapPolygonChildModel', function(IPolygon, $timeout, arraySync, PolygonChild) {
+    'uiGmapIPolygon', '$timeout', 'uiGmapPolygonChildModel', function(IPolygon, $timeout, PolygonChild) {
       var Polygon;
       return Polygon = (function(superClass) {
         extend(Polygon, superClass);
@@ -6848,7 +6864,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     hasProp = {}.hasOwnProperty;
 
   angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapPolygons', [
-    'uiGmapIPolygon', '$timeout', 'uiGmaparray-sync', 'uiGmapPolygonsParentModel', 'uiGmapPlural', function(Interface, $timeout, arraySync, ParentModel, Plural) {
+    'uiGmapIPolygon', '$timeout', 'uiGmapPolygonsParentModel', 'uiGmapPlural', function(Interface, $timeout, ParentModel, Plural) {
       var Polygons;
       return Polygons = (function(superClass) {
         extend(Polygons, superClass);
@@ -6887,7 +6903,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     hasProp = {}.hasOwnProperty;
 
   angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapPolyline', [
-    'uiGmapIPolyline', '$timeout', 'uiGmaparray-sync', 'uiGmapPolylineChildModel', function(IPolyline, $timeout, arraySync, PolylineChildModel) {
+    'uiGmapIPolyline', '$timeout', 'uiGmapPolylineChildModel', function(IPolyline, $timeout, PolylineChildModel) {
       var Polyline;
       return Polyline = (function(superClass) {
         extend(Polyline, superClass);
@@ -6921,7 +6937,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     hasProp = {}.hasOwnProperty;
 
   angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapPolylines', [
-    'uiGmapIPolyline', '$timeout', 'uiGmaparray-sync', 'uiGmapPolylinesParentModel', 'uiGmapPlural', function(IPolyline, $timeout, arraySync, PolylinesParentModel, Plural) {
+    'uiGmapIPolyline', '$timeout', 'uiGmapPolylinesParentModel', 'uiGmapPlural', function(IPolyline, $timeout, PolylinesParentModel, Plural) {
       var Polylines;
       return Polylines = (function(superClass) {
         extend(Polylines, superClass);
