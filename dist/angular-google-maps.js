@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-17
+/*! angular-google-maps 2.1.5 2015-08-19
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1142,11 +1142,12 @@ Nicholas McCready - https://twitter.com/nmccready
         return $timeout(function() {
           if (retriesLeft <= 0) {
             deferred.reject('Your maps are not found we have checked the maximum amount of times. :)');
+            return;
           }
           if (_ctr !== expectedInstances) {
-            return _checkIfReady(deferred, expectedInstances, retriesLeft - 1);
+            _checkIfReady(deferred, expectedInstances, retriesLeft - 1);
           } else {
-            return deferred.resolve(_promises());
+            deferred.resolve(_promises());
           }
         }, 100);
       };
