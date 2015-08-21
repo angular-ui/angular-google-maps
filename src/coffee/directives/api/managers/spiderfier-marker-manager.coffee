@@ -5,13 +5,9 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
     @type = 'SpiderfierMarkerManager'
     constructor: (gMap, opt_markers={}, @opt_options = {}, @opt_events, @scope) ->
       @type = SpiderfierMarkerManager.type
-
-      @clusterer = new MarkerSpiderfier gMap, @opt_options
-
+      @markerSpiderfier = new MarkerSpiderfier gMap, @opt_options
       @propMapGMarkers = new PropMap() #keep in sync with cluster.markers_
-
       @attachEvents @opt_events, 'opt_events'
-
       @noDrawOnSingleAddRemoves = true
       $log.info @
 
@@ -20,10 +16,10 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
         msg = 'gMarker.key undefined and it is REQUIRED!!'
         $log.error msg
 
-    add: (gMarker)=>
-      gMarker.setMap @clusterer.map #puts on map (could optimize for draw.. ugh)
+    add: (gMarker) =>
+      gMarker.setMap @markerSpiderfier.map #puts on map (could optimize for draw.. ugh)
       @checkKey gMarker
-      @clusterer.addMarker gMarker, @noDrawOnSingleAddRemoves
+      @markerSpiderfier.addMarker gMarker, @noDrawOnSingleAddRemoves
       @propMapGMarkers.put gMarker.key, gMarker
       @checkSync()
 
@@ -33,35 +29,35 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       @remove gMarker
       @add gMarker
 
-    addMany: (gMarkers)=>
+    addMany: (gMarkers) =>
       gMarkers.forEach (gMarker) =>
         @add gMarker
 
-    remove: (gMarker)=>
+    remove: (gMarker) =>
       @checkKey gMarker
       exists = @propMapGMarkers.get gMarker.key
       if exists
         gMarker.setMap null #puts on map (could optimize for draw.. ugh)
-        @clusterer.removeMarker(gMarker, @noDrawOnSingleAddRemoves)
+        @markerSpiderfier.removeMarker(gMarker, @noDrawOnSingleAddRemoves)
         @propMapGMarkers.remove gMarker.key
       @checkSync()
 
-    removeMany: (gMarkers)=>
+    removeMany: (gMarkers) =>
       gMarkers.forEach (gMarker) =>
         @remove gMarker
 
-    draw: ()=>
-      # @clusterer.repaint()
+    draw: () =>
+      # @markerSpiderfier.repaint()
 
-    clear: ()=>
+    clear: () =>
       @removeMany @getGMarkers()
 
     attachEvents: (options, optionsName) =>
       if angular.isDefined(options) and options? and angular.isObject(options)
         _.each options, (eventHandler, eventName) =>
           if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
-            $log.info "#{optionsName}: Attaching event: #{eventName} to clusterer"
-            @clusterer.addListener eventName, =>
+            $log.info "#{optionsName}: Attaching event: #{eventName} to markerSpiderfier"
+            @markerSpiderfier.addListener eventName, =>
               if eventName == 'spiderfy' or eventName == 'unspiderfy'
                 @scope.$evalAsync(options[eventName](arguments...))
               else #for consistency to be like EventsHelper
@@ -71,19 +67,23 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       if angular.isDefined(options) and options? and angular.isObject(options)
         for eventName, eventHandler of options
           if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
-            $log.info "#{optionsName}: Clearing event: #{eventName} to clusterer"
-            @clusterer.clearListeners eventName
+            $log.info "#{optionsName}: Clearing event: #{eventName} to markerSpiderfier"
+            @markerSpiderfier.clearListeners eventName
 
     destroy: =>
       @clearEvents @opt_events, 'opt_events'
       @clear()
 
     fit: =>
-      FitHelper.fit @getGMarkers(), @clusterer.map
+      FitHelper.fit @getGMarkers(), @markerSpiderfier.map
 
     getGMarkers: =>
-      @clusterer.getMarkers()#is an array so this should be fine as ClustererMarkerManager returns .values() (Array)
+      @markerSpiderfier.getMarkers()#is an array so this should be fine as markerSpiderfierMarkerManager returns .values() (Array)
 
+    isSpiderfied: =>
+      _.find @getGMarkers(), (gMarker) ->
+        gMarker?._omsData?
+        
     checkSync: =>
-#      throw 'GMarkers out of Sync in MarkerClusterer' if @getGMarkers().length != @propMapGMarkers.length
+#      throw 'GMarkers out of Sync in MarkermarkerSpiderfier' if @getGMarkers().length != @propMapGMarkers.length
 ]

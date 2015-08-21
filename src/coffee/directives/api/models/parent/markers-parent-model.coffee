@@ -105,6 +105,8 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 
           createAllNew: (scope) =>
             if @gManager?
+              if @gManager instanceof SpiderfierMarkerManager
+                isSpiderfied = @gManager.isSpiderfied()
               @gManager.clear()
               delete @gManager
             #support backwards comapat clusterEvents and clusterOptions
@@ -117,6 +119,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             else if scope.type == 'spider'
               @bindToTypeEvents(typeEvents, ['spiderfy', 'unspiderfy']) if typeEvents?
               @gManager = new SpiderfierMarkerManager @map, undefined, typeOptions, typeEvents, @scope
+              @gManager.spiderfy() if isSpiderfied
             else
               @gManager = new MarkerManager @map
 

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html ng-app="plunker">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/stylesheets/example.css"/>
+    <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/lodash/lodash.js"></script>
+    <script src="../dist/angular-google-maps_dev_mapped.js"></script>
+
+    <style>
+        .angular-google-map{
+            height:100%;
+            width:100%;
+        }
+        .angular-google-map-container {
+            width: 100%;
+            height:100%;
+        }
+        .marker_labels{
+            color:white;
+        }
+    </style>
+  </head>
+
+  <body ng-controller="MainCtrl">
+    <div class="map" style="height:400px;position:relative;width:400px;">
+        <!-- PROPERTY WINDOW ON GOOGLE MAP -->
+        <div ng-hide='true'>
+            <div id="infobox" class="infobox" style="background-color:white;border:solid 1px black;">
+                <p>M # {{infoBoxProperty.id}}</p>
+            </div>
+        </div>
+        <!-- /PROPERTY WINDOW ON GOOGLE MAP -->
+        <!-- GOOGLE MAP -->
+        <ui-gmap-google-map center="map.center" zoom="map.zoom" dragging="map.dragging" draggable="true" control="map.control" events="map.events">
+            <ui-gmap-markers ng-if="!map.doSpider" models="map.markers" coords="'coords'" idkey="'id'" options="'options'" events="markersEvents" type="'cluster'" typeEvents="clusterEvents" typeOptions="clusterOptions">
+            </ui-gmap-markers>
+            <ui-gmap-markers ng-if="map.doSpider" models="map.markers" coords="'coords'" idkey="'id'" options="'options'" events="markersEvents" type="'spider'" modelsbyref="true" typeOptions="spiderOptions">
+            </ui-gmap-markers>
+        </ui-gmap-google-map>
+        <!-- /GOOGLE MAP -->
+    </div>
+
+    <div>
+        <p ng-if="markerInfos">
+            <span ng-bind="markerInfos.id"></span>
+        </p>
+    </div>
+
+    <script>
+        var app = angular.module('plunker', [
+            'uiGmapgoogle-maps'
+        ]);
+
+        app.controller('MainCtrl', function($scope, uiGmapIsReady) {
+          $scope.map = {
+              center: { latitude: 46.83245, longitude: -71.23267}, zoom: 14, bounds: {}, markers: [], dragging: false,
+              events:
+              {
+                  zoom_changed: function(map){
+                      if(map.getZoom() > 14){
+                          $scope.map.doSpider = true;
+                      }
+                      else{
+                          $scope.map.doSpider = false;
+                      }
+                  }
+              }
+          };
+
+            uiGmapIsReady.promise().then(function (map_instances) {
+              $scope.infoBox = new InfoBox({
+                  disableAutoPan: true,
+                  alignBottom: true,
+                  content: document.getElementById('infobox'),
+                  pixelOffset: new google.maps.Size(20, 0),
+                  maxWidth: 350,
+                  zIndex: null,
+                  closeBoxURL: "",
+                  isHidden: false,
+                  enableEventPropagation: false
+               });
+
+              $scope.markersEvents = {
+                  click: function(marker, eventName, model, args){
+                    $scope.markerInfos = {id: marker.model.id};
+                    model.options.icon = {
+                      url: "http://res.cloudinary.com/gocaza-ca/image/upload/e_sepia/v1439840872/pin-off_2x_usuneb.png",
+                      size: new google.maps.Size(30,28),
+                      scaledSize: new google.maps.Size(30,28),
+                      origin: new google.maps.Point(0,0),
+                      anchor: new google.maps.Point(0,28/2)
+                    };
+                  },
+                  mouseover: function (marker) {
+                      $scope.infoBoxProperty = marker.model;
+                      $scope.infoBox.open(marker.map, marker);
+                  },
+                  mouseout: function (marker, eventName, model, args) {
+                     $scope.infoBox.close();
+                  }
+              };
+
+
+              $scope.clusterEvents = {
+                clusteringbegin: function (cluster) {
+                    $scope.infoBox.close();
+                }
+              };
+
+              $scope.spiderOptions = {
+                  keepSpiderfied:true
+              };
+
+              $scope.clusterOptions = {
+                  maxZoom:15,
+                  styles: [{
+                    width: 50,
+                    height: 50,
+                    textColor: '#ffffff',
+                    textSize: 15,
+                    url:"http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclusterer/1.0.2/images/m1.png"
+                  }],
+                  keepSpiderfied:true
+              };
+
+                $scope.map.type = 'cluster';
+
+                var markers = [];
+                for(var i = 0;i < 8;i++){
+                    var image = {
+                        url: "http://res.cloudinary.com/gocaza-ca/image/upload/v1439840872/pin-off_2x_usuneb.png",
+                        size: new google.maps.Size(30,28),
+                        scaledSize: new google.maps.Size(30,28),
+                        origin: new google.maps.Point(0,0),
+                        anchor: new google.maps.Point(0,28/2)
+                    };
+                    markers.push({
+                        id: i,
+                        coords:{
+                            latitude: 46.83245,
+                            longitude: -71.23267
+                        },
+                        options:{
+                            labelClass: 'marker_labels',
+                            labelContent: "M# " + i,
+                            labelAnchor:'-3 10',
+                            icon:image
+                        }
+                    });
+                }
+                $scope.map.markers = markers;
+          });
+        });
+    </script>
+  </body>
+
+</html>

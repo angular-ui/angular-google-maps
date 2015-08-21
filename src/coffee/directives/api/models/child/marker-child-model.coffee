@@ -86,6 +86,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       renderGMarker: (doDraw = true, validCb) ->
         #doDraw is to only update the marker on the map when it is really ready
         coords = @getProp('coords', @scope, @model)
+        if @gManager?.isSpiderfied?
+          isSpiderfied = @gManager.isSpiderfied()
         if coords?
           if !@validateCoords coords
             $log.debug 'MarkerChild does not have coords yet. They may be defined later.'
@@ -93,8 +95,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
           validCb() if validCb?
           @gManager.add @gObject if doDraw and @gObject
+          @gManager.markerSpiderfier.spiderListener(@gObject, window.event) if isSpiderfied
         else
           @gManager.remove @gObject if doDraw and @gObject
+
 
       setMyScope: (thingThatChanged, model, oldModel = undefined, isInit = false, doDraw = true) =>
         if not model?

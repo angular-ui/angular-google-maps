@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-17
+/*! angular-google-maps 2.1.5 2015-08-23
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -2147,6 +2147,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.opt_events = opt_events;
           this.scope = scope;
           this.checkSync = bind(this.checkSync, this);
+          this.isSpiderfied = bind(this.isSpiderfied, this);
           this.getGMarkers = bind(this.getGMarkers, this);
           this.fit = bind(this.fit, this);
           this.destroy = bind(this.destroy, this);
@@ -2159,7 +2160,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.update = bind(this.update, this);
           this.add = bind(this.add, this);
           this.type = SpiderfierMarkerManager.type;
-          this.clusterer = new MarkerSpiderfier(gMap, this.opt_options);
+          this.markerSpiderfier = new MarkerSpiderfier(gMap, this.opt_options);
           this.propMapGMarkers = new PropMap();
           this.attachEvents(this.opt_events, 'opt_events');
           this.noDrawOnSingleAddRemoves = true;
@@ -2175,9 +2176,9 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         SpiderfierMarkerManager.prototype.add = function(gMarker) {
-          gMarker.setMap(this.clusterer.map);
+          gMarker.setMap(this.markerSpiderfier.map);
           this.checkKey(gMarker);
-          this.clusterer.addMarker(gMarker, this.noDrawOnSingleAddRemoves);
+          this.markerSpiderfier.addMarker(gMarker, this.noDrawOnSingleAddRemoves);
           this.propMapGMarkers.put(gMarker.key, gMarker);
           return this.checkSync();
         };
@@ -2201,7 +2202,7 @@ Nicholas McCready - https://twitter.com/nmccready
           exists = this.propMapGMarkers.get(gMarker.key);
           if (exists) {
             gMarker.setMap(null);
-            this.clusterer.removeMarker(gMarker, this.noDrawOnSingleAddRemoves);
+            this.markerSpiderfier.removeMarker(gMarker, this.noDrawOnSingleAddRemoves);
             this.propMapGMarkers.remove(gMarker.key);
           }
           return this.checkSync();
@@ -2226,8 +2227,8 @@ Nicholas McCready - https://twitter.com/nmccready
             return _.each(options, (function(_this) {
               return function(eventHandler, eventName) {
                 if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
-                  $log.info(optionsName + ": Attaching event: " + eventName + " to clusterer");
-                  return _this.clusterer.addListener(eventName, function() {
+                  $log.info(optionsName + ": Attaching event: " + eventName + " to markerSpiderfier");
+                  return _this.markerSpiderfier.addListener(eventName, function() {
                     if (eventName === 'spiderfy' || eventName === 'unspiderfy') {
                       return _this.scope.$evalAsync(options[eventName].apply(options, arguments));
                     } else {
@@ -2247,8 +2248,8 @@ Nicholas McCready - https://twitter.com/nmccready
             for (eventName in options) {
               eventHandler = options[eventName];
               if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
-                $log.info(optionsName + ": Clearing event: " + eventName + " to clusterer");
-                results.push(this.clusterer.clearListeners(eventName));
+                $log.info(optionsName + ": Clearing event: " + eventName + " to markerSpiderfier");
+                results.push(this.markerSpiderfier.clearListeners(eventName));
               } else {
                 results.push(void 0);
               }
@@ -2263,11 +2264,17 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         SpiderfierMarkerManager.prototype.fit = function() {
-          return FitHelper.fit(this.getGMarkers(), this.clusterer.map);
+          return FitHelper.fit(this.getGMarkers(), this.markerSpiderfier.map);
         };
 
         SpiderfierMarkerManager.prototype.getGMarkers = function() {
-          return this.clusterer.getMarkers();
+          return this.markerSpiderfier.getMarkers();
+        };
+
+        SpiderfierMarkerManager.prototype.isSpiderfied = function() {
+          return _.find(this.getGMarkers(), function(gMarker) {
+            return (gMarker != null ? gMarker._omsData : void 0) != null;
+          });
         };
 
         SpiderfierMarkerManager.prototype.checkSync = function() {};
@@ -3278,11 +3285,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkerChildModel.prototype.renderGMarker = function(doDraw, validCb) {
-          var coords;
+          var coords, isSpiderfied, ref;
           if (doDraw == null) {
             doDraw = true;
           }
           coords = this.getProp('coords', this.scope, this.model);
+          if (((ref = this.gManager) != null ? ref.isSpiderfied : void 0) != null) {
+            isSpiderfied = this.gManager.isSpiderfied();
+          }
           if (coords != null) {
             if (!this.validateCoords(coords)) {
               $log.debug('MarkerChild does not have coords yet. They may be defined later.');
@@ -3292,7 +3302,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               validCb();
             }
             if (doDraw && this.gObject) {
-              return this.gManager.add(this.gObject);
+              this.gManager.add(this.gObject);
+            }
+            if (isSpiderfied) {
+              return this.gManager.markerSpiderfier.spiderListener(this.gObject, window.event);
             }
           } else {
             if (doDraw && this.gObject) {
@@ -4832,8 +4845,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.createAllNew = function(scope) {
-          var maybeCanceled, typeEvents, typeOptions;
+          var isSpiderfied, maybeCanceled, typeEvents, typeOptions;
           if (this.gManager != null) {
+            if (this.gManager instanceof SpiderfierMarkerManager) {
+              isSpiderfied = this.gManager.isSpiderfied();
+            }
             this.gManager.clear();
             delete this.gManager;
           }
@@ -4849,6 +4865,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               this.bindToTypeEvents(typeEvents, ['spiderfy', 'unspiderfy']);
             }
             this.gManager = new SpiderfierMarkerManager(this.map, void 0, typeOptions, typeEvents, this.scope);
+            if (isSpiderfied) {
+              this.gManager.spiderfy();
+            }
           } else {
             this.gManager = new MarkerManager(this.map);
           }

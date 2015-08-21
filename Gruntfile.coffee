@@ -132,5 +132,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'allExamples', allExamplesTaskToRun
 
-
+  grunt.registerTask 'server', ["connect:server", "watch:all"]
+  grunt.registerTask 's', 'server'
 #to see all tasks available don't forget "grunt --help" !!!
