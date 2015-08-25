@@ -11,10 +11,12 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     $timeout ->
       if retriesLeft <= 0
         deferred.reject('Your maps are not found we have checked the maximum amount of times. :)')
+        return
       if _ctr != expectedInstances
         _checkIfReady(deferred, expectedInstances, retriesLeft-1)
       else
         deferred.resolve(_promises())
+      return
     , 100
 
   spawn: ->
