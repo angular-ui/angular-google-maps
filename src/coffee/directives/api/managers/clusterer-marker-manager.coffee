@@ -1,6 +1,6 @@
 angular.module('uiGmapgoogle-maps.directives.api.managers')
 .factory 'uiGmapClustererMarkerManager', ['uiGmapLogger',
-'uiGmapFitHelper', 'uiGmapPropMap', ($log, FitHelper, PropMap) ->
+'uiGmapFitHelper', 'uiGmapPropMap', 'uiGmapEventsHelper', ($log, FitHelper, PropMap, EventsHelper) ->
   class ClustererMarkerManager
     @type = 'ClustererMarkerManager'
     constructor: (gMap, opt_markers={}, @opt_options = {}, @opt_events) ->
@@ -56,22 +56,20 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       @removeMany @getGMarkers()
       @clusterer.repaint()
 
-    attachEvents: (options, optionsName) ->
+    attachEvents: (options, optionsName) =>
+      @listeners = []
       if angular.isDefined(options) and options? and angular.isObject(options)
         for eventName, eventHandler of options
           if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
             $log.info "#{optionsName}: Attaching event: #{eventName} to clusterer"
-            google.maps.event.addListener @clusterer, eventName, options[eventName]
+            @listeners.push google.maps.event.addListener @clusterer, eventName, options[eventName]
 
-    clearEvents: (options, optionsName) ->
-      if angular.isDefined(options) and options? and angular.isObject(options)
-        for eventName, eventHandler of options
-          if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
-            $log.info "#{optionsName}: Clearing event: #{eventName} to clusterer"
-            google.maps.event.clearListeners @clusterer, eventName
-
+    clearEvents: () ->
+      EventsHelper.removeEvents @listeners
+      @listeners = []
+      
     destroy: =>
-      @clearEvents @opt_events, 'opt_events'
+      @clearEvents()
       @clear()
 
     fit: =>

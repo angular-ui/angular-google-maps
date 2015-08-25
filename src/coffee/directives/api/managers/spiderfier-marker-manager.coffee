@@ -69,6 +69,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
           if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
             $log.info "#{optionsName}: Clearing event: #{eventName} to markerSpiderfier"
             @markerSpiderfier.clearListeners eventName
+      return
 
     destroy: =>
       @clearEvents @opt_events, 'opt_events'
@@ -83,7 +84,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
     isSpiderfied: =>
       _.find @getGMarkers(), (gMarker) ->
         gMarker?._omsData?
-        
+
     checkSync: =>
 #      throw 'GMarkers out of Sync in MarkermarkerSpiderfier' if @getGMarkers().length != @propMapGMarkers.length
 ]

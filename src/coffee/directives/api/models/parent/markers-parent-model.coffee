@@ -213,14 +213,16 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
                 model.destroy(false) if model?
               , _async.chunkSizeFrom(@scope.cleanchunk, false)
               .then =>
-                @gManager.clear() if @gManager?
+                @gManager.destroy() if @gManager?
                 # _setPlurals(new PropMap(), @)
                 @plurals.removeAll()
                 if @plurals != @scope.plurals
                   console.error 'plurals out of sync for MarkersParentModel'
                 @scope.pluralsUpdate.updateCtr += 1
 
-          maybeExecMappedEvent:(group, fnName) ->
+          maybeExecMappedEvent:(group, fnName) =>
+            #this should not be happening, but events are not getting unhooked (google bug maybe)
+            return if @scope.$$destroyed
             typeEvents = @scope.typeEvents or @scope.clusterEvents
             if _.isFunction typeEvents?[fnName]
               pair = @mapTypeToPlurals group
@@ -235,8 +237,12 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             unless arrayToMap?
               $log.error "Unable to map event as we cannot find the array group to map"
               return
-            mapped = arrayToMap.map (g) =>
-              @scope.plurals.get(g.key).model
+            if @scope.plurals.values()?.length
+              mapped = arrayToMap.map (g) =>
+                @scope.plurals.get(g.key).model
+            else
+              mapped = []
+
             cluster: group
             mapped: mapped
             group: group

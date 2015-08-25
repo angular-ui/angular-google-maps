@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-23
+/*! angular-google-maps 2.1.5 2015-08-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -811,14 +811,16 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         },
         removeEvents: function(listeners) {
+          var key, l;
           if (!listeners) {
             return;
           }
-          return listeners.forEach(function(l) {
+          for (key in listeners) {
+            l = listeners[key];
             if (l) {
-              return google.maps.event.removeListener(l);
+              google.maps.event.removeListener(l);
             }
-          });
+          }
         }
       };
     }
@@ -1847,7 +1849,7 @@ Nicholas McCready - https://twitter.com/nmccready
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   angular.module('uiGmapgoogle-maps.directives.api.managers').factory('uiGmapClustererMarkerManager', [
-    'uiGmapLogger', 'uiGmapFitHelper', 'uiGmapPropMap', function($log, FitHelper, PropMap) {
+    'uiGmapLogger', 'uiGmapFitHelper', 'uiGmapPropMap', 'uiGmapEventsHelper', function($log, FitHelper, PropMap, EventsHelper) {
       var ClustererMarkerManager;
       ClustererMarkerManager = (function() {
         ClustererMarkerManager.type = 'ClustererMarkerManager';
@@ -1862,6 +1864,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.getGMarkers = bind(this.getGMarkers, this);
           this.fit = bind(this.fit, this);
           this.destroy = bind(this.destroy, this);
+          this.attachEvents = bind(this.attachEvents, this);
           this.clear = bind(this.clear, this);
           this.draw = bind(this.draw, this);
           this.removeMany = bind(this.removeMany, this);
@@ -1936,13 +1939,14 @@ Nicholas McCready - https://twitter.com/nmccready
 
         ClustererMarkerManager.prototype.attachEvents = function(options, optionsName) {
           var eventHandler, eventName, results;
+          this.listeners = [];
           if (angular.isDefined(options) && (options != null) && angular.isObject(options)) {
             results = [];
             for (eventName in options) {
               eventHandler = options[eventName];
               if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
                 $log.info(optionsName + ": Attaching event: " + eventName + " to clusterer");
-                results.push(google.maps.event.addListener(this.clusterer, eventName, options[eventName]));
+                results.push(this.listeners.push(google.maps.event.addListener(this.clusterer, eventName, options[eventName])));
               } else {
                 results.push(void 0);
               }
@@ -1951,25 +1955,13 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         };
 
-        ClustererMarkerManager.prototype.clearEvents = function(options, optionsName) {
-          var eventHandler, eventName, results;
-          if (angular.isDefined(options) && (options != null) && angular.isObject(options)) {
-            results = [];
-            for (eventName in options) {
-              eventHandler = options[eventName];
-              if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
-                $log.info(optionsName + ": Clearing event: " + eventName + " to clusterer");
-                results.push(google.maps.event.clearListeners(this.clusterer, eventName));
-              } else {
-                results.push(void 0);
-              }
-            }
-            return results;
-          }
+        ClustererMarkerManager.prototype.clearEvents = function() {
+          EventsHelper.removeEvents(this.listeners);
+          return this.listeners = [];
         };
 
         ClustererMarkerManager.prototype.destroy = function() {
-          this.clearEvents(this.opt_events, 'opt_events');
+          this.clearEvents();
           return this.clear();
         };
 
@@ -2242,19 +2234,15 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         SpiderfierMarkerManager.prototype.clearEvents = function(options, optionsName) {
-          var eventHandler, eventName, results;
+          var eventHandler, eventName;
           if (angular.isDefined(options) && (options != null) && angular.isObject(options)) {
-            results = [];
             for (eventName in options) {
               eventHandler = options[eventName];
               if (options.hasOwnProperty(eventName) && angular.isFunction(options[eventName])) {
                 $log.info(optionsName + ": Clearing event: " + eventName + " to markerSpiderfier");
-                results.push(this.markerSpiderfier.clearListeners(eventName));
-              } else {
-                results.push(void 0);
+                this.markerSpiderfier.clearListeners(eventName);
               }
             }
-            return results;
           }
         };
 
@@ -4720,6 +4708,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         MarkersParentModel.include(ModelsWatcher);
 
         function MarkersParentModel(scope, element, attrs, map) {
+          this.maybeExecMappedEvent = bind(this.maybeExecMappedEvent, this);
           this.onDestroy = bind(this.onDestroy, this);
           this.newChildMarker = bind(this.newChildMarker, this);
           this.pieceMeal = bind(this.pieceMeal, this);
@@ -4991,7 +4980,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
               }, _async.chunkSizeFrom(_this.scope.cleanchunk, false)).then(function() {
                 if (_this.gManager != null) {
-                  _this.gManager.clear();
+                  _this.gManager.destroy();
                 }
                 _this.plurals.removeAll();
                 if (_this.plurals !== _this.scope.plurals) {
@@ -5005,6 +4994,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         MarkersParentModel.prototype.maybeExecMappedEvent = function(group, fnName) {
           var pair, typeEvents;
+          if (this.scope.$$destroyed) {
+            return;
+          }
           typeEvents = this.scope.typeEvents || this.scope.clusterEvents;
           if (_.isFunction(typeEvents != null ? typeEvents[fnName] : void 0)) {
             pair = this.mapTypeToPlurals(group);
@@ -5015,7 +5007,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.mapTypeToPlurals = function(group) {
-          var arrayToMap, mapped;
+          var arrayToMap, mapped, ref;
           if (_.isArray(group)) {
             arrayToMap = group;
           } else if (_.isFunction(group.getMarkers)) {
@@ -5025,11 +5017,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             $log.error("Unable to map event as we cannot find the array group to map");
             return;
           }
-          mapped = arrayToMap.map((function(_this) {
-            return function(g) {
-              return _this.scope.plurals.get(g.key).model;
-            };
-          })(this));
+          if ((ref = this.scope.plurals.values()) != null ? ref.length : void 0) {
+            mapped = arrayToMap.map((function(_this) {
+              return function(g) {
+                return _this.scope.plurals.get(g.key).model;
+              };
+            })(this));
+          } else {
+            mapped = [];
+          }
           return {
             cluster: group,
             mapped: mapped,

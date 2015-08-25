@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-23
+/*! angular-google-maps 2.1.5 2015-08-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -538,14 +538,16 @@ return UUID;
           }
         },
         removeEvents: function(listeners) {
+          var key, l;
           if (!listeners) {
             return;
           }
-          return listeners.forEach(function(l) {
+          for (key in listeners) {
+            l = listeners[key];
             if (l) {
-              return google.maps.event.removeListener(l);
+              google.maps.event.removeListener(l);
             }
-          });
+          }
         }
       };
     }

@@ -24,6 +24,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
 
       link: (scope, element, attrs, ctrl) ->
         parentModel = undefined
+          
         ready = ->
           scope.deferred.resolve()
 

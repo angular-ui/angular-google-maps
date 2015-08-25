@@ -600,6 +600,9 @@ digraph dependencies {
           "uiGmapPropMap"[label="uiGmapPropMap"]
           "uiGmapPropMap" -> "uiGmapClustererMarkerManager"
         
+          "uiGmapEventsHelper"[label="uiGmapEventsHelper"]
+          "uiGmapEventsHelper" -> "uiGmapClustererMarkerManager"
+        
       
         
           "uiGmapLogger"[label="uiGmapLogger"]

@@ -27,6 +27,7 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
 
   removeEvents: (listeners) ->
     return unless listeners
-    listeners.forEach (l) ->
-      google.maps.event.removeListener(l) if l
+    for key, l of listeners
+      google.maps.event.removeListener l if l
+    return
 ]
