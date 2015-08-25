@@ -1144,11 +1144,12 @@ Nicholas McCready - https://twitter.com/nmccready
         return $timeout(function() {
           if (retriesLeft <= 0) {
             deferred.reject('Your maps are not found we have checked the maximum amount of times. :)');
+            return;
           }
           if (_ctr !== expectedInstances) {
-            return _checkIfReady(deferred, expectedInstances, retriesLeft - 1);
+            _checkIfReady(deferred, expectedInstances, retriesLeft - 1);
           } else {
-            return deferred.resolve(_promises());
+            deferred.resolve(_promises());
           }
         }, 100);
       };
