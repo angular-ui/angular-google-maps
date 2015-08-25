@@ -53,6 +53,9 @@ angular.module("uiGmapgoogle-maps.directives.api.managers")
         gMarker.isDrawn = false
         @remove(gMarker, true)
 
+    destroy: =>
+      @clear()
+
     clear: =>
       @gMarkers.each (gMarker) ->
         gMarker.setMap null

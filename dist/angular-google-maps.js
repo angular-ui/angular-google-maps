@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-24
+/*! angular-google-maps 2.1.5 2015-08-25
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1997,6 +1997,7 @@ Nicholas McCready - https://twitter.com/nmccready
           this.fit = bind(this.fit, this);
           this.handleOptDraw = bind(this.handleOptDraw, this);
           this.clear = bind(this.clear, this);
+          this.destroy = bind(this.destroy, this);
           this.draw = bind(this.draw, this);
           this.removeMany = bind(this.removeMany, this);
           this.remove = bind(this.remove, this);
@@ -2082,6 +2083,10 @@ Nicholas McCready - https://twitter.com/nmccready
               return _this.remove(gMarker, true);
             };
           })(this));
+        };
+
+        MarkerManager.prototype.destroy = function() {
+          return this.clear();
         };
 
         MarkerManager.prototype.clear = function() {
