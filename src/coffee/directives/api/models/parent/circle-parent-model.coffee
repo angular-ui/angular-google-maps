@@ -3,6 +3,12 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 ['uiGmapLogger', '$timeout','uiGmapGmapUtil',
 'uiGmapEventsHelper', 'uiGmapCircleOptionsBuilder',
 ($log, $timeout, GmapUtil, EventsHelper, Builder) ->
+  _settingFromDirective = (scope, fn) ->
+    scope.settingFromDirective = true
+    fn()
+    $timeout ->
+      scope.settingFromDirective = false
+
   class CircleParentModel extends Builder
     @include GmapUtil
     @include EventsHelper
@@ -19,6 +25,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
         new google.maps.Circle @buildOpts GmapUtil.getCoords(scope.center), scope.radius
 
       @setMyOptions = (newVals, oldVals) =>
+        return if scope.settingFromDirective
         unless _.isEqual newVals,oldVals
           gObject.setOptions @buildOpts GmapUtil.getCoords(scope.center), scope.radius
 
@@ -50,8 +57,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           lastRadius =  newRadius
 
           work = ->
-            scope.radius = newRadius if newRadius != scope.radius
-            scope.events.radius_changed(gObject, 'radius_changed', scope, arguments) if scope.events?.radius_changed and _.isFunction scope.events?.radius_changed
+            _settingFromDirective scope, ->
+              scope.radius = newRadius if newRadius != scope.radius
+              if scope.events?.radius_changed and _.isFunction scope.events?.radius_changed
+                scope.events.radius_changed(gObject, 'radius_changed', scope, arguments)
 
           # hack
           # for some reason in specs I can not get $evalAsync to fire.. im tired of wasting time on this
@@ -63,12 +72,14 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       if @listeners?
         @listeners.push google.maps.event.addListener gObject, 'center_changed', ->
           scope.$evalAsync ->
-            if angular.isDefined(scope.center.type)
-              scope.center.coordinates[1] = gObject.getCenter().lat()
-              scope.center.coordinates[0] = gObject.getCenter().lng()
-            else
-              scope.center.latitude = gObject.getCenter().lat()
-              scope.center.longitude = gObject.getCenter().lng()
+            _settingFromDirective scope, ->
+              if angular.isDefined(scope.center.type)
+                scope.center.coordinates[1] = gObject.getCenter().lat()
+                scope.center.coordinates[0] = gObject.getCenter().lng()
+              else
+                scope.center.latitude = gObject.getCenter().lat()
+                scope.center.longitude = gObject.getCenter().lng()
+
 
       scope.$on '$destroy', =>
         clean()

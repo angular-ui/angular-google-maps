@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-25
+/*! angular-google-maps 2.1.5 2015-08-26
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4195,7 +4195,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
   angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapCircleParentModel', [
     'uiGmapLogger', '$timeout', 'uiGmapGmapUtil', 'uiGmapEventsHelper', 'uiGmapCircleOptionsBuilder', function($log, $timeout, GmapUtil, EventsHelper, Builder) {
-      var CircleParentModel;
+      var CircleParentModel, _settingFromDirective;
+      _settingFromDirective = function(scope, fn) {
+        scope.settingFromDirective = true;
+        fn();
+        return $timeout(function() {
+          return scope.settingFromDirective = false;
+        });
+      };
       return CircleParentModel = (function(superClass) {
         extend(CircleParentModel, superClass);
 
@@ -4222,6 +4229,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           gObject = new google.maps.Circle(this.buildOpts(GmapUtil.getCoords(scope.center), scope.radius));
           this.setMyOptions = (function(_this) {
             return function(newVals, oldVals) {
+              if (scope.settingFromDirective) {
+                return;
+              }
               if (!_.isEqual(newVals, oldVals)) {
                 return gObject.setOptions(_this.buildOpts(GmapUtil.getCoords(scope.center), scope.radius));
               }
@@ -4259,13 +4269,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               }
               lastRadius = newRadius;
               work = function() {
-                var ref, ref1;
-                if (newRadius !== scope.radius) {
-                  scope.radius = newRadius;
-                }
-                if (((ref = scope.events) != null ? ref.radius_changed : void 0) && _.isFunction((ref1 = scope.events) != null ? ref1.radius_changed : void 0)) {
-                  return scope.events.radius_changed(gObject, 'radius_changed', scope, arguments);
-                }
+                return _settingFromDirective(scope, function() {
+                  var ref, ref1;
+                  if (newRadius !== scope.radius) {
+                    scope.radius = newRadius;
+                  }
+                  if (((ref = scope.events) != null ? ref.radius_changed : void 0) && _.isFunction((ref1 = scope.events) != null ? ref1.radius_changed : void 0)) {
+                    return scope.events.radius_changed(gObject, 'radius_changed', scope, arguments);
+                  }
+                });
               };
               if (!angular.mock) {
                 return scope.$evalAsync(function() {
@@ -4279,13 +4291,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (this.listeners != null) {
             this.listeners.push(google.maps.event.addListener(gObject, 'center_changed', function() {
               return scope.$evalAsync(function() {
-                if (angular.isDefined(scope.center.type)) {
-                  scope.center.coordinates[1] = gObject.getCenter().lat();
-                  return scope.center.coordinates[0] = gObject.getCenter().lng();
-                } else {
-                  scope.center.latitude = gObject.getCenter().lat();
-                  return scope.center.longitude = gObject.getCenter().lng();
-                }
+                return _settingFromDirective(scope, function() {
+                  if (angular.isDefined(scope.center.type)) {
+                    scope.center.coordinates[1] = gObject.getCenter().lat();
+                    return scope.center.coordinates[0] = gObject.getCenter().lng();
+                  } else {
+                    scope.center.latitude = gObject.getCenter().lat();
+                    return scope.center.longitude = gObject.getCenter().lng();
+                  }
+                });
               });
             }));
           }

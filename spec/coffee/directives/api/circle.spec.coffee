@@ -108,23 +108,6 @@ describe 'uiGmapCircle', ->
                 done()
           , 500
 
-    # describe "updates model from gObject", ->
-    #   it 'change center', (done) ->
-    #     listener = GCircle.creationSubscribe @, (gObject) =>
-    #       _.delay =>
-    #         gObject.setCenter
-    #           lng: -> 50
-    #           lat: -> -50
-    #         @digest =>
-    #           @timeout =>
-    #             expect(@circle.center.latitude).toBe(-50)
-    #             expect(@circle.center.longitude).toBe(50)
-    #             done()
-    #     @digest =>
-    #       @timeout =>
-    #         GCircle.creationUnSubscribe listener
-    #       , 500
-
     it 'change radius does not fire center_changed', (done) ->
       listener = GCircle.creationSubscribe @, (gObject) =>
         _.delay =>
@@ -160,3 +143,19 @@ describe 'uiGmapCircle', ->
         expect(@circle.control.getCircle).toBeDefined()
         expect(@circle.control.getCircle()).toEqual(jasmine.any(GCircle))
         done()
+  describe "updates model from gObject", ->
+    it 'change center', (done) ->
+      listener = GCircle.creationSubscribe @, (gObject) =>
+        _.delay =>
+          gObject.setCenter
+            lng: -> 50
+            lat: -> -50
+          @digest =>
+            @timeout =>
+              expect(@circle.center.latitude).toBe(-50)
+              expect(@circle.center.longitude).toBe(50)
+              done()
+      @digest =>
+        @timeout =>
+          GCircle.creationUnSubscribe listener
+        , 500
