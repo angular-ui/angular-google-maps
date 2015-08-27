@@ -289,6 +289,127 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;(function() {
   angular.module('uiGmapgoogle-maps.extensions').service('uiGmapLodash', function() {
+    var baseGet, baseToString, get, reIsDeepProp, reIsPlainProp, rePropName, toObject, toPath;
+    if (_.get == null) {
+      reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\n\\]|\\.)*?\1)\]/;
+      reIsPlainProp = /^\w*$/;
+      rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\n\\]|\\.)*?)\2)\]/g;
+
+      /**
+       * Converts `value` to an object if it's not one.
+       *
+       * @private
+       * @param {*} value The value to process.
+       * @returns {Object} Returns the object.
+       */
+      toObject = function(value) {
+        if (_.isObject(value)) {
+          return value;
+        } else {
+          return Object(value);
+        }
+      };
+
+      /**
+       * Converts `value` to a string if it's not one. An empty string is returned
+       * for `null` or `undefined` values.
+       *
+       * @private
+       * @param {*} value The value to process.
+       * @returns {string} Returns the string.
+       */
+      baseToString = function(value) {
+        if (value === null) {
+          return '';
+        } else {
+          return value + '';
+        }
+      };
+
+      /**
+       * Converts `value` to property path array if it's not one.
+       *
+       * @private
+       * @param {*} value The value to process.
+       * @returns {Array} Returns the property path array.
+       */
+      toPath = function(value) {
+        var result;
+        if (_.isArray(value)) {
+          return value;
+        }
+        result = [];
+        baseToString(value).replace(rePropName, function(match, number, quote, string) {
+          result.push(quote ? string.replace(reEscapeChar, '$1') : number || match);
+        });
+        return result;
+      };
+
+      /**
+       * The base implementation of `get` without support for string paths
+       * and default values.
+       *
+       * @private
+       * @param {Object} object The object to query.
+       * @param {Array} path The path of the property to get.
+       * @param {string} [pathKey] The key representation of path.
+       * @returns {*} Returns the resolved value.
+       */
+      baseGet = function(object, path, pathKey) {
+        var index, length;
+        if (object === null) {
+          return;
+        }
+        if (pathKey !== void 0 && pathKey in toObject(object)) {
+          path = [pathKey];
+        }
+        index = 0;
+        length = path.length;
+        while (!_.isUndefined(object) && index < length) {
+          object = object[path[index++]];
+        }
+        if (index && index === length) {
+          return object;
+        } else {
+          return void 0;
+        }
+      };
+
+      /**
+       * Gets the property value at `path` of `object`. If the resolved value is
+       * `undefined` the `defaultValue` is used in its place.
+       *
+       * @static
+       * @memberOf _
+       * @category Object
+       * @param {Object} object The object to query.
+       * @param {Array|string} path The path of the property to get.
+       * @param {*} [defaultValue] The value returned if the resolved value is `undefined`.
+       * @returns {*} Returns the resolved value.
+       * @example
+       *
+       * var object = { 'a': [{ 'b': { 'c': 3 } }] };
+       *
+       * _.get(object, 'a[0].b.c');
+       * // => 3
+       *
+       * _.get(object, ['a', '0', 'b', 'c']);
+       * // => 3
+       *
+       * _.get(object, 'a.b.c', 'default');
+       * // => 'default'
+       */
+      get = function(object, path, defaultValue) {
+        var result;
+        result = object === null ? void 0 : baseGet(object, toPath(path), path + '');
+        if (result === void 0) {
+          return defaultValue;
+        } else {
+          return result;
+        }
+      };
+      _.get = get;
+    }
 
     /*
         Author Nick McCready
