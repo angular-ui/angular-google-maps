@@ -127,10 +127,6 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         @props= ['draggable', 'editable', 'map','visible', 'radius', 'center']
         @setOptions opts
 
-        Circle.instances += 1
-        if window?.google?.maps?.event?
-          window.google.maps.event.fireAllListeners 'creation', @
-
         #getters
         @props.forEach (p) =>
           @["get#{capitalize p}"] = =>
@@ -142,6 +138,11 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
             @[p] = val
             if p == "radius" or p == "center"
               window.google.maps.event.fireAllListeners "#{p}_changed", @
+
+        Circle.instances += 1
+        @instance = Circle.instances
+        if window?.google?.maps?.event?
+          window.google.maps.event.fireAllListeners 'creation', @
 
       setOptions: (o)=>
         super(o)

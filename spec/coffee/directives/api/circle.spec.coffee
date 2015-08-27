@@ -108,6 +108,44 @@ describe 'uiGmapCircle', ->
                 done()
           , 500
 
+      it 'change center if directive events is not defined', (done) ->
+        #issue 1271
+        @html = """
+          <ui-gmap-google-map draggable="true" center="map.center" zoom="map.zoom">
+              <ui-gmap-circle center='map.circle.center'
+                            radius='map.circle.radius'
+                            fill='map.circle.fill'
+                            stroke='map.circle.stroke'
+                            clickable='map.circle.clickable'
+                            draggable='map.circle.draggable'
+                            editable='map.circle.editable'
+                            visible='map.circle.visible'
+                            control='map.circle.control'>
+            </ui-gmap-circle>
+          </ui-gmap-google-map>
+        """
+
+        @digest =>
+          @timeout =>
+            @digest =>
+              listener = GCircle.creationSubscribe @, (gObject) =>
+                _.delay =>
+                  gObject.setCenter
+                    lat: ->
+                      -50
+                    lng: ->
+                      50
+
+                  window.google.maps.event.fireListener(gObject,'center_changed')
+                  @digest =>
+                    @timeout =>
+                      expect(@scope.map.circle.center.longitude).toBe(50)
+                      expect(@scope.map.circle.center.latitude).toBe(-50)
+                      done()
+                  , false
+                , 200
+          , 500
+        , false
     it 'change radius does not fire center_changed', (done) ->
       listener = GCircle.creationSubscribe @, (gObject) =>
         _.delay =>
