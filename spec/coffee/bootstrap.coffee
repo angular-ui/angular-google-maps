@@ -32,12 +32,12 @@ beforeEach ->
       center:
         longitude: 47
         latitude: -27
-        
+
     @timeout = $timeout
     @compile = $compile
 
-  @digest = (fn) =>
-    @compile(@html)(@scope) if @html and @scope
+  @digest = (fn, doCompile = true) =>
+    @compile(@html)(@scope) if @html and @scope and doCompile
 
     fn() if fn? and _.isFunction fn
     while @timeout.hasPendingTasks()
