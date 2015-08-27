@@ -4547,7 +4547,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this), true);
           this.scope.$watch('options', (function(_this) {
             return function(newValue, oldValue) {
-              if (newValue !== oldValue) {
+              if (newValue !== oldValue && _this.doShow) {
                 return _this.gObject.setOptions(newValue);
               }
             };
@@ -4566,7 +4566,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           } else {
             this.gObject = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type](this.scope.options) : new google.maps[this.attrs.namespace][this.attrs.type](this.scope.options);
           }
-          if (this.gObject != null) {
+          if ((this.gObject != null) && this.doShow) {
             this.gObject.setMap(this.gMap);
           }
           if ((this.gObject != null) && (this.onLayerCreated != null)) {
