@@ -19,10 +19,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             @gObject.setMap null
       , true
       @scope.$watch 'options', (newValue, oldValue) =>
-        if newValue isnt oldValue
-          @gObject.setMap null
-          @gObject = null
-          @createGoogleLayer()
+        if newValue isnt oldValue and @doShow
+          @gObject.setOptions newValue
       , true
 
       @scope.$on '$destroy', => @gObject.setMap null
@@ -34,6 +32,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
       else
         @gObject = if @attrs.namespace == undefined then new google.maps[@attrs.type](@scope.options)
         else new google.maps[@attrs.namespace][@attrs.type](@scope.options)
+
+      if @gObject? and @doShow
+        @gObject.setMap @gMap
 
       if @gObject? and @onLayerCreated?
         @onLayerCreated(@scope, @gObject)? @gObject
