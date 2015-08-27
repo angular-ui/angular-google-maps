@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.5 2015-08-26
+/*! angular-google-maps 2.1.5 2015-08-27
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4548,9 +4548,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.scope.$watch('options', (function(_this) {
             return function(newValue, oldValue) {
               if (newValue !== oldValue) {
-                _this.gObject.setMap(null);
-                _this.gObject = null;
-                return _this.createGoogleLayer();
+                return _this.gObject.setOptions(newValue);
               }
             };
           })(this), true);
@@ -4567,6 +4565,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.gObject = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type]() : new google.maps[this.attrs.namespace][this.attrs.type]();
           } else {
             this.gObject = this.attrs.namespace === void 0 ? new google.maps[this.attrs.type](this.scope.options) : new google.maps[this.attrs.namespace][this.attrs.type](this.scope.options);
+          }
+          if (this.gObject != null) {
+            this.gObject.setMap(this.gMap);
           }
           if ((this.gObject != null) && (this.onLayerCreated != null)) {
             return typeof (base = this.onLayerCreated(this.scope, this.gObject)) === "function" ? base(this.gObject) : void 0;
