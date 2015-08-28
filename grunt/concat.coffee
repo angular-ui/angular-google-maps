@@ -4,6 +4,7 @@ vendor_js =
   src: [
     '<%= yeoman.dist %>/vendor/scripts/jquery.js'
     '<%= yeoman.dist %>/vendor/scripts/lodash*'
+    '<%= yeoman.dist %>/vendor/scripts/highlight*'
     '<%= yeoman.dist %>/vendor/scripts/angular.js'
     '<%= yeoman.dist %>/vendor/scripts/*.js'
     ]

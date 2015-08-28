@@ -280,3 +280,23 @@ ul.separated li:not(:first-child) {
 .label{
    display: inline-block;
 }
+
+.badge.badge-info{
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+
+.badge.badge-warning{
+  background-color: #e99002;
+  border-color: #d08002;
+}
+
+.badge.badge-success{
+  background-color: #43ac6a;
+  border-color: #3c9a5f;
+}
+
+.badge.badge-danger{
+  background-color: #f04124;
+    border-color: #ea2f10;
+}
