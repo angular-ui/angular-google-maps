@@ -82,29 +82,87 @@
             </td>
         </tr>
         <tr>
-            <td>doCluster</td>
+            <td>type <br><span class="badge badge-info">New 2.1.6</span></td>
+            <td><span class="label label-info">expression</span></td>
+            <td> String evaluated expression which should evaluate to:
+              <ul>
+                <li>null/undefined (regular marker)</li>
+                <li>spider (spiderfy)</li>
+                <li>cluster (clusterer)</li>
+              </ul>
+             </td>
+        </tr>
+        <tr>
+            <td>typeOptions <br><span class="badge badge-info">New 2.1.6</span></td>
+            <td><span class="label label-info">expression</span></td>
+            <td>Object containing options to pass to the marker relative to clusterer or spiderfy.
+                <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.16/docs/reference.html">
+                    clusterer
+                </a>
+                <a href="https://github.com/nmccready/OverlappingMarkerSpiderfier">
+                    spiderfy
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>typeEvents <br><span class="badge badge-info">New 2.1.6</span></td>
+            <td><span class="label label-info">expression</span></td>
+            <td>Object containing event options to pass to the marker relative to clusterer or spiderfy.
+                <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.16/docs/reference.html">
+                    clusterer
+                </a>
+                <a href="https://github.com/nmccready/OverlappingMarkerSpiderfier">
+                    spiderfy
+                </a>
+                events handle.
+                <br>
+                <p>
+                    This companion object is expected to be an object of the following optional functions: click,
+                    mouseover,
+                    or mouseout.
+                </p>
+            <pre>
+# example
+# for more see example (grunt examples)
+# issue-393-cluster-events-mapped.html
+$scope.clickEventsObject =
+  click: (cluster, clusterModels) ->
+  mouseout: (cluster, clusterModels) ->
+  mouseover: (cluster, clusterModels) ->
+            </pre>
+
+                <p>
+                    The function handle signature is (cluster:Array[GMarkers], clusterModels:Array[YourModel]). This
+                    handler
+                    returns a directly mapped array of your models which belong to gMarker cluster sent along.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>doCluster <span class="badge badge-warning">deprecated</span> <p>see type attribute</p></td>
             <td><span class="label label-info">expression</span></td>
             <td>boolean property to tell the directive to use clustering. This attribute is not really bindable at the
                 moment. Therefore it just needs to evaluate to javascript true. "true" or even "".
             </td>
         </tr>
         <tr>
-            <td>clusterOptions</td>
+            <td>clusterOptions <span class="badge badge-warning">deprecated</span> <p>see typeOptions attribute</p></td>
             <td><span class="label label-info">expression</span></td>
-            <td>object containing options to pass to the marker
+            <td>Object containing options to pass to the marker.
                 <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.16/docs/reference.html">
                     clusterer
                 </a>
             </td>
         </tr>
         <tr>
-            <td>clusterEvents</td>
+            <td>clusterEvents <span class="badge badge-warning">deprecated</span> <p>see typeEvents attribute</p></td>
             <td><span class="label label-info">expression</span></td>
-            <td>object containing event options to pass to the marker
+            <td>Object containing event options to pass to the marker.
                 <a href="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.0.16/docs/reference.html">
                     clusterer
                 </a>
                 events handle.
+                <br>
                 <p>
                     This companion object is expected to be an object of the following optional functions: click,
                     mouseover,
@@ -154,9 +212,11 @@ $scope.clickEventsObject =
         <tr>
             <td>modelsbyref</td>
             <td><span class="label label-info">expression</span></td>
-            <td>expression binding : To evaluate to truthy. This also means markers by default deep watches since
-                modelsbyref is undefined. If set to true, 'true', 'T', and many more then shallow watching is turned on.
-                Search the code base for uiGmapGmapUtil.isTrue
+            <td>expression binding :
+              <p>To evaluate to truthy.</p>
+              <p>
+                By default deep watches since modelsbyref is undefined. If set to true, 'true', 'T', and many more then shallow watching is turned on. Search the code base for uiGmapGmapUtil.isTrue
+              </p>
             </td>
         </tr>
         <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='Marker';directive='Markers';hasLabelOptions=true;isStringTypeOnArray=true">
@@ -194,6 +254,10 @@ $scope.clickEventsObject =
 
             doCluster="{string or object}"
             clusterOptions='{expression}'
+            clusterEvents='{expression}'
+            type="{expression or string} (spider or cluster or null(default))"
+            typeOptions='{expression}'
+            typeEvents='{expression}'
             fit="{string or object}"
 
             coords="'{string}'"

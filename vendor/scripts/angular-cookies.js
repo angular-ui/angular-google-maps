@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.4.3
+ * @license AngularJS v1.4.4
  * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -48,7 +48,7 @@ angular.module('ngCookies', ['ng']).
      * - **secure** - `{boolean}` - The cookie will be available only in secured connection.
      *
      * Note: by default the address that appears in your `<base>` tag will be used as path.
-     * This is import so that cookies will be visible for all routes in case html5mode is enabled
+     * This is important so that cookies will be visible for all routes in case html5mode is enabled
      *
      **/
     var defaults = this.defaults = {};

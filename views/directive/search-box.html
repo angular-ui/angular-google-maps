@@ -5,13 +5,13 @@ js<br>
 .config(function(uiGmapGoogleMapApiProvider) {
     uiGmapGoogleMapApiProvider.configure({
         //    key: 'your api key',
-        v: '3.17',
+        v: '3.20', //defaults to latest 3.X anyhow
         libraries: 'places' // Required for SearchBox.
     });
 })
 </div>
 or HTML <br>
-<div hljs language="html" source="'<script src=\'http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false&language=en&v=3.17\'></script>'">
+<div hljs language="html" source="'<script src=\'http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false&language=en&v=3.20\'></script>'">
 </div>
 
 <h4>Usage</h4>
@@ -52,8 +52,8 @@ or HTML <br>
       <td>The id of another div on the page to which the the Search Box field should be appended. If this property is set the Search Box will not be added as a control on the map and the position parameter is not required.</td>
     </tr>
     <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='SearchBox';directive='search-box';hasAutocompleteOptions=true">
-    
-    
+
+
   </tr></tbody>
 </table>
 
