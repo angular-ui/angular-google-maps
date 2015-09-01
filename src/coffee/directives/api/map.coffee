@@ -36,7 +36,9 @@ angular.module('uiGmapgoogle-maps.directives.api')
         transclude: true
         replace: false
         #priority: 100,
-        template: '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>'
+        template: """
+          <div class="angular-google-map"><div class="angular-google-map-container">
+          </div><div ng-transclude style="display: none"></div></div>"""
 
         scope:
           center: '=' # required
@@ -66,7 +68,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
           GoogleMapApi.then (maps) =>
             DEFAULTS = mapTypeId: maps.MapTypeId.ROADMAP
             spawned = IsReady.spawn()
-            resolveSpawned = =>
+            resolveSpawned = ->
               spawned.deferred.resolve
                 instance: spawned.instance
                 map: _gMap
@@ -155,7 +157,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
                   updateCenter()
 
-                  if s.bounds isnt null and s.bounds isnt `undefined` and s.bounds isnt undefined and not _.contains(disabledEvents, 'bounds')
+                  if !_.isUndefined(s.bounds) and !_.contains(disabledEvents, 'bounds')
                     s.bounds.northeast =
                       latitude: ne.lat()
                       longitude: ne.lng()
@@ -233,7 +235,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
             , true
 
             zoomPromise = null
-            scope.$watch 'zoom', (newValue, oldValue) =>
+            scope.$watch 'zoom', (newValue, oldValue) ->
               return unless newValue?
               return  if _.isEqual(newValue,oldValue) or _gMap?.getZoom() == scope?.zoom or settingFromDirective
               #make this time out longer than zoom_changes because zoom_changed should be done first
@@ -244,13 +246,14 @@ angular.module('uiGmapgoogle-maps.directives.api')
               zoomPromise = $timeout  ->
                 _gMap.setZoom newValue
                 settingZoomFromScope = false
-              , scope.eventOpts?.debounce?.zoomMs + 20, false # use $timeout as a simple wrapper for setTimeout without calling $apply
+              , scope.eventOpts?.debounce?.zoomMs + 20, false
 
             scope.$watch 'bounds', (newValue, oldValue) ->
               return  if newValue is oldValue
-              if !newValue?.northeast?.latitude? or !newValue?.northeast?.longitude? or !newValue?.southwest?.latitude? or !newValue?.southwest?.longitude?
-                $log.error "Invalid map bounds for new value: #{JSON.stringify newValue}"
-                return
+              if !newValue?.northeast?.latitude? or !newValue?.northeast?.longitude? or
+                !newValue?.southwest?.latitude? or !newValue?.southwest?.longitude?
+                  $log.error "Invalid map bounds for new value: #{JSON.stringify newValue}"
+                  return
               ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude)
               sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude)
               bounds = new google.maps.LatLngBounds(sw, ne)

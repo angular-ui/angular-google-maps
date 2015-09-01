@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.6 2015-08-27
+/*! angular-google-maps 2.1.6 2015-08-31
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -6486,7 +6486,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         Map.prototype.replace = false;
 
-        Map.prototype.template = '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>';
+        Map.prototype.template = "<div class=\"angular-google-map\"><div class=\"angular-google-map-container\">\n</div><div ng-transclude style=\"display: none\"></div></div>";
 
         Map.prototype.scope = {
           center: '=',
@@ -6641,7 +6641,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   settingFromDirective = true;
                   return scope.$evalAsync(function(s) {
                     updateCenter();
-                    if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0 && !_.contains(disabledEvents, 'bounds')) {
+                    if (!_.isUndefined(s.bounds) && !_.contains(disabledEvents, 'bounds')) {
                       s.bounds.northeast = {
                         latitude: ne.lat(),
                         longitude: ne.lng()

@@ -12,7 +12,6 @@ describe "uiGmapMap", ->
       map:
         events: {}
         options: {}
-        options: {}
         control: {}
         zoom: 10
         center:
@@ -25,16 +24,27 @@ describe "uiGmapMap", ->
     @scope = null
     @log.error.calls.reset()
 
-  it "it should delay creation until center is set", ->
-    @digest =>
-      expect(@scope.map.control.getGMap).toBeUndefined()
-    expect(@scope.map.control.getGMap).toBeDefined()
+  describe "control props are set", ->
+    it "getGMap", ->
+      @digest =>
+        expect(@scope.map.control.getGMap).toBeUndefined()
+      expect(@scope.map.control.getGMap).toBeDefined()
+
+    it "refresh", ->
+      @digest =>
+        expect(@scope.map.control.refresh).toBeUndefined()
+      expect(@scope.map.control.refresh).toBeDefined()
+    
+    it "getMapOptions", ->
+      @digest =>
+        expect(@scope.map.control.getMapOptions).toBeUndefined()
+      expect(@scope.map.control.getMapOptions).toBeDefined()
 
   describe 'blackList events', ->
     it '(all) blocks all but defaults', ->
       @scope.map.events =
         blacklist: 'all'
-      @digest =>
+      @digest ->
       events = google.maps.event.normalizedEvents()
       eventsBeyondDefaults =
         _.without events, 'idle'
@@ -43,7 +53,7 @@ describe "uiGmapMap", ->
     it '(dragstart) blocks only itself', ->
       @scope.map.events =
         blacklist: 'dragstart'
-      @digest =>
+      @digest ->
       events = google.maps.event.normalizedEvents()
       eventsBeyondDefaults =
         _.without events,
@@ -54,7 +64,7 @@ describe "uiGmapMap", ->
     it '(dragstart) blocks only itself', ->
       @scope.map.events =
         blacklist: 'dragstart'
-      @digest =>
+      @digest ->
       events = google.maps.event.normalizedEvents()
       eventsBeyondDefaults =
         _.without events,
@@ -65,7 +75,7 @@ describe "uiGmapMap", ->
     it '(dragend) blocks only itself', ->
       @scope.map.events =
         blacklist: 'dragstart'
-      @digest =>
+      @digest ->
       events = google.maps.event.normalizedEvents()
       eventsBeyondDefaults =
         _.without events,
@@ -76,7 +86,7 @@ describe "uiGmapMap", ->
     it '(drag) blocks only itself', ->
       @scope.map.events =
         blacklist: 'dragstart'
-      @digest =>
+      @digest ->
       events = google.maps.event.normalizedEvents()
       eventsBeyondDefaults =
         _.without events,
@@ -87,7 +97,7 @@ describe "uiGmapMap", ->
     it '(zoom_changed) blocks only itself', ->
       @scope.map.events =
         blacklist: 'dragstart'
-      @digest =>
+      @digest ->
       events = google.maps.event.normalizedEvents()
       eventsBeyondDefaults =
         _.without events,
@@ -98,7 +108,7 @@ describe "uiGmapMap", ->
     it '(center_changed) blocks only itself', ->
       @scope.map.events =
         blacklist: 'dragstart'
-      @digest =>
+      @digest ->
       events = google.maps.event.normalizedEvents()
       eventsBeyondDefaults =
         _.without events,
