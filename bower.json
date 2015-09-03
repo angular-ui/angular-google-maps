@@ -4,9 +4,10 @@
   "main": "./dist/angular-google-maps.js",
   "dependencies": {
     "angular": "1.2 - 1.4",
+    "angular-simple-logger": "~0.0.1",
     "lodash": ">=3.8.0"
   },
-  "ignore":[
+  "ignore": [
     "*.json",
     ".gitignore",
     "travis.yml",

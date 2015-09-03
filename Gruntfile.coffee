@@ -25,8 +25,7 @@ module.exports = (grunt) ->
     'grunt-verbosity'
     'grunt-webpack'
     'grunt-angular-architecture-graph'
-    ].forEach (gruntLib) ->
-      grunt.loadNpmTasks gruntLib
+    ].forEach (gruntLib) -> grunt.loadNpmTasks gruntLib
 
   #squishing this file done by moving grunt options out to its own file. This way we can focus on tasks!
   options = require('./grunt/options')(grunt)

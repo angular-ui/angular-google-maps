@@ -30,7 +30,7 @@ Nicolas Laplante - https://plus.google.com/108189012221374960701
 Nicholas McCready - https://twitter.com/nmccready
 ###
 #define application wide modules
-angular.module('uiGmapgoogle-maps.providers',[])
+angular.module('uiGmapgoogle-maps.providers',['nemLogging'])
 angular.module('uiGmapgoogle-maps.wrapped', [])
 angular.module('uiGmapgoogle-maps.extensions', ['uiGmapgoogle-maps.wrapped','uiGmapgoogle-maps.providers'])
 angular.module('uiGmapgoogle-maps.directives.api.utils', ['uiGmapgoogle-maps.extensions'])
