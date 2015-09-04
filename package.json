@@ -58,5 +58,8 @@
     "lodash": "~3.9.3",
     "webpack": "^1.9.10"
   },
-  "dependencies": {}
+  "dependencies": {
+    "angular": "^1.2",
+    "angular-simple-logger": "0.0.1"
+  }
 }

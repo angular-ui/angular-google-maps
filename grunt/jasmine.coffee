@@ -18,6 +18,8 @@ spec =
     vendor: [
       'tmp/string.js'
       'bower_components/angular/angular.js'
+      'bower_components/angular-simple-logger/dist/index.js'
+
     ]
     specs: ['tmp/spec/coffee/bootstrap.spec.js', 'tmp/spec/**/*spec.js']
     helpers: [
