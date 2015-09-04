@@ -45,6 +45,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             else
                 @addAsMapControl()
 
+            if not @visible
+                @setVisibility(@visible)
+
             if @autocomplete
                 @listener = google.maps.event.addListener @gObject, 'place_changed', =>
                     @places = @gObject.getPlace()
