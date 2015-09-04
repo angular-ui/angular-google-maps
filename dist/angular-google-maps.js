@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.6 2015-09-03
+/*! angular-google-maps 2.1.6 2015-09-04
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -5378,6 +5378,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             this.addToParentDiv();
           } else {
             this.addAsMapControl();
+          }
+          if (!this.visible) {
+            this.setVisibility(this.visible);
           }
           if (this.autocomplete) {
             this.listener = google.maps.event.addListener(this.gObject, 'place_changed', (function(_this) {

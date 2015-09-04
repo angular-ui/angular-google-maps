@@ -24,6 +24,10 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
     , function ($scope, $timeout, $log, $http, GoogleMapApi) {
   $log.doLog = true
 
+  $scope.toggleMap = function () {
+    $scope.searchbox.options.visible = !$scope.searchbox.options.visible
+  }
+
   GoogleMapApi.then(function(maps) {
     maps.visualRefresh = true;
     $scope.defaultBounds = new google.maps.LatLngBounds(
@@ -84,7 +88,8 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
       //position:'top-right',
       position:'top-left',
       options: {
-        bounds: {}
+        bounds: {},
+        visible: true
       },
       //parentdiv:'searchBoxParent',
       events: {
