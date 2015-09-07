@@ -55,7 +55,6 @@
     "grunt-webpack": "^1.0.8",
     "grunt-wrap": "^0.3.0",
     "jsonfile": "^2.0.1",
-    "lodash": "~3.9.3",
     "webpack": "^1.9.10"
   },
   "dependencies": {
