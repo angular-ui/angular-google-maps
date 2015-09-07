@@ -1,6 +1,13 @@
-<a name"2.1.7"></a>
-### 2.1.7 (2015-09-06)
+<a name"2.2.1"></a>
+### 2.2.1 (2015-09-06)
 
+#### Bug Fixes
+
+* **searchbox:** visibility fixes, issue #1471 ([265e2a3](https://github.com/angular-ui/angular-google-maps/commit/265e2a3))
+
+#### Features
+
+* **uiGmapLogger:** internals outsourced to nemSimpleLogger which we now instantiate ([05af52c](https://github.com/angular-ui/angular-google-maps/commit/05af52c))
 
 <a name"2.1.6"></a>
 ### 2.1.6 (2015-08-27)
@@ -43,4 +50,3 @@
   * added to bump routines ([69b317fa](https://github.com/angular-ui/angular-google-maps/commit/69b317fa))
   * trying to aid in documentation and help people figure this out ([b6017de0](https://github.com/angular-ui/angular-google-maps/commit/b6017de0))
 * **grunt-changelog:** changelog added to our grunt build, sorry I did not know about this sooner. See  ([84227c03](https://github.com/angular-ui/angular-google-maps/commit/84227c03))
-
