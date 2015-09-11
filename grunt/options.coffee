@@ -286,6 +286,8 @@ module.exports =
 
   'gh-pages':
     options:
+      repo: 'https://' + process.env.GH_TOKEN + '@github.com/angular-ui/angular-google-maps.git'
+      silent: true
       base: 'dist'
       user:
         name: process.env.GIT_NAME
