@@ -44,17 +44,20 @@
             </td>
         </tr>
         <tr>
-            <td>icon</td>
-            <td><span class="label label-info">expression</span></td>
-            <td>Expression returning the absolute path to an image used as the marker icon</td>
-        </tr>
-        <tr>
             <td>click</td>
             <td><span class="label label-info">expression|function</span></td>
             <td>Event handler to call when clicking on the marker</td>
         </tr>
         <tr ng-include="'./views/directive/partials/options.html'" ng-init="thing='Marker';directive='Marker';hasLabelOptions=true">
-        </tr><tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Marker'">
+        </tr><tr>
+            <td>options.icon</td>
+            <td><span class="label label-info">expression</span></td>
+            <td>Expression returning the absolute path to an image used as the marker icon</td>
+            <p class="badge badge-danger">icon is part of options</p>
+            <p>example</p>
+            <code>$scope.options = {icon:'url/icon.png'};</code>
+        </tr>
+        <tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Marker'">
         </tr>
         <tr>
             <td>control</td>
@@ -93,7 +96,6 @@
 <ui-gmap-marker
         idKey='{expression}'
         coords='{expression}'
-        icon='{expression}'
         click='{expression}'
         options='{expression}'
         events='{expression}'
