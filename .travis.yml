@@ -6,7 +6,7 @@ before_script:
     - bower cache clean
     - PATH="$(npm bin):$PATH" npm install npm install
 
-env
+env:
     - secure: "tAaltwZyh+uf3Q7YH+9VZXsRfa2fr4DdJEJWDC78eIGAiPvtscp1ltmRp7RJjRuF7qOEHsF2sNqMslSt978vMFypF/OdZB464PX7qSmE/du4PP4ha42YU2ueC01CIxVmbGWLdVpE9SEJt19++fvIRXKHti2tYGjzaJZuEHuZqmo="
 script: grunt default --force gh-pages
 branches:
