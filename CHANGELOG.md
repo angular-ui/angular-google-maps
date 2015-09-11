@@ -1,3 +1,12 @@
+<a name"2.2.1"></a>
+### 2.2.1 (2015-09-11)
+
+
+#### Bug Fixes
+
+* **meteor:** prepping for new release to have meteor working again ([6d01d4eb](https://github.com/angular-ui/angular-google-maps/commit/6d01d4eb))
+
+
 <a name"2.2.0"></a>
 ### 2.2.0 (2015-09-06)
 
