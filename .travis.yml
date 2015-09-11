@@ -5,7 +5,7 @@ before_script:
     - PATH="$(npm bin):$PATH" npm install -g bower
     - bower cache clean
     - PATH="$(npm bin):$PATH" npm install npm install
-script: grunt test --force
+script: grunt default --force gh-pages
 branches:
   only:
     - master
