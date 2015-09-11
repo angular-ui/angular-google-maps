@@ -18,8 +18,9 @@ Package.onUse(function(api) {
   api.versionsFrom(['METEOR@0.9.0', 'METEOR@1.0']);
 
   api.use([
+    'stevezhu:lodash@1.0.2',
     'angular:angular@1.2.0',
-    'stevezhu:lodash@1.0.2'
+    'nmccready:angular-simple-logger@0.0.1'
   ], where);
 
   api.addFiles('dist/angular-google-maps.js', where);
