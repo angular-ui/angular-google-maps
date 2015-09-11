@@ -287,6 +287,9 @@ module.exports =
   'gh-pages':
     options:
       base: 'dist'
+      user:
+        name: process.env.GIT_NAME
+        email: process.env.GIT_EMAIL
 
     src: ['**']
 

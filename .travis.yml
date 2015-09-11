@@ -1,3 +1,4 @@
+sudo: false
 language: node_js
 node_js:
     - "0.10"
@@ -7,8 +8,14 @@ before_script:
     - PATH="$(npm bin):$PATH" npm install npm install
 
 env:
-    - secure: "tAaltwZyh+uf3Q7YH+9VZXsRfa2fr4DdJEJWDC78eIGAiPvtscp1ltmRp7RJjRuF7qOEHsF2sNqMslSt978vMFypF/OdZB464PX7qSmE/du4PP4ha42YU2ueC01CIxVmbGWLdVpE9SEJt19++fvIRXKHti2tYGjzaJZuEHuZqmo="
-script: grunt default --force gh-pages
+    global:
+      - secure: "tAaltwZyh+uf3Q7YH+9VZXsRfa2fr4DdJEJWDC78eIGAiPvtscp1ltmRp7RJjRuF7qOEHsF2sNqMslSt978vMFypF/OdZB464PX7qSmE/du4PP4ha42YU2ueC01CIxVmbGWLdVpE9SEJt19++fvIRXKHti2tYGjzaJZuEHuZqmo="
+script:
+    - grunt default --force
+
+after_success:
+    - grunt gh-pages
+
 branches:
   only:
     - master
