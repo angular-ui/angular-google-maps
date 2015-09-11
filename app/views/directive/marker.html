@@ -53,10 +53,12 @@
         <tr>
             <td>options.icon</td>
             <td><span class="label label-info">expression</span></td>
-            <td>Expression returning the absolute path to an image used as the marker icon</td>
-            <p class="badge badge-danger">icon is part of options</p>
-            <p>example</p>
-            <code>$scope.options = {icon:'url/icon.png'};</code>
+            <td>
+                <p>Expression returning the absolute path to an image used as the marker icon</p>
+                <p class="badge badge-danger">icon is part of options</p>
+                <p>example</p>
+                <code>$scope.options = {icon:'url/icon.png'};</code>
+            </td>
         </tr>
         <tr ng-include="'./views/directive/partials/events.html'" ng-init="thing='Marker'">
         </tr>
