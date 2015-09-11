@@ -15,11 +15,27 @@
                     Alternatively, you can use Bower to install it automatically:
                 </p>
                 <div hljs language="bash">bower install angular-google-maps</div>
-                <p>If not using Bower, you'll also need to fetch <a href="http://lodash.com/" rel="external">lodash.js</a> yourself.</p>
+                <p>If not using Bower, you'll also need to fetch:
+                  <ul>
+                    <li>
+                        <a href="http://lodash.com/" rel="external">lodash.js</a>
+                    </li>
+                    <li>
+                        <a href="http://angularjs.org/" rel="external">angular.js</a>
+                    </li>
+                    <li>
+                        <a href="http://github.com/nmccready/angular-simple-logger/blob/master/dist/index.js" rel="external">angular-simple-logger/dist/index.js</a>
+                    </li>
+                  </ul>
+
+                yourself.</p>
+                <p>
+                  It is <strong>HIGHLY</strong> recommended that you check the package.json and or bower.json file for the current dependencies and their versions!
+                </p>
             </li>
             <li>
                 <p>Load lodash.js and angular-google.maps.js into your HTML page:</p>
-                <div hljs language="html" source="'<script src=\'/path/to/lodash[.min].js\'></script>\n<script src=\'/path/to/angular-google-maps[.min].js\'></script>'">
+                <div hljs language="html" source="'<script src=\'/path/to/lodash[.min].js\'></script>\n<script src=\'/path/to/angular[.min].js\'></script>\n<script src=\'/path/to/angular-simple-logger/index[.min].js\'></script>\n<script src=\'/path/to/angular-google-maps[.min].js\'></script>'">
                 </div>
             </li>
             <li>

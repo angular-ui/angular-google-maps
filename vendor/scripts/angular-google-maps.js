@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.6 2015-08-27
+/*! angular-google-maps 2.2.0 2015-09-06
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -38,7 +38,7 @@ Nicholas McCready - https://twitter.com/nmccready
  */
 
 (function() {
-  angular.module('uiGmapgoogle-maps.providers', []);
+  angular.module('uiGmapgoogle-maps.providers', ['nemLogging']);
 
   angular.module('uiGmapgoogle-maps.wrapped', []);
 
@@ -1345,65 +1345,8 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapLogger', [
-    '$log', function($log) {
-      var LEVELS, Logger, log, maybeExecLevel;
-      LEVELS = {
-        log: 1,
-        info: 2,
-        debug: 3,
-        warn: 4,
-        error: 5,
-        none: 6
-      };
-      maybeExecLevel = function(level, current, fn) {
-        if (level >= current) {
-          return fn();
-        }
-      };
-      log = function(logLevelFnName, msg) {
-        if ($log != null) {
-          return $log[logLevelFnName](msg);
-        } else {
-          return console[logLevelFnName](msg);
-        }
-      };
-      Logger = (function() {
-        function Logger() {
-          var logFns;
-          this.doLog = true;
-          logFns = {};
-          ['log', 'info', 'debug', 'warn', 'error'].forEach((function(_this) {
-            return function(level) {
-              return logFns[level] = function(msg) {
-                if (_this.doLog) {
-                  return maybeExecLevel(LEVELS[level], _this.currentLevel, function() {
-                    return log(level, msg);
-                  });
-                }
-              };
-            };
-          })(this));
-          this.LEVELS = LEVELS;
-          this.currentLevel = LEVELS.error;
-          this.log = logFns['log'];
-          this.info = logFns['info'];
-          this.debug = logFns['debug'];
-          this.warn = logFns['warn'];
-          this.error = logFns['error'];
-        }
-
-        Logger.prototype.spawn = function() {
-          return new Logger();
-        };
-
-        Logger.prototype.setLog = function(someLogger) {
-          return $log = someLogger;
-        };
-
-        return Logger;
-
-      })();
-      return new Logger();
+    'nemSimpleLogger', function(nemSimpleLogger) {
+      return nemSimpleLogger.spawn();
     }
   ]);
 
@@ -5436,6 +5379,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           } else {
             this.addAsMapControl();
           }
+          if (!this.visible) {
+            this.setVisibility(this.visible);
+          }
           if (this.autocomplete) {
             this.listener = google.maps.event.addListener(this.gObject, 'place_changed', (function(_this) {
               return function() {
@@ -6486,7 +6432,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 
         Map.prototype.replace = false;
 
-        Map.prototype.template = '<div class="angular-google-map"><div class="angular-google-map-container"></div><div ng-transclude style="display: none"></div></div>';
+        Map.prototype.template = "<div class=\"angular-google-map\"><div class=\"angular-google-map-container\">\n</div><div ng-transclude style=\"display: none\"></div></div>";
 
         Map.prototype.scope = {
           center: '=',
@@ -6641,7 +6587,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   settingFromDirective = true;
                   return scope.$evalAsync(function(s) {
                     updateCenter();
-                    if (s.bounds !== null && s.bounds !== undefined && s.bounds !== void 0 && !_.contains(disabledEvents, 'bounds')) {
+                    if (!_.isUndefined(s.bounds) && !_.contains(disabledEvents, 'bounds')) {
                       s.bounds.northeast = {
                         latitude: ne.lat(),
                         longitude: ne.lng()
