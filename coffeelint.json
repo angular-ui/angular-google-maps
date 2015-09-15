@@ -18,7 +18,7 @@
     },
     "max_line_length": {
         "name": "max_line_length",
-        "value": 125,
+        "value": 256,
         "level": "warn",
         "limitComments": true
     },

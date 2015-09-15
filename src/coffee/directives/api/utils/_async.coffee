@@ -4,7 +4,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       _cb = undefined
       then: (cb) ->
         _cb = cb
-      resolve: () ->
+      resolve: ->
         _cb.apply(undefined, arguments)
   ])
 .service 'uiGmap_async', [ '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q','uiGmapDataStructures', 'uiGmapGmapUtil',
@@ -69,7 +69,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
    - Promises have been broken down to 4 states create, update,delete (3 main) and init. (Helps boil down problems in ordering)
     where (init) is special to indicate that it is one of the first or to allow a create promise to work beyond being after a delete
 
-   - Every Promise that comes is is enqueue and linked to the last promise in the queue.
+   - Every Promise that comes in is enqueued and linked to the last promise in the queue.
 
    - A promise can be skipped or canceled to save cycles.
 
@@ -149,6 +149,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     if angular.isArray collection
       array = collection
     else
+      collection = _.pick collection, (val, propName) ->
+        collection.hasOwnProperty propName
       array = if keys then keys else Object.keys(_.omit(collection, ['length', 'forEach', 'map']))
       keys = array
 
@@ -237,7 +239,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   managePromiseQueue: managePromiseQueue
   promiseLock: managePromiseQueue
   defaultChunkSize: defaultChunkSize
-  chunkSizeFrom:(fromSize, ret = undefined) ->
+  chunkSizeFrom: (fromSize, ret = undefined) ->
     if _.isNumber fromSize
       ret = fromSize
     if uiGmapGmapUtil.isFalse(fromSize) or fromSize == false

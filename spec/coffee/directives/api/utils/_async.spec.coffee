@@ -49,7 +49,7 @@ describe "_async", ->
     it "handle callback passes an index", (done) ->
       @digest =>
         chunkHit = false
-        @subject.each [1], (thing, index)->
+        @subject.each [1], (thing, index) ->
           chunkHit = true
           expect(thing).toEqual 1
           expect(index).toEqual 0
@@ -108,7 +108,7 @@ describe "_async", ->
             expect(test[999]).toEqual("$1000")
             expect(test.length).toEqual(known.length)
             expect(test).toEqual(
-              _.map known, (n)->
+              _.map known, (n) ->
                 n += 1
                 "$#{n.toString()}"
             )
@@ -133,6 +133,25 @@ describe "_async", ->
             expect(test).toEqual(known)
             done()
 
+      it 'prototypes should not be called', (done) ->
+        class Dummy
+          prop1: 'prop1'
+          prop2: 'prop2'
+        d = new Dummy()
+        d.prop3 = 'prop3'
+
+        vals = []
+
+        @digest =>
+          @subject.each d, (val) ->
+            vals.push val
+          , chunking = false
+          .then ->
+            expect(vals.length).toBe 1
+            expect(vals[0]).toBe d.prop3
+            done()
+
+
   describe "Objects", ->
     it "handle zero elements", (done) ->
       @digest =>
@@ -156,7 +175,7 @@ describe "_async", ->
       @digest =>
         known = {}
         known[num] = num for num in [0..100]
-        known.length = _.values(known).length
+        # known.length = _.values(known).length
         test = []
         pauses = 1
 
@@ -211,7 +230,7 @@ describe "_async", ->
             vals = _.values(_.omit known, 'length')
             expect(test.length).toEqual(vals.length)
             expect(test).toEqual(
-              _.map vals, (n)->
+              _.map vals, (n) ->
                 n += 1
                 "$#{n.toString()}"
             )
