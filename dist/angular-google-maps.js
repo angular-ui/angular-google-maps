@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-09-11
+/*! angular-google-maps 2.2.1 2015-09-15
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -595,7 +595,7 @@ Nicholas McCready - https://twitter.com/nmccready
        - Promises have been broken down to 4 states create, update,delete (3 main) and init. (Helps boil down problems in ordering)
         where (init) is special to indicate that it is one of the first or to allow a create promise to work beyond being after a delete
       
-       - Every Promise that comes is is enqueue and linked to the last promise in the queue.
+       - Every Promise that comes in is enqueued and linked to the last promise in the queue.
       
        - A promise can be skipped or canceled to save cycles.
       
@@ -686,6 +686,9 @@ Nicholas McCready - https://twitter.com/nmccready
         if (angular.isArray(collection)) {
           array = collection;
         } else {
+          collection = _.pick(collection, function(val, propName) {
+            return collection.hasOwnProperty(propName);
+          });
           array = keys ? keys : Object.keys(_.omit(collection, ['length', 'forEach', 'map']));
           keys = array;
         }
