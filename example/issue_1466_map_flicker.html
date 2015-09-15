@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html ng-app="checkin">
+
+<head>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js" type="text/javascript"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <script src="../bower_components/angular/angular.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/angular-filter/0.4.7/angular-filter.js"></script>
+  <script src="../bower_components/angular-simple-logger/dist/index.js"></script>
+  <script src='../bower_components/lodash/lodash.min.js'></script>
+  <script src='../dist/angular-google-maps_dev_mapped.js'></script>
+
+
+  <style>
+    .item {
+      margin: 0 auto;
+      height: 50px;
+      background-color: #fff;
+      width: 70%;
+      box-shadow: 0 -1px 0 #e5e5e5, 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24);
+      font-size: 16px;
+    }
+
+    .item:hover {
+      background-color: #F8F8F8;
+      cursor: pointer;
+    }
+
+    .item .item_date {
+      float: right;
+      text-align: right;
+      width: 100px;
+      height: 50px;
+      padding: 0 25px 0 0;
+      font-size: 13px;
+      color: #999999;
+      line-height: 50px;
+      overflow: hidden;
+      font-weight: 300;
+    }
+
+    .fa.fa-check-circle {
+      color: #2ecc71;
+    }
+
+    .fa.fa-times-circle {
+      color: #e74c3c;
+    }
+
+    .angular-google-map-container {
+      height: 300px;
+    }
+
+    @media (max-width:1255px) {
+      .item, .date_container {
+        width: 845px;
+      }
+    }
+
+    @media (max-width:988px) {
+      .item, .date_container {
+        width: 90%;
+      }
+    }
+  </style>
+
+
+</head>
+
+<body ng-controller="view">
+
+  <div style="margin-top:10px;" ng-repeat="group in checkins | groupBy: 'group_date' | toArray:true | orderBy: '-$key'">
+
+    <div class="item fade noselect">
+      <div style="font-weight:bold;padding:16px;">{{ group.$key | date: 'EEEE, MMMM d, yyyy' }}</div>
+    </div>
+
+    <div ng-repeat="data in group track by data.id| orderBy: '-checkin_time'">
+      <div ng-click="data.showMap = !data.showMap" class="item fade noselect" style="height:40px;">
+        <div class="item_date" style="float:left;height:40px;line-height:40px;">{{ data.checkin_time | date:'shortTime' }}</div>
+        <div style="float:left;height:40px;line-height:40px;">
+          <div ng-show="data.valid"><i class="fa fa-check-circle"></i></div>
+          <div ng-show="!data.valid"><i class="fa fa-times-circle"></i></div>
+        </div>
+        <div style="float:left;margin-left:30px;line-height:40px;height:40px;">View Map</div>
+      </div>
+      <div ng-if="data.showMap" class="item" style="height:300px;">
+        <div ng-include="'hi.tpl'"></div>
+      </div>
+    </div>
+  </div>
+
+
+
+</body>
+
+<script>
+
+  var routerApp = angular.module('checkin', ['ui.router', 'angular.filter', 'uiGmapgoogle-maps'])
+  .config(function($stateProvider, $urlRouterProvider, $locationProvider) {
+
+  })
+  .run(function ($rootScope, $state, $templateCache) {
+    $templateCache.put('hi.tpl', '<div class="hi">hi</div>');
+  })
+  .controller('view', function($scope, $rootScope, $http, $state, $stateParams) {
+    $scope.checkins = [{"id":"GqLWJ4H5q0BM","group_date":1440979200000,"checkin_time":1441058336000,"map_data":{"center":{"latitude":"38.595075660662","longitude":"-76.906425319577"},"zoom":8},"valid":true,"picture_id":"89559315-17C4-CB23-70E1-84453B87B98F","showMap":false},{"id":"B3ZBq9HYjgWE","group_date":1440979200000,"checkin_time":1441053250000,"map_data":{"center":{"latitude":"38.595164606395","longitude":"-76.906371768485"},"zoom":8},"valid":true,"picture_id":"5370D1B1-C5B9-BAAC-1C04-30272A47EBF8","showMap":false},{"id":"XMOQ8oF0dqp7","group_date":1440979200000,"checkin_time":1441052531000,"map_data":{"center":{"latitude":"38.606304160848","longitude":"-76.89944298369"},"zoom":8},"valid":true,"picture_id":"62C979BA-27E7-6512-A2D7-72CEA63B677D","showMap":false},{"id":"d6X1XAtxnZwZ","group_date":1440979200000,"checkin_time":1441052174000,"map_data":{"center":{"latitude":"38.606429700536","longitude":"-76.899270418485"},"zoom":8},"valid":true,"picture_id":"C28CFD14-E300-F5DE-3B0F-9D8B612C958B","showMap":false},{"id":"oR710OIK3gLY","group_date":1440115200000,"checkin_time":1440174577000,"map_data":{"center":{"latitude":"38.6063562","longitude":"-76.8992996"},"zoom":8},"valid":true,"picture_id":"9903205F-9CF2-0102-F571-E14608044D6A","showMap":false},{"id":"mRM2O6CgdD4Q","group_date":1439510400000,"checkin_time":1439566755000,"map_data":{"center":{"latitude":"38.606428","longitude":"-76.8993801"},"zoom":8},"valid":true,"picture_id":"CE5E4148-BC5A-158B-6A1A-FF39387277C0","showMap":false},{"id":"Z5X5pLfMzBPB","group_date":1439510400000,"checkin_time":1439566662000,"map_data":{"center":{"latitude":"38.6063988","longitude":"-76.8994246"},"zoom":8},"valid":true,"picture_id":"A649CCB4-21F8-BC1D-A8A5-2FD1048769AD","showMap":false},{"id":"OYXdrrc6p9MZ","group_date":1439510400000,"checkin_time":1439565296000,"map_data":{"center":{"latitude":"38.6064299","longitude":"-76.8993408"},"zoom":8},"valid":true,"picture_id":"1461D90F-D102-1D3C-34DE-92C7909879C9","showMap":false},{"id":"oRvjq6iKqGdM","group_date":1439510400000,"checkin_time":1439564191000,"map_data":{"center":{"latitude":"38.6062978","longitude":"-76.8993873"},"zoom":8},"valid":true,"picture_id":"07084AB6-6ACE-A581-7FC0-DC8FF5EFA158","showMap":false},{"id":"MeXRBGhaqbkr","group_date":1439510400000,"checkin_time":1439562013000,"map_data":{"center":{"latitude":"38.606372","longitude":"-76.8994667"},"zoom":8},"valid":true,"picture_id":null,"showMap":false},{"id":"2RWnYDswqDeW","group_date":1439510400000,"checkin_time":1439561468000,"map_data":{"center":{"latitude":"38.6064359","longitude":"-76.8991404"},"zoom":8},"valid":true,"picture_id":null,"showMap":false},{"id":"RdX4dLFmW3b9","group_date":1439510400000,"checkin_time":1439561181000,"map_data":{"center":{"latitude":"38.6061878","longitude":"-76.8995835"},"zoom":8},"valid":true,"picture_id":null,"showMap":false},{"id":"E984gBS2gGGg","group_date":1439510400000,"checkin_time":1439560406000,"map_data":{"center":{"latitude":"38.6063188","longitude":"-76.8993273"},"zoom":8},"valid":true,"picture_id":null,"showMap":false},{"id":"mMZ78qOCE6L1a","group_date":1439510400000,"checkin_time":1439559742000,"map_data":{"center":{"latitude":"38.6062685","longitude":"-76.8991436"},"zoom":8},"valid":true,"picture_id":null,"showMap":false},{"id":"qjw2BKIEpaL8","group_date":1439510400000,"checkin_time":1439555992000,"map_data":{"center":{"latitude":"38.6062061","longitude":"-76.8991204"},"zoom":8},"valid":true,"picture_id":null,"showMap":false},{"id":"eJ80Jbhaa6RG","group_date":1439424000000,"checkin_time":1439505395000,"map_data":{"center":{"latitude":"38.6063379","longitude":"-76.8992974"},"zoom":8},"valid":true,"picture_id":null,"showMap":false},{"id":"vZr9JgUeEqXO","group_date":1439424000000,"checkin_time":1439505117000,"map_data":{"center":{"latitude":"38.6064848","longitude":"-76.8995532"},"zoom":8},"valid":true,"picture_id":null,"showMap":false},{"id":"RxYbzLtMn5ed","group_date":1439424000000,"checkin_time":1439500894000,"map_data":{"center":{"latitude":"38.6064245","longitude":"-76.8992338"},"zoom":8},"valid":true,"picture_id":null,"showMap":false}];
+  });
+</script>
+
+</html>
