@@ -4,11 +4,11 @@ _ = require 'lodash'
 _pkg = require '../package.json'
 
 _pkg.nextVersion = do ->
-    # note this will fail on new minor or major releases.. oh well manually fix it
-    # for now as this is mainly for changelog
-    last = _.last _pkg.version.split('.')
-    next = Number(last) + 1
-    _pkg.version.replace(last, String(next))
+  # note this will fail on new minor or major releases.. oh well manually fix it
+  # for now as this is mainly for changelog
+  last = _.last _pkg.version.split('.')
+  next = Number(last) + 1
+  _pkg.version.replace(last, String(next))
 
 pipeline = [
   "src/coffee/module"
@@ -260,6 +260,7 @@ module.exports = (grunt) ->
     jasmine:
       spec: jasmineSettings.spec
       consoleSpec: jasmineSettings.consoleSpec
+      underscoreSpec: jasmineSettings.consoleUnderscoreSpec
 
     replace:
       utils:
@@ -304,13 +305,13 @@ module.exports = (grunt) ->
           filename: "webpack.[name].js",
 
     changelog:
-        options:
-            version: _pkg.nextVersion
+      options:
+        version: _pkg.nextVersion
 
     angular_architecture_graph:
-            diagram:
-                files:
-                    "dist/architecture": ["dist/angular-google-maps.js"]
+      diagram:
+        files:
+          "dist/architecture": ["dist/angular-google-maps.js"]
 
   options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options
