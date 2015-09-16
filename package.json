@@ -9,7 +9,7 @@
   "scripts": {
     "build": "grunt",
     "example": "grunt example",
-    "test": "grunt"
+    "test": "grunt && grunt jasmine:underscoreSpec"
   },
   "keywords": [
     "angularjs",
