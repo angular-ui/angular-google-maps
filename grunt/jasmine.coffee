@@ -3,15 +3,15 @@ log = require('util').log
 
 doCover = false #clean cheap way to disable coverage so you can debug the darn code.. thank you blanket
 
-_requireConfig =
+_requireConfig = (loPath = 'bower_components/lodash/lodash') ->
   paths:
-    'lodash': 'bower_components/lodash/lodash'
+    lodash: loPath
     'angular-mock': 'bower_components/angular-mocks/angular-mocks'
   deps: ['lodash', 'angular-mock']
 
 # log('jasmineSettings: past requireConfig')
 
-spec =
+spec = (loPath) ->
   src: ['dist/angular-google-maps_dev_mapped.js']
   options:
     keepRunner: true
@@ -27,17 +27,16 @@ spec =
     ]
     template: require 'grunt-template-jasmine-requirejs'
     templateOptions:
-      requireConfig: _requireConfig
+      requireConfig: _requireConfig(loPath)
 
-consoleSpec = _.extend {}, spec
-consoleSpec.src = 'dist/angular-google-maps.js'
+consoleSpec = _.extend spec(), src: 'dist/angular-google-maps.js'
 
 # log('jasmineSettings: past spec')
 
 coverage = undefined
 
 if doCover
-  coverage = _.clone spec
+  coverage = _.clone spec()
   coverage.options = _.extend coverage.options,
     template: require 'grunt-template-jasmine-istanbul'
     templateOptions:
@@ -56,9 +55,11 @@ if doCover
 # log('jasmineSettings: past coverage')
 
 toExport =
-  spec: spec
+  spec: spec()
+  consoleUnderscoreSpec: _.extend(spec('bower_components/underscore/underscore'), src: 'dist/angular-google-maps.js')
   consoleSpec: consoleSpec
-toExport['coverage'] = coverage if coverage
+
+toExport.coverage = coverage if coverage
 
 # log('jasmineSettings: past toExport')
 module.exports = toExport
