@@ -26,10 +26,11 @@
   ],
   "devDependencies": {
     "angular-mocks": "1.2 - 1.4",
-    "uuid": "http://github.com/LiosK/UUID.js/archive/v3.2.tar.gz",
     "angular-route": "1.2 - 1.4",
     "bootstrap-without-jquery": "git://github.com/tagawa/bootstrap-without-jquery.git",
     "data-structures": "~1.4.2",
-    "OverlappingMarkerSpiderfier": "git://github.com/nmccready/OverlappingMarkerSpiderfier.git"
+    "OverlappingMarkerSpiderfier": "git://github.com/nmccready/OverlappingMarkerSpiderfier.git",
+    "underscore": "~1.8.3",
+    "uuid": "http://github.com/LiosK/UUID.js/archive/v3.2.tar.gz"
   }
 }
