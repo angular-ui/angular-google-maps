@@ -23,7 +23,10 @@ angular.module('uiGmapgoogle-maps.providers')
         query = _.map _.omit(options, omitOptions), (v, k) ->
           k + '=' + v
 
-        document.getElementById(scriptId).remove() if scriptId
+        if scriptId
+          scriptElem = document.getElementById(scriptId)
+          scriptElem.parentNode.removeChild(scriptElem)
+
         query = query.join '&'
         script = document.createElement 'script'
         script.id = scriptId = "ui_gmap_map_load_#{uuid.generate()}"
