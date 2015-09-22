@@ -47,6 +47,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         else
           action = new PropertyAction (calledKey, newVal) =>
             #being in a closure works , direct to setMyScope is not working (but should?)
+            calledKey =  'all' if _.isFunction calledKey
             if not @firstTime
               @setMyScope calledKey, scope
           , false
@@ -64,7 +65,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         $log.info @
 
 
-      destroy: (removeFromManager = true)=>
+      destroy: (removeFromManager = true) =>
         @removeFromManager = removeFromManager
         @scope.$destroy()
 
@@ -120,7 +121,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           when 'options'
             @createMarker(model, oldModel, isInit, doDraw) if !justCreated
 
-      createMarker: (model, oldModel = undefined, isInit = false, doDraw = true)=>
+      createMarker: (model, oldModel = undefined, isInit = false, doDraw = true) =>
         @maybeSetScopeValue 'options', model, oldModel, @optionsKey, @evalModelHandle, isInit, @setOptions, doDraw
         @firstTime = false
 
@@ -188,7 +189,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @removeEvents @internalListeners if @internalListeners
           @externalListeners = @setEvents @gObject, @scope, @model, ['dragend']
           #must pass fake $evalAsync see events-helper
-          @internalListeners = @setEvents @gObject, {events: @internalEvents(), $evalAsync: () ->}, @model
+          @internalListeners = @setEvents @gObject, {events: @internalEvents(), $evalAsync: -> }, @model
 
           @gObject.key = @id if @id?
 
