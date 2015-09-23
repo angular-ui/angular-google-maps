@@ -134,7 +134,7 @@
         <!-- predefined markers -->
         <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
         <ui-gmap-marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id" options="m.options">
-            <ui-gmap-window ng-cloak  coords="map.infoWindowWithCustomClass.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
+            <ui-gmap-window ng-cloak  coords="m.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
                     <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
                     <p class="muted">My marker will stay open when the window is popped up!</p>
             </ui-gmap-window>
@@ -143,11 +143,8 @@
          <!--marker for clicked position can not put google.map.animations.BOUNCE , since it is not initiaized yet-->
         <!--DISABLED ANIMATION on MarkerLABEL due to Google SDK V3 bug, see MarkerLabelChildModel.setOption -->
         <!--<div ng-init="opts = {animation:1}">-->
-            <ui-gmap-marker coords="map.clickedMarker"  idKey="map.clickedMarker.id" options="map.clickedMarker.options">
-                <ui-gmap-window isIconVisibleOnClick="true" options="map.infoWindowWithCustomClass.options">This is my clicked marker!
-                    <p class="muted">My marker will reappear when you close me.</p>
-                </ui-gmap-window>
-            </ui-gmap-marker>
+        <ui-gmap-marker coords="map.clickedMarker"  idKey="map.clickedMarker.id" options="map.clickedMarker.options">
+        </ui-gmap-marker>
         <!--</div>-->
 
         <!-- polyline example -->
