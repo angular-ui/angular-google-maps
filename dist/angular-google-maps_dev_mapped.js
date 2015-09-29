@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-09-24
+/*! angular-google-maps 2.2.1 2015-09-30
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -2047,6 +2047,26 @@ Nicholas McCready - https://twitter.com/nmccready
 
       })();
       return ClustererMarkerManager;
+    }
+  ]);
+
+}).call(this);
+;(function() {
+  angular.module('uiGmapgoogle-maps.directives.api.managers').service('uiGmapGoogleMapObjectManager', [
+    function() {
+      var _sharedInstance;
+      _sharedInstance = null;
+      return {
+        createMapInstance: function(parentElement, options) {
+          if (!_sharedInstance) {
+            _sharedInstance = new google.maps.Map(parentElement, options);
+          } else {
+            angular.element(parentElement).append(_sharedInstance.getDiv());
+            _sharedInstance.setOptions(options);
+          }
+          return _sharedInstance;
+        }
+      };
     }
   ]);
 
@@ -6401,7 +6421,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     hasProp = {}.hasOwnProperty;
 
   angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapMap', [
-    '$timeout', '$q', 'uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapBaseObject', 'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid', 'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer', 'uiGmapGoogleMapsUtilV3', 'uiGmapGoogleMapApi', 'uiGmapEventsHelper', function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3, GoogleMapApi, EventsHelper) {
+    '$timeout', '$q', 'uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapBaseObject', 'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid', 'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer', 'uiGmapGoogleMapsUtilV3', 'uiGmapGoogleMapApi', 'uiGmapEventsHelper', 'uiGmapGoogleMapObjectManager', function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3, GoogleMapApi, EventsHelper, GoogleMapObjectManager) {
       'use strict';
       var DEFAULTS, Map, initializeItems;
       DEFAULTS = void 0;
@@ -6522,7 +6542,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 zoom: scope.zoom,
                 bounds: scope.bounds
               });
-              _gMap = new google.maps.Map(el.find('div')[1], mapOptions);
+              _gMap = GoogleMapObjectManager.createMapInstance(el.find('div')[1], mapOptions);
               _gMap['uiGmap_id'] = uuid.generate();
               dragging = false;
               listeners.push(google.maps.event.addListenerOnce(_gMap, 'idle', function() {

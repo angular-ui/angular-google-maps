@@ -4,10 +4,11 @@ angular.module('uiGmapgoogle-maps.directives.api')
   'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid',
   'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer',
   'uiGmapGoogleMapsUtilV3','uiGmapGoogleMapApi','uiGmapEventsHelper',
+  'uiGmapGoogleMapObjectManager'
   ($timeout,$q, $log, GmapUtil, BaseObject,
     CtrlHandle, IsReady, uuid,
     ExtendGWin, ExtendMarkerClusterer,
-    GoogleMapsUtilV3,GoogleMapApi, EventsHelper) ->
+    GoogleMapsUtilV3,GoogleMapApi, EventsHelper, GoogleMapObjectManager) ->
       'use strict'
       DEFAULTS = undefined
 
@@ -103,7 +104,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
               zoom: scope.zoom
               bounds: scope.bounds
 
-            _gMap = new google.maps.Map(el.find('div')[1], mapOptions)
+            _gMap = GoogleMapObjectManager.createMapInstance(el.find('div')[1], mapOptions)
             _gMap['uiGmap_id'] = uuid.generate()
 
             dragging = false

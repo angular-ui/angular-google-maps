@@ -305,6 +305,9 @@ digraph dependencies {
         "uiGmapEventsHelper"[label="uiGmapEventsHelper"]
         "uiGmapEventsHelper" -> "uiGmapMap"
       
+        "uiGmapGoogleMapObjectManager"[label="uiGmapGoogleMapObjectManager"]
+        "uiGmapGoogleMapObjectManager" -> "uiGmapMap"
+      
     
       
         "uiGmapIMarker"[label="uiGmapIMarker"]
