@@ -536,6 +536,8 @@ digraph dependencies {
       
 
       
+        "uiGmapGoogleMapObjectManager"[label="uiGmapGoogleMapObjectManager", color=5]
+      
 
       
         "uiGmapClustererMarkerManager"[label="uiGmapClustererMarkerManager", color=6]
@@ -563,6 +565,8 @@ digraph dependencies {
 
       
 
+      
+        "uiGmapgoogle-maps.directives.api.managers" -> "uiGmapGoogleMapObjectManager"
       
 
       
@@ -592,6 +596,8 @@ digraph dependencies {
 
       
 
+      
+        
       
 
       
@@ -1587,6 +1593,9 @@ digraph dependencies {
         
           "uiGmapEventsHelper"[label="uiGmapEventsHelper"]
           "uiGmapEventsHelper" -> "uiGmapMap"
+        
+          "uiGmapGoogleMapObjectManager"[label="uiGmapGoogleMapObjectManager"]
+          "uiGmapGoogleMapObjectManager" -> "uiGmapMap"
         
       
         

@@ -15,6 +15,9 @@ digraph dependencies {
     
 
     
+      "uiGmapGoogleMapObjectManager"[label="uiGmapGoogleMapObjectManager", color=5]
+      "uiGmapgoogle-maps.directives.api.managers" -> "uiGmapGoogleMapObjectManager"
+    
 
     
       "uiGmapClustererMarkerManager"[label="uiGmapClustererMarkerManager", color=6]
@@ -48,6 +51,8 @@ digraph dependencies {
 
     
 
+    
+      
     
 
     

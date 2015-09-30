@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-09-24
+/*! angular-google-maps 2.2.1 2015-09-30
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -2047,6 +2047,41 @@ Nicholas McCready - https://twitter.com/nmccready
 
       })();
       return ClustererMarkerManager;
+    }
+  ]);
+
+}).call(this);
+;(function() {
+  angular.module('uiGmapgoogle-maps.directives.api.managers').service('uiGmapGoogleMapObjectManager', [
+    function() {
+      var _availableInstances, _usedInstances;
+      _availableInstances = [];
+      _usedInstances = [];
+      return {
+        createMapInstance: function(parentElement, options) {
+          var instance;
+          instance = null;
+          if (_availableInstances.length === 0) {
+            instance = new google.maps.Map(parentElement, options);
+            _usedInstances.push(instance);
+          } else {
+            instance = _availableInstances.pop();
+            angular.element(parentElement).append(instance.getDiv());
+            instance.setOptions(options);
+            _usedInstances.push(instance);
+          }
+          return instance;
+        },
+        recycleMapInstance: function(instance) {
+          var index;
+          index = _usedInstances.indexOf(instance);
+          if (index < 0) {
+            throw new Error('Expected map instance to be a previously used instance');
+          }
+          _usedInstances.splice(index, 1);
+          return _availableInstances.push(instance);
+        }
+      };
     }
   ]);
 
@@ -6401,7 +6436,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     hasProp = {}.hasOwnProperty;
 
   angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapMap', [
-    '$timeout', '$q', 'uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapBaseObject', 'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid', 'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer', 'uiGmapGoogleMapsUtilV3', 'uiGmapGoogleMapApi', 'uiGmapEventsHelper', function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3, GoogleMapApi, EventsHelper) {
+    '$timeout', '$q', 'uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapBaseObject', 'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid', 'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer', 'uiGmapGoogleMapsUtilV3', 'uiGmapGoogleMapApi', 'uiGmapEventsHelper', 'uiGmapGoogleMapObjectManager', function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3, GoogleMapApi, EventsHelper, GoogleMapObjectManager) {
       'use strict';
       var DEFAULTS, Map, initializeItems;
       DEFAULTS = void 0;
@@ -6462,7 +6497,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           var listeners, unbindCenterWatch;
           listeners = [];
           scope.$on('$destroy', function() {
-            return EventsHelper.removeEvents(listeners);
+            EventsHelper.removeEvents(listeners);
+            if (attrs.recycleMapInstance === 'true' && scope.map) {
+              GoogleMapObjectManager.recycleMapInstance(scope.map);
+              return scope.map = null;
+            }
           });
           scope.idleAndZoomChanged = false;
           if (scope.center == null) {
@@ -6522,7 +6561,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 zoom: scope.zoom,
                 bounds: scope.bounds
               });
-              _gMap = new google.maps.Map(el.find('div')[1], mapOptions);
+              if (attrs.recycleMapInstance === 'true') {
+                _gMap = GoogleMapObjectManager.createMapInstance(el.find('div')[1], mapOptions);
+              } else {
+                _gMap = new google.maps.Map(el.find('div')[1], mapOptions);
+              }
               _gMap['uiGmap_id'] = uuid.generate();
               dragging = false;
               listeners.push(google.maps.event.addListenerOnce(_gMap, 'idle', function() {
