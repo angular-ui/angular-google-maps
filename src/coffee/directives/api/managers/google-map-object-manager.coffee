@@ -1,13 +1,24 @@
 angular.module('uiGmapgoogle-maps.directives.api.managers')
 .service 'uiGmapGoogleMapObjectManager', [ () ->
-  _sharedInstance = null
+  _availableInstances = []
+  _usedInstances = []
   return {
     createMapInstance: (parentElement, options) ->
-      if !_sharedInstance
-        _sharedInstance = new google.maps.Map(parentElement, options)
+      instance = null
+      if _availableInstances.length == 0
+        instance = new google.maps.Map(parentElement, options)
+        _usedInstances.push(instance)
       else
-        angular.element(parentElement).append(_sharedInstance.getDiv())
-        _sharedInstance.setOptions(options)
-      return _sharedInstance
+        instance = _availableInstances.pop()
+        angular.element(parentElement).append(instance.getDiv())
+        instance.setOptions(options)
+        _usedInstances.push(instance)
+      return instance
+    recycleMapInstance: (instance) ->
+      index = _usedInstances.indexOf(instance)
+      if index < 0
+        throw new Error('Expected map instance to be a previously used instance')
+      _usedInstances.splice(index, 1)
+      _availableInstances.push(instance)
   }
 ]
