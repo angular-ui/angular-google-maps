@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src='../bower_components/lodash/lodash.min.js'></script>
+  <script src="../bower_components/angular/angular.js"></script>
+  <script src="../bower_components/angular-simple-logger/dist/index.js"></script>
+  <script src='../dist/angular-google-maps_dev_mapped.js'></script>
+
+  <style>
+  .angular-google-map-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    }
+
+  </style>
+
+</head>
+
+<body>
+  <div ng-app="mapsApp" ng-controller="MapCtrl">
+    <ui-gmap-google-map id="google.map" class="google" center='defaults.center' zoom='defaults.zoom' options='defaults.options' type='HYBRID' refresh="refresh">
+      <ui-gmap-map-type ng-if="layer" options="layer"></ui-gmap-map-type>
+    </ui-gmap-google-map>
+  </div>
+</body>
+
+<script>
+  //Angular App Module and Controller
+  angular.module('mapsApp', ['uiGmapgoogle-maps'])
+
+  .constant('mapDefaults', {
+    center: {
+      latitude: 39.2,
+      longitude: -76.4
+    },
+    zoom: 7,
+    options: {
+      minZoom: 7,
+      maxZoom: 22,
+    }
+  })
+
+  .constant('layerData', {
+
+    user_name: 'eczajk1',
+    cartodb_logo: false,
+
+    query: 'SELECT * FROM tl_2014_us_cd114 WHERE statefp = \'24\'',
+    interactivity: 'cartodb_id',
+    tile_style: '#tl_2014_us_cd114{ polygon-fill: #FF6600; polygon-opacity: 0.7; line-color: #FFF; line-width: 1; line-opacity: 1;}',
+
+    table_name: 'tl_2014_us_cd114'
+      //interaction: true
+  })
+  .service('cartodbLoader', function($q, $timeout){
+    var d = $q.defer();
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = '//cdn.rawgit.com/CartoDB/cartodb.js-bower/master/cartodb.js';
+
+    function checkIfCartoDbIsReady() {
+      $timeout(function(){
+        if(window.cartodb)
+          return d.resolve(window.cartodb);
+        checkIfCartoDbIsReady();
+      }, 500);
+    }
+
+    this.load = function(){
+      document.body.appendChild(script);
+      checkIfCartoDbIsReady();
+    };
+
+    this.promise = d.promise;
+    return this;
+
+  })
+  .controller('MapCtrl', function($scope, mapDefaults, uiGmapIsReady, layerData, cartodbLoader) {
+    var map;
+
+    $scope.defaults = mapDefaults;
+
+    uiGmapIsReady.promise(1).then(function(instances) {
+      instances.forEach(function(instance) {
+        map = layerData.map = instance.map;
+      });
+
+      cartodbLoader.load();
+      cartodbLoader.promise.then(function(){
+        // leverage the MapTypes directive
+        $scope.layer = new cartodb.geo.CartoDBLayerGMaps(layerData);
+      });
+
+    });
+
+  });
+</script>
+
+</html>
