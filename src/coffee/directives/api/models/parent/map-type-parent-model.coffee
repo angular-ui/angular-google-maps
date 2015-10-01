@@ -23,16 +23,15 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @hideOverlay()
         , true
 
-        @scope.$watch 'options', (newValue, oldValue) =>
+        @scope.$watchCollection 'options', (newValue, oldValue) =>
           unless _.isEqual newValue, oldValue
             @refreshMapType()
-        , true
 
         if angular.isDefined @attrs.refresh
-          @scope.$watch('refresh', (newValue, oldValue) =>
+          @scope.$watch 'refresh', (newValue, oldValue) =>
             unless _.isEqual newValue, oldValue
               @refreshMapType()
-          , true)
+          , true
 
         @scope.$on '$destroy', =>
           @hideOverlay()
