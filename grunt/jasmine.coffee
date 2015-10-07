@@ -18,7 +18,7 @@ spec = (loPath) ->
     vendor: [
       'tmp/string.js'
       'bower_components/angular/angular.js'
-      'bower_components/angular-simple-logger/dist/index.js'
+      'bower_components/angular-simple-logger/dist/angular-simple-logger.js'
 
     ]
     specs: ['tmp/spec/coffee/bootstrap.spec.js', 'tmp/spec/**/*spec.js']
