@@ -25,7 +25,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
         @scope.$watchCollection 'options', (newValue, oldValue) =>
           unless _.isEqual newValue, oldValue
-            @refreshMapType()
+            mapTypeProps = [
+              'tileSize'
+              'maxZoom'
+              'minZoom'
+              'name'
+              'alt'
+            ]
+            different = _.some(mapTypeProps, (prop) ->
+              !oldValue or !newValue or !_.isEqual(newValue[prop], oldValue[prop])
+            )
+            if different
+              @refreshMapType()
 
         if angular.isDefined @attrs.refresh
           @scope.$watch 'refresh', (newValue, oldValue) =>
