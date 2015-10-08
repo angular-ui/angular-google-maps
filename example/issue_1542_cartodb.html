@@ -23,7 +23,7 @@
 <body>
   <div ng-app="mapsApp" ng-controller="MapCtrl">
     <ui-gmap-google-map id="google.map" class="google" center='defaults.center' zoom='defaults.zoom' options='defaults.options' type='HYBRID' refresh="refresh">
-      <ui-gmap-map-type ng-if="layer" options="layer"></ui-gmap-map-type>
+      <ui-gmap-map-type ng-repeat="layer in layers" options="layer"></ui-gmap-map-type>
     </ui-gmap-google-map>
   </div>
 </body>
@@ -44,7 +44,7 @@
     }
   })
 
-  .constant('layerData', {
+  .constant('layerData1', {
 
     user_name: 'eczajk1',
     cartodb_logo: false,
@@ -56,6 +56,20 @@
     table_name: 'tl_2014_us_cd114'
       //interaction: true
   })
+
+  .constant('layerData2', {
+
+    user_name: 'eczajk1',
+    cartodb_logo: false,
+
+    query: 'SELECT * FROM tl_2014_us_cd114 WHERE statefp = \'10\'',
+    interactivity: 'cartodb_id',
+    tile_style: '#tl_2014_us_cd114{ polygon-fill: red; polygon-opacity: 0.7; line-color: #FFF; line-width: 1; line-opacity: 1;}',
+
+    table_name: 'tl_2014_us_cd114'
+      //interaction: true
+  })
+
   .service('cartodbLoader', function($q, $timeout){
     var d = $q.defer();
     var script = document.createElement('script');
@@ -79,20 +93,22 @@
     return this;
 
   })
-  .controller('MapCtrl', function($scope, mapDefaults, uiGmapIsReady, layerData, cartodbLoader) {
+  .controller('MapCtrl', function($scope, mapDefaults, uiGmapIsReady, layerData1, layerData2, cartodbLoader) {
     var map;
 
     $scope.defaults = mapDefaults;
 
     uiGmapIsReady.promise(1).then(function(instances) {
       instances.forEach(function(instance) {
-        map = layerData.map = instance.map;
+        map = layerData1.map = layerData2.map = instance.map;
       });
 
       cartodbLoader.load();
       cartodbLoader.promise.then(function(){
         // leverage the MapTypes directive
-        $scope.layer = new cartodb.geo.CartoDBLayerGMaps(layerData);
+        var layer1 = new cartodb.geo.CartoDBLayerGMaps(layerData1);
+        var layer2 = new cartodb.geo.CartoDBLayerGMaps(layerData2);
+        $scope.layers = [layer1, layer2];
       });
 
     });
