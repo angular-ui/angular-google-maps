@@ -91,7 +91,26 @@ angular.module('uiGmapgoogle-maps.directives.api')
             # Parse options
             opts =
               options: {}
-            opts.options = scope.options  if attrs.options
+
+            if attrs.options
+              angular.extend opts.options, scope.options
+              ctrlOpts = [
+                'mapTypeControl'
+                'panControl'
+                'rotateControl'
+                'streetViewControl'
+                'zoomControl'
+              ]
+              ctrlOpts.forEach (opt) ->
+                config = opts.options[opt + 'Options']
+                if !config
+                  return
+                if config.position and google.maps.ControlPosition[config.position]
+                  config.position = google.maps.ControlPosition[config.position]
+                styleClass = (opt + 'Style').charAt(0).toUpperCase() + (opt + 'Style').slice(1)
+                if config.style and google.maps[styleClass] and google.maps[styleClass][config.style]
+                  config.style = google.maps[styleClass][config.style]
+                return
 
             opts.styles = scope.styles  if attrs.styles
             if attrs.type
