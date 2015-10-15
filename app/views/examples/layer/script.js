@@ -1,6 +1,6 @@
+'use strict';
 angular.module('appMaps', ['uiGmapgoogle-maps'])
     .controller('mainCtrl', function($scope) {
-        $scope.map = {center: {latitude: 51.219053, longitude: 4.404418 }, zoom: 4 };
-        $scope.options = {scrollwheel: false};
-        $scope.showWeather = true;
+        $scope.map = {center: {latitude: 38.90, longitude: -77.016 }, zoom: 12 };
+        $scope.show = true;
     });

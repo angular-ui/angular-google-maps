@@ -82,6 +82,6 @@ module.exports = (grunt) ->
     'prod_build'
   ]
 
-  grunt.registerTask 's', ['server']
+  grunt.registerTask 's', ['open', 'connect:dist:keepalive']#just server prod release
 
   return

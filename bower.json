@@ -17,13 +17,15 @@
     "share-button": "~0.0.3",
     "bootstrap": "~3.2.0",
     "lodash": ">=2.4.1",
-    "highlightjs": "~8.7.0"
+    "highlightjs": "~8.7.0",
+    "angular-simple-logger": "~0.1.4"
   },
   "devDependencies": {
     "angular-mocks": "1.4.5",
     "angular-scenario": "1.4.5"
   },
   "resolutions": {
-    "angular": "1.4.5"
+    "angular": "1.4.5",
+    "angular-simple-logger": "~0.1.4"
   }
 }
