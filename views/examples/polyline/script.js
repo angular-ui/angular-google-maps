@@ -1,7 +1,14 @@
 angular.module('appMaps', ['uiGmapgoogle-maps'])
-    .controller('mainCtrl', function($scope) {
+    .config(function(uiGmapGoogleMapApiProvider) {
+      uiGmapGoogleMapApiProvider.configure({
+          libraries: 'geometry,visualization'
+      });
+    })
+    .controller('mainCtrl', function($scope, uiGmapGoogleMapApi) {
         $scope.map = {center: {latitude: 40.1451, longitude: -99.6680 }, zoom: 4, bounds: {}};
-        $scope.polylines = [
+        $scope.polylines = [];
+        uiGmapGoogleMapApi.then(function(){
+          $scope.polylines = [
             {
                 id: 1,
                 path: [
@@ -73,25 +80,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
                     offset: '25px',
                     repeat: '50px'
                 }]
-            },
-            {
-                id: 3,
-                path: google.maps.geometry.encoding.decodePath("uowfHnzb}Uyll@i|i@syAcx}Cpj[_wXpd}AhhCxu[ria@_{AznyCnt^|re@nt~B?m|Awn`G?vk`RzyD}nr@uhjHuqGrf^ren@"),
-                stroke: {
-                    color: '#4EAE47',
-                    weight: 3
-                },
-                editable: false,
-                draggable: false,
-                geodesic: false,
-                visible: true,
-                icons: [{
-                    icon: {
-                        path: google.maps.SymbolPath.BACKWARD_OPEN_ARROW
-                    },
-                    offset: '25px',
-                    repeat: '50px'
-                }]
             }
         ];
+        });
     });

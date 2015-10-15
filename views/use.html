@@ -12,10 +12,34 @@
                 <p>
                     Download <a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.js">angular-google-maps.js</a>
                     (<a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.min.js">minified version</a>) and put it with your other scripts.
-                    Alternatively, you can use Bower to install it automatically:
+                    Alternatively, you can use Bower, NPM, and Meteor to install it automatically:
                 </p>
-                <div hljs language="bash">bower install angular-google-maps</div>
-                <p>If not using Bower, you'll also need to fetch:
+                <ul>
+                  <li>
+                    <div>
+                      Bower:
+                      <div hljs language="bash">bower install angular-google-maps</div>
+                      <p>
+                        it is recommended to use <a href="https://github.com/ck86/main-bower-files">main-bower-files</a> with gulp, or grunt. As this will zip up all your dependencies in one nice vendor.js file.
+                      </p>
+                    </div>
+                  </li>
+                  <li>
+                    <div>
+                      NPM:
+                      <div hljs language="bash">npm install angular-google-maps</div>
+                      <p>
+                        it is recommended to use <a href="http://browserify.org/">browserify</a> or <a href="http://webpack.github.io/docs/">webpack</a> to bootstrap CommonJS dependencies.
+                      </p>
+                    </div>
+                  </li>
+                  <li>
+                    Meteor: see <a href="https://atmospherejs.com/angularui/angular-google-maps">here</a>
+                  </li>
+                </ul>
+
+
+                <p title="your living in the stone age">If not using Bower, NPM, or Meteor, or zero package managers you'll also need to fetch:
                   <ul>
                     <li>
                         <a href="http://lodash.com/" rel="external">lodash.js</a>
@@ -24,7 +48,7 @@
                         <a href="http://angularjs.org/" rel="external">angular.js</a>
                     </li>
                     <li>
-                        <a href="http://github.com/nmccready/angular-simple-logger/blob/master/dist/index.js" rel="external">angular-simple-logger/dist/index.js</a>
+                        <a href="http://github.com/nmccready/angular-simple-logger/blob/master/dist/angular-simple-logger.js" rel="external">angular-simple-logger/dist/angular-simple-logger.js</a>
                     </li>
                   </ul>
 
@@ -35,7 +59,7 @@
             </li>
             <li>
                 <p>Load lodash.js and angular-google.maps.js into your HTML page:</p>
-                <div hljs language="html" source="'<script src=\'/path/to/lodash[.min].js\'></script>\n<script src=\'/path/to/angular[.min].js\'></script>\n<script src=\'/path/to/angular-simple-logger/index[.min].js\'></script>\n<script src=\'/path/to/angular-google-maps[.min].js\'></script>'">
+                <div hljs language="html" source="'<script src=\'/path/to/lodash[.min].js\'></script>\n<script src=\'/path/to/angular[.min].js\'></script>\n<script src=\'/path/to/angular-simple-logger/angular-simple-logger[.min].js\'></script>\n<script src=\'/path/to/angular-google-maps[.min].js\'></script>'">
                 </div>
             </li>
             <li>
