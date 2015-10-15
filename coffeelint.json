@@ -1,0 +1,28 @@
+{
+  "no_trailing_whitespace": {
+    "allowed_in_comments": true
+  },
+  "max_line_length": {
+    "value": 256,
+    "level": "warn",
+    "limitComments": false
+  },
+  "camel_case_classes": {
+    "level": "error"
+  },
+  "no_plusplus": {
+    "level": "ignore"
+  },
+  "no_throwing_strings": {
+    "level": "warn"
+  },
+  "no_unnecessary_fat_arrows":{
+    "level": "error"
+  },
+  "no_unnecessary_double_quotes":{
+    "level": "ignore"
+  },
+  "no_interpolation_in_single_quotes":{
+    "level": "error"
+  }
+}
