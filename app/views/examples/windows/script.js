@@ -20,12 +20,12 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
                 title: 'm' + i,
                 show: false
             };
-            ret.onClick = function() {
-                console.log("Clicked!");
-                ret.show = !ret.show;
-            };
             ret[idKey] = i;
             return ret;
+        };
+        $scope.onClick = function(model) {
+            console.log("Clicked!");
+            model.show = !model.show;
         };
         $scope.randomMarkers = [];
         // Get the bounds from the map once it's loaded
