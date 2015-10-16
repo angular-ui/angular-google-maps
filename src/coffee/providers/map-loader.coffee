@@ -2,6 +2,7 @@
 angular.module('uiGmapgoogle-maps.providers')
 .factory('uiGmapMapScriptLoader', ['$q', 'uiGmapuuid', ($q, uuid) ->
       scriptId = undefined
+      lastNetworkStatus = undefined
 
       getScriptUrl = (options)->
         #china doesn't allow https and has a special url
@@ -44,7 +45,12 @@ angular.module('uiGmapgoogle-maps.providers')
             # Cordova specific https://github.com/apache/cordova-plugin-network-information/
             if window.navigator.connection && window.Connection && window.navigator.connection.type == window.Connection.NONE
               document.addEventListener 'online', ->
+                  if !lastNetworkStatus || lastNetworkStatus != 'online'
+                    lastNetworkStatus = 'online';
                     includeScript options if !isGoogleMapsLoaded()
+
+              document.addEventListener 'offline', ->
+                lastNetworkStatus = 'offline';
             else
               includeScript options
 
