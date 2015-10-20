@@ -8,6 +8,7 @@ angular.module('angularGoogleMapsApp')
     'circle',
     'layer',
     'map-control',
+    'map-type',
     'marker',
     'marker-label',
     'markers',
