@@ -1,0 +1,4 @@
+{
+    "name": "street-view-panorama",
+    "files": ["index.html", "street-view-window.html", "script.js", "../base/plnkr.html"]
+}
