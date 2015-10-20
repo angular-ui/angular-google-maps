@@ -1,0 +1,17 @@
+<div ng-controller="ctrl">
+    <ui-gmap-google-map id="map"
+                       center="map.center"
+                       pan="map.pan"
+                       zoom="map.zoom"
+                       refresh="map.refresh"
+                       options="map.options"
+                       events="map.events"
+                       bounds="map.bounds">
+
+        <ui-gmap-marker idKey='map.id' coords="map.marker" >
+            <ui-gmap-window templateUrl="'street-view-window.html'" templateParameter="map.marker">
+            </ui-gmap-window>
+        </ui-gmap-marker>
+
+    </ui-gmap-google-map>
+</div>

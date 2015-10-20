@@ -1,0 +1,7 @@
+<div id="map_canvas" ng-controller="mainCtrl">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom">
+        <ui-gmap-map-type options="squaresMapType" show="map.showOverlay"></ui-gmap-map-type>
+    </ui-gmap-google-map>
+
+    <a class="btn btn-primary" ng-click="map.showOverlay = !map.showOverlay">Toggle overlay</a>
+</div>

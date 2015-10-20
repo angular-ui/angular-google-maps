@@ -1,0 +1,60 @@
+<new-scope>
+  <p>The <code>map-type</code> directive is used to add custom map types, as overlays or single layers.</p>
+
+  <h4>Usage</h4>
+
+  <div hljs language="html" include="'map-type-template'"></div>
+  <h4>Parameters</h4>
+
+  <p>Required properties are in red.</p>
+  <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+          <th>Param</th>
+          <th>Type</th>
+          <th>Details</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+          <td>options</td>
+          <td><span class="label label-danger">expression</span></td>
+          <td>Map type options, including in particular <code>getTile</code> or <code>getTileUrl</code> methods.
+              For complete list of options see <a href="https://developers.google.com/maps/documentation/javascript/maptypes#MapTypeInterface" target="_blank">Google Maps API documentation</a>.
+          </td>
+      </tr>
+      <tr>
+          <td>id</td>
+          <td><span class="label label-info">string</span></td>
+          <td>Map type id, to be used in the controler to display the maptype as a single layer.</td>
+      </tr>
+      <tr>
+          <td>show</td>
+          <td><span class="label label-info">expression</span></td>
+          <td>Scope variable used to show the maptype as an overlay. Defaults to <code>true</code>, unless <code>id</code>
+              has been defined
+          </td>
+      </tr>
+      <tr>
+          <td>refresh</td>
+          <td><span class="label label-info">expression</span></td>
+          <td>Variable or expression to watch, which will trigger a maptype refresh when changing.<br>
+              Useful in the case where the <code>getTileUrl</code> is dynamically defined (for example using
+              filters, options&hellip;), and you want to apply changes immediately.
+          </td>
+      </tr>
+      </tbody>
+  </table>
+
+  <h4>Examples</h4>
+  <runnable-example example="'map-type'"></runnable-example>
+
+  <script type="text/ng-template" id="map-type-template">
+    <ui-gmap-map-type
+        options='{expression}'
+        id="'{string}'"
+        show='{expression}'
+        refresh='{expression}'>
+    </ui-gmap-map-type>
+  </script>
+</new-scope>
