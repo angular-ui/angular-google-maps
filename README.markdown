@@ -83,7 +83,7 @@ The various directives are documented at [official site](http://angular-google-m
 ### Contributing
 
 Filing issues:
- Prior to submiting an issue:
+ Prior to submitting an issue:
 - Search open/**closed** issues, src examples (./examples), gitter, and then google plus community! **Again please search!**
 - issues w/ plnkrs get attention quicker
 
