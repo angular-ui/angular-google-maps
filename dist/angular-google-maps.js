@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-10-01
+/*! angular-google-maps 2.2.1 2015-10-20
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -78,7 +78,7 @@ Nicholas McCready - https://twitter.com/nmccready
         }
       };
       includeScript = function(options) {
-        var omitOptions, query, script;
+        var omitOptions, query, script, scriptElem;
         omitOptions = ['transport', 'isGoogleMapsForWork', 'china'];
         if (options.isGoogleMapsForWork) {
           omitOptions.push('key');
@@ -87,7 +87,8 @@ Nicholas McCready - https://twitter.com/nmccready
           return k + '=' + v;
         });
         if (scriptId) {
-          document.getElementById(scriptId).remove();
+          scriptElem = document.getElementById(scriptId);
+          scriptElem.parentNode.removeChild(scriptElem);
         }
         query = query.join('&');
         script = document.createElement('script');
@@ -4740,8 +4741,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this), true);
           this.scope.$watchCollection('options', (function(_this) {
             return function(newValue, oldValue) {
+              var different, mapTypeProps;
               if (!_.isEqual(newValue, oldValue)) {
-                return _this.refreshMapType();
+                mapTypeProps = ['tileSize', 'maxZoom', 'minZoom', 'name', 'alt'];
+                different = _.some(mapTypeProps, function(prop) {
+                  return !oldValue || !newValue || !_.isEqual(newValue[prop], oldValue[prop]);
+                });
+                if (different) {
+                  return _this.refreshMapType();
+                }
               }
             };
           })(this));
