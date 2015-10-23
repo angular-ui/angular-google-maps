@@ -42,7 +42,7 @@
     },
     "colon_assignment_spacing": {
         "name": "colon_assignment_spacing",
-        "level": "warn",
+        "level": "ignore",
         "spacing": {
             "left": 0,
             "right": 1

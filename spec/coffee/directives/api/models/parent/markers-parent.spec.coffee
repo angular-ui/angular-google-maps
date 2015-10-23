@@ -70,6 +70,7 @@ xdescribe 'uiGmapMarkersParentModel', ->
       props.push(propName)
 
     spyOn(@subject, 'createMarkersFromScratch')
+    console.log @subject.createMarkersFromScratch
     @subject.onTimeOut(@scope)
     #expect(props[i]).toEqual(prop) for prop, i in expectedProps
     expect(@subject.createMarkersFromScratch).toHaveBeenCalled()

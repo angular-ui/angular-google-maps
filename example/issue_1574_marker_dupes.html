@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src='../bower_components/lodash/lodash.min.js'></script>
+  <script src="../bower_components/angular/angular.js"></script>
+  <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
+  <script src='../dist/angular-google-maps_dev_mapped.js'></script>
+
+  <style>
+  .angular-google-map-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    }
+
+    .line {
+    height: 4px;
+    margin-top: 10px;
+    background-color: black;
+    opacity: 0.5;
+}
+
+.line.short {
+    width: 100px;
+}
+
+.line.large {
+    width: 350px;
+    margin-left: -80px;
+}
+
+.marker {
+    color: white;
+    border: 2px white solid;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 20px;
+    letter-spacing: 0.1em;
+    font-weight: bold;
+}
+
+.marker:hover {
+    background-color: #C52183;
+    animation: pulse 1s;
+}
+
+/* ANIMATIONS */
+@keyframes pulse {
+  50% {
+
+    transform: scale(4);
+  }
+
+  100% {
+
+    transform: scale(1);
+  }
+}
+
+a[href^="http://maps.google.com/maps"] {
+    display: none !important
+}
+
+a[href^="https://maps.google.com/maps"] {
+    display: none !important
+}
+
+.gmnoprint a,
+.gmnoprint span,
+.gm-style-cc {
+    display: none;
+}
+
+.gmnoprint div {
+    background: none !important;
+}
+
+
+  </style>
+
+</head>
+
+<body>
+  <div ng-app="mapsApp" ng-controller="MapCtrl as vm">
+    <ui-gmap-google-map center='vm.map.center' zoom='vm.map.zoom' options="vm.options">
+        <ui-gmap-markers models="vm.markers" coords="'self'" options="'self'" events="vm.markersEvents">
+          <!-- <ui-gmap-windows ></ui-gmap-windows> -->
+        </ui-gmap-markers>
+    </ui-gmap-google-map>
+  </div>
+</body>
+
+<script>
+  //Angular App Module and Controller
+  angular.module('mapsApp', ['uiGmapgoogle-maps'])
+  .config(function(uiGmapGoogleMapApiProvider){
+        //Google maps config
+        uiGmapGoogleMapApiProvider.configure({
+            libraries: 'weather,geometry,visualization'
+        });
+  })
+  .service('mapStyles', function(){
+        this.shades = [{
+            featureType: "all",
+            elementType: "labels.text.fill",
+            stylers: [{
+                saturation: 36
+            }, {
+                color: "#000000"
+            }, {
+                lightness: 40
+            }]
+        }, {
+            featureType: "all",
+            elementType: "labels.text.stroke",
+            stylers: [{
+                visibility: "on"
+            }, {
+                color: "#000000"
+            }, {
+                lightness: 16
+            }]
+        }, {
+            featureType: "all",
+            elementType: "labels.icon",
+            stylers: [{
+                visibility: "off"
+            }]
+        }, {
+            featureType: "administrative",
+            elementType: "all",
+            stylers: [{
+                visibility: "off"
+            }]
+        }, {
+            featureType: "administrative",
+            elementType: "geometry",
+            stylers: [{
+                visibility: "on"
+            }]
+        }, {
+            featureType: "administrative",
+            elementType: "geometry.fill",
+            stylers: [{
+                color: "#000000"
+            }, {
+                lightness: 20
+            }]
+        }, {
+            featureType: "administrative",
+            elementType: "geometry.stroke",
+            stylers: [{
+                color: "#000000"
+            }, {
+                lightness: 17
+            }, {
+                weight: 1.2
+            }]
+        }, {
+            featureType: "administrative",
+            elementType: "labels",
+            stylers: [{
+                visibility: "off"
+            }]
+        }, {
+            featureType: "administrative",
+            elementType: "labels.text",
+            stylers: [{
+                visibility: "off"
+            }]
+        }, {
+            featureType: "landscape",
+            elementType: "geometry",
+            stylers: [{
+                color: "#000000"
+            }, {
+                lightness: 20
+            }]
+        }, {
+            featureType: "poi",
+            elementType: "geometry",
+            stylers: [{
+                color: "#000000"
+            }, {
+                lightness: 21
+            }]
+        }, {
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [{
+                visibility: "off"
+            }]
+        }, {
+            featureType: "road",
+            elementType: "labels",
+            stylers: [{
+                visibility: "off"
+            }]
+        }, {
+            featureType: "road.highway",
+            elementType: "geometry.fill",
+            stylers: [{
+                color: "#000000"
+            }, {
+                lightness: 17
+            }]
+        }, {
+            featureType: "road.highway",
+            elementType: "geometry.stroke",
+            stylers: [{
+                color: "#000000"
+            }, {
+                lightness: 29
+            }, {
+                weight: .2
+            }]
+        }, {
+            featureType: "road.arterial",
+            elementType: "geometry",
+            stylers: [{
+                color: "#000000"
+            }, {
+                lightness: 18
+            }]
+        }, {
+            featureType: "road.local",
+            elementType: "geometry",
+            stylers: [{
+                color: "#000000"
+            }, {
+                lightness: 16
+            }]
+        }, {
+            featureType: "transit",
+            elementType: "geometry",
+            stylers: [{
+                color: "#000000"
+            }, {
+                lightness: 19
+            }]
+        }, {
+            featureType: "transit",
+            elementType: "labels",
+            stylers: [{
+                visibility: "off"
+            }]
+        }, {
+            featureType: "water",
+            elementType: "geometry",
+            stylers: [{
+                color: "#394951"
+            }, {
+                lightness: 17
+            }]
+        }]
+  })
+  .controller("MapCtrl", function(uiGmapGoogleMapApi, uiGmapLogger, $log, mapStyles) {
+        uiGmapLogger.currentLevel = uiGmapLogger.LEVELS.debug;
+        var vm = this;
+
+        vm.map = {
+            center: {
+                latitude: 41.3710614,
+                longitude: 2.1485521
+            },
+            zoom: 14
+        };
+        vm.options = {
+            draggable: true,
+            fit: true,
+            minZoom: 13,
+            maxZoom: 14,
+            disableDefaultUI: true,
+            styles: mapStyles.shades
+        };
+
+        //http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.9/docs/reference.html
+        vm.markers = [{
+            id: 101,
+            latitude: 41.374565,
+            longitude: 2.185239,
+            labelAnchor: "15 15",
+            icon: "false",
+            labelContent: "•••",
+            /*
+             *  The name of the CSS class defining the styles for the label.
+             *  Note that style values for position, overflow, top, left, zIndex, display, marginLeft, and marginTop are ignored;
+             *  these styles are for internal use only.
+             **/
+            labelClass: "marker",
+            /*
+             *  An object literal whose properties define specific CSS style values to be applied to the label.
+             *  Style values defined here override those that may be defined in the labelClass style sheet.
+             *  If this property is changed after the label has been created, all previously set styles (except those defined in the style sheet) are removed from the label before the new style values are applied.
+             **/
+            labelStyle: {
+                width: (30 + (3 * 5)) + "px",
+                height: (30 + (3 * 5)) + "px",
+                lineHeight: (30 + (3 * 5)) + "px"
+            }
+        }, {
+            id: 102,
+            latitude: 41.378565,
+            longitude: 2.15,
+            labelAnchor: "15 15",
+            icon: "false",
+            labelContent: "•",
+            labelClass: "marker",
+            labelStyle: {
+                width: (30 + (1 * 5)) + "px",
+                height: (30 + (1 * 5)) + "px",
+                lineHeight: (30 + (1 * 5)) + "px"
+            }
+        }, {
+            id: 103,
+            latitude: 41.387965,
+            longitude: 2.156,
+            labelAnchor: "15 15",
+            icon: "false",
+            labelContent: "•",
+            labelClass: "marker",
+            labelStyle: {
+                width: (30 + (1 * 5)) + "px",
+                height: (30 + (1 * 5)) + "px",
+                lineHeight: (30 + (1 * 5)) + "px"
+            }
+        }, {
+            id: 104,
+            latitude: 41.382965,
+            longitude: 2.16750,
+            labelAnchor: "15 15",
+            icon: "false",
+            labelContent: "•",
+            labelClass: "marker",
+            labelStyle: {
+                width: (30 + (1 * 5)) + "px",
+                height: (30 + (1 * 5)) + "px",
+                lineHeight: (30 + (1 * 5)) + "px"
+            }
+        }, {
+            id: 105,
+            latitude: 41.373,
+            longitude: 2.16,
+            labelAnchor: "15 15",
+            icon: "false",
+            labelContent: "•",
+            labelClass: "marker",
+            labelStyle: {
+                width: (30 + (1 * 5)) + "px",
+                height: (30 + (1 * 5)) + "px",
+                lineHeight: (30 + (1 * 5)) + "px"
+            }
+        }, {
+            id: 106,
+            latitude: 41.375965,
+            longitude: 2.17400,
+            labelAnchor: "15 15",
+            icon: "false",
+            labelContent: "•",
+            labelClass: "marker",
+            labelStyle: {
+                width: (30 + (1 * 5)) + "px",
+                height: (30 + (1 * 5)) + "px",
+                lineHeight: (30 + (1 * 5)) + "px"
+            }
+        }];
+
+        vm.markersEvents = {
+            click: function(gMarker, eventName, model) {
+                console.log(gMarker);
+                console.log(eventName);
+                console.log(model);
+            },
+            mouseover: function(gMarker, eventName, model) {
+
+            }
+
+        };
+
+        vm.data = [{
+            x: 1,
+            y: 0
+        }, {
+            x: 2,
+            y: 0
+        }, {
+            x: 3,
+            y: 0
+        }, {
+            x: 4,
+            y: 0
+        }, {
+            x: 5,
+            y: 0
+        }, {
+            x: 6,
+            y: 0
+        }, {
+            x: 7,
+            y: 15
+        }, {
+            x: 8,
+            y: 0
+        }, {
+            x: 9,
+            y: 20
+        }, {
+            x: 10,
+            y: 8
+        }, {
+            x: 11,
+            y: 0
+        }, {
+            x: 12,
+            y: 23
+        }, {
+            x: 13,
+            y: 0
+        }, {
+            x: 14,
+            y: 9
+        }, {
+            x: 15,
+            y: 0
+        }, {
+            x: 16,
+            y: 21
+        }, {
+            x: 17,
+            y: 0
+        }, {
+            x: 18,
+            y: 0
+        }, {
+            x: 19,
+            y: 30
+        }, {
+            x: 20,
+            y: 0
+        }, {
+            x: 21,
+            y: 0
+        }, {
+            x: 22,
+            y: 25
+        }, {
+            x: 23,
+            y: 0
+        }, {
+            x: 24,
+            y: 0
+        }, {
+            x: 25,
+            y: 0
+        }, {
+            x: 26,
+            y: 0
+        }, {
+            x: 27,
+            y: 0
+        }, {
+            x: 28,
+            y: 0
+        }, {
+            x: 29,
+            y: 0
+        }, {
+            x: 30,
+            y: 0
+        }];
+        uiGmapGoogleMapApi.then(function(maps) {
+          $log.info("google maps ready");
+        });
+  return this;
+});
+</script>
+
+</html>

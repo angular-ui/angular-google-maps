@@ -186,25 +186,25 @@ describe 'uiGmapMarkers (directive creation)', ->
         @scope.onClick = ->
         spyOn @scope, 'onClick'
         _.extend @scope, map: @map
-  
+
         toPush = {}
         toPush.id = 0
         toPush.latitude = 47
         toPush.longitude = -27
         @scope.items = [toPush]
-  
+
         listener = GMarker.creationSubscribe @, (gMarker) =>
           _.delay =>
             window.google.maps.event.fireListener(gMarker,'click')
             expect(@scope.onClick).toHaveBeenCalled()
             done()
           , 250
-  
+
         #force gMarker object to invoke click
         @digest =>
-          @timeout =>
+          @timeout ->
             expect(GMarker.instances).toEqual(1)
             GMarker.creationUnSubscribe listener
-    
+
     it 'exists', ->
       expect(@subject).toBeDefined()

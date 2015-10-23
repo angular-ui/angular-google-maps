@@ -1,9 +1,11 @@
 angular.module('uiGmapgoogle-maps.wrapped')
 .service('uiGmapMarkerSpiderfier', [ 'uiGmapGoogleMapApi', function(GoogleMapApi) {
   var self = this;
-  //BEGIN REPLACE
-  @@REPLACE_W_LIBS
-  //END REPLACE
+  /* istanbul ignore next */
+  +function(){
+    @@REPLACE_W_LIBS
+  }.apply(self);
+
   GoogleMapApi.then(function(){
     self.OverlappingMarkerSpiderfier.initializeGoogleMaps(window.google);
   });

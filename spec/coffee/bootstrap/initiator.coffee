@@ -1,5 +1,5 @@
-window["uiGmapInitiator"] =
-  initDirective: (testSuite, apiSubjectClassName, thingsToInit = ['initAll'])->
+window.uiGmapInitiator =
+  initDirective: (testSuite, apiSubjectClassName, thingsToInit = ['initAll']) ->
 
     injects = ['uiGmapLogger']
     if apiSubjectClassName?
@@ -23,10 +23,10 @@ window["uiGmapInitiator"] =
     testSuite
 
   initMock: (testSuite, injectedCb) ->
-    app = module "uiGmapgoogle-maps.mocks"
-    module "uiGmapgoogle-maps.directives.api.utils"
+    app = window.module "uiGmapgoogle-maps.mocks"
+    window.module "uiGmapgoogle-maps.directives.api.utils"
     apiMock = undefined
-    testSuite.injects.push (GoogleApiMock) =>
+    testSuite.injects.push (GoogleApiMock) ->
       apiMock = new GoogleApiMock()
       apiMock.initAll()
       injectedCb(apiMock) if injectedCb? and _.isFunction injectedCb

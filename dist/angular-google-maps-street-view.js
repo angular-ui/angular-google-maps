@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-10-20
+/*! angular-google-maps 2.2.1 2015-10-23
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -64,6 +64,7 @@ Nicholas McCready - https://twitter.com/nmccready
 ;angular.module('uiGmapgoogle-maps.wrapped')
 .service('uiGmapuuid', function() {
   //BEGIN REPLACE
+  /* istanbul ignore next */
   /*
  Version: core-1.0
  The MIT License: Copyright (c) 2012 LiosK.

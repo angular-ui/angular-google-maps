@@ -9,7 +9,7 @@ describe 'uiGmapPolyline', ->
       Polyline.resetInstances()
 
     @injects.push (uiGmapPolyline) =>
-        @subject = uiGmapPolyline
+      @subject = uiGmapPolyline
 
     @injectAll()
 

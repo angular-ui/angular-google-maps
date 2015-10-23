@@ -48,7 +48,7 @@ describe 'PropMap tests', ->
       @propMap.put('foo', 'bar')
       @propMap.put('baz', 'biz')
       keys = @propMap.keys()
-      console.log keys
+      # console.log keys
       expected = ['foo', 'baz']
       expect(keys[i]).toEqual(item) for item, i in expected
 

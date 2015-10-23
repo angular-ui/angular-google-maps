@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-10-20
+/*! angular-google-maps 2.2.1 2015-10-23
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -7996,6 +7996,7 @@ StreetViewPanorama Directive to care of basic initialization of StreetViewPanora
 ;angular.module('uiGmapgoogle-maps.wrapped')
 .service('uiGmapuuid', function() {
   //BEGIN REPLACE
+  /* istanbul ignore next */
   /*
  Version: core-1.0
  The MIT License: Copyright (c) 2012 LiosK.
@@ -8012,6 +8013,8 @@ angular.module('uiGmapgoogle-maps.wrapped')
   return {
     init: _.once(function () {
       //BEGIN REPLACE
+      /* istanbul ignore next */
+      +function(){
       /**
  * @name InfoBox
  * @version 1.1.13 [March 19, 2014]
@@ -12737,14 +12740,17 @@ var RichMarkerPosition = {
 };
 window['RichMarkerPosition'] = RichMarkerPosition;
 
+
+        //TODO: export / passthese on in the service instead of window
+        window.InfoBox = InfoBox;
+        window.Cluster = Cluster;
+        window.ClusterIcon = ClusterIcon;
+        window.MarkerClusterer = MarkerClusterer;
+        window.MarkerLabel_ = MarkerLabel_;
+        window.MarkerWithLabel = MarkerWithLabel;
+        window.RichMarker = RichMarker;
+      }();
       //END REPLACE
-      window.InfoBox = InfoBox;
-      window.Cluster = Cluster;
-      window.ClusterIcon = ClusterIcon;
-      window.MarkerClusterer = MarkerClusterer;
-      window.MarkerLabel_ = MarkerLabel_;
-      window.MarkerWithLabel = MarkerWithLabel;
-      window.RichMarker = RichMarker;
     })
   };
 });
@@ -12794,6 +12800,7 @@ window['RichMarkerPosition'] = RichMarkerPosition;
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* istanbul ignore next */
 	angular.module('uiGmapgoogle-maps.wrapped')
 	.service('uiGmapDataStructures', function() {
 	return {
@@ -14542,8 +14549,9 @@ window['RichMarkerPosition'] = RichMarkerPosition;
 /******/ ]);;angular.module('uiGmapgoogle-maps.wrapped')
 .service('uiGmapMarkerSpiderfier', [ 'uiGmapGoogleMapApi', function(GoogleMapApi) {
   var self = this;
-  //BEGIN REPLACE
-  
+  /* istanbul ignore next */
+  +function(){
+    
 /** @preserve OverlappingMarkerSpiderfier
 https://github.com/jawj/OverlappingMarkerSpiderfier
 Copyright (c) 2011 - 2013 George MacKerron
@@ -15105,7 +15113,8 @@ this['OverlappingMarkerSpiderfier'] = (function() {
 
 })();
 
-  //END REPLACE
+  }.apply(self);
+
   GoogleMapApi.then(function(){
     self.OverlappingMarkerSpiderfier.initializeGoogleMaps(window.google);
   });

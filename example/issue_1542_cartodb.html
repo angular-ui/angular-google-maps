@@ -21,7 +21,7 @@
 </head>
 
 <body>
-  <div ng-app="mapsApp" ng-controller="MapCtrl">
+  <div ng-app="mapsApp" ng-controller="MapCtrl as alias">
     <ui-gmap-google-map id="google.map" class="google" center='defaults.center' zoom='defaults.zoom' options='defaults.options' type='HYBRID' refresh="refresh">
       <ui-gmap-map-type ng-repeat="layer in layers" options="layer"></ui-gmap-map-type>
     </ui-gmap-google-map>

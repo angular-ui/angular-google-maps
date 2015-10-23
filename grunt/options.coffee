@@ -1,5 +1,4 @@
 log = require('util').log
-jasmineSettings = require './jasmine'
 _ = require 'lodash'
 _pkg = require '../package.json'
 
@@ -55,7 +54,7 @@ concatDist =
     footer: "}( window,angular));"
   src: pipeline.map( (f) -> "tmp/#{f}.js").concat [
     "tmp/wrapped_uuid.js"
-    "tmp/wrapped_libs.js"
+    "tmp/wrapped_gmaps_sdk_util_v3.js"
     "tmp/webpack.dataStructures.js"
     "tmp/wrapped_marker_spiderfier.js"
     "src/js/**/*.js" #this all will only work if the dependency orders do not matter
@@ -157,30 +156,12 @@ module.exports = (grunt) ->
         dest: 'tmp/'
         ext: '.js'
 
-      specs:
-        expand: true,
-        flatten: false,
-        src: [
-        #specs
-          "spec/coffee/bootstrap.coffee"
-          "spec/coffee/helpers/*.coffee"
-          "spec/coffee/usage/*.coffee"
-          "spec/coffee/directives/api/*.coffee"
-          "spec/coffee/providers/*.coffee"
-          "spec/coffee/directives/api/models/child/*.coffee"
-          "spec/coffee/directives/api/models/parent/*.coffee"
-          "spec/coffee/directives/api/options/**/*.coffee"
-          "spec/coffee/directives/api/utils/*.coffee"
-        ]
-        dest: "tmp/"
-        ext: '.spec.js'
-
     concat:
       dist: concatDist
       distMapped: concatDistMapped
       libs:
         src: ["curl_components/**/*.js"]
-        dest: "tmp/libs.js"
+        dest: "tmp/gmaps_sdk_util_v3.js"
       streetview: concatStreetView
       streetviewMapped: concatStreetViewMapped
     copy:
@@ -232,17 +213,16 @@ module.exports = (grunt) ->
         options:
           livereload: true
 
-        files: ["src/coffee/**/*.coffee", "src/coffee/*.coffee", "src/coffee/**/**/*.coffee", "spec/**/*.spec.coffee",
-          "spec/coffee/helpers/**"]
-        tasks: ["fast"]
+        files: ["src/coffee/**/*.coffee"]
+        tasks: ["karma"]
 
     open:
     #examples replaced by lookup via allExamplesOpen see below
       version:
         path: "http://localhost:3100/package.json"
 
-      jasmine:
-        path: "http://localhost:8069/_SpecRunner.html"
+      coverage:
+        path: "http://localhost:8069/dist/coverage/dist/index.html"
 
     connect:
       server:
@@ -251,25 +231,20 @@ module.exports = (grunt) ->
           port: 3100
           base: ""
 
-      jasmineServer:
+      coverage:
         options:
           hostname: "0.0.0.0"
           port: 8069
           base: ""
 
-    jasmine:
-      spec: jasmineSettings.spec
-      consoleSpec: jasmineSettings.consoleSpec
-      underscoreSpec: jasmineSettings.consoleUnderscoreSpec
-
     replace:
       utils:
         options:
           patterns: [
-            match: 'REPLACE_W_LIBS', replacement: '<%= grunt.file.read("tmp/libs.js") %>'
+            match: 'REPLACE_W_LIBS', replacement: '<%= grunt.file.read("tmp/gmaps_sdk_util_v3.js") %>'
           ]
         src: 'src/js/wrapped/google-maps-util-v3.js'
-        dest: 'tmp/wrapped_libs.js'
+        dest: 'tmp/wrapped_gmaps_sdk_util_v3.js'
       uuid:
         options:
           patterns: [
@@ -291,8 +266,7 @@ module.exports = (grunt) ->
     verbosity:
       quiet:
         options: mode: 'normal'
-        tasks: ['coffee', 'clean', 'clean:dist', 'copy', 'concat', 'jasmineSettings',
-          'mkdir:all', 'jshint', 'uglify', 'replace', 'concat:dist', 'concat:libs']
+        tasks: ['coffee', 'clean', 'clean:dist', 'copy', 'concat', 'mkdir:all', 'jshint', 'uglify', 'replace', 'concat:dist', 'concat:libs']
 
     # for  commonjs libraries that need to be rolled in
     webpack:
@@ -313,5 +287,4 @@ module.exports = (grunt) ->
         files:
           "dist/architecture": ["dist/angular-google-maps.js"]
 
-  options.jasmine.coverage = jasmineSettings.coverage if jasmineSettings.coverage
   return options
