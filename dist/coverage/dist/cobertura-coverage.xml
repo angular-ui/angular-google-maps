@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
-<coverage lines-valid="7514"  lines-covered="4933"  line-rate="0.6565000000000001"  branches-valid="3538"  branches-covered="1768"  branch-rate="0.4997"  timestamp="1445574390256" complexity="0" version="0.1">
+<coverage lines-valid="7514"  lines-covered="4933"  line-rate="0.6565000000000001"  branches-valid="3538"  branches-covered="1768"  branch-rate="0.4997"  timestamp="1445574912643" complexity="0" version="0.1">
 <sources>
 	<source>/Users/nem/code/github/thirdparties/angular-google-maps</source>
 </sources>
