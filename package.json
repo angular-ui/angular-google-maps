@@ -9,7 +9,7 @@
   "scripts": {
     "build": "grunt",
     "example": "grunt example",
-    "test": "grunt karma"
+    "test": "grunt bower karma"
   },
   "keywords": [
     "angularjs",
