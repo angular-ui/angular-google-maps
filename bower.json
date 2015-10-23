@@ -22,7 +22,9 @@
     "spec/coffee/directives",
     "spec/coffee/providers",
     "spec/coffee/usage",
-    "tmp"
+    "tmp",
+    "dist/coverage/",
+    "dist/architecture/"
   ],
   "devDependencies": {
     "angular-mocks": "1.2 - 1.4",

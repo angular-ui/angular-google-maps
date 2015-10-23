@@ -1,0 +1,17 @@
+.*
+spec/
+*.json
+.gitignore
+travis.yml
+*.html
+package.js
+*.md
+src/
+gulp/
+scripts/
+node_modules/
+bower_components/
+tmp/
+.versions
+*.coffee
+dist/coverage/
