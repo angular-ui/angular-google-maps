@@ -23,7 +23,7 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
             ret[idKey] = i;
             return ret;
         };
-        $scope.onClick = function(model) {
+        $scope.onClick = function(marker, eventName, model) {
             console.log("Clicked!");
             model.show = !model.show;
         };

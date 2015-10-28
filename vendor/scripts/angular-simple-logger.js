@@ -19,11 +19,11 @@ var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); 
 
 angular.module('nemLogging').provider('nemSimpleLogger', [
   'nemDebugProvider', function(nemDebugProvider) {
-    var LEVELS, Logger, _fns, _isValidLogObject, _maybeExecLevel, _wrapDebug, key, nemDebug, val;
+    var LEVELS, Logger, _fns, _isValidLogObject, _maybeExecLevel, _wrapDebug, i, key, len, nemDebug, val;
     nemDebug = nemDebugProvider.debug;
     _fns = ['debug', 'info', 'warn', 'error', 'log'];
     LEVELS = {};
-    for (key in _fns) {
+    for (key = i = 0, len = _fns.length; i < len; key = ++i) {
       val = _fns[key];
       LEVELS[val] = key;
     }
@@ -33,13 +33,13 @@ angular.module('nemLogging').provider('nemSimpleLogger', [
       }
     };
     _isValidLogObject = function(logObject) {
-      var isValid;
+      var isValid, j, len1;
       isValid = false;
       if (!logObject) {
         return isValid;
       }
-      for (key in _fns) {
-        val = _fns[key];
+      for (j = 0, len1 = _fns.length; j < len1; j++) {
+        val = _fns[j];
         isValid = (logObject[val] != null) && typeof logObject[val] === 'function';
         if (!isValid) {
           break;
@@ -53,18 +53,18 @@ angular.module('nemLogging').provider('nemSimpleLogger', [
       see: https://github.com/visionmedia/debug/blob/master/Readme.md
      */
     _wrapDebug = function(debugStrLevel, logObject) {
-      var debugInstance, newLogger;
+      var debugInstance, j, len1, newLogger;
       debugInstance = nemDebug(debugStrLevel);
       newLogger = {};
-      for (key in _fns) {
-        val = _fns[key];
+      for (j = 0, len1 = _fns.length; j < len1; j++) {
+        val = _fns[j];
         newLogger[val] = val === 'debug' ? debugInstance : logObject[val];
       }
       return newLogger;
     };
     Logger = (function() {
       function Logger($log1) {
-        var logFns;
+        var fn1, j, len1, level, logFns;
         this.$log = $log1;
         this.spawn = bind(this.spawn, this);
         if (!this.$log) {
@@ -75,7 +75,7 @@ angular.module('nemLogging').provider('nemSimpleLogger', [
         }
         this.doLog = true;
         logFns = {};
-        _fns.forEach((function(_this) {
+        fn1 = (function(_this) {
           return function(level) {
             logFns[level] = function(msg) {
               if (_this.doLog) {
@@ -86,7 +86,11 @@ angular.module('nemLogging').provider('nemSimpleLogger', [
             };
             return _this[level] = logFns[level];
           };
-        })(this));
+        })(this);
+        for (j = 0, len1 = _fns.length; j < len1; j++) {
+          level = _fns[j];
+          fn1(level);
+        }
         this.LEVELS = LEVELS;
         this.currentLevel = LEVELS.error;
       }
