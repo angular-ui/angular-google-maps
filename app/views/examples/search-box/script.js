@@ -3,17 +3,12 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
   .config(['uiGmapGoogleMapApiProvider', function (GoogleMapApi) {
     GoogleMapApi.configure({
   //  key: 'your api key',
-      v: '3.20',
+  //    v: '3.20',
       libraries: 'places'
     });
   }])
   
-  .run(['$templateCache', function ($templateCache) {
-    $templateCache.put('searchbox.tpl.html', '<input type="text" placeholder="Search">');
-  }])
-
   .controller('mainCtrl', ['$scope', '$log', 'uiGmapGoogleMapApi', function ($scope, $log, GoogleMapApi) {
-      
       angular.extend($scope, {
         map: {center: 
           {
