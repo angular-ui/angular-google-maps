@@ -35,22 +35,27 @@ angular.module('uiGmapgoogle-maps.providers')
         script.src = getScriptUrl(options) + query
         document.body.appendChild script
 
+
       isGoogleMapsLoaded = ->
         angular.isDefined(window.google) and angular.isDefined(window.google.maps)
 
+      isWebView = (obj = window) ->
+        !(!obj.cordova && !obj.PhoneGap && !obj.phonegap && !obj.forge)
+
       onWindowLoad = (options)->
-        # if its a WebView
-        if !(!window.cordova && !window.PhoneGap && !window.phonegap && !window.forge)
+        if isWebView()
           document.addEventListener 'deviceready', ->
-            # Cordova specific https://github.com/apache/cordova-plugin-network-information/
-            if window.navigator.connection && window.Connection && window.navigator.connection.type == window.Connection.NONE
+            if window.navigator.connection.type == window.Connection.NONE
               document.addEventListener 'online', ->
+                  # Workaround for issue where in Android, network events are fired multiple times in a row
+                  # https://issues.apache.org/jira/browse/CB-7787
                   if !lastNetworkStatus || lastNetworkStatus != 'online'
-                    lastNetworkStatus = 'online';
+                    lastNetworkStatus = 'online'
                     includeScript options if !isGoogleMapsLoaded()
 
               document.addEventListener 'offline', ->
-                lastNetworkStatus = 'offline';
+                lastNetworkStatus = 'offline'
+
             else
               includeScript options
 
