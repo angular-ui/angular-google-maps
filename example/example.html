@@ -132,7 +132,7 @@
         </ui-gmap-markers>
 
         <!-- predefined markers -->
-        <!-- rendering via ng-repear, HIGH OVERHEAD via DOM Manipulation -->
+        <!-- rendering via ng-repeat, HIGH OVERHEAD via DOM Manipulation -->
         <ui-gmap-marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="onMarkerClicked(m)" idKey="m.id" options="m.options">
             <ui-gmap-window ng-cloak  coords="m.coords" isIconVisibleOnClick="false" options="map.infoWindowWithCustomClass.options">
                     <p>This is an info window at {{ m.latitude | number:4 }}, {{ m.longitude | number:4 }}!</p>
