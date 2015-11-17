@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.1.6 2015-08-31
+/*! angular-google-maps 2.1.6 2015-11-17
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -64,8 +64,9 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module('uiGmapgoogle-maps.providers').factory('uiGmapMapScriptLoader', [
     '$q', 'uiGmapuuid', function($q, uuid) {
-      var getScriptUrl, includeScript, isGoogleMapsLoaded, scriptId;
+      var getScriptUrl, includeScript, isGoogleMapsLoaded, scriptId, usedConfiguration;
       scriptId = void 0;
+      usedConfiguration = void 0;
       getScriptUrl = function(options) {
         if (options.china) {
           return 'http://maps.google.cn/maps/api/js?';
@@ -79,7 +80,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
       includeScript = function(options) {
         var omitOptions, query, script;
-        omitOptions = ['transport', 'isGoogleMapsForWork', 'china'];
+        omitOptions = ['transport', 'isGoogleMapsForWork', 'china', 'preventLoad'];
         if (options.isGoogleMapsForWork) {
           omitOptions.push('key');
         }
@@ -112,16 +113,29 @@ Nicholas McCready - https://twitter.com/nmccready
             window[randomizedFunctionName] = null;
             deferred.resolve(window.google.maps);
           };
-          if (window.navigator.connection && window.Connection && window.navigator.connection.type === window.Connection.NONE) {
+          if (window.navigator.connection && window.Connection && window.navigator.connection.type === window.Connection.NONE && !options.preventLoad) {
             document.addEventListener('online', function() {
               if (!isGoogleMapsLoaded()) {
                 return includeScript(options);
               }
             });
-          } else {
+          } else if (!options.preventLoad) {
             includeScript(options);
           }
+          usedConfiguration = options;
+          usedConfiguration.randomizedFunctionName = randomizedFunctionName;
           return deferred.promise;
+        },
+        manualLoad: function() {
+          var config;
+          config = usedConfiguration;
+          if (!isGoogleMapsLoaded()) {
+            return includeScript(config);
+          } else {
+            if (window[config.randomizedFunctionName]) {
+              return window[config.randomizedFunctionName]();
+            }
+          }
         }
       };
     }
@@ -133,7 +147,8 @@ Nicholas McCready - https://twitter.com/nmccready
       v: '3',
       libraries: '',
       language: 'en',
-      sensor: 'false'
+      sensor: 'false',
+      preventLoad: false
     };
     this.configure = function(options) {
       angular.extend(this.options, options);
@@ -146,7 +161,15 @@ Nicholas McCready - https://twitter.com/nmccready
       })(this)
     ];
     return this;
-  });
+  }).service('uiGmapGoogleMapApiManualLoader', [
+    'uiGmapMapScriptLoader', function(loader) {
+      return {
+        load: function() {
+          loader.manualLoad();
+        }
+      };
+    }
+  ]);
 
 }).call(this);
 ;(function() {
