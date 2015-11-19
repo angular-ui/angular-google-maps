@@ -18,7 +18,7 @@ describe 'uiGmapGoogleMapApiProvider', ->
 
 
   it 'uses maps.google.cn when in china', ->
-    options = { china: true, v: '3.17', libraries: '', language: 'en', sensor: 'false' }
+    options = { china: true, v: '3.17', libraries: '', language: 'en' }
     mapScriptLoader.load(options)
     lastScriptIndex = document.getElementsByTagName('script').length - 1
     expect(document.getElementsByTagName('script')[lastScriptIndex].src).toContain('http://maps.google.cn/maps/api/js')
@@ -35,7 +35,7 @@ describe 'uiGmapGoogleMapApiProvider', ->
     it 'should include the script when the device is online', ->
       window.navigator.connection.type = window.Connection.WIFI
 
-      options = { v: '3.17', libraries: '', language: 'en', sensor: 'false', device: 'online' }
+      options = { v: '3.17', libraries: '', language: 'en', device: 'online' }
       mapScriptLoader.load(options)
 
       lastScriptIndex = document.getElementsByTagName('script').length - 1
@@ -44,7 +44,7 @@ describe 'uiGmapGoogleMapApiProvider', ->
     it 'should wait for the online event to include the script when the device is offline', ->
       window.navigator.connection.type = window.Connection.NONE
 
-      options = { v: '3.17', libraries: '', language: 'en', sensor: 'false', device: 'offline' }
+      options = { v: '3.17', libraries: '', language: 'en', device: 'offline' }
       mapScriptLoader.load(options)
       lastScriptIndex = document.getElementsByTagName('script').length - 1
       expect(document.getElementsByTagName('script')[lastScriptIndex].src).not.toContain('device=offline')

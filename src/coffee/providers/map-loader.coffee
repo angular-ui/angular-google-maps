@@ -77,7 +77,6 @@ angular.module('uiGmapgoogle-maps.providers')
       v: '3' #NOTICE THIS CAN BE OVERRIDEN, That is why this is a provider!!!!!!!!!
       libraries: ''
       language: 'en'
-      sensor: 'false'
 
     # A function that lets us configure options of the service
     @configure = (options) ->
