@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-10-23
+/*! angular-google-maps 2.2.1 2015-11-19
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -146,8 +146,7 @@ return UUID;
       china: false,
       v: '3',
       libraries: '',
-      language: 'en',
-      sensor: 'false'
+      language: 'en'
     };
     this.configure = function(options) {
       angular.extend(this.options, options);
