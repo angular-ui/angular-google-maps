@@ -23,10 +23,7 @@ angular.module('uiGmapgoogle-maps.providers')
         query = _.map _.omit(options, omitOptions), (v, k) ->
           k + '=' + v
 
-        if scriptId
-          scriptElem = document.getElementById(scriptId)
-          scriptElem.parentNode.removeChild(scriptElem)
-
+        document.getElementById(scriptId).remove() if scriptId
         query = query.join '&'
         script = document.createElement 'script'
         script.id = scriptId = "ui_gmap_map_load_#{uuid.generate()}"
@@ -77,6 +74,7 @@ angular.module('uiGmapgoogle-maps.providers')
       v: '3' #NOTICE THIS CAN BE OVERRIDEN, That is why this is a provider!!!!!!!!!
       libraries: ''
       language: 'en'
+      sensor: 'false'
 
     # A function that lets us configure options of the service
     @configure = (options) ->

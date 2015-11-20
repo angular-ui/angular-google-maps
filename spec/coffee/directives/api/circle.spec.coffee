@@ -29,7 +29,6 @@ describe 'uiGmapCircle', ->
       zoom: 12
       center : {longitude: 47, latitude: -27}
 
-    circleEvents = jasmine.createSpyObj 'circleEvents', ['radius_changed','center_changed']
     @circle =
       id: 1,
       center: {longitude: 47, latitude: -27},
@@ -46,16 +45,21 @@ describe 'uiGmapCircle', ->
       clickable: true
       editable: true
       visible: true
-      events: circleEvents
+      events:
+        radius_changed: (gObject) ->
+        center_changed: (gObject) ->
       control: {}
 
-    apiMock = window.uiGmapInitiator
+    apiMock = window['uiGmapInitiator']
     .initMock(@, ->
       GCircle = window.google.maps.Circle
     ).apiMock
 
     @injects.push (uiGmapCircle) =>
       @subject = uiGmapCircle
+
+    spyOn @circle.events, 'radius_changed'
+    spyOn @circle.events, 'center_changed'
 
     map.circle = @circle
 
@@ -67,7 +71,7 @@ describe 'uiGmapCircle', ->
     it 'from start', (done) ->
 
       @digest =>
-        @timeout ->
+        @timeout =>
           expect(GCircle.instances).toEqual(1)
           done()
 
@@ -82,7 +86,7 @@ describe 'uiGmapCircle', ->
           done()
 
       @digest =>
-        @timeout ->
+        @timeout =>
           expect(GCircle.instances).toEqual(1)
           GCircle.creationUnSubscribe listener
         , 500
@@ -151,7 +155,7 @@ describe 'uiGmapCircle', ->
             expect(@circle.events.center_changed).not.toHaveBeenCalled()
             done()
       @digest =>
-        @timeout ->
+        @timeout =>
           GCircle.creationUnSubscribe listener
         , 500
 
@@ -165,7 +169,7 @@ describe 'uiGmapCircle', ->
             expect(@circle.events.center_changed).toHaveBeenCalled()
             expect(@circle.events.radius_changed).not.toHaveBeenCalled()
             done()
-      @digest ->
+      @digest =>
         GCircle.creationUnSubscribe listener
 
   it 'exists', ->
@@ -190,6 +194,6 @@ describe 'uiGmapCircle', ->
               expect(@circle.center.longitude).toBe(50)
               done()
       @digest =>
-        @timeout ->
+        @timeout =>
           GCircle.creationUnSubscribe listener
         , 500

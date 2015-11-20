@@ -1,4 +1,3 @@
-/* istanbul ignore next */
 angular.module('uiGmapgoogle-maps.wrapped')
 .service('uiGmapDataStructures', function() {
 return {

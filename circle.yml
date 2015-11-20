@@ -1,0 +1,4 @@
+dependencies:
+  post:
+    #for some reason circle ci is broken on uglify.js but everything is fine in travis.. unfollowing for now
+    - npm install

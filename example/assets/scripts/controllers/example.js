@@ -1,3 +1,4 @@
+'use strict';
 angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
 
 .value("rndAddToLatLon", function () {
@@ -21,12 +22,12 @@ angular.module("angular-google-maps-example", ['uiGmapgoogle-maps'])
   $scope.danger = false;
   $scope.controlClick = function () {
     $scope.danger = !$scope.danger;
-    alert('custom control clicked!');
+    alert('custom control clicked!')
   };
 })
 
-.controller("ExampleController",['$scope', '$timeout', 'uiGmapLogger', '$http', 'rndAddToLatLon','uiGmapGoogleMapApi',
-function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
+.controller("ExampleController",['$scope', '$timeout', 'uiGmapLogger', '$http', 'rndAddToLatLon','uiGmapGoogleMapApi'
+    , function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
   $log.currentLevel = $log.LEVELS.debug;
 
   GoogleMapApi.then(function(maps) {
@@ -125,7 +126,8 @@ function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
       draggable: false,
       geodesic: false,
       visible: true
-    }];
+    }
+]
   });
 
   var versionUrl = (window.location.host === "rawgithub.com" || window.location.host === "rawgit.com") ?
@@ -146,7 +148,7 @@ function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
   var genRandomMarkers = function (numberOfMarkers, scope) {
     var markers = [];
     for (var i = 0; i < numberOfMarkers; i++) {
-      markers.push(createRandomMarker(i, scope.map.bounds));
+      markers.push(createRandomMarker(i, scope.map.bounds))
     }
     scope.map.randomMarkers = markers;
   };
@@ -157,7 +159,7 @@ function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
       lng_min = bounds.southwest.longitude,
       lng_range = bounds.northeast.longitude - lng_min;
 
-    if (!idKey)
+    if (idKey == null)
       idKey = "id";
 
     var latitude = lat_min + (Math.random() * lat_range);
@@ -202,7 +204,7 @@ function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
   var selectClusterType = function(value){
     var cloned = _.clone($scope.map.randomMarkers, true);
     $scope.map.randomMarkers = [];
-    $scope.map.clusterOptions = $scope.map.selectedClusterTypes[value] || $scope.map.selectedClusterTypes.standard;
+    $scope.map.clusterOptions = $scope.map.selectedClusterTypes[value] || $scope.map.selectedClusterTypes['standard'];
     $scope.map.clusterOptionsText =  angular.toJson($scope.map.clusterOptions);
     if(!value){
       value = 'standard';
@@ -339,8 +341,10 @@ function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
         }
       ],
       clickMarkers: [
-        {id: 1, "latitude": 50.948968, "longitude": 6.944781},
-        {id: 2, "latitude": 50.94129, "longitude": 6.95817},
+        {id: 1, "latitude": 50.948968, "longitude": 6.944781}
+        ,
+        {id: 2, "latitude": 50.94129, "longitude": 6.95817}
+        ,
         {id: 3, "latitude": 50.9175, "longitude": 6.943611}
       ],
       dynamicMarkers: [],
@@ -350,7 +354,7 @@ function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
       clusterTypes: clusterTypes,
       selectClusterType: selectClusterType,
       selectedClusterTypes: selectedClusterTypes,
-      clusterOptions: selectedClusterTypes.standard,
+      clusterOptions: selectedClusterTypes['standard'],
       clickedMarker: {
         id: 0,
         options:{
@@ -380,7 +384,7 @@ function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
             longitude: lon
           };
           //scope apply required because this event handler is outside of the angular domain
-          $scope.$evalAsync();
+          $scope.$apply();
         },
         dragend: function () {
           $timeout(function () {
@@ -605,9 +609,9 @@ function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
     $scope.map.infoWindow.show = false;
     $scope.map.templatedInfoWindow.show = false;
     $scope.map.templatedInfoWindow.coords = null;
-    $scope.map.infoWindowWithCustomClass.show = false;
+    $scope.map.infoWindowWithCustomClass.show = false
     $scope.map.infoWindowWithCustomClass.coords = null;
-    $scope.map.infoWindow.show = false;
+    $scope.map.infoWindow.show = false
     $scope.map.infoWindow.coords = null;
   };
   $scope.refreshMap = function () {
@@ -619,7 +623,7 @@ function ($scope, $timeout, $log, $http, rndAddToLatLon,GoogleMapApi) {
   $scope.getMapInstance = function () {
     alert("You have Map Instance of" + $scope.map.control.getGMap().toString());
     return;
-  };
+  }
   $scope.map.clusterOptionsText = JSON.stringify($scope.map.clusterOptions);
   $scope.$watch('map.clusterOptionsText', function (newValue, oldValue) {
     if (newValue !== oldValue)

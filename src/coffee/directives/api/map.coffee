@@ -4,11 +4,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
   'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid',
   'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer',
   'uiGmapGoogleMapsUtilV3','uiGmapGoogleMapApi','uiGmapEventsHelper',
-  'uiGmapGoogleMapObjectManager'
   ($timeout,$q, $log, GmapUtil, BaseObject,
     CtrlHandle, IsReady, uuid,
     ExtendGWin, ExtendMarkerClusterer,
-    GoogleMapsUtilV3,GoogleMapApi, EventsHelper, GoogleMapObjectManager) ->
+    GoogleMapsUtilV3,GoogleMapApi, EventsHelper) ->
       'use strict'
       DEFAULTS = undefined
 
@@ -57,9 +56,6 @@ angular.module('uiGmapgoogle-maps.directives.api')
           listeners = []
           scope.$on '$destroy', ->
             EventsHelper.removeEvents listeners
-            if attrs.recycleMapInstance == 'true' && scope.map
-              GoogleMapObjectManager.recycleMapInstance(scope.map)
-              scope.map = null
 
           scope.idleAndZoomChanged = false
           unless scope.center?
@@ -107,10 +103,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
               zoom: scope.zoom
               bounds: scope.bounds
 
-            if attrs.recycleMapInstance == 'true'
-              _gMap = GoogleMapObjectManager.createMapInstance(el.find('div')[1], mapOptions)
-            else
-              _gMap = new google.maps.Map(el.find('div')[1], mapOptions)
+            _gMap = new google.maps.Map(el.find('div')[1], mapOptions)
             _gMap['uiGmap_id'] = uuid.generate()
 
             dragging = false

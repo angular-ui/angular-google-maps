@@ -2,13 +2,12 @@ language: node_js
 node_js:
     - "0.12"
 before_script: PATH="$(npm bin):$PATH" npm install
-script: npm test
+script: grunt
 branches:
   only:
     - master
-    - 2.2.X
-    - 2.1.X
     - 2.0.X
+    - 2.1.X
     - 1.2.X
     - 1.0.X
     - website

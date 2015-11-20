@@ -146,39 +146,35 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @listeners = @listeners.concat @setEvents maybeMarker, {events: {click: click}}, @model
 
         showWindow: =>
-          return unless @gObject?
-          templateScope = null
+          if @gObject?
+            show = =>
+              unless @gObject.isOpen()
+                maybeMarker = @getGmarker()
+                pos = @gObject.getPosition() if @gObject? and @gObject.getPosition?
+                pos = maybeMarker.getPosition() if maybeMarker
+                return unless pos
+                @gObject.open @mapCtrl, maybeMarker
+                isOpen = @gObject.isOpen()
+                @model.show = isOpen if @model.show != isOpen
 
-          show = =>
-            unless @gObject.isOpen()
-              maybeMarker = @getGmarker()
-              pos = @gObject.getPosition() if @gObject? and @gObject.getPosition?
-              pos = maybeMarker.getPosition() if maybeMarker
-              return unless pos
-              @gObject.open @mapCtrl, maybeMarker
-              isOpen = @gObject.isOpen()
-              @model.show = isOpen if @model.show != isOpen
+            if @scope.templateUrl
+              $http.get(@scope.templateUrl, { cache: $templateCache }).then (content) =>
+                templateScope = @scope.$new()
+                if angular.isDefined @scope.templateParameter
+                  templateScope.parameter = @scope.templateParameter
+                compiled = $compile(content.data) templateScope
+                @gObject.setContent compiled[0]
+                show()
 
-          if @scope.templateUrl
-            $http.get(@scope.templateUrl, { cache: $templateCache }).then (content) =>
+            else if @scope.template
               templateScope = @scope.$new()
-              if angular.isDefined @scope.templateParameter
+              if angular.isDefined(@scope.templateParameter)
                 templateScope.parameter = @scope.templateParameter
-              compiled = $compile(content.data) templateScope
+              compiled = $compile(@scope.template) templateScope
               @gObject.setContent compiled[0]
               show()
-
-          else if @scope.template
-            templateScope = @scope.$new()
-            if angular.isDefined(@scope.templateParameter)
-              templateScope.parameter = @scope.templateParameter
-            compiled = $compile(@scope.template) templateScope
-            @gObject.setContent compiled[0]
-            show()
-          else
-            show()
-
-          @scope.$on 'destroy', -> templateScope.$destroy()
+            else
+              show()
 
         hideWindow: =>
           @gObject.close() if @gObject? and @gObject.isOpen()
@@ -197,9 +193,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           delete @gObject
           delete @opts
 
-        destroy: (manualOverride = false) =>
+        destroy: (manualOverride = false)=>
           @remove()
-          if (@scope? and not @scope?.$$destroyed) and (@needToManualDestroy or manualOverride)
+          if @scope? and not @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
             @scope.$destroy()
 
         updateModel: (model) =>

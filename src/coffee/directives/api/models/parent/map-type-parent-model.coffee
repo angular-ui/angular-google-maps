@@ -23,26 +23,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               @hideOverlay()
         , true
 
-        @scope.$watchCollection 'options', (newValue, oldValue) =>
+        @scope.$watch 'options', (newValue, oldValue) =>
           unless _.isEqual newValue, oldValue
-            mapTypeProps = [
-              'tileSize'
-              'maxZoom'
-              'minZoom'
-              'name'
-              'alt'
-            ]
-            different = _.some(mapTypeProps, (prop) ->
-              !oldValue or !newValue or !_.isEqual(newValue[prop], oldValue[prop])
-            )
-            if different
-              @refreshMapType()
+            @refreshMapType()
+        , true
 
         if angular.isDefined @attrs.refresh
-          @scope.$watch 'refresh', (newValue, oldValue) =>
+          @scope.$watch('refresh', (newValue, oldValue) =>
             unless _.isEqual newValue, oldValue
               @refreshMapType()
-          , true
+          , true)
 
         @scope.$on '$destroy', =>
           @hideOverlay()

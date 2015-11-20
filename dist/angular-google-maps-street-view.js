@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-11-19
+/*! angular-google-maps 2.1.6 2015-11-20
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -64,7 +64,6 @@ Nicholas McCready - https://twitter.com/nmccready
 ;angular.module('uiGmapgoogle-maps.wrapped')
 .service('uiGmapuuid', function() {
   //BEGIN REPLACE
-  /* istanbul ignore next */
   /*
  Version: core-1.0
  The MIT License: Copyright (c) 2012 LiosK.
@@ -91,7 +90,7 @@ return UUID;
         }
       };
       includeScript = function(options) {
-        var omitOptions, query, script, scriptElem;
+        var omitOptions, query, script;
         omitOptions = ['transport', 'isGoogleMapsForWork', 'china'];
         if (options.isGoogleMapsForWork) {
           omitOptions.push('key');
@@ -100,8 +99,7 @@ return UUID;
           return k + '=' + v;
         });
         if (scriptId) {
-          scriptElem = document.getElementById(scriptId);
-          scriptElem.parentNode.removeChild(scriptElem);
+          document.getElementById(scriptId).remove();
         }
         query = query.join('&');
         script = document.createElement('script');
@@ -146,7 +144,8 @@ return UUID;
       china: false,
       v: '3',
       libraries: '',
-      language: 'en'
+      language: 'en',
+      sensor: 'false'
     };
     this.configure = function(options) {
       angular.extend(this.options, options);
