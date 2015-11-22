@@ -219,7 +219,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @scope.$apply()
         click: (marker, eventName, model, mousearg) =>
           click = @getProp 'click', @scope, @model
-          if @doClick and click?
+          if @doClick and angular.isFunction(click)
             @scope.$evalAsync click marker, eventName, @model, mousearg
 
     MarkerChildModel
