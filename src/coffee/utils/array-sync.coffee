@@ -46,8 +46,7 @@ angular.module('uiGmapgoogle-maps').factory 'uiGmaparray-sync', [
           set_at: (index) ->
             return if isSetFromScope #important to avoid cyclic forever change loop watch to map event change and back
             value = mapArray.getAt(index)
-            return  unless value
-            return  if not value.lng or not value.lat
+            return unless value and value.lng and value.lat
             geojsonArray[index][1] = value.lat()
             geojsonArray[index][0] = value.lng()
 
