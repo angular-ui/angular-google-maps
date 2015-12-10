@@ -21,6 +21,9 @@ digraph dependencies {
     
 
     
+      "uiGmapGoogleMapApiManualLoader"[label="uiGmapGoogleMapApiManualLoader", color=5]
+      "uiGmapgoogle-maps.providers" -> "uiGmapGoogleMapApiManualLoader"
+    
 
     
       "uiGmapMapScriptLoader"[label="uiGmapMapScriptLoader", color=6]
@@ -50,6 +53,11 @@ digraph dependencies {
 
     
 
+    
+      
+        "uiGmapMapScriptLoader"[label="uiGmapMapScriptLoader"]
+        "uiGmapMapScriptLoader" -> "uiGmapGoogleMapApiManualLoader"
+      
     
 
     

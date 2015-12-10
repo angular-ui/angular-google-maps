@@ -2,6 +2,7 @@
 angular.module('uiGmapgoogle-maps.providers')
 .factory('uiGmapMapScriptLoader', ['$q', 'uiGmapuuid', ($q, uuid) ->
       scriptId = undefined
+      usedConfiguration = undefined
 
       getScriptUrl = (options)->
         #china doesn't allow https and has a special url
@@ -15,7 +16,7 @@ angular.module('uiGmapgoogle-maps.providers')
             options.transport + '://maps.googleapis.com/maps/api/js?';
 
       includeScript = (options)->
-        omitOptions = ['transport', 'isGoogleMapsForWork', 'china']
+        omitOptions = ['transport', 'isGoogleMapsForWork', 'china', 'preventLoad']
         # 'Google Maps API for Work developers must not include a key in their requests.' so remove from url params
         if options.isGoogleMapsForWork
           omitOptions.push('key')
@@ -52,14 +53,29 @@ angular.module('uiGmapgoogle-maps.providers')
           return
 
         # Cordova specific https://github.com/apache/cordova-plugin-network-information/
-        if window.navigator.connection && window.Connection && window.navigator.connection.type == window.Connection.NONE
+        if window.navigator.connection && window.Connection && window.navigator.connection.type == window.Connection.NONE && !options.preventLoad
           document.addEventListener 'online', ->
             includeScript options if !isGoogleMapsLoaded()
-        else
+        else if !options.preventLoad
           includeScript options
+
+        usedConfiguration = options
+        usedConfiguration.randomizedFunctionName = randomizedFunctionName
 
         # Return the promise
         deferred.promise
+
+      manualLoad: () ->
+        # Use the configuration defined when Angular configured all modules
+        config = usedConfiguration
+
+        if !isGoogleMapsLoaded()
+          # Load the API if it isn't already
+          includeScript config
+        else
+          # If the API is loaded but the original configuration's callback has
+          # not been executed then do so
+          window[config.randomizedFunctionName]() if window[config.randomizedFunctionName]
 ])
 #holy hool!!, any time your passing a dependency to a 'provider' you must append the Provider text to the service
 # name.. makes no sense and this is not documented well
@@ -77,6 +93,8 @@ angular.module('uiGmapgoogle-maps.providers')
       v: '3' #NOTICE THIS CAN BE OVERRIDEN, That is why this is a provider!!!!!!!!!
       libraries: ''
       language: 'en'
+      sensor: 'false'
+      preventLoad: false
 
     # A function that lets us configure options of the service
     @configure = (options) ->
@@ -89,3 +107,8 @@ angular.module('uiGmapgoogle-maps.providers')
     ]
     @
   )
+.service('uiGmapGoogleMapApiManualLoader', ['uiGmapMapScriptLoader', (loader) ->
+    load: ()->
+        loader.manualLoad()
+        return
+])

@@ -89,6 +89,8 @@ digraph dependencies {
       
 
       
+        "uiGmapGoogleMapApiManualLoader"[label="uiGmapGoogleMapApiManualLoader", color=5]
+      
 
       
         "uiGmapMapScriptLoader"[label="uiGmapMapScriptLoader", color=6]
@@ -114,6 +116,8 @@ digraph dependencies {
 
       
 
+      
+        "uiGmapgoogle-maps.providers" -> "uiGmapGoogleMapApiManualLoader"
       
 
       
@@ -141,6 +145,11 @@ digraph dependencies {
 
       
 
+      
+        
+          "uiGmapMapScriptLoader"[label="uiGmapMapScriptLoader"]
+          "uiGmapMapScriptLoader" -> "uiGmapGoogleMapApiManualLoader"
+        
       
 
       
