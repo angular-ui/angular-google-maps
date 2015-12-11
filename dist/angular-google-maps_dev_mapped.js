@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-11-19
+/*! angular-google-maps 2.2.1 2015-12-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -64,8 +64,9 @@ Nicholas McCready - https://twitter.com/nmccready
 ;(function() {
   angular.module('uiGmapgoogle-maps.providers').factory('uiGmapMapScriptLoader', [
     '$q', 'uiGmapuuid', function($q, uuid) {
-      var getScriptUrl, includeScript, isGoogleMapsLoaded, scriptId;
+      var getScriptUrl, includeScript, isGoogleMapsLoaded, scriptId, usedConfiguration;
       scriptId = void 0;
+      usedConfiguration = void 0;
       getScriptUrl = function(options) {
         if (options.china) {
           return 'http://maps.google.cn/maps/api/js?';
@@ -79,7 +80,7 @@ Nicholas McCready - https://twitter.com/nmccready
       };
       includeScript = function(options) {
         var omitOptions, query, script, scriptElem;
-        omitOptions = ['transport', 'isGoogleMapsForWork', 'china'];
+        omitOptions = ['transport', 'isGoogleMapsForWork', 'china', 'preventLoad'];
         if (options.isGoogleMapsForWork) {
           omitOptions.push('key');
         }
@@ -113,16 +114,29 @@ Nicholas McCready - https://twitter.com/nmccready
             window[randomizedFunctionName] = null;
             deferred.resolve(window.google.maps);
           };
-          if (window.navigator.connection && window.Connection && window.navigator.connection.type === window.Connection.NONE) {
+          if (window.navigator.connection && window.Connection && window.navigator.connection.type === window.Connection.NONE && !options.preventLoad) {
             document.addEventListener('online', function() {
               if (!isGoogleMapsLoaded()) {
                 return includeScript(options);
               }
             });
-          } else {
+          } else if (!options.preventLoad) {
             includeScript(options);
           }
+          usedConfiguration = options;
+          usedConfiguration.randomizedFunctionName = randomizedFunctionName;
           return deferred.promise;
+        },
+        manualLoad: function() {
+          var config;
+          config = usedConfiguration;
+          if (!isGoogleMapsLoaded()) {
+            return includeScript(config);
+          } else {
+            if (window[config.randomizedFunctionName]) {
+              return window[config.randomizedFunctionName]();
+            }
+          }
         }
       };
     }
@@ -133,7 +147,9 @@ Nicholas McCready - https://twitter.com/nmccready
       china: false,
       v: '3',
       libraries: '',
-      language: 'en'
+      language: 'en',
+      sensor: 'false',
+      preventLoad: false
     };
     this.configure = function(options) {
       angular.extend(this.options, options);
@@ -146,7 +162,15 @@ Nicholas McCready - https://twitter.com/nmccready
       })(this)
     ];
     return this;
-  });
+  }).service('uiGmapGoogleMapApiManualLoader', [
+    'uiGmapMapScriptLoader', function(loader) {
+      return {
+        load: function() {
+          loader.manualLoad();
+        }
+      };
+    }
+  ]);
 
 }).call(this);
 ;(function() {
@@ -3632,7 +3656,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               return function(marker, eventName, model, mousearg) {
                 var click;
                 click = _this.getProp('click', _this.scope, _this.model);
-                if (_this.doClick && (click != null)) {
+                if (_this.doClick && angular.isFunction(click)) {
                   return _this.scope.$evalAsync(click(marker, eventName, _this.model, mousearg));
                 }
               };
