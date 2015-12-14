@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-12-10
+/*! angular-google-maps 2.2.1 2015-12-14
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -965,7 +965,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           for (key in listeners) {
             l = listeners[key];
-            if (l) {
+            if (l && listeners.hasOwnProperty(key)) {
               google.maps.event.removeListener(l);
             }
           }
@@ -2500,10 +2500,7 @@ Nicholas McCready - https://twitter.com/nmccready
                 return;
               }
               value = mapArray.getAt(index);
-              if (!value) {
-                return;
-              }
-              if (!value.lng || !value.lat) {
+              if (!(value && value.lng && value.lat)) {
                 return;
               }
               geojsonArray[index][1] = value.lat();

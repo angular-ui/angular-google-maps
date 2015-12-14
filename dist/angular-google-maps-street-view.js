@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-12-10
+/*! angular-google-maps 2.2.1 2015-12-14
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -512,7 +512,7 @@ return UUID;
           }
           for (key in listeners) {
             l = listeners[key];
-            if (l) {
+            if (l && listeners.hasOwnProperty(key)) {
               google.maps.event.removeListener(l);
             }
           }

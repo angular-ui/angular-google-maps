@@ -28,6 +28,6 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
   removeEvents: (listeners) ->
     return unless listeners
     for key, l of listeners
-      google.maps.event.removeListener l if l
+      google.maps.event.removeListener(l) if l and listeners.hasOwnProperty(key)
     return
 ]
