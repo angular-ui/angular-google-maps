@@ -25,6 +25,13 @@ module.exports =
         'autoprefixer'
       ]
 
+    examples:
+      files: ['<%= yeoman.app %>/views/examples/{,*/}*.*']
+      tasks: [
+        'copy:examples'
+      ]
+
+
     livereload:
       options:
         livereload: LIVERELOAD_PORT
@@ -228,6 +235,27 @@ module.exports =
       dest: '.tmp/styles/'
       src: '{,*/}*.css'
 
+    examples:
+      files: [
+        {
+          expand: true
+          cwd: '<%= yeoman.app %>'
+          dest: '.tmp/'
+          src: [
+            'views/examples/{,*/}*.*'
+          ]
+        }
+        {
+          expand: true
+          cwd: 'dist/vendor/'
+          dest: '.tmp/vendor'
+          src: [
+            '{,*/}*.*'
+          ]
+        }
+      ]
+
+
     vendor_fonts:
       expand: true
       cwd: '<%= yeoman.dist %>/vendor/fonts'
@@ -238,6 +266,7 @@ module.exports =
     server: [
       'coffee:dist'
       'copy:styles'
+      'copy:examples'
     ]
     test: [
       'coffee'
