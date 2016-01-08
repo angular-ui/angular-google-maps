@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2015-12-14
+/*! angular-google-maps 2.2.1 2016-01-08
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -5471,6 +5471,13 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
           this.listeners = this.setEvents(this.gObject, this.scope, this.scope);
           this.$log.info(this);
+          this.scope.$on('$stateChangeSuccess', (function(_this) {
+            return function() {
+              if (_this.attrs.parentdiv != null) {
+                return _this.addToParentDiv();
+              }
+            };
+          })(this));
           return this.scope.$on('$destroy', (function(_this) {
             return function() {
               return _this.gObject = null;
@@ -5483,8 +5490,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         SearchBoxParentModel.prototype.addToParentDiv = function() {
+          var ref;
           this.parentDiv = angular.element(document.getElementById(this.scope.parentdiv));
-          return this.parentDiv.append(this.input);
+          if (((ref = this.parentDiv[0]) != null ? ref.firstChild : void 0) == null) {
+            return this.parentDiv.append(this.input);
+          }
         };
 
         SearchBoxParentModel.prototype.createSearchBox = function() {

@@ -58,6 +58,9 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             @listeners = @setEvents @gObject, @scope, @scope
             @$log.info @
 
+            @scope.$on '$stateChangeSuccess', =>
+                @addToParentDiv() if @attrs.parentdiv?
+
             @scope.$on '$destroy', =>
                 @gObject = null
 
@@ -66,7 +69,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
         addToParentDiv: =>
             @parentDiv = angular.element document.getElementById(@scope.parentdiv)
-            @parentDiv.append @input
+            @parentDiv.append @input if !@parentDiv[0]?.firstChild?
 
         createSearchBox: =>
             if @autocomplete
