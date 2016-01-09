@@ -1,4 +1,4 @@
-//<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&sensor=false&language=en&v=3.16"></script>
+//<script src="http://maps.googleapis.com/maps/api/js?libraries=weather,geometry,visualization&language=en&v=3.16"></script>
 angular.module("app", ['uiGmapgoogle-maps'])
 
 .value("rndAddToLatLon", function () {
