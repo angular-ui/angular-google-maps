@@ -9,7 +9,8 @@
   "scripts": {
     "build": "grunt",
     "example": "grunt example",
-    "test": "grunt bower karma"
+    "mocha": "mocha ./spec/backend/**/*.spec.* --harmony_destructuring -t 6000",
+    "test": "npm run mocha && grunt bower karma"
   },
   "keywords": [
     "angularjs",
@@ -54,6 +55,7 @@
     "grunt-verbosity": "^0.2.2",
     "grunt-webpack": "^1.0.8",
     "grunt-wrap": "^0.3.0",
+    "jsonfile": "^2.0.1",
     "karma": "^0.13.9",
     "karma-chrome-launcher": "^0.2.0",
     "karma-coffee-preprocessor": "^0.3.0",
@@ -61,7 +63,7 @@
     "karma-jasmine": "^0.3.6",
     "karma-mocha-reporter": "^1.1.1",
     "karma-phantomjs-launcher": "^0.2.1",
-    "jsonfile": "^2.0.1",
+    "mocha": "2.3.4",
     "webpack": "^1.9.10"
   },
   "dependencies": {

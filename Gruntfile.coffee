@@ -60,7 +60,7 @@ module.exports = (grunt) ->
   grunt.registerTask "spec", [
     'bower', 'curl',
     'verbosity', "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat",
-    "copy", "connect:jasmineServer", "karma", "open:jasmine", "watch:spec"]
+    "copy", "karma", "open:jasmine", "watch:spec"]
 
   grunt.registerTask "coverage", ['connect:coverage','open:coverage', "watch:spec"]
 
