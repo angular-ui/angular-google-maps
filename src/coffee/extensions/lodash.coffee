@@ -118,7 +118,7 @@ angular.module('uiGmapgoogle-maps.extensions')
           return false
       #    if (nativeIndexOf && obj.indexOf == nativeIndexOf)
       #        return obj.indexOf(target) != -1
-      _.any obj, (value) =>
+      _.some obj, (value) =>
           if comparison?
               comparison value, target
           else
