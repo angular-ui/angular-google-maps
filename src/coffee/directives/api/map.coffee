@@ -127,13 +127,13 @@ angular.module('uiGmapgoogle-maps.directives.api')
               disabledEvents = [disabledEvents]
 
             maybeHookToEvent = (eventName, fn, prefn) ->
-              unless _.contains disabledEvents, eventName
+              unless _.includes disabledEvents, eventName
                 prefn() if prefn
                 listeners.push google.maps.event.addListener _gMap, eventName, ->
                   unless scope.update?.lazy
                     fn()
 
-            unless _.contains disabledEvents, 'all'
+            unless _.includes disabledEvents, 'all'
               maybeHookToEvent 'dragstart', ->
                 dragging = true
                 scope.$evalAsync (s) ->
@@ -145,7 +145,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
                   s.dragging = dragging if s.dragging?
 
               updateCenter = (c = _gMap.center, s =  scope) ->
-                return if _.contains disabledEvents, 'center'
+                return if _.includes disabledEvents, 'center'
                 if angular.isDefined(s.center.type)
                   s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
                   s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
@@ -164,7 +164,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
                   updateCenter()
 
-                  if !_.isUndefined(s.bounds) and !_.contains(disabledEvents, 'bounds')
+                  if !_.isUndefined(s.bounds) and !_.includes(disabledEvents, 'bounds')
                     s.bounds.northeast =
                       latitude: ne.lat()
                       longitude: ne.lng()
@@ -173,7 +173,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
                       latitude: sw.lat()
                       longitude: sw.lng()
 
-                  if not _.contains(disabledEvents, 'zoom')
+                  if not _.includes(disabledEvents, 'zoom')
                     s.zoom = _gMap.zoom
                     scope.idleAndZoomChanged = !scope.idleAndZoomChanged
                   settingFromDirective = false

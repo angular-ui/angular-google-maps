@@ -16,7 +16,7 @@ angular.module("uiGmapgoogle-maps.directives.api.utils")
     if eventObj?
       _.compact _.map eventObj.events, (eventHandler, eventName) ->
         if ignores
-          doIgnore = _(ignores).contains(eventName) #ignores to be invoked by internal listeners
+          doIgnore = _(ignores).includes(eventName) #ignores to be invoked by internal listeners
         if eventObj.events.hasOwnProperty(eventName) and angular.isFunction(eventObj.events[eventName]) and !doIgnore
           google.maps.event.addListener gObject, eventName, ->
             #$scope.$evalAsync must exist, I have tried null checking, underscore key checking. Nothing works but having a real or fake $evalAsync

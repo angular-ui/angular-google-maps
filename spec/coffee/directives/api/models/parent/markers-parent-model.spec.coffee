@@ -84,21 +84,21 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
             @subject.scope.clusterEvents.click @clusterTest
-            expect(_.all(@markerModelsCluster, (entity, i)=>
+            expect(_.every(@markerModelsCluster, (entity, i)=>
               entity == @subject.plurals.get(i+1).model
             )).toBeTruthy()
           it 'mouseout - ', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
             @subject.scope.clusterEvents.mouseout @clusterTest
-            expect(_.all(@markerModelsCluster, (entity, i)=>
+            expect(_.every(@markerModelsCluster, (entity, i)=>
               entity == @subject.plurals.get(i+1).model
             )).toBeTruthy()
           it 'mouseover - ', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
             @subject.scope.clusterEvents.mouseover @clusterTest
-            expect(_.all(@markerModelsCluster, (entity, i)=>
+            expect(_.every(@markerModelsCluster, (entity, i)=>
               entity == @subject.plurals.get(i+1).model
             )).toBeTruthy()
         describe 'some legacy event', =>

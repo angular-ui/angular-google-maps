@@ -22,7 +22,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           GmapUtil.getPath(model, modelKey)
 
       modelKeyComparison: (model1, model2) =>
-        hasCoords = _.contains(@interface.scopeKeys, 'coords')
+        hasCoords = _.includes(@interface.scopeKeys, 'coords')
         scope = @scope if hasCoords and  @scope.coords? or not hasCoords
         if not scope? then throw 'No scope set!'
         if hasCoords
