@@ -96,6 +96,22 @@ angular.module('uiGmapgoogle-maps.extensions')
       if result == undefined then defaultValue else result
 
     _.get = get
+    
+    
+  ###
+      For Lodash 4 compatibility (some aliases are removed)
+  ###
+	
+	if typeof _.contains == undefined
+		_.contains = _.includes;
+		_.prototype.contains = _.includes;	
+	if typeof _.object == undefined
+		_.object = _.zipObject;
+	if typeof _.all == undefined
+		_.all = _.every;
+	if typeof _.any == undefined
+		_.any = _.some;
+    
   ###
       Author Nick McCready
       Intersection of Objects if the arrays have something in common each intersecting object will be returned
