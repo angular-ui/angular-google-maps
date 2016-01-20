@@ -144,15 +144,20 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     return  valOrKey if _isArray
     collection[valOrKey]
 
+  _ignoreFields = ['length', 'forEach', 'map']
+
   _getArrayAndKeys = (collection, keys, bailOutCb, cb) ->
     #checks to handle array and object iteration
     if angular.isArray collection
       array = collection
     else
-      collection = _.pick collection, (val, propName) ->
-        collection.hasOwnProperty propName
-      array = if keys then keys else Object.keys(_.omit(collection, ['length', 'forEach', 'map']))
-      keys = array
+      if keys
+        array = keys
+      else
+        array = []
+        for propName, val of collection
+          if collection.hasOwnProperty(propName) and !_.includes(_ignoreFields, propName)
+            array.push val
 
     if !cb? #shifting args if last cb is not defined
       cb = bailOutCb

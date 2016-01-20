@@ -50,7 +50,7 @@ module.exports = (config) ->
   # NOTE , TODO 'html' reporter use if you want to hit the karma jasmine runner (frequently causes karma to blow up at the end of run),
   # test results reporter to use
   # possible values: 'dots', 'progress', 'mocha'
-    reporters: ['dots', 'coverage']
+    reporters: ['mocha', 'coverage']
 
   # web server port
     port: 9876

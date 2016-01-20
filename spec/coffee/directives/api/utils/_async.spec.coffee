@@ -117,7 +117,7 @@ describe "_async", ->
         , 10
 
     describe "no chunking / pauses", ->
-      it "rang 101 zero pauses", (done) ->
+      it "range 101 zero pauses", (done) ->
         @digest =>
           known = _.range(101)
           test = []

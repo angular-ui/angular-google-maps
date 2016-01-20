@@ -48,15 +48,15 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
     window['uiGmapInitiator'].initMock(@)
 
     @injects.push (element, attrs, map, uiGmapMarkersParentModel, uiGmapGoogleMapsUtilV3,uiGmapExtendMarkerClusterer) =>
-        uiGmapGoogleMapsUtilV3.init()
-        uiGmapExtendMarkerClusterer.init()
+      uiGmapGoogleMapsUtilV3.init()
+      uiGmapExtendMarkerClusterer.init()
 
-        @scope.options =
-          animation: google.maps.Animation.BOUNCE
-        @testCtor = uiGmapMarkersParentModel
+      @scope.options =
+        animation: google.maps.Animation.BOUNCE
+      @testCtor = uiGmapMarkersParentModel
 
-        @subject = new @testCtor(@scope, element, attrs, map)
-        @subject
+      @subject = new @testCtor(@scope, element, attrs, map)
+      @subject
 
     @injectAll()
 
@@ -84,24 +84,24 @@ describe 'MarkersParentModel - Clusterer Event Extensions', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
             @subject.scope.clusterEvents.click @clusterTest
-            expect(_.every(@markerModelsCluster, (entity, i)=>
-              entity == @subject.plurals.get(i+1).model
+            expect(_.every(@markerModelsCluster, (entity, i) =>
+              entity == @subject.plurals.get(i + 1).model
             )).toBeTruthy()
           it 'mouseout - ', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
             @subject.scope.clusterEvents.mouseout @clusterTest
-            expect(_.every(@markerModelsCluster, (entity, i)=>
-              entity == @subject.plurals.get(i+1).model
+            expect(_.every(@markerModelsCluster, (entity, i) =>
+              entity == @subject.plurals.get(i + 1).model
             )).toBeTruthy()
           it 'mouseover - ', ->
             @subject.plurals.put 1, model: 'test1'
             @subject.plurals.put 2, model: 'test2'
             @subject.scope.clusterEvents.mouseover @clusterTest
-            expect(_.every(@markerModelsCluster, (entity, i)=>
-              entity == @subject.plurals.get(i+1).model
+            expect(_.every(@markerModelsCluster, (entity, i) =>
+              entity == @subject.plurals.get(i + 1).model
             )).toBeTruthy()
-        describe 'some legacy event', =>
+        describe 'some legacy event', ->
           it 'crap - ', -> #not a real event but shows that any existing function can be fired
             @subject.gManager.opt_events.crap()
             expect(@markerModelsCluster).toBe('crap')
