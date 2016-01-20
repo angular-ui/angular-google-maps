@@ -26,7 +26,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       @setMyOptions = (newVals, oldVals) =>
         return if scope.settingFromDirective
-        unless _.isEqual newVals,oldVals
+        unless _.isEqual newVals,oldVals and newVals == oldVals and (newVals? and oldVals? and newVals.coordinates == oldVals.coordinates)
           gObject.setOptions @buildOpts GmapUtil.getCoords(scope.center), scope.radius
 
       @props = @props.concat [
