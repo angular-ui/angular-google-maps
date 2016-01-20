@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2016-01-13
+/*! angular-google-maps 2.2.1 2016-01-19
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -491,7 +491,7 @@ return UUID;
             return _.compact(_.map(eventObj.events, function(eventHandler, eventName) {
               var doIgnore;
               if (ignores) {
-                doIgnore = _(ignores).contains(eventName);
+                doIgnore = _(ignores).includes(eventName);
               }
               if (eventObj.events.hasOwnProperty(eventName) && angular.isFunction(eventObj.events[eventName]) && !doIgnore) {
                 return google.maps.event.addListener(gObject, eventName, function() {

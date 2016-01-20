@@ -13,7 +13,7 @@ describe "uiGmapLodash.differenceObjects", ->
       b: 3
     ]
     module 'uiGmapgoogle-maps.extensions'
-    inject (uiGmapLodash) =>
+    inject (uiGmapLodash) ->
       subject = uiGmapLodash
       
   describe "Comparing Arrays of Objects", ->

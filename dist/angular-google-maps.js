@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2016-01-13
+/*! angular-google-maps 2.2.1 2016-01-19
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -435,6 +435,23 @@ Nicholas McCready - https://twitter.com/nmccready
     }
 
     /*
+        For Lodash 4 compatibility (some aliases are removed)
+     */
+    if (_.contains == null) {
+      _.contains = _.includes;
+      _.prototype.contains = _.includes;
+    }
+    if (_.object == null) {
+      _.object = _.zipObject;
+    }
+    if (_.all == null) {
+      _.all = _.every;
+    }
+    if (_.any == null) {
+      _.any = _.some;
+    }
+
+    /*
         Author Nick McCready
         Intersection of Objects if the arrays have something in common each intersecting object will be returned
         in an new array.
@@ -444,17 +461,15 @@ Nicholas McCready - https://twitter.com/nmccready
       if (comparison == null) {
         comparison = void 0;
       }
-      res = _.map(array1, (function(_this) {
-        return function(obj1) {
-          return _.find(array2, function(obj2) {
-            if (comparison != null) {
-              return comparison(obj1, obj2);
-            } else {
-              return _.isEqual(obj1, obj2);
-            }
-          });
-        };
-      })(this));
+      res = _.map(array1, function(obj1) {
+        return _.find(array2, function(obj2) {
+          if (comparison != null) {
+            return comparison(obj1, obj2);
+          } else {
+            return _.isEqual(obj1, obj2);
+          }
+        });
+      });
       return _.filter(res, function(o) {
         return o != null;
       });
@@ -466,15 +481,13 @@ Nicholas McCready - https://twitter.com/nmccready
       if (obj === null) {
         return false;
       }
-      return _.any(obj, (function(_this) {
-        return function(value) {
-          if (comparison != null) {
-            return comparison(value, target);
-          } else {
-            return _.isEqual(value, target);
-          }
-        };
-      })(this));
+      return _.some(obj, function(value) {
+        if (comparison != null) {
+          return comparison(value, target);
+        } else {
+          return _.isEqual(value, target);
+        }
+      });
     };
     this.differenceObjects = function(array1, array2, comparison) {
       if (comparison == null) {
@@ -944,7 +957,7 @@ Nicholas McCready - https://twitter.com/nmccready
             return _.compact(_.map(eventObj.events, function(eventHandler, eventName) {
               var doIgnore;
               if (ignores) {
-                doIgnore = _(ignores).contains(eventName);
+                doIgnore = _(ignores).includes(eventName);
               }
               if (eventObj.events.hasOwnProperty(eventName) && angular.isFunction(eventObj.events[eventName]) && !doIgnore) {
                 return google.maps.event.addListener(gObject, eventName, function() {
@@ -1422,7 +1435,7 @@ Nicholas McCready - https://twitter.com/nmccready
 
         ModelKey.prototype.modelKeyComparison = function(model1, model2) {
           var hasCoords, isEqual, scope;
-          hasCoords = _.contains(this["interface"].scopeKeys, 'coords');
+          hasCoords = _.includes(this["interface"].scopeKeys, 'coords');
           if (hasCoords && (this.scope.coords != null) || !hasCoords) {
             scope = this.scope;
           }
@@ -6604,7 +6617,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 disabledEvents = [disabledEvents];
               }
               maybeHookToEvent = function(eventName, fn, prefn) {
-                if (!_.contains(disabledEvents, eventName)) {
+                if (!_.includes(disabledEvents, eventName)) {
                   if (prefn) {
                     prefn();
                   }
@@ -6616,7 +6629,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }));
                 }
               };
-              if (!_.contains(disabledEvents, 'all')) {
+              if (!_.includes(disabledEvents, 'all')) {
                 maybeHookToEvent('dragstart', function() {
                   dragging = true;
                   return scope.$evalAsync(function(s) {
@@ -6640,7 +6653,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   if (s == null) {
                     s = scope;
                   }
-                  if (_.contains(disabledEvents, 'center')) {
+                  if (_.includes(disabledEvents, 'center')) {
                     return;
                   }
                   if (angular.isDefined(s.center.type)) {
@@ -6668,7 +6681,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   settingFromDirective = true;
                   return scope.$evalAsync(function(s) {
                     updateCenter();
-                    if (!_.isUndefined(s.bounds) && !_.contains(disabledEvents, 'bounds')) {
+                    if (!_.isUndefined(s.bounds) && !_.includes(disabledEvents, 'bounds')) {
                       s.bounds.northeast = {
                         latitude: ne.lat(),
                         longitude: ne.lng()
@@ -6678,7 +6691,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                         longitude: sw.lng()
                       };
                     }
-                    if (!_.contains(disabledEvents, 'zoom')) {
+                    if (!_.includes(disabledEvents, 'zoom')) {
                       s.zoom = _gMap.zoom;
                       scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
                     }

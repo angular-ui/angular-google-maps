@@ -59,7 +59,7 @@ angular.module('uiGmapgoogle-maps.extensions')
       if object == null
         return
       if pathKey != undefined and pathKey of toObject(object)
-        path = [ pathKey ]
+        path = [pathKey]
       index = 0
       length = path.length
       while !_.isUndefined(object) and index < length
@@ -96,75 +96,75 @@ angular.module('uiGmapgoogle-maps.extensions')
       if result == undefined then defaultValue else result
 
     _.get = get
-    
-    
+
+
   ###
       For Lodash 4 compatibility (some aliases are removed)
   ###
-	
-	if typeof _.contains == undefined
-		_.contains = _.includes;
-		_.prototype.contains = _.includes;	
-	if typeof _.object == undefined
-		_.object = _.zipObject;
-	if typeof _.all == undefined
-		_.all = _.every;
-	if typeof _.any == undefined
-		_.any = _.some;
-    
+
+  unless _.contains?
+    _.contains = _.includes
+    _.prototype.contains = _.includes
+  unless _.object?
+    _.object = _.zipObject
+  unless _.all?
+    _.all = _.every
+  unless _.any?
+    _.any = _.some
+
   ###
       Author Nick McCready
       Intersection of Objects if the arrays have something in common each intersecting object will be returned
       in an new array.
   ###
   @intersectionObjects = (array1, array2, comparison = undefined) ->
-      res = _.map array1, (obj1) =>
-          _.find array2, (obj2) =>
-              if comparison?
-                  comparison(obj1, obj2)
-              else
-                  _.isEqual(obj1, obj2)
-      _.filter res, (o) ->
-          o?
+    res = _.map array1, (obj1) ->
+      _.find array2, (obj2) ->
+        if comparison?
+          comparison(obj1, obj2)
+        else
+          _.isEqual(obj1, obj2)
+    _.filter res, (o) ->
+      o?
 
   # Determine if the array or object contains a given value (using `===`).
   #Aliased as `include`.
   @containsObject = _.includeObject = (obj, target, comparison = undefined) ->
-      if (obj == null)
-          return false
-      #    if (nativeIndexOf && obj.indexOf == nativeIndexOf)
-      #        return obj.indexOf(target) != -1
-      _.some obj, (value) =>
-          if comparison?
-              comparison value, target
-          else
-              _.isEqual value, target
+    if (obj == null)
+      return false
+    #    if (nativeIndexOf && obj.indexOf == nativeIndexOf)
+    #        return obj.indexOf(target) != -1
+    _.some obj, (value) ->
+      if comparison?
+        comparison value, target
+      else
+        _.isEqual value, target
 
 
   @differenceObjects = (array1, array2, comparison = undefined) ->
-      _.filter array1, (value) =>
-          !@containsObject array2, value, comparison
+    _.filter array1, (value) =>
+      !@containsObject array2, value, comparison
 
   #alias to differenceObjects
   @withoutObjects = @differenceObjects
 
   @indexOfObject = (array, item, comparison, isSorted) ->
-      return -1  unless array?
-      i = 0
-      length = array.length
-      if isSorted
-          if typeof isSorted is "number"
-              i = ((if isSorted < 0 then Math.max(0, length + isSorted) else isSorted))
-          else
-              i = _.sortedIndex(array, item)
-              return (if array[i] is item then i else -1)
-      while i < length
-          if comparison?
-              return i if comparison array[i], item
-          else
-              return i if _.isEqual array[i], item
-          i++
-      -1
+    return -1  unless array?
+    i = 0
+    length = array.length
+    if isSorted
+      if typeof isSorted is "number"
+        i = ((if isSorted < 0 then Math.max(0, length + isSorted) else isSorted))
+      else
+        i = _.sortedIndex(array, item)
+        return (if array[i] is item then i else -1)
+    while i < length
+      if comparison?
+        return i if comparison array[i], item
+      else
+        return i if _.isEqual array[i], item
+      i++
+    -1
 
   @isNullOrUndefined = (thing) ->
     _.isNull thing or _.isUndefined thing
