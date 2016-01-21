@@ -22,7 +22,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           GmapUtil.getPath(model, modelKey)
 
       modelKeyComparison: (model1, model2) =>
-        hasCoords = _.includes(@interface.scopeKeys, 'coords')
+        hasCoords = @interface.scopeKeys?.hasOwnProperty 'coords'
         scope = @scope if hasCoords and  @scope.coords? or not hasCoords
         if not scope? then throw 'No scope set!'
         if hasCoords
@@ -31,7 +31,8 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           #deep comparison of the rest of properties
           return isEqual unless isEqual
         #compare the rest of the properties that are being watched by scope
-        isEqual = _.every _.without(@interface.scopeKeys, 'coords'), (k) =>
+        without = _.without(@interface.scopeKeys, 'coords')
+        isEqual = _.every without, (k) =>
           @scopeOrModelVal(scope[k], scope, model1) == @scopeOrModelVal(scope[k], scope, model2)
         isEqual
 
@@ -94,6 +95,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           if doWrap
             return {isScope: isScope, value: ret}
           ret
+
         scopeProp = _.get scope, key
 
         if _.isFunction scopeProp
@@ -124,11 +126,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         childScope.model = model
 
 
-      onDestroy: (scope) =>
-#        @cached = {}
+      onDestroy: (scope) ->
 
       destroy: (manualOverride = false) =>
-#        @cached = {}
         if @scope? and not @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
           @scope.$destroy()
         else

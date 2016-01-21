@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2016-01-19
+/*! angular-google-maps 2.2.1 2016-01-20
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -567,7 +567,7 @@ Nicholas McCready - https://twitter.com/nmccready
     }
   ]).service('uiGmap_async', [
     '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q', 'uiGmapDataStructures', 'uiGmapGmapUtil', function($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures, uiGmapGmapUtil) {
-      var ExposedPromise, PromiseQueueManager, SniffedPromise, _getArrayAndKeys, _getIterateeValue, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch;
+      var ExposedPromise, PromiseQueueManager, SniffedPromise, _getArrayAndKeys, _getIterateeValue, _ignoreFields, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch;
       promiseTypes = uiGmapPromise.promiseTypes;
       isInProgress = uiGmapPromise.isInProgress;
       promiseStatus = uiGmapPromise.promiseStatus;
@@ -717,16 +717,23 @@ Nicholas McCready - https://twitter.com/nmccready
         }
         return collection[valOrKey];
       };
+      _ignoreFields = ['length', 'forEach', 'map'];
       _getArrayAndKeys = function(collection, keys, bailOutCb, cb) {
-        var array;
+        var array, propName, val;
         if (angular.isArray(collection)) {
           array = collection;
         } else {
-          collection = _.pick(collection, function(val, propName) {
-            return collection.hasOwnProperty(propName);
-          });
-          array = keys ? keys : Object.keys(_.omit(collection, ['length', 'forEach', 'map']));
-          keys = array;
+          if (keys) {
+            array = keys;
+          } else {
+            array = [];
+            for (propName in collection) {
+              val = collection[propName];
+              if (collection.hasOwnProperty(propName) && !_.includes(_ignoreFields, propName)) {
+                array.push(val);
+              }
+            }
+          }
         }
         if (cb == null) {
           cb = bailOutCb;
@@ -1406,7 +1413,6 @@ Nicholas McCready - https://twitter.com/nmccready
           this.modelsLength = bind(this.modelsLength, this);
           this.updateChild = bind(this.updateChild, this);
           this.destroy = bind(this.destroy, this);
-          this.onDestroy = bind(this.onDestroy, this);
           this.setChildScope = bind(this.setChildScope, this);
           this.getChanges = bind(this.getChanges, this);
           this.getProp = bind(this.getProp, this);
@@ -1434,8 +1440,8 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         ModelKey.prototype.modelKeyComparison = function(model1, model2) {
-          var hasCoords, isEqual, scope;
-          hasCoords = _.includes(this["interface"].scopeKeys, 'coords');
+          var hasCoords, isEqual, ref, scope, without;
+          hasCoords = (ref = this["interface"].scopeKeys) != null ? ref.hasOwnProperty('coords') : void 0;
           if (hasCoords && (this.scope.coords != null) || !hasCoords) {
             scope = this.scope;
           }
@@ -1448,7 +1454,8 @@ Nicholas McCready - https://twitter.com/nmccready
               return isEqual;
             }
           }
-          isEqual = _.every(_.without(this["interface"].scopeKeys, 'coords'), (function(_this) {
+          without = _.without(this["interface"].scopeKeys, 'coords');
+          isEqual = _.every(without, (function(_this) {
             return function(k) {
               return _this.scopeOrModelVal(scope[k], scope, model1) === _this.scopeOrModelVal(scope[k], scope, model2);
             };
@@ -1622,11 +1629,9 @@ Nicholas McCready - https://twitter.com/nmccready
       return {
         didQueueInitPromise: function(existingPiecesObj, scope) {
           if (scope.models.length === 0) {
-            _async.promiseLock(existingPiecesObj, uiGmapPromise.promiseTypes.init, null, null, ((function(_this) {
-              return function() {
-                return uiGmapPromise.resolve();
-              };
-            })(this)));
+            _async.promiseLock(existingPiecesObj, uiGmapPromise.promiseTypes.init, null, null, (function() {
+              return uiGmapPromise.resolve();
+            }));
             return true;
           }
           return false;
