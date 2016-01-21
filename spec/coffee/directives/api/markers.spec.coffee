@@ -26,7 +26,7 @@ describe 'uiGmapMarkers (directive creation)', ->
     @injectAll()
 
   describe "object models", ->
-    describe 'should add markers for each object in model',  ->
+    describe 'should add markers for each object in model1',  ->
       it 'from start', (done) ->
         _.extend @scope, map: @map
 
@@ -34,39 +34,32 @@ describe 'uiGmapMarkers (directive creation)', ->
         toPush.id = 0
         toPush.latitude = 47
         toPush.longitude = -27
-        @scope.items =
-          0: toPush
-          length: 1
+        @scope.items = [toPush]
 
         @digest =>
           @timeout =>
             expect(GMarker.instances).toEqual(1)
             done()
 
-    describe 'should add markers for each object in model',  ->
+    describe 'should add markers for each object in model2',  ->
       it 'from start', (done) ->
         _.extend @scope, map: @map
 
-        items  = {}
-        array = _.range(2)
-        items.length = array.length
-        array.forEach (num) ->
-          toPush =
-            id: num
-            latitude: 47
-            longitude: -27
-
+        items = []
+        numarray = _.range(2)
+        numarray.forEach (num) ->
+          toPush = { id: num, latitude: 47, longitude: -27 }
           items[num] = toPush
 
         @scope.items = items
 
         @digest =>
           @timeout =>
-            expect(GMarker.instances).toEqual(array.length)
+            expect(GMarker.instances).toEqual(numarray.length)
             done()
 
   describe "array models", ->
-    describe 'should add markers for each object in model',  ->
+    describe 'should add markers for each object in model3',  ->
       it 'from start', (done) ->
         _.extend @scope, map: @map
 
