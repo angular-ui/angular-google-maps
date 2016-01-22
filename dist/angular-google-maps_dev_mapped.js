@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2016-01-19
+/*! angular-google-maps 2.2.1 2016-01-21
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4375,7 +4375,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (scope.settingFromDirective) {
                 return;
               }
-              if (!_.isEqual(newVals, oldVals)) {
+              if (!(_.isEqual(newVals, oldVals) && newVals === oldVals && ((newVals != null) && (oldVals != null) ? newVals.coordinates === oldVals.coordinates : true))) {
                 return gObject.setOptions(_this.buildOpts(GmapUtil.getCoords(scope.center), scope.radius));
               }
             };
