@@ -5423,13 +5423,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
   ]);
 
 }).call(this);
-;(function() {
+;
+/*global angular:true, google:true */
+
+(function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
   angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapSearchBoxParentModel', [
-    'uiGmapBaseObject', 'uiGmapLogger', 'uiGmapEventsHelper', '$timeout', '$http', '$templateCache', function(BaseObject, Logger, EventsHelper, $timeout, $http, $templateCache) {
+    'uiGmapBaseObject', 'uiGmapLogger', 'uiGmapEventsHelper', function(BaseObject, Logger, EventsHelper) {
       var SearchBoxParentModel;
       SearchBoxParentModel = (function(superClass) {
         extend(SearchBoxParentModel, superClass);
@@ -5534,7 +5537,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         SearchBoxParentModel.prototype.addToParentDiv = function() {
           var ref;
           this.parentDiv = angular.element(document.getElementById(this.scope.parentdiv));
-          if (((ref = this.parentDiv[0]) != null ? ref.firstChild : void 0) == null) {
+          if ((ref = this.parentDiv) != null ? ref.length : void 0) {
             return this.parentDiv.append(this.input);
           }
         };
