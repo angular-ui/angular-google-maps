@@ -1,6 +1,7 @@
 log = require('util').log
 _ = require 'lodash'
 karmaRunner = require './grunt/karma'
+argv = require('yargs').argv
 
 module.exports = (grunt) ->
   # Load the required plugins
@@ -131,4 +132,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'karma', 'karma runner', ->
     karmaRunner(grunt) @async()
+
+  grunt.registerTask 'karmaSpecific', 'karma runner', ->
+    karmaRunner(grunt, files: argv.files) @async()
 #to see all tasks available don't forget "grunt --help" !!!

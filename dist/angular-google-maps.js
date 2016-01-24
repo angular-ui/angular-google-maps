@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2016-01-20
+/*! angular-google-maps 2.3.0 2016-01-23
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -310,13 +310,60 @@ Nicholas McCready - https://twitter.com/nmccready
   });
 
 }).call(this);
-;(function() {
+;
+/*global _:true, angular:true */
+
+(function() {
   angular.module('uiGmapgoogle-maps.extensions').service('uiGmapLodash', function() {
-    var baseGet, baseToString, get, reIsDeepProp, reIsPlainProp, rePropName, toObject, toPath;
+    var baseGet, baseToString, fixLodash, get, reEscapeChar, rePropName, toObject, toPath;
+    rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\n\\]|\\.)*?)\2)\]/g;
+    reEscapeChar = /\\(\\)?/g;
+
+    /*
+        For Lodash 4 compatibility (some aliases are removed)
+     */
+    fixLodash = function(arg) {
+      var isProto, missingName, swapName;
+      missingName = arg.missingName, swapName = arg.swapName, isProto = arg.isProto;
+      if (_[missingName] == null) {
+        _[missingName] = _[swapName];
+        if (isProto) {
+          return _.prototype[missingName] = _[swapName];
+        }
+      }
+    };
+    [
+      {
+        missingName: 'contains',
+        swapName: 'includes',
+        isProto: true
+      }, {
+        missingName: 'includes',
+        swapName: 'contains',
+        isProto: true
+      }, {
+        missingName: 'object',
+        swapName: 'zipObject'
+      }, {
+        missingName: 'zipObject',
+        swapName: 'object'
+      }, {
+        missingName: 'all',
+        swapName: 'every'
+      }, {
+        missingName: 'every',
+        swapName: 'all'
+      }, {
+        missingName: 'any',
+        swapName: 'some'
+      }, {
+        missingName: 'some',
+        swapName: 'any'
+      }
+    ].forEach(function(toMonkeyPatch) {
+      return fixLodash(toMonkeyPatch);
+    });
     if (_.get == null) {
-      reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\n\\]|\\.)*?\1)\]/;
-      reIsPlainProp = /^\w*$/;
-      rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\n\\]|\\.)*?)\2)\]/g;
 
       /**
        * Converts `value` to an object if it's not one.
@@ -432,23 +479,6 @@ Nicholas McCready - https://twitter.com/nmccready
         }
       };
       _.get = get;
-    }
-
-    /*
-        For Lodash 4 compatibility (some aliases are removed)
-     */
-    if (_.contains == null) {
-      _.contains = _.includes;
-      _.prototype.contains = _.includes;
-    }
-    if (_.object == null) {
-      _.object = _.zipObject;
-    }
-    if (_.all == null) {
-      _.all = _.every;
-    }
-    if (_.any == null) {
-      _.any = _.some;
     }
 
     /*
@@ -1397,18 +1427,20 @@ Nicholas McCready - https://twitter.com/nmccready
   ]);
 
 }).call(this);
-;(function() {
+;
+/*global _:true, angular:true */
+
+(function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
   angular.module('uiGmapgoogle-maps.directives.api.utils').factory('uiGmapModelKey', [
-    'uiGmapBaseObject', 'uiGmapGmapUtil', 'uiGmapPromise', '$q', '$timeout', function(BaseObject, GmapUtil, uiGmapPromise, $q, $timeout) {
-      var ModelKey;
-      return ModelKey = (function(superClass) {
-        extend(ModelKey, superClass);
+    'uiGmapBaseObject', 'uiGmapGmapUtil', function(BaseObject, GmapUtil) {
+      return (function(superClass) {
+        extend(_Class, superClass);
 
-        function ModelKey(scope1) {
+        function _Class(scope1) {
           this.scope = scope1;
           this.modelsLength = bind(this.modelsLength, this);
           this.updateChild = bind(this.updateChild, this);
@@ -1418,14 +1450,14 @@ Nicholas McCready - https://twitter.com/nmccready
           this.getProp = bind(this.getProp, this);
           this.setIdKey = bind(this.setIdKey, this);
           this.modelKeyComparison = bind(this.modelKeyComparison, this);
-          ModelKey.__super__.constructor.call(this);
+          _Class.__super__.constructor.call(this);
           this["interface"] = {};
           this["interface"].scopeKeys = [];
           this.defaultIdKey = 'id';
           this.idKey = void 0;
         }
 
-        ModelKey.prototype.evalModelHandle = function(model, modelKey) {
+        _Class.prototype.evalModelHandle = function(model, modelKey) {
           if ((model == null) || (modelKey == null)) {
             return;
           }
@@ -1439,7 +1471,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         };
 
-        ModelKey.prototype.modelKeyComparison = function(model1, model2) {
+        _Class.prototype.modelKeyComparison = function(model1, model2) {
           var hasCoords, isEqual, ref, scope, without;
           hasCoords = (ref = this["interface"].scopeKeys) != null ? ref.hasOwnProperty('coords') : void 0;
           if (hasCoords && (this.scope.coords != null) || !hasCoords) {
@@ -1463,18 +1495,16 @@ Nicholas McCready - https://twitter.com/nmccready
           return isEqual;
         };
 
-        ModelKey.prototype.setIdKey = function(scope) {
+        _Class.prototype.setIdKey = function(scope) {
           return this.idKey = scope.idKey != null ? scope.idKey : this.defaultIdKey;
         };
 
-        ModelKey.prototype.setVal = function(model, key, newValue) {
-          var thingToSet;
-          thingToSet = this.modelOrKey(model, key);
-          thingToSet = newValue;
+        _Class.prototype.setVal = function(model, key, newValue) {
+          this.modelOrKey(model, key = newValue);
           return model;
         };
 
-        ModelKey.prototype.modelOrKey = function(model, key) {
+        _Class.prototype.modelOrKey = function(model, key) {
           if (key == null) {
             return;
           }
@@ -1484,7 +1514,7 @@ Nicholas McCready - https://twitter.com/nmccready
           return model;
         };
 
-        ModelKey.prototype.getProp = function(propName, scope, model) {
+        _Class.prototype.getProp = function(propName, scope, model) {
           return this.scopeOrModelVal(propName, scope, model);
         };
 
@@ -1496,7 +1526,7 @@ Nicholas McCready - https://twitter.com/nmccready
         actually tracked by scope. (should make things faster with whitelisted)
          */
 
-        ModelKey.prototype.getChanges = function(now, prev, whitelistedProps) {
+        _Class.prototype.getChanges = function(now, prev, whitelistedProps) {
           var c, changes, prop;
           if (whitelistedProps) {
             prev = _.pick(prev, whitelistedProps);
@@ -1522,7 +1552,7 @@ Nicholas McCready - https://twitter.com/nmccready
           return changes;
         };
 
-        ModelKey.prototype.scopeOrModelVal = function(key, scope, model, doWrap) {
+        _Class.prototype.scopeOrModelVal = function(key, scope, model, doWrap) {
           var maybeWrap, modelKey, modelProp, scopeProp;
           if (doWrap == null) {
             doWrap = false;
@@ -1561,7 +1591,7 @@ Nicholas McCready - https://twitter.com/nmccready
           return maybeWrap(false, modelProp, doWrap);
         };
 
-        ModelKey.prototype.setChildScope = function(keys, childScope, model) {
+        _Class.prototype.setChildScope = function(keys, childScope, model) {
           var isScopeObj, key, name, newValue;
           for (key in keys) {
             name = keys[key];
@@ -1576,9 +1606,9 @@ Nicholas McCready - https://twitter.com/nmccready
           return childScope.model = model;
         };
 
-        ModelKey.prototype.onDestroy = function(scope) {};
+        _Class.prototype.onDestroy = function(scope) {};
 
-        ModelKey.prototype.destroy = function(manualOverride) {
+        _Class.prototype.destroy = function(manualOverride) {
           var ref;
           if (manualOverride == null) {
             manualOverride = false;
@@ -1590,7 +1620,7 @@ Nicholas McCready - https://twitter.com/nmccready
           }
         };
 
-        ModelKey.prototype.updateChild = function(child, model) {
+        _Class.prototype.updateChild = function(child, model) {
           if (model[this.idKey] == null) {
             this.$log.error("Model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
             return;
@@ -1598,7 +1628,7 @@ Nicholas McCready - https://twitter.com/nmccready
           return child.updateModel(model);
         };
 
-        ModelKey.prototype.modelsLength = function(arrayOrObjModels) {
+        _Class.prototype.modelsLength = function(arrayOrObjModels) {
           var len, toCheck;
           if (arrayOrObjModels == null) {
             arrayOrObjModels = void 0;
@@ -1616,7 +1646,7 @@ Nicholas McCready - https://twitter.com/nmccready
           return len;
         };
 
-        return ModelKey;
+        return _Class;
 
       })(BaseObject);
     }
@@ -4380,7 +4410,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
               if (scope.settingFromDirective) {
                 return;
               }
-              if (!_.isEqual(newVals, oldVals)) {
+              if (!(_.isEqual(newVals, oldVals) && newVals === oldVals && ((newVals != null) && (oldVals != null) ? newVals.coordinates === oldVals.coordinates : true))) {
                 return gObject.setOptions(_this.buildOpts(GmapUtil.getCoords(scope.center), scope.radius));
               }
             };
@@ -5398,13 +5428,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
   ]);
 
 }).call(this);
-;(function() {
+;
+/*global angular:true, google:true */
+
+(function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
   angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapSearchBoxParentModel', [
-    'uiGmapBaseObject', 'uiGmapLogger', 'uiGmapEventsHelper', '$timeout', '$http', '$templateCache', function(BaseObject, Logger, EventsHelper, $timeout, $http, $templateCache) {
+    'uiGmapBaseObject', 'uiGmapLogger', 'uiGmapEventsHelper', function(BaseObject, Logger, EventsHelper) {
       var SearchBoxParentModel;
       SearchBoxParentModel = (function(superClass) {
         extend(SearchBoxParentModel, superClass);
@@ -5509,7 +5542,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         SearchBoxParentModel.prototype.addToParentDiv = function() {
           var ref;
           this.parentDiv = angular.element(document.getElementById(this.scope.parentdiv));
-          if (((ref = this.parentDiv[0]) != null ? ref.firstChild : void 0) == null) {
+          if ((ref = this.parentDiv) != null ? ref.length : void 0) {
             return this.parentDiv.append(this.input);
           }
         };

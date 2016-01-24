@@ -1,7 +1,7 @@
+###global _:true, angular:true ###
 angular.module('uiGmapgoogle-maps.directives.api.utils')
-.factory 'uiGmapModelKey', ['uiGmapBaseObject', 'uiGmapGmapUtil', 'uiGmapPromise', '$q', '$timeout',
-  (BaseObject, GmapUtil, uiGmapPromise, $q, $timeout) ->
-    class ModelKey extends BaseObject
+.factory 'uiGmapModelKey', ['uiGmapBaseObject', 'uiGmapGmapUtil', (BaseObject, GmapUtil) ->
+    class extends BaseObject
       constructor: (@scope) ->
         super()
         ##common scope keys interface for iterating comparators
@@ -41,8 +41,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
 
       setVal: (model, key, newValue) ->
-        thingToSet = @modelOrKey model, key
-        thingToSet = newValue
+        @modelOrKey model, key = newValue
         model
 
       modelOrKey: (model, key) ->

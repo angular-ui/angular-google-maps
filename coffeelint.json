@@ -71,7 +71,7 @@
     },
     "no_empty_param_list": {
         "name": "no_empty_param_list",
-        "level": "warn"
+        "level": "ignore"
     },
     "no_stand_alone_at": {
         "name": "no_stand_alone_at",

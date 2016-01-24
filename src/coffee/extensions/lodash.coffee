@@ -1,11 +1,32 @@
+###global _:true, angular:true ###
 angular.module('uiGmapgoogle-maps.extensions')
 .service 'uiGmapLodash', ->
+  # Used to match property names within property paths.
+  rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\n\\]|\\.)*?)\2)\]/g
+  #Used to match backslashes in property paths.
+  reEscapeChar = /\\(\\)?/g
+
+  ###
+      For Lodash 4 compatibility (some aliases are removed)
+  ###
+  fixLodash = ({missingName, swapName, isProto}) ->
+    unless _[missingName]?
+      _[missingName] = _[swapName]
+      _::[missingName] = _[swapName] if isProto
+
+  [
+    {missingName: 'contains', swapName: 'includes', isProto: true}
+    {missingName: 'includes', swapName: 'contains', isProto: true}
+    {missingName: 'object', swapName: 'zipObject'}
+    {missingName: 'zipObject', swapName: 'object'}
+    {missingName: 'all', swapName: 'every'}
+    {missingName: 'every', swapName: 'all'}
+    {missingName: 'any', swapName: 'some'}
+    {missingName: 'some', swapName: 'any'}
+  ].forEach (toMonkeyPatch) ->
+    fixLodash(toMonkeyPatch)
 
   unless _.get?#fill dependency if missing
-    # Used to match property names within property paths.
-    reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\n\\]|\\.)*?\1)\]/
-    reIsPlainProp = /^\w*$/
-    rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\n\\]|\\.)*?)\2)\]/g
     ###*
     # Converts `value` to an object if it's not one.
     #
@@ -97,20 +118,6 @@ angular.module('uiGmapgoogle-maps.extensions')
 
     _.get = get
 
-
-  ###
-      For Lodash 4 compatibility (some aliases are removed)
-  ###
-
-  unless _.contains?
-    _.contains = _.includes
-    _.prototype.contains = _.includes
-  unless _.object?
-    _.object = _.zipObject
-  unless _.all?
-    _.all = _.every
-  unless _.any?
-    _.any = _.some
 
   ###
       Author Nick McCready

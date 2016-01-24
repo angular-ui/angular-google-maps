@@ -5,7 +5,7 @@
 [![Dependencies](https://david-dm.org/angular-ui/angular-google-maps/dev-status.svg)](https://david-dm.org/angular-ui/angular-google-maps)&nbsp;
 
 Builds:
-- Master (2.2.X): [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.svg?branch=master)](https://travis-ci.org/angular-ui/angular-google-maps)
+- Master (2.3.X): [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.svg?branch=master)](https://travis-ci.org/angular-ui/angular-google-maps)
 
 - 2.2.X: [![Build Status](https://travis-ci.org/angular-ui/angular-google-maps.svg?branch=2.2.X)](https://travis-ci.org/angular-ui/angular-google-maps)
 
@@ -96,14 +96,14 @@ PR's should follow [angular git commit conventions](https://github.com/angular/a
 
 ### Branching Scheme
 
-PRS to master are for 2.2.X only.
+PRS to master are for 2.3.X only.
 
 If you want it rolled into a older release then target your PR to that respective branching name like 2.1.X.
 
-*Note: many fixes relevant to 2.0.X can be rolled up into 2.1.X, and 2.2.X*
+*Note: many fixes relevant to 2.0.X can be rolled up into 2.1.X, 2.2.X and 2.3.X*
 
-- master: points to the active targeted next release branch (2.2.X)
-- 2.2.X: latest of 2.2.X  *side note: 2.2.X is basically the same as 2.1.X except the logging dependency has been added*
-- 2.1.X: latest of 2.1.X
+- master: points to the active targeted next release branch (2.3.X)
+- 2.2.X: latest of 2.2.X
+- 2.1.X: ""
 - 2.0.X: ""
 ... etc

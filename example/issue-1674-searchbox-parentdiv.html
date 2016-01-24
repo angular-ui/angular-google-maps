@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org/" ng-app="appMaps">
+
+<head>
+    <meta charset="utf-8" />
+
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/lodash/lodash.js"></script>
+    <script src="../bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
+    <script src="../dist/angular-google-maps.js"></script>
+
+    <style type="text/css">
+        html, body, #map_canvas {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+        }
+
+        #map_canvas {
+            position: relative;
+        }
+
+
+        .angular-google-map-container {
+            position: absolute;
+            top: 50px;
+            bottom: 0;
+            right: 0;
+            left: 0;
+        }
+        label{
+          margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map_canvas" ng-controller="mainCtrl">
+      <div id="searchbox">
+        <label>Enter an address: </label>
+      </div>
+    <script type="text/ng-template" id="searchbox.tpl.html">
+        <input type="text" placeholder="Search Box">
+    </script>
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
+        <ui-gmap-search-box parentdiv="'searchbox'" template="searchbox.template" events="searchbox.events"></ui-gmap-search-box>
+      <ui-gmap-marker coords="marker.coords" idkey="marker.id">
+        </ui-gmap-marker>
+    </ui-gmap-google-map>
+</div>
+<!--example-->
+</body>
+<script>
+angular.module('appMaps', ['uiGmapgoogle-maps'])
+    .config(function(uiGmapGoogleMapApiProvider) {
+      uiGmapGoogleMapApiProvider.configure({
+          //    key: 'your api key',
+          v: '3.20', //defaults to latest 3.X anyhow
+          libraries: 'places' // Required for SearchBox.
+      });
+    })
+    .controller('mainCtrl', function ($scope, $log) {
+        $scope.map = {center: {latitude: 40.1451, longitude: -99.6680 }, zoom: 20 };
+
+        $scope.marker = {
+          id: Date.now()
+        }
+        var events = {
+          places_changed: function (searchBox) {
+
+            var place = searchBox.getPlaces()[0];
+            console.log(place.geometry.location.lat());
+            var lat = place.geometry.location.lat(),lon = place.geometry.location.lng();
+                $scope.marker = {
+                    id: Date.now(),
+                    coords: {
+                        latitude: lat,
+                        longitude: lon
+                    }
+                };
+
+                $scope.map.center = {
+                  latitude: lat,
+                  longitude: lon
+
+                };
+
+          }
+        }
+        $scope.searchbox = { template:'searchbox.tpl.html', events:events};
+    });
+</script>
+</html>

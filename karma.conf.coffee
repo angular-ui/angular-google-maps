@@ -32,12 +32,9 @@ module.exports = (config) ->
       'spec/coffee/bootstrap/bootstrap.coffee'
       'spec/coffee/bootstrap/google-api-mock.coffee'
       'spec/coffee/bootstrap/initiator.coffee'
-
-      'spec/coffee/**/*.spec.coffee'
-      # 'spec/**/*.spec.coffee'
-      # 'spec/**/*.spec.js'
       #do not include those specs for jasmine html runner by karma kama_jasmine_runner.html
       {pattern:'*coffee', included: false}
+      'spec/coffee/**/*.spec.coffee'
     ]
 
   # list of files to exclude

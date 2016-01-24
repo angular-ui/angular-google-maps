@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.2.1 2016-01-20
+/*! angular-google-maps 2.3.0 2016-01-23
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
