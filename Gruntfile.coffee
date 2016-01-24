@@ -50,12 +50,11 @@ module.exports = (grunt) ->
   options.open = _.extend options.open, allExamplesOpen
   grunt.initConfig options
 
+  grunt.registerTask 'build', ['verbosity', 'clean:dist', 'jshint', 'mkdir', 'coffee',
+  'concat:libs', 'replace', 'webpack', 'concat:dist', 'concat:streetview'
+  'copy']
   # Default task: build a release in dist/
-  grunt.registerTask "default", [
-    'bower', 'curl',
-    'verbosity', 'clean:dist', 'jshint', 'mkdir', 'coffee',
-    'concat:libs', 'replace', 'webpack', 'concat:dist', 'concat:streetview'
-    'copy', 'uglify:dist', 'uglify:streetview', 'karma']
+  grunt.registerTask "default", ['bower', 'curl', 'build', 'uglify:dist', 'uglify:streetview', 'karma']
 
   # run default "grunt" prior to generate _SpecRunner.html
   grunt.registerTask "spec", [
@@ -135,4 +134,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'karmaSpecific', 'karma runner', ->
     karmaRunner(grunt, files: argv.files) @async()
+
+  grunt.registerTask 'karmaB', ['build', 'karmaSpecific']
+  grunt.registerTask 'karmaSpecB', ['build', 'karma']
 #to see all tasks available don't forget "grunt --help" !!!

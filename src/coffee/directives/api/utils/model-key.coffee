@@ -2,12 +2,9 @@
 angular.module('uiGmapgoogle-maps.directives.api.utils')
 .factory 'uiGmapModelKey', ['uiGmapBaseObject', 'uiGmapGmapUtil', (BaseObject, GmapUtil) ->
     class extends BaseObject
-      constructor: (@scope) ->
+      constructor: (@scope, @interface = scopeKeys:[]) ->
         super()
         ##common scope keys interface for iterating comparators
-        @interface = {}
-        @interface.scopeKeys = []
-
         @defaultIdKey = 'id'
         @idKey = undefined
 #        @cached = {}
@@ -22,12 +19,18 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           GmapUtil.getPath(model, modelKey)
 
       modelKeyComparison: (model1, model2) =>
-        hasCoords = @interface.scopeKeys?.hasOwnProperty 'coords'
+        hasCoords = @interface.scopeKeys.indexOf('coords') >= 0
         scope = @scope if hasCoords and  @scope.coords? or not hasCoords
         if not scope? then throw 'No scope set!'
+
         if hasCoords
-          isEqual = GmapUtil.equalCoords  @scopeOrModelVal('coords', scope, model1),
-            @scopeOrModelVal('coords', scope, model2)
+          console.log 'hasCoords'
+          coord1 = @scopeOrModelVal('coords', scope, model1)
+          coord2 = @scopeOrModelVal('coords', scope, model2)
+          console.log "coord1:" + JSON.stringify coord1
+          console.log "coord2:" + JSON.stringify coord2
+          isEqual = GmapUtil.equalCoords coord1, coord2
+
           #deep comparison of the rest of properties
           return isEqual unless isEqual
         #compare the rest of the properties that are being watched by scope

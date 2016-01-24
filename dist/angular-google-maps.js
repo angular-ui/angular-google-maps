@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.3.0 2016-01-23
+/*! angular-google-maps 2.3.0 2016-01-24
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1053,7 +1053,10 @@ Nicholas McCready - https://twitter.com/nmccready
   ]);
 
 }).call(this);
-;(function() {
+;
+/*global _:true, angular:true, google:true */
+
+(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapGmapUtil', [
     'uiGmapLogger', '$compile', function(Logger, $compile) {
       var _isFalse, _isTruthy, getCoords, getLatitude, getLongitude, validateCoords;
@@ -1440,8 +1443,11 @@ Nicholas McCready - https://twitter.com/nmccready
       return (function(superClass) {
         extend(_Class, superClass);
 
-        function _Class(scope1) {
+        function _Class(scope1, _interface) {
           this.scope = scope1;
+          this["interface"] = _interface != null ? _interface : {
+            scopeKeys: []
+          };
           this.modelsLength = bind(this.modelsLength, this);
           this.updateChild = bind(this.updateChild, this);
           this.destroy = bind(this.destroy, this);
@@ -1451,8 +1457,6 @@ Nicholas McCready - https://twitter.com/nmccready
           this.setIdKey = bind(this.setIdKey, this);
           this.modelKeyComparison = bind(this.modelKeyComparison, this);
           _Class.__super__.constructor.call(this);
-          this["interface"] = {};
-          this["interface"].scopeKeys = [];
           this.defaultIdKey = 'id';
           this.idKey = void 0;
         }
@@ -1472,8 +1476,8 @@ Nicholas McCready - https://twitter.com/nmccready
         };
 
         _Class.prototype.modelKeyComparison = function(model1, model2) {
-          var hasCoords, isEqual, ref, scope, without;
-          hasCoords = (ref = this["interface"].scopeKeys) != null ? ref.hasOwnProperty('coords') : void 0;
+          var coord1, coord2, hasCoords, isEqual, scope, without;
+          hasCoords = this["interface"].scopeKeys.indexOf('coords') >= 0;
           if (hasCoords && (this.scope.coords != null) || !hasCoords) {
             scope = this.scope;
           }
@@ -1481,7 +1485,12 @@ Nicholas McCready - https://twitter.com/nmccready
             throw 'No scope set!';
           }
           if (hasCoords) {
-            isEqual = GmapUtil.equalCoords(this.scopeOrModelVal('coords', scope, model1), this.scopeOrModelVal('coords', scope, model2));
+            console.log('hasCoords');
+            coord1 = this.scopeOrModelVal('coords', scope, model1);
+            coord2 = this.scopeOrModelVal('coords', scope, model2);
+            console.log("coord1:" + JSON.stringify(coord1));
+            console.log("coord2:" + JSON.stringify(coord2));
+            isEqual = GmapUtil.equalCoords(coord1, coord2);
             if (!isEqual) {
               return isEqual;
             }

@@ -1,6 +1,7 @@
 log = require('util').log
 _ = require 'lodash'
 _pkg = require '../package.json'
+{pipeline, fullPipeline} = require './pipeline'
 
 _pkg.nextVersion = do ->
   # note this will fail on new minor or major releases.. oh well manually fix it
@@ -8,35 +9,6 @@ _pkg.nextVersion = do ->
   last = _.last _pkg.version.split('.')
   next = Number(last) + 1
   _pkg.version.replace(last, String(next))
-
-pipeline = [
-  "src/coffee/module"
-  "src/coffee/providers/*"
-  "src/coffee/extensions/*"
-  "src/coffee/directives/api/utils/*"
-  "src/coffee/directives/api/managers/*"
-
-  "src/coffee/controllers/polyline-display"
-  "src/coffee/utils/*"
-
-  "src/coffee/directives/api/options/**/*"
-  "src/coffee/directives/api/models/child/*"
-  "src/coffee/directives/api/models/parent/*"
-  "src/coffee/directives/api/*"
-  "src/coffee/directives/map"
-  "src/coffee/directives/marker"
-  "src/coffee/directives/markers"
-  "src/coffee/directives/label"
-  "src/coffee/directives/polygon"
-  "src/coffee/directives/circle"
-  "src/coffee/directives/polyline*"
-  "src/coffee/directives/rectangle"
-  "src/coffee/directives/window"
-  "src/coffee/directives/windows"
-  "src/coffee/directives/layer"
-  "src/coffee/directives/control"
-  "src/coffee/directives/*"
-]
 
 # configs for concat main distribution & dev mapping
 concatDist =
@@ -52,17 +24,7 @@ concatDist =
     """
     separator: ";"
     footer: "}( window,angular));"
-  src: pipeline.map( (f) -> "tmp/#{f}.js").concat [
-    "tmp/wrapped_uuid.js"
-    "tmp/wrapped_gmaps_sdk_util_v3.js"
-    "tmp/webpack.dataStructures.js"
-    "tmp/wrapped_marker_spiderfier.js"
-    "src/js/**/*.js" #this all will only work if the dependency orders do not matter
-    "src/js/**/**/*.js"
-    "src/js/**/**/**/*.js"
-    "!src/js/wrapped/webpack/*.js"
-    "!src/js/wrapped/*.js"
-  ]
+  src: fullPipeline
   dest: "dist/<%= pkg.name %>.js"
 
 concatDistMapped = _.cloneDeep concatDist

@@ -28,16 +28,17 @@ describe 'ModelKey Tests', ->
 
     it 'model1 to model1 is same', ->
       @scope.coords = 'coords'
-      expect(@subject.modelKeyComparison(@model1, @model1, @scope))
+      expect(@subject.modelKeyComparison(@model1, @model1))
       .toEqual(true)
 
     it 'model1 to model2 is diff', ->
-      expect(@subject.modelKeyComparison(@model1, @model2, @scope))
+      @scope.coords = 'coords'
+      expect(@subject.modelKeyComparison(@model1, @model2))
       .toEqual(false)
 
     it 'model2 to model3 is same by values', ->
       @scope.coords = 'coords'
-      expect(@subject.modelKeyComparison(@model2, @model3, @scope))
+      expect(@subject.modelKeyComparison(@model2, @model3))
       .toEqual(true)
 
   it 'should properly set id key', ->
