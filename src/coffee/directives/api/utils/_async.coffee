@@ -1,3 +1,4 @@
+###global _:true,angular:true,###
 angular.module('uiGmapgoogle-maps.directives.api.utils')
 .service('uiGmap_sync', [ ->
     fakePromise: ->
@@ -139,6 +140,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
 
   _getIterateeValue = (collection, array, index) ->
+    # logger.debug "collection: #{JSON.stringify collection}"
+    # logger.debug "array: #{JSON.stringify array}"
+    # logger.debug "index: #{index}"
     _isArray = collection == array
     valOrKey = array[index]
     return  valOrKey if _isArray
@@ -146,7 +150,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
   _ignoreFields = ['length', 'forEach', 'map']
 
-  _getArrayAndKeys = (collection, keys, bailOutCb, cb) ->
+  getArrayAndKeys = (collection, keys, bailOutCb, cb) ->
     #checks to handle array and object iteration
     if angular.isArray collection
       array = collection
@@ -157,12 +161,12 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         array = []
         for propName, val of collection
           if collection.hasOwnProperty(propName) and !_.includes(_ignoreFields, propName)
-            array.push val
+            array.push propName
 
     if !cb? #shifting args if last cb is not defined
       cb = bailOutCb
 
-    if angular.isArray(array) and (array == undefined or array?.length <= 0)
+    if angular.isArray(array) and !array?.length
       return bailOutCb() if cb != bailOutCb
     cb(array, keys)
 
@@ -177,8 +181,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
     Optional Asynchronous Chunking via promises.
   ###
   doChunk = (collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, _keys) ->
-    _getArrayAndKeys collection, _keys, (array, keys) ->
-
+    getArrayAndKeys collection, _keys, (array, keys) ->
+      # logger.debug array
+      # logger.debug keys
       if chunkSizeOrDontChunk and chunkSizeOrDontChunk < array.length
         cnt = chunkSizeOrDontChunk
       else
@@ -186,9 +191,12 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
       i = index
       keepGoing = true
+      # logger.debug "cnt: #{cnt}"
       while keepGoing and cnt-- and i < (if array then array.length else i + 1)
+        # logger.debug "cnt: #{cnt}"
         # process array[index] here
         val = _getIterateeValue(collection, array, i)
+        # logger.debug "val: #{val}"
         keepGoing = if angular.isFunction val then true else logTryCatch chunkCb, undefined, overallD, [val, i]
         ++i
 
@@ -215,7 +223,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       overallD.reject error
       return ret
 
-    _getArrayAndKeys collection, _keys
+    getArrayAndKeys collection, _keys
     , ->
       overallD.resolve()
       return ret
@@ -228,7 +236,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   #copied from underscore but w/ async each above
   map = (collection, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, _keys) ->
     results = []
-    _getArrayAndKeys collection, _keys
+    getArrayAndKeys collection, _keys
     , ->
       return uiGmapPromise.resolve(results)
     , (array, keys) ->
@@ -244,6 +252,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
   managePromiseQueue: managePromiseQueue
   promiseLock: managePromiseQueue
   defaultChunkSize: defaultChunkSize
+  getArrayAndKeys: getArrayAndKeys
   chunkSizeFrom: (fromSize, ret = undefined) ->
     if _.isNumber fromSize
       ret = fromSize

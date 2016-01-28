@@ -1,3 +1,4 @@
+###global _:true,angular:true,###
 angular.module("uiGmapgoogle-maps.directives.api.models.parent")
 .factory "uiGmapMarkersParentModel", [
   "uiGmapIMarkerParentModel", "uiGmapModelsWatcher",
@@ -19,7 +20,6 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
           constructor: (scope, element, attrs, map) ->
             super(scope, element, attrs, map)
             @interface = IMarker
-            self = @
 
             _setPlurals(new PropMap(), @)
             @scope.pluralsUpdate =
@@ -62,7 +62,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             else
               @pieceMeal(scope)
 
-          validateScope: (scope)=>
+          validateScope: (scope) =>
             modelsNotDefined = angular.isUndefined(scope.models) or scope.models == undefined
             if(modelsNotDefined)
               @$log.error(@constructor.name + ": no valid models attribute found")
@@ -97,7 +97,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               #rollback to not have stack overflow to call self over and over
               angular.extend typeEvents, @origTypeEvents
             internalHandles = {}
-            _.each events, (eventName) =>
+            _.each events, (eventName) ->
               internalHandles[eventName] = (group) ->
                 self.maybeExecMappedEvent group, eventName
 
@@ -129,7 +129,7 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             maybeCanceled = null
 
             _async.promiseLock @, uiGmapPromise.promiseTypes.create, 'createAllNew'
-            , ((canceledMsg) -> maybeCanceled= canceledMsg)
+            , ((canceledMsg) -> maybeCanceled = canceledMsg)
             , =>
               _async.each scope.models, (model) =>
                 @newChildMarker(model, scope)
@@ -191,7 +191,9 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
               @inProgress = false
               @rebuildAll(scope)
 
-          newChildMarker: (model, scope)=>
+          newChildMarker: (model, scope) =>
+            unless model
+              throw 'model undefined'
             unless model[@idKey]?
               @$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.")
               return
@@ -202,14 +204,14 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             IMarker.scopeKeys.forEach (k) ->
               keys[k] = scope[k]
             child = new MarkerChildModel(childScope, model, keys, @map, @DEFAULTS,
-              @doClick, @gManager, doDrawSelf = false) #this is managed so child is not drawing itself
+              @doClick, @gManager, false) #this is managed so child is not drawing itself
             @scope.plurals.put(model[@idKey], child) #major change this makes model.id a requirement
             child
 
           onDestroy: (scope) =>
             super(scope)
             _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
-              _async.each @scope.plurals.values(), (model) =>
+              _async.each @scope.plurals.values(), (model) ->
                 model.destroy(false) if model?
               , _async.chunkSizeFrom(@scope.cleanchunk, false)
               .then =>

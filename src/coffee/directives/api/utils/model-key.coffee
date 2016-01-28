@@ -24,11 +24,11 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         if not scope? then throw 'No scope set!'
 
         if hasCoords
-          console.log 'hasCoords'
+          # logger.debug 'hasCoords'
           coord1 = @scopeOrModelVal('coords', scope, model1)
           coord2 = @scopeOrModelVal('coords', scope, model2)
-          console.log "coord1:" + JSON.stringify coord1
-          console.log "coord2:" + JSON.stringify coord2
+          # logger.debug "coord1:" + JSON.stringify coord1
+          # logger.debug "coord2:" + JSON.stringify coord2
           isEqual = GmapUtil.equalCoords coord1, coord2
 
           #deep comparison of the rest of properties

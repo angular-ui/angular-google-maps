@@ -1,3 +1,4 @@
+###global _:true,expect:true,###
 describe "_async", ->
 
   beforeEach ->
@@ -9,6 +10,36 @@ describe "_async", ->
 
   afterEach ->
     @subject = null
+
+  describe 'getArrayAndKeys', ->
+    describe 'handles array', ->
+      it 'normal', (done) ->
+        testColl = [1,2,3]
+        @subject.getArrayAndKeys testColl, null, null, (array, keys) ->
+          expect(testColl).toEqual array
+          expect(keys).toBeFalsy()
+          done()
+
+    describe 'handles object', ->
+      it 'normal', (done) ->
+        testColl =
+          'one':1
+          'two':2
+          'three':3
+        @subject.getArrayAndKeys testColl, null, (-> throw "bail"), (array, keys) ->
+          expect(['one','two','three']).toEqual array
+          expect(keys).toBeFalsy()
+          done()
+
+      it 'came w keys', (done) ->
+        testColl =
+          '1':1
+          '2':2
+          '3':3
+        @subject.getArrayAndKeys testColl, ['a','b','c'], (-> throw "bail"), (array, keys) ->
+          expect(['a','b','c']).toEqual array
+          expect(['a','b','c']).toEqual keys
+          done()
 
   describe "arrays", ->
 

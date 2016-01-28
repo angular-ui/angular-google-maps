@@ -359,6 +359,12 @@ Nicholas McCready - https://twitter.com/nmccready
       }, {
         missingName: 'some',
         swapName: 'any'
+      }, {
+        missingName: 'first',
+        swapName: 'head'
+      }, {
+        missingName: 'head',
+        swapName: 'first'
       }
     ].forEach(function(toMonkeyPatch) {
       return fixLodash(toMonkeyPatch);
@@ -577,7 +583,10 @@ Nicholas McCready - https://twitter.com/nmccready
   });
 
 }).call(this);
-;(function() {
+;
+/*global _:true,angular:true, */
+
+(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmap_sync', [
     function() {
       return {
@@ -597,7 +606,7 @@ Nicholas McCready - https://twitter.com/nmccready
     }
   ]).service('uiGmap_async', [
     '$timeout', 'uiGmapPromise', 'uiGmapLogger', '$q', 'uiGmapDataStructures', 'uiGmapGmapUtil', function($timeout, uiGmapPromise, $log, $q, uiGmapDataStructures, uiGmapGmapUtil) {
-      var ExposedPromise, PromiseQueueManager, SniffedPromise, _getArrayAndKeys, _getIterateeValue, _ignoreFields, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch;
+      var ExposedPromise, PromiseQueueManager, SniffedPromise, _getIterateeValue, _ignoreFields, defaultChunkSize, doChunk, doSkippPromise, each, errorObject, getArrayAndKeys, isInProgress, kickPromise, logTryCatch, managePromiseQueue, map, maybeCancelPromises, promiseStatus, promiseTypes, tryCatch;
       promiseTypes = uiGmapPromise.promiseTypes;
       isInProgress = uiGmapPromise.isInProgress;
       promiseStatus = uiGmapPromise.promiseStatus;
@@ -748,7 +757,7 @@ Nicholas McCready - https://twitter.com/nmccready
         return collection[valOrKey];
       };
       _ignoreFields = ['length', 'forEach', 'map'];
-      _getArrayAndKeys = function(collection, keys, bailOutCb, cb) {
+      getArrayAndKeys = function(collection, keys, bailOutCb, cb) {
         var array, propName, val;
         if (angular.isArray(collection)) {
           array = collection;
@@ -760,7 +769,7 @@ Nicholas McCready - https://twitter.com/nmccready
             for (propName in collection) {
               val = collection[propName];
               if (collection.hasOwnProperty(propName) && !_.includes(_ignoreFields, propName)) {
-                array.push(val);
+                array.push(propName);
               }
             }
           }
@@ -768,7 +777,7 @@ Nicholas McCready - https://twitter.com/nmccready
         if (cb == null) {
           cb = bailOutCb;
         }
-        if (angular.isArray(array) && (array === void 0 || (array != null ? array.length : void 0) <= 0)) {
+        if (angular.isArray(array) && !(array != null ? array.length : void 0)) {
           if (cb !== bailOutCb) {
             return bailOutCb();
           }
@@ -787,7 +796,7 @@ Nicholas McCready - https://twitter.com/nmccready
         Optional Asynchronous Chunking via promises.
        */
       doChunk = function(collection, chunkSizeOrDontChunk, pauseMilli, chunkCb, pauseCb, overallD, index, _keys) {
-        return _getArrayAndKeys(collection, _keys, function(array, keys) {
+        return getArrayAndKeys(collection, _keys, function(array, keys) {
           var cnt, i, keepGoing, val;
           if (chunkSizeOrDontChunk && chunkSizeOrDontChunk < array.length) {
             cnt = chunkSizeOrDontChunk;
@@ -838,7 +847,7 @@ Nicholas McCready - https://twitter.com/nmccready
           overallD.reject(error);
           return ret;
         }
-        return _getArrayAndKeys(collection, _keys, function() {
+        return getArrayAndKeys(collection, _keys, function() {
           overallD.resolve();
           return ret;
         }, function(array, keys) {
@@ -849,7 +858,7 @@ Nicholas McCready - https://twitter.com/nmccready
       map = function(collection, iterator, chunkSizeOrDontChunk, pauseCb, index, pauseMilli, _keys) {
         var results;
         results = [];
-        return _getArrayAndKeys(collection, _keys, function() {
+        return getArrayAndKeys(collection, _keys, function() {
           return uiGmapPromise.resolve(results);
         }, function(array, keys) {
           return each(collection, function(o) {
@@ -865,6 +874,7 @@ Nicholas McCready - https://twitter.com/nmccready
         managePromiseQueue: managePromiseQueue,
         promiseLock: managePromiseQueue,
         defaultChunkSize: defaultChunkSize,
+        getArrayAndKeys: getArrayAndKeys,
         chunkSizeFrom: function(fromSize, ret) {
           if (ret == null) {
             ret = void 0;
@@ -1485,11 +1495,8 @@ Nicholas McCready - https://twitter.com/nmccready
             throw 'No scope set!';
           }
           if (hasCoords) {
-            console.log('hasCoords');
             coord1 = this.scopeOrModelVal('coords', scope, model1);
             coord2 = this.scopeOrModelVal('coords', scope, model2);
-            console.log("coord1:" + JSON.stringify(coord1));
-            console.log("coord2:" + JSON.stringify(coord2));
             isEqual = GmapUtil.equalCoords(coord1, coord2);
             if (!isEqual) {
               return isEqual;
@@ -4898,7 +4905,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
   ]);
 
 }).call(this);
-;(function() {
+;
+/*global _:true,angular:true, */
+
+(function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
@@ -4929,10 +4939,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.createChildScopes = bind(this.createChildScopes, this);
           this.validateScope = bind(this.validateScope, this);
           this.onWatch = bind(this.onWatch, this);
-          var self;
           MarkersParentModel.__super__.constructor.call(this, scope, element, attrs, map);
           this["interface"] = IMarker;
-          self = this;
           _setPlurals(new PropMap(), this);
           this.scope.pluralsUpdate = {
             updateCtr: 0
@@ -5034,13 +5042,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             angular.extend(typeEvents, this.origTypeEvents);
           }
           internalHandles = {};
-          _.each(events, (function(_this) {
-            return function(eventName) {
-              return internalHandles[eventName] = function(group) {
-                return self.maybeExecMappedEvent(group, eventName);
-              };
+          _.each(events, function(eventName) {
+            return internalHandles[eventName] = function(group) {
+              return self.maybeExecMappedEvent(group, eventName);
             };
-          })(this));
+          });
           return angular.extend(typeEvents, internalHandles);
         };
 
@@ -5164,7 +5170,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MarkersParentModel.prototype.newChildMarker = function(model, scope) {
-          var child, childScope, doDrawSelf, keys;
+          var child, childScope, keys;
+          if (!model) {
+            throw 'model undefined';
+          }
           if (model[this.idKey] == null) {
             this.$log.error("Marker model has no id to assign a child to. This is required for performance. Please assign id, or redirect id to a different key.");
             return;
@@ -5176,7 +5185,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           IMarker.scopeKeys.forEach(function(k) {
             return keys[k] = scope[k];
           });
-          child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gManager, doDrawSelf = false);
+          child = new MarkerChildModel(childScope, model, keys, this.map, this.DEFAULTS, this.doClick, this.gManager, false);
           this.scope.plurals.put(model[this.idKey], child);
           return child;
         };

@@ -23,6 +23,8 @@ angular.module('uiGmapgoogle-maps.extensions')
     {missingName: 'every', swapName: 'all'}
     {missingName: 'any', swapName: 'some'}
     {missingName: 'some', swapName: 'any'}
+    {missingName: 'first', swapName: 'head'}
+    {missingName: 'head', swapName: 'first'}
   ].forEach (toMonkeyPatch) ->
     fixLodash(toMonkeyPatch)
 
