@@ -1,6 +1,7 @@
 log = require('util').log
 _ = require 'lodash'
-karmaRunner = require './grunt/karma'
+kickoff = require 'karma-kickoff'
+argv = require('yargs').argv
 
 module.exports = (grunt) ->
   # Load the required plugins
@@ -49,12 +50,11 @@ module.exports = (grunt) ->
   options.open = _.extend options.open, allExamplesOpen
   grunt.initConfig options
 
+  grunt.registerTask 'build', ['verbosity', 'clean:dist', 'jshint', 'mkdir', 'coffee',
+  'concat:libs', 'replace', 'webpack', 'concat:dist', 'concat:streetview'
+  'copy']
   # Default task: build a release in dist/
-  grunt.registerTask "default", [
-    'bower', 'curl',
-    'verbosity', 'clean:dist', 'jshint', 'mkdir', 'coffee',
-    'concat:libs', 'replace', 'webpack', 'concat:dist', 'concat:streetview'
-    'copy', 'uglify:dist', 'uglify:streetview', 'karma']
+  grunt.registerTask "default", ['bower', 'curl', 'build', 'uglify:dist', 'uglify:streetview', 'karma']
 
   # run default "grunt" prior to generate _SpecRunner.html
   grunt.registerTask "spec", [
@@ -130,5 +130,18 @@ module.exports = (grunt) ->
   grunt.registerTask 's', 'server'
 
   grunt.registerTask 'karma', 'karma runner', ->
-    karmaRunner(grunt) @async()
+    kickoff @async(),
+      logFn: grunt.log.oklns
+      configFile: require.resolve './karma.conf.coffee'
+
+  grunt.registerTask 'karmaSpecific', 'karma runner', ->
+    kickoff @async(),
+      configFile: require.resolve './karma.conf.coffee'
+      logFn: grunt.log.oklns
+      appendFiles: argv.files.split(',')
+      lengthToPop: 1
+      reporters: ['mocha']
+
+  grunt.registerTask 'karmaB', ['build', 'karmaSpecific']
+  grunt.registerTask 'karmaSpecB', ['build', 'karma']
 #to see all tasks available don't forget "grunt --help" !!!

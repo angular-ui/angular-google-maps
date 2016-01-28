@@ -64,7 +64,6 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @createMarker @model
         $log.info @
 
-
       destroy: (removeFromManager = true) =>
         @removeFromManager = removeFromManager
         @scope.$destroy()

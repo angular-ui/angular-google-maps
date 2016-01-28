@@ -1,5 +1,5 @@
+###global _:true,expect:true,spyOn:true###
 describe 'uiGmapMarkers (directive creation)', ->
-  allDone =  undefined
   GMarker = null
   modelClicked = false
 
@@ -27,43 +27,43 @@ describe 'uiGmapMarkers (directive creation)', ->
 
   describe "object models", ->
     describe 'should add markers for each object in model',  ->
-      it 'from start', (done) ->
-        _.extend @scope, map: @map
+      describe 'from start', ->
+        it 'one model', (done) ->
+          _.extend @scope, map: @map
 
-        toPush = {}
-        toPush.id = 0
-        toPush.latitude = 47
-        toPush.longitude = -27
-        @scope.items =
-          0: toPush
-          length: 1
+          toPush = {}
+          toPush.id = 0
+          toPush.latitude = 47
+          toPush.longitude = -27
+          @scope.items =
+            0: toPush
+            length: 1
 
-        @digest =>
-          @timeout =>
-            expect(GMarker.instances).toEqual(1)
-            done()
+          @digest =>
+            @timeout ->
+              expect(GMarker.instances).toEqual(1)
+              done()
 
-    describe 'should add markers for each object in model',  ->
-      it 'from start', (done) ->
-        _.extend @scope, map: @map
+        it 'multiple models', (done) ->
+          _.extend @scope, map: @map
 
-        items  = {}
-        array = _.range(2)
-        items.length = array.length
-        array.forEach (num) ->
-          toPush =
-            id: num
-            latitude: 47
-            longitude: -27
+          items  = {}
+          array = _.range(2)
+          items.length = array.length
+          array.forEach (num) ->
+            toPush =
+              id: num
+              latitude: 47
+              longitude: -27
 
-          items[num] = toPush
+            items[num] = toPush
 
-        @scope.items = items
+          @scope.items = items
 
-        @digest =>
-          @timeout =>
-            expect(GMarker.instances).toEqual(array.length)
-            done()
+          @digest =>
+            @timeout ->
+              expect(GMarker.instances).toEqual(array.length)
+              done()
 
   describe "array models", ->
     describe 'should add markers for each object in model',  ->
@@ -77,7 +77,7 @@ describe 'uiGmapMarkers (directive creation)', ->
         @scope.items = [toPush]
 
         @digest =>
-          @timeout =>
+          @timeout ->
             expect(GMarker.instances).toEqual(1)
             done()
 
@@ -97,12 +97,12 @@ describe 'uiGmapMarkers (directive creation)', ->
             toPush.longitude = -27
             @scope.items.push(toPush)
           , 250
-          @timeout =>
+          @timeout ->
             expect(GMarker.instances).toEqual(1)
             done()
           , 350
 
-      describe 'update an existing marker should modify an existing gObject (gMarker)', =>
+      describe 'update an existing marker should modify an existing gObject (gMarker)', ->
         beforeEach ->
           @updateTest = (done, updateFn ) =>
             @scope.onClick = ->

@@ -10,7 +10,8 @@
     "build": "grunt",
     "example": "grunt example",
     "mocha": "mocha ./spec/backend/**/*.spec.* --harmony_destructuring -t 6000",
-    "test": "npm run mocha && grunt bower karma"
+    "test": "npm run mocha && grunt bower karma",
+    "karma": "./scripts/karma"
   },
   "keywords": [
     "angularjs",
@@ -56,19 +57,21 @@
     "grunt-webpack": "^1.0.8",
     "grunt-wrap": "^0.3.0",
     "jsonfile": "^2.0.1",
-    "karma": "^0.13.9",
+    "karma": "0.13.X",
     "karma-chrome-launcher": "^0.2.0",
     "karma-coffee-preprocessor": "^0.3.0",
-    "karma-coverage": "^0.5.1",
-    "karma-jasmine": "^0.3.6",
-    "karma-mocha-reporter": "^1.1.1",
-    "karma-phantomjs-launcher": "^0.2.1",
-    "mocha": "2.3.4",
-    "webpack": "^1.9.10"
+    "karma-coverage": "0.5.X",
+    "karma-jasmine": "0.3.X",
+    "karma-mocha-reporter": "1.X",
+    "karma-phantomjs-launcher": "0.2.X",
+    "mocha": "2.X",
+    "webpack": "^1.9.10",
+    "yargs": "3.32.0",
+    "karma-kickoff": "0.0.X"
   },
   "dependencies": {
     "angular": "1.2 - 1.4",
     "angular-simple-logger": ">=0.0.1",
-    "lodash": "3.X"
+    "lodash": "3.X - 4.X"
   }
 }

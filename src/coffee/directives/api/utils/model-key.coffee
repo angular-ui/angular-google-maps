@@ -1,13 +1,10 @@
+###global _:true, angular:true ###
 angular.module('uiGmapgoogle-maps.directives.api.utils')
-.factory 'uiGmapModelKey', ['uiGmapBaseObject', 'uiGmapGmapUtil', 'uiGmapPromise', '$q', '$timeout',
-  (BaseObject, GmapUtil, uiGmapPromise, $q, $timeout) ->
-    class ModelKey extends BaseObject
-      constructor: (@scope) ->
+.factory 'uiGmapModelKey', ['uiGmapBaseObject', 'uiGmapGmapUtil', (BaseObject, GmapUtil) ->
+    class extends BaseObject
+      constructor: (@scope, @interface = scopeKeys:[]) ->
         super()
         ##common scope keys interface for iterating comparators
-        @interface = {}
-        @interface.scopeKeys = []
-
         @defaultIdKey = 'id'
         @idKey = undefined
 #        @cached = {}
@@ -22,16 +19,23 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           GmapUtil.getPath(model, modelKey)
 
       modelKeyComparison: (model1, model2) =>
-        hasCoords = _.includes(@interface.scopeKeys, 'coords')
+        hasCoords = @interface.scopeKeys.indexOf('coords') >= 0
         scope = @scope if hasCoords and  @scope.coords? or not hasCoords
         if not scope? then throw 'No scope set!'
+
         if hasCoords
-          isEqual = GmapUtil.equalCoords  @scopeOrModelVal('coords', scope, model1),
-            @scopeOrModelVal('coords', scope, model2)
+          # logger.debug 'hasCoords'
+          coord1 = @scopeOrModelVal('coords', scope, model1)
+          coord2 = @scopeOrModelVal('coords', scope, model2)
+          # logger.debug "coord1:" + JSON.stringify coord1
+          # logger.debug "coord2:" + JSON.stringify coord2
+          isEqual = GmapUtil.equalCoords coord1, coord2
+
           #deep comparison of the rest of properties
           return isEqual unless isEqual
         #compare the rest of the properties that are being watched by scope
-        isEqual = _.every _.without(@interface.scopeKeys, 'coords'), (k) =>
+        without = _.without(@interface.scopeKeys, 'coords')
+        isEqual = _.every without, (k) =>
           @scopeOrModelVal(scope[k], scope, model1) == @scopeOrModelVal(scope[k], scope, model2)
         isEqual
 
@@ -40,8 +44,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         @idKey = if scope.idKey? then scope.idKey else @defaultIdKey
 
       setVal: (model, key, newValue) ->
-        thingToSet = @modelOrKey model, key
-        thingToSet = newValue
+        @modelOrKey model, key = newValue
         model
 
       modelOrKey: (model, key) ->
@@ -94,6 +97,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           if doWrap
             return {isScope: isScope, value: ret}
           ret
+
         scopeProp = _.get scope, key
 
         if _.isFunction scopeProp
@@ -124,11 +128,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         childScope.model = model
 
 
-      onDestroy: (scope) =>
-#        @cached = {}
+      onDestroy: (scope) ->
 
       destroy: (manualOverride = false) =>
-#        @cached = {}
         if @scope? and not @scope?.$$destroyed and (@needToManualDestroy or manualOverride)
           @scope.$destroy()
         else

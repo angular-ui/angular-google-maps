@@ -1,3 +1,4 @@
+###global angular:true, inject:true, expect: true ###
 describe 'ModelKey Tests', ->
   beforeEach ->
     angular.mock.module('uiGmapgoogle-maps.directives.api.utils')
@@ -14,16 +15,31 @@ describe 'ModelKey Tests', ->
     expect(@subject.evalModelHandle(model, 'foo')).toEqual(undefined)
     expect(@subject.evalModelHandle(model, 'sub.foo')).toEqual('bar')
 
-  it 'should properly compare models', ->
-    model1 = {coords: {latitude: 41, longitude: -27}}
-    model2 = {coords: {latitude: 40, longitude: -27}}
-    model3 = {coords: { type: 'Point', coordinates: [ -27, 40 ] }}
-    @subject.interface.scopeKeys = ['coords']
-    expect(@subject.modelKeyComparison).toThrow('No scope set!')
-    @scope.coords = 'coords'
-    expect(@subject.modelKeyComparison(model1, model1,@scope)).toEqual(true)
-    expect(@subject.modelKeyComparison(model1, model2,@scope)).toEqual(false)
-    expect(@subject.modelKeyComparison(model2, model3,@scope)).toEqual(true)
+  describe 'should properly compare models', ->
+    beforeEach ->
+      @model1 = {coords: {latitude: 41, longitude: -27}}
+      @model2 = {coords: {latitude: 40, longitude: -27}}
+      @model3 = {coords: { type: 'Point', coordinates: [ -27, 40 ] }}
+      @subject.interface.scopeKeys = ['coords']
+      delete @scope.coords
+
+    it 'throws with no scope', ->
+      expect(@subject.modelKeyComparison).toThrow('No scope set!')
+
+    it 'model1 to model1 is same', ->
+      @scope.coords = 'coords'
+      expect(@subject.modelKeyComparison(@model1, @model1))
+      .toEqual(true)
+
+    it 'model1 to model2 is diff', ->
+      @scope.coords = 'coords'
+      expect(@subject.modelKeyComparison(@model1, @model2))
+      .toEqual(false)
+
+    it 'model2 to model3 is same by values', ->
+      @scope.coords = 'coords'
+      expect(@subject.modelKeyComparison(@model2, @model3))
+      .toEqual(true)
 
   it 'should properly set id key', ->
     expect(@subject.idKey).toEqual(undefined)

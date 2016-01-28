@@ -1,3 +1,4 @@
+###global _:true, angular:true, google:true ###
 capitalize = (s) ->
   return s[0].toUpperCase() + s.slice(1)
 
@@ -8,11 +9,11 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
       @map
     setMap: (m) =>
       @map = m
-    setOptions: (o)=>
+    setOptions: (o) =>
       @opts = o
 
   class DraggableObject extends MapObject
-    setDraggable: (bool)=>
+    setDraggable: (bool) =>
       @draggable = bool
     getDraggable: =>
       @draggable
@@ -82,7 +83,7 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         if window?.google?.maps?.event?
           window.google.maps.event.fireAllListeners 'creation', @
 
-      setOptions: (o)=>
+      setOptions: (o) =>
         super(o)
         if o?.position?
           @position = o.position
@@ -124,7 +125,7 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
 
       constructor: (opts) ->
         super()
-        @props= ['draggable', 'editable', 'map','visible', 'radius', 'center']
+        @props = ['draggable', 'editable', 'map','visible', 'radius', 'center']
         @setOptions opts
 
         #getters
@@ -144,7 +145,7 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         if window?.google?.maps?.event?
           window.google.maps.event.fireAllListeners 'creation', @
 
-      setOptions: (o)=>
+      setOptions: (o) =>
         super(o)
         _.extend @, o
 
@@ -215,8 +216,8 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         @content
       draw: =>
         @drawn = true
-      onRemove: =>
-      onAdd: =>
+      onRemove: ->
+      onAdd: ->
 
   getPolyline = ->
     class Polyline extends DraggableObject
@@ -233,9 +234,9 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
         @editable
       getPath: =>
         @path
-      setEditable: (bool)=>
+      setEditable: (bool) =>
         @editable = bool
-      setPath: (array)=>
+      setPath: (array) =>
         @path = array
 
   getMVCArray = ->
@@ -291,7 +292,7 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
       window.google.maps = {}
 
       # To make debugging easier, mock everything with exceptions
-      unmocked = (api) => () => throw new String('Unmocked API ' + api)
+      unmocked = (api) -> () -> throw new String('Unmocked API ' + api)
       window.google.maps.Marker = unmocked('Marker')
       window.google.maps.event =
         clearListeners: unmocked('event.clearListeners')
@@ -353,14 +354,14 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
 
     mockOverlayView: (OverlayView = class OverlayView
       setMap: () ->) ->
-      window.google.maps.OverlayView = OverlayView
+        window.google.maps.OverlayView = OverlayView
 
     mockEvent: (event = {}) ->
       listeners = []
       #mocking google maps event listener
       if not event.addListener
         event.addListener = (thing, eventName, callBack) ->
-          found = _.find listeners, (obj)->
+          found = _.find listeners, (obj) ->
             obj.obj == thing
           unless found?
             toPush = {}
@@ -390,7 +391,7 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
 
       unless event.fireListener
         event.fireListener = (thing, eventName) ->
-          found = _.find listeners, (obj)->
+          found = _.find listeners, (obj) ->
             obj.obj == thing
           if found? and found?.events[eventName]?
             found.events[eventName].forEach (cb) -> cb(found.obj)
@@ -407,7 +408,7 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
 
       unless event.fireAllListeners
         event.fireAllListeners = (eventName, state) ->
-          listeners.forEach (obj)->
+          listeners.forEach (obj) ->
             if obj.events[eventName]?
               obj.events[eventName].forEach (cb) -> cb(state)
 
@@ -423,7 +424,7 @@ angular.module('uiGmapgoogle-maps.mocks', ['uiGmapgoogle-maps'])
     mockMVCArray: (impl = getMVCArray()) ->
       window.google.maps.MVCArray = impl
 
-    mockCircle: (Circle = getCircle())->
+    mockCircle: (Circle = getCircle()) ->
       window.google.maps.Circle = Circle
 
     mockPoint: (Point = (x, y) -> return {x: x, y: y}) ->
