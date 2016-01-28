@@ -1,6 +1,6 @@
 log = require('util').log
 _ = require 'lodash'
-karmaRunner = require './grunt/karma'
+kickoff = require 'karma-kickoff'
 argv = require('yargs').argv
 
 module.exports = (grunt) ->
@@ -130,10 +130,17 @@ module.exports = (grunt) ->
   grunt.registerTask 's', 'server'
 
   grunt.registerTask 'karma', 'karma runner', ->
-    karmaRunner(grunt) @async()
+    kickoff @async(),
+      logFn: grunt.log.oklns
+      configFile: require.resolve './karma.conf.coffee'
 
   grunt.registerTask 'karmaSpecific', 'karma runner', ->
-    karmaRunner(grunt, files: argv.files) @async()
+    kickoff @async(),
+      configFile: require.resolve './karma.conf.coffee'
+      logFn: grunt.log.oklns
+      appendFiles: argv.files.split(',')
+      lengthToPop: 1
+      reporters: ['mocha']
 
   grunt.registerTask 'karmaB', ['build', 'karmaSpecific']
   grunt.registerTask 'karmaSpecB', ['build', 'karma']

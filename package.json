@@ -66,7 +66,8 @@
     "karma-phantomjs-launcher": "0.2.X",
     "mocha": "2.X",
     "webpack": "^1.9.10",
-    "yargs": "3.32.0"
+    "yargs": "3.32.0",
+    "karma-kickoff": "0.0.X"
   },
   "dependencies": {
     "angular": "1.2 - 1.4",
