@@ -1,3 +1,4 @@
+###global _:true,angular:true,google:true###
 angular.module('uiGmapgoogle-maps.directives.api.models.child')
 .factory 'uiGmapWindowChildModel',
   ['uiGmapBaseObject', 'uiGmapGmapUtil', 'uiGmapLogger', '$compile', '$http', '$templateCache',
@@ -6,8 +7,14 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       class WindowChildModel extends BaseObject
         @include GmapUtil
         @include EventsHelper
-        constructor: (@model, @scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerScope, @element,
-          @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
+        constructor: (opts) ->
+          {
+            @model, @scope, @opts, @isIconVisibleOnClick,
+            @mapCtrl, @markerScope, @element,
+            @needToManualDestroy = false,
+            @markerIsVisibleAfterWindowClose = true,
+            @isScopeModel = false
+          } = opts
 
           #where @model is a reference to model in the controller scope
           #clonedModel is a copy for comparison

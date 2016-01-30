@@ -1,3 +1,4 @@
+###global angular:true###
 angular.module('uiGmapgoogle-maps.directives.api')
 .factory 'uiGmapWindow', [ 'uiGmapIWindow', 'uiGmapGmapUtil', 'uiGmapWindowChildModel','uiGmapLodash', 'uiGmapLogger',
   (IWindow, GmapUtil, WindowChildModel, uiGmapLodash, $log) ->

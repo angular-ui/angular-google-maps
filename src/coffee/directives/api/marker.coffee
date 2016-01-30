@@ -1,3 +1,4 @@
+###global _:true,angular:true###
 angular.module("uiGmapgoogle-maps.directives.api")
 .factory "uiGmapMarker", [
   "uiGmapIMarker", "uiGmapMarkerChildModel", "uiGmapMarkerManager", "uiGmapLogger",
@@ -13,17 +14,18 @@ angular.module("uiGmapgoogle-maps.directives.api")
         _.extend @, IMarker.handle($scope, $element)
       ]
 
-      link:(scope, element, attrs, ctrl) =>
+      link:(scope, element, attrs, ctrl) ->
         mapPromise = IMarker.mapPromise(scope, ctrl)
-        mapPromise.then (map) =>
-          gManager = new MarkerManager map
+        mapPromise.then (gMap) ->
+          gManager = new MarkerManager gMap
 
           keys = _.object(IMarker.keys,IMarker.keys)
 
-          m = new MarkerChildModel scope, scope,
-            keys, map, {}, doClick = true,
-            gManager, doDrawSelf = false,
-            trackModel = false
+          m = new MarkerChildModel {
+            scope, model: scope, keys, gMap,
+            doClick: true, gManager,
+            doDrawSelf: false, trackModel: false
+          }
 
           m.deferred.promise.then (gMarker) ->
             scope.deferred.resolve gMarker
@@ -31,7 +33,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
           if scope.control?
             scope.control.getGMarkers = gManager.getGMarkers
 
-        scope.$on '$destroy', =>
+        scope.$on '$destroy', ->
           gManager?.clear()
           gManager = null
 ]

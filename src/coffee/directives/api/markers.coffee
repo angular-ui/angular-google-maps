@@ -1,3 +1,4 @@
+###global _:true,angular:true###
 angular.module("uiGmapgoogle-maps.directives.api")
 .factory "uiGmapMarkers", [
   "uiGmapIMarker", "uiGmapPlural", "uiGmapMarkersParentModel", "uiGmap_sync", "uiGmapLogger",
@@ -24,7 +25,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
 
       link: (scope, element, attrs, ctrl) ->
         parentModel = undefined
-          
+
         ready = ->
           scope.deferred.resolve()
 

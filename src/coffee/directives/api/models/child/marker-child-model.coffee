@@ -1,3 +1,4 @@
+###global _:true,angular:true,google:true, RichMarker:true###
 angular.module('uiGmapgoogle-maps.directives.api.models.child')
 .factory 'uiGmapMarkerChildModel', [
   'uiGmapModelKey', 'uiGmapGmapUtil',
@@ -19,11 +20,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             child.gObject.setMap null
             child.gObject = null
 
-      constructor: (scope, @model, @keys, @gMap, @defaults, @doClick, @gManager, @doDrawSelf = true,
-        @trackModel = true, @needRedraw = false) ->
+      constructor: (opts) ->
+        {
+          scope, @model, @keys, @gMap, @defaults = {},
+          @doClick, @gManager, @doDrawSelf = true,
+          @trackModel = true, @needRedraw = false
+          @isScopeModel = false
+        } = opts
         #where @model is a reference to model in the controller scope
         #clonedModel is a copy for comparison
-        @clonedModel = _.clone(@model,true)
+        @clonedModel = _.clone(@model,true) if @isScopeModel
         @deferred = uiGmapPromise.defer()
         _.each @keys, (v, k) =>
           keyValue = @keys[k]
@@ -45,7 +51,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
               @handleModelChanges newValue, oldValue
           , true
         else
-          action = new PropertyAction (calledKey, newVal) =>
+          action = new PropertyAction (calledKey) =>
             #being in a closure works , direct to setMyScope is not working (but should?)
             calledKey =  'all' if _.isFunction calledKey
             if not @firstTime
@@ -80,7 +86,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @needRedraw = true
 
       updateModel: (model) =>
-        @clonedModel = _.clone(model,true) #changed from _.clone(model, true) eliminates lodash dep (so you can use underscore)
+        @clonedModel = _.clone(model,true) if @isScopeModel
         @setMyScope 'all', model, @model
 
       renderGMarker: (doDraw = true, validCb) ->

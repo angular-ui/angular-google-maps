@@ -1,3 +1,4 @@
+###global _:true,angular:true###
 angular.module('uiGmapgoogle-maps.directives.api')
 .factory 'uiGmapBasePolyChildModel', [
   'uiGmapLogger', '$timeout', 'uiGmaparray-sync', 'uiGmapGmapUtil', 'uiGmapEventsHelper'
@@ -5,10 +6,11 @@ angular.module('uiGmapgoogle-maps.directives.api')
     (Builder, gFactory) ->
       class BasePolyChildModel extends Builder
         @include GmapUtil
-        constructor: (@scope, @attrs, @map, @defaults, @model, gObjectChangeCb) ->
+        constructor: ({@scope, @attrs, @map, @defaults, @model, gObjectChangeCb, @isScopeModel = false}) ->
           #where @model is a reference to model in the controller scope
           #clonedModel is a copy for comparison
-          @clonedModel = _.clone @model, true
+          if @isScopeModel
+            @clonedModel = _.clone @model, true
 
           @isDragging = false
           @internalEvents =
