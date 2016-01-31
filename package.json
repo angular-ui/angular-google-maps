@@ -34,7 +34,7 @@
     "grunt-bump": "0.3.1",
     "grunt-cli": "~0.1.13",
     "grunt-contrib-clean": "~0.6.0",
-    "grunt-contrib-coffee": "~0.13.0",
+    "grunt-contrib-coffee": "git://github.com/nmccready/grunt-contrib-coffee#3d47cf8e539a0a7a537e6725c78c8c61b6b170eb",
     "grunt-contrib-compress": "~0.13.0",
     "grunt-contrib-concat": "~0.5.1",
     "grunt-contrib-connect": "~0.10.1",

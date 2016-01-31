@@ -1,3 +1,4 @@
+###globals angular, _, google###
 angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 .factory 'uiGmapCircleParentModel',
 ['uiGmapLogger', '$timeout','uiGmapGmapUtil',
@@ -12,7 +13,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
   class CircleParentModel extends Builder
     @include GmapUtil
     @include EventsHelper
-    constructor: (scope, element, @attrs, @map, @DEFAULTS) ->
+    constructor: (scope, element, @attrs, @gMap, @DEFAULTS) ->
       @scope = scope
       lastRadius = null
       clean = =>
@@ -26,8 +27,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
       @setMyOptions = (newVals, oldVals) =>
         return if scope.settingFromDirective
-        unless _.isEqual(newVals,oldVals) and 
-        newVals == oldVals and 
+        unless _.isEqual(newVals,oldVals) and
+        newVals == oldVals and
         (if newVals? and oldVals? then newVals.coordinates == oldVals.coordinates else true)
           gObject.setOptions @buildOpts GmapUtil.getCoords(scope.center), scope.radius
 
@@ -82,7 +83,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               scope.center.longitude = gObject.getCenter().lng()
 
 
-      scope.$on '$destroy', =>
+      scope.$on '$destroy', ->
         clean()
         gObject.setMap null
 

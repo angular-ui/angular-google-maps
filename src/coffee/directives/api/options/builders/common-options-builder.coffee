@@ -19,7 +19,7 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
       unless @scope
         $log.error 'this.scope not defined in CommonOptionsBuilder can not buildOpts'
         return
-      unless @map
+      unless @gMap
         $log.error 'this.map not defined in CommonOptionsBuilder can not buildOpts'
         return
 
@@ -27,7 +27,7 @@ angular.module('uiGmapgoogle-maps.directives.api.options.builders')
 
       stroke = @scopeOrModelVal 'stroke', @scope, model
       opts = angular.extend customOpts, @DEFAULTS,
-        map: @map
+        map: @gMap
         strokeColor: stroke?.color
         strokeOpacity: stroke?.opacity
         strokeWeight: stroke?.weight

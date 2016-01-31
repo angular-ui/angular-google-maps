@@ -9,8 +9,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
         @include EventsHelper
         constructor: (opts) ->
           {
-            @model, @scope, @opts, @isIconVisibleOnClick,
-            @mapCtrl, @markerScope, @element,
+            @model = {}, @scope, @opts, @isIconVisibleOnClick,
+            @gMap, @markerScope, @element,
             @needToManualDestroy = false,
             @markerIsVisibleAfterWindowClose = true,
             @isScopeModel = false
@@ -162,7 +162,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
               pos = @gObject.getPosition() if @gObject? and @gObject.getPosition?
               pos = maybeMarker.getPosition() if maybeMarker
               return unless pos
-              @gObject.open @mapCtrl, maybeMarker
+              @gObject.open @gMap, maybeMarker
               isOpen = @gObject.isOpen()
               @model.show = isOpen if @model.show != isOpen
 

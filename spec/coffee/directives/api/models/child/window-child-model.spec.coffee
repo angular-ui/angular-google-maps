@@ -1,3 +1,4 @@
+###globals _,google###
 describe 'uiGmapWindowChildModel', ->
     beforeEach ->
 
@@ -7,9 +8,9 @@ describe 'uiGmapWindowChildModel', ->
             @infoBoxRealTemp = window.InfoBox
         else
             window.InfoBox = (opt_opts) ->
-                opt_opts = opt_opts || {}
-                @boxClass_ = opt_opts.boxClass || 'infoBox'
-                @content_ = opt_opts.content || '';
+                opt_opts = opt_opts ? {}
+                @boxClass_ = opt_opts.boxClass ? 'infoBox'
+                @content_ = opt_opts.content ? ''
                 @div_ = document.createElement('div')
                 @div_.className = @boxClass_
 
@@ -34,7 +35,12 @@ describe 'uiGmapWindowChildModel', ->
           @gMarker
 
           @subject =
-            new uiGmapWindowChildModel model, @scope, @windowOpts, isIconVisibleOnClick, mapCtrl, undefined, '<span>hi</span>'
+            new uiGmapWindowChildModel {
+              model,
+              scope: @scope, opts: @windowOpts,
+              isIconVisibleOnClick, gMap: mapCtrl,
+              element: '<span>hi</span>'
+            }
         @injectAll()
 
     it 'can be created', ->

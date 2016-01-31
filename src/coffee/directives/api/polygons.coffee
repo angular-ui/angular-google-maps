@@ -1,3 +1,4 @@
+###global angular:true###
 angular.module('uiGmapgoogle-maps.directives.api')
 .factory 'uiGmapPolygons', [
   'uiGmapIPolygon', '$timeout', 'uiGmapPolygonsParentModel', 'uiGmapPlural',

@@ -1,3 +1,4 @@
+###global angular###
 angular.module('uiGmapgoogle-maps.directives.api')
 .service 'uiGmapPlural', [->
   _initControl = (scope, parent) ->

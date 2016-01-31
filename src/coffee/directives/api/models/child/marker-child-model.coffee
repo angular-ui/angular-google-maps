@@ -120,19 +120,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             _.each @keys, (v, k) =>
               @setMyScope k, model, oldModel, isInit, doDraw
           when 'icon'
-            @maybeSetScopeValue 'icon', model, oldModel, @iconKey, @evalModelHandle, isInit, @setIcon, doDraw
+            @maybeSetScopeValue {gSetter: @setIcon, doDraw}
           when 'coords'
-            @maybeSetScopeValue 'coords', model, oldModel, @coordsKey, @evalModelHandle, isInit, @setCoords, doDraw
+            @maybeSetScopeValue {gSetter: @setCoords, doDraw}
           when 'options'
             @createMarker(model, oldModel, isInit, doDraw) if !justCreated
 
       createMarker: (model, oldModel = undefined, isInit = false, doDraw = true) =>
-        @maybeSetScopeValue 'options', model, oldModel, @optionsKey, @evalModelHandle, isInit, @setOptions, doDraw
+        @maybeSetScopeValue {gSetter: @setOptions, doDraw}
         @firstTime = false
 
-      maybeSetScopeValue: (scopePropName, model, oldModel, modelKey, evaluate, isInit, gSetter = undefined,
-        doDraw = true) =>
-          gSetter(@scope, doDraw) if gSetter?
+      maybeSetScopeValue: ({gSetter, doDraw = true}) =>
+        gSetter(@scope, doDraw) if gSetter?
         @gManager.draw() if @doDrawSelf and doDraw
 
       isNotValid: (scope, doCheckGmarker = true) =>
