@@ -1,3 +1,4 @@
+###global _, angular###
 angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 .factory 'uiGmapBasePolysParentModel', [
   '$timeout', 'uiGmapLogger','uiGmapModelKey', 'uiGmapModelsWatcher',
@@ -44,16 +45,16 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           @onDestroy(doDelete).then =>
             @createChildScopes() if doCreate
 
-        onDestroy: (scope) =>
+        onDestroy: () =>
           super(@scope)
           _async.promiseLock @, uiGmapPromise.promiseTypes.delete, undefined, undefined, =>
-            _async.each @plurals.values(), (child) =>
+            _async.each @plurals.values(), (child) ->
               child.destroy true #to make sure it is really dead, otherwise watchers can kick off (artifacts in path create)
             , _async.chunkSizeFrom(@scope.cleanchunk, false)
             .then =>
               @plurals?.removeAll()
 
-        watchDestroy: (scope)=>
+        watchDestroy: (scope) =>
           scope.$on '$destroy', =>
             @rebuildAll(scope, false, true)
 
@@ -69,7 +70,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           else
             @pieceMeal @scope, false
 
-        watchIdKey: (scope)=>
+        watchIdKey: (scope) =>
           @setIdKey scope
           scope.$watch 'idKey', (newValue, oldValue) =>
             if (newValue != oldValue and !newValue?)
@@ -100,7 +101,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               #handle done callBack
               @firstTime = false
 
-        pieceMeal: (scope, isArray = true)=>
+        pieceMeal: (scope, isArray = true) =>
           return if scope.$$destroyed
           #allows graceful fallout of _async.each
           maybeCanceled = null
@@ -113,7 +114,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
               .then (state) =>
                 payload = state
                 if(payload.updates.length)
-                  _async.each payload.updates, (obj) =>
+                  _async.each payload.updates, (obj) ->
                     _.extend obj.child.scope, obj.model
                     obj.child.model = obj.model
                 _async.each payload.removals, (child) =>
@@ -136,7 +137,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             @inProgress = false
             @rebuildAll(@scope, true, true)
 
-        createChild: (model, gMap)=>
+        createChild: (model, gMap) =>
           childScope = @scope.$new(false)
           @setChildScope(IPoly.scopeKeys, childScope, model)
 
@@ -146,8 +147,15 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
           , true
 
           childScope.static = @scope.static
-          child = new PolyChildModel childScope, @attrs, gMap, @defaults, model, =>
-            @maybeFit()
+          child = new PolyChildModel {
+            isScopeModel: true,
+            scope: childScope
+            attrs: @attrs
+            gMap
+            defaults: @defaults, model,
+            gObjectChangeCb: =>
+              @maybeFit()
+          }
 
           unless model[@idKey]?
             @$log.error """

@@ -1,3 +1,4 @@
+###globals angular, _, google###
 angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 .factory 'uiGmapRectangleParentModel',
 ['uiGmapLogger','uiGmapGmapUtil',
@@ -7,14 +8,14 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
   class RectangleParentModel extends Builder
     @include GmapUtil
     @include EventsHelper
-    constructor: (@scope, element, @attrs, @map, @DEFAULTS) ->
+    constructor: (@scope, element, @attrs, @gMap, @DEFAULTS) ->
       # Validate required properties
       bounds = undefined
       dragging = false
       myListeners = []
       listeners = undefined
       fit = =>
-        @fitMapBounds @map, bounds  if @isTrue(@attrs.fit)
+        @fitMapBounds @gMap, bounds  if @isTrue(@attrs.fit)
       createBounds = =>
         if @scope.bounds? and @scope.bounds?.sw? and @scope.bounds?.ne? and @validateBoundPoints(@scope.bounds)
           bounds = @convertBoundPoints(@scope.bounds)
@@ -99,7 +100,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             @removeEvents listeners if listeners?
             listeners = @setEvents gObject, @scope, @scope
       # Remove gObject on scope $destroy
-      @scope.$on '$destroy', =>
+      @scope.$on '$destroy', ->
         clear()
 
       $log.info @

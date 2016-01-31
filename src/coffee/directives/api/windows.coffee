@@ -1,3 +1,4 @@
+###global angular###
 angular.module('uiGmapgoogle-maps.directives.api')
 .factory 'uiGmapWindows', [
   'uiGmapIWindow', 'uiGmapPlural', 'uiGmapWindowsParentModel', 'uiGmapPromise', 'uiGmapLogger',
@@ -30,15 +31,15 @@ angular.module('uiGmapgoogle-maps.directives.api')
             else
               @init scope, element, attrs, ctrls, map, markerScope
 
-      init: (scope, element, attrs, ctrls, map, additionalScope) =>
+      init: (scope, element, attrs, ctrls, map, additionalScope) ->
         parentModel = new WindowsParentModel(scope, element, attrs, ctrls, map, additionalScope)
         Plural.link(scope, parentModel)
         if scope.control?
-          scope.control.getGWindows = =>
-            parentModel.plurals.map (child)->
+          scope.control.getGWindows = ->
+            parentModel.plurals.map (child) ->
               child.gObject
           #deprecated use getPlurals
-          scope.control.getChildWindows = =>
+          scope.control.getChildWindows = ->
             parentModel.plurals
 
 

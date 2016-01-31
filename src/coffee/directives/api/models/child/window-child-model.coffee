@@ -1,3 +1,4 @@
+###global _:true,angular:true,google:true###
 angular.module('uiGmapgoogle-maps.directives.api.models.child')
 .factory 'uiGmapWindowChildModel',
   ['uiGmapBaseObject', 'uiGmapGmapUtil', 'uiGmapLogger', '$compile', '$http', '$templateCache',
@@ -6,12 +7,18 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
       class WindowChildModel extends BaseObject
         @include GmapUtil
         @include EventsHelper
-        constructor: (@model, @scope, @opts, @isIconVisibleOnClick, @mapCtrl, @markerScope, @element,
-          @needToManualDestroy = false, @markerIsVisibleAfterWindowClose = true) ->
+        constructor: (opts) ->
+          {
+            @model = {}, @scope, @opts, @isIconVisibleOnClick,
+            @gMap, @markerScope, @element,
+            @needToManualDestroy = false,
+            @markerIsVisibleAfterWindowClose = true,
+            @isScopeModel = false
+          } = opts
 
           #where @model is a reference to model in the controller scope
           #clonedModel is a copy for comparison
-          @clonedModel = _.clone @model, true
+          @clonedModel = _.clone @model, true if @isScopeModel
 
           @getGmarker = ->
             @markerScope?.getGMarker() if @markerScope?['getGMarker']?
@@ -155,7 +162,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
               pos = @gObject.getPosition() if @gObject? and @gObject.getPosition?
               pos = maybeMarker.getPosition() if maybeMarker
               return unless pos
-              @gObject.open @mapCtrl, maybeMarker
+              @gObject.open @gMap, maybeMarker
               isOpen = @gObject.isOpen()
               @model.show = isOpen if @model.show != isOpen
 
@@ -203,8 +210,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @scope.$destroy()
 
         updateModel: (model) =>
-          @clonedModel = _.clone(model,true)
-          _.extend(@model, @clonedModel)
+          @clonedModel = _.clone(model,true) if @isScopeModel
+          _.extend(@model, @clonedModel or model)
 
       WindowChildModel
   ]

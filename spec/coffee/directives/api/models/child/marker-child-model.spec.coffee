@@ -1,3 +1,4 @@
+###globals angular,google,inject###
 describe 'uiGmapMarkerChildModel', ->
   beforeEach ->
     #define / inject values into the item we are testing... not a controller but it allows us to inject
@@ -33,8 +34,14 @@ describe 'uiGmapMarkerChildModel', ->
         scope.coords = @coordsKey
         scope.options = @optionsKey
         mgr = new MarkerManager(document.gMap, undefined, undefined)
-        @subject = new MarkerChildModel(scope, @model, scope, document.gMap, defaults = {},
-          doClick = (()->), mgr)
+        @subject = new MarkerChildModel {
+          scope,
+          model: @model,
+          keys: scope,
+          gmap: document.gMap,
+          doClick: (()->)
+          gManager: mgr
+        }
     ]
 
 
@@ -74,21 +81,15 @@ describe 'uiGmapMarkerChildModel', ->
       expect(@subject.__proto__.evalModelHandle(@model, undefined)).toEqual(undefined)
 
   describe 'maybeSetScopeValue()', ->
-    beforeEach(->
-      @gSetterCalled = false
+    beforeEach ->
+      @gSetterObj = gSetter: ->
+      spyOn(@gSetterObj,'gSetter')
       @isInit = false
-      @gSetter = (scope)=>
-        @gSetterCalled = true
-    )
-    it 'oldModel undefined, isInit false - changes scope\'s models value, and calls gSetter ', ->
-      newModel =
-        icon: 'someIcon'
-      @subject.scope.icon = 'junk'
-      @subject.maybeSetScopeValue('icon', newModel, undefined, @iconKey,
-        @subject.__proto__.evalModelHandle, @isInit, @gSetter)
-      expect(@gSetterCalled).toEqual(true)
-      # expect(@subject.scope.icon).toEqual(newModel.icon)
 
+
+    it 'oldModel undefined, isInit false - changes scope\'s models value, and calls gSetter ', ->
+      @subject.maybeSetScopeValue(gSetter: @gSetterObj.gSetter)
+      expect(@gSetterObj.gSetter).toHaveBeenCalled()
 
   describe 'destroy()', ->
     it 'wipes internal scope', ->

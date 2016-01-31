@@ -1,4 +1,4 @@
-###global _:true,expect:true,spyOn:true###
+###globals _###
 describe 'uiGmapMarkers (directive creation)', ->
   GMarker = null
   modelClicked = false
