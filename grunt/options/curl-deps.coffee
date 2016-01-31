@@ -6,12 +6,12 @@
 # If it is on github or any git repo then npm or bower should be used otherwise use this.
 _ = require 'lodash'
 path = require 'path'
-relativePath = path.join __dirname, '../'
+relativePath = path.join __dirname, '../../'
 
 jf = require 'jsonfile'
 
 
-deps = require('../curl.json').devDependencies
+deps = require('../../curl.json').devDependencies
 
 rc = null
 rcDirectory = null
@@ -20,7 +20,7 @@ rcDirectory = null
 try
   rc = jf.readFileSync "#{relativePath}.curlrc"
   rcDirectory = rc.directory if rc
-  
+
 location = rcDirectory or 'curl_components'
 
 #take all dependencies and map them like bower / node
@@ -30,4 +30,5 @@ _.each deps, (v, k) ->
   deps["#{location}/#{repoName}/index.js"] = v
   delete deps[k]
 
-module.exports = deps
+module.exports =
+  curl : deps

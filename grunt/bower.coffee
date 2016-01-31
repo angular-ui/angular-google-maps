@@ -1,4 +1,3 @@
-fs = require 'fs'
 exec = require('child_process').exec
 
 module.exports = (grunt) ->

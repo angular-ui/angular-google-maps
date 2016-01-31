@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.3.1 2016-01-30
+/*! angular-google-maps 2.3.1 2016-01-31
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -3820,7 +3820,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           this.doShow = bind(this.doShow, this);
           var maybeMarker, ref, ref1, ref2, ref3;
           this.model = (ref = opts.model) != null ? ref : {}, this.scope = opts.scope, this.opts = opts.opts, this.isIconVisibleOnClick = opts.isIconVisibleOnClick, this.gMap = opts.gMap, this.markerScope = opts.markerScope, this.element = opts.element, this.needToManualDestroy = (ref1 = opts.needToManualDestroy) != null ? ref1 : false, this.markerIsVisibleAfterWindowClose = (ref2 = opts.markerIsVisibleAfterWindowClose) != null ? ref2 : true, this.isScopeModel = (ref3 = opts.isScopeModel) != null ? ref3 : false;
-          this.clonedModel = _.clone(this.model, true);
+          if (this.isScopeModel) {
+            this.clonedModel = _.clone(this.model, true);
+          }
           this.getGmarker = function() {
             var ref4, ref5;
             if (((ref4 = this.markerScope) != null ? ref4['getGMarker'] : void 0) != null) {
@@ -4105,8 +4107,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         WindowChildModel.prototype.updateModel = function(model) {
-          this.clonedModel = _.clone(model, true);
-          return _.extend(this.model, this.clonedModel);
+          if (this.isScopeModel) {
+            this.clonedModel = _.clone(model, true);
+          }
+          return _.extend(this.model, this.clonedModel || model);
         };
 
         return WindowChildModel;
@@ -6573,364 +6577,359 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
   ]);
 
 }).call(this);
-;(function() {
+;
+/*globals angular,_,google */
+
+(function() {
   var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapMap', [
-    '$timeout', '$q', 'uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapBaseObject', 'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid', 'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer', 'uiGmapGoogleMapsUtilV3', 'uiGmapGoogleMapApi', 'uiGmapEventsHelper', 'uiGmapGoogleMapObjectManager', function($timeout, $q, $log, GmapUtil, BaseObject, CtrlHandle, IsReady, uuid, ExtendGWin, ExtendMarkerClusterer, GoogleMapsUtilV3, GoogleMapApi, EventsHelper, GoogleMapObjectManager) {
-      'use strict';
-      var DEFAULTS, Map, initializeItems;
-      DEFAULTS = void 0;
-      initializeItems = [GoogleMapsUtilV3, ExtendGWin, ExtendMarkerClusterer];
-      return Map = (function(superClass) {
-        extend(Map, superClass);
+  angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapMap', ['$timeout', '$q', '$log', 'uiGmapGmapUtil', 'uiGmapBaseObject', 'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid', 'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer', 'uiGmapGoogleMapsUtilV3', 'uiGmapGoogleMapApi', 'uiGmapEventsHelper', 'uiGmapGoogleMapObjectManager', function($timeout, $q, $log, uiGmapGmapUtil, uiGmapBaseObject, uiGmapCtrlHandle, uiGmapIsReady, uiGmapuuid, uiGmapExtendGWin, uiGmapExtendMarkerClusterer, uiGmapGoogleMapsUtilV3, uiGmapGoogleMapApi, uiGmapEventsHelper, uiGmapGoogleMapObjectManager) {
+    var DEFAULTS, Map, initializeItems;
+    DEFAULTS = void 0;
+    initializeItems = [uiGmapGoogleMapsUtilV3, uiGmapExtendGWin, uiGmapExtendMarkerClusterer];
+    return Map = (function(superClass) {
+      extend(Map, superClass);
 
-        Map.include(GmapUtil);
+      Map.include(uiGmapGmapUtil);
 
-        function Map() {
-          this.link = bind(this.link, this);
-          var ctrlFn, self;
-          ctrlFn = function($scope) {
-            var ctrlObj, retCtrl;
-            retCtrl = void 0;
-            $scope.$on('$destroy', function() {
-              return IsReady.decrement();
-            });
-            ctrlObj = CtrlHandle.handle($scope);
-            $scope.ctrlType = 'Map';
-            $scope.deferred.promise.then(function() {
-              return initializeItems.forEach(function(i) {
-                return i.init();
-              });
-            });
-            ctrlObj.getMap = function() {
-              return $scope.map;
-            };
-            retCtrl = _.extend(this, ctrlObj);
-            return retCtrl;
-          };
-          this.controller = ['$scope', ctrlFn];
-          self = this;
-        }
-
-        Map.prototype.restrict = 'EMA';
-
-        Map.prototype.transclude = true;
-
-        Map.prototype.replace = false;
-
-        Map.prototype.template = "<div class=\"angular-google-map\"><div class=\"angular-google-map-container\">\n</div><div ng-transclude style=\"display: none\"></div></div>";
-
-        Map.prototype.scope = {
-          center: '=',
-          zoom: '=',
-          dragging: '=',
-          control: '=',
-          options: '=',
-          events: '=',
-          eventOpts: '=',
-          styles: '=',
-          bounds: '=',
-          update: '='
-        };
-
-        Map.prototype.link = function(scope, element, attrs) {
-          var listeners, unbindCenterWatch;
-          listeners = [];
-          scope.$on('$destroy', function() {
-            EventsHelper.removeEvents(listeners);
-            if (attrs.recycleMapInstance === 'true' && scope.map) {
-              GoogleMapObjectManager.recycleMapInstance(scope.map);
-              return scope.map = null;
-            }
+      function Map() {
+        this.link = bind(this.link, this);
+        var ctrlFn;
+        ctrlFn = function($scope) {
+          var ctrlObj, retCtrl;
+          retCtrl = void 0;
+          $scope.$on('$destroy', function() {
+            return uiGmapIsReady.decrement();
           });
-          scope.idleAndZoomChanged = false;
-          if (scope.center == null) {
-            unbindCenterWatch = scope.$watch('center', (function(_this) {
-              return function() {
-                if (!scope.center) {
-                  return;
-                }
-                unbindCenterWatch();
-                return _this.link(scope, element, attrs);
-              };
-            })(this));
-            return;
+          ctrlObj = uiGmapCtrlHandle.handle($scope);
+          $scope.ctrlType = 'Map';
+          $scope.deferred.promise.then(function() {
+            return initializeItems.forEach(function(i) {
+              return i.init();
+            });
+          });
+          ctrlObj.getMap = function() {
+            return $scope.map;
+          };
+          retCtrl = _.extend(this, ctrlObj);
+          return retCtrl;
+        };
+        this.controller = ['$scope', ctrlFn];
+      }
+
+      Map.prototype.restrict = 'EMA';
+
+      Map.prototype.transclude = true;
+
+      Map.prototype.replace = false;
+
+      Map.prototype.template = "<div class=\"angular-google-map\"><div class=\"angular-google-map-container\">\n</div><div ng-transclude style=\"display: none\"></div></div>";
+
+      Map.prototype.scope = {
+        center: '=',
+        zoom: '=',
+        dragging: '=',
+        control: '=',
+        options: '=',
+        events: '=',
+        eventOpts: '=',
+        styles: '=',
+        bounds: '=',
+        update: '='
+      };
+
+      Map.prototype.link = function(scope, element, attrs) {
+        var listeners, unbindCenterWatch;
+        listeners = [];
+        scope.$on('$destroy', function() {
+          uiGmapEventsHelper.removeEvents(listeners);
+          if (attrs.recycleMapInstance === 'true' && scope.map) {
+            uiGmapGoogleMapObjectManager.recycleMapInstance(scope.map);
+            return scope.map = null;
           }
-          return GoogleMapApi.then((function(_this) {
-            return function(maps) {
-              var _gMap, customListeners, disabledEvents, dragging, el, eventName, getEventHandler, mapOptions, maybeHookToEvent, opts, ref, resolveSpawned, settingFromDirective, spawned, type, updateCenter, zoomPromise;
-              DEFAULTS = {
-                mapTypeId: maps.MapTypeId.ROADMAP
-              };
-              spawned = IsReady.spawn();
-              resolveSpawned = function() {
-                return spawned.deferred.resolve({
-                  instance: spawned.instance,
-                  map: _gMap
-                });
-              };
-              if (!_this.validateCoords(scope.center)) {
-                $log.error('angular-google-maps: could not find a valid center property');
+        });
+        scope.idleAndZoomChanged = false;
+        if (scope.center == null) {
+          unbindCenterWatch = scope.$watch('center', (function(_this) {
+            return function() {
+              if (!scope.center) {
                 return;
               }
-              if (!angular.isDefined(scope.zoom)) {
-                $log.error('angular-google-maps: map zoom property not set');
-                return;
-              }
-              el = angular.element(element);
-              el.addClass('angular-google-map');
-              opts = {
-                options: {}
-              };
-              if (attrs.options) {
-                opts.options = scope.options;
-              }
-              if (attrs.styles) {
-                opts.styles = scope.styles;
-              }
-              if (attrs.type) {
-                type = attrs.type.toUpperCase();
-                if (google.maps.MapTypeId.hasOwnProperty(type)) {
-                  opts.mapTypeId = google.maps.MapTypeId[attrs.type.toUpperCase()];
-                } else {
-                  $log.error("angular-google-maps: invalid map type '" + attrs.type + "'");
-                }
-              }
-              mapOptions = angular.extend({}, DEFAULTS, opts, {
-                center: _this.getCoords(scope.center),
-                zoom: scope.zoom,
-                bounds: scope.bounds
-              });
-              if (attrs.recycleMapInstance === 'true') {
-                _gMap = GoogleMapObjectManager.createMapInstance(el.find('div')[1], mapOptions);
-              } else {
-                _gMap = new google.maps.Map(el.find('div')[1], mapOptions);
-              }
-              _gMap['uiGmap_id'] = uuid.generate();
-              dragging = false;
-              listeners.push(google.maps.event.addListenerOnce(_gMap, 'idle', function() {
-                scope.deferred.resolve(_gMap);
-                return resolveSpawned();
-              }));
-              disabledEvents = attrs.events && (((ref = scope.events) != null ? ref.blacklist : void 0) != null) ? scope.events.blacklist : [];
-              if (_.isString(disabledEvents)) {
-                disabledEvents = [disabledEvents];
-              }
-              maybeHookToEvent = function(eventName, fn, prefn) {
-                if (!_.includes(disabledEvents, eventName)) {
-                  if (prefn) {
-                    prefn();
-                  }
-                  return listeners.push(google.maps.event.addListener(_gMap, eventName, function() {
-                    var ref1;
-                    if (!((ref1 = scope.update) != null ? ref1.lazy : void 0)) {
-                      return fn();
-                    }
-                  }));
-                }
-              };
-              if (!_.includes(disabledEvents, 'all')) {
-                maybeHookToEvent('dragstart', function() {
-                  dragging = true;
-                  return scope.$evalAsync(function(s) {
-                    if (s.dragging != null) {
-                      return s.dragging = dragging;
-                    }
-                  });
-                });
-                maybeHookToEvent('dragend', function() {
-                  dragging = false;
-                  return scope.$evalAsync(function(s) {
-                    if (s.dragging != null) {
-                      return s.dragging = dragging;
-                    }
-                  });
-                });
-                updateCenter = function(c, s) {
-                  if (c == null) {
-                    c = _gMap.center;
-                  }
-                  if (s == null) {
-                    s = scope;
-                  }
-                  if (_.includes(disabledEvents, 'center')) {
-                    return;
-                  }
-                  if (angular.isDefined(s.center.type)) {
-                    if (s.center.coordinates[1] !== c.lat()) {
-                      s.center.coordinates[1] = c.lat();
-                    }
-                    if (s.center.coordinates[0] !== c.lng()) {
-                      return s.center.coordinates[0] = c.lng();
-                    }
-                  } else {
-                    if (s.center.latitude !== c.lat()) {
-                      s.center.latitude = c.lat();
-                    }
-                    if (s.center.longitude !== c.lng()) {
-                      return s.center.longitude = c.lng();
-                    }
-                  }
-                };
-                settingFromDirective = false;
-                maybeHookToEvent('idle', function() {
-                  var b, ne, sw;
-                  b = _gMap.getBounds();
-                  ne = b.getNorthEast();
-                  sw = b.getSouthWest();
-                  settingFromDirective = true;
-                  return scope.$evalAsync(function(s) {
-                    updateCenter();
-                    if (!_.isUndefined(s.bounds) && !_.includes(disabledEvents, 'bounds')) {
-                      s.bounds.northeast = {
-                        latitude: ne.lat(),
-                        longitude: ne.lng()
-                      };
-                      s.bounds.southwest = {
-                        latitude: sw.lat(),
-                        longitude: sw.lng()
-                      };
-                    }
-                    if (!_.includes(disabledEvents, 'zoom')) {
-                      s.zoom = _gMap.zoom;
-                      scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
-                    }
-                    return settingFromDirective = false;
-                  });
-                });
-              }
-              if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
-                getEventHandler = function(eventName) {
-                  return function() {
-                    return scope.events[eventName].apply(scope, [_gMap, eventName, arguments]);
-                  };
-                };
-                customListeners = [];
-                for (eventName in scope.events) {
-                  if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
-                    customListeners.push(google.maps.event.addListener(_gMap, eventName, getEventHandler(eventName)));
-                  }
-                }
-                listeners.concat(customListeners);
-              }
-              _gMap.getOptions = function() {
-                return mapOptions;
-              };
-              scope.map = _gMap;
-              if ((attrs.control != null) && (scope.control != null)) {
-                scope.control.refresh = function(maybeCoords) {
-                  var coords, ref1, ref2;
-                  if (_gMap == null) {
-                    return;
-                  }
-                  if (((typeof google !== "undefined" && google !== null ? (ref1 = google.maps) != null ? (ref2 = ref1.event) != null ? ref2.trigger : void 0 : void 0 : void 0) != null) && (_gMap != null)) {
-                    google.maps.event.trigger(_gMap, 'resize');
-                  }
-                  if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.longitude : void 0) != null)) {
-                    coords = _this.getCoords(maybeCoords);
-                    if (_this.isTrue(attrs.pan)) {
-                      return _gMap.panTo(coords);
-                    } else {
-                      return _gMap.setCenter(coords);
-                    }
-                  }
-                };
-                scope.control.getGMap = function() {
-                  return _gMap;
-                };
-                scope.control.getMapOptions = function() {
-                  return mapOptions;
-                };
-                scope.control.getCustomEventListeners = function() {
-                  return customListeners;
-                };
-                scope.control.removeEvents = function(yourListeners) {
-                  return EventsHelper.removeEvents(yourListeners);
-                };
-              }
-              scope.$watch('center', function(newValue, oldValue) {
-                var coords, settingCenterFromScope;
-                if (newValue === oldValue || settingFromDirective) {
-                  return;
-                }
-                coords = _this.getCoords(scope.center);
-                if (coords.lat() === _gMap.center.lat() && coords.lng() === _gMap.center.lng()) {
-                  return;
-                }
-                settingCenterFromScope = true;
-                if (!dragging) {
-                  if (!_this.validateCoords(newValue)) {
-                    $log.error("Invalid center for newValue: " + (JSON.stringify(newValue)));
-                  }
-                  if (_this.isTrue(attrs.pan) && scope.zoom === _gMap.zoom) {
-                    _gMap.panTo(coords);
-                  } else {
-                    _gMap.setCenter(coords);
-                  }
-                }
-                return settingCenterFromScope = false;
-              }, true);
-              zoomPromise = null;
-              scope.$watch('zoom', function(newValue, oldValue) {
-                var ref1, ref2, settingZoomFromScope;
-                if (newValue == null) {
-                  return;
-                }
-                if (_.isEqual(newValue, oldValue) || (_gMap != null ? _gMap.getZoom() : void 0) === (scope != null ? scope.zoom : void 0) || settingFromDirective) {
-                  return;
-                }
-                settingZoomFromScope = true;
-                if (zoomPromise != null) {
-                  $timeout.cancel(zoomPromise);
-                }
-                return zoomPromise = $timeout(function() {
-                  _gMap.setZoom(newValue);
-                  return settingZoomFromScope = false;
-                }, ((ref1 = scope.eventOpts) != null ? (ref2 = ref1.debounce) != null ? ref2.zoomMs : void 0 : void 0) + 20, false);
-              });
-              scope.$watch('bounds', function(newValue, oldValue) {
-                var bounds, ne, ref1, ref2, ref3, ref4, sw;
-                if (newValue === oldValue) {
-                  return;
-                }
-                if (((newValue != null ? (ref1 = newValue.northeast) != null ? ref1.latitude : void 0 : void 0) == null) || ((newValue != null ? (ref2 = newValue.northeast) != null ? ref2.longitude : void 0 : void 0) == null) || ((newValue != null ? (ref3 = newValue.southwest) != null ? ref3.latitude : void 0 : void 0) == null) || ((newValue != null ? (ref4 = newValue.southwest) != null ? ref4.longitude : void 0 : void 0) == null)) {
-                  $log.error("Invalid map bounds for new value: " + (JSON.stringify(newValue)));
-                  return;
-                }
-                ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude);
-                sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude);
-                bounds = new google.maps.LatLngBounds(sw, ne);
-                return _gMap.fitBounds(bounds);
-              });
-              return ['options', 'styles'].forEach(function(toWatch) {
-                return scope.$watch(toWatch, function(newValue, oldValue) {
-                  var watchItem;
-                  watchItem = this.exp;
-                  if (_.isEqual(newValue, oldValue)) {
-                    return;
-                  }
-                  if (watchItem === 'options') {
-                    opts.options = newValue;
-                  } else {
-                    opts.options[watchItem] = newValue;
-                  }
-                  if (_gMap != null) {
-                    return _gMap.setOptions(opts);
-                  }
-                }, true);
-              });
+              unbindCenterWatch();
+              return _this.link(scope, element, attrs);
             };
           })(this));
-        };
+          return;
+        }
+        return uiGmapGoogleMapApi.then((function(_this) {
+          return function(maps) {
+            var _gMap, customListeners, disabledEvents, dragging, el, eventName, getEventHandler, mapOptions, maybeHookToEvent, opts, ref, resolveSpawned, settingFromDirective, spawned, type, updateCenter, zoomPromise;
+            DEFAULTS = {
+              mapTypeId: maps.MapTypeId.ROADMAP
+            };
+            spawned = uiGmapIsReady.spawn();
+            resolveSpawned = function() {
+              return spawned.deferred.resolve({
+                instance: spawned.instance,
+                map: _gMap
+              });
+            };
+            if (!_this.validateCoords(scope.center)) {
+              $log.error('angular-google-maps: could not find a valid center property');
+              return;
+            }
+            if (!angular.isDefined(scope.zoom)) {
+              $log.error('angular-google-maps: map zoom property not set');
+              return;
+            }
+            el = angular.element(element);
+            el.addClass('angular-google-map');
+            opts = {
+              options: {}
+            };
+            if (attrs.options) {
+              opts.options = scope.options;
+            }
+            if (attrs.styles) {
+              opts.styles = scope.styles;
+            }
+            if (attrs.type) {
+              type = attrs.type.toUpperCase();
+              if (google.maps.MapTypeId.hasOwnProperty(type)) {
+                opts.mapTypeId = google.maps.MapTypeId[attrs.type.toUpperCase()];
+              } else {
+                $log.error("angular-google-maps: invalid map type '" + attrs.type + "'");
+              }
+            }
+            mapOptions = angular.extend({}, DEFAULTS, opts, {
+              center: _this.getCoords(scope.center),
+              zoom: scope.zoom,
+              bounds: scope.bounds
+            });
+            if (attrs.recycleMapInstance === 'true') {
+              _gMap = uiGmapGoogleMapObjectManager.createMapInstance(el.find('div')[1], mapOptions);
+            } else {
+              _gMap = new google.maps.Map(el.find('div')[1], mapOptions);
+            }
+            _gMap['uiGmap_id'] = uiGmapuuid.generate();
+            dragging = false;
+            listeners.push(google.maps.event.addListenerOnce(_gMap, 'idle', function() {
+              scope.deferred.resolve(_gMap);
+              return resolveSpawned();
+            }));
+            disabledEvents = attrs.events && (((ref = scope.events) != null ? ref.blacklist : void 0) != null) ? scope.events.blacklist : [];
+            if (_.isString(disabledEvents)) {
+              disabledEvents = [disabledEvents];
+            }
+            maybeHookToEvent = function(eventName, fn, prefn) {
+              if (!_.includes(disabledEvents, eventName)) {
+                if (prefn) {
+                  prefn();
+                }
+                return listeners.push(google.maps.event.addListener(_gMap, eventName, function() {
+                  var ref1;
+                  if (!((ref1 = scope.update) != null ? ref1.lazy : void 0)) {
+                    return fn();
+                  }
+                }));
+              }
+            };
+            if (!_.includes(disabledEvents, 'all')) {
+              maybeHookToEvent('dragstart', function() {
+                dragging = true;
+                return scope.$evalAsync(function(s) {
+                  if (s.dragging != null) {
+                    return s.dragging = dragging;
+                  }
+                });
+              });
+              maybeHookToEvent('dragend', function() {
+                dragging = false;
+                return scope.$evalAsync(function(s) {
+                  if (s.dragging != null) {
+                    return s.dragging = dragging;
+                  }
+                });
+              });
+              updateCenter = function(c, s) {
+                if (c == null) {
+                  c = _gMap.center;
+                }
+                if (s == null) {
+                  s = scope;
+                }
+                if (_.includes(disabledEvents, 'center')) {
+                  return;
+                }
+                if (angular.isDefined(s.center.type)) {
+                  if (s.center.coordinates[1] !== c.lat()) {
+                    s.center.coordinates[1] = c.lat();
+                  }
+                  if (s.center.coordinates[0] !== c.lng()) {
+                    return s.center.coordinates[0] = c.lng();
+                  }
+                } else {
+                  if (s.center.latitude !== c.lat()) {
+                    s.center.latitude = c.lat();
+                  }
+                  if (s.center.longitude !== c.lng()) {
+                    return s.center.longitude = c.lng();
+                  }
+                }
+              };
+              settingFromDirective = false;
+              maybeHookToEvent('idle', function() {
+                var b, ne, sw;
+                b = _gMap.getBounds();
+                ne = b.getNorthEast();
+                sw = b.getSouthWest();
+                settingFromDirective = true;
+                return scope.$evalAsync(function(s) {
+                  updateCenter();
+                  if (!_.isUndefined(s.bounds) && !_.includes(disabledEvents, 'bounds')) {
+                    s.bounds.northeast = {
+                      latitude: ne.lat(),
+                      longitude: ne.lng()
+                    };
+                    s.bounds.southwest = {
+                      latitude: sw.lat(),
+                      longitude: sw.lng()
+                    };
+                  }
+                  if (!_.includes(disabledEvents, 'zoom')) {
+                    s.zoom = _gMap.zoom;
+                    scope.idleAndZoomChanged = !scope.idleAndZoomChanged;
+                  }
+                  return settingFromDirective = false;
+                });
+              });
+            }
+            if (angular.isDefined(scope.events) && scope.events !== null && angular.isObject(scope.events)) {
+              getEventHandler = function(eventName) {
+                return function() {
+                  return scope.events[eventName].apply(scope, [_gMap, eventName, arguments]);
+                };
+              };
+              customListeners = [];
+              for (eventName in scope.events) {
+                if (scope.events.hasOwnProperty(eventName) && angular.isFunction(scope.events[eventName])) {
+                  customListeners.push(google.maps.event.addListener(_gMap, eventName, getEventHandler(eventName)));
+                }
+              }
+              listeners.concat(customListeners);
+            }
+            _gMap.getOptions = function() {
+              return mapOptions;
+            };
+            scope.map = _gMap;
+            if ((attrs.control != null) && (scope.control != null)) {
+              scope.control.refresh = function(maybeCoords) {
+                var coords, ref1, ref2;
+                if (_gMap == null) {
+                  return;
+                }
+                if (((typeof google !== "undefined" && google !== null ? (ref1 = google.maps) != null ? (ref2 = ref1.event) != null ? ref2.trigger : void 0 : void 0 : void 0) != null) && (_gMap != null)) {
+                  google.maps.event.trigger(_gMap, 'resize');
+                }
+                if (((maybeCoords != null ? maybeCoords.latitude : void 0) != null) && ((maybeCoords != null ? maybeCoords.longitude : void 0) != null)) {
+                  coords = _this.getCoords(maybeCoords);
+                  if (_this.isTrue(attrs.pan)) {
+                    return _gMap.panTo(coords);
+                  } else {
+                    return _gMap.setCenter(coords);
+                  }
+                }
+              };
+              scope.control.getGMap = function() {
+                return _gMap;
+              };
+              scope.control.getMapOptions = function() {
+                return mapOptions;
+              };
+              scope.control.getCustomEventListeners = function() {
+                return customListeners;
+              };
+              scope.control.removeEvents = function(yourListeners) {
+                return uiGmapEventsHelper.removeEvents(yourListeners);
+              };
+            }
+            scope.$watch('center', function(newValue, oldValue) {
+              var coords;
+              if (newValue === oldValue || settingFromDirective) {
+                return;
+              }
+              coords = _this.getCoords(scope.center);
+              if (coords.lat() === _gMap.center.lat() && coords.lng() === _gMap.center.lng()) {
+                return;
+              }
+              if (!dragging) {
+                if (!_this.validateCoords(newValue)) {
+                  $log.error("Invalid center for newValue: " + (JSON.stringify(newValue)));
+                }
+                if (_this.isTrue(attrs.pan) && scope.zoom === _gMap.zoom) {
+                  return _gMap.panTo(coords);
+                } else {
+                  return _gMap.setCenter(coords);
+                }
+              }
+            }, true);
+            zoomPromise = null;
+            scope.$watch('zoom', function(newValue, oldValue) {
+              var ref1, ref2;
+              if (newValue == null) {
+                return;
+              }
+              if (_.isEqual(newValue, oldValue) || (_gMap != null ? _gMap.getZoom() : void 0) === (scope != null ? scope.zoom : void 0) || settingFromDirective) {
+                return;
+              }
+              if (zoomPromise != null) {
+                $timeout.cancel(zoomPromise);
+              }
+              return zoomPromise = $timeout(function() {
+                return _gMap.setZoom(newValue);
+              }, ((ref1 = scope.eventOpts) != null ? (ref2 = ref1.debounce) != null ? ref2.zoomMs : void 0 : void 0) + 20, false);
+            });
+            scope.$watch('bounds', function(newValue, oldValue) {
+              var bounds, ne, ref1, ref2, ref3, ref4, sw;
+              if (newValue === oldValue) {
+                return;
+              }
+              if (((newValue != null ? (ref1 = newValue.northeast) != null ? ref1.latitude : void 0 : void 0) == null) || ((newValue != null ? (ref2 = newValue.northeast) != null ? ref2.longitude : void 0 : void 0) == null) || ((newValue != null ? (ref3 = newValue.southwest) != null ? ref3.latitude : void 0 : void 0) == null) || ((newValue != null ? (ref4 = newValue.southwest) != null ? ref4.longitude : void 0 : void 0) == null)) {
+                $log.error("Invalid map bounds for new value: " + (JSON.stringify(newValue)));
+                return;
+              }
+              ne = new google.maps.LatLng(newValue.northeast.latitude, newValue.northeast.longitude);
+              sw = new google.maps.LatLng(newValue.southwest.latitude, newValue.southwest.longitude);
+              bounds = new google.maps.LatLngBounds(sw, ne);
+              return _gMap.fitBounds(bounds);
+            });
+            return ['options', 'styles'].forEach(function(toWatch) {
+              return scope.$watch(toWatch, function(newValue, oldValue) {
+                var watchItem;
+                watchItem = this.exp;
+                if (_.isEqual(newValue, oldValue)) {
+                  return;
+                }
+                if (watchItem === 'options') {
+                  opts.options = newValue;
+                } else {
+                  opts.options[watchItem] = newValue;
+                }
+                if (_gMap != null) {
+                  return _gMap.setOptions(opts);
+                }
+              }, true);
+            });
+          };
+        })(this));
+      };
 
-        return Map;
+      return Map;
 
-      })(BaseObject);
-    }
-  ]);
+    })(uiGmapBaseObject);
+  }]);
 
 }).call(this);
 ;
@@ -7512,12 +7511,13 @@ Nicholas McCready - https://twitter.com/nmccready
 Nick Baugh - https://github.com/niftylettuce
  */
 
+
+/*globals angular */
+
 (function() {
-  angular.module("uiGmapgoogle-maps").directive("uiGmapGoogleMap", [
-    "uiGmapMap", function(Map) {
-      return new Map();
-    }
-  ]);
+  angular.module("uiGmapgoogle-maps").directive("uiGmapGoogleMap", ['uiGmapMap', function(uiGmapMap) {
+    return new uiGmapMap();
+  }]);
 
 }).call(this);
 ;
