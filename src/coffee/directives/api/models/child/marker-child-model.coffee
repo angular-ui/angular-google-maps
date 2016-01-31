@@ -28,7 +28,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           @isScopeModel = false
         } = opts
         #where @model is a reference to model in the controller scope
-        #clonedModel is a copy for comparison
+        #clonedModel is a copy for comparison (see models-watcher)
         @clonedModel = _.clone(@model,true) if @isScopeModel
         @deferred = uiGmapPromise.defer()
         _.each @keys, (v, k) =>

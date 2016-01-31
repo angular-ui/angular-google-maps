@@ -18,7 +18,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
 
           #where @model is a reference to model in the controller scope
           #clonedModel is a copy for comparison
-          @clonedModel = _.clone @model, true
+          @clonedModel = _.clone @model, true if @isScopeModel
 
           @getGmarker = ->
             @markerScope?.getGMarker() if @markerScope?['getGMarker']?
@@ -210,8 +210,8 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
             @scope.$destroy()
 
         updateModel: (model) =>
-          @clonedModel = _.clone(model,true)
-          _.extend(@model, @clonedModel)
+          @clonedModel = _.clone(model,true) if @isScopeModel
+          _.extend(@model, @clonedModel or model)
 
       WindowChildModel
   ]
