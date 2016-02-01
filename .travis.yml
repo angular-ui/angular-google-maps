@@ -16,8 +16,8 @@ branches:
 sudo: false
 after_success:
 - eval "$(ssh-agent -s)"
-- chmod 600 .travis/deploy.enc
-- ssh-add .travis/deploy.enc
+- chmod 600 .travis/deploy
+- ssh-add .travis/deploy
 - BRANCH=git branch
 - echo Current Branch $BRANCH !!!!!!!!!!!!!!!!!!!!
 - if [[ "$BRANCH" != "website" ]]; then echo "not syncing $BRANCH exiting"; exit 0;
