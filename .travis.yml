@@ -16,7 +16,7 @@ branches:
 sudo: false
 before_install:
 - openssl aes-256-cbc -K $encrypted_471396ff623e_key -iv $encrypted_471396ff623e_iv
-  -in deploy.enc -out ./.travis/deploy -d
+  -in ./.travis/deploy.enc -out ./.travis/deploy -d
 after_success:
   - eval "$(ssh-agent -s)"
   - chmod 600 .travis/deploy.enc
