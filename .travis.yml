@@ -20,8 +20,7 @@ after_success:
 - ssh-add .travis/deploy
 - BRANCH=git branch
 - echo Current Branch $BRANCH !!!!!!!!!!!!!!!!!!!!
-- if [[ "$BRANCH" != "website" ]]; then echo "not syncing $BRANCH exiting"; exit 0;
-  fi;
+- if [[ "$BRANCH" != "website" ]]; then echo "not syncing $BRANCH exiting"; exit 0; fi;
 - git add -A
 - git commit -am "buildAll from travis"
 - git remote add deploy git@github.com:angular-ui/angular-google-maps.git
