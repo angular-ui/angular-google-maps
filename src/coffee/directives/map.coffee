@@ -7,8 +7,6 @@ Nick Baugh - https://github.com/niftylettuce
 
 #jshint indent:4
 
-#globals directives,google
-angular.module("uiGmapgoogle-maps")
-.directive "uiGmapGoogleMap", ["uiGmapMap", (Map) ->
-  new Map()
-]
+###globals angular###
+angular.module("uiGmapgoogle-maps").directive "uiGmapGoogleMap", (uiGmapMap) ->
+  new uiGmapMap()

@@ -48,6 +48,7 @@
     "grunt-debug-task": "^0.1.7",
     "grunt-graphviz": "^0.1.1",
     "grunt-mkdir": "~0.1.2",
+    "grunt-ng-annotate": "1.0.1",
     "grunt-open": "~0.2.3",
     "grunt-replace": "^0.9.2",
     "grunt-subgrunt": "^0.4.5",
@@ -62,12 +63,13 @@
     "karma-coffee-preprocessor": "^0.3.0",
     "karma-coverage": "0.5.X",
     "karma-jasmine": "0.3.X",
+    "karma-kickoff": "0.0.X",
     "karma-mocha-reporter": "1.X",
     "karma-phantomjs-launcher": "0.2.X",
     "mocha": "2.X",
+    "require-directory": "2.1.1",
     "webpack": "^1.9.10",
-    "yargs": "3.32.0",
-    "karma-kickoff": "0.0.X"
+    "yargs": "3.32.0"
   },
   "dependencies": {
     "angular": "1.2 - 1.4",

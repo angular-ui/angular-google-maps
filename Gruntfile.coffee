@@ -26,6 +26,7 @@ module.exports = (grunt) ->
     'grunt-verbosity'
     'grunt-webpack'
     'grunt-angular-architecture-graph'
+    'grunt-ng-annotate'
     ].forEach (gruntLib) -> grunt.loadNpmTasks gruntLib
 
   #squishing this file done by moving grunt options out to its own file. This way we can focus on tasks!
@@ -50,16 +51,18 @@ module.exports = (grunt) ->
   options.open = _.extend options.open, allExamplesOpen
   grunt.initConfig options
 
-  grunt.registerTask 'build', ['verbosity', 'clean:dist', 'jshint', 'mkdir', 'coffee',
-  'concat:libs', 'replace', 'webpack', 'concat:dist', 'concat:streetview'
-  'copy']
-  # Default task: build a release in dist/
-  grunt.registerTask "default", ['bower', 'curl', 'build', 'uglify:dist', 'uglify:streetview', 'karma']
+  grunt.registerTask 'bowerCurl', ['bower', 'curl']
+
+  grunt.registerTask 'build', ['bowerCurl', 'clean:dist', 'jshint', 'mkdir', 'coffee', 'ngAnnotate',
+  'concat:libs', 'replace', 'webpack']
+
+  grunt.registerTask "default", [ 'verbosity', 'build', 'concat:dist', 'copy', 'uglify:dist', 'uglify:streetview', 'karma']
+
+  grunt.registerTask "buildAll", [ "build", "concat",
+    "uglify", "copy", "karma", "graph"]
 
   # run default "grunt" prior to generate _SpecRunner.html
-  grunt.registerTask "spec", [
-    'bower', 'curl',
-    'verbosity', "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat",
+  grunt.registerTask "spec", [ 'verbosity', "build", "concat:dist",
     "copy", "karma", "open:jasmine", "watch:spec"]
 
   grunt.registerTask "coverage", ['connect:coverage','open:coverage', "watch:spec"]
@@ -76,15 +79,10 @@ module.exports = (grunt) ->
 
   grunt.registerTask "fast", dev.concat ["karma"]
 
-  grunt.registerTask "mappAll", [
-    'bower', 'curl',
-    "clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat", "uglify"
-    "copy", "karma", "graph"]
 
   grunt.registerTask "build-street-view", ['clean:streetview','mkdir','coffee', 'concat:libs', 'replace',
     'concat:streetview', 'concat:streetviewMapped', 'uglify:streetview', 'uglify:streetviewMapped']
 
-  grunt.registerTask "buildAll", "mappAll"
 
   # Run the example page by creating a local copy of angular-google-maps.js
   # and running a webserver on port 3100 with livereload. Web page is opened

@@ -1,28 +1,25 @@
+###globals angular,_,google###
 angular.module('uiGmapgoogle-maps.directives.api')
-.factory 'uiGmapMap', [
-  '$timeout', '$q','uiGmapLogger', 'uiGmapGmapUtil', 'uiGmapBaseObject',
-  'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid',
-  'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer',
-  'uiGmapGoogleMapsUtilV3','uiGmapGoogleMapApi','uiGmapEventsHelper',
-  'uiGmapGoogleMapObjectManager'
-  ($timeout,$q, $log, GmapUtil, BaseObject,
-    CtrlHandle, IsReady, uuid,
-    ExtendGWin, ExtendMarkerClusterer,
-    GoogleMapsUtilV3,GoogleMapApi, EventsHelper, GoogleMapObjectManager) ->
-      'use strict'
+.factory 'uiGmapMap',
+  ($timeout,$q, $log, uiGmapGmapUtil, uiGmapBaseObject,
+    uiGmapCtrlHandle, uiGmapIsReady, uiGmapuuid,
+    uiGmapExtendGWin, uiGmapExtendMarkerClusterer,
+    uiGmapGoogleMapsUtilV3,uiGmapGoogleMapApi,
+    uiGmapEventsHelper, uiGmapGoogleMapObjectManager) ->
+
       DEFAULTS = undefined
 
-      initializeItems = [GoogleMapsUtilV3, ExtendGWin, ExtendMarkerClusterer]
+      initializeItems = [uiGmapGoogleMapsUtilV3, uiGmapExtendGWin, uiGmapExtendMarkerClusterer]
 
-      class Map extends BaseObject
-        @include GmapUtil
+      class Map extends uiGmapBaseObject
+        @include uiGmapGmapUtil
         constructor: ->
           ctrlFn = ($scope) ->
             retCtrl = undefined
             $scope.$on '$destroy', ->
-              IsReady.decrement()
+              uiGmapIsReady.decrement()
 
-            ctrlObj = CtrlHandle.handle $scope
+            ctrlObj = uiGmapCtrlHandle.handle $scope
             $scope.ctrlType = 'Map'
             $scope.deferred.promise.then ->
               initializeItems.forEach (i) ->
@@ -32,7 +29,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
             retCtrl = _.extend @, ctrlObj
             retCtrl
           @controller = ['$scope', ctrlFn ]
-          self = @
+
         restrict: 'EMA'
         transclude: true
         replace: false
@@ -56,9 +53,9 @@ angular.module('uiGmapgoogle-maps.directives.api')
         link: (scope, element, attrs) =>
           listeners = []
           scope.$on '$destroy', ->
-            EventsHelper.removeEvents listeners
+            uiGmapEventsHelper.removeEvents listeners
             if attrs.recycleMapInstance == 'true' && scope.map
-              GoogleMapObjectManager.recycleMapInstance(scope.map)
+              uiGmapGoogleMapObjectManager.recycleMapInstance(scope.map)
               scope.map = null
 
           scope.idleAndZoomChanged = false
@@ -69,9 +66,9 @@ angular.module('uiGmapgoogle-maps.directives.api')
               @link scope, element, attrs #try again
             return
 
-          GoogleMapApi.then (maps) =>
+          uiGmapGoogleMapApi.then (maps) =>
             DEFAULTS = mapTypeId: maps.MapTypeId.ROADMAP
-            spawned = IsReady.spawn()
+            spawned = uiGmapIsReady.spawn()
             resolveSpawned = ->
               spawned.deferred.resolve
                 instance: spawned.instance
@@ -97,9 +94,9 @@ angular.module('uiGmapgoogle-maps.directives.api')
             if attrs.type
               type = attrs.type.toUpperCase()
               if google.maps.MapTypeId.hasOwnProperty(type)
-                  opts.mapTypeId = google.maps.MapTypeId[attrs.type.toUpperCase()]
+                opts.mapTypeId = google.maps.MapTypeId[attrs.type.toUpperCase()]
               else
-                  $log.error "angular-google-maps: invalid map type '#{attrs.type}'"
+                $log.error "angular-google-maps: invalid map type '#{attrs.type}'"
 
             # Create the map
             mapOptions = angular.extend {}, DEFAULTS, opts,
@@ -108,10 +105,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
               bounds: scope.bounds
 
             if attrs.recycleMapInstance == 'true'
-              _gMap = GoogleMapObjectManager.createMapInstance(el.find('div')[1], mapOptions)
+              _gMap = uiGmapGoogleMapObjectManager.createMapInstance(el.find('div')[1], mapOptions)
             else
               _gMap = new google.maps.Map(el.find('div')[1], mapOptions)
-            _gMap['uiGmap_id'] = uuid.generate()
+            _gMap['uiGmap_id'] = uiGmapuuid.generate()
 
             dragging = false
 
@@ -220,7 +217,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
               scope.control.getCustomEventListeners = ->
                 customListeners
               scope.control.removeEvents = (yourListeners) ->
-                EventsHelper.removeEvents(yourListeners)
+                uiGmapEventsHelper.removeEvents(yourListeners)
 
             #UPDATES / SETS FROM CONTROLLER TO COMMAND DIRECTIVE
             #TODO: These watches could potentially be removed infavor of using control only
@@ -229,7 +226,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
               return if newValue == oldValue or settingFromDirective
               coords = @getCoords scope.center #get scope.center to make sure that newValue is not behind
               return  if coords.lat() is _gMap.center.lat() and coords.lng() is _gMap.center.lng()
-              settingCenterFromScope = true
+
               unless dragging
                 if !@validateCoords(newValue)
                   $log.error("Invalid center for newValue: #{JSON.stringify newValue}")
@@ -238,7 +235,6 @@ angular.module('uiGmapgoogle-maps.directives.api')
                 else
                   _gMap.setCenter coords
 
-              settingCenterFromScope = false
             , true
 
             zoomPromise = null
@@ -247,12 +243,9 @@ angular.module('uiGmapgoogle-maps.directives.api')
               return  if _.isEqual(newValue,oldValue) or _gMap?.getZoom() == scope?.zoom or settingFromDirective
               #make this time out longer than zoom_changes because zoom_changed should be done first
               #being done first should make scopes equal
-              settingZoomFromScope = true
-
               $timeout.cancel(zoomPromise) if zoomPromise?
               zoomPromise = $timeout  ->
                 _gMap.setZoom newValue
-                settingZoomFromScope = false
               , scope.eventOpts?.debounce?.zoomMs + 20, false
 
             scope.$watch 'bounds', (newValue, oldValue) ->
@@ -276,4 +269,3 @@ angular.module('uiGmapgoogle-maps.directives.api')
                   opts.options[watchItem] = newValue
                 _gMap.setOptions opts  if _gMap?
               , true
-  ]
