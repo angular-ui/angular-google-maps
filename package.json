@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "grunt",
+    "buildAll": "grunt buildAll",
     "example": "grunt example",
     "mocha": "mocha ./spec/backend/**/*.spec.* --harmony_destructuring -t 6000",
     "test": "npm run mocha && grunt bower karma",
