@@ -1,3 +1,4 @@
+###globals _,google###
 describe "uiGmapMap", ->
   beforeEach ->
     window['uiGmapInitiator'].initDirective @, "Map", ['initAll'], {}
@@ -34,7 +35,7 @@ describe "uiGmapMap", ->
       @digest =>
         expect(@scope.map.control.refresh).toBeUndefined()
       expect(@scope.map.control.refresh).toBeDefined()
-    
+
     it "getMapOptions", ->
       @digest =>
         expect(@scope.map.control.getMapOptions).toBeUndefined()

@@ -1,3 +1,4 @@
+###globals angular,_,inject###
 #global jasmine protects
 beforeEach ->
   @googleTemp = window.google

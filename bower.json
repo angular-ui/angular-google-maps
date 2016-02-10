@@ -3,7 +3,7 @@
   "version": "2.3.1",
   "main": "./dist/angular-google-maps.js",
   "dependencies": {
-    "angular": "1.2 - 1.4",
+    "angular": "1.2 - 1.5",
     "angular-simple-logger": ">=0.0.1",
     "lodash": "3.X - 4.X"
   },
@@ -27,8 +27,8 @@
     "dist/architecture/"
   ],
   "devDependencies": {
-    "angular-mocks": "1.2 - 1.4",
-    "angular-route": "1.2 - 1.4",
+    "angular-mocks": "1.2 - 1.5",
+    "angular-route": "1.2 - 1.5",
     "bootstrap-without-jquery": "git://github.com/tagawa/bootstrap-without-jquery.git",
     "data-structures": "~1.4.2",
     "OverlappingMarkerSpiderfier": "git://github.com/nmccready/OverlappingMarkerSpiderfier.git",

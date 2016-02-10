@@ -56,13 +56,15 @@ module.exports = (grunt) ->
   grunt.registerTask 'build', ['bowerCurl', 'clean:dist', 'jshint', 'mkdir', 'coffee', 'ngAnnotate',
   'concat:libs', 'replace', 'webpack']
 
-  grunt.registerTask "default", [ 'verbosity', 'build', 'concat:dist', 'copy', 'uglify:dist', 'uglify:streetview', 'karma']
+  grunt.registerTask 'buildDist', ['build', 'concat:dist']
+
+  grunt.registerTask "default", [ 'verbosity', 'buildDist', 'copy', 'uglify:dist', 'uglify:streetview', 'karma']
 
   grunt.registerTask "buildAll", [ "build", "concat",
     "uglify", "copy", "karma", "graph"]
 
   # run default "grunt" prior to generate _SpecRunner.html
-  grunt.registerTask "spec", [ 'verbosity', "build", "concat:dist",
+  grunt.registerTask "spec", [ 'verbosity', "buildDist",
     "copy", "karma", "open:jasmine", "watch:spec"]
 
   grunt.registerTask "coverage", ['connect:coverage','open:coverage', "watch:spec"]

@@ -7,6 +7,7 @@
 #   options: can set styles and keys
 #
 ##
+###globals angular, _###
 angular.module('uiGmapgoogle-maps.directives.api').service 'uiGmapDragZoom', [
   'uiGmapCtrlHandle', 'uiGmapPropertyAction', (CtrlHandle, PropertyAction) ->
     restrict: 'EMA'
@@ -38,9 +39,9 @@ angular.module('uiGmapgoogle-maps.directives.api').service 'uiGmapDragZoom', [
         setOptionsAction = new PropertyAction (key, newVal) ->
           enableKeyDragZoom newVal if newVal
 
-        scope.$watch 'keyboardkey', setKeyAction.sic
+        scope.$watch 'keyboardkey', setKeyAction.sic 'keyboardkey'
         setKeyAction.sic scope.keyboardkey
 
-        scope.$watch 'options', setOptionsAction.sic
+        scope.$watch 'options', setOptionsAction.sic 'options'
         setOptionsAction.sic scope.options
 ]

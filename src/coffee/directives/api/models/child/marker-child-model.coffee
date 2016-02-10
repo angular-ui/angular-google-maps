@@ -59,7 +59,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.child')
           , false
 
           _.each @keys, (v, k) ->
-            scope.$watch k, action.sic, true
+            scope.$watch k, action.sic(k), true
 
         #hiding destroy functionality as it should only be called via scope.$destroy()
         @scope.$on '$destroy', =>
