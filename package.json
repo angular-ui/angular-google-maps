@@ -74,7 +74,7 @@
     "yargs": "3.32.0"
   },
   "dependencies": {
-    "angular": "1.2 - 1.4",
+    "angular": "1.2 - 1.5",
     "angular-simple-logger": ">=0.0.1",
     "lodash": "3.X - 4.X"
   }

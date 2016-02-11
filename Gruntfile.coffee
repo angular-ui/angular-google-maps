@@ -142,6 +142,6 @@ module.exports = (grunt) ->
       lengthToPop: 1
       reporters: ['mocha']
 
-  grunt.registerTask 'karmaB', ['build', 'karmaSpecific']
-  grunt.registerTask 'karmaSpecB', ['build', 'karma']
+  grunt.registerTask 'buildSpecFile', ['buildDist', 'karmaSpecific']
+  grunt.registerTask 'buildSpec', ['buildDist', 'karma']
 #to see all tasks available don't forget "grunt --help" !!!

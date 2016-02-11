@@ -6147,10 +6147,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           return CtrlHandle.mapPromise(scope, ctrl).then(function(map) {
             var enableKeyDragZoom, setKeyAction, setOptionsAction;
             enableKeyDragZoom = function(opts) {
-              map.enableKeyDragZoom(opts);
-              if (scope.spec) {
-                return scope.spec.enableKeyDragZoom(opts);
-              }
+              return map.enableKeyDragZoom(opts);
             };
             setKeyAction = new PropertyAction(function(key, newVal) {
               if (newVal) {
@@ -6591,7 +6588,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapMap', ['$timeout', '$q', '$log', 'uiGmapGmapUtil', 'uiGmapBaseObject', 'uiGmapCtrlHandle', 'uiGmapIsReady', 'uiGmapuuid', 'uiGmapExtendGWin', 'uiGmapExtendMarkerClusterer', 'uiGmapGoogleMapsUtilV3', 'uiGmapGoogleMapApi', 'uiGmapEventsHelper', 'uiGmapGoogleMapObjectManager', function($timeout, $q, $log, uiGmapGmapUtil, uiGmapBaseObject, uiGmapCtrlHandle, uiGmapIsReady, uiGmapuuid, uiGmapExtendGWin, uiGmapExtendMarkerClusterer, uiGmapGoogleMapsUtilV3, uiGmapGoogleMapApi, uiGmapEventsHelper, uiGmapGoogleMapObjectManager) {
+  angular.module('uiGmapgoogle-maps.directives.api').factory('uiGmapMap', function($timeout, $q, $log, uiGmapGmapUtil, uiGmapBaseObject, uiGmapCtrlHandle, uiGmapIsReady, uiGmapuuid, uiGmapExtendGWin, uiGmapExtendMarkerClusterer, uiGmapGoogleMapsUtilV3, uiGmapGoogleMapApi, uiGmapEventsHelper, uiGmapGoogleMapObjectManager) {
     var DEFAULTS, Map, initializeItems;
     DEFAULTS = void 0;
     initializeItems = [uiGmapGoogleMapsUtilV3, uiGmapExtendGWin, uiGmapExtendMarkerClusterer];
@@ -6933,7 +6930,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
       return Map;
 
     })(uiGmapBaseObject);
-  }]);
+  });
 
 }).call(this);
 ;
@@ -7519,9 +7516,9 @@ Nick Baugh - https://github.com/niftylettuce
 /*globals angular */
 
 (function() {
-  angular.module("uiGmapgoogle-maps").directive("uiGmapGoogleMap", ['uiGmapMap', function(uiGmapMap) {
+  angular.module("uiGmapgoogle-maps").directive("uiGmapGoogleMap", function(uiGmapMap) {
     return new uiGmapMap();
-  }]);
+  });
 
 }).call(this);
 ;

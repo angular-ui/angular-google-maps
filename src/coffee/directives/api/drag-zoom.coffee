@@ -28,7 +28,6 @@ angular.module('uiGmapgoogle-maps.directives.api').service 'uiGmapDragZoom', [
       CtrlHandle.mapPromise(scope, ctrl).then (map) ->
         enableKeyDragZoom = (opts) ->
           map.enableKeyDragZoom(opts)
-          scope.spec.enableKeyDragZoom(opts) if scope.spec
 
         setKeyAction = new PropertyAction (key, newVal) ->
           if newVal
