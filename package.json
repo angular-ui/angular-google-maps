@@ -68,6 +68,7 @@
     "karma-mocha-reporter": "1.X",
     "karma-phantomjs-launcher": "0.2.X",
     "mocha": "2.X",
+    "phantomjs-polyfill": "0.0.1",
     "require-directory": "2.1.1",
     "webpack": "^1.9.10",
     "yargs": "3.32.0"
