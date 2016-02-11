@@ -91,11 +91,11 @@ module.exports = (grunt) ->
   # automatically in the default browser.
   grunt.registerTask 'graph', ['angular_architecture_graph']
 
-  grunt.registerTask 'bump-@-preminor', ['changelog', 'bump-only:preminor', 'mappAll', 'bump-commit']
-  grunt.registerTask 'bump-@-prerelease', ['changelog','bump-only:prerelease', 'mappAll', 'bump-commit']
-  grunt.registerTask 'bump-@', ['changelog','bump-only', 'mappAll', 'bump-commit']
-  grunt.registerTask 'bump-@-minor', ['changelog','bump-only:minor', 'mappAll', 'bump-commit']
-  grunt.registerTask 'bump-@-major', ['changelog','bump-only:major', 'mappAll', 'bump-commit']
+  grunt.registerTask 'bump-@-preminor', ['changelog', 'bump-only:preminor', 'buildAll', 'bump-commit']
+  grunt.registerTask 'bump-@-prerelease', ['changelog','bump-only:prerelease', 'buildAll', 'bump-commit']
+  grunt.registerTask 'bump-@', ['changelog','bump-only', 'buildAll', 'bump-commit']
+  grunt.registerTask 'bump-@-minor', ['changelog','bump-only:minor', 'buildAll', 'bump-commit']
+  grunt.registerTask 'bump-@-major', ['changelog','bump-only:major', 'buildAll', 'bump-commit']
 
   exampleOpenTasks = []
 
