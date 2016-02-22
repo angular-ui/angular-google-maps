@@ -56,13 +56,16 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
   });
 
   angular.extend($scope, {
-    selected: {
+    window: {
+      show: false,
       options: {
-        visible:false
-
+        pixelOffset: { width: 0, height: -40 }
       },
       templateurl:'window.tpl.html',
-      templateparameter: {}
+      templateparameter: {},
+      closeClick: function () {
+        $scope.window.show = false;
+      }
     },
     searchModel: {
       searchTerm : "Pizza"
@@ -114,16 +117,24 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
           for (var i = 0, place; place = places[i]; i++) {
             // Create a marker for each place.
             var marker = {
-              id:i,
+              idKey:i,
               place_id: place.place_id,
               name: place.name,
               latitude: place.geometry.location.lat(),
               longitude: place.geometry.location.lng(),
-              options: {
-                visible:false
-              },
               templateurl:'window.tpl.html',
-              templateparameter: place
+              templateparameter: place,
+              events: {
+                click: function (marker) {
+                  $scope.window.coords = {
+                    latitude: marker.model.latitude,
+                    longitude: marker.model.longitude
+                  }
+                  $scope.window.templateparameter = marker.model.templateparameter;
+                  $scope.window.show = true;
+                  
+                }
+              }
             };
             newMarkers.push(marker);
 
@@ -141,18 +152,6 @@ angular.module("search-box-example", ['uiGmapgoogle-maps'])
             }
           }
 
-          _.each(newMarkers, function(marker) {
-            marker.closeClick = function() {
-              $scope.selected.options.visible = false;
-              marker.options.visble = false;
-              return $scope.$apply();
-            };
-            marker.onClicked = function() {
-              $scope.selected.options.visible = false;
-              $scope.selected = marker;
-              $scope.selected.options.visible = true;
-            };
-          });
 
           $scope.map.markers = newMarkers;
         }
