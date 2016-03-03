@@ -73,27 +73,6 @@ angular.module('uiGmapgoogle-maps.directives.api')
               $log.error 'angular-google-maps: a center or bounds property is required'
               return
 
-            if angular.isDefined(scope.center) and not @validateCoords(scope.center)
-              $log.error 'angular-google-maps: the supplied center property (' + scope.center + ') is not valid'
-              return
-
-            if angular.isDefined(scope.bounds)
-              if !angular.isDefined(scope.bounds.northeast)
-                $log.error 'angular-google-maps: bounds.northeast property is not defined'
-                return
-
-              if !angular.isDefined(scope.bounds.southwest)
-                $log.error 'angular-google-maps: bounds.southwest property is not defined'
-                return
-
-              if not @validateCoords(scope.bounds.northeast)
-                $log.error 'angular-google-maps: bounds.northeast property (' + scope.bounds.northeast + ') is not valid'
-                return
-
-              if not @validateCoords(scope.bounds.southwest)
-                $log.error 'angular-google-maps: bounds.southwest property (' + scope.bounds.southwest + ') is not valid'
-                return
-
             # If center is not set, calculate the center point from bounds
             if !angular.isDefined(scope.center)
               scope.center = new google.maps.LatLngBounds(@getCoords(scope.bounds.southwest), @getCoords(scope.bounds.northeast)).getCenter();
