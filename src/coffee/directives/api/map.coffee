@@ -39,15 +39,15 @@ angular.module('uiGmapgoogle-maps.directives.api')
           </div><div ng-transclude style="display: none"></div></div>"""
 
         scope:
-          center: '=' # required
-          zoom: '=' # required
+          center: '=' # either bounds or center is required
+          zoom: '=' # optional
           dragging: '=' # optional
           control: '=' # optional
           options: '=' # optional
           events: '=' # optional
           eventOpts: '=' # optional
           styles: '=' # optional
-          bounds: '='
+          bounds: '=' # either bounds or center is required
           update: '=' # optional
 
         link: (scope, element, attrs) =>
@@ -59,12 +59,6 @@ angular.module('uiGmapgoogle-maps.directives.api')
               scope.map = null
 
           scope.idleAndZoomChanged = false
-          unless scope.center?
-            unbindCenterWatch = scope.$watch 'center', =>
-              return unless scope.center
-              unbindCenterWatch()
-              @link scope, element, attrs #try again
-            return
 
           uiGmapGoogleMapApi.then (maps) =>
             DEFAULTS = mapTypeId: maps.MapTypeId.ROADMAP
@@ -74,23 +68,28 @@ angular.module('uiGmapgoogle-maps.directives.api')
                 instance: spawned.instance
                 map: _gMap
 
-            # Center property must be specified and provide lat &
-            # lng properties
-            if not @validateCoords(scope.center)
-              $log.error 'angular-google-maps: could not find a valid center property'
+            # Either a center or bounds lat/long property must be specified
+            if not angular.isDefined(scope.center) and not angular.isDefined(scope.bounds)
+              $log.error 'angular-google-maps: a center or bounds property is required'
               return
+
+            # If center is not set, calculate the center point from bounds
+            if !angular.isDefined(scope.center)
+              scope.center = new google.maps.LatLngBounds(@getCoords(scope.bounds.southwest), @getCoords(scope.bounds.northeast)).getCenter();
+
+            # If zoom is not set, use a default value
             unless angular.isDefined(scope.zoom)
-              $log.error 'angular-google-maps: map zoom property not set'
-              return
+              scope.zoom = 10;
+
             el = angular.element(element)
             el.addClass 'angular-google-map'
 
             # Parse options
             opts =
               options: {}
-            opts.options = scope.options  if attrs.options
+            opts.options = scope.options if attrs.options
 
-            opts.styles = scope.styles  if attrs.styles
+            opts.styles = scope.styles if attrs.styles
             if attrs.type
               type = attrs.type.toUpperCase()
               if google.maps.MapTypeId.hasOwnProperty(type)
@@ -120,7 +119,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
               if attrs.events and scope.events?.blacklist?
                 scope.events.blacklist
               else []
-            if  _.isString disabledEvents
+            if _.isString disabledEvents
               disabledEvents = [disabledEvents]
 
             maybeHookToEvent = (eventName, fn, prefn) ->
@@ -141,14 +140,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
                 scope.$evalAsync (s) ->
                   s.dragging = dragging if s.dragging?
 
-              updateCenter = (c = _gMap.center, s =  scope) ->
+              updateCenter = (c = _gMap.center, s = scope) ->
                 return if _.includes disabledEvents, 'center'
-                if angular.isDefined(s.center.type)
-                  s.center.coordinates[1] = c.lat() if s.center.coordinates[1] isnt c.lat()
-                  s.center.coordinates[0] = c.lng() if s.center.coordinates[0] isnt c.lng()
-                else
-                  s.center.latitude = c.lat()  if s.center.latitude isnt c.lat()
-                  s.center.longitude = c.lng()  if s.center.longitude isnt c.lng()
+                  s.center.latitude = c.lat() if s.center.latitude isnt c.lat()
+                  s.center.longitude = c.lng() if s.center.longitude isnt c.lng()
 
               settingFromDirective = false
               maybeHookToEvent 'idle', ->
@@ -157,7 +152,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
                 sw = b.getSouthWest()
 
                 settingFromDirective = true
-                scope.$evalAsync (s)  ->
+                scope.$evalAsync (s) ->
 
                   updateCenter()
 
@@ -225,7 +220,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
             scope.$watch 'center', (newValue, oldValue) =>
               return if newValue == oldValue or settingFromDirective
               coords = @getCoords scope.center #get scope.center to make sure that newValue is not behind
-              return  if coords.lat() is _gMap.center.lat() and coords.lng() is _gMap.center.lng()
+              return if coords.lat() is _gMap.center.lat() and coords.lng() is _gMap.center.lng()
 
               unless dragging
                 if !@validateCoords(newValue)
@@ -234,22 +229,22 @@ angular.module('uiGmapgoogle-maps.directives.api')
                   _gMap.panTo coords
                 else
                   _gMap.setCenter coords
-
             , true
 
             zoomPromise = null
             scope.$watch 'zoom', (newValue, oldValue) ->
               return unless newValue?
-              return  if _.isEqual(newValue,oldValue) or _gMap?.getZoom() == scope?.zoom or settingFromDirective
+              return if _.isEqual(newValue,oldValue) or _gMap?.getZoom() == scope?.zoom or settingFromDirective
               #make this time out longer than zoom_changes because zoom_changed should be done first
               #being done first should make scopes equal
               $timeout.cancel(zoomPromise) if zoomPromise?
-              zoomPromise = $timeout  ->
+              zoomPromise = $timeout ->
                 _gMap.setZoom newValue
-              , scope.eventOpts?.debounce?.zoomMs + 20, false
+              , scope.eventOpts?.debounce?.zoomMs + 20
+              , false
 
             scope.$watch 'bounds', (newValue, oldValue) ->
-              return  if newValue is oldValue
+              return if newValue is oldValue
               if !newValue?.northeast?.latitude? or !newValue?.northeast?.longitude? or
                 !newValue?.southwest?.latitude? or !newValue?.southwest?.longitude?
                   $log.error "Invalid map bounds for new value: #{JSON.stringify newValue}"
@@ -261,10 +256,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
             ['options','styles'].forEach (toWatch) ->
               scope.$watch toWatch, (newValue,oldValue) ->
-                return  if _.isEqual(newValue,oldValue)
+                return if _.isEqual(newValue,oldValue)
                 if toWatch == 'options'
                   opts.options = newValue
                 else
                   opts.options[toWatch] = newValue
-                _gMap.setOptions opts  if _gMap?
+                _gMap.setOptions opts if _gMap?
               , true
