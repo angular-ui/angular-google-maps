@@ -49,6 +49,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
           styles: '=' # optional
           bounds: '=' # either bounds or center is required
           update: '=' # optional
+          ready: '@' # optional
 
         link: (scope, element, attrs) =>
           listeners = []
@@ -114,6 +115,11 @@ angular.module('uiGmapgoogle-maps.directives.api')
             listeners.push google.maps.event.addListenerOnce _gMap, 'idle', ->
               scope.deferred.resolve _gMap
               resolveSpawned()
+
+            # run the ready event
+            if angular.isDefined scope.ready
+              scope.$applyAsync ->
+                scope.$parent.$eval scope.ready
 
             disabledEvents =
               if attrs.events and scope.events?.blacklist?
@@ -213,6 +219,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
                 customListeners
               scope.control.removeEvents = (yourListeners) ->
                 uiGmapEventsHelper.removeEvents(yourListeners)
+
 
             #UPDATES / SETS FROM CONTROLLER TO COMMAND DIRECTIVE
             #TODO: These watches could potentially be removed infavor of using control only
