@@ -20,7 +20,10 @@ describe 'ModelKey Tests', ->
       @model1 = {coords: {latitude: 41, longitude: -27}}
       @model2 = {coords: {latitude: 40, longitude: -27}}
       @model3 = {coords: { type: 'Point', coordinates: [ -27, 40 ] }}
-      @subject.interface.scopeKeys = ['coords']
+      @model4 = {options: {animation: 2, visible: true}, coords: {latitude: 41, longitude: -27}}
+      @model5 = {options: {animation: 2, visible: true}, coords: {latitude: 41, longitude: -27}}
+      @model6 = {options: {animation: 2, visible: false}, coords: {latitude: 41, longitude: -27}}
+      @subject.interface.scopeKeys = ['coords','options']
       delete @scope.coords
 
     it 'throws with no scope', ->
@@ -40,6 +43,17 @@ describe 'ModelKey Tests', ->
       @scope.coords = 'coords'
       expect(@subject.modelKeyComparison(@model2, @model3))
       .toEqual(true)
+
+    it 'model4 to model5 with options is same by values', ->
+      @scope.coords = 'coords'
+      @scope.options = 'options'
+      expect(@subject.modelKeyComparison(@model4, @model5))
+      .toEqual(true)
+    it 'model4 to model6 with different options is diff', ->
+      @scope.coords = 'coords'
+      @scope.options = 'options'
+      expect(@subject.modelKeyComparison(@model4, @model6))
+      .toEqual(false)
 
   it 'should properly set id key', ->
     expect(@subject.idKey).toEqual(undefined)
