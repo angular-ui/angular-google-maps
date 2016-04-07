@@ -25,6 +25,7 @@ describe 'ModelKey Tests', ->
       @model6 = {options: {animation: 2, visible: false}, coords: {latitude: 41, longitude: -27}}
       @subject.interface.scopeKeys = ['coords','options']
       delete @scope.coords
+      delete @scope.options
 
     it 'throws with no scope', ->
       expect(@subject.modelKeyComparison).toThrow('No scope set!')
