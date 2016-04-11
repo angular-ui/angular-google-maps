@@ -40,9 +40,11 @@ angular.module("uiGmapgoogle-maps.directives.api")
             # checking if is using the transcluded content or will load the template
             if hasTranscludedContent
 
-              controlDiv.append transclude()
+              transclude (transcludeEl) =>
 
-              pushControl(map, controlDiv, index)
+                controlDiv.append transcludeEl
+
+                pushControl(map, controlDiv, index)
 
             else
               $http.get(scope.template, { cache: $templateCache })
