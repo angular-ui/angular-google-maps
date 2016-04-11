@@ -6101,8 +6101,10 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   return map.controls[google.maps.ControlPosition[position]].push(control[0]);
                 };
                 if (hasTranscludedContent) {
-                  controlDiv.append(transclude());
-                  return pushControl(map, controlDiv, index);
+                  return transclude(function(transcludeEl) {
+                    controlDiv.append(transcludeEl);
+                    return pushControl(map, controlDiv, index);
+                  });
                 } else {
                   return $http.get(scope.template, {
                     cache: $templateCache
