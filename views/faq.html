@@ -139,10 +139,21 @@ If only one window at a time is needed, then use 'window' and change out the bin
 </p>
 <div hljs>
 	<ui-gmap-google-map center="map.center" zoom="map.zoom">
-		<ui-gmap-window show="map.window.show" coords="map.window.model" options="map.window.options" closeclick="map.window.closeClick()">
+		<ui-gmap-window 
+			show="map.window.show"
+			coords="map.window.model" 
+			options="map.window.options"
+			closeclick="map.window.closeClick()">
+			
 			<div ng-non-bindable>test</div>
+		
 		</ui-gmap-window>
-		<ui-gmap-markers idkey="'bid'" models="map.markers" coords="'self'" docluster="false" fit="'true'" icon="'icon'" events="map.markersEvents" options="'options'"></ui-gmap-markers>
+		
+		<ui-gmap-markers
+			idkey="'bid'" models="map.markers" coords="'self'" 
+			docluster="false" fit="'true'" icon="'icon'" 
+			events="map.markersEvents" options="'options'">
+		</ui-gmap-markers>
 	</ui-gmap-google-map>
 </div>
 
