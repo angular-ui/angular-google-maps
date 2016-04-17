@@ -16,7 +16,7 @@
 <p>It is possible to access the map instance using the <code>tilesloaded</code> event:</p>
 
 <ul class="nav nav-tabs">
-    <li class="active"><a href="" data-target="#faq-map-instance-tab-html" data-toggle="tab">HTML</a></li>
+    <li class="active"><a href="" data-target="#faq-map-instance-tab-html-js" data-toggle="tab">HTML</a></li>
     <li><a href="" data-target="#faq-map-instance-tab-script" data-toggle="tab">Script</a></li>
 </ul>
 
@@ -27,15 +27,15 @@
         </div>
     </div>
     <div id="faq-map-instance-tab-script" class="tab-pane">
-        <div hljs>
+        <div hljs hljs-language='javascript'>
             $scope.map = {
-            events: {
-            tilesloaded: function (map) {
-            $scope.$apply(function () {
-            $log.info('this is the map instance', map);
-            });
-            }
-            }
+				events: {
+					tilesloaded: function (map) {
+						$scope.$apply(function () {
+							$log.info('this is the map instance', map);
+						});
+					}
+				}
             }
         </div>
     </div>
@@ -62,10 +62,10 @@
         <p>Let's assume we include the map in an <code>ng-view</code> block:</p>
 
         <div hljs>
-            $scope.$on('$viewContentLoaded', function () {
-            var mapHeight = 500; // or any other calculated value
-            $("#my-map .angular-google-map-container").height(mapHeight);
-            });
+			$scope.$on('$viewContentLoaded', function () {
+				var mapHeight = 500; // or any other calculated value
+				$("#my-map .angular-google-map-container").height(mapHeight);
+			});
         </div>
     </div>
     <div id="faq-map-height-tab-html-css" class="tab-pane">
