@@ -1,4 +1,9 @@
 <div id="map_canvas" ng-controller="mainCtrl">
+  <style type="text/css">
+  .btn-warning {
+       background-color:#EC971F;
+     }
+  </style>
     <script type="text/ng-template" id="control.tpl.html">
         <button class="btn btn-sm btn-primary" ng-class="{'btn-warning': danger}" ng-click="controlClick()">{{controlText}}</button>
     </script>
