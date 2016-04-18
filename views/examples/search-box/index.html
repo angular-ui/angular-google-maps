@@ -1,6 +1,7 @@
 <div id="map_canvas" ng-controller="mainCtrl">
-    <script type="text/ng-template" id="searchbox.tpl.html">
-        <input type="text" placeholder="Search Box">
+
+    <script id="searchbox.tpl.html" type="text/ng-template">
+      <input type="text" placeholder="Search">
     </script>
     <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
         <ui-gmap-search-box template="searchbox.template" events="searchbox.events"></ui-gmap-search-box>

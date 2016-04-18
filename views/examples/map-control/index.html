@@ -1,8 +1,18 @@
 <div id="map_canvas" ng-controller="mainCtrl">
+  <style type="text/css">
+  .btn-warning {
+       background-color:#EC971F;
+     }
+  </style>
     <script type="text/ng-template" id="control.tpl.html">
         <button class="btn btn-sm btn-primary" ng-class="{'btn-warning': danger}" ng-click="controlClick()">{{controlText}}</button>
     </script>
     <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
         <ui-gmap-map-control template="control.tpl.html" position="top-right" controller="controlCtrl" index="-1"></ui-gmap-map-control>
+        <ui-gmap-map-control>
+          <div ng-controller="inlineControlCtrl">
+              <button class="btn btn-sm btn-primary" ng-class="{'btn-warning': danger}" ng-click="controlClick()">{{controlText}}</button>
+          </div>
+        </ui-gmap-map-control>
     </ui-gmap-google-map>
 </div>

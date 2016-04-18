@@ -10,4 +10,13 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
             $scope.danger = !$scope.danger;
             alert('custom control clicked!');
         };
+    })
+    .controller('inlineControlCtrl',function($scope){
+      $scope.controlText = 'I\'m a custom control from inline template';
+      $scope.danger = false;
+      $scope.controlClick = function () {
+          $scope.danger = !$scope.danger;
+          alert('custom control from inline template clicked!');
+      };
+
     });
