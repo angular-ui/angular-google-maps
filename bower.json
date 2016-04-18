@@ -14,7 +14,7 @@
     "json3": "~3.2.4",
     "jquery": "~2.1.x",
     "es5-shim": "~2.0.8",
-    "share-button": "~0.0.3",
+    "share-button": "=0.0.3",
     "bootstrap": "~3.2.0",
     "lodash": ">=2.4.1",
     "highlightjs": "~8.7.0",
