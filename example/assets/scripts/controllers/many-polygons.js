@@ -79,7 +79,7 @@
           },
           polyEvents: {
             click: function (gPoly, eventName, polyModel) {
-              window.alert("Poly Clicked: id:" + polyModel.$id + ' ' + JSON.stringify(polyModel.path));
+              window.alert("Poly " + eventName + ": id:" + polyModel.id + ' ' + JSON.stringify(polyModel.geom));
             }
           },
           draw: undefined
@@ -89,12 +89,17 @@
           $http.get('assets/json/many_polygons.json').then(function (data) {
             $log.debug("poly length: " + data.data.length);
             $scope.map.polys = data.data;
+            rawPolys = data.data;
           });
 
         });
 
         $scope.$onRootScope("clearButtonClicked", function () {
           $scope.map.polys = [];
+        });
+
+        $scope.$onRootScope("polyButtonClicked", function () {
+          $scope.map.polys = rawPolys;
         });
 
       }])
