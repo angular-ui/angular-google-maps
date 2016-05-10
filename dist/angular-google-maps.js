@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.3.2 2016-04-25
+/*! angular-google-maps 2.3.2 2016-05-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -6074,12 +6074,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           Control.__super__.constructor.call(this);
         }
 
-        Control.prototype.link = function(scope, element, attrs, ctrl) {
+        Control.prototype.transclude = true;
+
+        Control.prototype.link = function(scope, element, attrs, ctrl, transclude) {
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
-              var index, position;
-              if (angular.isUndefined(scope.template)) {
-                _this.$log.error('mapControl: could not find a valid template property');
+              var hasTranscludedContent, index, position, transcludedContent;
+              transcludedContent = transclude();
+              hasTranscludedContent = transclude().length > 0;
+              if (!hasTranscludedContent && angular.isUndefined(scope.template)) {
+                _this.$log.error('mapControl: could not find a valid template property or elements for transclusion');
                 return;
               }
               index = angular.isDefined(scope.index && !isNaN(parseInt(scope.index))) ? parseInt(scope.index) : void 0;
@@ -6089,30 +6093,40 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return;
               }
               return IControl.mapPromise(scope, ctrl).then(function(map) {
-                var control, controlDiv;
+                var control, controlDiv, pushControl;
                 control = void 0;
                 controlDiv = angular.element('<div></div>');
-                return $http.get(scope.template, {
-                  cache: $templateCache
-                }).success(function(template) {
-                  var templateCtrl, templateScope;
-                  templateScope = scope.$new();
-                  controlDiv.append(template);
-                  if (angular.isDefined(scope.controller)) {
-                    templateCtrl = $controller(scope.controller, {
-                      $scope: templateScope
-                    });
-                    controlDiv.children().data('$ngControllerController', templateCtrl);
-                  }
-                  control = $compile(controlDiv.children())(templateScope);
+                pushControl = function(map, control, index) {
                   if (index) {
-                    return control[0].index = index;
+                    control[0].index = index;
                   }
-                }).error(function(error) {
-                  return _this.$log.error('mapControl: template could not be found');
-                }).then(function() {
                   return map.controls[google.maps.ControlPosition[position]].push(control[0]);
-                });
+                };
+                if (hasTranscludedContent) {
+                  return transclude(function(transcludeEl) {
+                    controlDiv.append(transcludeEl);
+                    return pushControl(map, controlDiv, index);
+                  });
+                } else {
+                  return $http.get(scope.template, {
+                    cache: $templateCache
+                  }).success(function(template) {
+                    var templateCtrl, templateScope;
+                    templateScope = scope.$new();
+                    controlDiv.append(template);
+                    if (angular.isDefined(scope.controller)) {
+                      templateCtrl = $controller(scope.controller, {
+                        $scope: templateScope
+                      });
+                      controlDiv.children().data('$ngControllerController', templateCtrl);
+                    }
+                    return control = $compile(controlDiv.children())(templateScope);
+                  }).error(function(error) {
+                    return _this.$log.error('mapControl: template could not be found');
+                  }).then(function() {
+                    return pushControl(map, control, index);
+                  });
+                }
               });
             };
           })(this));

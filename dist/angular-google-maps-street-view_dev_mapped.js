@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.3.2 2016-02-11
+/*! angular-google-maps 2.3.2 2016-05-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -228,7 +228,9 @@ return UUID;
         if (!value) {
           return;
         }
-        if (Array.isArray(value) && value.length === 2) {
+        if (value instanceof google.maps.LatLng) {
+          return value;
+        } else if (Array.isArray(value) && value.length === 2) {
           return new google.maps.LatLng(value[1], value[0]);
         } else if (angular.isDefined(value.type) && value.type === 'Point') {
           return new google.maps.LatLng(value.coordinates[1], value.coordinates[0]);

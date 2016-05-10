@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.3.2 2016-02-11
+/*! angular-google-maps 2.3.2 2016-05-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1036,7 +1036,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapFitHelper', [
-    'uiGmapLogger', function($log) {
+    'uiGmapLogger', '$timeout', function($log, $timeout) {
       return {
         fit: function(markersOrPoints, gMap) {
           var bounds, everSet, key, markerOrPoint, point;
@@ -1054,7 +1054,9 @@ Nicholas McCready - https://twitter.com/nmccready
               bounds.extend(point);
             }
             if (everSet) {
-              return gMap.fitBounds(bounds);
+              return $timeout(function() {
+                return gMap.fitBounds(bounds);
+              });
             }
           }
         }
@@ -1098,7 +1100,9 @@ Nicholas McCready - https://twitter.com/nmccready
         if (!value) {
           return;
         }
-        if (Array.isArray(value) && value.length === 2) {
+        if (value instanceof google.maps.LatLng) {
+          return value;
+        } else if (Array.isArray(value) && value.length === 2) {
           return new google.maps.LatLng(value[1], value[0]);
         } else if (angular.isDefined(value.type) && value.type === 'Point') {
           return new google.maps.LatLng(value.coordinates[1], value.coordinates[0]);
@@ -6070,12 +6074,16 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           Control.__super__.constructor.call(this);
         }
 
-        Control.prototype.link = function(scope, element, attrs, ctrl) {
+        Control.prototype.transclude = true;
+
+        Control.prototype.link = function(scope, element, attrs, ctrl, transclude) {
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
-              var index, position;
-              if (angular.isUndefined(scope.template)) {
-                _this.$log.error('mapControl: could not find a valid template property');
+              var hasTranscludedContent, index, position, transcludedContent;
+              transcludedContent = transclude();
+              hasTranscludedContent = transclude().length > 0;
+              if (!hasTranscludedContent && angular.isUndefined(scope.template)) {
+                _this.$log.error('mapControl: could not find a valid template property or elements for transclusion');
                 return;
               }
               index = angular.isDefined(scope.index && !isNaN(parseInt(scope.index))) ? parseInt(scope.index) : void 0;
@@ -6085,30 +6093,40 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return;
               }
               return IControl.mapPromise(scope, ctrl).then(function(map) {
-                var control, controlDiv;
+                var control, controlDiv, pushControl;
                 control = void 0;
                 controlDiv = angular.element('<div></div>');
-                return $http.get(scope.template, {
-                  cache: $templateCache
-                }).success(function(template) {
-                  var templateCtrl, templateScope;
-                  templateScope = scope.$new();
-                  controlDiv.append(template);
-                  if (angular.isDefined(scope.controller)) {
-                    templateCtrl = $controller(scope.controller, {
-                      $scope: templateScope
-                    });
-                    controlDiv.children().data('$ngControllerController', templateCtrl);
-                  }
-                  control = $compile(controlDiv.children())(templateScope);
+                pushControl = function(map, control, index) {
                   if (index) {
-                    return control[0].index = index;
+                    control[0].index = index;
                   }
-                }).error(function(error) {
-                  return _this.$log.error('mapControl: template could not be found');
-                }).then(function() {
                   return map.controls[google.maps.ControlPosition[position]].push(control[0]);
-                });
+                };
+                if (hasTranscludedContent) {
+                  return transclude(function(transcludeEl) {
+                    controlDiv.append(transcludeEl);
+                    return pushControl(map, controlDiv, index);
+                  });
+                } else {
+                  return $http.get(scope.template, {
+                    cache: $templateCache
+                  }).success(function(template) {
+                    var templateCtrl, templateScope;
+                    templateScope = scope.$new();
+                    controlDiv.append(template);
+                    if (angular.isDefined(scope.controller)) {
+                      templateCtrl = $controller(scope.controller, {
+                        $scope: templateScope
+                      });
+                      controlDiv.children().data('$ngControllerController', templateCtrl);
+                    }
+                    return control = $compile(controlDiv.children())(templateScope);
+                  }).error(function(error) {
+                    return _this.$log.error('mapControl: template could not be found');
+                  }).then(function() {
+                    return pushControl(map, control, index);
+                  });
+                }
               });
             };
           })(this));
@@ -6644,7 +6662,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
       };
 
       Map.prototype.link = function(scope, element, attrs) {
-        var listeners, unbindCenterWatch;
+        var listeners;
         listeners = [];
         scope.$on('$destroy', function() {
           uiGmapEventsHelper.removeEvents(listeners);
@@ -6654,18 +6672,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           }
         });
         scope.idleAndZoomChanged = false;
-        if (scope.center == null) {
-          unbindCenterWatch = scope.$watch('center', (function(_this) {
-            return function() {
-              if (!scope.center) {
-                return;
-              }
-              unbindCenterWatch();
-              return _this.link(scope, element, attrs);
-            };
-          })(this));
-          return;
-        }
         return uiGmapGoogleMapApi.then((function(_this) {
           return function(maps) {
             var _gMap, customListeners, disabledEvents, dragging, el, eventName, getEventHandler, mapOptions, maybeHookToEvent, opts, ref, resolveSpawned, settingFromDirective, spawned, type, updateCenter, zoomPromise;
@@ -6679,13 +6685,15 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 map: _gMap
               });
             };
-            if (!_this.validateCoords(scope.center)) {
-              $log.error('angular-google-maps: could not find a valid center property');
+            if (!angular.isDefined(scope.center) && !angular.isDefined(scope.bounds)) {
+              $log.error('angular-google-maps: a center or bounds property is required');
               return;
             }
+            if (!angular.isDefined(scope.center)) {
+              scope.center = new google.maps.LatLngBounds(_this.getCoords(scope.bounds.southwest), _this.getCoords(scope.bounds.northeast)).getCenter();
+            }
             if (!angular.isDefined(scope.zoom)) {
-              $log.error('angular-google-maps: map zoom property not set');
-              return;
+              scope.zoom = 10;
             }
             el = angular.element(element);
             el.addClass('angular-google-map');
@@ -6764,16 +6772,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   s = scope;
                 }
                 if (_.includes(disabledEvents, 'center')) {
-                  return;
-                }
-                if (angular.isDefined(s.center.type)) {
-                  if (s.center.coordinates[1] !== c.lat()) {
-                    s.center.coordinates[1] = c.lat();
-                  }
-                  if (s.center.coordinates[0] !== c.lng()) {
-                    return s.center.coordinates[0] = c.lng();
-                  }
-                } else {
                   if (s.center.latitude !== c.lat()) {
                     s.center.latitude = c.lat();
                   }
