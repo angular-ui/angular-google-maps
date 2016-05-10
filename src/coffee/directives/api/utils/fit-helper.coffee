@@ -1,5 +1,5 @@
 angular.module('uiGmapgoogle-maps.directives.api.utils')
-.service 'uiGmapFitHelper', [ 'uiGmapLogger', ($log) ->
+.service 'uiGmapFitHelper', [ 'uiGmapLogger', '$timeout', ($log, $timeout) ->
   fit: (markersOrPoints, gMap) ->
     if gMap and markersOrPoints?.length
       bounds = new google.maps.LatLngBounds()
@@ -9,5 +9,6 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           everSet = true unless everSet
           point = if _.isFunction markerOrPoint.getPosition then markerOrPoint.getPosition() else markerOrPoint
         bounds.extend point
-      gMap.fitBounds(bounds) if everSet
+      if everSet
+        $timeout () -> gMap.fitBounds(bounds)
 ]

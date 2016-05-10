@@ -51,6 +51,12 @@ npm install && bower install
 meteor add angularui:angular-google-maps
 ```
 
+* Installing for [Meteor 1.3+](https://www.meteor.com/) application:
+
+```shell
+meteor npm intsall --save angular-google-maps
+```
+
 ### Building
 To build the library after you made changes, simply run grunt:
 

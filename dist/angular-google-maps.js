@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.3.2 2016-04-11
+/*! angular-google-maps 2.3.2 2016-05-10
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1036,7 +1036,7 @@ Nicholas McCready - https://twitter.com/nmccready
 }).call(this);
 ;(function() {
   angular.module('uiGmapgoogle-maps.directives.api.utils').service('uiGmapFitHelper', [
-    'uiGmapLogger', function($log) {
+    'uiGmapLogger', '$timeout', function($log, $timeout) {
       return {
         fit: function(markersOrPoints, gMap) {
           var bounds, everSet, key, markerOrPoint, point;
@@ -1054,7 +1054,9 @@ Nicholas McCready - https://twitter.com/nmccready
               bounds.extend(point);
             }
             if (everSet) {
-              return gMap.fitBounds(bounds);
+              return $timeout(function() {
+                return gMap.fitBounds(bounds);
+              });
             }
           }
         }
