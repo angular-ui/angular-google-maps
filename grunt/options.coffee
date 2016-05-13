@@ -214,7 +214,7 @@ module.exports =
           src: [
             '*.{ico,png,txt,json}'
             '.htaccess'
-            'CNAME'
+            # 'CNAME'
             'sitemap.xml'
             'images/{,*/}*.{gif,webp}'
             'styles/fonts/*'
