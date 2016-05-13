@@ -13,7 +13,7 @@ module.exports = (config) ->
     files: [
       "https://maps.googleapis.com/maps/api/js?sensor=false"
       "dist/vendor/scripts/jquery.js"
-      "dist/vendor/scripts/lodash.compat.js"
+      "dist/vendor/scripts/lodash.js"
       "dist/vendor/scripts/angular.js"
       "dist/vendor/scripts/*.js"
       "app/scripts/module.js"
@@ -46,7 +46,7 @@ module.exports = (config) ->
     # - Safari (only Mac)
     # - PhantomJS
     # - IE (only Windows)
-    browsers: ["PhantomJS"] #, 'Chrome', 'IE'
+    browsers: process.env.KARMA_BROWSERS?.split(',') ? ["PhantomJS"] #, 'Chrome', 'IE'
 
     # Continuous Integration mode
     # if true, it capture browsers, run tests and exit

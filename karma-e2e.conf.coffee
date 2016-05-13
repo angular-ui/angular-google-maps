@@ -33,7 +33,7 @@ module.exports = (config) ->
     # - Safari (only Mac)
     # - PhantomJS
     # - IE (only Windows)
-    browsers: [
+    browsers: process.env.KARMA_BROWSERS?.split(',') ? [
       "Chrome"
       "PhantomJS"
       "IE"
