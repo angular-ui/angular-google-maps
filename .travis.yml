@@ -1,7 +1,7 @@
 sudo: false
 language: node_js
 node_js:
-    - "4.X"
+    - "4"
 before_script:
     - PATH="$(npm bin):$PATH" npm install -g bower
     - bower cache clean
