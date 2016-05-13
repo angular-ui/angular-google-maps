@@ -8189,7 +8189,3069 @@ angular.module('uiGmapgoogle-maps.wrapped')
       //BEGIN REPLACE
       /* istanbul ignore next */
       +function(){
-      
+      function ClusterIcon(cluster,styles){cluster.getMarkerClusterer().extend(ClusterIcon,google.maps.OverlayView),this.cluster_=cluster,this.className_=cluster.getMarkerClusterer().getClusterClass(),this.styles_=styles,this.center_=null,this.div_=null,this.sums_=null,this.visible_=!1,this.setMap(cluster.getMap())}function Cluster(mc){this.markerClusterer_=mc,this.map_=mc.getMap(),this.gridSize_=mc.getGridSize(),this.minClusterSize_=mc.getMinimumClusterSize(),this.averageCenter_=mc.getAverageCenter(),this.hideLabel_=mc.getHideLabel(),this.markers_=[],this.center_=null,this.bounds_=null,this.clusterIcon_=new ClusterIcon(this,mc.getStyles())}function MarkerClusterer(map,opt_markers,opt_options){this.extend(MarkerClusterer,google.maps.OverlayView),opt_markers=opt_markers||[],opt_options=opt_options||{},this.markers_=[],this.clusters_=[],this.listeners_=[],this.activeMap_=null,this.ready_=!1,this.gridSize_=opt_options.gridSize||60,this.minClusterSize_=opt_options.minimumClusterSize||2,this.maxZoom_=opt_options.maxZoom||null,this.styles_=opt_options.styles||[],this.title_=opt_options.title||"",this.zoomOnClick_=!0,void 0!==opt_options.zoomOnClick&&(this.zoomOnClick_=opt_options.zoomOnClick),this.averageCenter_=!1,void 0!==opt_options.averageCenter&&(this.averageCenter_=opt_options.averageCenter),this.ignoreHidden_=!1,void 0!==opt_options.ignoreHidden&&(this.ignoreHidden_=opt_options.ignoreHidden),this.enableRetinaIcons_=!1,void 0!==opt_options.enableRetinaIcons&&(this.enableRetinaIcons_=opt_options.enableRetinaIcons),this.hideLabel_=!1,void 0!==opt_options.hideLabel&&(this.hideLabel_=opt_options.hideLabel),this.imagePath_=opt_options.imagePath||MarkerClusterer.IMAGE_PATH,this.imageExtension_=opt_options.imageExtension||MarkerClusterer.IMAGE_EXTENSION,this.imageSizes_=opt_options.imageSizes||MarkerClusterer.IMAGE_SIZES,this.calculator_=opt_options.calculator||MarkerClusterer.CALCULATOR,this.batchSize_=opt_options.batchSize||MarkerClusterer.BATCH_SIZE,this.batchSizeIE_=opt_options.batchSizeIE||MarkerClusterer.BATCH_SIZE_IE,this.clusterClass_=opt_options.clusterClass||"cluster",-1!==navigator.userAgent.toLowerCase().indexOf("msie")&&(this.batchSize_=this.batchSizeIE_),this.setupStyles_(),this.addMarkers(opt_markers,!0),this.setMap(map)}ClusterIcon.prototype.onAdd=function(){var cMouseDownInCluster,cDraggingMapByCluster,cClusterIcon=this;this.div_=document.createElement("div"),this.div_.className=this.className_,this.visible_&&this.show(),this.getPanes().overlayMouseTarget.appendChild(this.div_),this.boundsChangedListener_=google.maps.event.addListener(this.getMap(),"bounds_changed",function(){cDraggingMapByCluster=cMouseDownInCluster}),google.maps.event.addDomListener(this.div_,"mousedown",function(){cMouseDownInCluster=!0,cDraggingMapByCluster=!1}),google.maps.event.addDomListener(this.div_,"click",function(e){if(cMouseDownInCluster=!1,!cDraggingMapByCluster){var theBounds,mz,mc=cClusterIcon.cluster_.getMarkerClusterer();google.maps.event.trigger(mc,"click",cClusterIcon.cluster_),google.maps.event.trigger(mc,"clusterclick",cClusterIcon.cluster_),mc.getZoomOnClick()&&(mz=mc.getMaxZoom(),theBounds=cClusterIcon.cluster_.getBounds(),mc.getMap().fitBounds(theBounds),setTimeout(function(){mc.getMap().fitBounds(theBounds),null!==mz&&mc.getMap().getZoom()>mz&&mc.getMap().setZoom(mz+1)},100)),e.cancelBubble=!0,e.stopPropagation&&e.stopPropagation()}}),google.maps.event.addDomListener(this.div_,"mouseover",function(){var mc=cClusterIcon.cluster_.getMarkerClusterer();google.maps.event.trigger(mc,"mouseover",cClusterIcon.cluster_)}),google.maps.event.addDomListener(this.div_,"mouseout",function(){var mc=cClusterIcon.cluster_.getMarkerClusterer();google.maps.event.trigger(mc,"mouseout",cClusterIcon.cluster_)})},ClusterIcon.prototype.onRemove=function(){this.div_&&this.div_.parentNode&&(this.hide(),google.maps.event.removeListener(this.boundsChangedListener_),google.maps.event.clearInstanceListeners(this.div_),this.div_.parentNode.removeChild(this.div_),this.div_=null)},ClusterIcon.prototype.draw=function(){if(this.visible_){var pos=this.getPosFromLatLng_(this.center_);this.div_.style.top=pos.y+"px",this.div_.style.left=pos.x+"px"}},ClusterIcon.prototype.hide=function(){this.div_&&(this.div_.style.display="none"),this.visible_=!1},ClusterIcon.prototype.show=function(){if(this.div_){var img="",bp=this.backgroundPosition_.split(" "),spriteH=parseInt(bp[0].trim(),10),spriteV=parseInt(bp[1].trim(),10),pos=this.getPosFromLatLng_(this.center_);this.div_.style.cssText=this.createCss(pos),img="<img src='"+this.url_+"' style='position: absolute; top: "+spriteV+"px; left: "+spriteH+"px; ",img+=this.cluster_.getMarkerClusterer().enableRetinaIcons_?"width: "+this.width_+"px;height: "+this.height_+"px;":"clip: rect("+-1*spriteV+"px, "+(-1*spriteH+this.width_)+"px, "+(-1*spriteV+this.height_)+"px, "+-1*spriteH+"px);",img+="'>",this.div_.innerHTML=img+"<div style='position: absolute;top: "+this.anchorText_[0]+"px;left: "+this.anchorText_[1]+"px;color: "+this.textColor_+";font-size: "+this.textSize_+"px;font-family: "+this.fontFamily_+";font-weight: "+this.fontWeight_+";font-style: "+this.fontStyle_+";text-decoration: "+this.textDecoration_+";text-align: center;width: "+this.width_+"px;line-height:"+this.height_+"px;'>"+(this.cluster_.hideLabel_?" ":this.sums_.text)+"</div>",this.div_.title="undefined"==typeof this.sums_.title||""===this.sums_.title?this.cluster_.getMarkerClusterer().getTitle():this.sums_.title,this.div_.style.display=""}this.visible_=!0},ClusterIcon.prototype.useStyle=function(sums){this.sums_=sums;var index=Math.max(0,sums.index-1);index=Math.min(this.styles_.length-1,index);var style=this.styles_[index];this.url_=style.url,this.height_=style.height,this.width_=style.width,this.anchorText_=style.anchorText||[0,0],this.anchorIcon_=style.anchorIcon||[parseInt(this.height_/2,10),parseInt(this.width_/2,10)],this.textColor_=style.textColor||"black",this.textSize_=style.textSize||11,this.textDecoration_=style.textDecoration||"none",this.fontWeight_=style.fontWeight||"bold",this.fontStyle_=style.fontStyle||"normal",this.fontFamily_=style.fontFamily||"Arial,sans-serif",this.backgroundPosition_=style.backgroundPosition||"0 0"},ClusterIcon.prototype.setCenter=function(center){this.center_=center},ClusterIcon.prototype.createCss=function(pos){var style=[];return style.push("cursor: pointer;"),style.push("position: absolute; top: "+pos.y+"px; left: "+pos.x+"px;"),style.push("width: "+this.width_+"px; height: "+this.height_+"px;"),style.join("")},ClusterIcon.prototype.getPosFromLatLng_=function(latlng){var pos=this.getProjection().fromLatLngToDivPixel(latlng);return pos.x-=this.anchorIcon_[1],pos.y-=this.anchorIcon_[0],pos.x=parseInt(pos.x,10),pos.y=parseInt(pos.y,10),pos},Cluster.prototype.getSize=function(){return this.markers_.length},Cluster.prototype.getMarkers=function(){return this.markers_},Cluster.prototype.getCenter=function(){return this.center_},Cluster.prototype.getMap=function(){return this.map_},Cluster.prototype.getMarkerClusterer=function(){return this.markerClusterer_},Cluster.prototype.getBounds=function(){var i,bounds=new google.maps.LatLngBounds(this.center_,this.center_),markers=this.getMarkers();for(i=0;i<markers.length;i++)bounds.extend(markers[i].getPosition());return bounds},Cluster.prototype.remove=function(){this.clusterIcon_.setMap(null),this.markers_=[],delete this.markers_},Cluster.prototype.addMarker=function(marker){var i,mCount,mz;if(this.isMarkerAlreadyAdded_(marker))return!1;if(this.center_){if(this.averageCenter_){var l=this.markers_.length+1,lat=(this.center_.lat()*(l-1)+marker.getPosition().lat())/l,lng=(this.center_.lng()*(l-1)+marker.getPosition().lng())/l;this.center_=new google.maps.LatLng(lat,lng),this.calculateBounds_()}}else this.center_=marker.getPosition(),this.calculateBounds_();if(marker.isAdded=!0,this.markers_.push(marker),mCount=this.markers_.length,mz=this.markerClusterer_.getMaxZoom(),null!==mz&&this.map_.getZoom()>mz)marker.getMap()!==this.map_&&marker.setMap(this.map_);else if(mCount<this.minClusterSize_)marker.getMap()!==this.map_&&marker.setMap(this.map_);else if(mCount===this.minClusterSize_)for(i=0;mCount>i;i++)this.markers_[i].setMap(null);else marker.setMap(null);return!0},Cluster.prototype.isMarkerInClusterBounds=function(marker){return this.bounds_.contains(marker.getPosition())},Cluster.prototype.calculateBounds_=function(){var bounds=new google.maps.LatLngBounds(this.center_,this.center_);this.bounds_=this.markerClusterer_.getExtendedBounds(bounds)},Cluster.prototype.updateIcon_=function(){var mCount=this.markers_.length,mz=this.markerClusterer_.getMaxZoom();if(null!==mz&&this.map_.getZoom()>mz)return void this.clusterIcon_.hide();if(mCount<this.minClusterSize_)return void this.clusterIcon_.hide();var numStyles=this.markerClusterer_.getStyles().length,sums=this.markerClusterer_.getCalculator()(this.markers_,numStyles);this.clusterIcon_.setCenter(this.center_),this.clusterIcon_.useStyle(sums),this.clusterIcon_.show()},Cluster.prototype.isMarkerAlreadyAdded_=function(marker){for(var i=0,n=this.markers_.length;n>i;i++)if(marker===this.markers_[i])return!0;return!1},MarkerClusterer.prototype.onAdd=function(){var cMarkerClusterer=this;this.activeMap_=this.getMap(),this.ready_=!0,this.repaint(),this.listeners_=[google.maps.event.addListener(this.getMap(),"zoom_changed",function(){cMarkerClusterer.resetViewport_(!1),(this.getZoom()===(this.get("minZoom")||0)||this.getZoom()===this.get("maxZoom"))&&google.maps.event.trigger(this,"idle")}),google.maps.event.addListener(this.getMap(),"idle",function(){cMarkerClusterer.redraw_()})]},MarkerClusterer.prototype.onRemove=function(){var i;for(i=0;i<this.markers_.length;i++)this.markers_[i].getMap()!==this.activeMap_&&this.markers_[i].setMap(this.activeMap_);for(i=0;i<this.clusters_.length;i++)this.clusters_[i].remove();for(this.clusters_=[],i=0;i<this.listeners_.length;i++)google.maps.event.removeListener(this.listeners_[i]);this.listeners_=[],this.activeMap_=null,this.ready_=!1},MarkerClusterer.prototype.draw=function(){},MarkerClusterer.prototype.setupStyles_=function(){var i,size;if(!(this.styles_.length>0))for(i=0;i<this.imageSizes_.length;i++)size=this.imageSizes_[i],this.styles_.push({url:this.imagePath_+(i+1)+"."+this.imageExtension_,height:size,width:size})},MarkerClusterer.prototype.fitMapToMarkers=function(){var i,markers=this.getMarkers(),bounds=new google.maps.LatLngBounds;for(i=0;i<markers.length;i++)bounds.extend(markers[i].getPosition());this.getMap().fitBounds(bounds)},MarkerClusterer.prototype.getGridSize=function(){return this.gridSize_},MarkerClusterer.prototype.setGridSize=function(gridSize){this.gridSize_=gridSize},MarkerClusterer.prototype.getMinimumClusterSize=function(){return this.minClusterSize_},MarkerClusterer.prototype.setMinimumClusterSize=function(minimumClusterSize){this.minClusterSize_=minimumClusterSize},MarkerClusterer.prototype.getMaxZoom=function(){return this.maxZoom_},MarkerClusterer.prototype.setMaxZoom=function(maxZoom){this.maxZoom_=maxZoom},MarkerClusterer.prototype.getStyles=function(){return this.styles_},MarkerClusterer.prototype.setStyles=function(styles){this.styles_=styles},MarkerClusterer.prototype.getTitle=function(){return this.title_},MarkerClusterer.prototype.setTitle=function(title){this.title_=title},MarkerClusterer.prototype.getZoomOnClick=function(){return this.zoomOnClick_},MarkerClusterer.prototype.setZoomOnClick=function(zoomOnClick){this.zoomOnClick_=zoomOnClick},MarkerClusterer.prototype.getAverageCenter=function(){return this.averageCenter_},MarkerClusterer.prototype.setAverageCenter=function(averageCenter){this.averageCenter_=averageCenter},MarkerClusterer.prototype.getIgnoreHidden=function(){return this.ignoreHidden_},MarkerClusterer.prototype.setIgnoreHidden=function(ignoreHidden){this.ignoreHidden_=ignoreHidden},MarkerClusterer.prototype.getEnableRetinaIcons=function(){return this.enableRetinaIcons_},MarkerClusterer.prototype.setEnableRetinaIcons=function(enableRetinaIcons){this.enableRetinaIcons_=enableRetinaIcons},MarkerClusterer.prototype.getImageExtension=function(){return this.imageExtension_},MarkerClusterer.prototype.setImageExtension=function(imageExtension){this.imageExtension_=imageExtension},MarkerClusterer.prototype.getImagePath=function(){return this.imagePath_},MarkerClusterer.prototype.setImagePath=function(imagePath){this.imagePath_=imagePath},MarkerClusterer.prototype.getImageSizes=function(){return this.imageSizes_},MarkerClusterer.prototype.setImageSizes=function(imageSizes){this.imageSizes_=imageSizes},MarkerClusterer.prototype.getCalculator=function(){return this.calculator_},MarkerClusterer.prototype.setCalculator=function(calculator){this.calculator_=calculator},MarkerClusterer.prototype.setHideLabel=function(hideLabel){this.hideLabel_=hideLabel},MarkerClusterer.prototype.getHideLabel=function(){return this.hideLabel_},MarkerClusterer.prototype.getBatchSizeIE=function(){return this.batchSizeIE_},MarkerClusterer.prototype.setBatchSizeIE=function(batchSizeIE){this.batchSizeIE_=batchSizeIE},MarkerClusterer.prototype.getClusterClass=function(){return this.clusterClass_},MarkerClusterer.prototype.setClusterClass=function(clusterClass){this.clusterClass_=clusterClass},MarkerClusterer.prototype.getMarkers=function(){return this.markers_},MarkerClusterer.prototype.getTotalMarkers=function(){return this.markers_.length},MarkerClusterer.prototype.getClusters=function(){return this.clusters_},MarkerClusterer.prototype.getTotalClusters=function(){return this.clusters_.length},MarkerClusterer.prototype.addMarker=function(marker,opt_nodraw){this.pushMarkerTo_(marker),opt_nodraw||this.redraw_()},MarkerClusterer.prototype.addMarkers=function(markers,opt_nodraw){var key;for(key in markers)markers.hasOwnProperty(key)&&this.pushMarkerTo_(markers[key]);opt_nodraw||this.redraw_()},MarkerClusterer.prototype.pushMarkerTo_=function(marker){if(marker.getDraggable()){var cMarkerClusterer=this;google.maps.event.addListener(marker,"dragend",function(){cMarkerClusterer.ready_&&(this.isAdded=!1,cMarkerClusterer.repaint())})}marker.isAdded=!1,this.markers_.push(marker)},MarkerClusterer.prototype.removeMarker=function(marker,opt_nodraw,opt_noMapRemove){var removeFromMap=!0&&!opt_noMapRemove,removed=this.removeMarker_(marker,removeFromMap);return!opt_nodraw&&removed&&this.repaint(),removed},MarkerClusterer.prototype.removeMarkers=function(markers,opt_nodraw,opt_noMapRemove){var i,r,removed=!1,removeFromMap=!0&&!opt_noMapRemove;for(i=0;i<markers.length;i++)r=this.removeMarker_(markers[i],removeFromMap),removed=removed||r;return!opt_nodraw&&removed&&this.repaint(),removed},MarkerClusterer.prototype.removeMarker_=function(marker,removeFromMap){var i,index=-1;if(this.markers_.indexOf)index=this.markers_.indexOf(marker);else for(i=0;i<this.markers_.length;i++)if(marker===this.markers_[i]){index=i;break}return-1===index?!1:(removeFromMap&&marker.setMap(null),this.markers_.splice(index,1),!0)},MarkerClusterer.prototype.clearMarkers=function(){this.resetViewport_(!0),this.markers_=[]},MarkerClusterer.prototype.repaint=function(){var oldClusters=this.clusters_.slice();this.clusters_=[],this.resetViewport_(!1),this.redraw_(),setTimeout(function(){var i;for(i=0;i<oldClusters.length;i++)oldClusters[i].remove()},0)},MarkerClusterer.prototype.getExtendedBounds=function(bounds){var projection=this.getProjection(),tr=new google.maps.LatLng(bounds.getNorthEast().lat(),bounds.getNorthEast().lng()),bl=new google.maps.LatLng(bounds.getSouthWest().lat(),bounds.getSouthWest().lng()),trPix=projection.fromLatLngToDivPixel(tr);trPix.x+=this.gridSize_,trPix.y-=this.gridSize_;var blPix=projection.fromLatLngToDivPixel(bl);blPix.x-=this.gridSize_,blPix.y+=this.gridSize_;var ne=projection.fromDivPixelToLatLng(trPix),sw=projection.fromDivPixelToLatLng(blPix);return bounds.extend(ne),bounds.extend(sw),bounds},MarkerClusterer.prototype.redraw_=function(){this.createClusters_(0)},MarkerClusterer.prototype.resetViewport_=function(opt_hide){var i,marker;for(i=0;i<this.clusters_.length;i++)this.clusters_[i].remove();for(this.clusters_=[],i=0;i<this.markers_.length;i++)marker=this.markers_[i],marker.isAdded=!1,opt_hide&&marker.setMap(null)},MarkerClusterer.prototype.distanceBetweenPoints_=function(p1,p2){var R=6371,dLat=(p2.lat()-p1.lat())*Math.PI/180,dLon=(p2.lng()-p1.lng())*Math.PI/180,a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(p1.lat()*Math.PI/180)*Math.cos(p2.lat()*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2),c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a)),d=R*c;return d},MarkerClusterer.prototype.isMarkerInBounds_=function(marker,bounds){return bounds.contains(marker.getPosition())},MarkerClusterer.prototype.addToClosestCluster_=function(marker){var i,d,cluster,center,distance=4e4,clusterToAddTo=null;for(i=0;i<this.clusters_.length;i++)cluster=this.clusters_[i],center=cluster.getCenter(),center&&(d=this.distanceBetweenPoints_(center,marker.getPosition()),distance>d&&(distance=d,clusterToAddTo=cluster));clusterToAddTo&&clusterToAddTo.isMarkerInClusterBounds(marker)?clusterToAddTo.addMarker(marker):(cluster=new Cluster(this),cluster.addMarker(marker),this.clusters_.push(cluster))},MarkerClusterer.prototype.createClusters_=function(iFirst){var i,marker,mapBounds,cMarkerClusterer=this;if(this.ready_){0===iFirst&&(google.maps.event.trigger(this,"clusteringbegin",this),"undefined"!=typeof this.timerRefStatic&&(clearTimeout(this.timerRefStatic),delete this.timerRefStatic)),mapBounds=this.getMap().getZoom()>3?new google.maps.LatLngBounds(this.getMap().getBounds().getSouthWest(),this.getMap().getBounds().getNorthEast()):new google.maps.LatLngBounds(new google.maps.LatLng(85.02070771743472,-178.48388434375),new google.maps.LatLng(-85.08136444384544,178.00048865625));var bounds=this.getExtendedBounds(mapBounds),iLast=Math.min(iFirst+this.batchSize_,this.markers_.length);for(i=iFirst;iLast>i;i++)marker=this.markers_[i],!marker.isAdded&&this.isMarkerInBounds_(marker,bounds)&&(!this.ignoreHidden_||this.ignoreHidden_&&marker.getVisible())&&this.addToClosestCluster_(marker);if(iLast<this.markers_.length)this.timerRefStatic=setTimeout(function(){cMarkerClusterer.createClusters_(iLast)},0);else for(delete this.timerRefStatic,google.maps.event.trigger(this,"clusteringend",this),i=0;i<this.clusters_.length;i++)this.clusters_[i].updateIcon_()}},MarkerClusterer.prototype.extend=function(obj1,obj2){return function(object){var property;for(property in object.prototype)this.prototype[property]=object.prototype[property];return this}.apply(obj1,[obj2])},MarkerClusterer.CALCULATOR=function(markers,numStyles){for(var index=0,title="",count=markers.length.toString(),dv=count;0!==dv;)dv=parseInt(dv/10,10),index++;return index=Math.min(index,numStyles),{text:count,index:index,title:title}},MarkerClusterer.BATCH_SIZE=2e3,MarkerClusterer.BATCH_SIZE_IE=500,MarkerClusterer.IMAGE_PATH="//cdn.rawgit.com/mahnunchik/markerclustererplus/master/images/m",MarkerClusterer.IMAGE_EXTENSION="png",MarkerClusterer.IMAGE_SIZES=[53,56,66,78,90],"function"!=typeof String.prototype.trim&&(String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g,"")});
+/**
+ *  google-maps-utility-library-v3-infobox
+ *
+ * @version: 1.1.14
+ * @author: Gary Little (inspired by proof-of-concept code from Pamela Fox of Google)
+ * @contributors: Nicholas McCready
+ * @date: Fri May 13 2016 16:35:27 GMT-0400 (EDT)
+ * @license: Apache License 2.0
+ */
+/**
+ * @fileoverview InfoBox extends the Google Maps JavaScript API V3 <tt>OverlayView</tt> class.
+ *  <p>
+ *  An InfoBox behaves like a <tt>google.maps.InfoWindow</tt>, but it supports several
+ *  additional properties for advanced styling. An InfoBox can also be used as a map label.
+ *  <p>
+ *  An InfoBox also fires the same events as a <tt>google.maps.InfoWindow</tt>.
+ */
+
+/*jslint browser:true */
+/*global google */
+
+/**
+ * @name InfoBoxOptions
+ * @class This class represents the optional parameter passed to the {@link InfoBox} constructor.
+ * @property {string|Node} content The content of the InfoBox (plain text or an HTML DOM node).
+ * @property {boolean} [disableAutoPan=false] Disable auto-pan on <tt>open</tt>.
+ * @property {number} maxWidth The maximum width (in pixels) of the InfoBox. Set to 0 if no maximum.
+ * @property {Size} pixelOffset The offset (in pixels) from the top left corner of the InfoBox
+ *  (or the bottom left corner if the <code>alignBottom</code> property is <code>true</code>)
+ *  to the map pixel corresponding to <tt>position</tt>.
+ * @property {LatLng} position The geographic location at which to display the InfoBox.
+ * @property {number} zIndex The CSS z-index style value for the InfoBox.
+ *  Note: This value overrides a zIndex setting specified in the <tt>boxStyle</tt> property.
+ * @property {string} [boxClass="infoBox"] The name of the CSS class defining the styles for the InfoBox container.
+ * @property {Object} [boxStyle] An object literal whose properties define specific CSS
+ *  style values to be applied to the InfoBox. Style values defined here override those that may
+ *  be defined in the <code>boxClass</code> style sheet. If this property is changed after the
+ *  InfoBox has been created, all previously set styles (except those defined in the style sheet)
+ *  are removed from the InfoBox before the new style values are applied.
+ * @property {string} closeBoxMargin The CSS margin style value for the close box.
+ *  The default is "2px" (a 2-pixel margin on all sides).
+ * @property {string} closeBoxURL The URL of the image representing the close box.
+ *  Note: The default is the URL for Google's standard close box.
+ *  Set this property to "" if no close box is required.
+ * @property {Size} infoBoxClearance Minimum offset (in pixels) from the InfoBox to the
+ *  map edge after an auto-pan.
+ * @property {boolean} [isHidden=false] Hide the InfoBox on <tt>open</tt>.
+ *  [Deprecated in favor of the <tt>visible</tt> property.]
+ * @property {boolean} [visible=true] Show the InfoBox on <tt>open</tt>.
+ * @property {boolean} alignBottom Align the bottom left corner of the InfoBox to the <code>position</code>
+ *  location (default is <tt>false</tt> which means that the top left corner of the InfoBox is aligned).
+ * @property {string} pane The pane where the InfoBox is to appear (default is "floatPane").
+ *  Set the pane to "mapPane" if the InfoBox is being used as a map label.
+ *  Valid pane names are the property names for the <tt>google.maps.MapPanes</tt> object.
+ * @property {boolean} enableEventPropagation Propagate mousedown, mousemove, mouseover, mouseout,
+ *  mouseup, click, dblclick, touchstart, touchend, touchmove, and contextmenu events in the InfoBox
+ *  (default is <tt>false</tt> to mimic the behavior of a <tt>google.maps.InfoWindow</tt>). Set
+ *  this property to <tt>true</tt> if the InfoBox is being used as a map label.
+ */
+
+/**
+ * Creates an InfoBox with the options specified in {@link InfoBoxOptions}.
+ *  Call <tt>InfoBox.open</tt> to add the box to the map.
+ * @constructor
+ * @param {InfoBoxOptions} [opt_opts]
+ */
+function InfoBox(opt_opts) {
+
+  opt_opts = opt_opts || {};
+
+  google.maps.OverlayView.apply(this, arguments);
+
+  // Standard options (in common with google.maps.InfoWindow):
+  //
+  this.content_ = opt_opts.content || "";
+  this.disableAutoPan_ = opt_opts.disableAutoPan || false;
+  this.maxWidth_ = opt_opts.maxWidth || 0;
+  this.pixelOffset_ = opt_opts.pixelOffset || new google.maps.Size(0, 0);
+  this.position_ = opt_opts.position || new google.maps.LatLng(0, 0);
+  this.zIndex_ = opt_opts.zIndex || null;
+
+  // Additional options (unique to InfoBox):
+  //
+  this.boxClass_ = opt_opts.boxClass || "infoBox";
+  this.boxStyle_ = opt_opts.boxStyle || {};
+  this.closeBoxMargin_ = opt_opts.closeBoxMargin || "2px";
+  this.closeBoxURL_ = opt_opts.closeBoxURL || "http://www.google.com/intl/en_us/mapfiles/close.gif";
+  if (opt_opts.closeBoxURL === "") {
+    this.closeBoxURL_ = "";
+  }
+  this.infoBoxClearance_ = opt_opts.infoBoxClearance || new google.maps.Size(1, 1);
+
+  if (typeof opt_opts.visible === "undefined") {
+    if (typeof opt_opts.isHidden === "undefined") {
+      opt_opts.visible = true;
+    } else {
+      opt_opts.visible = !opt_opts.isHidden;
+    }
+  }
+  this.isHidden_ = !opt_opts.visible;
+
+  this.alignBottom_ = opt_opts.alignBottom || false;
+  this.pane_ = opt_opts.pane || "floatPane";
+  this.enableEventPropagation_ = opt_opts.enableEventPropagation || false;
+
+  this.div_ = null;
+  this.closeListener_ = null;
+  this.moveListener_ = null;
+  this.contextListener_ = null;
+  this.eventListeners_ = null;
+  this.fixedWidthSet_ = null;
+}
+
+/* InfoBox extends OverlayView in the Google Maps API v3.
+ */
+InfoBox.prototype = new google.maps.OverlayView();
+
+/**
+ * Creates the DIV representing the InfoBox.
+ * @private
+ */
+InfoBox.prototype.createInfoBoxDiv_ = function () {
+
+  var i;
+  var events;
+  var bw;
+  var me = this;
+
+  // This handler prevents an event in the InfoBox from being passed on to the map.
+  //
+  var cancelHandler = function (e) {
+    e.cancelBubble = true;
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+  };
+
+  // This handler ignores the current event in the InfoBox and conditionally prevents
+  // the event from being passed on to the map. It is used for the contextmenu event.
+  //
+  var ignoreHandler = function (e) {
+
+    e.returnValue = false;
+
+    if (e.preventDefault) {
+
+      e.preventDefault();
+    }
+
+    if (!me.enableEventPropagation_) {
+
+      cancelHandler(e);
+    }
+  };
+
+  if (!this.div_) {
+
+    this.div_ = document.createElement("div");
+
+    this.setBoxStyle_();
+
+    if (typeof this.content_.nodeType === "undefined") {
+      this.div_.innerHTML = this.getCloseBoxImg_() + this.content_;
+    } else {
+      this.div_.innerHTML = this.getCloseBoxImg_();
+      this.div_.appendChild(this.content_);
+    }
+
+    // Add the InfoBox DIV to the DOM
+    this.getPanes()[this.pane_].appendChild(this.div_);
+
+    this.addClickHandler_();
+
+    if (this.div_.style.width) {
+
+      this.fixedWidthSet_ = true;
+
+    } else {
+
+      if (this.maxWidth_ !== 0 && this.div_.offsetWidth > this.maxWidth_) {
+
+        this.div_.style.width = this.maxWidth_;
+        this.div_.style.overflow = "auto";
+        this.fixedWidthSet_ = true;
+
+      } else { // The following code is needed to overcome problems with MSIE
+
+        bw = this.getBoxWidths_();
+
+        this.div_.style.width = (this.div_.offsetWidth - bw.left - bw.right) + "px";
+        this.fixedWidthSet_ = false;
+      }
+    }
+
+    this.panBox_(this.disableAutoPan_);
+
+    if (!this.enableEventPropagation_) {
+
+      this.eventListeners_ = [];
+
+      // Cancel event propagation.
+      //
+      // Note: mousemove not included (to resolve Issue 152)
+      events = ["mousedown", "mouseover", "mouseout", "mouseup",
+      "click", "dblclick", "touchstart", "touchend", "touchmove"];
+
+      for (i = 0; i < events.length; i++) {
+
+        this.eventListeners_.push(google.maps.event.addDomListener(this.div_, events[i], cancelHandler));
+      }
+
+      // Workaround for Google bug that causes the cursor to change to a pointer
+      // when the mouse moves over a marker underneath InfoBox.
+      this.eventListeners_.push(google.maps.event.addDomListener(this.div_, "mouseover", function (e) {
+        this.style.cursor = "default";
+      }));
+    }
+
+    this.contextListener_ = google.maps.event.addDomListener(this.div_, "contextmenu", ignoreHandler);
+
+    /**
+     * This event is fired when the DIV containing the InfoBox's content is attached to the DOM.
+     * @name InfoBox#domready
+     * @event
+     */
+    google.maps.event.trigger(this, "domready");
+  }
+};
+
+/**
+ * Returns the HTML <IMG> tag for the close box.
+ * @private
+ */
+InfoBox.prototype.getCloseBoxImg_ = function () {
+
+  var img = "";
+
+  if (this.closeBoxURL_ !== "") {
+
+    img  = "<img";
+    img += " src='" + this.closeBoxURL_ + "'";
+    img += " align=right"; // Do this because Opera chokes on style='float: right;'
+    img += " style='";
+    img += " position: relative;"; // Required by MSIE
+    img += " cursor: pointer;";
+    img += " margin: " + this.closeBoxMargin_ + ";";
+    img += "'>";
+  }
+
+  return img;
+};
+
+/**
+ * Adds the click handler to the InfoBox close box.
+ * @private
+ */
+InfoBox.prototype.addClickHandler_ = function () {
+
+  var closeBox;
+
+  if (this.closeBoxURL_ !== "") {
+
+    closeBox = this.div_.firstChild;
+    this.closeListener_ = google.maps.event.addDomListener(closeBox, "click", this.getCloseClickHandler_());
+
+  } else {
+
+    this.closeListener_ = null;
+  }
+};
+
+/**
+ * Returns the function to call when the user clicks the close box of an InfoBox.
+ * @private
+ */
+InfoBox.prototype.getCloseClickHandler_ = function () {
+
+  var me = this;
+
+  return function (e) {
+
+    // 1.0.3 fix: Always prevent propagation of a close box click to the map:
+    e.cancelBubble = true;
+
+    if (e.stopPropagation) {
+
+      e.stopPropagation();
+    }
+
+    /**
+     * This event is fired when the InfoBox's close box is clicked.
+     * @name InfoBox#closeclick
+     * @event
+     */
+    google.maps.event.trigger(me, "closeclick");
+
+    me.close();
+  };
+};
+
+/**
+ * Pans the map so that the InfoBox appears entirely within the map's visible area.
+ * @private
+ */
+InfoBox.prototype.panBox_ = function (disablePan) {
+
+  var map;
+  var bounds;
+  var xOffset = 0, yOffset = 0;
+
+  if (!disablePan) {
+
+    map = this.getMap();
+
+    if (map instanceof google.maps.Map) { // Only pan if attached to map, not panorama
+
+      if (!map.getBounds().contains(this.position_)) {
+      // Marker not in visible area of map, so set center
+      // of map to the marker position first.
+        map.setCenter(this.position_);
+      }
+
+      bounds = map.getBounds();
+
+      var mapDiv = map.getDiv();
+      var mapWidth = mapDiv.offsetWidth;
+      var mapHeight = mapDiv.offsetHeight;
+      var iwOffsetX = this.pixelOffset_.width;
+      var iwOffsetY = this.pixelOffset_.height;
+      var iwWidth = this.div_.offsetWidth;
+      var iwHeight = this.div_.offsetHeight;
+      var padX = this.infoBoxClearance_.width;
+      var padY = this.infoBoxClearance_.height;
+      var pixPosition = this.getProjection().fromLatLngToContainerPixel(this.position_);
+
+      if (pixPosition.x < (-iwOffsetX + padX)) {
+        xOffset = pixPosition.x + iwOffsetX - padX;
+      } else if ((pixPosition.x + iwWidth + iwOffsetX + padX) > mapWidth) {
+        xOffset = pixPosition.x + iwWidth + iwOffsetX + padX - mapWidth;
+      }
+      if (this.alignBottom_) {
+        if (pixPosition.y < (-iwOffsetY + padY + iwHeight)) {
+          yOffset = pixPosition.y + iwOffsetY - padY - iwHeight;
+        } else if ((pixPosition.y + iwOffsetY + padY) > mapHeight) {
+          yOffset = pixPosition.y + iwOffsetY + padY - mapHeight;
+        }
+      } else {
+        if (pixPosition.y < (-iwOffsetY + padY)) {
+          yOffset = pixPosition.y + iwOffsetY - padY;
+        } else if ((pixPosition.y + iwHeight + iwOffsetY + padY) > mapHeight) {
+          yOffset = pixPosition.y + iwHeight + iwOffsetY + padY - mapHeight;
+        }
+      }
+
+      if (!(xOffset === 0 && yOffset === 0)) {
+
+        // Move the map to the shifted center.
+        //
+        var c = map.getCenter();
+        map.panBy(xOffset, yOffset);
+      }
+    }
+  }
+};
+
+/**
+ * Sets the style of the InfoBox by setting the style sheet and applying
+ * other specific styles requested.
+ * @private
+ */
+InfoBox.prototype.setBoxStyle_ = function () {
+
+  var i, boxStyle;
+
+  if (this.div_) {
+
+    // Apply style values from the style sheet defined in the boxClass parameter:
+    this.div_.className = this.boxClass_;
+
+    // Clear existing inline style values:
+    this.div_.style.cssText = "";
+
+    // Apply style values defined in the boxStyle parameter:
+    boxStyle = this.boxStyle_;
+    for (i in boxStyle) {
+
+      if (boxStyle.hasOwnProperty(i)) {
+
+        this.div_.style[i] = boxStyle[i];
+      }
+    }
+
+    // Fix for iOS disappearing InfoBox problem.
+    // See http://stackoverflow.com/questions/9229535/google-maps-markers-disappear-at-certain-zoom-level-only-on-iphone-ipad
+    this.div_.style.WebkitTransform = "translateZ(0)";
+
+    // Fix up opacity style for benefit of MSIE:
+    //
+    if (typeof this.div_.style.opacity !== "undefined" && this.div_.style.opacity !== "") {
+      // See http://www.quirksmode.org/css/opacity.html
+      this.div_.style.MsFilter = "\"progid:DXImageTransform.Microsoft.Alpha(Opacity=" + (this.div_.style.opacity * 100) + ")\"";
+      this.div_.style.filter = "alpha(opacity=" + (this.div_.style.opacity * 100) + ")";
+    }
+
+    // Apply required styles:
+    //
+    this.div_.style.position = "absolute";
+    this.div_.style.visibility = 'hidden';
+    if (this.zIndex_ !== null) {
+
+      this.div_.style.zIndex = this.zIndex_;
+    }
+  }
+};
+
+/**
+ * Get the widths of the borders of the InfoBox.
+ * @private
+ * @return {Object} widths object (top, bottom left, right)
+ */
+InfoBox.prototype.getBoxWidths_ = function () {
+
+  var computedStyle;
+  var bw = {top: 0, bottom: 0, left: 0, right: 0};
+  var box = this.div_;
+
+  if (document.defaultView && document.defaultView.getComputedStyle) {
+
+    computedStyle = box.ownerDocument.defaultView.getComputedStyle(box, "");
+
+    if (computedStyle) {
+
+      // The computed styles are always in pixel units (good!)
+      bw.top = parseInt(computedStyle.borderTopWidth, 10) || 0;
+      bw.bottom = parseInt(computedStyle.borderBottomWidth, 10) || 0;
+      bw.left = parseInt(computedStyle.borderLeftWidth, 10) || 0;
+      bw.right = parseInt(computedStyle.borderRightWidth, 10) || 0;
+    }
+
+  } else if (document.documentElement.currentStyle) { // MSIE
+
+    if (box.currentStyle) {
+
+      // The current styles may not be in pixel units, but assume they are (bad!)
+      bw.top = parseInt(box.currentStyle.borderTopWidth, 10) || 0;
+      bw.bottom = parseInt(box.currentStyle.borderBottomWidth, 10) || 0;
+      bw.left = parseInt(box.currentStyle.borderLeftWidth, 10) || 0;
+      bw.right = parseInt(box.currentStyle.borderRightWidth, 10) || 0;
+    }
+  }
+
+  return bw;
+};
+
+/**
+ * Invoked when <tt>close</tt> is called. Do not call it directly.
+ */
+InfoBox.prototype.onRemove = function () {
+
+  if (this.div_) {
+
+    this.div_.parentNode.removeChild(this.div_);
+    this.div_ = null;
+  }
+};
+
+/**
+ * Draws the InfoBox based on the current map projection and zoom level.
+ */
+InfoBox.prototype.draw = function () {
+
+  this.createInfoBoxDiv_();
+
+  var pixPosition = this.getProjection().fromLatLngToDivPixel(this.position_);
+
+  this.div_.style.left = (pixPosition.x + this.pixelOffset_.width) + "px";
+
+  if (this.alignBottom_) {
+    this.div_.style.bottom = -(pixPosition.y + this.pixelOffset_.height) + "px";
+  } else {
+    this.div_.style.top = (pixPosition.y + this.pixelOffset_.height) + "px";
+  }
+
+  if (this.isHidden_) {
+
+    this.div_.style.visibility = "hidden";
+
+  } else {
+
+    this.div_.style.visibility = "visible";
+  }
+};
+
+/**
+ * Sets the options for the InfoBox. Note that changes to the <tt>maxWidth</tt>,
+ *  <tt>closeBoxMargin</tt>, <tt>closeBoxURL</tt>, and <tt>enableEventPropagation</tt>
+ *  properties have no affect until the current InfoBox is <tt>close</tt>d and a new one
+ *  is <tt>open</tt>ed.
+ * @param {InfoBoxOptions} opt_opts
+ */
+InfoBox.prototype.setOptions = function (opt_opts) {
+  if (typeof opt_opts.boxClass !== "undefined") { // Must be first
+
+    this.boxClass_ = opt_opts.boxClass;
+    this.setBoxStyle_();
+  }
+  if (typeof opt_opts.boxStyle !== "undefined") { // Must be second
+
+    this.boxStyle_ = opt_opts.boxStyle;
+    this.setBoxStyle_();
+  }
+  if (typeof opt_opts.content !== "undefined") {
+
+    this.setContent(opt_opts.content);
+  }
+  if (typeof opt_opts.disableAutoPan !== "undefined") {
+
+    this.disableAutoPan_ = opt_opts.disableAutoPan;
+  }
+  if (typeof opt_opts.maxWidth !== "undefined") {
+
+    this.maxWidth_ = opt_opts.maxWidth;
+  }
+  if (typeof opt_opts.pixelOffset !== "undefined") {
+
+    this.pixelOffset_ = opt_opts.pixelOffset;
+  }
+  if (typeof opt_opts.alignBottom !== "undefined") {
+
+    this.alignBottom_ = opt_opts.alignBottom;
+  }
+  if (typeof opt_opts.position !== "undefined") {
+
+    this.setPosition(opt_opts.position);
+  }
+  if (typeof opt_opts.zIndex !== "undefined") {
+
+    this.setZIndex(opt_opts.zIndex);
+  }
+  if (typeof opt_opts.closeBoxMargin !== "undefined") {
+
+    this.closeBoxMargin_ = opt_opts.closeBoxMargin;
+  }
+  if (typeof opt_opts.closeBoxURL !== "undefined") {
+
+    this.closeBoxURL_ = opt_opts.closeBoxURL;
+  }
+  if (typeof opt_opts.infoBoxClearance !== "undefined") {
+
+    this.infoBoxClearance_ = opt_opts.infoBoxClearance;
+  }
+  if (typeof opt_opts.isHidden !== "undefined") {
+
+    this.isHidden_ = opt_opts.isHidden;
+  }
+  if (typeof opt_opts.visible !== "undefined") {
+
+    this.isHidden_ = !opt_opts.visible;
+  }
+  if (typeof opt_opts.enableEventPropagation !== "undefined") {
+
+    this.enableEventPropagation_ = opt_opts.enableEventPropagation;
+  }
+
+  if (this.div_) {
+
+    this.draw();
+  }
+};
+
+/**
+ * Sets the content of the InfoBox.
+ *  The content can be plain text or an HTML DOM node.
+ * @param {string|Node} content
+ */
+InfoBox.prototype.setContent = function (content) {
+  this.content_ = content;
+
+  if (this.div_) {
+
+    if (this.closeListener_) {
+
+      google.maps.event.removeListener(this.closeListener_);
+      this.closeListener_ = null;
+    }
+
+    // Odd code required to make things work with MSIE.
+    //
+    if (!this.fixedWidthSet_) {
+
+      this.div_.style.width = "";
+    }
+
+    if (typeof content.nodeType === "undefined") {
+      this.div_.innerHTML = this.getCloseBoxImg_() + content;
+    } else {
+      this.div_.innerHTML = this.getCloseBoxImg_();
+      this.div_.appendChild(content);
+    }
+
+    // Perverse code required to make things work with MSIE.
+    // (Ensures the close box does, in fact, float to the right.)
+    //
+    if (!this.fixedWidthSet_) {
+      this.div_.style.width = this.div_.offsetWidth + "px";
+      if (typeof content.nodeType === "undefined") {
+        this.div_.innerHTML = this.getCloseBoxImg_() + content;
+      } else {
+        this.div_.innerHTML = this.getCloseBoxImg_();
+        this.div_.appendChild(content);
+      }
+    }
+
+    this.addClickHandler_();
+  }
+
+  /**
+   * This event is fired when the content of the InfoBox changes.
+   * @name InfoBox#content_changed
+   * @event
+   */
+  google.maps.event.trigger(this, "content_changed");
+};
+
+/**
+ * Sets the geographic location of the InfoBox.
+ * @param {LatLng} latlng
+ */
+InfoBox.prototype.setPosition = function (latlng) {
+
+  this.position_ = latlng;
+
+  if (this.div_) {
+
+    this.draw();
+  }
+
+  /**
+   * This event is fired when the position of the InfoBox changes.
+   * @name InfoBox#position_changed
+   * @event
+   */
+  google.maps.event.trigger(this, "position_changed");
+};
+
+/**
+ * Sets the zIndex style for the InfoBox.
+ * @param {number} index
+ */
+InfoBox.prototype.setZIndex = function (index) {
+
+  this.zIndex_ = index;
+
+  if (this.div_) {
+
+    this.div_.style.zIndex = index;
+  }
+
+  /**
+   * This event is fired when the zIndex of the InfoBox changes.
+   * @name InfoBox#zindex_changed
+   * @event
+   */
+  google.maps.event.trigger(this, "zindex_changed");
+};
+
+/**
+ * Sets the visibility of the InfoBox.
+ * @param {boolean} isVisible
+ */
+InfoBox.prototype.setVisible = function (isVisible) {
+
+  this.isHidden_ = !isVisible;
+  if (this.div_) {
+    this.div_.style.visibility = (this.isHidden_ ? "hidden" : "visible");
+  }
+};
+
+/**
+ * Returns the content of the InfoBox.
+ * @returns {string}
+ */
+InfoBox.prototype.getContent = function () {
+
+  return this.content_;
+};
+
+/**
+ * Returns the geographic location of the InfoBox.
+ * @returns {LatLng}
+ */
+InfoBox.prototype.getPosition = function () {
+
+  return this.position_;
+};
+
+/**
+ * Returns the zIndex for the InfoBox.
+ * @returns {number}
+ */
+InfoBox.prototype.getZIndex = function () {
+
+  return this.zIndex_;
+};
+
+/**
+ * Returns a flag indicating whether the InfoBox is visible.
+ * @returns {boolean}
+ */
+InfoBox.prototype.getVisible = function () {
+
+  var isVisible;
+
+  if ((typeof this.getMap() === "undefined") || (this.getMap() === null)) {
+    isVisible = false;
+  } else {
+    isVisible = !this.isHidden_;
+  }
+  return isVisible;
+};
+
+/**
+ * Shows the InfoBox. [Deprecated; use <tt>setVisible</tt> instead.]
+ */
+InfoBox.prototype.show = function () {
+
+  this.isHidden_ = false;
+  if (this.div_) {
+    this.div_.style.visibility = "visible";
+  }
+};
+
+/**
+ * Hides the InfoBox. [Deprecated; use <tt>setVisible</tt> instead.]
+ */
+InfoBox.prototype.hide = function () {
+
+  this.isHidden_ = true;
+  if (this.div_) {
+    this.div_.style.visibility = "hidden";
+  }
+};
+
+/**
+ * Adds the InfoBox to the specified map or Street View panorama. If <tt>anchor</tt>
+ *  (usually a <tt>google.maps.Marker</tt>) is specified, the position
+ *  of the InfoBox is set to the position of the <tt>anchor</tt>. If the
+ *  anchor is dragged to a new location, the InfoBox moves as well.
+ * @param {Map|StreetViewPanorama} map
+ * @param {MVCObject} [anchor]
+ */
+InfoBox.prototype.open = function (map, anchor) {
+
+  var me = this;
+
+  if (anchor) {
+
+    this.position_ = anchor.getPosition();
+    this.moveListener_ = google.maps.event.addListener(anchor, "position_changed", function () {
+      me.setPosition(this.getPosition());
+    });
+  }
+
+  this.setMap(map);
+
+  if (this.div_) {
+
+    this.panBox_();
+  }
+};
+
+/**
+ * Removes the InfoBox from the map.
+ */
+InfoBox.prototype.close = function () {
+
+  var i;
+
+  if (this.closeListener_) {
+
+    google.maps.event.removeListener(this.closeListener_);
+    this.closeListener_ = null;
+  }
+
+  if (this.eventListeners_) {
+
+    for (i = 0; i < this.eventListeners_.length; i++) {
+
+      google.maps.event.removeListener(this.eventListeners_[i]);
+    }
+    this.eventListeners_ = null;
+  }
+
+  if (this.moveListener_) {
+
+    google.maps.event.removeListener(this.moveListener_);
+    this.moveListener_ = null;
+  }
+
+  if (this.contextListener_) {
+
+    google.maps.event.removeListener(this.contextListener_);
+    this.contextListener_ = null;
+  }
+
+  this.setMap(null);
+};
+
+/**
+ *  google-maps-utility-library-v3-keydragzoom
+ *
+ * @version: 2.0.9
+ * @author: Nianwei Liu [nianwei at gmail dot com] & Gary Little [gary at luxcentral dot com]
+ * @contributors: undefined
+ * @date: Fri May 13 2016 13:45:18 GMT-0400 (EDT)
+ * @license: Apache License 2.0
+ */
+/**
+ * @fileoverview This library adds a drag zoom capability to a V3 Google map.
+ *  When drag zoom is enabled, holding down a designated hot key <code>(shift | ctrl | alt)</code>
+ *  while dragging a box around an area of interest will zoom the map in to that area when
+ *  the mouse button is released. Optionally, a visual control can also be supplied for turning
+ *  a drag zoom operation on and off.
+ *  Only one line of code is needed: <code>google.maps.Map.enableKeyDragZoom();</code>
+ *  <p>
+ *  NOTE: Do not use Ctrl as the hot key with Google Maps JavaScript API V3 since, unlike with V2,
+ *  it causes a context menu to appear when running on the Macintosh.
+ *  <p>
+ *  Note that if the map's container has a border around it, the border widths must be specified
+ *  in pixel units (or as thin, medium, or thick). This is required because of an MSIE limitation.
+ *   <p>NL: 2009-05-28: initial port to core API V3.
+ *  <br>NL: 2009-11-02: added a temp fix for -moz-transform for FF3.5.x using code from Paul Kulchenko (http://notebook.kulchenko.com/maps/gridmove).
+ *  <br>NL: 2010-02-02: added a fix for IE flickering on divs onmousemove, caused by scroll value when get mouse position.
+ *  <br>GL: 2010-06-15: added a visual control option.
+ */
+(function () {
+  /*jslint browser:true */
+  /*global window,google */
+  /* Utility functions use "var funName=function()" syntax to allow use of the */
+  /* Dean Edwards Packer compression tool (with Shrink variables, without Base62 encode). */
+
+  /**
+   * Converts "thin", "medium", and "thick" to pixel widths
+   * in an MSIE environment. Not called for other browsers
+   * because getComputedStyle() returns pixel widths automatically.
+   * @param {string} widthValue The value of the border width parameter.
+   */
+  var toPixels = function (widthValue) {
+    var px;
+    switch (widthValue) {
+    case "thin":
+      px = "2px";
+      break;
+    case "medium":
+      px = "4px";
+      break;
+    case "thick":
+      px = "6px";
+      break;
+    default:
+      px = widthValue;
+    }
+    return px;
+  };
+ /**
+  * Get the widths of the borders of an HTML element.
+  *
+  * @param {Node} h  The HTML element.
+  * @return {Object} The width object {top, bottom left, right}.
+  */
+  var getBorderWidths = function (h) {
+    var computedStyle;
+    var bw = {};
+    if (document.defaultView && document.defaultView.getComputedStyle) {
+      computedStyle = h.ownerDocument.defaultView.getComputedStyle(h, "");
+      if (computedStyle) {
+        // The computed styles are always in pixel units (good!)
+        bw.top = parseInt(computedStyle.borderTopWidth, 10) || 0;
+        bw.bottom = parseInt(computedStyle.borderBottomWidth, 10) || 0;
+        bw.left = parseInt(computedStyle.borderLeftWidth, 10) || 0;
+        bw.right = parseInt(computedStyle.borderRightWidth, 10) || 0;
+        return bw;
+      }
+    } else if (document.documentElement.currentStyle) { // MSIE
+      if (h.currentStyle) {
+        // The current styles may not be in pixel units so try to convert (bad!)
+        bw.top = parseInt(toPixels(h.currentStyle.borderTopWidth), 10) || 0;
+        bw.bottom = parseInt(toPixels(h.currentStyle.borderBottomWidth), 10) || 0;
+        bw.left = parseInt(toPixels(h.currentStyle.borderLeftWidth), 10) || 0;
+        bw.right = parseInt(toPixels(h.currentStyle.borderRightWidth), 10) || 0;
+        return bw;
+      }
+    }
+    // Shouldn't get this far for any modern browser
+    bw.top = parseInt(h.style["border-top-width"], 10) || 0;
+    bw.bottom = parseInt(h.style["border-bottom-width"], 10) || 0;
+    bw.left = parseInt(h.style["border-left-width"], 10) || 0;
+    bw.right = parseInt(h.style["border-right-width"], 10) || 0;
+    return bw;
+  };
+
+  // Page scroll values for use by getMousePosition. To prevent flickering on MSIE
+  // they are calculated only when the document actually scrolls, not every time the
+  // mouse moves (as they would be if they were calculated inside getMousePosition).
+  var scroll = {
+    x: 0,
+    y: 0
+  };
+  var getScrollValue = function (e) {
+    scroll.x = (typeof document.documentElement.scrollLeft !== "undefined" ? document.documentElement.scrollLeft : document.body.scrollLeft);
+    scroll.y = (typeof document.documentElement.scrollTop !== "undefined" ? document.documentElement.scrollTop : document.body.scrollTop);
+  };
+  getScrollValue();
+
+  /**
+   * Get the position of the mouse relative to the document.
+   * @param {Event} e  The mouse event.
+   * @return {Object} The position object {left, top}.
+   */
+  var getMousePosition = function (e) {
+    var posX = 0, posY = 0;
+    e = e || window.event;
+    if (typeof e.pageX !== "undefined") {
+      posX = e.pageX;
+      posY = e.pageY;
+    } else if (typeof e.clientX !== "undefined") { // MSIE
+      posX = e.clientX + scroll.x;
+      posY = e.clientY + scroll.y;
+    }
+    return {
+      left: posX,
+      top: posY
+    };
+  };
+  /**
+   * Get the position of an HTML element relative to the document.
+   * @param {Node} h  The HTML element.
+   * @return {Object} The position object {left, top}.
+   */
+  var getElementPosition = function (h) {
+    var posX = h.offsetLeft;
+    var posY = h.offsetTop;
+    var parent = h.offsetParent;
+    // Add offsets for all ancestors in the hierarchy
+    while (parent !== null) {
+      // Adjust for scrolling elements which may affect the map position.
+      //
+      // See http://www.howtocreate.co.uk/tutorials/javascript/browserspecific
+      //
+      // "...make sure that every element [on a Web page] with an overflow
+      // of anything other than visible also has a position style set to
+      // something other than the default static..."
+      if (parent !== document.body && parent !== document.documentElement) {
+        posX -= parent.scrollLeft;
+        posY -= parent.scrollTop;
+      }
+      // See http://groups.google.com/group/google-maps-js-api-v3/browse_thread/thread/4cb86c0c1037a5e5
+      // Example: http://notebook.kulchenko.com/maps/gridmove
+      var m = parent;
+      // This is the "normal" way to get offset information:
+      var moffx = m.offsetLeft;
+      var moffy = m.offsetTop;
+      // This covers those cases where a transform is used:
+      if (!moffx && !moffy && window.getComputedStyle) {
+        var matrix = document.defaultView.getComputedStyle(m, null).MozTransform ||
+        document.defaultView.getComputedStyle(m, null).WebkitTransform;
+        if (matrix) {
+          if (typeof matrix === "string") {
+            var parms = matrix.split(",");
+            moffx += parseInt(parms[4], 10) || 0;
+            moffy += parseInt(parms[5], 10) || 0;
+          }
+        }
+      }
+      posX += moffx;
+      posY += moffy;
+      parent = parent.offsetParent;
+    }
+    return {
+      left: posX,
+      top: posY
+    };
+  };
+  /**
+   * Set the properties of an object to those from another object.
+   * @param {Object} obj The target object.
+   * @param {Object} vals The source object.
+   */
+  var setVals = function (obj, vals) {
+    if (obj && vals) {
+      for (var x in vals) {
+        if (vals.hasOwnProperty(x)) {
+          obj[x] = vals[x];
+        }
+      }
+    }
+    return obj;
+  };
+  /**
+   * Set the opacity. If op is not passed in, this function just performs an MSIE fix.
+   * @param {Node} h The HTML element.
+   * @param {number} op The opacity value (0-1).
+   */
+  var setOpacity = function (h, op) {
+    if (typeof op !== "undefined") {
+      h.style.opacity = op;
+    }
+    if (typeof h.style.opacity !== "undefined" && h.style.opacity !== "") {
+      h.style.filter = "alpha(opacity=" + (h.style.opacity * 100) + ")";
+    }
+  };
+  /**
+   * @name KeyDragZoomOptions
+   * @class This class represents the optional parameter passed into <code>google.maps.Map.enableKeyDragZoom</code>.
+   * @property {string} [key="shift"] The hot key to hold down to activate a drag zoom, <code>shift | ctrl | alt</code>.
+   *  NOTE: Do not use Ctrl as the hot key with Google Maps JavaScript API V3 since, unlike with V2,
+   *  it causes a context menu to appear when running on the Macintosh. Also note that the
+   *  <code>alt</code> hot key refers to the Option key on a Macintosh.
+   * @property {Object} [boxStyle={border: "4px solid #736AFF"}]
+   *  An object literal defining the CSS styles of the zoom box.
+   *  Border widths must be specified in pixel units (or as thin, medium, or thick).
+   * @property {Object} [veilStyle={backgroundColor: "gray", opacity: 0.25, cursor: "crosshair"}]
+   *  An object literal defining the CSS styles of the veil pane which covers the map when a drag
+   *  zoom is activated. The previous name for this property was <code>paneStyle</code> but the use
+   *  of this name is now deprecated.
+   * @property {boolean} [noZoom=false] A flag indicating whether to disable zooming after an area is
+   *  selected. Set this to <code>true</code> to allow KeyDragZoom to be used as a simple area
+   *  selection tool.
+   * @property {boolean} [visualEnabled=false] A flag indicating whether a visual control is to be used.
+   * @property {string} [visualClass=""] The name of the CSS class defining the styles for the visual
+   *  control. To prevent the visual control from being printed, set this property to the name of
+   *  a class, defined inside a <code>@media print</code> rule, which sets the CSS
+   *  <code>display</code> style to <code>none</code>.
+   * @property {ControlPosition} [visualPosition=google.maps.ControlPosition.LEFT_TOP]
+   *  The position of the visual control.
+   * @property {Size} [visualPositionOffset=google.maps.Size(35, 0)] The width and height values
+   *  provided by this property are the offsets (in pixels) from the location at which the control
+   *  would normally be drawn to the desired drawing location.
+   * @property {number} [visualPositionIndex=null] The index of the visual control.
+   *  The index is for controlling the placement of the control relative to other controls at the
+   *  position given by <code>visualPosition</code>; controls with a lower index are placed first.
+   *  Use a negative value to place the control <i>before</i> any default controls. No index is
+   *  generally required.
+   * @property {String} [visualSprite="http://maps.gstatic.com/mapfiles/ftr/controls/dragzoom_btn.png"]
+   *  The URL of the sprite image used for showing the visual control in the on, off, and hot
+   *  (i.e., when the mouse is over the control) states. The three images within the sprite must
+   *  be the same size and arranged in on-hot-off order in a single row with no spaces between images.
+   * @property {Size} [visualSize=google.maps.Size(20, 20)] The width and height values provided by
+   *  this property are the size (in pixels) of each of the images within <code>visualSprite</code>.
+   * @property {Object} [visualTips={off: "Turn on drag zoom mode", on: "Turn off drag zoom mode"}]
+   *  An object literal defining the help tips that appear when
+   *  the mouse moves over the visual control. The <code>off</code> property is the tip to be shown
+   *  when the control is off and the <code>on</code> property is the tip to be shown when the
+   *  control is on.
+   */
+  /**
+   * @name DragZoom
+   * @class This class represents a drag zoom object for a map. The object is activated by holding down the hot key
+   * or by turning on the visual control.
+   * This object is created when <code>google.maps.Map.enableKeyDragZoom</code> is called; it cannot be created directly.
+   * Use <code>google.maps.Map.getDragZoomObject</code> to gain access to this object in order to attach event listeners.
+   * @param {Map} map The map to which the DragZoom object is to be attached.
+   * @param {KeyDragZoomOptions} [opt_zoomOpts] The optional parameters.
+   */
+  function DragZoom(map, opt_zoomOpts) {
+    var me = this;
+    var ov = new google.maps.OverlayView();
+    ov.onAdd = function () {
+      me.init_(map, opt_zoomOpts);
+    };
+    ov.draw = function () {
+    };
+    ov.onRemove = function () {
+    };
+    ov.setMap(map);
+    this.prjov_ = ov;
+  }
+  /**
+   * Initialize the tool.
+   * @param {Map} map The map to which the DragZoom object is to be attached.
+   * @param {KeyDragZoomOptions} [opt_zoomOpts] The optional parameters.
+   */
+  DragZoom.prototype.init_ = function (map, opt_zoomOpts) {
+    var i;
+    var me = this;
+    this.map_ = map;
+    opt_zoomOpts = opt_zoomOpts || {};
+    this.key_ = opt_zoomOpts.key || "shift";
+    this.key_ = this.key_.toLowerCase();
+    this.borderWidths_ = getBorderWidths(this.map_.getDiv());
+    this.veilDiv_ = [];
+    for (i = 0; i < 4; i++) {
+      this.veilDiv_[i] = document.createElement("div");
+      // Prevents selection of other elements on the webpage
+      // when a drag zoom operation is in progress:
+      this.veilDiv_[i].onselectstart = function () {
+        return false;
+      };
+      // Apply default style values for the veil:
+      setVals(this.veilDiv_[i].style, {
+        backgroundColor: "gray",
+        opacity: 0.25,
+        cursor: "crosshair"
+      });
+      // Apply style values specified in veilStyle parameter:
+      setVals(this.veilDiv_[i].style, opt_zoomOpts.paneStyle); // Old option name was "paneStyle"
+      setVals(this.veilDiv_[i].style, opt_zoomOpts.veilStyle); // New name is "veilStyle"
+      // Apply mandatory style values:
+      setVals(this.veilDiv_[i].style, {
+        position: "absolute",
+        overflow: "hidden",
+        display: "none"
+      });
+      // Workaround for Firefox Shift-Click problem:
+      if (this.key_ === "shift") {
+        this.veilDiv_[i].style.MozUserSelect = "none";
+      }
+      setOpacity(this.veilDiv_[i]);
+      // An IE fix: If the background is transparent it cannot capture mousedown
+      // events, so if it is, change the background to white with 0 opacity.
+      if (this.veilDiv_[i].style.backgroundColor === "transparent") {
+        this.veilDiv_[i].style.backgroundColor = "white";
+        setOpacity(this.veilDiv_[i], 0);
+      }
+      this.map_.getDiv().appendChild(this.veilDiv_[i]);
+    }
+
+    this.noZoom_ = opt_zoomOpts.noZoom || false;
+    this.visualEnabled_ = opt_zoomOpts.visualEnabled || false;
+    this.visualClass_ = opt_zoomOpts.visualClass || "";
+    this.visualPosition_ = opt_zoomOpts.visualPosition || google.maps.ControlPosition.LEFT_TOP;
+    this.visualPositionOffset_ = opt_zoomOpts.visualPositionOffset || new google.maps.Size(35, 0);
+    this.visualPositionIndex_ = opt_zoomOpts.visualPositionIndex || null;
+    this.visualSprite_ = opt_zoomOpts.visualSprite || "http" + (document.location.protocol === "https:" ? "s" : "") + "://maps.gstatic.com/mapfiles/ftr/controls/dragzoom_btn.png";
+    this.visualSize_ = opt_zoomOpts.visualSize || new google.maps.Size(20, 20);
+    this.visualTips_ = opt_zoomOpts.visualTips || {};
+    this.visualTips_.off =  this.visualTips_.off || "Turn on drag zoom mode";
+    this.visualTips_.on =  this.visualTips_.on || "Turn off drag zoom mode";
+
+    this.boxDiv_ = document.createElement("div");
+    // Apply default style values for the zoom box:
+    setVals(this.boxDiv_.style, {
+      border: "4px solid #736AFF"
+    });
+    // Apply style values specified in boxStyle parameter:
+    setVals(this.boxDiv_.style, opt_zoomOpts.boxStyle);
+    // Apply mandatory style values:
+    setVals(this.boxDiv_.style, {
+      position: "absolute",
+      display: "none"
+    });
+    setOpacity(this.boxDiv_);
+    this.map_.getDiv().appendChild(this.boxDiv_);
+    this.boxBorderWidths_ = getBorderWidths(this.boxDiv_);
+
+    this.listeners_ = [
+      google.maps.event.addDomListener(document, "keydown", function (e) {
+        me.onKeyDown_(e);
+      }),
+      google.maps.event.addDomListener(document, "keyup", function (e) {
+        me.onKeyUp_(e);
+      }),
+      google.maps.event.addDomListener(this.veilDiv_[0], "mousedown", function (e) {
+        me.onMouseDown_(e);
+      }),
+      google.maps.event.addDomListener(this.veilDiv_[1], "mousedown", function (e) {
+        me.onMouseDown_(e);
+      }),
+      google.maps.event.addDomListener(this.veilDiv_[2], "mousedown", function (e) {
+        me.onMouseDown_(e);
+      }),
+      google.maps.event.addDomListener(this.veilDiv_[3], "mousedown", function (e) {
+        me.onMouseDown_(e);
+      }),
+      google.maps.event.addDomListener(document, "mousedown", function (e) {
+        me.onMouseDownDocument_(e);
+      }),
+      google.maps.event.addDomListener(document, "mousemove", function (e) {
+        me.onMouseMove_(e);
+      }),
+      google.maps.event.addDomListener(document, "mouseup", function (e) {
+        me.onMouseUp_(e);
+      }),
+      google.maps.event.addDomListener(window, "scroll", getScrollValue)
+    ];
+
+    this.hotKeyDown_ = false;
+    this.mouseDown_ = false;
+    this.dragging_ = false;
+    this.startPt_ = null;
+    this.endPt_ = null;
+    this.mapWidth_ = null;
+    this.mapHeight_ = null;
+    this.mousePosn_ = null;
+    this.mapPosn_ = null;
+
+    if (this.visualEnabled_) {
+      this.buttonDiv_ = this.initControl_(this.visualPositionOffset_);
+      if (this.visualPositionIndex_ !== null) {
+        this.buttonDiv_.index = this.visualPositionIndex_;
+      }
+      this.map_.controls[this.visualPosition_].push(this.buttonDiv_);
+      this.controlIndex_ = this.map_.controls[this.visualPosition_].length - 1;
+    }
+  };
+  /**
+   * Initializes the visual control and returns its DOM element.
+   * @param {Size} offset The offset of the control from its normal position.
+   * @return {Node} The DOM element containing the visual control.
+   */
+  DragZoom.prototype.initControl_ = function (offset) {
+    var control;
+    var image;
+    var me = this;
+
+    control = document.createElement("div");
+    control.className = this.visualClass_;
+    control.style.position = "relative";
+    control.style.overflow = "hidden";
+    control.style.height = this.visualSize_.height + "px";
+    control.style.width = this.visualSize_.width + "px";
+    control.title = this.visualTips_.off;
+    image = document.createElement("img");
+    image.src = this.visualSprite_;
+    image.style.position = "absolute";
+    image.style.left = -(this.visualSize_.width * 2) + "px";
+    image.style.top = 0 + "px";
+    control.appendChild(image);
+    control.onclick = function (e) {
+      me.hotKeyDown_ = !me.hotKeyDown_;
+      if (me.hotKeyDown_) {
+        me.buttonDiv_.firstChild.style.left = -(me.visualSize_.width * 0) + "px";
+        me.buttonDiv_.title = me.visualTips_.on;
+        me.activatedByControl_ = true;
+        google.maps.event.trigger(me, "activate");
+      } else {
+        me.buttonDiv_.firstChild.style.left = -(me.visualSize_.width * 2) + "px";
+        me.buttonDiv_.title = me.visualTips_.off;
+        google.maps.event.trigger(me, "deactivate");
+      }
+      me.onMouseMove_(e); // Updates the veil
+    };
+    control.onmouseover = function () {
+      me.buttonDiv_.firstChild.style.left = -(me.visualSize_.width * 1) + "px";
+    };
+    control.onmouseout = function () {
+      if (me.hotKeyDown_) {
+        me.buttonDiv_.firstChild.style.left = -(me.visualSize_.width * 0) + "px";
+        me.buttonDiv_.title = me.visualTips_.on;
+      } else {
+        me.buttonDiv_.firstChild.style.left = -(me.visualSize_.width * 2) + "px";
+        me.buttonDiv_.title = me.visualTips_.off;
+      }
+    };
+    control.ondragstart = function () {
+      return false;
+    };
+    setVals(control.style, {
+      cursor: "pointer",
+      marginTop: offset.height + "px",
+      marginLeft: offset.width + "px"
+    });
+    return control;
+  };
+  /**
+   * Returns <code>true</code> if the hot key is being pressed when an event occurs.
+   * @param {Event} e The keyboard event.
+   * @return {boolean} Flag indicating whether the hot key is down.
+   */
+  DragZoom.prototype.isHotKeyDown_ = function (e) {
+    var isHot;
+    e = e || window.event;
+    isHot = (e.shiftKey && this.key_ === "shift") || (e.altKey && this.key_ === "alt") || (e.ctrlKey && this.key_ === "ctrl");
+    if (!isHot) {
+      // Need to look at keyCode for Opera because it
+      // doesn't set the shiftKey, altKey, ctrlKey properties
+      // unless a non-modifier event is being reported.
+      //
+      // See http://cross-browser.com/x/examples/shift_mode.php
+      // Also see http://unixpapa.com/js/key.html
+      switch (e.keyCode) {
+      case 16:
+        if (this.key_ === "shift") {
+          isHot = true;
+        }
+        break;
+      case 17:
+        if (this.key_ === "ctrl") {
+          isHot = true;
+        }
+        break;
+      case 18:
+        if (this.key_ === "alt") {
+          isHot = true;
+        }
+        break;
+      }
+    }
+    return isHot;
+  };
+  /**
+   * Returns <code>true</code> if the mouse is on top of the map div.
+   * The position is captured in onMouseMove_.
+   * @return {boolean}
+   */
+  DragZoom.prototype.isMouseOnMap_ = function () {
+    var mousePosn = this.mousePosn_;
+    if (mousePosn) {
+      var mapPosn = this.mapPosn_;
+      var mapDiv = this.map_.getDiv();
+      return mousePosn.left > mapPosn.left && mousePosn.left < (mapPosn.left + mapDiv.offsetWidth) &&
+      mousePosn.top > mapPosn.top && mousePosn.top < (mapPosn.top + mapDiv.offsetHeight);
+    } else {
+      // if user never moved mouse
+      return false;
+    }
+  };
+  /**
+   * Show the veil if the hot key is down and the mouse is over the map,
+   * otherwise hide the veil.
+   */
+  DragZoom.prototype.setVeilVisibility_ = function () {
+    var i;
+    if (this.map_ && this.hotKeyDown_ && this.isMouseOnMap_()) {
+      var mapDiv = this.map_.getDiv();
+      this.mapWidth_ = mapDiv.offsetWidth - (this.borderWidths_.left + this.borderWidths_.right);
+      this.mapHeight_ = mapDiv.offsetHeight - (this.borderWidths_.top + this.borderWidths_.bottom);
+      if (this.activatedByControl_) { // Veil covers entire map (except control)
+        var left = parseInt(this.buttonDiv_.style.left, 10) + this.visualPositionOffset_.width;
+        var top = parseInt(this.buttonDiv_.style.top, 10) + this.visualPositionOffset_.height;
+        var width = this.visualSize_.width;
+        var height = this.visualSize_.height;
+        // Left veil rectangle:
+        this.veilDiv_[0].style.top = "0px";
+        this.veilDiv_[0].style.left = "0px";
+        this.veilDiv_[0].style.width = left + "px";
+        this.veilDiv_[0].style.height = this.mapHeight_ + "px";
+        // Right veil rectangle:
+        this.veilDiv_[1].style.top = "0px";
+        this.veilDiv_[1].style.left = (left + width) + "px";
+        this.veilDiv_[1].style.width = (this.mapWidth_ - (left + width)) + "px";
+        this.veilDiv_[1].style.height = this.mapHeight_ + "px";
+        // Top veil rectangle:
+        this.veilDiv_[2].style.top = "0px";
+        this.veilDiv_[2].style.left = left + "px";
+        this.veilDiv_[2].style.width = width + "px";
+        this.veilDiv_[2].style.height = top + "px";
+        // Bottom veil rectangle:
+        this.veilDiv_[3].style.top = (top + height) + "px";
+        this.veilDiv_[3].style.left = left + "px";
+        this.veilDiv_[3].style.width = width + "px";
+        this.veilDiv_[3].style.height = (this.mapHeight_ - (top + height)) + "px";
+        for (i = 0; i < this.veilDiv_.length; i++) {
+          this.veilDiv_[i].style.display = "block";
+        }
+      } else {
+        this.veilDiv_[0].style.left = "0px";
+        this.veilDiv_[0].style.top = "0px";
+        this.veilDiv_[0].style.width = this.mapWidth_ + "px";
+        this.veilDiv_[0].style.height = this.mapHeight_ + "px";
+        for (i = 1; i < this.veilDiv_.length; i++) {
+          this.veilDiv_[i].style.width = "0px";
+          this.veilDiv_[i].style.height = "0px";
+        }
+        for (i = 0; i < this.veilDiv_.length; i++) {
+          this.veilDiv_[i].style.display = "block";
+        }
+      }
+    } else {
+      for (i = 0; i < this.veilDiv_.length; i++) {
+        this.veilDiv_[i].style.display = "none";
+      }
+    }
+  };
+  /**
+   * Handle key down. Show the veil if the hot key has been pressed.
+   * @param {Event} e The keyboard event.
+   */
+  DragZoom.prototype.onKeyDown_ = function (e) {
+    if (this.map_ && !this.hotKeyDown_ && this.isHotKeyDown_(e)) {
+      this.mapPosn_ = getElementPosition(this.map_.getDiv());
+      this.hotKeyDown_ = true;
+      this.activatedByControl_ = false;
+      this.setVeilVisibility_();
+     /**
+       * This event is fired when the hot key is pressed.
+       * @name DragZoom#activate
+       * @event
+       */
+      google.maps.event.trigger(this, "activate");
+    }
+  };
+  /**
+   * Get the <code>google.maps.Point</code> of the mouse position.
+   * @param {Event} e The mouse event.
+   * @return {Point} The mouse position.
+   */
+  DragZoom.prototype.getMousePoint_ = function (e) {
+    var mousePosn = getMousePosition(e);
+    var p = new google.maps.Point();
+    p.x = mousePosn.left - this.mapPosn_.left - this.borderWidths_.left;
+    p.y = mousePosn.top - this.mapPosn_.top - this.borderWidths_.top;
+    p.x = Math.min(p.x, this.mapWidth_);
+    p.y = Math.min(p.y, this.mapHeight_);
+    p.x = Math.max(p.x, 0);
+    p.y = Math.max(p.y, 0);
+    return p;
+  };
+  /**
+   * Handle mouse down.
+   * @param {Event} e The mouse event.
+   */
+  DragZoom.prototype.onMouseDown_ = function (e) {
+    if (this.map_ && this.hotKeyDown_) {
+      this.mapPosn_ = getElementPosition(this.map_.getDiv());
+      this.dragging_ = true;
+      this.startPt_ = this.endPt_ = this.getMousePoint_(e);
+      this.boxDiv_.style.width = this.boxDiv_.style.height = "0px";
+      var prj = this.prjov_.getProjection();
+      var latlng = prj.fromContainerPixelToLatLng(this.startPt_);
+      /**
+       * This event is fired when the drag operation begins.
+       * The parameter passed is the geographic position of the starting point.
+       * @name DragZoom#dragstart
+       * @param {LatLng} latlng The geographic position of the starting point.
+       * @event
+       */
+      google.maps.event.trigger(this, "dragstart", latlng);
+    }
+  };
+  /**
+   * Handle mouse down at the document level.
+   * @param {Event} e The mouse event.
+   */
+  DragZoom.prototype.onMouseDownDocument_ = function (e) {
+    this.mouseDown_ = true;
+  };
+  /**
+   * Handle mouse move.
+   * @param {Event} e The mouse event.
+   */
+  DragZoom.prototype.onMouseMove_ = function (e) {
+    this.mousePosn_ = getMousePosition(e);
+    if (this.dragging_) {
+      this.endPt_ = this.getMousePoint_(e);
+      var left = Math.min(this.startPt_.x, this.endPt_.x);
+      var top = Math.min(this.startPt_.y, this.endPt_.y);
+      var width = Math.abs(this.startPt_.x - this.endPt_.x);
+      var height = Math.abs(this.startPt_.y - this.endPt_.y);
+      // For benefit of MSIE 7/8 ensure following values are not negative:
+      var boxWidth = Math.max(0, width - (this.boxBorderWidths_.left + this.boxBorderWidths_.right));
+      var boxHeight = Math.max(0, height - (this.boxBorderWidths_.top + this.boxBorderWidths_.bottom));
+      // Left veil rectangle:
+      this.veilDiv_[0].style.top = "0px";
+      this.veilDiv_[0].style.left = "0px";
+      this.veilDiv_[0].style.width = left + "px";
+      this.veilDiv_[0].style.height = this.mapHeight_ + "px";
+      // Right veil rectangle:
+      this.veilDiv_[1].style.top = "0px";
+      this.veilDiv_[1].style.left = (left + width) + "px";
+      this.veilDiv_[1].style.width = (this.mapWidth_ - (left + width)) + "px";
+      this.veilDiv_[1].style.height = this.mapHeight_ + "px";
+      // Top veil rectangle:
+      this.veilDiv_[2].style.top = "0px";
+      this.veilDiv_[2].style.left = left + "px";
+      this.veilDiv_[2].style.width = width + "px";
+      this.veilDiv_[2].style.height = top + "px";
+      // Bottom veil rectangle:
+      this.veilDiv_[3].style.top = (top + height) + "px";
+      this.veilDiv_[3].style.left = left + "px";
+      this.veilDiv_[3].style.width = width + "px";
+      this.veilDiv_[3].style.height = (this.mapHeight_ - (top + height)) + "px";
+      // Selection rectangle:
+      this.boxDiv_.style.top = top + "px";
+      this.boxDiv_.style.left = left + "px";
+      this.boxDiv_.style.width = boxWidth + "px";
+      this.boxDiv_.style.height = boxHeight + "px";
+      this.boxDiv_.style.display = "block";
+      /**
+       * This event is fired repeatedly while the user drags a box across the area of interest.
+       * The southwest and northeast point are passed as parameters of type <code>google.maps.Point</code>
+       * (for performance reasons), relative to the map container. Also passed is the projection object
+       * so that the event listener, if necessary, can convert the pixel positions to geographic
+       * coordinates using <code>google.maps.MapCanvasProjection.fromContainerPixelToLatLng</code>.
+       * @name DragZoom#drag
+       * @param {Point} southwestPixel The southwest point of the selection area.
+       * @param {Point} northeastPixel The northeast point of the selection area.
+       * @param {MapCanvasProjection} prj The projection object.
+       * @event
+       */
+      google.maps.event.trigger(this, "drag", new google.maps.Point(left, top + height), new google.maps.Point(left + width, top), this.prjov_.getProjection());
+    } else if (!this.mouseDown_) {
+      this.mapPosn_ = getElementPosition(this.map_.getDiv());
+      this.setVeilVisibility_();
+    }
+  };
+  /**
+   * Handle mouse up.
+   * @param {Event} e The mouse event.
+   */
+  DragZoom.prototype.onMouseUp_ = function (e) {
+    var z;
+    var me = this;
+    this.mouseDown_ = false;
+    if (this.dragging_) {
+      if ((this.getMousePoint_(e).x === this.startPt_.x) && (this.getMousePoint_(e).y === this.startPt_.y)) {
+        this.onKeyUp_(e); // Cancel event
+        return;
+      }
+      var left = Math.min(this.startPt_.x, this.endPt_.x);
+      var top = Math.min(this.startPt_.y, this.endPt_.y);
+      var width = Math.abs(this.startPt_.x - this.endPt_.x);
+      var height = Math.abs(this.startPt_.y - this.endPt_.y);
+      // Google Maps API bug: setCenter() doesn't work as expected if the map has a
+      // border on the left or top. The code here includes a workaround for this problem.
+      var kGoogleCenteringBug = true;
+      if (kGoogleCenteringBug) {
+        left += this.borderWidths_.left;
+        top += this.borderWidths_.top;
+      }
+
+      var prj = this.prjov_.getProjection();
+      var sw = prj.fromContainerPixelToLatLng(new google.maps.Point(left, top + height));
+      var ne = prj.fromContainerPixelToLatLng(new google.maps.Point(left + width, top));
+      var bnds = new google.maps.LatLngBounds(sw, ne);
+
+      if (this.noZoom_) {
+        this.boxDiv_.style.display = "none";
+      } else {
+        // Sometimes fitBounds causes a zoom OUT, so restore original zoom level if this happens.
+        z = this.map_.getZoom();
+        this.map_.fitBounds(bnds);
+        if (this.map_.getZoom() < z) {
+          this.map_.setZoom(z);
+        }
+
+        // Redraw box after zoom:
+        var swPt = prj.fromLatLngToContainerPixel(sw);
+        var nePt = prj.fromLatLngToContainerPixel(ne);
+        if (kGoogleCenteringBug) {
+          swPt.x -= this.borderWidths_.left;
+          swPt.y -= this.borderWidths_.top;
+          nePt.x -= this.borderWidths_.left;
+          nePt.y -= this.borderWidths_.top;
+        }
+        this.boxDiv_.style.left = swPt.x + "px";
+        this.boxDiv_.style.top = nePt.y + "px";
+        this.boxDiv_.style.width = (Math.abs(nePt.x - swPt.x) - (this.boxBorderWidths_.left + this.boxBorderWidths_.right)) + "px";
+        this.boxDiv_.style.height = (Math.abs(nePt.y - swPt.y) - (this.boxBorderWidths_.top + this.boxBorderWidths_.bottom)) + "px";
+        // Hide box asynchronously after 1 second:
+        setTimeout(function () {
+          me.boxDiv_.style.display = "none";
+        }, 1000);
+      }
+      this.dragging_ = false;
+      this.onMouseMove_(e); // Updates the veil
+      /**
+       * This event is fired when the drag operation ends.
+       * The parameter passed is the geographic bounds of the selected area.
+       * Note that this event is <i>not</i> fired if the hot key is released before the drag operation ends.
+       * @name DragZoom#dragend
+       * @param {LatLngBounds} bnds The geographic bounds of the selected area.
+       * @event
+       */
+      google.maps.event.trigger(this, "dragend", bnds);
+      // if the hot key isn't down, the drag zoom must have been activated by turning
+      // on the visual control. In this case, finish up by simulating a key up event.
+      if (!this.isHotKeyDown_(e)) {
+        this.onKeyUp_(e);
+      }
+    }
+  };
+  /**
+   * Handle key up.
+   * @param {Event} e The keyboard event.
+   */
+  DragZoom.prototype.onKeyUp_ = function (e) {
+    var i;
+    var left, top, width, height, prj, sw, ne;
+    var bnds = null;
+    if (this.map_ && this.hotKeyDown_) {
+      this.hotKeyDown_ = false;
+      if (this.dragging_) {
+        this.boxDiv_.style.display = "none";
+        this.dragging_ = false;
+        // Calculate the bounds when drag zoom was cancelled
+        left = Math.min(this.startPt_.x, this.endPt_.x);
+        top = Math.min(this.startPt_.y, this.endPt_.y);
+        width = Math.abs(this.startPt_.x - this.endPt_.x);
+        height = Math.abs(this.startPt_.y - this.endPt_.y);
+        prj = this.prjov_.getProjection();
+        sw = prj.fromContainerPixelToLatLng(new google.maps.Point(left, top + height));
+        ne = prj.fromContainerPixelToLatLng(new google.maps.Point(left + width, top));
+        bnds = new google.maps.LatLngBounds(sw, ne);
+      }
+      for (i = 0; i < this.veilDiv_.length; i++) {
+        this.veilDiv_[i].style.display = "none";
+      }
+      if (this.visualEnabled_) {
+        this.buttonDiv_.firstChild.style.left = -(this.visualSize_.width * 2) + "px";
+        this.buttonDiv_.title = this.visualTips_.off;
+        this.buttonDiv_.style.display = "";
+      }
+      /**
+       * This event is fired when the hot key is released.
+       * The parameter passed is the geographic bounds of the selected area immediately
+       * before the hot key was released.
+       * @name DragZoom#deactivate
+       * @param {LatLngBounds} bnds The geographic bounds of the selected area immediately
+       *  before the hot key was released.
+       * @event
+       */
+      google.maps.event.trigger(this, "deactivate", bnds);
+    }
+  };
+  /**
+   * @name google.maps.Map
+   * @class These are new methods added to the Google Maps JavaScript API V3's
+   * <a href="http://code.google.com/apis/maps/documentation/javascript/reference.html#Map">Map</a>
+   * class.
+   */
+  /**
+   * Enables drag zoom. The user can zoom to an area of interest by holding down the hot key
+   * <code>(shift | ctrl | alt )</code> while dragging a box around the area or by turning
+   * on the visual control then dragging a box around the area.
+   * @param {KeyDragZoomOptions} opt_zoomOpts The optional parameters.
+   */
+  google.maps.Map.prototype.enableKeyDragZoom = function (opt_zoomOpts) {
+    this.dragZoom_ = new DragZoom(this, opt_zoomOpts);
+  };
+  /**
+   * Disables drag zoom.
+   */
+  google.maps.Map.prototype.disableKeyDragZoom = function () {
+    var i;
+    var d = this.dragZoom_;
+    if (d) {
+      for (i = 0; i < d.listeners_.length; ++i) {
+        google.maps.event.removeListener(d.listeners_[i]);
+      }
+      this.getDiv().removeChild(d.boxDiv_);
+      for (i = 0; i < d.veilDiv_.length; i++) {
+        this.getDiv().removeChild(d.veilDiv_[i]);
+      }
+      if (d.visualEnabled_) {
+        // Remove the custom control:
+        this.controls[d.visualPosition_].removeAt(d.controlIndex_);
+      }
+      d.prjov_.setMap(null);
+      this.dragZoom_ = null;
+    }
+  };
+  /**
+   * Returns <code>true</code> if the drag zoom feature has been enabled.
+   * @return {boolean}
+   */
+  google.maps.Map.prototype.keyDragZoomEnabled = function () {
+    return this.dragZoom_ !== null;
+  };
+  /**
+   * Returns the DragZoom object which is created when <code>google.maps.Map.enableKeyDragZoom</code> is called.
+   * With this object you can use <code>google.maps.event.addListener</code> to attach event listeners
+   * for the "activate", "deactivate", "dragstart", "drag", and "dragend" events.
+   * @return {DragZoom}
+   */
+  google.maps.Map.prototype.getDragZoomObject = function () {
+    return this.dragZoom_;
+  };
+})();
+
+/**
+ *  google-maps-utility-library-v3-markerwithlabel
+ *
+ * @version: 1.1.10
+ * @author: Gary Little (inspired by code from Marc Ridey of Google).
+ * @contributors: Nicholas McCready
+ * @date: Fri May 13 2016 16:29:58 GMT-0400 (EDT)
+ * @license: Apache License 2.0
+ */
+/**
+ *  MarkerWithLabel allows you to define markers with associated labels. As you would expect,
+ *  if the marker is draggable, so too will be the label. In addition, a marker with a label
+ *  responds to all mouse events in the same manner as a regular marker. It also fires mouse
+ *  events and "property changed" events just as a regular marker would. Version 1.1 adds
+ *  support for the raiseOnDrag feature introduced in API V3.3.
+ *  <p>
+ *  If you drag a marker by its label, you can cancel the drag and return the marker to its
+ *  original position by pressing the <code>Esc</code> key. This doesn't work if you drag the marker
+ *  itself because this feature is not (yet) supported in the <code>google.maps.Marker</code> class.
+ */
+
+/*jslint browser:true */
+/*global document,google */
+
+/**
+ * @param {Function} childCtor Child class.
+ * @param {Function} parentCtor Parent class.
+ * @private
+ */
+function inherits(childCtor, parentCtor) {
+  /* @constructor */
+  function tempCtor() {}
+  tempCtor.prototype = parentCtor.prototype;
+  childCtor.superClass_ = parentCtor.prototype;
+  childCtor.prototype = new tempCtor();
+  /* @override */
+  childCtor.prototype.constructor = childCtor;
+}
+
+/**
+ * This constructor creates a label and associates it with a marker.
+ * It is for the private use of the MarkerWithLabel class.
+ * @constructor
+ * @param {Marker} marker The marker with which the label is to be associated.
+ * @param {string} crossURL The URL of the cross image =.
+ * @param {string} handCursor The URL of the hand cursor.
+ * @private
+ */
+function MarkerLabel_(marker, crossURL, handCursorURL) {
+  this.marker_ = marker;
+  this.handCursorURL_ = marker.handCursorURL;
+
+  this.labelDiv_ = document.createElement("div");
+  this.labelDiv_.style.cssText = "position: absolute; overflow: hidden;";
+
+  // Set up the DIV for handling mouse events in the label. This DIV forms a transparent veil
+  // in the "overlayMouseTarget" pane, a veil that covers just the label. This is done so that
+  // events can be captured even if the label is in the shadow of a google.maps.InfoWindow.
+  // Code is included here to ensure the veil is always exactly the same size as the label.
+  this.eventDiv_ = document.createElement("div");
+  this.eventDiv_.style.cssText = this.labelDiv_.style.cssText;
+
+  // This is needed for proper behavior on MSIE:
+  this.eventDiv_.setAttribute("onselectstart", "return false;");
+  this.eventDiv_.setAttribute("ondragstart", "return false;");
+
+  // Get the DIV for the "X" to be displayed when the marker is raised.
+  this.crossDiv_ = MarkerLabel_.getSharedCross(crossURL);
+}
+
+inherits(MarkerLabel_, google.maps.OverlayView);
+
+/**
+ * Returns the DIV for the cross used when dragging a marker when the
+ * raiseOnDrag parameter set to true. One cross is shared with all markers.
+ * @param {string} crossURL The URL of the cross image =.
+ * @private
+ */
+MarkerLabel_.getSharedCross = function (crossURL) {
+  var div;
+  if (typeof MarkerLabel_.getSharedCross.crossDiv === "undefined") {
+    div = document.createElement("img");
+    div.style.cssText = "position: absolute; z-index: 1000002; display: none;";
+    // Hopefully Google never changes the standard "X" attributes:
+    div.style.marginLeft = "-8px";
+    div.style.marginTop = "-9px";
+    div.src = crossURL;
+    MarkerLabel_.getSharedCross.crossDiv = div;
+  }
+  return MarkerLabel_.getSharedCross.crossDiv;
+};
+
+/**
+ * Adds the DIV representing the label to the DOM. This method is called
+ * automatically when the marker's <code>setMap</code> method is called.
+ * @private
+ */
+MarkerLabel_.prototype.onAdd = function () {
+  var me = this;
+  var cMouseIsDown = false;
+  var cDraggingLabel = false;
+  var cSavedZIndex;
+  var cLatOffset, cLngOffset;
+  var cIgnoreClick;
+  var cRaiseEnabled;
+  var cStartPosition;
+  var cStartCenter;
+  // Constants:
+  var cRaiseOffset = 20;
+  var cDraggingCursor = "url(" + this.handCursorURL_ + ")";
+
+  // Stops all processing of an event.
+  //
+  var cAbortEvent = function (e) {
+    if (e.preventDefault) {
+      e.preventDefault();
+    }
+    e.cancelBubble = true;
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
+  };
+
+  var cStopBounce = function () {
+    me.marker_.setAnimation(null);
+  };
+
+  this.getPanes().overlayImage.appendChild(this.labelDiv_);
+  this.getPanes().overlayMouseTarget.appendChild(this.eventDiv_);
+  // One cross is shared with all markers, so only add it once:
+  if (typeof MarkerLabel_.getSharedCross.processed === "undefined") {
+    this.getPanes().overlayImage.appendChild(this.crossDiv_);
+    MarkerLabel_.getSharedCross.processed = true;
+  }
+
+  this.listeners_ = [
+    google.maps.event.addDomListener(this.eventDiv_, "mouseover", function (e) {
+      if (me.marker_.getDraggable() || me.marker_.getClickable()) {
+        this.style.cursor = "pointer";
+        google.maps.event.trigger(me.marker_, "mouseover", e);
+      }
+    }),
+    google.maps.event.addDomListener(this.eventDiv_, "mouseout", function (e) {
+      if ((me.marker_.getDraggable() || me.marker_.getClickable()) && !cDraggingLabel) {
+        this.style.cursor = me.marker_.getCursor();
+        google.maps.event.trigger(me.marker_, "mouseout", e);
+      }
+    }),
+    google.maps.event.addDomListener(this.eventDiv_, "mousedown", function (e) {
+      cDraggingLabel = false;
+      if (me.marker_.getDraggable()) {
+        cMouseIsDown = true;
+        this.style.cursor = cDraggingCursor;
+      }
+      if (me.marker_.getDraggable() || me.marker_.getClickable()) {
+        google.maps.event.trigger(me.marker_, "mousedown", e);
+        cAbortEvent(e); // Prevent map pan when starting a drag on a label
+      }
+    }),
+    google.maps.event.addDomListener(document, "mouseup", function (mEvent) {
+      var position;
+      if (cMouseIsDown) {
+        cMouseIsDown = false;
+        me.eventDiv_.style.cursor = "pointer";
+        google.maps.event.trigger(me.marker_, "mouseup", mEvent);
+      }
+      if (cDraggingLabel) {
+        if (cRaiseEnabled) { // Lower the marker & label
+          position = me.getProjection().fromLatLngToDivPixel(me.marker_.getPosition());
+          position.y += cRaiseOffset;
+          me.marker_.setPosition(me.getProjection().fromDivPixelToLatLng(position));
+          // This is not the same bouncing style as when the marker portion is dragged,
+          // but it will have to do:
+          try { // Will fail if running Google Maps API earlier than V3.3
+            me.marker_.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(cStopBounce, 1406);
+          } catch (e) {}
+        }
+        me.crossDiv_.style.display = "none";
+        me.marker_.setZIndex(cSavedZIndex);
+        cIgnoreClick = true; // Set flag to ignore the click event reported after a label drag
+        cDraggingLabel = false;
+        mEvent.latLng = me.marker_.getPosition();
+        google.maps.event.trigger(me.marker_, "dragend", mEvent);
+      }
+    }),
+    google.maps.event.addListener(me.marker_.getMap(), "mousemove", function (mEvent) {
+      var position;
+      if (cMouseIsDown) {
+        if (cDraggingLabel) {
+          // Change the reported location from the mouse position to the marker position:
+          mEvent.latLng = new google.maps.LatLng(mEvent.latLng.lat() - cLatOffset, mEvent.latLng.lng() - cLngOffset);
+          position = me.getProjection().fromLatLngToDivPixel(mEvent.latLng);
+          if (cRaiseEnabled) {
+            me.crossDiv_.style.left = position.x + "px";
+            me.crossDiv_.style.top = position.y + "px";
+            me.crossDiv_.style.display = "";
+            position.y -= cRaiseOffset;
+          }
+          me.marker_.setPosition(me.getProjection().fromDivPixelToLatLng(position));
+          if (cRaiseEnabled) { // Don't raise the veil; this hack needed to make MSIE act properly
+            me.eventDiv_.style.top = (position.y + cRaiseOffset) + "px";
+          }
+          google.maps.event.trigger(me.marker_, "drag", mEvent);
+        } else {
+          // Calculate offsets from the click point to the marker position:
+          cLatOffset = mEvent.latLng.lat() - me.marker_.getPosition().lat();
+          cLngOffset = mEvent.latLng.lng() - me.marker_.getPosition().lng();
+          cSavedZIndex = me.marker_.getZIndex();
+          cStartPosition = me.marker_.getPosition();
+          cStartCenter = me.marker_.getMap().getCenter();
+          cRaiseEnabled = me.marker_.get("raiseOnDrag");
+          cDraggingLabel = true;
+          me.marker_.setZIndex(1000000); // Moves the marker & label to the foreground during a drag
+          mEvent.latLng = me.marker_.getPosition();
+          google.maps.event.trigger(me.marker_, "dragstart", mEvent);
+        }
+      }
+    }),
+    google.maps.event.addDomListener(document, "keydown", function (e) {
+      if (cDraggingLabel) {
+        if (e.keyCode === 27) { // Esc key
+          cRaiseEnabled = false;
+          me.marker_.setPosition(cStartPosition);
+          me.marker_.getMap().setCenter(cStartCenter);
+          google.maps.event.trigger(document, "mouseup", e);
+        }
+      }
+    }),
+    google.maps.event.addDomListener(this.eventDiv_, "click", function (e) {
+      if (me.marker_.getDraggable() || me.marker_.getClickable()) {
+        if (cIgnoreClick) { // Ignore the click reported when a label drag ends
+          cIgnoreClick = false;
+        } else {
+          google.maps.event.trigger(me.marker_, "click", e);
+          cAbortEvent(e); // Prevent click from being passed on to map
+        }
+      }
+    }),
+    google.maps.event.addDomListener(this.eventDiv_, "dblclick", function (e) {
+      if (me.marker_.getDraggable() || me.marker_.getClickable()) {
+        google.maps.event.trigger(me.marker_, "dblclick", e);
+        cAbortEvent(e); // Prevent map zoom when double-clicking on a label
+      }
+    }),
+    google.maps.event.addListener(this.marker_, "dragstart", function (mEvent) {
+      if (!cDraggingLabel) {
+        cRaiseEnabled = this.get("raiseOnDrag");
+      }
+    }),
+    google.maps.event.addListener(this.marker_, "drag", function (mEvent) {
+      if (!cDraggingLabel) {
+        if (cRaiseEnabled) {
+          me.setPosition(cRaiseOffset);
+          // During a drag, the marker's z-index is temporarily set to 1000000 to
+          // ensure it appears above all other markers. Also set the label's z-index
+          // to 1000000 (plus or minus 1 depending on whether the label is supposed
+          // to be above or below the marker).
+          me.labelDiv_.style.zIndex = 1000000 + (this.get("labelInBackground") ? -1 : +1);
+        }
+      }
+    }),
+    google.maps.event.addListener(this.marker_, "dragend", function (mEvent) {
+      if (!cDraggingLabel) {
+        if (cRaiseEnabled) {
+          me.setPosition(0); // Also restores z-index of label
+        }
+      }
+    }),
+    google.maps.event.addListener(this.marker_, "position_changed", function () {
+      me.setPosition();
+    }),
+    google.maps.event.addListener(this.marker_, "zindex_changed", function () {
+      me.setZIndex();
+    }),
+    google.maps.event.addListener(this.marker_, "visible_changed", function () {
+      me.setVisible();
+    }),
+    google.maps.event.addListener(this.marker_, "labelvisible_changed", function () {
+      me.setVisible();
+    }),
+    google.maps.event.addListener(this.marker_, "title_changed", function () {
+      me.setTitle();
+    }),
+    google.maps.event.addListener(this.marker_, "labelcontent_changed", function () {
+      me.setContent();
+    }),
+    google.maps.event.addListener(this.marker_, "labelanchor_changed", function () {
+      me.setAnchor();
+    }),
+    google.maps.event.addListener(this.marker_, "labelclass_changed", function () {
+      me.setStyles();
+    }),
+    google.maps.event.addListener(this.marker_, "labelstyle_changed", function () {
+      me.setStyles();
+    })
+  ];
+};
+
+/**
+ * Removes the DIV for the label from the DOM. It also removes all event handlers.
+ * This method is called automatically when the marker's <code>setMap(null)</code>
+ * method is called.
+ * @private
+ */
+MarkerLabel_.prototype.onRemove = function () {
+  var i;
+  this.labelDiv_.parentNode.removeChild(this.labelDiv_);
+  this.eventDiv_.parentNode.removeChild(this.eventDiv_);
+
+  // Remove event listeners:
+  for (i = 0; i < this.listeners_.length; i++) {
+    google.maps.event.removeListener(this.listeners_[i]);
+  }
+};
+
+/**
+ * Draws the label on the map.
+ * @private
+ */
+MarkerLabel_.prototype.draw = function () {
+  this.setContent();
+  this.setTitle();
+  this.setStyles();
+};
+
+/**
+ * Sets the content of the label.
+ * The content can be plain text or an HTML DOM node.
+ * @private
+ */
+MarkerLabel_.prototype.setContent = function () {
+  var content = this.marker_.get("labelContent");
+  if (typeof content.nodeType === "undefined") {
+    this.labelDiv_.innerHTML = content;
+    this.eventDiv_.innerHTML = this.labelDiv_.innerHTML;
+  } else {
+    this.labelDiv_.innerHTML = ""; // Remove current content
+    this.labelDiv_.appendChild(content);
+    content = content.cloneNode(true);
+    this.eventDiv_.innerHTML = ""; // Remove current content
+    this.eventDiv_.appendChild(content);
+  }
+};
+
+/**
+ * Sets the content of the tool tip for the label. It is
+ * always set to be the same as for the marker itself.
+ * @private
+ */
+MarkerLabel_.prototype.setTitle = function () {
+  this.eventDiv_.title = this.marker_.getTitle() || "";
+};
+
+/**
+ * Sets the style of the label by setting the style sheet and applying
+ * other specific styles requested.
+ * @private
+ */
+MarkerLabel_.prototype.setStyles = function () {
+  var i, labelStyle;
+
+  // Apply style values from the style sheet defined in the labelClass parameter:
+  this.labelDiv_.className = this.marker_.get("labelClass");
+  this.eventDiv_.className = this.labelDiv_.className;
+
+  // Clear existing inline style values:
+  this.labelDiv_.style.cssText = "";
+  this.eventDiv_.style.cssText = "";
+  // Apply style values defined in the labelStyle parameter:
+  labelStyle = this.marker_.get("labelStyle");
+  for (i in labelStyle) {
+    if (labelStyle.hasOwnProperty(i)) {
+      this.labelDiv_.style[i] = labelStyle[i];
+      this.eventDiv_.style[i] = labelStyle[i];
+    }
+  }
+  this.setMandatoryStyles();
+};
+
+/**
+ * Sets the mandatory styles to the DIV representing the label as well as to the
+ * associated event DIV. This includes setting the DIV position, z-index, and visibility.
+ * @private
+ */
+MarkerLabel_.prototype.setMandatoryStyles = function () {
+  this.labelDiv_.style.position = "absolute";
+  this.labelDiv_.style.overflow = "hidden";
+  // Make sure the opacity setting causes the desired effect on MSIE:
+  if (typeof this.labelDiv_.style.opacity !== "undefined" && this.labelDiv_.style.opacity !== "") {
+    this.labelDiv_.style.MsFilter = "\"progid:DXImageTransform.Microsoft.Alpha(opacity=" + (this.labelDiv_.style.opacity * 100) + ")\"";
+    this.labelDiv_.style.filter = "alpha(opacity=" + (this.labelDiv_.style.opacity * 100) + ")";
+  }
+
+  this.eventDiv_.style.position = this.labelDiv_.style.position;
+  this.eventDiv_.style.overflow = this.labelDiv_.style.overflow;
+  this.eventDiv_.style.opacity = 0.01; // Don't use 0; DIV won't be clickable on MSIE
+  this.eventDiv_.style.MsFilter = "\"progid:DXImageTransform.Microsoft.Alpha(opacity=1)\"";
+  this.eventDiv_.style.filter = "alpha(opacity=1)"; // For MSIE
+
+  this.setAnchor();
+  this.setPosition(); // This also updates z-index, if necessary.
+  this.setVisible();
+};
+
+/**
+ * Sets the anchor point of the label.
+ * @private
+ */
+MarkerLabel_.prototype.setAnchor = function () {
+  var anchor = this.marker_.get("labelAnchor");
+  this.labelDiv_.style.marginLeft = -anchor.x + "px";
+  this.labelDiv_.style.marginTop = -anchor.y + "px";
+  this.eventDiv_.style.marginLeft = -anchor.x + "px";
+  this.eventDiv_.style.marginTop = -anchor.y + "px";
+};
+
+/**
+ * Sets the position of the label. The z-index is also updated, if necessary.
+ * @private
+ */
+MarkerLabel_.prototype.setPosition = function (yOffset) {
+  var position = this.getProjection().fromLatLngToDivPixel(this.marker_.getPosition());
+  if (typeof yOffset === "undefined") {
+    yOffset = 0;
+  }
+  this.labelDiv_.style.left = Math.round(position.x) + "px";
+  this.labelDiv_.style.top = Math.round(position.y - yOffset) + "px";
+  this.eventDiv_.style.left = this.labelDiv_.style.left;
+  this.eventDiv_.style.top = this.labelDiv_.style.top;
+
+  this.setZIndex();
+};
+
+/**
+ * Sets the z-index of the label. If the marker's z-index property has not been defined, the z-index
+ * of the label is set to the vertical coordinate of the label. This is in keeping with the default
+ * stacking order for Google Maps: markers to the south are in front of markers to the north.
+ * @private
+ */
+MarkerLabel_.prototype.setZIndex = function () {
+  var zAdjust = (this.marker_.get("labelInBackground") ? -1 : +1);
+  if (typeof this.marker_.getZIndex() === "undefined") {
+    this.labelDiv_.style.zIndex = parseInt(this.labelDiv_.style.top, 10) + zAdjust;
+    this.eventDiv_.style.zIndex = this.labelDiv_.style.zIndex;
+  } else {
+    this.labelDiv_.style.zIndex = this.marker_.getZIndex() + zAdjust;
+    this.eventDiv_.style.zIndex = this.labelDiv_.style.zIndex;
+  }
+};
+
+/**
+ * Sets the visibility of the label. The label is visible only if the marker itself is
+ * visible (i.e., its visible property is true) and the labelVisible property is true.
+ * @private
+ */
+MarkerLabel_.prototype.setVisible = function () {
+  if (this.marker_.get("labelVisible")) {
+    this.labelDiv_.style.display = this.marker_.getVisible() ? "block" : "none";
+  } else {
+    this.labelDiv_.style.display = "none";
+  }
+  this.eventDiv_.style.display = this.labelDiv_.style.display;
+};
+
+/**
+ * @name MarkerWithLabelOptions
+ * @class This class represents the optional parameter passed to the {@link MarkerWithLabel} constructor.
+ *  The properties available are the same as for <code>google.maps.Marker</code> with the addition
+ *  of the properties listed below. To change any of these additional properties after the labeled
+ *  marker has been created, call <code>google.maps.Marker.set(propertyName, propertyValue)</code>.
+ *  <p>
+ *  When any of these properties changes, a property changed event is fired. The names of these
+ *  events are derived from the name of the property and are of the form <code>propertyname_changed</code>.
+ *  For example, if the content of the label changes, a <code>labelcontent_changed</code> event
+ *  is fired.
+ *  <p>
+ * @property {string|Node} [labelContent] The content of the label (plain text or an HTML DOM node).
+ * @property {Point} [labelAnchor] By default, a label is drawn with its anchor point at (0,0) so
+ *  that its top left corner is positioned at the anchor point of the associated marker. Use this
+ *  property to change the anchor point of the label. For example, to center a 50px-wide label
+ *  beneath a marker, specify a <code>labelAnchor</code> of <code>google.maps.Point(25, 0)</code>.
+ *  (Note: x-values increase to the right and y-values increase to the top.)
+ * @property {string} [labelClass] The name of the CSS class defining the styles for the label.
+ *  Note that style values for <code>position</code>, <code>overflow</code>, <code>top</code>,
+ *  <code>left</code>, <code>zIndex</code>, <code>display</code>, <code>marginLeft</code>, and
+ *  <code>marginTop</code> are ignored; these styles are for internal use only.
+ * @property {Object} [labelStyle] An object literal whose properties define specific CSS
+ *  style values to be applied to the label. Style values defined here override those that may
+ *  be defined in the <code>labelClass</code> style sheet. If this property is changed after the
+ *  label has been created, all previously set styles (except those defined in the style sheet)
+ *  are removed from the label before the new style values are applied.
+ *  Note that style values for <code>position</code>, <code>overflow</code>, <code>top</code>,
+ *  <code>left</code>, <code>zIndex</code>, <code>display</code>, <code>marginLeft</code>, and
+ *  <code>marginTop</code> are ignored; these styles are for internal use only.
+ * @property {boolean} [labelInBackground] A flag indicating whether a label that overlaps its
+ *  associated marker should appear in the background (i.e., in a plane below the marker).
+ *  The default is <code>false</code>, which causes the label to appear in the foreground.
+ * @property {boolean} [labelVisible] A flag indicating whether the label is to be visible.
+ *  The default is <code>true</code>. Note that even if <code>labelVisible</code> is
+ *  <code>true</code>, the label will <i>not</i> be visible unless the associated marker is also
+ *  visible (i.e., unless the marker's <code>visible</code> property is <code>true</code>).
+ * @property {boolean} [raiseOnDrag] A flag indicating whether the label and marker are to be
+ *  raised when the marker is dragged. The default is <code>true</code>. If a draggable marker is
+ *  being created and a version of Google Maps API earlier than V3.3 is being used, this property
+ *  must be set to <code>false</code>.
+ * @property {boolean} [optimized] A flag indicating whether rendering is to be optimized for the
+ *  marker. <b>Important: The optimized rendering technique is not supported by MarkerWithLabel,
+ *  so the value of this parameter is always forced to <code>false</code>.
+ * @property {string} [crossImage="http://maps.gstatic.com/intl/en_us/mapfiles/drag_cross_67_16.png"]
+ *  The URL of the cross image to be displayed while dragging a marker.
+ * @property {string} [handCursor="http://maps.gstatic.com/intl/en_us/mapfiles/closedhand_8_8.cur"]
+ *  The URL of the cursor to be displayed while dragging a marker.
+ */
+/**
+ * Creates a MarkerWithLabel with the options specified in {@link MarkerWithLabelOptions}.
+ * @constructor
+ * @param {MarkerWithLabelOptions} [opt_options] The optional parameters.
+ */
+function MarkerWithLabel(opt_options) {
+  opt_options = opt_options || {};
+  opt_options.labelContent = opt_options.labelContent || "";
+  opt_options.labelAnchor = opt_options.labelAnchor || new google.maps.Point(0, 0);
+  opt_options.labelClass = opt_options.labelClass || "markerLabels";
+  opt_options.labelStyle = opt_options.labelStyle || {};
+  opt_options.labelInBackground = opt_options.labelInBackground || false;
+  if (typeof opt_options.labelVisible === "undefined") {
+    opt_options.labelVisible = true;
+  }
+  if (typeof opt_options.raiseOnDrag === "undefined") {
+    opt_options.raiseOnDrag = true;
+  }
+  if (typeof opt_options.clickable === "undefined") {
+    opt_options.clickable = true;
+  }
+  if (typeof opt_options.draggable === "undefined") {
+    opt_options.draggable = false;
+  }
+  if (typeof opt_options.optimized === "undefined") {
+    opt_options.optimized = false;
+  }
+  opt_options.crossImage = opt_options.crossImage || "http" + (document.location.protocol === "https:" ? "s" : "") + "://maps.gstatic.com/intl/en_us/mapfiles/drag_cross_67_16.png";
+  opt_options.handCursor = opt_options.handCursor || "http" + (document.location.protocol === "https:" ? "s" : "") + "://maps.gstatic.com/intl/en_us/mapfiles/closedhand_8_8.cur";
+  opt_options.optimized = false; // Optimized rendering is not supported
+
+  this.label = new MarkerLabel_(this, opt_options.crossImage, opt_options.handCursor); // Bind the label to the marker
+
+  // Call the parent constructor. It calls Marker.setValues to initialize, so all
+  // the new parameters are conveniently saved and can be accessed with get/set.
+  // Marker.set triggers a property changed event (called "propertyname_changed")
+  // that the marker label listens for in order to react to state changes.
+  google.maps.Marker.apply(this, arguments);
+}
+
+inherits(MarkerWithLabel, google.maps.Marker);
+
+/**
+ * Overrides the standard Marker setMap function.
+ * @param {Map} theMap The map to which the marker is to be added.
+ * @private
+ */
+MarkerWithLabel.prototype.setMap = function (theMap) {
+
+  // Call the inherited function...
+  google.maps.Marker.prototype.setMap.apply(this, arguments);
+
+  // ... then deal with the label:
+  this.label.setMap(theMap);
+};
+
+// ==ClosureCompiler==
+// @compilation_level ADVANCED_OPTIMIZATIONS
+// @externs_url http://closure-compiler.googlecode.com/svn/trunk/contrib/externs/maps/google_maps_api_v3.js
+// @output_wrapper (function() {%output%})();
+// ==/ClosureCompiler==
+
+/**
+ * @license
+ * Copyright 2013 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * A RichMarker that allows any HTML/DOM to be added to a map and be draggable.
+ *
+ * @param {Object.<string, *>=} opt_options Optional properties to set.
+ * @extends {google.maps.OverlayView}
+ * @constructor
+ */
+function RichMarker(opt_options) {
+  var options = opt_options || {};
+
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this.ready_ = false;
+
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this.dragging_ = false;
+
+  if (opt_options['visible'] == undefined) {
+    opt_options['visible'] = true;
+  }
+
+  if (opt_options['shadow'] == undefined) {
+    opt_options['shadow'] = '7px -3px 5px rgba(88,88,88,0.7)';
+  }
+
+  if (opt_options['anchor'] == undefined) {
+    opt_options['anchor'] = RichMarkerPosition['BOTTOM'];
+  }
+
+  this.setValues(options);
+}
+RichMarker.prototype = new google.maps.OverlayView();
+window['RichMarker'] = RichMarker;
+
+
+/**
+ * Returns the current visibility state of the marker.
+ *
+ * @return {boolean} The visiblity of the marker.
+ */
+RichMarker.prototype.getVisible = function() {
+  return /** @type {boolean} */ (this.get('visible'));
+};
+RichMarker.prototype['getVisible'] = RichMarker.prototype.getVisible;
+
+
+/**
+ * Sets the visiblility state of the marker.
+ *
+ * @param {boolean} visible The visiblilty of the marker.
+ */
+RichMarker.prototype.setVisible = function(visible) {
+  this.set('visible', visible);
+};
+RichMarker.prototype['setVisible'] = RichMarker.prototype.setVisible;
+
+
+/**
+ *  The visible changed event.
+ */
+RichMarker.prototype.visible_changed = function() {
+  if (this.ready_) {
+    this.markerWrapper_.style['display'] = this.getVisible() ? '' : 'none';
+    this.draw();
+  }
+};
+RichMarker.prototype['visible_changed'] = RichMarker.prototype.visible_changed;
+
+
+/**
+ * Sets the marker to be flat.
+ *
+ * @param {boolean} flat If the marker is to be flat or not.
+ */
+RichMarker.prototype.setFlat = function(flat) {
+  this.set('flat', !!flat);
+};
+RichMarker.prototype['setFlat'] = RichMarker.prototype.setFlat;
+
+
+/**
+ * If the makrer is flat or not.
+ *
+ * @return {boolean} True the marker is flat.
+ */
+RichMarker.prototype.getFlat = function() {
+  return /** @type {boolean} */ (this.get('flat'));
+};
+RichMarker.prototype['getFlat'] = RichMarker.prototype.getFlat;
+
+
+/**
+ * Get the width of the marker.
+ *
+ * @return {Number} The width of the marker.
+ */
+RichMarker.prototype.getWidth = function() {
+  return /** @type {Number} */ (this.get('width'));
+};
+RichMarker.prototype['getWidth'] = RichMarker.prototype.getWidth;
+
+
+/**
+ * Get the height of the marker.
+ *
+ * @return {Number} The height of the marker.
+ */
+RichMarker.prototype.getHeight = function() {
+  return /** @type {Number} */ (this.get('height'));
+};
+RichMarker.prototype['getHeight'] = RichMarker.prototype.getHeight;
+
+
+/**
+ * Sets the marker's box shadow.
+ *
+ * @param {string} shadow The box shadow to set.
+ */
+RichMarker.prototype.setShadow = function(shadow) {
+  this.set('shadow', shadow);
+  this.flat_changed();
+};
+RichMarker.prototype['setShadow'] = RichMarker.prototype.setShadow;
+
+
+/**
+ * Gets the marker's box shadow.
+ *
+ * @return {string} The box shadow.
+ */
+RichMarker.prototype.getShadow = function() {
+  return /** @type {string} */ (this.get('shadow'));
+};
+RichMarker.prototype['getShadow'] = RichMarker.prototype.getShadow;
+
+
+/**
+ * Flat changed event.
+ */
+RichMarker.prototype.flat_changed = function() {
+  if (!this.ready_) {
+    return;
+  }
+
+  this.markerWrapper_.style['boxShadow'] =
+      this.markerWrapper_.style['webkitBoxShadow'] =
+      this.markerWrapper_.style['MozBoxShadow'] =
+      this.getFlat() ? '' : this.getShadow();
+};
+RichMarker.prototype['flat_changed'] = RichMarker.prototype.flat_changed;
+
+
+/**
+ * Sets the zIndex of the marker.
+ *
+ * @param {Number} index The index to set.
+ */
+RichMarker.prototype.setZIndex = function(index) {
+  this.set('zIndex', index);
+};
+RichMarker.prototype['setZIndex'] = RichMarker.prototype.setZIndex;
+
+
+/**
+ * Gets the zIndex of the marker.
+ *
+ * @return {Number} The zIndex of the marker.
+ */
+RichMarker.prototype.getZIndex = function() {
+  return /** @type {Number} */ (this.get('zIndex'));
+};
+RichMarker.prototype['getZIndex'] = RichMarker.prototype.getZIndex;
+
+
+/**
+ * zIndex changed event.
+ */
+RichMarker.prototype.zIndex_changed = function() {
+  if (this.getZIndex() && this.ready_) {
+    this.markerWrapper_.style.zIndex = this.getZIndex();
+  }
+};
+RichMarker.prototype['zIndex_changed'] = RichMarker.prototype.zIndex_changed;
+
+/**
+ * Whether the marker is draggable or not.
+ *
+ * @return {boolean} True if the marker is draggable.
+ */
+RichMarker.prototype.getDraggable = function() {
+  return /** @type {boolean} */ (this.get('draggable'));
+};
+RichMarker.prototype['getDraggable'] = RichMarker.prototype.getDraggable;
+
+
+/**
+ * Sets the marker to be draggable or not.
+ *
+ * @param {boolean} draggable If the marker is draggable or not.
+ */
+RichMarker.prototype.setDraggable = function(draggable) {
+  this.set('draggable', !!draggable);
+};
+RichMarker.prototype['setDraggable'] = RichMarker.prototype.setDraggable;
+
+
+/**
+ * Draggable property changed callback.
+ */
+RichMarker.prototype.draggable_changed = function() {
+  if (this.ready_) {
+    if (this.getDraggable()) {
+      this.addDragging_(this.markerWrapper_);
+    } else {
+      this.removeDragListeners_();
+    }
+  }
+};
+RichMarker.prototype['draggable_changed'] =
+    RichMarker.prototype.draggable_changed;
+
+
+/**
+ * Gets the postiton of the marker.
+ *
+ * @return {google.maps.LatLng} The position of the marker.
+ */
+RichMarker.prototype.getPosition = function() {
+  return /** @type {google.maps.LatLng} */ (this.get('position'));
+};
+RichMarker.prototype['getPosition'] = RichMarker.prototype.getPosition;
+
+
+/**
+ * Sets the position of the marker.
+ *
+ * @param {google.maps.LatLng} position The position to set.
+ */
+RichMarker.prototype.setPosition = function(position) {
+  this.set('position', position);
+};
+RichMarker.prototype['setPosition'] = RichMarker.prototype.setPosition;
+
+
+/**
+ * Position changed event.
+ */
+RichMarker.prototype.position_changed = function() {
+  this.draw();
+};
+RichMarker.prototype['position_changed'] =
+    RichMarker.prototype.position_changed;
+
+
+/**
+ * Gets the anchor.
+ *
+ * @return {google.maps.Size} The position of the anchor.
+ */
+RichMarker.prototype.getAnchor = function() {
+  return /** @type {google.maps.Size} */ (this.get('anchor'));
+};
+RichMarker.prototype['getAnchor'] = RichMarker.prototype.getAnchor;
+
+
+/**
+ * Sets the anchor.
+ *
+ * @param {RichMarkerPosition|google.maps.Size} anchor The anchor to set.
+ */
+RichMarker.prototype.setAnchor = function(anchor) {
+  this.set('anchor', anchor);
+};
+RichMarker.prototype['setAnchor'] = RichMarker.prototype.setAnchor;
+
+
+/**
+ * Anchor changed event.
+ */
+RichMarker.prototype.anchor_changed = function() {
+  this.draw();
+};
+RichMarker.prototype['anchor_changed'] = RichMarker.prototype.anchor_changed;
+
+
+/**
+ * Converts a HTML string to a document fragment.
+ *
+ * @param {string} htmlString The HTML string to convert.
+ * @return {Node} A HTML document fragment.
+ * @private
+ */
+RichMarker.prototype.htmlToDocumentFragment_ = function(htmlString) {
+  var tempDiv = document.createElement('DIV');
+  tempDiv.innerHTML = htmlString;
+  if (tempDiv.childNodes.length == 1) {
+    return /** @type {!Node} */ (tempDiv.removeChild(tempDiv.firstChild));
+  } else {
+    var fragment = document.createDocumentFragment();
+    while (tempDiv.firstChild) {
+      fragment.appendChild(tempDiv.firstChild);
+    }
+    return fragment;
+  }
+};
+
+
+/**
+ * Removes all children from the node.
+ *
+ * @param {Node} node The node to remove all children from.
+ * @private
+ */
+RichMarker.prototype.removeChildren_ = function(node) {
+  if (!node) {
+    return;
+  }
+
+  var child;
+  while (child = node.firstChild) {
+    node.removeChild(child);
+  }
+};
+
+
+/**
+ * Sets the content of the marker.
+ *
+ * @param {string|Node} content The content to set.
+ */
+RichMarker.prototype.setContent = function(content) {
+  this.set('content', content);
+};
+RichMarker.prototype['setContent'] = RichMarker.prototype.setContent;
+
+
+/**
+ * Get the content of the marker.
+ *
+ * @return {string|Node} The marker content.
+ */
+RichMarker.prototype.getContent = function() {
+  return /** @type {Node|string} */ (this.get('content'));
+};
+RichMarker.prototype['getContent'] = RichMarker.prototype.getContent;
+
+
+/**
+ * Sets the marker content and adds loading events to images
+ */
+RichMarker.prototype.content_changed = function() {
+  if (!this.markerContent_) {
+    // Marker content area doesnt exist.
+    return;
+  }
+
+  this.removeChildren_(this.markerContent_);
+  var content = this.getContent();
+  if (content) {
+    if (typeof content == 'string') {
+      content = content.replace(/^\s*([\S\s]*)\b\s*$/, '$1');
+      content = this.htmlToDocumentFragment_(content);
+    }
+    this.markerContent_.appendChild(content);
+
+    var that = this;
+    var images = this.markerContent_.getElementsByTagName('IMG');
+    for (var i = 0, image; image = images[i]; i++) {
+      // By default, a browser lets a image be dragged outside of the browser,
+      // so by calling preventDefault we stop this behaviour and allow the image
+      // to be dragged around the map and now out of the browser and onto the
+      // desktop.
+      google.maps.event.addDomListener(image, 'mousedown', function(e) {
+        if (that.getDraggable()) {
+          if (e.preventDefault) {
+            e.preventDefault();
+          }
+          e.returnValue = false;
+        }
+      });
+
+      // Because we don't know the size of an image till it loads, add a
+      // listener to the image load so the marker can resize and reposition
+      // itself to be the correct height.
+      google.maps.event.addDomListener(image, 'load', function() {
+        that.draw();
+      });
+    }
+
+    google.maps.event.trigger(this, 'domready');
+  }
+
+  if (this.ready_) {
+    this.draw();
+  }
+};
+RichMarker.prototype['content_changed'] = RichMarker.prototype.content_changed;
+
+/**
+ * Sets the cursor.
+ *
+ * @param {string} whichCursor What cursor to show.
+ * @private
+ */
+RichMarker.prototype.setCursor_ = function(whichCursor) {
+  if (!this.ready_) {
+    return;
+  }
+
+  var cursor = '';
+  if (navigator.userAgent.indexOf('Gecko/') !== -1) {
+    // Moz has some nice cursors :)
+    if (whichCursor == 'dragging') {
+      cursor = '-moz-grabbing';
+    }
+
+    if (whichCursor == 'dragready') {
+      cursor = '-moz-grab';
+    }
+
+    if (whichCursor == 'draggable') {
+      cursor = 'pointer';
+    }
+  } else {
+    if (whichCursor == 'dragging' || whichCursor == 'dragready') {
+      cursor = 'move';
+    }
+
+    if (whichCursor == 'draggable') {
+      cursor = 'pointer';
+    }
+  }
+
+  if (this.markerWrapper_.style.cursor != cursor) {
+    this.markerWrapper_.style.cursor = cursor;
+  }
+};
+
+/**
+ * Start dragging.
+ *
+ * @param {Event} e The event.
+ */
+RichMarker.prototype.startDrag = function(e) {
+  if (!this.getDraggable()) {
+    return;
+  }
+
+  if (!this.dragging_) {
+    this.dragging_ = true;
+    var map = this.getMap();
+    this.mapDraggable_ = map.get('draggable');
+    map.set('draggable', false);
+
+    // Store the current mouse position
+    this.mouseX_ = e.clientX;
+    this.mouseY_ = e.clientY;
+
+    this.setCursor_('dragready');
+
+    // Stop the text from being selectable while being dragged
+    this.markerWrapper_.style['MozUserSelect'] = 'none';
+    this.markerWrapper_.style['KhtmlUserSelect'] = 'none';
+    this.markerWrapper_.style['WebkitUserSelect'] = 'none';
+
+    this.markerWrapper_['unselectable'] = 'on';
+    this.markerWrapper_['onselectstart'] = function() {
+      return false;
+    };
+
+    this.addDraggingListeners_();
+
+    google.maps.event.trigger(this, 'dragstart');
+  }
+};
+
+
+/**
+ * Stop dragging.
+ */
+RichMarker.prototype.stopDrag = function() {
+  if (!this.getDraggable()) {
+    return;
+  }
+
+  if (this.dragging_) {
+    this.dragging_ = false;
+    this.getMap().set('draggable', this.mapDraggable_);
+    this.mouseX_ = this.mouseY_ = this.mapDraggable_ = null;
+
+    // Allow the text to be selectable again
+    this.markerWrapper_.style['MozUserSelect'] = '';
+    this.markerWrapper_.style['KhtmlUserSelect'] = '';
+    this.markerWrapper_.style['WebkitUserSelect'] = '';
+    this.markerWrapper_['unselectable'] = 'off';
+    this.markerWrapper_['onselectstart'] = function() {};
+
+    this.removeDraggingListeners_();
+
+    this.setCursor_('draggable');
+    google.maps.event.trigger(this, 'dragend');
+
+    this.draw();
+  }
+};
+
+
+/**
+ * Handles the drag event.
+ *
+ * @param {Event} e The event.
+ */
+RichMarker.prototype.drag = function(e) {
+  if (!this.getDraggable() || !this.dragging_) {
+    // This object isn't draggable or we have stopped dragging
+    this.stopDrag();
+    return;
+  }
+
+  var dx = this.mouseX_ - e.clientX;
+  var dy = this.mouseY_ - e.clientY;
+
+  this.mouseX_ = e.clientX;
+  this.mouseY_ = e.clientY;
+
+  var left = parseInt(this.markerWrapper_.style['left'], 10) - dx;
+  var top = parseInt(this.markerWrapper_.style['top'], 10) - dy;
+
+  this.markerWrapper_.style['left'] = left + 'px';
+  this.markerWrapper_.style['top'] = top + 'px';
+
+  var offset = this.getOffset_();
+
+  // Set the position property and adjust for the anchor offset
+  var point = new google.maps.Point(left - offset.width, top - offset.height);
+  var projection = this.getProjection();
+  this.setPosition(projection.fromDivPixelToLatLng(point));
+
+  this.setCursor_('dragging');
+  google.maps.event.trigger(this, 'drag');
+};
+
+
+/**
+ * Removes the drag listeners associated with the marker.
+ *
+ * @private
+ */
+RichMarker.prototype.removeDragListeners_ = function() {
+  if (this.draggableListener_) {
+    google.maps.event.removeListener(this.draggableListener_);
+    delete this.draggableListener_;
+  }
+  this.setCursor_('');
+};
+
+
+/**
+ * Add dragability events to the marker.
+ *
+ * @param {Node} node The node to apply dragging to.
+ * @private
+ */
+RichMarker.prototype.addDragging_ = function(node) {
+  if (!node) {
+    return;
+  }
+
+  var that = this;
+  this.draggableListener_ =
+    google.maps.event.addDomListener(node, 'mousedown', function(e) {
+      that.startDrag(e);
+    });
+
+  this.setCursor_('draggable');
+};
+
+
+/**
+ * Add dragging listeners.
+ *
+ * @private
+ */
+RichMarker.prototype.addDraggingListeners_ = function() {
+  var that = this;
+  if (this.markerWrapper_.setCapture) {
+    this.markerWrapper_.setCapture(true);
+    this.draggingListeners_ = [
+      google.maps.event.addDomListener(this.markerWrapper_, 'mousemove', function(e) {
+        that.drag(e);
+      }, true),
+      google.maps.event.addDomListener(this.markerWrapper_, 'mouseup', function() {
+        that.stopDrag();
+        that.markerWrapper_.releaseCapture();
+      }, true)
+    ];
+  } else {
+    this.draggingListeners_ = [
+      google.maps.event.addDomListener(window, 'mousemove', function(e) {
+        that.drag(e);
+      }, true),
+      google.maps.event.addDomListener(window, 'mouseup', function() {
+        that.stopDrag();
+      }, true)
+    ];
+  }
+};
+
+
+/**
+ * Remove dragging listeners.
+ *
+ * @private
+ */
+RichMarker.prototype.removeDraggingListeners_ = function() {
+  if (this.draggingListeners_) {
+    for (var i = 0, listener; listener = this.draggingListeners_[i]; i++) {
+      google.maps.event.removeListener(listener);
+    }
+    this.draggingListeners_.length = 0;
+  }
+};
+
+
+/**
+ * Get the anchor offset.
+ *
+ * @return {google.maps.Size} The size offset.
+ * @private
+ */
+RichMarker.prototype.getOffset_ = function() {
+  var anchor = this.getAnchor();
+  if (typeof anchor == 'object') {
+    return /** @type {google.maps.Size} */ (anchor);
+  }
+
+  var offset = new google.maps.Size(0, 0);
+  if (!this.markerContent_) {
+    return offset;
+  }
+
+  var width = this.markerContent_.offsetWidth;
+  var height = this.markerContent_.offsetHeight;
+
+  switch (anchor) {
+   case RichMarkerPosition['TOP_LEFT']:
+     break;
+   case RichMarkerPosition['TOP']:
+     offset.width = -width / 2;
+     break;
+   case RichMarkerPosition['TOP_RIGHT']:
+     offset.width = -width;
+     break;
+   case RichMarkerPosition['LEFT']:
+     offset.height = -height / 2;
+     break;
+   case RichMarkerPosition['MIDDLE']:
+     offset.width = -width / 2;
+     offset.height = -height / 2;
+     break;
+   case RichMarkerPosition['RIGHT']:
+     offset.width = -width;
+     offset.height = -height / 2;
+     break;
+   case RichMarkerPosition['BOTTOM_LEFT']:
+     offset.height = -height;
+     break;
+   case RichMarkerPosition['BOTTOM']:
+     offset.width = -width / 2;
+     offset.height = -height;
+     break;
+   case RichMarkerPosition['BOTTOM_RIGHT']:
+     offset.width = -width;
+     offset.height = -height;
+     break;
+  }
+
+  return offset;
+};
+
+
+/**
+ * Adding the marker to a map.
+ * Implementing the interface.
+ */
+RichMarker.prototype.onAdd = function() {
+  if (!this.markerWrapper_) {
+    this.markerWrapper_ = document.createElement('DIV');
+    this.markerWrapper_.style['position'] = 'absolute';
+  }
+
+  if (this.getZIndex()) {
+    this.markerWrapper_.style['zIndex'] = this.getZIndex();
+  }
+
+  this.markerWrapper_.style['display'] = this.getVisible() ? '' : 'none';
+
+  if (!this.markerContent_) {
+    this.markerContent_ = document.createElement('DIV');
+    this.markerWrapper_.appendChild(this.markerContent_);
+
+    var that = this;
+    google.maps.event.addDomListener(this.markerContent_, 'click', function(e) {
+      google.maps.event.trigger(that, 'click');
+    });
+    google.maps.event.addDomListener(this.markerContent_, 'mouseover', function(e) {
+      google.maps.event.trigger(that, 'mouseover');
+    });
+    google.maps.event.addDomListener(this.markerContent_, 'mouseout', function(e) {
+      google.maps.event.trigger(that, 'mouseout');
+    });
+  }
+
+  this.ready_ = true;
+  this.content_changed();
+  this.flat_changed();
+  this.draggable_changed();
+
+  var panes = this.getPanes();
+  if (panes) {
+    panes.overlayMouseTarget.appendChild(this.markerWrapper_);
+  }
+
+  google.maps.event.trigger(this, 'ready');
+};
+RichMarker.prototype['onAdd'] = RichMarker.prototype.onAdd;
+
+
+/**
+ * Impelementing the interface.
+ */
+RichMarker.prototype.draw = function() {
+  if (!this.ready_ || this.dragging_) {
+    return;
+  }
+
+  var projection = this.getProjection();
+
+  if (!projection) {
+    // The map projection is not ready yet so do nothing
+    return;
+  }
+
+  var latLng = /** @type {google.maps.LatLng} */ (this.get('position'));
+  var pos = projection.fromLatLngToDivPixel(latLng);
+
+  var offset = this.getOffset_();
+  this.markerWrapper_.style['top'] = (pos.y + offset.height) + 'px';
+  this.markerWrapper_.style['left'] = (pos.x + offset.width) + 'px';
+
+  var height = this.markerContent_.offsetHeight;
+  var width = this.markerContent_.offsetWidth;
+
+  if (width != this.get('width')) {
+    this.set('width', width);
+  }
+
+  if (height != this.get('height')) {
+    this.set('height', height);
+  }
+};
+RichMarker.prototype['draw'] = RichMarker.prototype.draw;
+
+
+/**
+ * Removing a marker from the map.
+ * Implementing the interface.
+ */
+RichMarker.prototype.onRemove = function() {
+  if (this.markerWrapper_ && this.markerWrapper_.parentNode) {
+    this.markerWrapper_.parentNode.removeChild(this.markerWrapper_);
+  }
+  this.removeDragListeners_();
+};
+RichMarker.prototype['onRemove'] = RichMarker.prototype.onRemove;
+
+
+/**
+ * RichMarker Anchor positions
+ * @enum {number}
+ */
+var RichMarkerPosition = {
+  'TOP_LEFT': 1,
+  'TOP': 2,
+  'TOP_RIGHT': 3,
+  'LEFT': 4,
+  'MIDDLE': 5,
+  'RIGHT': 6,
+  'BOTTOM_LEFT': 7,
+  'BOTTOM': 8,
+  'BOTTOM_RIGHT': 9
+};
+window['RichMarkerPosition'] = RichMarkerPosition;
+
 
         //TODO: export / passthese on in the service instead of window
         window.InfoBox = InfoBox;

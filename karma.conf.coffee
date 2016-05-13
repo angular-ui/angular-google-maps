@@ -33,11 +33,11 @@ module.exports = (config) ->
       'dist/angular-google-maps.js'
       'spec/coffee/bootstrap/bootstrap.coffee'
       'spec/coffee/bootstrap/google-api-mock.coffee'
-      'node_modules/markerclustererplus/dist/markerclusterer.min.js'
-      'node_modules/google-maps-utility-library-v3-infobox/dist/infobox.js'
-      'node_modules/google-maps-utility-library-v3-keydragzoom/dist/keydragzoom.js'
-      'node_modules/google-maps-utility-library-v3-markerwithlabel/dist/markerwithlabel.js'
-      'bower_components/js-rich-marker/src/richmarker.js'
+      # 'node_modules/markerclustererplus/dist/markerclusterer.min.js'
+      # 'node_modules/google-maps-utility-library-v3-infobox/dist/infobox.js'
+      # 'node_modules/google-maps-utility-library-v3-keydragzoom/dist/keydragzoom.js'
+      # 'node_modules/google-maps-utility-library-v3-markerwithlabel/dist/markerwithlabel.js'
+      # 'bower_components/js-rich-marker/src/richmarker.js'
       'spec/coffee/bootstrap/initiator.coffee'
       #do not include those specs for jasmine html runner by karma kama_jasmine_runner.html
       {pattern:'*coffee', included: false}

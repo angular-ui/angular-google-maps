@@ -45,7 +45,14 @@ module.exports =
     dist: concatDist
     distMapped: concatDistMapped
     libs:
-      src: ["curl_components/**/*.js"]
+      # NOTE: need to figure out how to make these optional in the examples so they are not bundled
+      src: [
+        'node_modules/markerclustererplus/dist/markerclusterer.min.js'
+        'node_modules/google-maps-utility-library-v3-infobox/dist/infobox.js'
+        'node_modules/google-maps-utility-library-v3-keydragzoom/dist/keydragzoom.js'
+        'node_modules/google-maps-utility-library-v3-markerwithlabel/dist/markerwithlabel.js'
+        'bower_components/js-rich-marker/src/richmarker.js'
+      ]
       dest: "tmp/gmaps_sdk_util_v3.js"
     streetview: concatStreetView
     streetviewMapped: concatStreetViewMapped
