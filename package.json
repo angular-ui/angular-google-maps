@@ -45,7 +45,6 @@
     "grunt-contrib-uglify": "~0.9.1",
     "grunt-contrib-watch": "~0.6.1",
     "grunt-conventional-changelog": "~1.2.2",
-    "grunt-curl": "^2.2.0",
     "grunt-debug-task": "^0.1.7",
     "grunt-graphviz": "^0.1.1",
     "grunt-mkdir": "~0.1.2",
@@ -76,6 +75,11 @@
   "dependencies": {
     "angular": "1.2 - 1.5",
     "angular-simple-logger": ">=0.0.1",
-    "lodash": "3.X - 4.X"
+    "google-maps-utility-library-v3-infobox": "1.1.14",
+    "google-maps-utility-library-v3-keydragzoom": "2.0.9",
+    "google-maps-utility-library-v3-markerwithlabel": "git://github.com/nmccready/google-maps-utility-library-v3-markerwithlabel.git",
+    "js-rich-marker": "git://github.com/MikaFima/js-rich-marker.git#0383f4bbdad4ddf154772fedbdd27e464600e943",
+    "lodash": "3.X - 4.X",
+    "markerclustererplus": "2.1.4"
   }
 }

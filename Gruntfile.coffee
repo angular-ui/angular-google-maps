@@ -22,7 +22,6 @@ module.exports = (grunt) ->
     'grunt-replace'
     'grunt-subgrunt'
     'grunt-debug-task'
-    'grunt-curl'
     'grunt-verbosity'
     'grunt-webpack'
     'grunt-angular-architecture-graph'
@@ -51,9 +50,7 @@ module.exports = (grunt) ->
   options.open = _.extend options.open, allExamplesOpen
   grunt.initConfig options
 
-  grunt.registerTask 'bowerCurl', ['bower', 'curl']
-
-  grunt.registerTask 'build', ['bowerCurl', 'clean:dist', 'jshint', 'mkdir', 'coffee', 'ngAnnotate',
+  grunt.registerTask 'build', ['bower', 'clean:dist', 'jshint', 'mkdir', 'coffee', 'ngAnnotate',
   'concat:libs', 'replace', 'webpack']
 
   grunt.registerTask 'buildDist', ['build', 'concat:dist']

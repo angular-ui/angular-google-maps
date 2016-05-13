@@ -5,7 +5,12 @@
   "dependencies": {
     "angular": "1.2 - 1.5",
     "angular-simple-logger": ">=0.0.1",
-    "lodash": "3.X - 4.X"
+    "lodash": "3.X - 4.X",
+    "markerclustererplus": "^2.1.4",
+    "google-maps-utility-library-v3-markerwithlabel": "git://github.com/nmccready/google-maps-utility-library-v3-markerwithlabel.git",
+    "google-maps-utility-library-v3-infobox": "^1.1.14",
+    "google-maps-utility-library-v3-keydragzoom": "^2.0.9",
+    "js-rich-marker": "*"
   },
   "ignore": [
     "*.json",
