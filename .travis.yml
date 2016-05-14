@@ -14,7 +14,7 @@ script:
     - grunt default --force
 
 after_success:
-    - grunt gh-pages
+    - grunt gh-pages:travis
 
 branches:
   only:

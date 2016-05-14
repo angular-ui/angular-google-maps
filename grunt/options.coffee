@@ -314,15 +314,23 @@ module.exports =
       dest: '<%= yeoman.app %>/changelog.json'
 
   'gh-pages':
-    options:
-      repo: 'https://' + process.env.GH_TOKEN + '@github.com/angular-ui/angular-google-maps.git'
-      silent: true
-      base: 'dist'
-      user:
-        name: process.env.GIT_NAME
-        email: process.env.GIT_EMAIL
+    travis:
+      options:
+        repo: 'https://' + process.env.GH_TOKEN + '@github.com/angular-ui/angular-google-maps.git'
+        silent: true
+        base: 'dist'
+        user:
+          name: process.env.GIT_NAME
+          email: process.env.GIT_EMAIL
 
-    src: ['**']
+      src: ['**']
+
+    local:
+      options:
+        base: 'dist'
+
+      src: ['**']
+
 
   bower:
     dev:
