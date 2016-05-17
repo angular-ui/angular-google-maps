@@ -15,7 +15,7 @@
 <body ng-controller="TestController">
     {{sites}}
     <ui-gmap-google-map class="col-sm-12 pad-none" center="map.center" zoom="map.zoom" style="min-height: 600px" draggable="true">
-      <ui-gmap-markers fit="true" doRebuildAll="doRebuildAll" models="markers" coords="'coords'" options="'options'" clusteroptions="map.clusterOptions">
+      <ui-gmap-markers fit="true" deepComparison="true" doRebuildAll="doRebuildAll" models="markers" coords="'coords'" options="'options'" clusteroptions="map.clusterOptions">
       </ui-gmap-markers>
     </ui-gmap-google-map>
 

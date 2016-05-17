@@ -15,6 +15,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
           type: '=?type' # cluster, spider, default undefined - normal
           typeOptions: '=?typeoptions'
           typeEvents: '=?typeevents'
+          deepComparison: '=?deepcomparison'
 
         $log.info @
 

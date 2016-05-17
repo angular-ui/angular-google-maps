@@ -26,6 +26,7 @@ describe 'ModelKey Tests', ->
       @subject.interface.scopeKeys = ['coords','options']
       delete @scope.coords
       delete @scope.options
+      delete @scope.deepComparison
 
     it 'throws with no scope', ->
       expect(@subject.modelKeyComparison).toThrow('No scope set!')
@@ -45,12 +46,27 @@ describe 'ModelKey Tests', ->
       expect(@subject.modelKeyComparison(@model2, @model3))
       .toEqual(true)
 
-    it 'model4 to model5 with options is same by values', ->
+    it 'model4 to model5 with options is same by values with deepComparison', ->
+      @scope.coords = 'coords'
+      @scope.options = 'options'
+      @scope.deepComparison = true
+      expect(@subject.modelKeyComparison(@model4, @model5))
+      .toEqual(true)
+
+    it 'model4 to model5 with options is diff without deepComparison', ->
       @scope.coords = 'coords'
       @scope.options = 'options'
       expect(@subject.modelKeyComparison(@model4, @model5))
-      .toEqual(true)
-    it 'model4 to model6 with different options is diff', ->
+      .toEqual(false)
+
+    it 'model4 to model6 with different options is diff with deepComparison', ->
+      @scope.coords = 'coords'
+      @scope.options = 'options'
+      @scope.deepComparison = true
+      expect(@subject.modelKeyComparison(@model4, @model6))
+      .toEqual(false)
+
+    it 'model4 to model6 with different options is diff without deepComparison', ->
       @scope.coords = 'coords'
       @scope.options = 'options'
       expect(@subject.modelKeyComparison(@model4, @model6))
