@@ -49,7 +49,6 @@ angular.module("uiGmapgoogle-maps.directives.api.models.parent")
             @watch 'typeEvents', @scope
             @watch 'fit', @scope
             @watch 'idKey', @scope
-            @watch 'deepComparison', @scope
 
             @gManager = undefined
             @createAllNew(@scope)

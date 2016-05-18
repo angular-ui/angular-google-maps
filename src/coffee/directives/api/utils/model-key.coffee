@@ -35,7 +35,6 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
           return isEqual unless isEqual
         #compare the rest of the properties that are being watched by scope
         without = _.without(@interface.scopeKeys, 'coords')
-        console.log("Scope.deepcomparison = " + scope.deepComparison)
 
         isEqual = _.every without, (k) =>
           m1 = @scopeOrModelVal(scope[k], scope, model1)

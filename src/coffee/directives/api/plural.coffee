@@ -35,6 +35,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
       chunk: '=chunk' #false to disable chunking, otherwise a number to define chunk size
       cleanchunk: '=cleanchunk' #false to disable chunking, otherwise a number to define chunk size
       control: '=control'
+      deepComparison: '=deepcomparison' #true to deep compare attributes on model for determining uniqueness.
 
   link: (scope, parent) ->
     _initControl(scope, parent)
