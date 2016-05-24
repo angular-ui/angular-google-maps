@@ -84,7 +84,7 @@ grunt example
 and open your browser on `http://localhost:3000/example.html`.
 
 ### Documentation
-The various directives are documented at [official site](http://angular-google-maps.org).
+The various directives are documented at [official site](http://angular-ui.github.io/angular-google-maps).
 
 ### Contributing
 
