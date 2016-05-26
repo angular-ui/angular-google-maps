@@ -12,6 +12,7 @@ Remove the template from below and provide thoughtful commentary *and code sampl
 
 <!-- BUG TEMPLATE -->
 Thanks to the guys of [React-Router](https://github.com/reactjs/react-router/), for [standardizing the way on how to report bugs](https://github.com/reactjs/react-router/blob/master/ISSUE_TEMPLATE.md)
+
 [An issue example](https://github.com/reactjs/react-router/issues/3480)
 
 ## Version
@@ -19,6 +20,7 @@ Thanks to the guys of [React-Router](https://github.com/reactjs/react-router/), 
 
 ## Test Case
 [http://jsbin.com/hicebe/edit?html,css,js,output](http://jsbin.com/hicebe/edit?html,css,js,output)
+
 [Direct output here](http://output.jsbin.com/hicebe/)
 
 ## Steps to reproduce
