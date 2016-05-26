@@ -11,6 +11,9 @@ Remove the template from below and provide thoughtful commentary *and code sampl
 -->
 
 <!-- BUG TEMPLATE -->
+Thanks to the guys of [React-Router](https://github.com/reactjs/react-router/), for [standardizing the way on how to report bugs](https://github.com/reactjs/react-router/blob/master/ISSUE_TEMPLATE.md)
+[An issue example](https://github.com/reactjs/react-router/issues/3480)
+
 ## Version
 2.3.3
 
