@@ -10,11 +10,11 @@ concatDist =
      *  <%= pkg.repository.type %>: <%= pkg.repository.url %>
      */
     ;
-    (function( window, angular, undefined ){
+    (function( window, angular, _, undefined ){
       'use strict';
     """
     separator: ";"
-    footer: "}( window,angular));"
+    footer: "}( window, angular, _));"
   src: fullPipeline
   dest: "dist/<%= pkg.name %>.js"
 
