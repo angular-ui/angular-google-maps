@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.3.3 2016-05-13
+/*! angular-google-maps 2.3.3 2016-06-04
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -6658,7 +6658,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         eventOpts: '=',
         styles: '=',
         bounds: '=',
-        update: '='
+        update: '=',
+        extent: '='
       };
 
       Map.prototype.link = function(scope, element, attrs) {
@@ -6789,12 +6790,12 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 settingFromDirective = true;
                 return scope.$evalAsync(function(s) {
                   updateCenter();
-                  if (!_.isUndefined(s.bounds) && !_.includes(disabledEvents, 'bounds')) {
-                    s.bounds.northeast = {
+                  if (!_.isUndefined(s.extent) && !_.includes(disabledEvents, 'extent')) {
+                    s.extent.northeast = {
                       latitude: ne.lat(),
                       longitude: ne.lng()
                     };
-                    s.bounds.southwest = {
+                    s.extent.southwest = {
                       latitude: sw.lat(),
                       longitude: sw.lng()
                     };
@@ -6892,7 +6893,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 return _gMap.setZoom(newValue);
               }, ((ref1 = scope.eventOpts) != null ? (ref2 = ref1.debounce) != null ? ref2.zoomMs : void 0 : void 0) + 20, false);
             });
-            scope.$watch('bounds', function(newValue, oldValue) {
+            scope.$watchCollection('bounds', function(newValue, oldValue) {
               var bounds, ne, ref1, ref2, ref3, ref4, sw;
               if (newValue === oldValue) {
                 return;

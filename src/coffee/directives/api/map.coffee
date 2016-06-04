@@ -49,6 +49,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
           styles: '=' # optional
           bounds: '=' # either bounds or center is required
           update: '=' # optional
+          extent: '=' # optional
 
         link: (scope, element, attrs) =>
           listeners = []
@@ -156,12 +157,12 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
                   updateCenter()
 
-                  if !_.isUndefined(s.bounds) and !_.includes(disabledEvents, 'bounds')
-                    s.bounds.northeast =
+                  if !_.isUndefined(s.extent) and !_.includes(disabledEvents, 'extent')
+                    s.extent.northeast =
                       latitude: ne.lat()
                       longitude: ne.lng()
 
-                    s.bounds.southwest =
+                    s.extent.southwest =
                       latitude: sw.lat()
                       longitude: sw.lng()
 
@@ -243,7 +244,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
               , scope.eventOpts?.debounce?.zoomMs + 20
               , false
 
-            scope.$watch 'bounds', (newValue, oldValue) ->
+            scope.$watchCollection 'bounds', (newValue, oldValue) ->
               return if newValue is oldValue
               if !newValue?.northeast?.latitude? or !newValue?.northeast?.longitude? or
                 !newValue?.southwest?.latitude? or !newValue?.southwest?.longitude?
