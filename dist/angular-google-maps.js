@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.3.3 2016-05-13
+/*! angular-google-maps 2.3.3 2016-06-14
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4809,30 +4809,38 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
       MapTypeParentModel = (function(superClass) {
         extend(MapTypeParentModel, superClass);
 
-        function MapTypeParentModel(scope, element, attrs, gMap, $log) {
+        function MapTypeParentModel(scope, element, attrs, gMap, $log, childModel, propMap) {
+          var watchChildModelOptions, watchChildModelShow, watchOptions, watchShow;
           this.scope = scope;
           this.element = element;
           this.attrs = attrs;
           this.gMap = gMap;
           this.$log = $log != null ? $log : Logger;
+          this.childModel = childModel;
+          this.propMap = propMap;
+          this.refreshShown = bind(this.refreshShown, this);
           this.hideOverlay = bind(this.hideOverlay, this);
           this.showOverlay = bind(this.showOverlay, this);
           this.refreshMapType = bind(this.refreshMapType, this);
           this.createMapType = bind(this.createMapType, this);
-          if (this.attrs.options == null) {
+          if (this.scope.options == null) {
             this.$log.info('options attribute for the map-type directive is mandatory. Map type creation aborted!!');
             return;
           }
           this.id = this.gMap.overlayMapTypesCount = this.gMap.overlayMapTypesCount + 1 || 0;
           this.doShow = true;
           this.createMapType();
-          if (angular.isDefined(this.attrs.show)) {
-            this.doShow = this.scope.show;
-          }
+          this.refreshShown();
           if (this.doShow && (this.gMap != null)) {
             this.showOverlay();
           }
-          this.scope.$watch('show', (function(_this) {
+          watchChildModelShow = (function(_this) {
+            return function() {
+              return _this.childModel[_this.attrs.show];
+            };
+          })(this);
+          watchShow = this.childModel ? watchChildModelShow : 'show';
+          this.scope.$watch(watchShow, (function(_this) {
             return function(newValue, oldValue) {
               if (newValue !== oldValue) {
                 _this.doShow = newValue;
@@ -4843,8 +4851,14 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 }
               }
             };
-          })(this), true);
-          this.scope.$watchCollection('options', (function(_this) {
+          })(this));
+          watchChildModelOptions = (function(_this) {
+            return function() {
+              return _this.childModel[_this.attrs.options];
+            };
+          })(this);
+          watchOptions = this.childModel ? watchChildModelOptions : 'options';
+          this.scope.$watchCollection(watchOptions, (function(_this) {
             return function(newValue, oldValue) {
               var different, mapTypeProps;
               if (!_.isEqual(newValue, oldValue)) {
@@ -4876,21 +4890,28 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         }
 
         MapTypeParentModel.prototype.createMapType = function() {
-          if (this.scope.options.getTile != null) {
-            this.mapType = this.scope.options;
-          } else if (this.scope.options.getTileUrl != null) {
-            this.mapType = new google.maps.ImageMapType(this.scope.options);
+          var id, idAttr, mapType;
+          mapType = this.childModel ? (this.attrs.options ? this.childModel[this.attrs.options] : this.childModel) : this.scope.options;
+          if (mapType.getTile != null) {
+            this.mapType = mapType;
+          } else if (mapType.getTileUrl != null) {
+            this.mapType = new google.maps.ImageMapType(mapType);
           } else {
             this.$log.info('options should provide either getTile or getTileUrl methods. Map type creation aborted!!');
             return;
           }
-          if (this.attrs.id && this.scope.id) {
-            this.gMap.mapTypes.set(this.scope.id, this.mapType);
+          idAttr = this.attrs.id ? (this.childModel ? this.attrs.id : 'id') : void 0;
+          id = idAttr ? (this.childModel ? this.childModel[idAttr] : this.scope[idAttr]) : void 0;
+          if (id) {
+            this.gMap.mapTypes.set(id, this.mapType);
             if (!angular.isDefined(this.attrs.show)) {
               this.doShow = false;
             }
           }
-          return this.mapType.layerId = this.id;
+          this.mapType.layerId = this.id;
+          if (this.childModel && angular.isDefined(this.scope.index)) {
+            return this.propMap.put(this.mapType.layerId, this.scope.index);
+          }
         };
 
         MapTypeParentModel.prototype.refreshMapType = function() {
@@ -4903,7 +4924,28 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         };
 
         MapTypeParentModel.prototype.showOverlay = function() {
-          return this.gMap.overlayMapTypes.push(this.mapType);
+          var found;
+          if (angular.isDefined(this.scope.index)) {
+            found = false;
+            if (this.gMap.overlayMapTypes.getLength()) {
+              return this.gMap.overlayMapTypes.forEach((function(_this) {
+                return function(mapType, index) {
+                  var layerIndex;
+                  if (!found) {
+                    layerIndex = _this.propMap.get(mapType.layerId.toString());
+                    if (layerIndex > _this.scope.index || !angular.isDefined(layerIndex)) {
+                      found = true;
+                      _this.gMap.overlayMapTypes.insertAt(index, _this.mapType);
+                    }
+                  }
+                };
+              })(this));
+            } else {
+              return this.gMap.overlayMapTypes.push(this.mapType);
+            }
+          } else {
+            return this.gMap.overlayMapTypes.push(this.mapType);
+          }
         };
 
         MapTypeParentModel.prototype.hideOverlay = function() {
@@ -4919,10 +4961,59 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           })(this));
         };
 
+        MapTypeParentModel.prototype.refreshShown = function() {
+          return this.doShow = angular.isDefined(this.attrs.show) ? (this.childModel ? this.childModel[this.attrs.show] : this.scope.show) : true;
+        };
+
         return MapTypeParentModel;
 
       })(BaseObject);
       return MapTypeParentModel;
+    }
+  ]);
+
+}).call(this);
+;(function() {
+  var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
+
+  angular.module('uiGmapgoogle-maps.directives.api.models.parent').factory('uiGmapMapTypesParentModel', [
+    'uiGmapBaseObject', 'uiGmapLogger', 'uiGmapMapTypeParentModel', 'uiGmapPropMap', function(BaseObject, Logger, MapTypeParentModel, PropMap) {
+      var MapTypesParentModel;
+      MapTypesParentModel = (function(superClass) {
+        extend(MapTypesParentModel, superClass);
+
+        function MapTypesParentModel(scope, element, attrs, gMap, $log) {
+          var pMap;
+          this.scope = scope;
+          this.element = element;
+          this.attrs = attrs;
+          this.gMap = gMap;
+          this.$log = $log != null ? $log : Logger;
+          if (this.attrs.mapTypes == null) {
+            this.$log.info('layers attribute for the map-types directive is mandatory. Map types creation aborted!!');
+            return;
+          }
+          pMap = new PropMap;
+          this.scope.mapTypes.forEach((function(_this) {
+            return function(l, i) {
+              var childScope, mockAttr;
+              mockAttr = {
+                options: _this.scope.options,
+                show: _this.scope.show,
+                refresh: _this.scope.refresh
+              };
+              childScope = _this.scope.$new();
+              childScope.index = i;
+              new MapTypeParentModel(childScope, null, mockAttr, _this.gMap, _this.$log, l, pMap);
+            };
+          })(this));
+        }
+
+        return MapTypesParentModel;
+
+      })(BaseObject);
+      return MapTypesParentModel;
     }
   ]);
 
@@ -7874,6 +7965,54 @@ This directive creates a new scope.
 
       })();
       return new MapType();
+    }
+  ]);
+
+}).call(this);
+;
+/*
+Map Layers directive
+
+This directive is used to create any type of Layer from the google maps sdk.
+This directive creates a new scope.
+ */
+
+(function() {
+  var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+  angular.module('uiGmapgoogle-maps').directive("uiGmapMapTypes", [
+    "$timeout", "uiGmapLogger", "uiGmapMapTypesParentModel", function($timeout, Logger, MapTypesParentModel) {
+      var MapTypes;
+      MapTypes = (function() {
+        function MapTypes() {
+          this.link = bind(this.link, this);
+          this.$log = Logger;
+          this.restrict = "EMA";
+          this.require = '^' + 'uiGmapGoogleMap';
+          this.priority = -1;
+          this.transclude = true;
+          this.template = '<span class=\"angular-google-map-layers\" ng-transclude></span>';
+          this.scope = {
+            mapTypes: "=mapTypes",
+            show: "=show",
+            options: "=options",
+            refresh: "=refresh",
+            id: "=idKey"
+          };
+        }
+
+        MapTypes.prototype.link = function(scope, element, attrs, mapCtrl) {
+          return mapCtrl.getScope().deferred.promise.then((function(_this) {
+            return function(map) {
+              return new MapTypesParentModel(scope, element, attrs, map);
+            };
+          })(this));
+        };
+
+        return MapTypes;
+
+      })();
+      return new MapTypes();
     }
   ]);
 
