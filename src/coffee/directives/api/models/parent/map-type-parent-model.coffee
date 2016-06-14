@@ -99,6 +99,11 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                   found = true
                   @gMap.overlayMapTypes.insertAt index, @mapType
               return
+
+            # if still not found, it just means that no layer has been found with
+            # a higher (or missing) index, so just added to the end
+            if !found
+              @gMap.overlayMapTypes.push @mapType
           else
             @gMap.overlayMapTypes.push @mapType
         else

@@ -4928,7 +4928,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
           if (angular.isDefined(this.scope.index)) {
             found = false;
             if (this.gMap.overlayMapTypes.getLength()) {
-              return this.gMap.overlayMapTypes.forEach((function(_this) {
+              this.gMap.overlayMapTypes.forEach((function(_this) {
                 return function(mapType, index) {
                   var layerIndex;
                   if (!found) {
@@ -4940,6 +4940,9 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   }
                 };
               })(this));
+              if (!found) {
+                return this.gMap.overlayMapTypes.push(this.mapType);
+              }
             } else {
               return this.gMap.overlayMapTypes.push(this.mapType);
             }
