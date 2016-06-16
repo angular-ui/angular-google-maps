@@ -46,9 +46,12 @@ angular.module('uiGmapgoogle-maps.providers')
           deferred.resolve window.google.maps
           return deferred.promise
 
-        randomizedFunctionName = options.callback = 'onGoogleMapsReady' + Math.round(Math.random() * 1000)
-        window[randomizedFunctionName] = ->
-          window[randomizedFunctionName] = null
+        options.callback = 'onGoogleMapsReady'
+        if options.randomizeCallbackName
+          options.callback += Math.round(Math.random() * 1000)
+        callbackFunctionName = options.callback
+        window[callbackFunctionName] = ->
+          window[callbackFunctionName] = null
           deferred.resolve window.google.maps
           return
 
@@ -60,7 +63,7 @@ angular.module('uiGmapgoogle-maps.providers')
           includeScript options
 
         usedConfiguration = options
-        usedConfiguration.randomizedFunctionName = randomizedFunctionName
+        usedConfiguration.callbackFunctionName = callbackFunctionName
 
         # Return the promise
         deferred.promise
@@ -75,7 +78,7 @@ angular.module('uiGmapgoogle-maps.providers')
         else
           # If the API is loaded but the original configuration's callback has
           # not been executed then do so
-          window[config.randomizedFunctionName]() if window[config.randomizedFunctionName]
+          window[config.callbackFunctionName]() if window[config.callbackFunctionName]
 ])
 #holy hool!!, any time your passing a dependency to a 'provider' you must append the Provider text to the service
 # name.. makes no sense and this is not documented well
@@ -94,6 +97,7 @@ angular.module('uiGmapgoogle-maps.providers')
       libraries: ''
       language: 'en'
       preventLoad: false
+      randomizeCallbackName: true
 
     # A function that lets us configure options of the service
     @configure = (options) ->
