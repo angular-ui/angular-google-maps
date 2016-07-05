@@ -70,6 +70,7 @@
     "phantomjs-polyfill": "0.0.1",
     "require-directory": "2.1.1",
     "webpack": "^1.9.10",
+    "webpack-dev-server": "^1.14.1",
     "yargs": "3.32.0"
   },
   "dependencies": {
