@@ -974,6 +974,8 @@ digraph dependencies {
       
         "uiGmapMapTypeParentModel"[label="uiGmapMapTypeParentModel", color=6]
       
+        "uiGmapMapTypesParentModel"[label="uiGmapMapTypesParentModel", color=6]
+      
         "uiGmapMarkersParentModel"[label="uiGmapMarkersParentModel", color=6]
       
         "uiGmapPolygonsParentModel"[label="uiGmapPolygonsParentModel", color=6]
@@ -1021,6 +1023,8 @@ digraph dependencies {
         "uiGmapgoogle-maps.directives.api.models.parent" -> "uiGmapLayerParentModel"
       
         "uiGmapgoogle-maps.directives.api.models.parent" -> "uiGmapMapTypeParentModel"
+      
+        "uiGmapgoogle-maps.directives.api.models.parent" -> "uiGmapMapTypesParentModel"
       
         "uiGmapgoogle-maps.directives.api.models.parent" -> "uiGmapMarkersParentModel"
       
@@ -1138,6 +1142,20 @@ digraph dependencies {
         
           "uiGmapLogger"[label="uiGmapLogger"]
           "uiGmapLogger" -> "uiGmapMapTypeParentModel"
+        
+      
+        
+          "uiGmapBaseObject"[label="uiGmapBaseObject"]
+          "uiGmapBaseObject" -> "uiGmapMapTypesParentModel"
+        
+          "uiGmapLogger"[label="uiGmapLogger"]
+          "uiGmapLogger" -> "uiGmapMapTypesParentModel"
+        
+          "uiGmapMapTypeParentModel"[label="uiGmapMapTypeParentModel"]
+          "uiGmapMapTypeParentModel" -> "uiGmapMapTypesParentModel"
+        
+          "uiGmapPropMap"[label="uiGmapPropMap"]
+          "uiGmapPropMap" -> "uiGmapMapTypesParentModel"
         
       
         
@@ -1774,6 +1792,8 @@ digraph dependencies {
       
         "uiGmapMapType"[label="uiGmapMapType", color=3]
       
+        "uiGmapMapTypes"[label="uiGmapMapTypes", color=3]
+      
         "uiGmapPolygons"[label="uiGmapPolygons", color=3]
       
         "uiGmapSearchBox"[label="uiGmapSearchBox", color=3]
@@ -1822,6 +1842,8 @@ digraph dependencies {
         "uiGmapgoogle-maps" -> "uiGmapFreeDrawPolygons"
       
         "uiGmapgoogle-maps" -> "uiGmapMapType"
+      
+        "uiGmapgoogle-maps" -> "uiGmapMapTypes"
       
         "uiGmapgoogle-maps" -> "uiGmapPolygons"
       
@@ -1947,6 +1969,14 @@ digraph dependencies {
         
           "uiGmapMapTypeParentModel"[label="uiGmapMapTypeParentModel"]
           "uiGmapMapTypeParentModel" -> "uiGmapMapType"
+        
+      
+        
+          "uiGmapLogger"[label="uiGmapLogger"]
+          "uiGmapLogger" -> "uiGmapMapTypes"
+        
+          "uiGmapMapTypesParentModel"[label="uiGmapMapTypesParentModel"]
+          "uiGmapMapTypesParentModel" -> "uiGmapMapTypes"
         
       
         

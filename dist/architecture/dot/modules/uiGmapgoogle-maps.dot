@@ -85,6 +85,9 @@ digraph dependencies {
       "uiGmapMapType"[label="uiGmapMapType", color=3]
       "uiGmapgoogle-maps" -> "uiGmapMapType"
     
+      "uiGmapMapTypes"[label="uiGmapMapTypes", color=3]
+      "uiGmapgoogle-maps" -> "uiGmapMapTypes"
+    
       "uiGmapPolygons"[label="uiGmapPolygons", color=3]
       "uiGmapgoogle-maps" -> "uiGmapPolygons"
     
@@ -197,6 +200,14 @@ digraph dependencies {
       
         "uiGmapMapTypeParentModel"[label="uiGmapMapTypeParentModel"]
         "uiGmapMapTypeParentModel" -> "uiGmapMapType"
+      
+    
+      
+        "uiGmapLogger"[label="uiGmapLogger"]
+        "uiGmapLogger" -> "uiGmapMapTypes"
+      
+        "uiGmapMapTypesParentModel"[label="uiGmapMapTypesParentModel"]
+        "uiGmapMapTypesParentModel" -> "uiGmapMapTypes"
       
     
       
