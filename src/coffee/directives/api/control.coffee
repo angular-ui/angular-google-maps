@@ -44,7 +44,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
 
                 controlDiv.append transcludeEl
 
-                pushControl(map, controlDiv, index)
+                pushControl(map, controlDiv.children(), index)
 
             else
               $http.get(scope.template, { cache: $templateCache })
