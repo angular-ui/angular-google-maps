@@ -54,7 +54,7 @@ meteor add angularui:angular-google-maps
 * Installing for [Meteor 1.3+](https://www.meteor.com/) application:
 
 ```shell
-meteor npm intsall --save angular-google-maps
+meteor npm install --save angular-google-maps
 ```
 
 ### Building
