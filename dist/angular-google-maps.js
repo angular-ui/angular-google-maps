@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.3.3 2016-07-16
+/*! angular-google-maps 2.3.3 2016-08-15
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -4358,7 +4358,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             childScope.$watch('model', (function(_this) {
               return function(newValue, oldValue) {
                 if (newValue !== oldValue) {
-                  return _this.setChildScope(childScope, newValue);
+                  return _this.setChildScope(IPoly.scopeKeys, childScope, newValue);
                 }
               };
             })(this), true);
