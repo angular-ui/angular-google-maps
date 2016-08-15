@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.3.3 2016-06-03
+/*! angular-google-maps 2.3.3 2016-07-16
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -96,7 +96,7 @@ Nicholas McCready - https://twitter.com/nmccready
         script.id = scriptId = "ui_gmap_map_load_" + (uuid.generate());
         script.type = 'text/javascript';
         script.src = getScriptUrl(options) + query;
-        return document.body.appendChild(script);
+        return document.head.appendChild(script);
       };
       isGoogleMapsLoaded = function() {
         return angular.isDefined(window.google) && angular.isDefined(window.google.maps);
