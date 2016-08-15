@@ -1,3 +1,13 @@
+<a name"2.4.3"></a>
+### 2.4.3 (2016-08-15)
+
+
+#### Bug Fixes
+
+* **build:** webpack-dev-server is a peer dependency of grunt-webpack ([e7631d28](https://github.com/angular-ui/angular-google-maps/commit/e7631d28))
+* **map-loader:** change includeScript to place maps api script tag to head element instead of bod ([8d6ed161](https://github.com/angular-ui/angular-google-maps/commit/8d6ed161))
+
+
 <a name"2.3.3"></a>
 ### 2.3.3 (2016-05-13)
 
