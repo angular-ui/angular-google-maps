@@ -1,3 +1,13 @@
+## Project No longer actively maintaned
+
+With angular 2 and other competing projects we have decided to announce that this project is no longer activley maintained. If someone desires to take over the project please contact any of the admins.
+
+As a warning this project is not activley watched by the admins and is checked here and there to fix any major issues. Therefore if something is **major**, contact someone directly via mentioning a users name/alias would notify the user.
+
+Alternatives:
+
+- [angularjs-google-maps](https://github.com/allenhwkim/angularjs-google-maps)
+- [angular2-google-maps](https://github.com/SebastianM/angular2-google-maps)
 
 # angular-google-maps
 > AngularJS directives for Google Maps
