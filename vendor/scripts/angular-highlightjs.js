@@ -1,6 +1,6 @@
 /*! angular-highlightjs
-version: 0.6.1
-build date: 2016-04-02
+version: 0.6.2
+build date: 2016-08-19
 author: Chih-Hsuan Fan
 https://github.com/pc035860/angular-highlightjs.git */
 
@@ -91,8 +91,8 @@ ngModule.factory('hljsCache', ["$cacheFactory", function ($cacheFactory) {
 /**
  * HljsCtrl controller
  */
-ngModule.controller('HljsCtrl', 
-["hljsCache", "hljsService", "$interpolate", "$window", "$log", function HljsCtrl (hljsCache, hljsService, $interpolate, $window, $log) {
+ngModule.controller('HljsCtrl',
+["hljsCache", "hljsService", "$interpolate", "$window", function HljsCtrl (hljsCache, hljsService, $interpolate, $window) {
   var ctrl = this;
 
   var _elm = null,
@@ -181,6 +181,7 @@ ngModule.controller('HljsCtrl',
           _elm.html(newVal);
         }
       });
+      _interpolateScope.$apply();
       _elm.html(interpolateFn(_interpolateScope));
     }
     else {
