@@ -1,4 +1,4 @@
-## Project No longer actively maintaned
+## Project No longer actively maintained
 
 With angular 2 and other competing projects we have decided to announce that this project is no longer activley maintained. If someone desires to take over the project please contact any of the admins.
 
