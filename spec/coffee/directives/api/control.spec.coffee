@@ -17,7 +17,7 @@ describe "directives.api.control", ->
       """
     element = @compile(html)(@scope)
     @rootScope.$apply()
-    expect(@log.error).toHaveBeenCalledWith('mapControl: could not find a valid template property')
+    expect(@log.error).toHaveBeenCalledWith('mapControl: could not find a valid template property or elements for transclusion')
     @log.error.calls.reset()
 
   it "should load template", ->

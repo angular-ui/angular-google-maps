@@ -24,6 +24,7 @@ module.exports = (config) ->
 
   # list of files / patterns to load in the browser
     files: [
+      # 'https://maps.googleapis.com/maps/api/js?sensor=false'
       'node_modules/phantomjs-polyfill/bind-polyfill.js'
       'bower_components/lodash/lodash.js'
       'bower_components/angular/angular.js'
@@ -32,6 +33,11 @@ module.exports = (config) ->
       'dist/angular-google-maps.js'
       'spec/coffee/bootstrap/bootstrap.coffee'
       'spec/coffee/bootstrap/google-api-mock.coffee'
+      # 'node_modules/markerclustererplus/dist/markerclusterer.min.js'
+      # 'node_modules/google-maps-utility-library-v3-infobox/dist/infobox.js'
+      # 'node_modules/google-maps-utility-library-v3-keydragzoom/dist/keydragzoom.js'
+      # 'node_modules/google-maps-utility-library-v3-markerwithlabel/dist/markerwithlabel.js'
+      # 'bower_components/js-rich-marker/src/richmarker.js'
       'spec/coffee/bootstrap/initiator.coffee'
       #do not include those specs for jasmine html runner by karma kama_jasmine_runner.html
       {pattern:'*coffee', included: false}
@@ -70,7 +76,7 @@ module.exports = (config) ->
 
   # start these browsers
   # available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJS']# options Chrome, PhantomJS
+    browsers: process.env.KARMA_BROWSERS?.split(',') ? ['PhantomJS']# options Chrome, PhantomJS
   #browserNoActivityTimeout: 200000000000000000000000000000000
   # If browser does not capture in given timeout [ms], kill it
     captureTimeout: 60000

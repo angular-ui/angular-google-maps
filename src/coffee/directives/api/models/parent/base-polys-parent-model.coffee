@@ -143,7 +143,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
           childScope.$watch 'model', (newValue, oldValue) =>
             if(newValue != oldValue)
-              @setChildScope(childScope, newValue)
+              @setChildScope(IPoly.scopeKeys, childScope, newValue)
           , true
 
           childScope.static = @scope.static

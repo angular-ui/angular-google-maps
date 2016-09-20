@@ -27,6 +27,11 @@
          bounds="map.bounds">
 
         <ui-gmap-map-control template="clear.tpl.html" position="top-right" index="1" controller="mapWidgetCtrl"></ui-gmap-map-control>
+        <ui-gmap-map-control position="top-right" index="1" >
+              <div ng-controller="mapWidgetCtrl">
+                <button class="btn btn-lg btn-primary"  ng-click="drawWidget.controlClick()">{{drawWidget.controlText}}</button>
+              </div>
+        </ui-gmap-map-control>
 
         <ui-gmap-free-draw-polygons polygons="map.polys" draw="map.draw" ></ui-gmap-free-draw-polygons>
     </ui-gmap-google-map>
