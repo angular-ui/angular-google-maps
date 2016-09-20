@@ -6872,7 +6872,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (s == null) {
                   s = scope;
                 }
-                if (_.includes(disabledEvents, 'center')) {
+                if (!_.includes(disabledEvents, 'center')) {
                   if (s.center.latitude !== c.lat()) {
                     s.center.latitude = c.lat();
                   }
