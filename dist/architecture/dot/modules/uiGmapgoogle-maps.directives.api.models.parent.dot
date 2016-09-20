@@ -47,6 +47,9 @@ digraph dependencies {
       "uiGmapMapTypeParentModel"[label="uiGmapMapTypeParentModel", color=6]
       "uiGmapgoogle-maps.directives.api.models.parent" -> "uiGmapMapTypeParentModel"
     
+      "uiGmapMapTypesParentModel"[label="uiGmapMapTypesParentModel", color=6]
+      "uiGmapgoogle-maps.directives.api.models.parent" -> "uiGmapMapTypesParentModel"
+    
       "uiGmapMarkersParentModel"[label="uiGmapMarkersParentModel", color=6]
       "uiGmapgoogle-maps.directives.api.models.parent" -> "uiGmapMarkersParentModel"
     
@@ -171,6 +174,20 @@ digraph dependencies {
       
         "uiGmapLogger"[label="uiGmapLogger"]
         "uiGmapLogger" -> "uiGmapMapTypeParentModel"
+      
+    
+      
+        "uiGmapBaseObject"[label="uiGmapBaseObject"]
+        "uiGmapBaseObject" -> "uiGmapMapTypesParentModel"
+      
+        "uiGmapLogger"[label="uiGmapLogger"]
+        "uiGmapLogger" -> "uiGmapMapTypesParentModel"
+      
+        "uiGmapMapTypeParentModel"[label="uiGmapMapTypeParentModel"]
+        "uiGmapMapTypeParentModel" -> "uiGmapMapTypesParentModel"
+      
+        "uiGmapPropMap"[label="uiGmapPropMap"]
+        "uiGmapPropMap" -> "uiGmapMapTypesParentModel"
       
     
       
