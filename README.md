@@ -1,3 +1,13 @@
+## Project No longer actively maintained
+
+With angular 2 and other competing projects we have decided to announce that this project is no longer activley maintained. If someone desires to take over the project please contact any of the admins.
+
+As a warning this project is not activley watched by the admins and is checked here and there to fix any major issues. Therefore if something is **major**, contact someone directly via mentioning a users name/alias (will notify the user/admin).
+
+Alternatives:
+
+- [angularjs-google-maps](https://github.com/allenhwkim/angularjs-google-maps)
+- [angular2-google-maps](https://github.com/SebastianM/angular2-google-maps)
 
 # angular-google-maps
 > AngularJS directives for Google Maps
@@ -54,7 +64,7 @@ meteor add angularui:angular-google-maps
 * Installing for [Meteor 1.3+](https://www.meteor.com/) application:
 
 ```shell
-meteor npm intsall --save angular-google-maps
+meteor npm install --save angular-google-maps
 ```
 
 ### Building

@@ -1,9 +1,9 @@
-/*! angular-google-maps 2.3.3 2016-05-13
+/*! angular-google-maps 2.3.4 2016-09-19
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
 ;
-(function( window, angular, undefined ){
+(function( window, angular, _, undefined ){
   'use strict';
 /*
 !
@@ -96,7 +96,7 @@ Nicholas McCready - https://twitter.com/nmccready
         script.id = scriptId = "ui_gmap_map_load_" + (uuid.generate());
         script.type = 'text/javascript';
         script.src = getScriptUrl(options) + query;
-        return document.body.appendChild(script);
+        return document.head.appendChild(script);
       };
       isGoogleMapsLoaded = function() {
         return angular.isDefined(window.google) && angular.isDefined(window.google.maps);
@@ -1509,7 +1509,14 @@ Nicholas McCready - https://twitter.com/nmccready
           without = _.without(this["interface"].scopeKeys, 'coords');
           isEqual = _.every(without, (function(_this) {
             return function(k) {
-              return _this.scopeOrModelVal(scope[k], scope, model1) === _this.scopeOrModelVal(scope[k], scope, model2);
+              var m1, m2;
+              m1 = _this.scopeOrModelVal(scope[k], scope, model1);
+              m2 = _this.scopeOrModelVal(scope[k], scope, model2);
+              if (scope.deepComparison) {
+                return _.isEqual(m1, m2);
+              } else {
+                return m1 === m2;
+              }
             };
           })(this));
           return isEqual;
@@ -4358,7 +4365,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             childScope.$watch('model', (function(_this) {
               return function(newValue, oldValue) {
                 if (newValue !== oldValue) {
-                  return _this.setChildScope(childScope, newValue);
+                  return _this.setChildScope(IPoly.scopeKeys, childScope, newValue);
                 }
               };
             })(this), true);
@@ -7020,7 +7027,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             modelsByRef: '=modelsbyref',
             type: '=?type',
             typeOptions: '=?typeoptions',
-            typeEvents: '=?typeevents'
+            typeEvents: '=?typeevents',
+            deepComparison: '=?deepcomparison'
           });
           $log.info(this);
         }
@@ -7114,7 +7122,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
             models: '=models',
             chunk: '=chunk',
             cleanchunk: '=cleanchunk',
-            control: '=control'
+            control: '=control',
+            deepComparison: '=deepcomparison'
           });
         },
         link: function(scope, parent) {
@@ -14019,5 +14028,5 @@ angular.module('uiGmapgoogle-maps.extensions')
     })
   };
 }]);
-}( window,angular));
+}( window, angular, _));
 //# sourceMappingURL=angular-google-maps_dev_mapped.js.map
