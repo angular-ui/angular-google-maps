@@ -141,7 +141,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
                   s.dragging = dragging if s.dragging?
 
               updateCenter = (c = _gMap.center, s = scope) ->
-                return if _.includes disabledEvents, 'center'
+                unless _.includes disabledEvents, 'center'
                   s.center.latitude = c.lat() if s.center.latitude isnt c.lat()
                   s.center.longitude = c.lng() if s.center.longitude isnt c.lng()
 
