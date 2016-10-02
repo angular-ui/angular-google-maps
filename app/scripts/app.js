@@ -34,10 +34,10 @@ angular.module('angularGoogleMapsApp')
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .state('use', {
-        url: '/use',
-        templateUrl: 'views/use.html',
-        controller: 'UseCtrl'
+      .state('quickstart', {
+        url: '/quickstart',
+        templateUrl: 'views/quickstart.html',
+        controller: 'QuickstartCtrl'
       })
       .state('api', {
         url: '/api',
