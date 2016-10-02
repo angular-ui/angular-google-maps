@@ -1,5 +1,5 @@
 'use strict';
 
 angular.module('angularGoogleMapsApp')
-  .controller('UseCtrl', ['$scope', function ($scope) {
+  .controller('QuickstartCtrl', ['$scope', function ($scope) {
   }]);
