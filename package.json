@@ -30,6 +30,11 @@
   "devDependencies": {
     "bower": "~1.4.1",
     "data-structures": "^1.4.2",
+    "eslint": "3.7.1",
+    "eslint-config-airbnb": "12.0.0",
+    "eslint-plugin-import": "1.16.0",
+    "eslint-plugin-jsx-a11y": "2.2.2",
+    "eslint-plugin-react": "6.3.0",
     "grunt": "~0.4.5",
     "grunt-angular-architecture-graph": "^0.2.6",
     "grunt-bump": "0.3.1",
@@ -69,8 +74,8 @@
     "mocha": "2.X",
     "phantomjs-polyfill": "0.0.1",
     "require-directory": "2.1.1",
-    "webpack": "^1.9.10",
-    "webpack-dev-server": "^1.14.1",
+    "webpack": "1.X",
+    "webpack-dev-server": "1.X",
     "yargs": "3.32.0"
   },
   "dependencies": {

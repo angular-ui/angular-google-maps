@@ -51,7 +51,7 @@ module.exports = (grunt) ->
   grunt.initConfig options
 
   grunt.registerTask 'build', ['bower', 'clean:dist', 'jshint', 'mkdir', 'coffee', 'ngAnnotate',
-  'concat:libs', 'replace', 'webpack']
+  'concat:libs', 'replace', 'webpack:commonjsDeps']
 
   grunt.registerTask 'buildDist', ['build', 'concat:dist']
 
@@ -72,7 +72,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'offline', ['default-no-specs', 'watch:offline']
 
-  dev = ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack", "concat", "copy"]
+  dev = ["clean:dist", "jshint", "mkdir", "coffee", "concat:libs", "replace", "webpack:commonjsDeps", "concat", "copy"]
 
   grunt.registerTask "dev", dev.concat ["uglify:distMapped", "uglify:streetviewMapped", "karma"]
 
@@ -130,6 +130,11 @@ module.exports = (grunt) ->
     kickoff @async(),
       logFn: grunt.log.oklns
       configFile: require.resolve './karma.conf.coffee'
+
+  grunt.registerTask 'karma:acceptance', 'karma runner', ->
+    kickoff @async(),
+      logFn: grunt.log.oklns
+      configFile: require.resolve './karma.acceptance.conf.coffee'
 
   grunt.registerTask 'karmaSpecific', 'karma runner', ->
     kickoff @async(),
