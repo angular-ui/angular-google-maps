@@ -131,14 +131,6 @@ footer .copyright {
     font-size: 80%;
 }
 
-ol.steps {
-    margin-top: 40px;
-}
-
-ol.steps li {
-    margin-bottom: 30px;
-}
-
 ol.steps li pre {
     margin-top: 10px;
 }
@@ -155,6 +147,11 @@ article {
 
 #docs-api-menu {
     margin-top: 10px;
+}
+
+#docs-api-menu li a {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .headline {

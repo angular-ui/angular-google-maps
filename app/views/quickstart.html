@@ -1,18 +1,15 @@
 <h1 class="page-header">Quickstart</h1>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-12 panel">
         <p>
-            To start using Google Maps for AngularJS, follow these simple steps to get started.
-            Once you're up and running, visit the <a ui-sref="api">API documentation</a> to learn how to get the most out of it.
+            To start using Google Maps for AngularJS, follow these simple steps.
+            Afterwards, visit the <a ui-sref="api">API documentation</a> to learn how to get the most out of it.
         </p>
 
         <ol class="steps">
             <li>
-                <p>
-                    Download <a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.js">angular-google-maps.js</a>
-                    (<a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.min.js">minified version</a>) and put it with your other scripts.
-                    Alternatively, you can use Bower, NPM, and Meteor to install it automatically:
+                <p>Use <strong>Bower</strong>, <strong>NPM</strong>, or <strong>Meteor</strong> to install it automatically:
                 </p>
                 <ul>
                   <li>
@@ -20,7 +17,7 @@
                       Bower:
                       <div hljs language="bash">bower install angular-google-maps</div>
                       <p>
-                        it is recommended to use <a href="https://github.com/ck86/main-bower-files">main-bower-files</a> with gulp, or grunt. As this will zip up all your dependencies in one nice vendor.js file.
+                        it is recommended to use <a href="https://github.com/ck86/main-bower-files">main-bower-files</a> with gulp, or grunt. As this will zip up all your dependencies in one nice <code>vendor.js</code> file.
                       </p>
                     </div>
                   </li>
@@ -34,12 +31,13 @@
                     </div>
                   </li>
                   <li>
-                    Meteor: see <a href="https://atmospherejs.com/angularui/angular-google-maps">here</a>
+                    Meteor: see <a href="https://atmospherejs.com/angularui/angular-google-maps">here</a>.
                   </li>
                 </ul>
 
 
-                <p title="your living in the stone age">If not using Bower, NPM, or Meteor, or zero package managers you'll also need to fetch:
+                <p title="your living in the stone age">Alternatively, download <a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.js">angular-google-maps.js</a>
+                    (<a href="https://raw.github.com/angular-ui/angular-google-maps/master/dist/angular-google-maps.min.js">minified version</a>) and put it with your other scripts. You'll also need to fetch:
                   <ul>
                     <li>
                         <a href="http://lodash.com/" rel="external">lodash.js</a>
@@ -48,20 +46,14 @@
                         <a href="http://angularjs.org/" rel="external">angular.js</a>
                     </li>
                     <li>
-                        <a href="http://github.com/nmccready/angular-simple-logger/blob/master/dist/angular-simple-logger.js" rel="external">angular-simple-logger/dist/angular-simple-logger.js</a>
+                        <a href="http://github.com/nmccready/angular-simple-logger/blob/master/dist/angular-simple-logger.js" rel="external">angular-simple-logger.js</a>
                     </li>
                   </ul>
 
-                yourself.</p>
-                <p>
-                  It is <strong>HIGHLY</strong> recommended that you check the package.json and or bower.json file for the current dependencies and their versions!
                 </p>
-            </li>
-            <li>
-                <p>Load lodash.js and angular-google.maps.js into your HTML page:</p>
-                <div hljs language="html"
-                source="'<script src=\'/path/to/lodash[.min].js\'></script>\n<script src=\'/path/to/angular[.min].js\'></script>\n<script src=\'/path/to/angular-simple-logger/angular-simple-logger[.min].js\'></script>\n<script src=\'/path/to/angular-google-maps[.min].js\'></script>'">
-                </div>
+                <p>
+                  It is <strong>highly</strong> recommended that you check the <code>package.json</code> and/or <code>bower.json</code> file for the current dependencies and their versions!
+                </p>
             </li>
             <li>
                 <p>Include the Google Maps API v3, via one of two ways:</p>
@@ -75,7 +67,7 @@
                         <div hljs language="html" source="'<script src=\'//maps.googleapis.com/maps/api/js?sensor=false\'></script>'">
                         </div>
                         <p class="muted">
-                            Note: If you go down this route, ensure that it is loaded prior to angular-google-maps.js!
+                            <strong>Note</strong>: If you go down this route, ensure that it is loaded prior to <code>angular-google-maps.js</code>!
                         </p>
                     </li>
                 </ul>
@@ -113,20 +105,20 @@ angular.module('myApplicationModule', ['uiGmapgoogle-maps']).config(
                 <div hljs language="js">angular.module('myApplicationModule', ['uiGmapgoogle-maps']);</div>
             </li>
             <li>
-                <p>Add a <code>map</code> object to your scope like so:</p>
+                <p>Add a <code>map</code> object to your <code>$scope</code>:</p>
                 <div hljs language="js">$scope.map = { center: { latitude: 45, longitude: -73 }, zoom: 8 };</div>
                 <p class="muted">
-                    Note: this is the very minimum set of properties required for the map to work.
+                    <strong>Note:</strong> this is the very minimum set of properties required for the map to work.
                     See the <a ui-sref="api">API documentation</a> for the full list of supported properties.
                 </p>
             </li>
             <li>
-                <p>Add a <code>&lt;ui-gmap-google-map&gt;</code> element in your template like so:</p>
+                <p>Add a <code>&lt;ui-gmap-google-map&gt;</code> element in your HTML like so:</p>
                 <div hljs language="html" source="'<ui-gmap-google-map center=\'map.center\' zoom=\'map.zoom\'></ui-gmap-google-map>'">
                 </div>
             </li>
             <li>
-                <p>Specify an height via CSS for the map container:</p>
+                <p>Specify a height via CSS for the map container:</p>
                 <div hljs language="css">.angular-google-map-container { height: 400px; }</div>
             </li>
         </ol>

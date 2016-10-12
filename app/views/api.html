@@ -1,28 +1,28 @@
 <h1 class="page-header">API documentation</h1>
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-xs-12 col-sm-3">
         <div affix offset-top="200" offset-bottom="650">
             <div class="well">
 
-                <input type="search" class="form-control" ng-model="query" placeholder="Search directive">
+                <input type="search" class="form-control" ng-model="query" placeholder="Search...">
 
                 <ul class="nav nav-list" id="docs-api-menu">
                     <li class="delimiter"></li>
                     <li class="nav-header">Providers</li>
-                    <li ng-repeat='d in providers | filter:query' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
+                    <li ng-repeat='d in providers | filter:query | orderBy:d' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
                         }}</a></li>
                     <li class="nav-header">Services</li>
-                    <li ng-repeat='d in services | filter:query' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
+                    <li ng-repeat='d in services | filter:query | orderBy:d' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
                         }}</a></li>
                     <li class="nav-header">Directives</li>
-                    <li ng-repeat='d in directives | filter:query' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
+                    <li ng-repeat='d in directives | filter:query | orderBy:d' class="animate-repeat"><a ui-sref="api.{{d}}">{{ d
                         }}</a></li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <div class="col-md-9">
+    <div class="col-xs-12 col-sm-9">
         <div class="panel-group" id="directivesAccordion">
             <div class="panel panel-default animate-repeat">
                 <div class="panel-heading">

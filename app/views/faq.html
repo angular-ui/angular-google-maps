@@ -1,14 +1,14 @@
-<h1 class="page-header">FAQ</h1>
+<h1 id="faq-header" class="page-header">FAQ</h1>
 
 <p>Here are the most frequently asked questions about this library from the issue tracker and the Google+ community. You
     can suggest an addition to this list by opening an issue in the issue tracker.</p>
 
 <ul>
-    <li><a href="#faq-map-instance">How do I access the map instance?</a></li>
-    <li><a href="#faq-map-height">Can I dynamically set the map height?</a></li>
-    <li><a href="#faq-map-events-apply">Map events are not working!</a></li>
-	<li><a href="#faq-multiple-windows">How do I only open one window at a time?</a></li>
-    <li><a href="#faq-map-partial-render">My map is only partially rendering!</a></li>
+    <li><a ng-click="gotoAnchor('faq-map-instance')">How do I access the map instance?</a></li>
+    <li><a ng-click="gotoAnchor('faq-map-height')">Can I dynamically set the map height?</a></li>
+    <li><a ng-click="gotoAnchor('faq-map-events-apply')">Map events are not working!</a></li>
+    <li><a ng-click="gotoAnchor('faq-multiple-windows')">How do I only open one window at a time?</a></li>
+    <li><a ng-click="gotoAnchor('faq-map-partial-render')">My map is only partially rendering!</a></li>
 </ul>
 
 <h3 id="faq-map-instance" class="faq-entry-title">How do I access the map instance?</h3>
@@ -40,6 +40,8 @@
         </div>
     </div>
 </div>
+
+<a ng-click="gotoAnchor('faq-header')">Go to top</a>
 
 <h3 id="faq-map-height" class="faq-entry-title">Can I dynamically set the map height?</h3>
 
@@ -114,6 +116,8 @@
     </div>
 </div>
 
+<a ng-click="gotoAnchor('faq-header')">Go to top</a>
+
 <h3 id="faq-map-events-apply" class="faq-entry-title">Maps events are not working!</h3>
 
 <p>Since Google Map's SDK events are fired outside the scope of the Angular application, a call to <code>$apply</code>
@@ -132,7 +136,10 @@
         }
     }
 </div>
-<h3 id="faq-map-partial-render" class="faq-entry-title">How do I only open one window at a time?</h3>
+
+<a ng-click="gotoAnchor('faq-header')">Go to top</a>
+
+<h3 id="faq-multiple-windows" class="faq-entry-title">How do I only open one window at a time?</h3>
 <p>Most likely this is a symptom of using the 'windows' directive when all you really need is the 'window' directive.
 The 'windows' directive has efficiency advantages over 'window' <i>when you are display a large number of windows simultaneously.</i>
 If only one window at a time is needed, then use 'window' and change out the bindings. One method of accomplishing this is outlined below:
@@ -182,8 +189,12 @@ If only one window at a time is needed, then use 'window' and change out the bin
 	};
 </div>
 
-<h3 id="faq-multiple-windows" class="faq-entry-title">My map is only partially rendering!</h3>
+<a ng-click="gotoAnchor('faq-header')">Go to top</a>
+
+<h3 id="faq-map-partial-render" class="faq-entry-title">My map is only partially rendering!</h3>
 
 <p>If rendering starts before elements are full size, google maps calculates according to the smaller size. This is most
     commonly the case with a hidden element (eg, ng-show). To fix this, use "ng-if" instead, as this will wait to attach
     to the DOM until the condition is true, which should be after everything has rendered fully.</p>
+
+<a ng-click="gotoAnchor('faq-header')">Go to top</a>
