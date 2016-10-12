@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.4.0 2016-09-19
+/*! angular-google-maps 2.4.0 2016-10-12
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -6180,13 +6180,8 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         Control.prototype.link = function(scope, element, attrs, ctrl, transclude) {
           return GoogleMapApi.then((function(_this) {
             return function(maps) {
-              var hasTranscludedContent, index, position, transcludedContent;
-              transcludedContent = transclude();
-              hasTranscludedContent = transclude().length > 0;
-              if (!hasTranscludedContent && angular.isUndefined(scope.template)) {
-                _this.$log.error('mapControl: could not find a valid template property or elements for transclusion');
-                return;
-              }
+              var hasTranscludedContent, index, position;
+              hasTranscludedContent = angular.isUndefined(scope.template);
               index = angular.isDefined(scope.index && !isNaN(parseInt(scope.index))) ? parseInt(scope.index) : void 0;
               position = angular.isDefined(scope.position) ? scope.position.toUpperCase().replace(/-/g, '_') : 'TOP_CENTER';
               if (!maps.ControlPosition[position]) {
@@ -6206,7 +6201,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 if (hasTranscludedContent) {
                   return transclude(function(transcludeEl) {
                     controlDiv.append(transcludeEl);
-                    return pushControl(map, controlDiv, index);
+                    return pushControl(map, controlDiv.children(), index);
                   });
                 } else {
                   return $http.get(scope.template, {
