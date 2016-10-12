@@ -6,7 +6,16 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
         longitude: -99.6680
       },
       zoom: 4,
-      bounds: {}
+      bounds: {
+        northeast: {
+          latitude: 45.1451,
+          longitude: -80.6680
+        },
+        southwest: {
+          latitude: 30.000,
+          longitude: -120.6680
+        }
+      }
     };
     $scope.options = {
       scrollwheel: false
@@ -31,18 +40,9 @@ angular.module('appMaps', ['uiGmapgoogle-maps'])
       ret[idKey] = i;
       return ret;
     };
-    $scope.randomMarkers = [];
-    // Get the bounds from the map once it's loaded
-    $scope.$watch(function() {
-      return $scope.map.bounds;
-    }, function(nv, ov) {
-      // Only need to regenerate once
-      if (!ov.southwest && nv.southwest) {
-        var markers = [];
-        for (var i = 0; i < 50; i++) {
-          markers.push(createRandomMarker(i, $scope.map.bounds))
-        }
-        $scope.randomMarkers = markers;
-      }
-    }, true);
+    var markers = [];
+    for (var i = 0; i < 50; i++) {
+      markers.push(createRandomMarker(i, $scope.map.bounds))
+    }
+    $scope.randomMarkers = markers;
   });
