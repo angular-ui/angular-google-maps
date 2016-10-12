@@ -9,13 +9,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
         GoogleMapApi.then (maps) =>
           # Validate attributes
 
-          transcludedContent = transclude()
-
-          hasTranscludedContent = transclude().length > 0
-
-          if !hasTranscludedContent && angular.isUndefined scope.template
-            @$log.error 'mapControl: could not find a valid template property or elements for transclusion'
-            return
+          hasTranscludedContent = angular.isUndefined scope.template
 
           index = if angular.isDefined scope.index and not isNaN(parseInt scope.index) then parseInt scope.index else undefined
 
@@ -44,7 +38,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
 
                 controlDiv.append transcludeEl
 
-                pushControl(map, controlDiv, index)
+                pushControl(map, controlDiv.children(), index)
 
             else
               $http.get(scope.template, { cache: $templateCache })
