@@ -142,8 +142,14 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
               updateCenter = (c = _gMap.center, s = scope) ->
                 unless _.includes disabledEvents, 'center'
-                  s.center.latitude = c.lat() if s.center.latitude isnt c.lat()
-                  s.center.longitude = c.lng() if s.center.longitude isnt c.lng()
+                  cLat = c.lat()
+                  cLng = c.lng()
+                  if angular.isDefined(s.center.type)
+                    s.center.coordinates[1] = cLat if s.center.coordinates[1] isnt cLat
+                    s.center.coordinates[0] = cLng if s.center.coordinates[0] isnt cLng
+                  else
+                    s.center.latitude = cLat if s.center.latitude isnt cLat
+                    s.center.longitude = cLng if s.center.longitude isnt cLng
 
               settingFromDirective = false
               maybeHookToEvent 'idle', ->
