@@ -42,7 +42,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
 
             else
               $http.get(scope.template, { cache: $templateCache })
-              .success (template) =>
+              .then (template) =>
                 templateScope = scope.$new()
                 controlDiv.append template
 
@@ -54,7 +54,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
                 # use children() rather than content() as the former seems to trim the content
                 control = $compile(controlDiv.children())(templateScope)
 
-              .error (error) =>
+              .catch (error) =>
                 @$log.error 'mapControl: template could not be found'
               .then =>
                 pushControl(map, control, index)
