@@ -51,6 +51,6 @@ angular.module('uiGmapgoogle-maps')
                 if not maps.ControlPosition[ctrlPosition]
                     @$log.error 'searchBox: invalid position property'
                     return
-                new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, $compile(template)(scope))
+                new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, $compile(template.data)(scope))
     new SearchBox()
 ]
