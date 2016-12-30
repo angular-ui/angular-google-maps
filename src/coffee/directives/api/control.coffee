@@ -44,7 +44,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
               $http.get(scope.template, { cache: $templateCache })
               .then (template) =>
                 templateScope = scope.$new()
-                controlDiv.append template
+                controlDiv.append template.data
 
                 # if a controller is defined on the directive then add it to the template
                 if angular.isDefined scope.controller
