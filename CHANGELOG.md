@@ -1,3 +1,12 @@
+<a name"2.4.1"></a>
+### 2.4.1 (2016-12-31)
+
+
+#### Bug Fixes
+
+* **angular 1.6:** working ([98da40d8](https://github.com/angular-ui/angular-google-maps/pull/1990/commits/98da40d86966a7b5faefbfd15c4a63d7f5281bdf))
+
+
 <a name"2.3.5"></a>
 ### 2.3.5 (2016-09-19)
 
