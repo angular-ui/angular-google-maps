@@ -42,7 +42,7 @@ angular.module('uiGmapgoogle-maps')
             $templateCache.put 'uigmap-searchbox-default.tpl.html', '<input type="text">'
             scope.template = 'uigmap-searchbox-default.tpl.html'
           $http.get(scope.template, { cache: $templateCache })
-            .success (template) =>
+            .then (template) =>
               if angular.isUndefined scope.events
                 @$log.error 'searchBox: the events property is required'
                 return
@@ -51,6 +51,6 @@ angular.module('uiGmapgoogle-maps')
                 if not maps.ControlPosition[ctrlPosition]
                     @$log.error 'searchBox: invalid position property'
                     return
-                new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, $compile(template)(scope))
+                new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, $compile(template.data)(scope))
     new SearchBox()
 ]
