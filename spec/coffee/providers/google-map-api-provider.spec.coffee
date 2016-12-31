@@ -25,6 +25,14 @@ describe 'uiGmapGoogleMapApiProvider', ->
     lastScriptIndex = document.head.getElementsByTagName('script').length - 1
     expect(document.head.getElementsByTagName('script')[lastScriptIndex].src).toContain('http://maps.google.cn/maps/api/js')
 
+  describe 'options', ->
+    it 'does not randomize the callback name when randomizeCallbackName is false', ->
+      options = { randomizeCallbackName: false, v: '3.17', libraries: '', language: 'en' }
+      mapScriptLoader.load(options)
+      lastScriptIndex = document.getElementsByTagName('script').length - 1
+      lastScriptSrc = document.getElementsByTagName('script')[lastScriptIndex].src
+      expect(_.endsWith lastScriptSrc, 'callback=onGoogleMapsReady').toBe true
+
   describe 'on Cordova devices', ->
     beforeAll ->
       window.navigator.connection = {}
