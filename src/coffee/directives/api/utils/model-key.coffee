@@ -121,7 +121,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
 
 
       setChildScope: (keys, childScope, model) =>
+        #coffeelint:disable=check_scope
         for key, name of keys
+        #coffeelint:enable=check_scope
           isScopeObj = @scopeOrModelVal name, childScope, model, true
           if isScopeObj?.value? #if we have something evaluated save to scope to not reevaluate on init
             newValue = isScopeObj.value

@@ -1,52 +1,52 @@
 describe 'uiGmapLayerParentModelSpec', ->
-    beforeEach ->
-        module('uiGmapgoogle-maps.mocks')
-        angular.module('mockModule', ['uiGmapgoogle-maps'])
-        .value('mapCtrl', {})
-        .value('element', {})
-        .value('attrs', {})
-        .value('model', {})
-        .value('scope', @scope)
+  beforeEach ->
+    module('uiGmapgoogle-maps.mocks')
+    angular.module('mockModule', ['uiGmapgoogle-maps'])
+    .value('mapCtrl', {})
+    .value('element', {})
+    .value('attrs', {})
+    .value('model', {})
+    .value('scope', @scope)
 
-        module 'mockModule'
-        inject (GoogleApiMock) ->
-          mock = new GoogleApiMock()
-          mock.mockAPI()
+    module 'mockModule'
+    inject (GoogleApiMock) ->
+      mock = new GoogleApiMock()
+      mock.mockAPI()
 
-        @scope =
-            options :
-                blah:true
-            $watch:()->
-            $on:()->
-        @attrs =
-            type:'testLayer'
-            options:'someBoundAttr'
-        self = @
-        @setOpts
-        @tempMaps = google.maps
-        google.maps.testLayer =  (opts)=>
-            self.setOpts = opts
-            setMap:()->
+    @scope =
+      options :
+        blah:true
+      $watch:()->
+      $on:()->
+    @attrs =
+      type:'testLayer'
+      options:'someBoundAttr'
+    self = @
+    @setOpts
+    @tempMaps = google.maps
+    google.maps.testLayer = (opts) ->
+      self.setOpts = opts
+      setMap:()->
 
-        @mapCtrl = {}
+    @mapCtrl = {}
 
-        @timeout = (fnc,time) =>
-            fnc()
+    @timeout = (fnc,time) ->
+      fnc()
 
-        inject ['$rootScope', 'uiGmapLayerParentModel', ($rootScope, LayerParentModel) =>
-            scope = $rootScope.$new()
-            @constructor = LayerParentModel
-            @scope = _.extend @scope, scope
-            @subject = new @constructor(@scope,{},@attrs,@mapCtrl)
-        ]
+    inject ['$rootScope', 'uiGmapLayerParentModel', ($rootScope, LayerParentModel) =>
+      scope = $rootScope.$new()
+      @constructor = LayerParentModel
+      @scope = _.extend @scope, scope
+      @subject = new @constructor(@scope,{},@attrs,@mapCtrl)
+    ]
 
-    afterEach ->
-        google.map = @tempMaps
+  afterEach ->
+    google.map = @tempMaps
 
-    it 'constructor is defined', ->
-        expect(@constructor).toBeDefined()
-    it 'subject is defined', ->
-        expect(@subject).toBeDefined()
+  it 'constructor is defined', ->
+    expect(@constructor).toBeDefined()
+  it 'subject is defined', ->
+    expect(@subject).toBeDefined()
 
-    it 'options set', ->
-        expect(@setOpts.blah).toBe(@scope.options.blah)
+  it 'options set', ->
+    expect(@setOpts.blah).toBe(@scope.options.blah)

@@ -2029,7 +2029,6 @@ Nicholas McCready - https://twitter.com/nmccready
           }
           this.opt_options = opt_options != null ? opt_options : {};
           this.opt_events = opt_events;
-          this.checkSync = bind(this.checkSync, this);
           this.getGMarkers = bind(this.getGMarkers, this);
           this.fit = bind(this.fit, this);
           this.destroy = bind(this.destroy, this);
@@ -2347,14 +2346,12 @@ Nicholas McCready - https://twitter.com/nmccready
           this.opt_options = opt_options != null ? opt_options : {};
           this.opt_events = opt_events;
           this.scope = scope;
-          this.checkSync = bind(this.checkSync, this);
           this.isSpiderfied = bind(this.isSpiderfied, this);
           this.getGMarkers = bind(this.getGMarkers, this);
           this.fit = bind(this.fit, this);
           this.destroy = bind(this.destroy, this);
           this.attachEvents = bind(this.attachEvents, this);
           this.clear = bind(this.clear, this);
-          this.draw = bind(this.draw, this);
           this.removeMany = bind(this.removeMany, this);
           this.remove = bind(this.remove, this);
           this.addMany = bind(this.addMany, this);
@@ -6385,8 +6382,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
 ;(function() {
   angular.module("uiGmapgoogle-maps.directives.api").service("uiGmapICircle", [
     function() {
-      var DEFAULTS;
-      DEFAULTS = {};
       return {
         restrict: "EA",
         replace: true,
@@ -6448,7 +6443,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
         }
 
         IControl.prototype.link = function(scope, element, attrs, ctrl) {
-          throw new Exception("Not implemented!!");
+          throw new Error("Not implemented!!");
         };
 
         return IControl;
@@ -6629,8 +6624,6 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
   angular.module('uiGmapgoogle-maps.directives.api').service('uiGmapIRectangle', [
     function() {
       'use strict';
-      var DEFAULTS;
-      DEFAULTS = {};
       return {
         restrict: 'EMA',
         require: '^' + 'uiGmapGoogleMap',

@@ -2,6 +2,9 @@ log = require('util').log
 _ = require 'lodash'
 kickoff = require 'karma-kickoff'
 argv = require('yargs').argv
+coffeelint = require './grunt/coffeelint'
+watch = require './grunt/options/watch'
+
 
 module.exports = (grunt) ->
   # Load the required plugins
@@ -41,14 +44,26 @@ module.exports = (grunt) ->
     allExamplesOpen[root] =
       path: pathValue
 
-#  console.log allExamplesOpen, true
 
   showOpenType = (toIterate = allExamplesOpen) ->
     _(toIterate).each (v, k) ->
       log "#{k} -> #{v.path}"
+
   #showAllExamples()
+
   options.open = _.extend options.open, allExamplesOpen
   grunt.initConfig options
+
+  lints = _.keys(_.omit(watch.coffeelint, 'options'))
+
+  lints.forEach (n) ->
+    grunt.registerTask "coffeelint:#{n}", ->
+      coffeelint({src:watch.coffeelint[n].files, doThrow:false}, @async())
+
+    grunt.registerTask "coffeelint:#{n}:throw", ->
+      coffeelint({src:watch.coffeelint[n].files}, @async())
+
+  grunt.registerTask 'lint', (lints.map (n) -> "coffeelint:#{n}").concat (lints.map (n) -> "watch:coffeelint-#{n}")
 
   grunt.registerTask 'build', ['bower', 'clean:dist', 'jshint', 'mkdir', 'coffee', 'ngAnnotate',
   'concat:libs', 'replace', 'webpack:commonjsDeps']
@@ -57,7 +72,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask "default", [ 'verbosity', 'buildDist', 'copy', 'uglify:dist', 'uglify:streetview', 'karma']
 
-  grunt.registerTask "buildAll", [ "build", "concat",
+  grunt.registerTask "buildAll", (lints.map (n) -> "coffeelint:#{n}:throw").concat [ "build", "concat",
     "uglify", "copy", "karma", "graph"]
 
   # run default "grunt" prior to generate _SpecRunner.html

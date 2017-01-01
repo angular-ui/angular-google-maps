@@ -159,7 +159,9 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
         array = keys
       else
         array = []
+        #coffeelint:disable=check_scope
         for propName, val of collection
+        #coffeelint:enable=check_scope
           if collection.hasOwnProperty(propName) and !_.includes(_ignoreFields, propName)
             array.push propName
 

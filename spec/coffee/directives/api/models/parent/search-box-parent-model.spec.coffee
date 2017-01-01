@@ -30,7 +30,7 @@ describe "uiGmapSearchBoxParentModelSpec", ->
     scope.map = {}
     scope.map.zoom = 12
     scope.map.center = {longitude: 47, latitude: -27}
-    element = @compile(html)(scope)
+    @compile(html)(scope)
 
   it "exists", ->
     expect(@subject).toBeDefined()

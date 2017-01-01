@@ -3,7 +3,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
 'uiGmapFitHelper', 'uiGmapPropMap', 'uiGmapEventsHelper', ($log, FitHelper, PropMap, EventsHelper) ->
   class ClustererMarkerManager
     @type = 'ClustererMarkerManager'
-    constructor: (gMap, opt_markers={}, @opt_options = {}, @opt_events) ->
+    constructor: (gMap, opt_markers = {}, @opt_options = {}, @opt_events) ->
       @type = ClustererMarkerManager.type
 
       @clusterer = new NgMapMarkerClusterer gMap, opt_markers, @opt_options
@@ -21,7 +21,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
         msg = 'gMarker.key undefined and it is REQUIRED!!'
         $log.error msg
 
-    add: (gMarker)=>
+    add: (gMarker) =>
       @checkKey gMarker
       @clusterer.addMarker gMarker, @noDrawOnSingleAddRemoves
       @propMapGMarkers.put gMarker.key, gMarker
@@ -33,11 +33,11 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       @remove gMarker
       @add gMarker
 
-    addMany: (gMarkers)=>
+    addMany: (gMarkers) =>
       gMarkers.forEach (gMarker) =>
         @add gMarker
 
-    remove: (gMarker)=>
+    remove: (gMarker) =>
       @checkKey gMarker
       exists = @propMapGMarkers.get gMarker.key
       if exists
@@ -45,21 +45,23 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
         @propMapGMarkers.remove gMarker.key
       @checkSync()
 
-    removeMany: (gMarkers)=>
+    removeMany: (gMarkers) =>
       gMarkers.forEach (gMarker) =>
         @remove gMarker
 
-    draw: ()=>
+    draw: () =>
       @clusterer.repaint()
 
-    clear: ()=>
+    clear: () =>
       @removeMany @getGMarkers()
       @clusterer.repaint()
 
     attachEvents: (options, optionsName) =>
       @listeners = []
       if angular.isDefined(options) and options? and angular.isObject(options)
+        #coffeelint: disable=check_scope
         for eventName, eventHandler of options
+        #coffeelint: enable=check_scope
           if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
             $log.info "#{optionsName}: Attaching event: #{eventName} to clusterer"
             @listeners.push google.maps.event.addListener @clusterer, eventName, options[eventName]
@@ -67,7 +69,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
     clearEvents: () ->
       EventsHelper.removeEvents @listeners
       @listeners = []
-      
+
     destroy: =>
       @clearEvents()
       @clear()
@@ -78,7 +80,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
     getGMarkers: =>
       @clusterer.getMarkers().values()
 
-    checkSync: =>
+    checkSync: ->
 #      throw 'GMarkers out of Sync in MarkerClusterer' if @getGMarkers().length != @propMapGMarkers.length
 
   ClustererMarkerManager

@@ -16,7 +16,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
             show: @scope.show
             refresh: @scope.refresh
           childScope = @scope.$new()
-          childScope.index = i;
+          childScope.index = i
           new MapTypeParentModel(childScope, null, mockAttr, @gMap, @$log, l, pMap)
           return
 

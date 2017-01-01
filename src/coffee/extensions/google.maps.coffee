@@ -59,7 +59,9 @@ angular.module('uiGmapgoogle-maps.extensions')
         else
           @_isOpen = val
 
+      #coffeelint:disable=camel_case_classes
       class uiGmapInfoBox extends window.InfoBox
+      #coffeelint:disable=camel_case_classes
         constructor: (opts) ->
           box = new window.InfoBox(opts)
           _.extend @, box

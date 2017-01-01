@@ -1,5 +1,4 @@
 describe 'uiGmapDragZoom spec', ->
-  allDone = undefined
 
   beforeEach ->
 
@@ -30,7 +29,7 @@ describe 'uiGmapDragZoom spec', ->
 
     spyOn(scope.spec, 'enableKeyDragZoom')
 
-    element = @compile(html)(scope)
+    @compile(html)(scope)
 
     @digest () =>
       @timeout () ->

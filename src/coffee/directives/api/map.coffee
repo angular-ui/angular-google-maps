@@ -75,11 +75,12 @@ angular.module('uiGmapgoogle-maps.directives.api')
 
             # If center is not set, calculate the center point from bounds
             if !angular.isDefined(scope.center)
-              scope.center = new google.maps.LatLngBounds(@getCoords(scope.bounds.southwest), @getCoords(scope.bounds.northeast)).getCenter();
+              scope.center = new google.maps.LatLngBounds(@getCoords(scope.bounds.southwest),
+                @getCoords(scope.bounds.northeast)).getCenter()
 
             # If zoom is not set, use a default value
             unless angular.isDefined(scope.zoom)
-              scope.zoom = 10;
+              scope.zoom = 10
 
             el = angular.element(element)
             el.addClass 'angular-google-map'

@@ -5,10 +5,10 @@ describe 'uiGmapIMarkerParentModel', ->
     @clickCount = 0
     @html = '<ui-gmap-markers models="models"></ui-gmap-markers>'
     @injects.push ($http, $templateCache, $interpolate, uiGmapIMarkerParentModel) =>
-        @attrs = {click: @click}
-        @IMarkerParentModel = uiGmapIMarkerParentModel
-        @scope.click = () =>
-          @clickCount++
+      @attrs = {click: @click}
+      @IMarkerParentModel = uiGmapIMarkerParentModel
+      @scope.click = () =>
+        @clickCount++
 
     @injectAll()
 
@@ -37,7 +37,7 @@ describe 'uiGmapIMarkerParentModel', ->
   it 'should call watch on timeout for correct properties', ->
     props = []
     expectedProps = 'coords icon options'.split(' ')
-    @IMarkerParentModel.prototype.watch = (prop, scope) =>
+    @IMarkerParentModel.prototype.watch = (prop, scope) ->
       props.push(prop)
 
     @scope.coords = {

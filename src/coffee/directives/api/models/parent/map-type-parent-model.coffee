@@ -94,7 +94,7 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
                 # once we have found a layer with a higher or missing layer index,
                 # insert this layer using the found overlayMapTypes index to keep
                 # them in the layers in order
-                layerIndex = _this.propMap.get(mapType.layerId.toString())
+                layerIndex = @propMap.get(mapType.layerId.toString())
                 if layerIndex > @scope.index or !angular.isDefined(layerIndex)
                   found = true
                   @gMap.overlayMapTypes.insertAt index, @mapType

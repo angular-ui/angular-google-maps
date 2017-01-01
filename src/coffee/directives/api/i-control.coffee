@@ -23,5 +23,5 @@ angular.module("uiGmapgoogle-maps.directives.api")
       @$log = Logger
 
     link: (scope, element, attrs, ctrl) ->
-      throw new Exception "Not implemented!!"
+      throw new Error("Not implemented!!")
 ]

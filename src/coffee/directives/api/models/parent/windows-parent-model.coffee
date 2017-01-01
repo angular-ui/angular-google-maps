@@ -83,8 +83,10 @@ angular.module('uiGmapgoogle-maps.directives.api.models.parent')
 
           watchOurScope: (scope) =>
             _.each IWindow.scopeKeys, (name) =>
+              #coffeelint:disable=check_scope
               nameKey = name + 'Key'
               @[nameKey] = if typeof scope[name] == 'function' then scope[name]() else scope[name]
+              #coffeelint:enable=check_scope
 
           createChildScopes: (isCreatingFromScratch = true) =>
             ###

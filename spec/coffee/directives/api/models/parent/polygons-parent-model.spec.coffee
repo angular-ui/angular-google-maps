@@ -6,10 +6,10 @@ describe 'PolygonsParentModel', ->
     window['uiGmapInitiator'].initMock(@)
 
     @injects.push (uiGmapPolygonsParentModel, uiGmapGoogleMapsUtilV3) =>
-        uiGmapGoogleMapsUtilV3.init()
-        @testCtor = uiGmapPolygonsParentModel
-        @subject = new @testCtor(@scope, {}, {}, {})
-        @subject
+      uiGmapGoogleMapsUtilV3.init()
+      @testCtor = uiGmapPolygonsParentModel
+      @subject = new @testCtor(@scope, {}, {}, {})
+      @subject
     @injectAll()
 
   it 'constructor exist', ->

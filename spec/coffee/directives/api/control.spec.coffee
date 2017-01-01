@@ -15,7 +15,7 @@ describe "directives.api.control", ->
         <ui-gmap-map-control template="mockControl.tpl.html"></ui-gmap-map-control>
       </ui-gmap-google-map>
       """
-    element = @compile(html)(@scope)
+    @compile(html)(@scope)
     @rootScope.$apply()
     expect(@log.error).not.toHaveBeenCalled()
     @log.error.calls.reset()
@@ -27,7 +27,7 @@ describe "directives.api.control", ->
             <ui-gmap-map-control template="mockControl.tpl.html" position="bad-position">
             </ui-gmap-map-control>
         </ui-gmap-google-map>"""
-    element = @compile(html)(@scope)
+    @compile(html)(@scope)
     @rootScope.$apply()
     expect(@log.error).toHaveBeenCalledWith('mapControl: invalid position property')
     @log.error.calls.reset()
@@ -38,7 +38,7 @@ describe "directives.api.control", ->
         <ui-gmap-map-control template="mockControl.tpl.html" position="bottom-center"></ui-gmap-map-control>
       </ui-gmap-google-map>
       """
-    element = @compile(html)(@scope)
+    @compile(html)(@scope)
     @rootScope.$apply()
     expect(@log.error).not.toHaveBeenCalled()
     @log.error.calls.reset()
@@ -49,7 +49,7 @@ describe "directives.api.control", ->
         <ui-gmap-map-control template="mockControl.tpl.html" position="ToP_LefT"></ui-gmap-map-control>
       </ui-gmap-google-map>
       """
-    element = @compile(html)(@scope)
+    @compile(html)(@scope)
     @rootScope.$apply()
     expect(@log.error).not.toHaveBeenCalled()
     @log.error.calls.reset()

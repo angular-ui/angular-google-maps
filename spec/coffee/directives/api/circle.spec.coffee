@@ -1,12 +1,16 @@
 describe 'uiGmapCircle', ->
+  #coffeelint:disable=check_scope
   allDone =  undefined
   GCircle = null
   modelClicked = false
+  #coffeelint:enable=check_scope
 
   afterEach ->
     window.google.maps.event.clearListeners()
     GCircle.resetInstances()
+    #coffeelint:disable=check_scope
     modelClicked = false
+    #coffeelint:enable=check_scope
 
   beforeEach ->
 
@@ -49,7 +53,7 @@ describe 'uiGmapCircle', ->
       events: circleEvents
       control: {}
 
-    apiMock = window.uiGmapInitiator
+    window.uiGmapInitiator
     .initMock(@, ->
       GCircle = window.google.maps.Circle
     ).apiMock
@@ -124,7 +128,7 @@ describe 'uiGmapCircle', ->
         @digest =>
           @timeout =>
             @digest =>
-              listener = GCircle.creationSubscribe @, (gObject) =>
+              GCircle.creationSubscribe @, (gObject) =>
                 _.delay =>
                   gObject.setCenter
                     lat: ->

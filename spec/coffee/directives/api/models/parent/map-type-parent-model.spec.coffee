@@ -9,7 +9,7 @@ describe 'uiGmapMapTypeParentModelSpec', ->
         @setOpts = opts
         getTileUrl: ->
 
-      spyOn(google.maps, 'ImageMapType').and.callThrough();
+      spyOn(google.maps, 'ImageMapType').and.callThrough()
       @mapCtrl = new window.google.maps.Map()
 
     angular.module('mockModule', ['uiGmapgoogle-maps', 'uiGmapgoogle-maps.mocks'])

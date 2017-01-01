@@ -35,8 +35,8 @@ xdescribe 'uiGmapMarkersParentModel', ->
 
     @clickCount = 0
     @html = '<ui-gmap-markers models="models"></ui-gmap-markers>'
-    @injects.push ['$http', '$templateCache', '$interpolate', 'uiGmapMarkersParentModel',
-      ($http, $templateCache, $interpolate, MarkersParentModel) =>
+    @injects.push ['$http', '$templateCache', '$interpolate', 'uiGmapMarkersParentModel', (
+    $http, $templateCache, $interpolate, MarkersParentModel) =>
       @attrs = {click: @click}
       @MarkersParentModel = MarkersParentModel
       @scope.click = () =>
@@ -65,14 +65,14 @@ xdescribe 'uiGmapMarkersParentModel', ->
 
   it 'should watch the appropriate properties on timeout', ->
     props = []
-    expectedProps = 'models doCluster clusterOptions clusterEvents fit idKey'.split(' ')
-    @scope.$watch = (propName, func) =>
+
+    @scope.$watch = (propName, func) ->
       props.push(propName)
 
     spyOn(@subject, 'createMarkersFromScratch')
     console.log @subject.createMarkersFromScratch
     @subject.onTimeOut(@scope)
-    #expect(props[i]).toEqual(prop) for prop, i in expectedProps
+
     expect(@subject.createMarkersFromScratch).toHaveBeenCalled()
 
   describe 'watch tests', ->

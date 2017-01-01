@@ -110,5 +110,30 @@
     "non_empty_constructor_needs_parens": {
         "name": "non_empty_constructor_needs_parens",
         "level": "ignore"
-    }
+    },
+    "check_scope": {
+    "module": "coffeescope2",
+    "level": "error",
+    "environments": ["es5", "node", "commonjs", "jasmine", "browser"],
+    "globals": {
+      "_": true,
+      "angular": true,
+      "google": true,
+      "inject": true,
+      "NgMapMarkerClusterer": true,
+      "MarkerWithLabel": true,
+      "RichMarker": true,
+      "PropMap": true
+    },
+    "overwrite": false,
+    "shadow": false,
+    "shadow_builtins": true,
+    "shadow_exceptions": ["err", "next"],
+    "undefined": true,
+    "hoist_local": true,
+    "hoist_parent": true,
+    "unused_variables": true,
+    "unused_arguments": false,
+    "unused_classes": false
+  }
 }

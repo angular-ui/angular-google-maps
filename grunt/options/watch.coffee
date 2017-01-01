@@ -1,5 +1,24 @@
-module.exports =
-  watch:
+_ =  require 'lodash'
+
+coffeelint = {}
+for n in ['grunt', 'src', 'spec']
+  coffeelint[n] =
+    options: livereload: true
+    files: [
+      "#{n}/**/*.coffee"
+    ]
+    tasks: ["coffeelint:#{n}"]
+
+
+coffeelint.grunt.files.push '*.coffee'
+
+coffeelintWatches = _.mapKeys coffeelint, (v, k) ->
+  "coffeelint-#{k}"
+
+
+module.exports = {
+  coffeelint
+  watch: _.extend coffeelintWatches,
     offline:
       options:
         livereload: true
@@ -28,3 +47,6 @@ module.exports =
 
       files: ["src/coffee/**/*.coffee"]
       tasks: ["karma"]
+}
+
+# console.log(module.exports)

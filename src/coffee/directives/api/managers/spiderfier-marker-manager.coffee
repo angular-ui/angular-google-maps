@@ -3,7 +3,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
 'uiGmapFitHelper', 'uiGmapPropMap', 'uiGmapMarkerSpiderfier', ($log, FitHelper, PropMap, MarkerSpiderfier) ->
   class SpiderfierMarkerManager
     @type = 'SpiderfierMarkerManager'
-    constructor: (gMap, opt_markers={}, @opt_options = {}, @opt_events, @scope) ->
+    constructor: (gMap, opt_markers = {}, @opt_options = {}, @opt_events, @scope) ->
       @type = SpiderfierMarkerManager.type
       @markerSpiderfier = new MarkerSpiderfier gMap, @opt_options
       @propMapGMarkers = new PropMap() #keep in sync with cluster.markers_
@@ -46,7 +46,7 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       gMarkers.forEach (gMarker) =>
         @remove gMarker
 
-    draw: () =>
+    draw: () ->
       # @markerSpiderfier.repaint()
 
     clear: () =>
@@ -65,7 +65,9 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
 
     clearEvents: (options, optionsName) ->
       if angular.isDefined(options) and options? and angular.isObject(options)
+        #coffeelint:disable=check_scope
         for eventName, eventHandler of options
+        #coffeelint:enable=check_scope
           if options.hasOwnProperty(eventName) and angular.isFunction(options[eventName])
             $log.info "#{optionsName}: Clearing event: #{eventName} to markerSpiderfier"
             @markerSpiderfier.clearListeners eventName
@@ -85,6 +87,6 @@ angular.module('uiGmapgoogle-maps.directives.api.managers')
       _.find @getGMarkers(), (gMarker) ->
         gMarker?._omsData?
 
-    checkSync: =>
+    checkSync: ->
 #      throw 'GMarkers out of Sync in MarkermarkerSpiderfier' if @getGMarkers().length != @propMapGMarkers.length
 ]
