@@ -79,7 +79,7 @@
     "yargs": "3.32.0"
   },
   "dependencies": {
-    "angular": "1.2 - 1.5",
+    "angular": "1.2 - 1.6",
     "angular-simple-logger": ">=0.0.1",
     "google-maps-utility-library-v3-infobox": "1.1.14",
     "google-maps-utility-library-v3-keydragzoom": "2.0.9",

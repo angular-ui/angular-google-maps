@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.4.0 2016-10-12
+/*! angular-google-maps 2.4.0 2017-01-01
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -6206,10 +6206,11 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 } else {
                   return $http.get(scope.template, {
                     cache: $templateCache
-                  }).success(function(template) {
-                    var templateCtrl, templateScope;
+                  }).then(function(arg) {
+                    var data, templateCtrl, templateScope;
+                    data = arg.data;
                     templateScope = scope.$new();
-                    controlDiv.append(template);
+                    controlDiv.append(data);
                     if (angular.isDefined(scope.controller)) {
                       templateCtrl = $controller(scope.controller, {
                         $scope: templateScope
@@ -6217,7 +6218,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                       controlDiv.children().data('$ngControllerController', templateCtrl);
                     }
                     return control = $compile(controlDiv.children())(templateScope);
-                  }).error(function(error) {
+                  })["catch"](function(error) {
                     return _this.$log.error('mapControl: template could not be found');
                   }).then(function() {
                     return pushControl(map, control, index);
@@ -6861,6 +6862,7 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                 });
               });
               updateCenter = function(c, s) {
+                var cLat, cLng;
                 if (c == null) {
                   c = _gMap.center;
                 }
@@ -6868,11 +6870,22 @@ Original idea from: http://stackoverflow.com/questions/22758950/google-map-drawi
                   s = scope;
                 }
                 if (!_.includes(disabledEvents, 'center')) {
-                  if (s.center.latitude !== c.lat()) {
-                    s.center.latitude = c.lat();
-                  }
-                  if (s.center.longitude !== c.lng()) {
-                    return s.center.longitude = c.lng();
+                  cLat = c.lat();
+                  cLng = c.lng();
+                  if (angular.isDefined(s.center.type)) {
+                    if (s.center.coordinates[1] !== cLat) {
+                      s.center.coordinates[1] = cLat;
+                    }
+                    if (s.center.coordinates[0] !== cLng) {
+                      return s.center.coordinates[0] = cLng;
+                    }
+                  } else {
+                    if (s.center.latitude !== cLat) {
+                      s.center.latitude = cLat;
+                    }
+                    if (s.center.longitude !== cLng) {
+                      return s.center.longitude = cLng;
+                    }
                   }
                 }
               };
@@ -8096,7 +8109,9 @@ This directive creates a new scope.
               }
               return $http.get(scope.template, {
                 cache: $templateCache
-              }).success(function(template) {
+              }).then(function(arg) {
+                var data;
+                data = arg.data;
                 if (angular.isUndefined(scope.events)) {
                   _this.$log.error('searchBox: the events property is required');
                   return;
@@ -8108,7 +8123,7 @@ This directive creates a new scope.
                     _this.$log.error('searchBox: invalid position property');
                     return;
                   }
-                  return new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, $compile(template)(scope));
+                  return new SearchBoxParentModel(scope, element, attrs, map, ctrlPosition, $compile(data)(scope));
                 });
               });
             };

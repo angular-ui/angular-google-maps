@@ -11,10 +11,17 @@ angular.module("uiGmapgoogle-maps.directives.api")
 
           hasTranscludedContent = angular.isUndefined scope.template
 
-          index = if angular.isDefined scope.index and not isNaN(parseInt scope.index) then parseInt scope.index else undefined
+          index = if angular.isDefined scope.index && !isNaN(parseInt scope.index)
+            parseInt(scope.index)
+          else
+            undefined
 
-          position = if angular.isDefined scope.position then scope.position.toUpperCase().replace /-/g, '_' else 'TOP_CENTER'
-          if not maps.ControlPosition[position]
+          position = if angular.isDefined(scope.position)
+            scope.position.toUpperCase().replace /-/g, '_'
+          else
+            'TOP_CENTER'
+
+          if !maps.ControlPosition[position]
             @$log.error 'mapControl: invalid position property'
             return
 
@@ -23,18 +30,19 @@ angular.module("uiGmapgoogle-maps.directives.api")
             control = undefined
             controlDiv = angular.element '<div></div>'
 
-            pushControl = (map, control, index) =>
+            pushControl = (map, control, index) ->
 
               # add index if defined
-              if index then control[0].index = index
+              if index
+                control[0].index = index
 
-              map.controls[google.maps.ControlPosition[position]].push control[0]
+              map.controls[google.maps.ControlPosition[position]].push(control[0])
 
 
             # checking if is using the transcluded content or will load the template
             if hasTranscludedContent
 
-              transclude (transcludeEl) =>
+              transclude (transcludeEl) ->
 
                 controlDiv.append transcludeEl
 
@@ -42,9 +50,9 @@ angular.module("uiGmapgoogle-maps.directives.api")
 
             else
               $http.get(scope.template, { cache: $templateCache })
-              .then (template) =>
+              .then ({data}) ->
                 templateScope = scope.$new()
-                controlDiv.append template.data
+                controlDiv.append(data)
 
                 # if a controller is defined on the directive then add it to the template
                 if angular.isDefined scope.controller
@@ -56,6 +64,6 @@ angular.module("uiGmapgoogle-maps.directives.api")
 
               .catch (error) =>
                 @$log.error 'mapControl: template could not be found'
-              .then =>
+              .then ->
                 pushControl(map, control, index)
 ]
