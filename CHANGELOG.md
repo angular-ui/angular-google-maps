@@ -1,6 +1,6 @@
 <a name"2.4.1"></a>
 ### 2.4.1 (2017-01-05)
-
+ * **angular 1.6:** internal changes to support angular 1.6
 
 <a name"2.3.5"></a>
 ### 2.3.5 (2016-09-19)
