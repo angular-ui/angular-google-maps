@@ -76,7 +76,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask "default", [ 'verbosity', 'buildDist', 'copy', 'uglify:dist', 'uglify:streetview', 'karma']
 
-  grunt.registerTask "buildAll",  "build", "concat", "uglify", "copy", "karma", "graph"
+  grunt.registerTask "buildAll",  ["build", "concat", "uglify", "copy", "karma", "graph"]
 
   # run default "grunt" prior to generate _SpecRunner.html
   grunt.registerTask "spec", [ 'verbosity', "buildDist",
