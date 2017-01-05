@@ -1,6 +1,4 @@
 describe 'uiGmapStreetViewPanorama (directive creation)', ->
-  allDone =  undefined
-  GMarker = null
   apiPromise = null
 
   beforeEach ->
@@ -13,7 +11,7 @@ describe 'uiGmapStreetViewPanorama (directive creation)', ->
       latitude: -27
 
     window['uiGmapInitiator'].initMock(@)
-    @injects.push (uiGmapGoogleMapApi ) =>
+    @injects.push (uiGmapGoogleMapApi ) ->
       apiPromise = uiGmapGoogleMapApi
 
     @injectAll()

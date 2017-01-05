@@ -34,7 +34,7 @@ describe 'uiGmapEventsHelper', ->
       expect(@subject.removeEvents).toBeDefined()
 
     it 'removes the listeners', ->
-      listeners = @subject.setEvents @, scope, 'model'
+      @subject.setEvents @, scope, 'model'
       expect(@listeners.length).toBe(1)
       @subject.removeEvents @listeners
       expect(@listeners.length).toBe(0)

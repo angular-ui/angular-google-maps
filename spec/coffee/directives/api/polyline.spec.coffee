@@ -1,5 +1,4 @@
 describe 'uiGmapPolyline', ->
-  allDone =  undefined
   Polyline = null
 
   beforeEach ->

@@ -155,7 +155,7 @@ describe "_async", ->
           pauses = 0
           @subject.each(known, (num) ->
             test.push(num)
-          , chunking = false
+          , false #chunking
           , ->
             pauses++
           ).then ->
@@ -176,7 +176,7 @@ describe "_async", ->
         @digest =>
           @subject.each d, (val) ->
             vals.push val
-          , chunking = false
+          , false #chunking
           .then ->
             expect(vals.length).toBe 1
             expect(vals[0]).toBe d.prop3

@@ -55,6 +55,8 @@ module.exports = (grunt) ->
   grunt.initConfig options
 
   lints = _.keys(_.omit(watch.coffeelint, 'options'))
+  coffeeLints = lints.map (n) -> "coffeelint:#{n}"
+  coffeeLintsThrow = lints.map (n) -> "coffeelint:#{n}:throw"
 
   lints.forEach (n) ->
     grunt.registerTask "coffeelint:#{n}", ->
@@ -63,17 +65,18 @@ module.exports = (grunt) ->
     grunt.registerTask "coffeelint:#{n}:throw", ->
       coffeelint({src:watch.coffeelint[n].files}, @async())
 
-  grunt.registerTask 'lint', (lints.map (n) -> "coffeelint:#{n}").concat (lints.map (n) -> "watch:coffeelint-#{n}")
+  grunt.registerTask 'lint', coffeeLints
 
-  grunt.registerTask 'build', ['bower', 'clean:dist', 'jshint', 'mkdir', 'coffee', 'ngAnnotate',
+  grunt.registerTask 'lintWatch', lints.map (n) -> "watch:coffeelint-#{n}"
+
+  grunt.registerTask 'build', coffeeLintsThrow.concat ['bower', 'clean:dist', 'jshint', 'mkdir', 'lint', 'coffee', 'ngAnnotate',
   'concat:libs', 'replace', 'webpack:commonjsDeps']
 
   grunt.registerTask 'buildDist', ['build', 'concat:dist']
 
   grunt.registerTask "default", [ 'verbosity', 'buildDist', 'copy', 'uglify:dist', 'uglify:streetview', 'karma']
 
-  grunt.registerTask "buildAll", (lints.map (n) -> "coffeelint:#{n}:throw").concat [ "build", "concat",
-    "uglify", "copy", "karma", "graph"]
+  grunt.registerTask "buildAll",  "build", "concat", "uglify", "copy", "karma", "graph"
 
   # run default "grunt" prior to generate _SpecRunner.html
   grunt.registerTask "spec", [ 'verbosity', "buildDist",

@@ -177,8 +177,8 @@ describe 'utils.gmap-util', ->
       'a b'
       '1,2'
     ]
-    testCases.forEach (testCase)=>
-      result = @subject.getLabelPositionPoint(testCase.input)
+    testCases.forEach (testCase) =>
+      @subject.getLabelPositionPoint(testCase.input)
 
   it 'should correctly fetch object values using dot-notation', ->
     object = { foo: { sea: 'hawks' }}

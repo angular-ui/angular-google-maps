@@ -22,7 +22,7 @@ describe 'marker-options', ->
       }
       mOpts = @subject.createOptions latLng, undefined, defaults
       expect(mOpts.visible).toEqual(defaults.options.visible)
-      options.visible = false;
+      options.visible = false
       expect(mOpts.options.visible).toEqual(defaults.options.visible)
 
     it 'should respect changes to options', ->
@@ -34,5 +34,5 @@ describe 'marker-options', ->
       }
       mOpts = @subject.createOptions latLng, options.icon, defaults
       expect(mOpts.icon).toEqual(defaults.options.icon)
-      options.icon = 'foo';
+      options.icon = 'foo'
       expect(mOpts.options.icon).toEqual(defaults.options.icon)

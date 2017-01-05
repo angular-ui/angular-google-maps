@@ -13,7 +13,7 @@ describe "uiGmapLodash.intersectionObjects", ->
       b: 3
     ]
     module 'uiGmapgoogle-maps.extensions'
-    inject (uiGmapLodash) =>
+    inject (uiGmapLodash) ->
       subject = uiGmapLodash
 
   describe "Comparing Arrays of Objects", ->
@@ -57,7 +57,6 @@ describe "uiGmapLodash.intersectionObjects", ->
             a: 3
             b: 3
           ]
-          diffArray = @objArray
           index = @objArray.indexOf {a: 1, b: 1}
           expect(index).toBe(-1)
           interArray = _.intersection(@objArray, difArray)
@@ -79,7 +78,6 @@ describe "uiGmapLodash.intersectionObjects", ->
             a: 3
             b: 3
           ]
-          diffArray = @objArray
           interArray = subject.intersectionObjects @objArray, difArray
           expect(interArray.length).toEqual(@objArray.length)
 
@@ -97,7 +95,6 @@ describe "uiGmapLodash.intersectionObjects", ->
             a: 4
             b: 4
           ]
-          diffArray = @objArray
           interArray = subject.intersectionObjects @objArray, difArray
           expect(interArray.length).toEqual(@objArray.length)
       describe "different length - not identical", ->
