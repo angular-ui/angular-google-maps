@@ -19,7 +19,7 @@ angular.module("uiGmapgoogle-maps.directives.api")
         mapPromise.then (gMap) ->
           gManager = new MarkerManager gMap
 
-          keys = _.object(IMarker.keys,IMarker.keys)
+          keys = _.zipObject(IMarker.keys,IMarker.keys)
 
           m = new MarkerChildModel {
             scope, model: scope, keys, gMap,
