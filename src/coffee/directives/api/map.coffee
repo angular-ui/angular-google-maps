@@ -241,7 +241,10 @@ angular.module('uiGmapgoogle-maps.directives.api')
             zoomPromise = null
             scope.$watch 'zoom', (newValue, oldValue) ->
               return unless newValue?
-              return if _.isEqual(newValue,oldValue) or _gMap?.getZoom() == scope?.zoom or settingFromDirective
+              if _.isEqual(newValue,oldValue) or _gMap?.getZoom() == scope?.zoom or settingFromDirective
+                if scope.idleAndZoomChanged
+                    unbindBoundsWatch()
+                return
               #make this time out longer than zoom_changes because zoom_changed should be done first
               #being done first should make scopes equal
               $timeout.cancel(zoomPromise) if zoomPromise?
@@ -250,7 +253,7 @@ angular.module('uiGmapgoogle-maps.directives.api')
               , scope.eventOpts?.debounce?.zoomMs + 20
               , false
 
-            scope.$watch 'bounds', (newValue, oldValue) ->
+            unbindBoundsWatch = scope.$watch 'bounds', (newValue, oldValue) ->
               return if newValue is oldValue
               if !newValue?.northeast?.latitude? or !newValue?.northeast?.longitude? or
                 !newValue?.southwest?.latitude? or !newValue?.southwest?.longitude?
