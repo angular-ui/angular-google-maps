@@ -7,7 +7,7 @@ angular.module('uiGmapgoogle-maps.directives.api.utils')
       #coffeelint:disable=check_scope
       for key, markerOrPoint of markersOrPoints
       #coffeelint:enable=check_scope
-        if markerOrPoint
+        if markersOrPoints.hasOwnProperty(key) && markerOrPoint
           everSet = true unless everSet
           point = if _.isFunction markerOrPoint.getPosition then markerOrPoint.getPosition() else markerOrPoint
         bounds.extend point

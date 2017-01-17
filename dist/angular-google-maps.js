@@ -1,4 +1,4 @@
-/*! angular-google-maps 2.4.1 2017-01-05
+/*! angular-google-maps 2.4.1 2017-01-17
  *  AngularJS directives for Google Maps
  *  git: https://github.com/angular-ui/angular-google-maps.git
  */
@@ -1045,7 +1045,7 @@ Nicholas McCready - https://twitter.com/nmccready
             everSet = false;
             for (key in markersOrPoints) {
               markerOrPoint = markersOrPoints[key];
-              if (markerOrPoint) {
+              if (markersOrPoints.hasOwnProperty(key) && markerOrPoint) {
                 if (!everSet) {
                   everSet = true;
                 }
