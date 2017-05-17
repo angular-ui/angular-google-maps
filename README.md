@@ -93,6 +93,24 @@ grunt example
 
 and open your browser on `http://localhost:3000/example.html`.
 
+### Webpack 2
+
+If using Webpack 2 with AngularJS 1.x throughs an angular error
+```
+Error: [$injector:modulerr] Failed to instantiate module {} due to:
+Error: [ng:areq] Argument 'module' is not a function, got Object
+```
+
+try this
+```javascript```
+import angularGoogleMaps from '../node_modules/angular-google-maps/importme'
+```
+instead of
+```javascript
+import angularGoogleMaps from 'angular-google-maps'
+```
+
+
 ### Documentation
 The various directives are documented at [official site](http://angular-ui.github.io/angular-google-maps).
 
