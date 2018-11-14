@@ -1,5 +1,7 @@
 ## Project No longer actively maintained
 
+This repo is heavily outdated and there are no maintainers. Therefore issue tracking has been disabled.
+
 With angular 2 and other competing projects we have decided to announce that this project is no longer activley maintained. If someone desires to take over the project please contact any of the admins.
 
 As a warning this project is not activley watched by the admins and is checked here and there to fix any major issues. Therefore if something is **major**, contact someone directly via mentioning a users name/alias (will notify the user/admin).
